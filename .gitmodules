@@ -1,0 +1,12 @@
+[submodule "sub/lua"]
+	path = sub/lua
+	url = git@github.com:LuaDist/lua.git
+[submodule "sub/SURFACE"]
+	path = sub/SURFACE
+	url = git@github.com:avr-aics-riken/SURFACE.git
+[submodule "third_party/SURFACE"]
+	path = third_party/SURFACE
+	url = git@github.com:avr-aics-riken/SURFACE.git
+[submodule "third_party/lua"]
+	path = third_party/lua
+	url = git@github.com:LuaDist/lua.git
