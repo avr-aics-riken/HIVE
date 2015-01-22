@@ -6,6 +6,9 @@
 #include <mpi.h>
 #endif
 
+#include <stdio.h>
+#include <string.h>
+
 #if defined(_WIN32) || defined(_WIN64)
 #include <direct.h>
 #define snprintf _snprintf
@@ -20,20 +23,16 @@
 const int defWidth = 512;
 const int defHeight = 512;
 
+#include "../SceneScript/SceneScript.h"
+
 void renderScene(const char* scenefile)
 {
     printf("RENDER!! > %s\n", scenefile);
     
-    // Create RenderCore
-    //RenderCore* render = new RenderCore(width,height);
-    //render->SetMode(RENDER_LSGL);
-    //render->SetFSAA(fsaa);
-    
-    // Load scenefile
-    //std::string basepath = getBasePath(scenefile);
-    //chdir(basepath.c_str());
-    //std::string scenefilestr = getFilename(scenefile);
-    //LoaderCore::LoadScene(scenefilestr.c_str(), rendering, render); // render from scene file
+    SceneScript script;
+    if (!script.Execute(scenefile)) {
+        printf("[Error] scene file!! > %s\n", scenefile);
+    }
 }
 
 int main(int argc, char* argv[])
