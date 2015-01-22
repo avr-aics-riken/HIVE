@@ -30,7 +30,8 @@ set(SOURCES
 )
 
 add_executable (hrender ${SOURCES})
-target_link_libraries(hrender lua.dylib)
+
+target_link_libraries(hrender liblua)
 
 
 # Test
