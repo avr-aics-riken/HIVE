@@ -29,17 +29,16 @@ void RegisterSceneClass(lua_State* L)
 
 int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
 {
+    lua_pushvalue(L, n); // stack on top
+
     if (!lua_istable(L, -1))
         return 0;
-    lua_pushnil(L);
     int num = 0;
+    lua_pushnil(L);
     while(lua_next(L, -2) != 0){
         ++num;
-        
-        std::string feildname = static_cast<std::string>(lua_tostring(L, -2)); // name
         PolygonModel* robj = LUACAST<PolygonModel*>(L, -1); // val
         robjs.push_back(robj);
-        
         lua_pop(L, 1);
     }
     return num;
