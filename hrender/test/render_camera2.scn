@@ -1,0 +1,25 @@
+
+print('Render camera2')
+
+local camera1 = Camera()
+camera1:SetScreenSize(1024, 1024)
+camera1:SetFilename('image1.jpg')
+camera1:Look{
+	from = {0,0,300},
+	to   = {0,0,0},
+	up   = {0,1,0},
+	fov  = 60
+}
+
+local camera2 = Camera()
+camera2:SetScreenSize(512, 512)
+camera2:SetFilename('image2.jpg')
+camera:Look{
+	from = {0,300,300},
+	to   = {0,0,0},
+	up   = {0,1,0},
+	fov  = 45
+}
+
+render {camera1, camera2}
+

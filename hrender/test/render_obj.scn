@@ -17,7 +17,7 @@ local obj = ObjLoader()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
-model:Create(obj)
+model:Create(obj:MeshData())
 
 render {camera, model}
 
