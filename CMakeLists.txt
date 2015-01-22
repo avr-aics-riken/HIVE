@@ -1,9 +1,10 @@
-# hrender
-PROJECT(hrender)
+cmake_minimum_required(VERSION 2.8)
 
+PROJECT(HIVE)
 
-# sub modules
-SUBDIRS(third_party/lua)
-SUBDIRS(third_party/SURFACE)
+# modules
+add_subdirectory(third_party/SURFACE)
+add_subdirectory(third_party/lua)
 
-add_executable (hrender src/main.cpp )
+add_subdirectory(hrender)
+add_subdirectory(HIVE)
