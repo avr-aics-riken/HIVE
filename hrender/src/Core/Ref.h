@@ -4,6 +4,8 @@
     Reference count
 */
 
+#include <assert.h>
+
 class RefCount
 {
 protected:

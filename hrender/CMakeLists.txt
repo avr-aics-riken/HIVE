@@ -26,6 +26,7 @@ link_directories(${LIBS})
 # Source files
 set(SOURCES
 	src/Core/main.cpp
+	src/SceneScript/PolygonModel.cpp
 	src/SceneScript/SceneScript.cpp
 	src/Renderer/RenderCore.cpp
 )

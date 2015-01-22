@@ -10,6 +10,22 @@
 
 #include "../Renderer/RenderCore.h"
 
+// --- Script Classes ----
+#include "PolygonModel.h"
+
+void RegisterSceneClass(lua_State* L)
+{
+    LUA_SCRIPTCLASS_REGISTER(L, PolygonModel);
+    /*
+     TODO:
+     */
+    
+    SetFunction(L, "PolygonModel", LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel));
+    /*
+     TODO:
+     */
+}
+// ------------------------
 
 int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
 {
@@ -21,7 +37,7 @@ int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& ro
         ++num;
         
         std::string feildname = static_cast<std::string>(lua_tostring(L, -2)); // name
-        RenderObject* robj = LUACAST<RenderObject*>(L, -1); // val
+        PolygonModel* robj = LUACAST<PolygonModel*>(L, -1); // val
         robjs.push_back(robj);
         
         lua_pop(L, 1);
@@ -62,7 +78,7 @@ int render(lua_State* L)
 void registerFuncs(lua_State* L)
 {
     SetFunction(L, "render", render);
-    //RegisterSceneClass(L); // ここでクラス群を登録
+    RegisterSceneClass(L);
 }
 
 bool SceneScript::Execute(const char* scenefile)
