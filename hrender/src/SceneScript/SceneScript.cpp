@@ -12,18 +12,17 @@
 
 // --- Script Classes ----
 #include "PolygonModel.h"
+#include "Loader.h"
+#include "Camera.h"
 
 void RegisterSceneClass(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, PolygonModel);
-    /*
-     TODO:
-     */
-    
+	LUA_SCRIPTCLASS_REGISTER(L, OBJLoader);
+	LUA_SCRIPTCLASS_REGISTER(L, Camera);
     SetFunction(L, "PolygonModel", LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel));
-    /*
-     TODO:
-     */
+	SetFunction(L, "OBJLoader",    LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader));
+	SetFunction(L, "Camera",       LUA_SCRIPTCLASS_NEW_FUNCTION(Camera));
 }
 // ------------------------
 

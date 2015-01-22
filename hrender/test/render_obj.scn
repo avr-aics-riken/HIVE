@@ -13,7 +13,7 @@ camera:Look{
 }
 
 
-local obj = ObjLoader()
+local obj = OBJLoader()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
