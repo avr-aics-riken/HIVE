@@ -1,0 +1,6 @@
+
+print('load obj')
+
+local obj = ObjLoader()
+obj:Load('test.obj')
+
