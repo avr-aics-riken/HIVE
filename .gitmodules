@@ -7,6 +7,12 @@
 [submodule "third_party/SURFACE"]
 	path = third_party/SURFACE
 	url = git@github.com:avr-aics-riken/SURFACE.git
+	ignore = dirty
 [submodule "third_party/lua"]
 	path = third_party/lua
 	url = git@github.com:LuaDist/lua.git
+	ignore = dirty
+[submodule "third_party/SURFACE-dev"]
+	path = third_party/SURFACE-dev
+	url = git@github.com:digirea/SURFACE.git
+	ignore = dirty
