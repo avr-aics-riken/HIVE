@@ -167,118 +167,11 @@ inline void closeLua(lua_State* L)
 #define _STRACE(...)
 #endif
 
-// --- Reference count ---
+// --- Reference count ----
+#include "../Core/Ref.h"
 
-class LuaRef
-{
-protected:
-	LuaRef()         { m_ref = 0; }
-	virtual ~LuaRef(){};
-	lua_State* L;
-public:
-	int Ref()          { return ++m_ref; }
-	int GetRef() const { return m_ref; }
-	int Unref()        {
-		const int ref = --m_ref;
-		assert(ref>=0);
-		if (!ref)
-			delete this;
-		return ref;
-	}
-	void SetL(lua_State* ls) { L = ls; }
-private:
-	int m_ref;
-};
-
-template<class T>
-class LuaRefPtr
-{
-public:
-	LuaRefPtr()
-	{
-		m_p = 0;
-	}
-	LuaRefPtr(T* s)
-	{
-		m_p = s;
-		if (m_p)
-			m_p->Ref();
-	}
-	LuaRefPtr(const LuaRefPtr& p)
-	{
-		m_p = p;
-		if (m_p)
-			m_p->Ref();
-	}
-	~LuaRefPtr()
-	{
-		if (m_p)
-			m_p->Unref();
-	}
-	
-	T* Get() const
-	{
-		return m_p;
-	}
-	
-	operator T*() const
-	{
-		return m_p;
-	}
-	T& operator *() const
-	{
-		assert(m_p);
-		return *m_p;
-	}
-	T* operator->() const
-	{
-		assert(m_p);
-		return m_p;
-	}
-	bool operator !() const
-	{
-		return m_p == 0;
-	}
-	bool operator ==(T* p) const
-	{
-		return m_p == p;
-	}
-	bool operator !=(T* p) const
-	{
-		return m_p != p;
-	}
-	bool operator <(T* p) const // for STL container
-	{
-		return m_p < p;
-	}
-	
-	//equal operator
-	T* operator =(T* p)
-	{
-		if (p)
-			p->Ref();
-		if (m_p)
-			m_p->Unref();
-		m_p = p;
-		return m_p;
-	}
-	const LuaRefPtr& operator =(const LuaRefPtr& r)
-	{
-		if (this->m_p == r.m_p)
-			return *this;
-		
-		if (r.m_p)
-			r.m_p->Ref();
-		if (m_p)
-			m_p->Unref();
-		m_p = r.m_p;
-		
-		return *this;
-	}
-	
-private:
-	T* m_p;
-};
+#define LuaRef Ref
+#define LuaRefPtr RefPtr
 
 
 // --- LUACAST / LUAPUSH template ---
@@ -401,7 +294,7 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 		/* *object = new CLASSNAME();*/ \
 		LuaRefPtr<CLASSNAME>** object = (LuaRefPtr<CLASSNAME>**)lua_newuserdata(L,sizeof(LuaRefPtr<CLASSNAME>*)); \
 		*object = new LuaRefPtr<CLASSNAME>(new CLASSNAME()); \
-		(**object)->SetL(L); \
+		(**object)->SetUserData(L); \
 		luaL_getmetatable(L, #CLASSNAME "_metatable");  \
 		lua_setmetatable(L, -2); \
 		return 1; \

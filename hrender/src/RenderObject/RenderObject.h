@@ -2,12 +2,12 @@
     RenderObject.h
 */
 
-class RenderObject : public LuaRef
+#include "../Core/Ref.h"
+
+class RenderObject : public RefCount
 {
 public:
     RenderObject(){};
     ~RenderObject(){};
     
 };
-
-LUA_SCRIPTCLASS_CAST_AND_PUSH(RenderObject)

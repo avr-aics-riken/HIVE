@@ -27,6 +27,7 @@ link_directories(${LIBS})
 set(SOURCES
 	src/Core/main.cpp
 	src/SceneScript/SceneScript.cpp
+	src/Renderer/RenderCore.cpp
 )
 
 add_executable (hrender ${SOURCES})

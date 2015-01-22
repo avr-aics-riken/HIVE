@@ -8,8 +8,6 @@
 
 #include <vector>
 
-#include "../RenderObject/RenderObject.h"
-
 #include "../Renderer/RenderCore.h"
 
 
