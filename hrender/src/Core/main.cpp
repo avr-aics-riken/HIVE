@@ -25,9 +25,9 @@ void renderScene(const char* scenefile)
     printf("RENDER!! > %s\n", scenefile);
     
     // Create RenderCore
-    RenderCore* render = new RenderCore(width,height);
-    render->SetMode(RENDER_LSGL);
-    render->SetFSAA(fsaa);
+    //RenderCore* render = new RenderCore(width,height);
+    //render->SetMode(RENDER_LSGL);
+    //render->SetFSAA(fsaa);
     
     // Load scenefile
     //std::string basepath = getBasePath(scenefile);
