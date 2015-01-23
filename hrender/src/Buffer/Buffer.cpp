@@ -1,7 +1,5 @@
 #include "Buffer.h"
 
-
-
 int Vec3Buffer::Create(int num)
 {
 	m_buffer.resize(num);
