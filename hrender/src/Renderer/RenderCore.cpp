@@ -70,12 +70,37 @@ public:
     
     void Render()
     {
-        renderObjects();
-        readbackImage();
-        tempSave(m_imgbuf, m_width, m_height, "image.jpg");
+        RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
+        for (it = m_renderObjects.begin(); it != eit; ++it)
+        {
+            if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
+                setupCamera((*it));
+                renderObjects();
+                readbackImage();
+                
+                tempSave(m_imgbuf, m_width, m_height, "image.jpg"); // TEST
+            }
+        }
     }
    
 private:
+    
+    void setupCamera(RenderObject* camera)
+    {
+        
+        
+    }
+    
+    void drawObj_SGL(RenderObject* camera)
+    {
+        
+    }
+
+    void drawObj_GL(RenderObject* camera)
+    {
+        
+    }
+
     void readbackImage()
     {
         if (m_mode == RENDER_LSGL)
@@ -115,11 +140,13 @@ private:
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                /*if ((*it)->GetType() != RenderObject::TYPE_POLYGON
-                    &&  (*it)->GetType() != RenderObject::TYPE_POINT
-                    &&  (*it)->GetType() != RenderObject::TYPE_VOLUME)
+                if ((*it)->GetType() != RenderObject::TYPE_POLYGON
+                &&  (*it)->GetType() != RenderObject::TYPE_POINT
+                &&  (*it)->GetType() != RenderObject::TYPE_VOLUME)
                     continue;
                 
+                drawObj_SGL((*it));
+                /*
                 unsigned int prog = (*it)->GetSGLProgram();
                 if (!prog)
                     continue;
@@ -141,11 +168,13 @@ private:
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                /*if ((*it)->GetType() != RenderObject::TYPE_POLYGON
-                    &&  (*it)->GetType() != RenderObject::TYPE_POINT
-                    &&  (*it)->GetType() != RenderObject::TYPE_VOLUME)
+                if ((*it)->GetType() != RenderObject::TYPE_POLYGON
+                &&  (*it)->GetType() != RenderObject::TYPE_POINT
+                &&  (*it)->GetType() != RenderObject::TYPE_VOLUME)
                     continue;
                 
+                drawObj_GL((*it));
+                /*
                 unsigned int prog = (*it)->GetGLProgram();
                 if (!prog)
                     continue;
