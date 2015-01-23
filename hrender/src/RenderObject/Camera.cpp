@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <stdio.h>
+
 Camera::Camera()
 {
 	width  = 0;
@@ -25,8 +27,6 @@ bool Camera::SetFilename(const std::string& filename)
 	printf("Debug: FileName = %s\n", filename.c_str());
 	return true;
 }
-
-
 
 bool Camera::LookAt(float eye_x, float eye_y, float eye_z,
 				  float tar_x, float tar_y, float tar_z,
