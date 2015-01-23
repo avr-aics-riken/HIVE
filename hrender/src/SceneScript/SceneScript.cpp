@@ -11,18 +11,18 @@
 #include "../Renderer/RenderCore.h"
 
 // --- Script Classes ----
-#include "PolygonModel.h"
-#include "Loader.h"
-#include "Camera.h"
+#include "PolygonModel_Lua.h"
+#include "ObjLoader_Lua.h"
+#include "Camera_Lua.h"
 
 void RegisterSceneClass(lua_State* L)
 {
-    LUA_SCRIPTCLASS_REGISTER(L, PolygonModel);
-	LUA_SCRIPTCLASS_REGISTER(L, OBJLoader);
-	LUA_SCRIPTCLASS_REGISTER(L, Camera);
-    SetFunction(L, "PolygonModel", LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel));
-	SetFunction(L, "OBJLoader",    LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader));
-	SetFunction(L, "Camera",       LUA_SCRIPTCLASS_NEW_FUNCTION(Camera));
+  LUA_SCRIPTCLASS_REGISTER(L, PolygonModel_Lua);
+	LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
+	LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
+  SetFunction(L, "PolygonModel", LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
+	SetFunction(L, "OBJLoader",    LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
+	SetFunction(L, "Camera",       LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
 }
 // ------------------------
 
@@ -36,7 +36,7 @@ int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& ro
     lua_pushnil(L);
     while(lua_next(L, -2) != 0){
         ++num;
-        PolygonModel* robj = LUACAST<PolygonModel*>(L, -1); // val
+        PolygonModel_Lua* robj = LUACAST<PolygonModel_Lua*>(L, -1); // val
         robjs.push_back(robj);
         lua_pop(L, 1);
     }

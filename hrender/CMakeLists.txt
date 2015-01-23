@@ -17,6 +17,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
 	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
+	${PROJECT_SOURCE_DIR}/../hrender/src/Core
 	${CMAKE_BINARY_DIR}/third_party/lua
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
@@ -32,14 +33,19 @@ link_directories(${LIBS})
 # Source files
 set(SOURCES
 	src/Core/main.cpp
-	src/SceneScript/PolygonModel.cpp
+	src/SceneScript/PolygonModel_Lua.cpp
+  	src/SceneScript/Camera_Lua.cpp
+	src/SceneScript/ObjLoader_Lua.cpp
 	src/SceneScript/SceneScript.cpp
+	src/SceneScript/PolygonModel_Lua.cpp
 	src/Renderer/RenderCore.cpp
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp
 	src/Image/jpge.cpp
 	src/Buffer/Buffer.cpp
+	src/Buffer/BufferMeshData.cpp
 	src/Loader/Loader.cpp
+	src/Loader/ObjLoader.cpp
 	src/RenderObject/Camera.cpp
 )
 
