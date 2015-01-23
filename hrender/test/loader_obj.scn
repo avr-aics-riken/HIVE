@@ -1,6 +1,6 @@
 
 print('load obj')
 
-local obj = ObjLoader()
-obj:Load('test.obj')
+local obj = OBJLoader()
+obj:Load('bunny.obj')
 

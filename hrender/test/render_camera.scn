@@ -5,11 +5,11 @@ local camera = Camera()
 camera:SetScreenSize(1024, 1024)
 camera:SetFilename('image.jpg')
 
-camera:Look{
-	from = {0,0,300},
-	to   = {0,0,0},
-	up   = {0,1,0},
-	fov  = 60
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
 }
 
 render {camera}
