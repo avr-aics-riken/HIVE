@@ -1,7 +1,13 @@
+#pragma once
+
 /*
     RenderCore.h
 */
 
+enum RENDER_MODE{
+    RENDER_OPENGL,
+    RENDER_LSGL
+};
 
 class RenderObject;
 
@@ -18,4 +24,6 @@ private:
     RenderCore();
     ~RenderCore();
 
+    class Impl;
+    Impl* m_imp;
 };
