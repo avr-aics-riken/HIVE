@@ -2,7 +2,6 @@
 #define _BUFFER_H_
 
 #include "LuaUtil.h"
-#include "Math.h"
 #include <vector>
 
 
