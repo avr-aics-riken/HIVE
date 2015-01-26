@@ -7,6 +7,7 @@ Camera::Camera()
 	width  = 0;
 	height = 0;
 	outputfile = ""; //todo 
+	SetType(TYPE_CAMERA);
 }
 
 Camera::~Camera()
