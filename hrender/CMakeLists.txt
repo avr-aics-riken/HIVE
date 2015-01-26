@@ -47,6 +47,7 @@ set(SOURCES
 	src/Loader/Loader.cpp
 	src/Loader/ObjLoader.cpp
 	src/RenderObject/Camera.cpp
+	src/RenderObject/PolygonModel.cpp
 )
 
 add_executable (hrender ${SOURCES})
