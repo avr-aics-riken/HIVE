@@ -4,9 +4,10 @@
 
 #include "../RenderObject/RenderObject.h"
 #include "LuaUtil.h"
+#include "PolygonModel.h"
 #include "BufferMeshData.h"
 
-class PolygonModel_Lua : public RenderObject
+class PolygonModel_Lua : public PolygonModel
 {
 public:
 	PolygonModel_Lua();
