@@ -8,16 +8,16 @@
 #include <string>
 
 class Camera : public RenderObject {
-	unsigned int width;
-	unsigned int height;
-	std::string  outputfile;
+	unsigned int m_width;
+	unsigned int m_height;
+	std::string  m_outputfile;
 	struct CameraInfo {
 		float eye[3];
 		float tar[3];
 		float up [3];
 		float fov;
 	};
-	CameraInfo info;
+	CameraInfo m_info;
 protected:
 	Camera();
 	~Camera();
@@ -27,6 +27,12 @@ protected:
 				float tar_x, float tar_y, float tar_z,
 				float up_x,  float up_y,  float up_z,
 				float fov);
+    
+public:
+    int GetScreenWidth() const;
+    int GetScreenHeight() const;
+    const CameraInfo* GetCameraInfo() const;
+
 };
 
 #endif //_CAMERA_H_

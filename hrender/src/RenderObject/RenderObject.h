@@ -6,7 +6,10 @@
 
 
 #include "../Core/Ref.h"
-#include "BufferMeshData.h"
+//#include "BufferMeshData.h"
+
+class BufferMeshData;
+class CameraData;
 
 class RenderObject : public RefCount
 {
@@ -21,14 +24,14 @@ public:
 		TYPE_MAX,
 	};
 
-    MODE_TYPE GetType() const       { return m_type; }
-    BufferMeshData* Mesh() const    { return m_mesh; }
-
+    MODE_TYPE GetType() const       { return m_type;   }
+    BufferMeshData* GetMesh() const { return m_mesh;   }
+    
 protected:
     RenderObject(MODE_TYPE t) : m_type(t) {};
 	~RenderObject(){};
     
-	void SetMesh(BufferMeshData *m) { m_mesh = m;    }
+    void SetMesh(BufferMeshData *m) { m_mesh   = m;    }
     
 private:
 	MODE_TYPE       m_type;
