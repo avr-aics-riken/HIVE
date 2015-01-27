@@ -6,6 +6,8 @@
 
 #include "Commands.h"
 #include <vector>
+#include <map>
+#include <algorithm>
 
 #include "../RenderObject/RenderObject.h"
 #include "../RenderObject/PolygonModel.h"
@@ -17,7 +19,12 @@
 
 #include "../Core/vxmath.h"
 
+#include "PolygonBuffer.h"
+#include "PointBuffer.h"
+#include "VolumeBuffer.h"
+
 #include "../Image/SimpleJPG.h"
+
 
 namespace {
     bool tempSave(const unsigned char* rgba, int w, int h, const char* imageFile)
@@ -43,20 +50,38 @@ private:
     int m_width;
     int m_height;
     RENDER_MODE m_mode;
+    
+    // Framebuffers
     unsigned char* m_imgbuf;
     float* m_depthbuf;
     unsigned int m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer;
     unsigned int m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer;
-
+    VX::Math::vec4 m_clearcolor;
+    
     const Camera* m_currentCamera;
     
+    // Rendering nodes
     typedef std::vector<RefPtr<RenderObject> > RenderObjectArray;
     RenderObjectArray m_renderObjects;
+    
+    // Device caches
+    /*typedef std::map<const PolygonModel*, RefPtr<PolygonBuffer> > PolygonBufferMap;
+    typedef std::map<const PointModel*,   RefPtr<PointBuffer> >   PointBufferMap;
+    typedef std::map<const VolumeModel*,  RefPtr<VolumeBuffer> >  VolumeBufferMap;
+    PolygonBufferMap m_polygonBuffers;
+    PointBufferMap   m_pointBuffers;
+    VolumeBufferMap  m_volumeBuffers;*/
+    typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
+    BufferMap m_buffers_SGL;
+    BufferMap m_buffers_GL;
+
+    
 public:
     Impl()
     {
         m_mode   = RENDER_LSGL;//RENDER_OPENGL;
-        m_imgbuf = 0;
+        m_clearcolor = VX::Math::vec4(0,0,0,0);
+        m_imgbuf   = 0;
         m_depthbuf = 0;
         m_sgl_depthbuffer = 0;
         m_sgl_colorbuffer = 0;
@@ -111,63 +136,60 @@ private:
         resize(w, h);
     }
     
-    void bindCamera(unsigned int prog)
+    const BaseBuffer* createBufferSGL(const RenderObject* robj)
     {
-        const Camera* camera = m_currentCamera;
-        const Camera::CameraInfo* info = camera->GetCameraInfo();
-    
-        // TODO:
-        //if (camera->CameraType() == STEREO) {
-        //  SetStereoEnvCamera_SGL(prog, info->eye, info->tar, info->up, 20.0f, 0.03f); // fixme
-        //else
-    
-        SetCamera_SGL(prog, info->eye, info->tar, info->up, info->fov);
-        
-    }
-    
-    void draw_SGL(const PolygonModel* pmodel)
-    {
-        BufferMeshData* mesh = pmodel->GetMesh();
-        mesh = mesh;
-        /*
-         unsigned int prog = (*it)->GetSGLProgram();
-         if (!prog)
-         continue;
-         // TODO: move to Render()
-         BindProgram_SGL(prog);
-         SetUniform2fv_SGL(prog, "resolution", res);
-         SetUniform4fv_SGL(prog, "backgroundColor", bgcolor);
-         bindCamera(prog);
-         (*it)->Render(RENDER_LSGL);*/
-    }
-    void draw_SGL(const PointModel* pmodel)
-    {
-        // TODO:
-    }
-    void draw_SGL(const VolumeModel* vmodel)
-    {
-        // TODO:
-    }
-    void drawObj_SGL(const RenderObject* robj)
-    {
-        // TODO: Optimize here
-        
+        const BaseBuffer* buffer = 0;
         if (robj->GetType() == RenderObject::TYPE_POLYGON) {
-            draw_SGL(static_cast<const PolygonModel*>(robj));
+            PolygonBuffer* pbuf = new PolygonBuffer(RENDER_LSGL);
+            pbuf->Create(static_cast<const PolygonModel*>(robj));
+            buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_POINT) {
-            draw_SGL(static_cast<const PointModel*>(robj));
+            /*PointBuffer* pbuf = new PointBuffer(RENDER_LSGL);
+            pbuf->Create(static_cast<const PointModel*>(robj));
+            buffer = pbuf;*/
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
-            draw_SGL(static_cast<const VolumeModel*>(robj));
+            /*VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
+             vbuf->Create(static_cast<const VolumeModel*>(robj));
+             buffer = vbuf;*/
+        } else {
+            // Unknow type
+            printf("Unkown RenderObjet type:\n");
+            assert(0);
         }
-        // other type is invisible
+        return buffer;
     }
-
-    void drawObj_GL(const RenderObject* robj)
+    
+    void draw_SGL(const RenderObject* robj)
     {
-        /* TODO */
-        /*
+        if (robj->GetType() == RenderObject::TYPE_CAMERA) {
+            return;
+        }
+        
+        const BaseBuffer* buffer = 0;
+        BufferMap::const_iterator it = m_buffers_SGL.find(robj);
+        if (it != m_buffers_SGL.end()) {
+            buffer = it->second.Get();
+        } else {
+            buffer = createBufferSGL(robj);
+        }
+
+        assert(buffer);
+
+        const float res[] = {m_width, m_height};
+
+        buffer->BindProgram();
+        buffer->Uniform2fv("resolution", res);
+        buffer->Uniform4fv("backgroundColor", &m_clearcolor.x);
+        buffer->SetCamera(m_currentCamera);
+        buffer->Render();
+        buffer->UnbindProgram();
+        
+    }
+    void draw_GL(const RenderObject* robj)
+    {
+        // TODO
          /// old code
-         unsigned int prog = (*it)->GetGLProgram();
+        /* unsigned int prog = (*it)->GetGLProgram();
          if (!prog)
          continue;
          // TODO: move to Render()
@@ -177,7 +199,6 @@ private:
          
          SetCamera_GL(prog, m_eye, m_lookat, m_up, m_fov, m_width, m_height, m_near, m_far);
          (*it)->Render(RENDER_OPENGL);*/
-
     }
 
     void readbackImage()
@@ -207,10 +228,8 @@ private:
     {
         printf("RenderCore::RENDER!!!!\n");
         
-        const float bgcolor[] = {0,0.0,0,0.0};//{m_clearcolor_r,m_clearcolor_g,m_clearcolor_b,m_clearcolor_a};
         if (m_mode == RENDER_LSGL) {
-            //Clear_SGL(m_clearcolor_r,m_clearcolor_g,m_clearcolor_b,m_clearcolor_a);
-            Clear_SGL(bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3]);
+            Clear_SGL(m_clearcolor.x, m_clearcolor.y, m_clearcolor.z, m_clearcolor.w);
             
             //SampleCoverage_SGL(m_fsaa, 0);
             //PixelStep_SGL(m_pixelstep);
@@ -218,19 +237,18 @@ private:
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                drawObj_SGL((*it));
+                draw_SGL((*it));
             }
             
             //BindProgram_SGL(0); // TODO: not need to release?
         } else {
             //bindGLBuffer();
-            //Clear_GL(m_clearcolor_r,m_clearcolor_g,m_clearcolor_b,m_clearcolor_a);
-            Clear_GL(bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3]);
+            Clear_GL(m_clearcolor.x, m_clearcolor.y, m_clearcolor.z, m_clearcolor.w);
             
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                drawObj_GL((*it));
+                draw_GL((*it));
             }
             
             BindProgram_GL(0);

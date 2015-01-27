@@ -4,10 +4,7 @@
     RenderCore.h
 */
 
-enum RENDER_MODE{
-    RENDER_OPENGL,
-    RENDER_LSGL
-};
+#include "RenderMode.h"
 
 class RenderObject;
 
