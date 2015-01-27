@@ -8,14 +8,23 @@
 #include <vector>
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/PolygonModel.h"
+#include "../RenderObject/PointModel.h"
+#include "../RenderObject/VolumeModel.h"
 #include "../RenderObject/Camera.h"
 #include "../Core/Ref.h"
+
+#include "../Core/vxmath.h"
 
 #include "../Image/SimpleJPG.h"
 
 namespace {
     bool tempSave(const unsigned char* rgba, int w, int h, const char* imageFile)
     {
+        if (std::string(imageFile) == "")
+            return false;
+        if (!rgba)
+            return false;
         void* jpgbuf = 0;
         int fsize = SimpleJPGSaverRGBA(&jpgbuf, w, h, rgba);
         FILE* fp = fopen(imageFile, "wb");
@@ -38,6 +47,8 @@ private:
     unsigned int m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer;
     unsigned int m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer;
 
+    const Camera* m_currentCamera;
+    
     typedef std::vector<RefPtr<RenderObject> > RenderObjectArray;
     RenderObjectArray m_renderObjects;
 public:
@@ -52,7 +63,7 @@ public:
         m_gl_depthbuffer  = 0;
         m_gl_colorbuffer  = 0;
         m_gl_framebuffer  = 0;
-        resize(512, 512);
+        resize(512, 512); // default size
     }
     
     ~Impl() {
@@ -78,35 +89,94 @@ public:
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const int w = camera->GetScreenWidth();
                 const int h = camera->GetScreenHeight();
-                setupCamera((*it));
+                const std::string& outfile = camera->GetOutputFile();
+                setCurrentCamera(camera);
                 renderObjects();
                 readbackImage();
                 
-                tempSave(m_imgbuf, w, h, "image.jpg"); // TEST
+                tempSave(m_imgbuf, w, h, outfile.c_str());
             }
-            ////test
-            //if ((*it)->GetType() == RenderObject::TYPE_POLYGON) {
-            //  (*it)->Mesh()->print();
-            //}
         }
     }
    
 private:
     
-    void setupCamera(RenderObject* camera)
+    void setCurrentCamera(const Camera* camera)
     {
+        m_currentCamera = camera;
         
+        const int w = camera->GetScreenWidth();
+        const int h = camera->GetScreenHeight();
+        resize(w, h);
+    }
+    
+    void bindCamera(unsigned int prog)
+    {
+        const Camera* camera = m_currentCamera;
+        const Camera::CameraInfo* info = camera->GetCameraInfo();
+    
+        // TODO:
+        //if (camera->CameraType() == STEREO) {
+        //  SetStereoEnvCamera_SGL(prog, info->eye, info->tar, info->up, 20.0f, 0.03f); // fixme
+        //else
+    
+        SetCamera_SGL(prog, info->eye, info->tar, info->up, info->fov);
         
     }
     
-    void drawObj_SGL(RenderObject* camera)
+    void draw_SGL(const PolygonModel* pmodel)
     {
+        BufferMeshData* mesh = pmodel->GetMesh();
+        mesh = mesh;
+        /*
+         unsigned int prog = (*it)->GetSGLProgram();
+         if (!prog)
+         continue;
+         // TODO: move to Render()
+         BindProgram_SGL(prog);
+         SetUniform2fv_SGL(prog, "resolution", res);
+         SetUniform4fv_SGL(prog, "backgroundColor", bgcolor);
+         bindCamera(prog);
+         (*it)->Render(RENDER_LSGL);*/
+    }
+    void draw_SGL(const PointModel* pmodel)
+    {
+        // TODO:
+    }
+    void draw_SGL(const VolumeModel* vmodel)
+    {
+        // TODO:
+    }
+    void drawObj_SGL(const RenderObject* robj)
+    {
+        // TODO: Optimize here
         
+        if (robj->GetType() == RenderObject::TYPE_POLYGON) {
+            draw_SGL(static_cast<const PolygonModel*>(robj));
+        } else if (robj->GetType() == RenderObject::TYPE_POINT) {
+            draw_SGL(static_cast<const PointModel*>(robj));
+        } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
+            draw_SGL(static_cast<const VolumeModel*>(robj));
+        }
+        // other type is invisible
     }
 
-    void drawObj_GL(RenderObject* camera)
+    void drawObj_GL(const RenderObject* robj)
     {
-        
+        /* TODO */
+        /*
+         /// old code
+         unsigned int prog = (*it)->GetGLProgram();
+         if (!prog)
+         continue;
+         // TODO: move to Render()
+         BindProgram_GL(prog);
+         SetUniform2fv_GL(prog, "resolution", res);
+         SetUniform4fv_GL(prog, "backgroundColor", bgcolor);
+         
+         SetCamera_GL(prog, m_eye, m_lookat, m_up, m_fov, m_width, m_height, m_near, m_far);
+         (*it)->Render(RENDER_OPENGL);*/
+
     }
 
     void readbackImage()
@@ -136,7 +206,6 @@ private:
     {
         printf("RenderCore::RENDER!!!!\n");
         
-        const float res[] = {static_cast<float>(m_width), static_cast<float>(m_height)};
         const float bgcolor[] = {0,0.0,0,0.0};//{m_clearcolor_r,m_clearcolor_g,m_clearcolor_b,m_clearcolor_a};
         if (m_mode == RENDER_LSGL) {
             //Clear_SGL(m_clearcolor_r,m_clearcolor_g,m_clearcolor_b,m_clearcolor_a);
@@ -148,23 +217,7 @@ private:
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                if ((*it)->GetType() != RenderObject::TYPE_POLYGON
-                &&  (*it)->GetType() != RenderObject::TYPE_POINT
-                &&  (*it)->GetType() != RenderObject::TYPE_VOLUME)
-                    continue;
-                
                 drawObj_SGL((*it));
-                /*
-                unsigned int prog = (*it)->GetSGLProgram();
-                if (!prog)
-                    continue;
-                // TODO: move to Render()
-                BindProgram_SGL(prog);
-                SetUniform2fv_SGL(prog, "resolution", res);
-                SetUniform4fv_SGL(prog, "backgroundColor", bgcolor);
-                SetCamera_SGL(prog, m_eye, m_lookat, m_up, m_fov);
-                //SetStereoEnvCamera_SGL(prog, m_eye, m_lookat, m_up, 20.0f, 0.03f); // fixme
-                (*it)->Render(RENDER_LSGL);*/
             }
             
             //BindProgram_SGL(0); // TODO: not need to release?
@@ -176,23 +229,7 @@ private:
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                if ((*it)->GetType() != RenderObject::TYPE_POLYGON
-                &&  (*it)->GetType() != RenderObject::TYPE_POINT
-                &&  (*it)->GetType() != RenderObject::TYPE_VOLUME)
-                    continue;
-                
                 drawObj_GL((*it));
-                /*
-                unsigned int prog = (*it)->GetGLProgram();
-                if (!prog)
-                    continue;
-                // TODO: move to Render()
-                BindProgram_GL(prog);
-                SetUniform2fv_GL(prog, "resolution", res);
-                SetUniform4fv_GL(prog, "backgroundColor", bgcolor);
-                
-                SetCamera_GL(prog, m_eye, m_lookat, m_up, m_fov, m_width, m_height, m_near, m_far);
-                (*it)->Render(RENDER_OPENGL);*/
             }
             
             BindProgram_GL(0);
@@ -220,12 +257,17 @@ private:
         m_height = h;
         
         delete [] m_imgbuf;
-        m_imgbuf = new unsigned char[w * h * 4];
+        m_imgbuf = 0;
         delete [] m_depthbuf;
-        m_depthbuf = new float[w * h];
-        for(int y = 0; y < h; ++y){
-            for(int x = 0; x < w; ++x){
-                m_depthbuf[x + y * w] = x / (float)w;
+        m_depthbuf = 0;
+        
+        if (w != 0 && h != 0) {
+            m_imgbuf = new unsigned char[w * h * 4];
+            m_depthbuf = new float[w * h];
+            for(int y = 0; y < h; ++y){
+                for(int x = 0; x < w; ++x){
+                    m_depthbuf[x + y * w] = x / (float)w;
+                }
             }
         }
     }
