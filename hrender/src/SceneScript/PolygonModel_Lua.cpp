@@ -13,11 +13,8 @@ bool PolygonModel_Lua::SetShader(const std::string& shaderfile)
     return false;
 }
 
-bool PolygonModel_Lua::Create(BufferMeshData *mesh)
+bool PolygonModel_Lua::Create(BufferMeshData_Lua *mesh)
 {
-    printf("Mesh Data=%08X\n", mesh);
-    if(mesh) mesh->print();
-    else     printf("MESH DATA is NULL\n");
     PolygonModel::Create(mesh);
     return true;
 }

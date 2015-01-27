@@ -80,11 +80,10 @@ public:
                 
                 tempSave(m_imgbuf, m_width, m_height, "image.jpg"); // TEST
             }
-            if ((*it)->GetType() == RenderObject::TYPE_POLYGON) {
-							printf("Mesh = %08X\n", (*it)->Mesh());
-							(*it)->Mesh()->print();
-
-						}
+            ////test
+            //if ((*it)->GetType() == RenderObject::TYPE_POLYGON) {
+            //  (*it)->Mesh()->print();
+            //}
         }
     }
    

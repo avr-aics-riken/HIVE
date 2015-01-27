@@ -2,12 +2,19 @@
 
 BufferMeshData::BufferMeshData()
 {
-	printf("Buffer Mesh Data Cons\n");
 }
 
 BufferMeshData::~BufferMeshData()
 {
-	printf("Buffer Mesh Data Destruct\n");
+}
+
+BufferMeshData::BufferMeshData(BufferMeshData* inst)
+{
+	this->m_pos      = inst->m_pos     ;
+	this->m_normal   = inst->m_normal  ;
+	this->m_texcoord = inst->m_texcoord;
+	this->m_index    = inst->m_index   ;
+	this->m_mat      = inst->m_mat     ;
 }
 
 void BufferMeshData::Clear()
