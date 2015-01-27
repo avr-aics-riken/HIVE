@@ -11,7 +11,7 @@
 #include <gles_context.h>
 #include "../Core/vxmath.h"
 
-void CreateBuffer_LSGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer)
+void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glGenFramebuffers(1, &framebuffer);
@@ -241,6 +241,12 @@ void PixelStep_SGL(int n)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.lsglSetPixelStep(n);
+}
+
+void SetShaderCompiler_SGL(const char* path, const char* opt)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.lsglSetShaderCompiler(path, opt);
 }
 
 bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)

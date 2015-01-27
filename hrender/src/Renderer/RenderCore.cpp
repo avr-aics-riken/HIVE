@@ -90,6 +90,14 @@ public:
         m_gl_colorbuffer  = 0;
         m_gl_framebuffer  = 0;
         resize(512, 512); // default size
+        
+        // TODO
+        //std::string binaryPath = getBinaryPath();
+        std::string binaryPath = "/Users/kioku/git/HIVE/hrender/";
+        binaryPath += "../third_party/SURFACE/glsl/glslc";
+        binaryPath += " --cxxflags=\"-O2\"";
+        SetShaderCompiler_SGL(binaryPath.c_str(), NULL);
+
     }
     
     ~Impl() {
@@ -209,7 +217,7 @@ private:
         //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
         
         float clearcolor_r = 0.0;
-        float clearcolor_g = 1.0;
+        float clearcolor_g = 0.0;
         float clearcolor_b = 0.0;
         
         // merge to bgcolor
@@ -269,7 +277,7 @@ private:
         //		if (m_gl_framebuffer || m_gl_colorbuffer || m_gl_depthbuffer)
         //			ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer); // todo nothing here
         
-        CreateBuffer_LSGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
+        CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
         //		CreateBuffer_GL  (w, h, m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);  // todo nothing here
         
         m_width  = w;

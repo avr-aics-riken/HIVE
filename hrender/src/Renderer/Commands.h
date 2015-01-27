@@ -8,7 +8,7 @@
 #ifndef __AnimTool__Commands__
 #define __AnimTool__Commands__
 
-void CreateBuffer_LSGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer);
+void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer);
 void ReleaseBuffer_SGL(unsigned int framebuffer, unsigned int colorRenderbuffer, unsigned int depthRenderbuffer);
 void Clear_SGL(float red, float green, float blue, float alpha);
 void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf);
@@ -35,6 +35,7 @@ void DrawArrays_SGL(unsigned int vtxnum);
 void DrawPointArrays_SGL(unsigned int vertexnum);
 void SampleCoverage_SGL(float a, bool invert);
 void PixelStep_SGL(int n);
+void SetShaderCompiler_SGL(const char* path, const char* opt);
 bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg);
 bool CreateProgramBinary_SGL(const char* soname, unsigned int& prg);
 bool DeleteProgram_SGL(unsigned int prg);
