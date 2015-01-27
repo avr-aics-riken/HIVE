@@ -57,3 +57,9 @@ const Camera::CameraInfo* Camera::GetCameraInfo() const
     return &m_info;
 }
 
+const std::string& Camera::GetOutputFile() const
+{
+    return m_outputfile;
+}
+
+

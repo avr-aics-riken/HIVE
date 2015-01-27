@@ -178,7 +178,7 @@ void SetUniformMatrix_SGL(unsigned int prg, const char* name, const float* val)
 		sgl.glUniformMatrix4fv(p, 1, 0, val);
 }
 
-void SetCamera_SGL(unsigned int prg, float* eye, float* lookat, float* up, float fov)
+void SetCamera_SGL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.lsglSetCamera(eye, lookat, up, fov);
@@ -195,7 +195,7 @@ void SetCamera_SGL(unsigned int prg, float* eye, float* lookat, float* up, float
 	SetUniform3fv_SGL(prg, "up", &up[0]);
 }
 
-void SetStereoEnvCamera_SGL(unsigned int prg, float* eye, float* lookat, float* up, float zeroParallax, float eyeSeparation)
+void SetStereoEnvCamera_SGL(unsigned int prg, const float* eye, const float* lookat, const float* up, float zeroParallax, float eyeSeparation)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.lsglSetStereoEnvCamera(eye, lookat, up, zeroParallax, eyeSeparation);
