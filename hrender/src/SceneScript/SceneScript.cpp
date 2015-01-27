@@ -11,6 +11,7 @@
 #include "../Renderer/RenderCore.h"
 
 // --- Script Classes ----
+#include "BufferMeshData_Lua.h"
 #include "PolygonModel_Lua.h"
 #include "ObjLoader_Lua.h"
 #include "Camera_Lua.h"
@@ -20,9 +21,11 @@ void RegisterSceneClass(lua_State* L)
   LUA_SCRIPTCLASS_REGISTER(L, PolygonModel_Lua);
 	LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
 	LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
+	LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
   SetFunction(L, "PolygonModel", LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
 	SetFunction(L, "OBJLoader",    LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
 	SetFunction(L, "Camera",       LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
+	SetFunction(L, "MeshData",     LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
 }
 // ------------------------
 

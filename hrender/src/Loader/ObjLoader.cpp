@@ -38,9 +38,9 @@ bool OBJLoader::Load(const char* filename){
 	return r;
 }
 
-BufferMeshData OBJLoader::MeshData()
+BufferMeshData *OBJLoader::MeshData()
 {
-	return mesh;
+	return &mesh;
 }
 
 

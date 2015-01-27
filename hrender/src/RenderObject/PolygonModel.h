@@ -11,7 +11,7 @@ public:
 	PolygonModel();
     ~PolygonModel();
     bool SetShader(const std::string& shaderfile);
-    bool Create(BufferMeshData &mesh);
+    bool Create(BufferMeshData *mesh);
 };
 
 #endif //_POLYGONMODEL_H_
