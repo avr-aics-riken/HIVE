@@ -10,7 +10,7 @@ bool OBJLoader_Lua::Load(const char* filename){
 	return OBJLoader::Load(filename);
 }
 
-BufferMeshData *OBJLoader_Lua::MeshData() {
+BufferMeshData_Lua* OBJLoader_Lua::MeshData() {
 	return new BufferMeshData_Lua(OBJLoader::MeshData());
 }
 
