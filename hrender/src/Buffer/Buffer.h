@@ -1,6 +1,7 @@
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
+#include <stdio.h>
 #include "Ref.h"
 #include <vector>
 

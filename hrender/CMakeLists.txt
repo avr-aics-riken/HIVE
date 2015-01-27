@@ -34,10 +34,11 @@ link_directories(${LIBS})
 set(SOURCES
 	src/Core/main.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
-  	src/SceneScript/Camera_Lua.cpp
+	src/SceneScript/Camera_Lua.cpp
 	src/SceneScript/ObjLoader_Lua.cpp
 	src/SceneScript/SceneScript.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
+	src/SceneScript/BufferMeshData_Lua.cpp
 	src/Renderer/RenderCore.cpp
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp

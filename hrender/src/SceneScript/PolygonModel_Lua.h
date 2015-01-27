@@ -14,11 +14,11 @@ public:
     ~PolygonModel_Lua();
     
     bool SetShader(const std::string& shaderfile);
-    bool Create(BufferMeshData mesh);
+    bool Create(BufferMeshData *mesh);
     
     LUA_SCRIPTCLASS_BEGIN(PolygonModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferMeshData)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferMeshData *)
     LUA_SCRIPTCLASS_END();
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(PolygonModel_Lua);

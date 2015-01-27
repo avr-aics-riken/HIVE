@@ -21,15 +21,15 @@ public:
 		TYPE_MAX,
 	};
 
-	RenderObject(){  };
+	RenderObject(){};
 	~RenderObject(){};
-	MODE_TYPE GetType()    { return type; }
-	BufferMeshData &Mesh() { return mesh; }
-	void SetType(MODE_TYPE t)        { type = t; }
-	void SetMesh(BufferMeshData &m)  { mesh = m; }
+	MODE_TYPE GetType()             { return type; }
+	BufferMeshData *Mesh()          { return mesh; }
+	void SetType(MODE_TYPE t)       { type = t; }
+	void SetMesh(BufferMeshData *m) { mesh = m; }
 private:
-	MODE_TYPE      type;
-	BufferMeshData mesh;
+	MODE_TYPE       type;
+	BufferMeshData *mesh;
 protected:
 };
 

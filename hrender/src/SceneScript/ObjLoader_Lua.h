@@ -17,10 +17,10 @@ public:
 	~OBJLoader_Lua();
 	void Clear();
 	bool Load(const char* filename);
-	BufferMeshData  MeshData();
+	BufferMeshData  *MeshData();
 	LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
 	LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
-	LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData, MeshData)
+	LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData *, MeshData)
 	LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(OBJLoader_Lua);

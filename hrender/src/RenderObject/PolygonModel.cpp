@@ -14,9 +14,11 @@ bool PolygonModel::SetShader(const std::string& shaderfile)
 	return false;
 }
 
-bool PolygonModel::Create(BufferMeshData &mesh)
+bool PolygonModel::Create(BufferMeshData *m)
 {
-	SetMesh(mesh);
+	if(m) m->print();
+	else  printf("%s:Mesh Data is NULL\n", __func__);
+	SetMesh(m);
 	return true;
 }
 
