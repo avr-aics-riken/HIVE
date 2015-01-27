@@ -18,7 +18,6 @@ void BaseBuffer::BindProgram() const
 }
 void BaseBuffer::Uniform2fv(const char* name, const float*) const
 {
-    if (m_mode == )
 }
 void BaseBuffer::Uniform4fv(const char* name, const float*) const
 {
