@@ -21,11 +21,11 @@ void BufferMeshData::Clear()
 
 void BufferMeshData::print()
 {
-	printf("%s:Position() %08X\n", __func__, m_pos      );
-	printf("%s:Normal()   %08X\n", __func__, m_normal   );
-	printf("%s:Texcoord() %08X\n", __func__, m_texcoord );
-	printf("%s:Index()    %08X\n", __func__, m_index    );
-	printf("%s:Material() %08X\n", __func__, m_mat      );
+/*	printf("%s:Position() %08p\n", __func__, m_pos.Get()      );
+	printf("%s:Normal()   %08X\n", __func__, m_normal.Get()   );
+	printf("%s:Texcoord() %08X\n", __func__, m_texcoord.Get() );
+	printf("%s:Index()    %08X\n", __func__, m_index.Get()    );
+	printf("%s:Material() %08X\n", __func__, m_mat.Get()      );*/
 }
 
 Vec3Buffer  *BufferMeshData::Position() { return m_pos;      }
