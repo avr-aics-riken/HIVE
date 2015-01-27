@@ -42,15 +42,11 @@ double PolygonAnalyzer::MaxZ() {
 bool PolygonAnalyzer::Execute(PolygonModel *model)
 {
     PolygonAnalyzerProc proc;
-    float m_volHist[3] = {0,0,0};
-    const float *volumedata = NULL;
-    int number  = 0;
+    std::vector<float> m_volHist[3];
     if(model->GetMesh()) {
-        number     = model->GetMesh()->Position()->GetNum();
-        volumedata = model->GetMesh()->Position()->GetBuffer();
-        printf("%s : number = %08X\n", __func__, number);
-        printf("%s : buffer = %08X\n", __func__, volumedata);
-        //proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, volumedata, number);
+        int number = model->GetMesh()->Position()->GetNum();
+        const float* buffer = static_cast<const float*>(model->GetMesh()->Position()->GetBuffer());
+        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
     } else {
         printf("%s : Mesh data not found.", __func__);
     }
