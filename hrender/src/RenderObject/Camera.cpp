@@ -2,12 +2,11 @@
 
 #include <stdio.h>
 
-Camera::Camera()
+Camera::Camera() : RenderObject(TYPE_CAMERA)
 {
 	width  = 0;
 	height = 0;
-	outputfile = ""; //todo 
-	SetType(TYPE_CAMERA);
+	outputfile = ""; //todo
 }
 
 Camera::~Camera()

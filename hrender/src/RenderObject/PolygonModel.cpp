@@ -1,8 +1,7 @@
 #include "PolygonModel.h"
 
-PolygonModel::PolygonModel()
+PolygonModel::PolygonModel() : RenderObject(TYPE_POLYGON)
 {
-	SetType(TYPE_POLYGON);
 }
 
 PolygonModel::~PolygonModel()
