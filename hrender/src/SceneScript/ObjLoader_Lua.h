@@ -6,6 +6,8 @@
 #include "Buffer.h"
 #include "BufferMeshData.h"
 #include "ObjLoader.h"
+#include "BufferMeshData_Lua.h"
+
 
 //------//------//------//------//------//------//------//------//------
 //
@@ -17,10 +19,11 @@ public:
 	~OBJLoader_Lua();
 	void Clear();
 	bool Load(const char* filename);
-	BufferMeshData  *MeshData();
+	BufferMeshData_Lua* MeshData();
+    
 	LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
 	LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
-	LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData *, MeshData)
+	LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
 	LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(OBJLoader_Lua);
