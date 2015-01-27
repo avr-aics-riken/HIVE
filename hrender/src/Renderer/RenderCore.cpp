@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/Camera.h"
 #include "../Core/Ref.h"
 
 #include "../Image/SimpleJPG.h"
@@ -74,11 +75,14 @@ public:
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
+                Camera* camera = static_cast<Camera*>(it->Get());
+                const int w = camera->GetScreenWidth();
+                const int h = camera->GetScreenHeight();
                 setupCamera((*it));
                 renderObjects();
                 readbackImage();
                 
-                tempSave(m_imgbuf, m_width, m_height, "image.jpg"); // TEST
+                tempSave(m_imgbuf, w, h, "image.jpg"); // TEST
             }
             ////test
             //if ((*it)->GetType() == RenderObject::TYPE_POLYGON) {
