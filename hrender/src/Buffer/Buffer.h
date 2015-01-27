@@ -14,18 +14,18 @@ enum BufferType{
 	BUFFER_INDEX
 };
 
-class BaseBuffer : public RefCount
+class BaseArrayBuffer : public RefCount
 {
 public:
 	virtual BufferType GetType() const = 0;
-	BaseBuffer() : RefCount(){}
-	virtual ~BaseBuffer(){}
+	BaseArrayBuffer() : RefCount(){}
+	virtual ~BaseArrayBuffer(){}
 };
 
-class Vec2Buffer : public BaseBuffer
+class Vec2Buffer : public BaseArrayBuffer
 {
 public:
-    Vec2Buffer() : BaseBuffer() {}
+    Vec2Buffer() : BaseArrayBuffer() {}
     ~Vec2Buffer(){}
     BufferType GetType() const { return BUFFER_VEC2; }
     
@@ -38,10 +38,10 @@ private:
     std::vector<vec2> m_buffer;
 };
 
-class Vec3Buffer : public BaseBuffer
+class Vec3Buffer : public BaseArrayBuffer
 {
 public:
-	Vec3Buffer() : BaseBuffer() {}
+	Vec3Buffer() : BaseArrayBuffer() {}
 	~Vec3Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC3; }
 	
@@ -54,10 +54,10 @@ private:
 	std::vector<vec3> m_buffer;
 };
 
-class Vec4Buffer : public BaseBuffer
+class Vec4Buffer : public BaseArrayBuffer
 {
 public:
-	Vec4Buffer() : BaseBuffer() {}
+	Vec4Buffer() : BaseArrayBuffer() {}
 	~Vec4Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC4; }
 	
@@ -71,10 +71,10 @@ private:
 	std::vector<vec4> m_buffer;
 };
 
-class FloatBuffer : public BaseBuffer
+class FloatBuffer : public BaseArrayBuffer
 {
 public:
-	FloatBuffer() : BaseBuffer() {}
+	FloatBuffer() : BaseArrayBuffer() {}
 	~FloatBuffer(){}
 	BufferType GetType() const { return BUFFER_FLOAT; }
 	
@@ -86,10 +86,10 @@ protected:
 	std::vector<float> m_buffer;
 };
 
-class UintBuffer : public BaseBuffer
+class UintBuffer : public BaseArrayBuffer
 {
 public:
-	UintBuffer() : BaseBuffer() {}
+	UintBuffer() : BaseArrayBuffer() {}
 	~UintBuffer(){}
 	BufferType GetType() const { return BUFFER_INDEX; }
 	

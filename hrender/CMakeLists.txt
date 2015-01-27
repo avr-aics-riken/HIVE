@@ -41,6 +41,8 @@ set(SOURCES
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/BufferMeshData_Lua.cpp
 	src/Renderer/RenderCore.cpp
+	src/Renderer/BaseBuffer.cpp
+	src/Renderer/PolygonBuffer.cpp
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp
 	src/Image/jpge.cpp
