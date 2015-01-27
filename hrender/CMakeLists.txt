@@ -13,6 +13,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/lua/src
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
+	${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
@@ -40,10 +41,12 @@ set(SOURCES
 	src/SceneScript/SceneScript.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/BufferMeshData_Lua.cpp
+	src/SceneScript/PolygonAnalyzer_Lua.cpp
 	src/Renderer/RenderCore.cpp
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp
 	src/Image/jpge.cpp
+	src/Analyzer/PolygonAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
 	src/Loader/Loader.cpp
