@@ -9,6 +9,7 @@
 
 #include "../RenderObject/RenderObject.h"
 #include "../RenderObject/Camera.h"
+#include "../RenderObject/PolygonModel.h"
 #include "../Core/Ref.h"
 
 #include "../Image/SimpleJPG.h"
@@ -84,9 +85,9 @@ public:
                 
                 tempSave(m_imgbuf, w, h, "image.jpg"); // TEST
             }
-            ////test
+            //test
             //if ((*it)->GetType() == RenderObject::TYPE_POLYGON) {
-            //  (*it)->Mesh()->print();
+            //    //PolygonModel* mesh = static_cast<PolygonModel*>(it->Get());
             //}
         }
     }
