@@ -27,6 +27,13 @@ public:
     void Uniform4fv(const char* name, const float*) const;
     void SetCamera(const Camera* camera) const;
     void UnbindProgram() const;
+    
+    //-------------------------------------------------------------------
+
+protected:
+    bool loadShaderSrc(const char* srcname);
+    unsigned int getProgram() const;
+    
 };
 
 #endif // __BASEBUFFER_H__

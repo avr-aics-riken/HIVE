@@ -10,7 +10,7 @@ PolygonModel_Lua::~PolygonModel_Lua()
 
 bool PolygonModel_Lua::SetShader(const std::string& shaderfile)
 {
-    return false;
+    return PolygonModel::SetShader(shaderfile);
 }
 
 bool PolygonModel_Lua::Create(BufferMeshData_Lua *mesh)
