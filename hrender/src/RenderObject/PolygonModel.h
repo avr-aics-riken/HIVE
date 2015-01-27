@@ -7,11 +7,14 @@
 
 class PolygonModel : public RenderObject
 {
+private:
+	BufferMeshData* m_mesh;
 public:
 	PolygonModel();
     ~PolygonModel();
     bool SetShader(const std::string& shaderfile);
     bool Create(BufferMeshData *mesh);
+    BufferMeshData* GetMesh() const;
 };
 
 #endif //_POLYGONMODEL_H_
