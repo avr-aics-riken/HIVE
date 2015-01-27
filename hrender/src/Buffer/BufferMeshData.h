@@ -8,6 +8,7 @@
 class BufferMeshData : public RefCount
 {
 public:
+    BufferMeshData(BufferMeshData* inst){};
 	RefPtr<Vec3Buffer >  m_pos;
 	RefPtr<Vec3Buffer >  m_normal;
 	RefPtr<Vec2Buffer >  m_texcoord;
