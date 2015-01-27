@@ -12,6 +12,7 @@
 #include "../RenderObject/PointModel.h"
 #include "../RenderObject/VolumeModel.h"
 #include "../RenderObject/Camera.h"
+#include "../RenderObject/PolygonModel.h"
 #include "../Core/Ref.h"
 
 #include "../Core/vxmath.h"
