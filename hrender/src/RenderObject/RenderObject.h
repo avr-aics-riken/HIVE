@@ -25,17 +25,13 @@ public:
 	};
 
     MODE_TYPE GetType() const       { return m_type;   }
-    BufferMeshData* GetMesh() const { return m_mesh;   }
     
 protected:
     RenderObject(MODE_TYPE t) : m_type(t) {};
 	~RenderObject(){};
     
-    void SetMesh(BufferMeshData *m) { m_mesh   = m;    }
-    
 private:
 	MODE_TYPE       m_type;
-	BufferMeshData* m_mesh;
     
 protected:
 };
