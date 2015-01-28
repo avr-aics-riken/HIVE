@@ -2,6 +2,6 @@
 print('load VOL')
 
 local vol = VOLLoader()
-vol:Load('norm_u_lap_p_phi_psi_0000200100.4.vol')
+vol:Load('test.vol')
 
 
