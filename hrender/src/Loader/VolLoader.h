@@ -3,35 +3,24 @@
 
 #include "Ref.h"
 #include "Buffer.h"
+#include "BufferVolumeData.h"
 
 class VOLLoader : public RefCount
 {
 public:
     VOLLoader();
     ~VOLLoader();
-
     void Clear();
     bool Load(const char* filename);
-    int Width()    {
-        return m_dim[0];
-    }
-    int Height()   {
-        return m_dim[1];
-    }
-    int Depth()    {
-        return m_dim[2];
-    }
-    int Component() {
-        return m_comp;
-    }
-    FloatBuffer* Buffer() {
-        return m_buffer;
-    }
+    int Width();
+    int Height();
+    int Depth();
+    int Component();
+    FloatBuffer* Buffer();
 
+    BufferVolumeData *VolumeData();
 private:
-    int m_dim[3];
-    int m_comp;
-    RefPtr<FloatBuffer> m_buffer;
+    BufferVolumeData m_volume;
 };
 
 #endif //_VOLLOADER_H_

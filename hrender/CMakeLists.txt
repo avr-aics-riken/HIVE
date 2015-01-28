@@ -43,6 +43,7 @@ set(SOURCES
 	src/SceneScript/SceneScript.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/BufferMeshData_Lua.cpp
+	src/SceneScript/BufferVolumeData_Lua.cpp
 	src/SceneScript/PolygonAnalyzer_Lua.cpp
 	src/Renderer/RenderCore.cpp
 	src/Renderer/BaseBuffer.cpp
@@ -53,6 +54,7 @@ set(SOURCES
 	src/Analyzer/PolygonAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
+	src/Buffer/BufferVolumeData.cpp
 	src/Loader/Loader.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/StlLoader.cpp

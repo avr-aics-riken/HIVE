@@ -14,6 +14,7 @@
 #include "PolygonModel_Lua.h"
 #include "Camera_Lua.h"
 #include "BufferMeshData_Lua.h"
+#include "BufferVolumeData_Lua.h"
 #include "ObjLoader_Lua.h"
 #include "StlLoader_Lua.h"
 #include "VolLoader_Lua.h"
@@ -25,6 +26,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, PolygonModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
@@ -33,6 +35,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
+    SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
