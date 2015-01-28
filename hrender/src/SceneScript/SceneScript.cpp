@@ -21,6 +21,7 @@
 #include "VolLoader_Lua.h"
 #include "SphLoader_Lua.h"
 #include "PolygonAnalyzer_Lua.h"
+#include "FloatsToFloat_Lua.h"
 
 void RegisterSceneClass(lua_State* L)
 {
@@ -44,6 +45,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
     SetFunction(L, "SPHLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
     SetFunction(L, "PolygonAnalyzer",     LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonAnalyzer_Lua));
+    SetFunction(L, "FloatsToFloat",       LUA_SCRIPTCLASS_NEW_FUNCTION(FloatsToFloat_Lua));
 }
 // ------------------------
 

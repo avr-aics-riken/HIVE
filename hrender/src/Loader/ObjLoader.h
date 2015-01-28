@@ -13,7 +13,7 @@ public:
 	BufferMeshData mesh;
 protected:
 	bool Load(const char* filename);
-	BufferMeshData *MeshData();
+	BufferMeshData* MeshData();
 };
 
 #endif //_OBJLOADERNATIVE_H

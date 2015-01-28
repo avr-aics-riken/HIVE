@@ -15,6 +15,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
 	${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
+	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
 	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
 	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
@@ -46,6 +47,7 @@ set(SOURCES
 	src/SceneScript/BufferMeshData_Lua.cpp
 	src/SceneScript/BufferVolumeData_Lua.cpp
 	src/SceneScript/PolygonAnalyzer_Lua.cpp
+	src/SceneScript/FloatsToFloat_Lua.cpp
 	src/Renderer/RenderCore.cpp
 	src/Renderer/BaseBuffer.cpp
 	src/Renderer/PolygonBuffer.cpp
@@ -56,6 +58,7 @@ set(SOURCES
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
 	src/Buffer/BufferVolumeData.cpp
+	src/Builder/FloatsToFloat.cpp
 	src/Loader/Loader.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/StlLoader.cpp
