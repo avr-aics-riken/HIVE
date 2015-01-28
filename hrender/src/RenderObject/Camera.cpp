@@ -7,6 +7,10 @@ Camera::Camera() : RenderObject(TYPE_CAMERA)
 	m_width  = 0;
 	m_height = 0;
 	m_outputfile = ""; //todo
+    m_clearcolor[0] = 0.0f;
+    m_clearcolor[1] = 0.0f;
+    m_clearcolor[2] = 0.0f;
+    m_clearcolor[3] = 0.0f;
 }
 
 Camera::~Camera()
@@ -41,6 +45,18 @@ bool Camera::LookAt(float eye_x, float eye_y, float eye_z,
 	return true;
 }
 
+bool Camera::ClearColor(float red, float green, float blue, float alpha)
+{
+    m_clearcolor[0] = red;
+    m_clearcolor[1] = green;
+    m_clearcolor[2] = blue;
+    m_clearcolor[3] = alpha;
+}
+
+const float* Camera::GetClearColor() const
+{
+    return m_clearcolor;
+}
 
 int Camera::GetScreenWidth() const
 {
