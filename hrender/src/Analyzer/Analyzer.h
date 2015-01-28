@@ -91,14 +91,14 @@ private:
 	size_t totalCount_;
 };
 
-class VolumeAnalyzer {
+class VolumeAnalyzerProc {
 public:
-	VolumeAnalyzer() {};
-	~VolumeAnalyzer() {};
+	VolumeAnalyzerProc() {};
+	~VolumeAnalyzerProc() {};
 	
 	// Analyzer volume and returns min/max value and histogram.
 	template <typename T>
-	void AnalyzeScalarVolume(std::vector<float> &outHistogram, double &minVal,
+	void AnalyzeScalar(std::vector<float> &outHistogram, double &minVal,
 							 double &maxVal, const T *vol, int res[3],
 							 int numBins = 256) {
 		
@@ -122,7 +122,7 @@ public:
 	}
 	
 	template <typename T>
-	void AnalyzeVectorVolume(std::vector<float> outHistograms[3],
+	void AnalyzeVector(std::vector<float> outHistograms[3],
 							 double minVal[3], double maxVal[3], const T *vol,
 							 int res[3], int numBins = 256, int component = 3) {
 		
