@@ -6,5 +6,6 @@ PROJECT(HIVE)
 add_subdirectory(third_party/SURFACE)
 add_subdirectory(third_party/lua)
 
+# build
 add_subdirectory(hrender)
 add_subdirectory(HIVE)
