@@ -34,3 +34,6 @@ int VOLLoader_Lua::Component() {
     return VOLLoader::Component();
 }
 
+BufferVolumeData_Lua* VOLLoader_Lua::VolumeData() {
+    return new BufferVolumeData_Lua(VOLLoader::VolumeData());
+}

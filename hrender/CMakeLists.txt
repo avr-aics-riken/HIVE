@@ -35,6 +35,7 @@ link_directories(${LIBS})
 set(SOURCES
 	src/Core/main.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
+	src/SceneScript/VolumeModel_Lua.cpp
 	src/SceneScript/Camera_Lua.cpp
 	src/SceneScript/ObjLoader_Lua.cpp
 	src/SceneScript/StlLoader_Lua.cpp
@@ -43,6 +44,7 @@ set(SOURCES
 	src/SceneScript/SceneScript.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/BufferMeshData_Lua.cpp
+	src/SceneScript/BufferVolumeData_Lua.cpp
 	src/SceneScript/PolygonAnalyzer_Lua.cpp
 	src/Renderer/RenderCore.cpp
 	src/Renderer/BaseBuffer.cpp
@@ -53,6 +55,7 @@ set(SOURCES
 	src/Analyzer/PolygonAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
+	src/Buffer/BufferVolumeData.cpp
 	src/Loader/Loader.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/StlLoader.cpp
@@ -60,6 +63,7 @@ set(SOURCES
 	src/Loader/SphLoader.cpp
 	src/RenderObject/Camera.cpp
 	src/RenderObject/PolygonModel.cpp
+	src/RenderObject/VolumeModel.cpp
 )
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

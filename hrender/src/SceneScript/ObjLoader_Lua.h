@@ -1,13 +1,10 @@
 #ifndef _OBJLOADER_LUA_H_
 #define _OBJLOADER_LUA_H_
 
-
 #include "LuaUtil.h"
 #include "Buffer.h"
-#include "BufferMeshData.h"
-#include "ObjLoader.h"
 #include "BufferMeshData_Lua.h"
-
+#include "ObjLoader.h"
 
 //------//------//------//------//------//------//------//------//------
 //

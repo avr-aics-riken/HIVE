@@ -3,6 +3,7 @@
 
 #include "LuaUtil.h"
 #include "VolLoader.h"
+#include "BufferVolumeData_Lua.h"
 
 class VOLLoader_Lua : public VOLLoader
 {
@@ -15,12 +16,14 @@ public:
     int Height();
     int Depth();
     int Component();
+    BufferVolumeData_Lua* VolumeData();
     LUA_SCRIPTCLASS_BEGIN(VOLLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Width)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(VOLLoader_Lua);
