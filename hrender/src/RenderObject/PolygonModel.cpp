@@ -14,7 +14,7 @@ bool PolygonModel::SetShader(const std::string& shaderfile)
     return true;
 }
 
-bool PolygonModel::Create(BufferMeshData *m)
+bool PolygonModel::Create(BufferMeshData* m)
 {
     m_mesh   = m;
     return true;

@@ -35,6 +35,7 @@ link_directories(${LIBS})
 set(SOURCES
 	src/Core/main.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
+	src/SceneScript/VolumeModel_Lua.cpp
 	src/SceneScript/Camera_Lua.cpp
 	src/SceneScript/ObjLoader_Lua.cpp
 	src/SceneScript/StlLoader_Lua.cpp
@@ -62,6 +63,7 @@ set(SOURCES
 	src/Loader/SphLoader.cpp
 	src/RenderObject/Camera.cpp
 	src/RenderObject/PolygonModel.cpp
+	src/RenderObject/VolumeModel.cpp
 )
 
 add_executable (hrender ${SOURCES})
