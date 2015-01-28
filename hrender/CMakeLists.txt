@@ -38,7 +38,6 @@ set(SOURCES
 	src/Core/Path.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/VolumeModel_Lua.cpp
-	src/SceneScript/Camera_Lua.cpp
 	src/SceneScript/ObjLoader_Lua.cpp
 	src/SceneScript/StlLoader_Lua.cpp
 	src/SceneScript/VolLoader_Lua.cpp
