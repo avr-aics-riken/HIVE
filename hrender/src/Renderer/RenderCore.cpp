@@ -25,14 +25,7 @@
 
 #include "../Image/SimpleJPG.h"
 
-
-#ifdef _WIN32
-    #include <windows.h>
-#elif __APPLE__
-    #include <CoreFoundation/CFBundle.h>
-#else
-    #include <unistd.h>
-#endif
+#include "../Core/Path.h"
 
 namespace {
     bool tempSave(const unsigned char* rgba, int w, int h, const char* imageFile)
@@ -49,35 +42,6 @@ namespace {
         free(jpgbuf);
         printf("Save:%s\n", imageFile);
         return true;
-    }
-    
-    std::string getBinaryDir()
-    {
-        const int MAXPATHLEN = 4096;
-        char exepath[MAXPATHLEN] = {};
-#if _WIN32
-        assert(0);// TODO
-        return std::string(exepath);
-        
-#elif __APPLE__
-        CFBundleRef bundle          = CFBundleGetMainBundle();
-        CFURLRef    executableURL  = CFBundleCopyExecutableURL(bundle);
-        CFStringRef executablePath  =
-        CFURLCopyFileSystemPath(executableURL, kCFURLPOSIXPathStyle);
-        CFStringGetMaximumSizeOfFileSystemRepresentation(executablePath);
-        CFStringGetFileSystemRepresentation(executablePath, exepath, MAXPATHLEN);
-        CFRelease(executablePath);
-        CFRelease(executableURL);
-#else // Linux
-        readlink("/proc/self/exe", exepath, sizeof(exepath));
-#endif
-        // for Mac & Linux
-        std::string fullpath(exepath);
-        size_t t = fullpath.rfind("/");
-        if (t != std::string::npos) {
-            fullpath = fullpath.substr(0, t + 1);
-        }
-        return fullpath;
     }
 }
 
