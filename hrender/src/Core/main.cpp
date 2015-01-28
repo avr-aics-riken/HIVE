@@ -8,37 +8,33 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <direct.h>
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define chdir _chdir
-#else
-#include <unistd.h>
-#endif
+#include <string>
 
 const int defWidth = 512;
 const int defHeight = 512;
 
 #include "../SceneScript/SceneScript.h"
 
+#include "../Core/Path.h"
+
 void renderScene(const char* scenefile)
 {
     printf("RENDER!! > %s\n", scenefile);
     
+    std::string scenepath(scenefile);
+    std::string scenefullfile = convertFullpath(scenepath);
+    changeFileDir(scenefullfile);
+    
     SceneScript script;
-    if (!script.Execute(scenefile)) {
-        printf("[Error] scene file!! > %s\n", scenefile);
+    if (!script.Execute(scenefullfile.c_str())) {
+        printf("[Error] scene file!! > %s\n", scenefullfile.c_str());
     }
 }
 
 int main(int argc, char* argv[])
 {
-    int rank = 0;
 #ifdef ENABLE_MPI
+    int rank = 0;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     printf("[MPI] rank = %d\n", rank);
@@ -48,7 +44,7 @@ int main(int argc, char* argv[])
     
     // Parse args
     for (int i = 1; i < argc; ++i) {
-        const char* arg = &argv[i][0];
+        //const char* arg = &argv[i][0];
         size_t na = strlen(argv[i]);
         if (na > 4 && strncasecmp(&argv[i][na-4],".scn",4)==0)
         {

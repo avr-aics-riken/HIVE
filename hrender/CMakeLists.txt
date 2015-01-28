@@ -35,6 +35,7 @@ link_directories(${LIBS})
 # Source files
 set(SOURCES
 	src/Core/main.cpp
+	src/Core/Path.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/VolumeModel_Lua.cpp
 	src/SceneScript/Camera_Lua.cpp
