@@ -91,9 +91,19 @@ public:
         m_gl_colorbuffer  = 0;
         m_gl_framebuffer  = 0;
         resize(512, 512); // default size
-        
-        
+
 #ifndef USE_GLSL_CONFIG
+        LSGL_CompilerSetting();
+#endif
+    }
+    
+    ~Impl() {
+        ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
+        //ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);
+    }
+    
+    void LSGL_CompilerSetting()
+    {
         std::string binaryPath = getBinaryDir();
 #ifdef __APPLE__
         std::string binpath = "macosx64";
@@ -117,12 +127,6 @@ public:
         compilerCmd += std::string(" --cxxflags=\"") + opt      + std::string("\"");
         compilerCmd += std::string(" --mesacc=\"")   + mesaPath + std::string("\"");
         SetShaderCompiler_SGL(compilerCmd.c_str(), NULL);
-#endif
-    }
-    
-    ~Impl() {
-        ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
-        //ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);
     }
 
     void AddRenderObject(RenderObject* robj)

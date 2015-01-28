@@ -10,9 +10,6 @@
 #include <string.h>
 #include <string>
 
-const int defWidth = 512;
-const int defHeight = 512;
-
 #include "../SceneScript/SceneScript.h"
 
 #include "../Core/Path.h"
