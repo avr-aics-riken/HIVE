@@ -26,6 +26,14 @@
 #include "../Image/SimpleJPG.h"
 
 
+#ifdef _WIN32
+    #include <windows.h>
+#elif __APPLE__
+    #include <CoreFoundation/CFBundle.h>
+#else
+    #include <unistd.h>
+#endif
+
 namespace {
     bool tempSave(const unsigned char* rgba, int w, int h, const char* imageFile)
     {
@@ -41,6 +49,35 @@ namespace {
         free(jpgbuf);
         printf("Save:%s\n", imageFile);
         return true;
+    }
+    
+    std::string getBinaryDir()
+    {
+        const int MAXPATHLEN = 4096;
+        char exepath[MAXPATHLEN] = {};
+#if _WIN32
+        assert(0);// TODO
+        return std::string(exepath);
+        
+#elif __APPLE__
+        CFBundleRef bundle          = CFBundleGetMainBundle();
+        CFURLRef    executableURL  = CFBundleCopyExecutableURL(bundle);
+        CFStringRef executablePath  =
+        CFURLCopyFileSystemPath(executableURL, kCFURLPOSIXPathStyle);
+        CFStringGetMaximumSizeOfFileSystemRepresentation(executablePath);
+        CFStringGetFileSystemRepresentation(executablePath, exepath, MAXPATHLEN);
+        CFRelease(executablePath);
+        CFRelease(executableURL);
+#else // Linux
+        readlink("/proc/self/exe", exepath, sizeof(exepath));
+#endif
+        // for Mac & Linux
+        std::string fullpath(exepath);
+        size_t t = fullpath.rfind("/");
+        if (t != std::string::npos) {
+            fullpath = fullpath.substr(0, t + 1);
+        }
+        return fullpath;
     }
 }
 
@@ -91,13 +128,32 @@ public:
         m_gl_framebuffer  = 0;
         resize(512, 512); // default size
         
-        // TODO
-        //std::string binaryPath = getBinaryPath();
-        std::string binaryPath = "/Users/kioku/git/HIVE/hrender/";
-        binaryPath += "../third_party/SURFACE/glsl/glslc";
-        binaryPath += " --cxxflags=\"-O2\"";
-        SetShaderCompiler_SGL(binaryPath.c_str(), NULL);
-
+        
+#ifndef USE_GLSL_CONFIG
+        std::string binaryPath = getBinaryDir();
+#ifdef __APPLE__
+        std::string binpath = "macosx64";
+        std::string ccmd    = "clang++";
+#elif _WIN32
+        std::string binpath = "win64";
+        std::string ccmd    = "g++";
+#elif __linux__
+        std::string binpath = "linux_x64";
+        std::string ccmd    = "g++";
+#elif SPARC
+        std::string binpath = "sparc64";
+        std::string ccmd    = "fccpx";
+#endif
+        std::string opt      = "-O2";
+        
+        std::string mesaPath = binaryPath + "glsl/bin/" + binpath + "/glsl_compiler";
+        std::string compilerCmd;
+        compilerCmd += binaryPath + std::string("glsl/glslc");
+        compilerCmd += std::string(" --cxx=\"")      + ccmd     + std::string("\"");
+        compilerCmd += std::string(" --cxxflags=\"") + opt      + std::string("\"");
+        compilerCmd += std::string(" --mesacc=\"")   + mesaPath + std::string("\"");
+        SetShaderCompiler_SGL(compilerCmd.c_str(), NULL);
+#endif
     }
     
     ~Impl() {

@@ -62,11 +62,41 @@ set(SOURCES
 	src/RenderObject/PolygonModel.cpp
 )
 
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+
 add_executable (hrender ${SOURCES})
 
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
 
+# Additional Libraries
+if (APPLE)
+	find_library(COCOA Cocoa)
+	if (NOT COCOA)
+	    message(FATAL_ERROR "Cocoa Framework not found")
+	endif()
+	target_link_libraries(hrender ${COCOA})
+endif()
+
+
+
+# Copy GLSL Compiler
+SET(GLSL_PATH ${PROJECT_SOURCE_DIR}/../third_party/SURFACE/glsl)
+file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+
+# ------------------
+# [For develop]
+
+# create symbolic link version (but can't work)
+#ADD_CUSTOM_COMMAND(OUTPUT myLinkDebug COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Debug/glsl)
+#ADD_CUSTOM_COMMAND(OUTPUT myLinkRelease COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Release/glsl)
+#ADD_DEPENDENCIES(hrender myLinkDebug)
+#ADD_DEPENDENCIES(hrender myLinkRelease)
+
+# Alt. copy folders
+file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
+file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
+# ------------------
 
 # Test
 add_subdirectory(test)
