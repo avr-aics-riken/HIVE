@@ -30,3 +30,7 @@ bool SPHLoader_Lua::Load(const char* filename)
     return SPHLoader::Load(filename);
 }
 
+BufferVolumeData_Lua* SPHLoader_Lua::VolumeData() {
+    return new BufferVolumeData_Lua(SPHLoader::VolumeData());
+}
+
