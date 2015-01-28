@@ -39,6 +39,7 @@ set(SOURCES
 	src/SceneScript/ObjLoader_Lua.cpp
 	src/SceneScript/StlLoader_Lua.cpp
 	src/SceneScript/VolLoader_Lua.cpp
+	src/SceneScript/SphLoader_Lua.cpp
 	src/SceneScript/SceneScript.cpp
 	src/SceneScript/PolygonModel_Lua.cpp
 	src/SceneScript/BufferMeshData_Lua.cpp
@@ -56,6 +57,7 @@ set(SOURCES
 	src/Loader/ObjLoader.cpp
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
+	src/Loader/SphLoader.cpp
 	src/RenderObject/Camera.cpp
 	src/RenderObject/PolygonModel.cpp
 )
