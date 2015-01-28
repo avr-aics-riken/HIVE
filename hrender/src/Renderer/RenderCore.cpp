@@ -165,6 +165,8 @@ private:
         
         const int w = camera->GetScreenWidth();
         const int h = camera->GetScreenHeight();
+        
+        m_clearcolor = VX::Math::vec4(camera->GetClearColor());
         resize(w, h);
     }
     

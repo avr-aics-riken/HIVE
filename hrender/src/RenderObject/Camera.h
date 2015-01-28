@@ -17,6 +17,7 @@ public:
         float fov;
     };
     
+    const float* GetClearColor() const;
     int GetScreenWidth() const;
     int GetScreenHeight() const;
     const CameraInfo* GetCameraInfo() const;
@@ -27,6 +28,7 @@ private:
 	unsigned int m_height;
 	std::string  m_outputfile;
 	CameraInfo m_info;
+    float m_clearcolor[4];
     
 protected:
 	Camera();
@@ -37,6 +39,7 @@ protected:
 				float tar_x, float tar_y, float tar_z,
 				float up_x,  float up_y,  float up_z,
 				float fov);
+    bool ClearColor(float red, float green, float blue, float alpha);
 
 };
 

@@ -20,8 +20,16 @@ PolygonBuffer::~PolygonBuffer()
 bool PolygonBuffer::Create(const PolygonModel* model)
 {
     bool r = true;
-    // make VB/IB
     
+    // load shader
+    const std::string& shadername = model->GetShader();
+
+    r &= loadShaderSrc(shadername.c_str());
+    if (!r) {
+        printf("[Error]Not set shader\n");
+    }
+        
+    // make VB/IB
     BufferMeshData* mesh = model->GetMesh();
     const int vnum = mesh->Position()->GetNum();
     const int inum = mesh->Index()->GetNum();
@@ -35,9 +43,6 @@ bool PolygonBuffer::Create(const PolygonModel* model)
                    inum, mesh->Index()->GetBuffer(),
                    m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     
-    // load shader
-    const std::string& shadername = model->GetShader();
-    r &= loadShaderSrc(shadername.c_str());
     
     return r;
 }
