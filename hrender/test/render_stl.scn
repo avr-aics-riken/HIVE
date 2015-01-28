@@ -3,7 +3,7 @@ print('Render Obj')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
-camera:SetFilename('render_obj.jpg')
+camera:SetFilename('render_stl.jpg')
 
 camera:LookAt(
 	0,0,300,
@@ -13,14 +13,13 @@ camera:LookAt(
 )
 
 
-local obj = OBJLoader()
-obj:Load('bunny.obj')
+local stl = STLLoader()
+stl:Load('bunny.stl')
 
 local model = PolygonModel()
-local meshdata = obj:MeshData()
+local meshdata = stl:MeshData()
 model:Create(meshdata)
 model:SetShader('white.frag')
-
 
 local analy = PolygonAnalyzer()
 analy:Execute(model)
