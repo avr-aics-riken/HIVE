@@ -23,6 +23,7 @@ bool STLLoader::Load(const char* filename){
 	mesh.m_normal = new Vec3Buffer();
 	mesh.m_mat = new FloatBuffer();
 	mesh.m_index = new UintBuffer();
+	mesh.m_texcoord = new Vec2Buffer();
 	mesh.m_pos->Create(obj.GetVertexNum());
 	memcpy(mesh.m_pos->GetBuffer(), obj.GetPositionBuffer(), sizeof(float)*3*mesh.m_pos->GetNum());
 	mesh.m_normal->Create(obj.GetVertexNum());
