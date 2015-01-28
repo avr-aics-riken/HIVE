@@ -161,7 +161,6 @@ inline void closeLua(lua_State* L)
 }
 
 // ---------- Lua Class wrapper --------------
-#define SCRIPT_DEBUG
 #ifdef SCRIPT_DEBUG
 #define _STRACE printf
 #else
