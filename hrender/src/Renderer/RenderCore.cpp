@@ -93,8 +93,9 @@ public:
         
         // TODO
         //std::string binaryPath = getBinaryPath();
-        std::string binaryPath = "/Users/kioku/git/HIVE/hrender/";
-        binaryPath += "../third_party/SURFACE/glsl/glslc";
+        //std::string binaryPath = "/Users/kioku/git/HIVE/hrender/";
+        //binaryPath += "../third_party/SURFACE/glsl/glslc";
+        std::string binaryPath = "/home/masaki-s/HIVE/third_party/SURFACE/glsl/glslc";
         binaryPath += " --cxxflags=\"-O2\"";
         SetShaderCompiler_SGL(binaryPath.c_str(), NULL);
 
