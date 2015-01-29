@@ -7,6 +7,89 @@ PROJECT(hrender)
 
 message(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR})
 
+# --------------------------------------
+# 
+#  SAME Build Option with SURFACE
+#
+# Build options
+#
+# K/FX10 native environment
+IF (CMAKE_SYSTEM_PROCESSOR MATCHES "s64fx")
+
+  # Use native Fujitsu compiler
+  IF (SURFACE_BUILD_WITH_MPI)
+    SET(CMAKE_C_COMPILER mpifcc)
+    SET(CMAKE_CXX_COMPILER mpiFCC)
+  ELSE()
+    SET(CMAKE_C_COMPILER fcc)
+    SET(CMAKE_CXX_COMPILER FCC)
+  ENDIF()
+
+  # gcc compatible flag(-Xg)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Xg")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xg")
+
+  # PIC flag
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+  # OpenMP flag(-Kopenmp)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Kopenmp")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Kopenmp")
+
+  IF (CMAKE_BUILD_TYPE MATCHES "Release")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Kfast")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Kfast")
+  ENDIF()
+
+  # Prevent CMake from adding GNU-specific linker flags (-rdynamic)
+  SET(CMAKE_C_COMPILER_ID "Fujitsu" CACHE STRING "Fujitsu C cross-compiler" FORCE)
+  SET(CMAKE_CXX_COMPILER_ID "Fujitsu" CACHE STRING "Fujitsu C++ cross-compiler" FORCE)
+
+  # FindOpenMP.cmake does not try -Kopenmp,but the package will try specific
+  # flags based on the compier ID.
+  SET(OMP_FLAG_Fujitsu "-Kopenmp")
+ENDIF()
+
+# K cross compiling
+IF (SURFACE_BUILD_K_CROSS_COMPILE)
+
+  # Use Fujitsu cross compiler
+  IF (SURFACE_BUILD_WITH_MPI)
+    SET(CMAKE_C_COMPILER mpifccpx)
+    SET(CMAKE_CXX_COMPILER mpiFCCpx)
+  ELSE()
+    SET(CMAKE_C_COMPILER fccpx)
+    SET(CMAKE_CXX_COMPILER FCCpx)
+  ENDIF()
+
+  # Prevent CMake from adding GNU-specific linker flags (-rdynamic)
+  SET(CMAKE_C_COMPILER_ID "Fujitsu" CACHE STRING "Fujitsu C cross-compiler" FORCE)
+  SET(CMAKE_CXX_COMPILER_ID "Fujitsu" CACHE STRING "Fujitsu C++ cross-compiler" FORCE)
+
+  # gcc compatible flag(-Xg)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Xg")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xg")
+
+  # PIC flag
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+  # OpenMP flag(-Kopenmp)
+  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Kopenmp")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Kopenmp")
+
+  IF (CMAKE_BUILD_TYPE MATCHES "Release")
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Kfast")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Kfast")
+  ENDIF()
+
+  # FindOpenMP.cmake does not try -Kopenmp,but the package will try specific
+  # flags based on the compier ID.
+  SET(OMP_FLAG_Fujitsu "-Kopenmp")
+  
+ENDIF()
+# --------------------------------------
 
 # Headers
 set(INCLUDES
