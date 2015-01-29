@@ -53,6 +53,7 @@ set(SOURCES
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp
 	src/Renderer/PolygonBuffer.cpp
+	src/Renderer/VolumeBuffer.cpp
 	src/Renderer/RenderCore.cpp
 	src/SceneScript/SceneScript.cpp
 )

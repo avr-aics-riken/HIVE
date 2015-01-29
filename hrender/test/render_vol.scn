@@ -13,8 +13,8 @@ camera:LookAt(
 )
 
 
-local sph = SPHLoader()
-sph:Load('fvel_0000001470.sph')
+local sph = VOLLoader()
+sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol')
 
 local volume = VolumeModel()
 local volumedata = sph:VolumeData()
