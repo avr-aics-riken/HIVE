@@ -1,4 +1,5 @@
 
+#include <string>
 #include "BaseBuffer.h"
 #include "../RenderObject/Camera.h"
 
