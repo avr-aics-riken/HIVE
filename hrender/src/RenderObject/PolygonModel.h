@@ -2,15 +2,15 @@
 #define _POLYGONMODEL_H_
 
 #include "RenderObject.h"
-#include "LuaUtil.h"
 
 class BufferMeshData;
 
 class PolygonModel : public RenderObject
 {
 private:
-	BufferMeshData* m_mesh;
-    std::string m_shaderfile;
+    class Impl;
+    Impl* m_imp;
+    
 public:
 	PolygonModel();
     ~PolygonModel();

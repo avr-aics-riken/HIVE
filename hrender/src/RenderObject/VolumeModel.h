@@ -2,15 +2,14 @@
 #define _VOLUMEMODEL_H_
 
 #include "RenderObject.h"
-#include "LuaUtil.h"
 
 class BufferVolumeData;
 
 class VolumeModel : public RenderObject
 {
 private:
-    BufferVolumeData* m_volume;
-    std::string m_shaderfile;
+    class Impl;
+    Impl* m_imp;
 public:
     VolumeModel();
     ~VolumeModel();

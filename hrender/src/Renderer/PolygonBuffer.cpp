@@ -1,7 +1,10 @@
+#include <string>
+
 #include "PolygonBuffer.h"
-#include "Commands.h"
 #include "../RenderObject/PolygonModel.h"
 #include "../Buffer/BufferMeshData.h"
+
+#include "Commands.h"
 
 PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
