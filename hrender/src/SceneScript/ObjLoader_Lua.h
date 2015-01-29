@@ -12,16 +12,21 @@
 class OBJLoader_Lua : public OBJLoader
 {
 public:
-	OBJLoader_Lua();
-	~OBJLoader_Lua();
-	void Clear();
-	bool Load(const char* filename);
-	BufferMeshData_Lua* MeshData();
-    
-	LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
-	LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
-	LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
-	LUA_SCRIPTCLASS_END()
+    OBJLoader_Lua(){}
+    ~OBJLoader_Lua(){};
+
+    bool Load(const char* filename){
+        return OBJLoader::Load(filename);
+    }
+
+    BufferMeshData_Lua* MeshData() {
+        return new BufferMeshData_Lua(OBJLoader::MeshData());
+    }
+
+    LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
+    LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(OBJLoader_Lua);
 
