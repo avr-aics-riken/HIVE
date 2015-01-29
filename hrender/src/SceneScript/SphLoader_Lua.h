@@ -27,13 +27,12 @@ public:
         return Component();
     }
 
-
     bool Load(const char* filename) {
-        return Load(filename);
+        return SPHLoader::Load(filename);
     }
 
     BufferVolumeData_Lua* VolumeData() {
-        return new BufferVolumeData_Lua(VolumeData());
+        return new BufferVolumeData_Lua(SPHLoader::VolumeData());
     }
 
     LUA_SCRIPTCLASS_BEGIN(SPHLoader_Lua)

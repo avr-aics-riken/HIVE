@@ -182,9 +182,9 @@ private:
             pbuf->Create(static_cast<const PointModel*>(robj));
             buffer = pbuf;*/
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
-            /*VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
+             VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
-             buffer = vbuf;*/
+             buffer = vbuf;
         } else {
             // Unknow type
             printf("Unkown RenderObjet type:\n");

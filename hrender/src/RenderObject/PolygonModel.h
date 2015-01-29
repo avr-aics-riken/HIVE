@@ -1,6 +1,7 @@
 #ifndef _POLYGONMODEL_H_
 #define _POLYGONMODEL_H_
 
+#include <string>
 #include "RenderObject.h"
 
 class BufferMeshData;
