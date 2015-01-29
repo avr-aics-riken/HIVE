@@ -93,6 +93,4 @@ file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
 file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
 # ------------------
 
-# Test
-add_subdirectory(test)
 
