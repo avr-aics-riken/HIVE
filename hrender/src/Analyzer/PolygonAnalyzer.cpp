@@ -50,7 +50,7 @@ bool PolygonAnalyzer::Execute(PolygonModel *model)
         const float* buffer = static_cast<const float*>(model->GetMesh()->Position()->GetBuffer());
         proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
     } else {
-        printf("%s : Mesh data not found.", __func__);
+        printf("Mesh data not found.");
     }
     return true;
 }
