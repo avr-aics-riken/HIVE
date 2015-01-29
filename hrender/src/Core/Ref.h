@@ -116,3 +116,4 @@ public:
 private:
     T* m_p;
 };
+
