@@ -152,3 +152,4 @@ private:
 };
 
 #endif /* defined(__SimpleSPH_HEADER__) */
+

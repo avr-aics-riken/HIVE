@@ -122,3 +122,4 @@ inline int SimpleTGASaverRGBA(void** tgabuffer, int w, int h, const unsigned cha
 	return r;
 }
 #endif
+

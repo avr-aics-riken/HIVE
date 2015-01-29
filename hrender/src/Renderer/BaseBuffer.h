@@ -37,3 +37,4 @@ protected:
 };
 
 #endif // __BASEBUFFER_H__
+

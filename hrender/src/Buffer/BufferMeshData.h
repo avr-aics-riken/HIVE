@@ -26,3 +26,4 @@ public:
 };
 
 #endif //_BUFFERMESHDATA_H_
+

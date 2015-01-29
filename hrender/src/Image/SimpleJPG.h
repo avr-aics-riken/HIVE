@@ -213,3 +213,4 @@ inline int SimpleJPGSaverRGBA(void** jpgbuffer, int w, int h, const unsigned cha
 }
 
 #endif // INCLUDE_SIMPLEJPG
+

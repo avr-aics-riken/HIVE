@@ -114,6 +114,7 @@ private:
         dim[1] = h;
         dim[2] = d;
         component = components;
+        /*
         size_t datasize;
         if (type == 1) {
             //type = VOLUME_TYPE_U8;
@@ -125,6 +126,7 @@ private:
             //type = VOLUME_TYPE_F64;
             datasize = sizeof(double);
         }
+        */
 
         return voldata;
     }
@@ -163,3 +165,4 @@ private:
 };
 
 #endif /* defined(__SimpleVOL_HEADER__) */
+
