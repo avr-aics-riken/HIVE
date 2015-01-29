@@ -5,6 +5,7 @@
 #include "RenderCore.h"
 
 #include "Commands.h"
+#include <string>
 #include <vector>
 #include <map>
 #include <algorithm>
