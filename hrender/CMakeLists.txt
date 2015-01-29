@@ -36,37 +36,26 @@ link_directories(${LIBS})
 set(SOURCES
 	src/Core/main.cpp
 	src/Core/Path.cpp
-	src/SceneScript/PolygonModel_Lua.cpp
-	src/SceneScript/VolumeModel_Lua.cpp
-	src/SceneScript/ObjLoader_Lua.cpp
-	src/SceneScript/StlLoader_Lua.cpp
-	src/SceneScript/VolLoader_Lua.cpp
-	src/SceneScript/SphLoader_Lua.cpp
-	src/SceneScript/SceneScript.cpp
-	src/SceneScript/PolygonModel_Lua.cpp
-	src/SceneScript/BufferMeshData_Lua.cpp
-	src/SceneScript/BufferVolumeData_Lua.cpp
-	src/SceneScript/PolygonAnalyzer_Lua.cpp
-	src/SceneScript/FloatsToFloat_Lua.cpp
-	src/Renderer/RenderCore.cpp
-	src/Renderer/BaseBuffer.cpp
-	src/Renderer/PolygonBuffer.cpp
-	src/Renderer/Commands_GL.cpp
-	src/Renderer/Commands_LSGL.cpp
-	src/Image/jpge.cpp
 	src/Analyzer/PolygonAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
 	src/Buffer/BufferVolumeData.cpp
 	src/Builder/FloatsToFloat.cpp
+	src/Image/jpge.cpp
 	src/Loader/Loader.cpp
 	src/Loader/ObjLoader.cpp
+	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
-	src/Loader/SphLoader.cpp
 	src/RenderObject/Camera.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
+	src/Renderer/BaseBuffer.cpp
+	src/Renderer/Commands_GL.cpp
+	src/Renderer/Commands_LSGL.cpp
+	src/Renderer/PolygonBuffer.cpp
+	src/Renderer/RenderCore.cpp
+	src/SceneScript/SceneScript.cpp
 )
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

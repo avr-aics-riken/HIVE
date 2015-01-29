@@ -12,13 +12,34 @@ class PolygonAnalyzer_Lua : public PolygonAnalyzer
 public:
     PolygonAnalyzer_Lua() {}
     ~PolygonAnalyzer_Lua() {}
-    double MinX();
-    double MinY();
-    double MinZ();
-    double MaxX();
-    double MaxY();
-    double MaxZ();
-    bool Execute(PolygonModel_Lua*);
+    double MinX() {
+        return PolygonAnalyzer::MinX();
+    }
+
+    double MinY() {
+        return PolygonAnalyzer::MinY();
+    }
+
+    double MinZ() {
+        return PolygonAnalyzer::MinZ();
+    }
+
+    double MaxX() {
+        return PolygonAnalyzer::MaxX();
+    }
+
+    double MaxY() {
+        return PolygonAnalyzer::MaxY();
+    }
+
+    double MaxZ() {
+        return PolygonAnalyzer::MaxZ();
+    }
+
+    bool Execute(PolygonModel_Lua *model) {
+        PolygonAnalyzer::Execute(model);
+        return true;
+    }
 
     LUA_SCRIPTCLASS_BEGIN(PolygonAnalyzer_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MinX)

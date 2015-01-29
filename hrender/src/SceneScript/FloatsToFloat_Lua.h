@@ -8,10 +8,20 @@
 class FloatsToFloat_Lua : public FloatsToFloat
 {
 public:
-    FloatsToFloat_Lua();
-    int Create(BufferVolumeData_Lua* volume, int offset);
-    int Component();
-    BufferVolumeData_Lua* VolumeData();
+    FloatsToFloat_Lua(){}
+
+    int Create(BufferVolumeData_Lua* volume, int offset) {
+        return FloatsToFloat::Create(volume, offset);
+    }
+
+    int Component() {
+        return FloatsToFloat::Component();
+    }
+
+    BufferVolumeData_Lua* VolumeData() {
+        return new BufferVolumeData_Lua(FloatsToFloat::VolumeData());
+    }
+
     LUA_SCRIPTCLASS_BEGIN(FloatsToFloat_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG2(int,Create,BufferVolumeData_Lua*, int)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
