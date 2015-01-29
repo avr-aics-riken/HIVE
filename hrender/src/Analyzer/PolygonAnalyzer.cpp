@@ -1,3 +1,4 @@
+#include <string>
 #include "PolygonAnalyzer.h"
 #include "Analyzer.h"
 #include "../Buffer/BufferMeshData.h"

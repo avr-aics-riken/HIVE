@@ -42,7 +42,6 @@ set(SOURCES
 	src/Buffer/BufferVolumeData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
-	src/Loader/Loader.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp
