@@ -108,10 +108,10 @@ std::string convertFullpath(const std::string& path)
     if (path.find("/") == 0) {
         return path;
     } else {
-        std::string exedir = getBinaryDir();
-        std::string fullpath = exedir + path;
-        //std::string currDir = getCurrentDir();
-        //std::string fullpath = currDir + path;
+        //std::string exedir = getBinaryDir();
+        //std::string fullpath = exedir + path;
+        std::string currDir = getCurrentDir();
+        std::string fullpath = currDir + path;
         return fullpath;
     }
 #endif
