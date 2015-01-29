@@ -1,0 +1,9 @@
+
+print('Send basic')
+
+local network = Http()
+
+local json = "{ AAA: 'BBB', CCC:10 }"
+network:Connect('http://localhost:1337')
+network:send(json)
+network:Close()
