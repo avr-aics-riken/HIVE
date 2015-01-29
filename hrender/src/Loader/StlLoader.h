@@ -1,5 +1,5 @@
-#ifndef _STLLOADERNATIVE_H
-#define _STLLOADERNATIVE_H
+#ifndef _STLLOADER_H_
+#define _STLLOADER_H_
 
 #include "Ref.h"
 #include "BufferMeshData.h"
@@ -16,4 +16,5 @@ protected:
 	BufferMeshData *MeshData();
 };
 
-#endif //_STLLOADERNATIVE_H
+#endif //_STLLOADER_H_
+

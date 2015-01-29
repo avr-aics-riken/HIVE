@@ -1,6 +1,5 @@
 
 print('Render Obj')
-
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_obj.jpg')
@@ -14,13 +13,12 @@ camera:LookAt(
 
 
 local obj = OBJLoader()
-obj:Load('bunny.obj')
+obj:Load('/home/masaki-s/HIVE/build/../hrender/test/bunny.obj')
 
 local model = PolygonModel()
 local meshdata = obj:MeshData()
 model:Create(meshdata)
-model:SetShader('white.frag')
-
+model:SetShader('/home/masaki-s/HIVE/build/../hrender/test/white.frag')
 
 local analy = PolygonAnalyzer()
 analy:Execute(model)

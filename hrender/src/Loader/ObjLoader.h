@@ -17,3 +17,4 @@ protected:
 };
 
 #endif //_OBJLOADERNATIVE_H
+

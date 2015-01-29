@@ -816,3 +816,4 @@ private:
 };
 
 #endif // INCLUDE_SIMPLEOBJ
+

@@ -489,3 +489,4 @@ inline bool SimpleHDRSaver(const char* hdrfilename, int w, int h, const float* r
 	return true;
 }
 #endif // INCLUDE_SimpleHDR_h
+
