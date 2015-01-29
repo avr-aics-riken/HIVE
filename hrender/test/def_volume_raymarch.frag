@@ -4,7 +4,7 @@
 #ifdef GL_ES
 precision mediump float;
 #endif
-a:
+
 uniform sampler3D tex0;
 uniform vec2 resolution;
 uniform vec3 eye;

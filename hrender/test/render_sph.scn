@@ -19,8 +19,7 @@ sph:Load('fvel_0000001470.sph')
 local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
-volume:SetShader('def_volume_raymarch.frag')
-
+volume:SetShader('white.frag')
 render {camera, volume}
 
 
