@@ -13,12 +13,12 @@ camera:LookAt(
 
 
 local obj = OBJLoader()
-obj:Load('/home/masaki-s/HIVE/build/../hrender/test/bunny.obj')
+obj:Load('bunny.obj')
 
 local model = PolygonModel()
 local meshdata = obj:MeshData()
 model:Create(meshdata)
-model:SetShader('/home/masaki-s/HIVE/build/../hrender/test/white.frag')
+model:SetShader('white.frag')
 
 local analy = PolygonAnalyzer()
 analy:Execute(model)
