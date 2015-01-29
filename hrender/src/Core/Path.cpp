@@ -1,5 +1,6 @@
 
 #include <string>
+#include <stdio.h>
 #include "Path.h"
 
 #ifdef _WIN32
@@ -40,7 +41,6 @@ std::string getBinaryDir()
 }
 
 
-
 #if defined(_WIN32) || defined(_WIN64)
 #include <direct.h>
 #define snprintf _snprintf
@@ -53,6 +53,38 @@ std::string getBinaryDir()
 #endif
 #include <string>
 
+
+std::string getCurrentDir()
+{
+    char buffer[1024] = {0};
+    char *temp = NULL;
+    std::string ret = "";
+#if _WIN32
+    DWORD dwRet = GetCurrentDirectory(sizeof(buffer), (LPTSTR)buffer);
+    if(!dwRet)
+    {
+        printf("Failed get current directory.");
+        return ret;
+    }
+#elif __APPLE__
+    temp = getcwd(buffer, sizeof(buffer));
+    if(!temp) 
+    {
+        printf("Failed get current directory.");
+        return ret;
+    }
+#else // Linux
+    temp = getcwd(buffer, sizeof(buffer));
+    if(!temp) 
+    {
+        printf("Failed get current directory.");
+        return ret;
+    }
+#endif
+    ret = buffer;
+    ret = ret + "/";
+    return ret;
+}
 
 void changeFileDir(const std::string& filefullpath)
 {
@@ -78,6 +110,8 @@ std::string convertFullpath(const std::string& path)
     } else {
         std::string exedir = getBinaryDir();
         std::string fullpath = exedir + path;
+        //std::string currDir = getCurrentDir();
+        //std::string fullpath = currDir + path;
         return fullpath;
     }
 #endif
