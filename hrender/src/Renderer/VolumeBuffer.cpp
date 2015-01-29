@@ -50,6 +50,8 @@ bool VolumeBuffer::MakeBox(float width, float height, float depth)
 
     CreateVBIB_SGL(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
             m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
+    m_vertex_num = vertexnum;
+    m_index_num  = indexnum;
 
     //CreateVBIB_GL(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
     //        m_ogl.vtx, m_ogl.normal, m_ogl.material, m_sgl.tex, m_ogl.index);
@@ -101,6 +103,7 @@ bool VolumeBuffer::Create(const VolumeModel* model)
 
     // load shader
     const std::string& shadername = model->GetShader();
+    printf("%s\n", shadername.c_str());
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
         printf("[Error]Not set shader\n");
@@ -119,11 +122,21 @@ bool VolumeBuffer::Create(const VolumeModel* model)
 
 void VolumeBuffer::Render() const
 {
+    // TODO: not supported yet rotation
+    //float volumescale[] = {m_boxsize[0]*m_scale[0],m_boxsize[1]*m_scale[1],m_boxsize[2]*m_scale[2]};
+    float volumescale[] = {m_boxsize[0],m_boxsize[1],m_boxsize[2]};
+    printf("%f %f %f\n", volumescale[0], volumescale[1], volumescale[2]);
+    SetUniform3fv_SGL(getProgram(), "volumescale", volumescale);
+    SetUniform3fv_SGL(getProgram(), "volumedim", m_voldim);
+    //SetUniform3fv_SGL(getProgram(), "offset", m_trans);
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
+    BindTexture3D_SGL(m_sgl_voltex);
     if (m_index_id)
+    {
         DrawElements_SGL(m_index_num);
-    else
+    } else {
         DrawArrays_SGL(m_vertex_num);
+    }
 }
 
 
