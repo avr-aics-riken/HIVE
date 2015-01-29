@@ -1,5 +1,6 @@
 
 #include <string>
+#include <stdio.h>
 #include "Path.h"
 
 #ifdef _WIN32
@@ -39,6 +40,37 @@ std::string getBinaryDir()
     return fullpath;
 }
 
+std::string getCurrentDir()
+{
+    char buffer[1024] = {0};
+    char *temp = NULL;
+    std::string ret = "";
+#if _WIN32
+    DWORD dwRet = GetCurrentDirectory(sizeof(buffer), (LPTSTR)buffer);
+    if(!dwRet)
+    {
+        printf("Failed get current directory.");
+        return ret;
+    }
+#elif __APPLE__
+    temp = getcwd(buffer, sizeof(buffer));
+    if(!temp) 
+    {
+        printf("Failed get current directory.");
+        return ret;
+    }
+#else // Linux
+    temp = getcwd(buffer, sizeof(buffer));
+    if(!temp) 
+    {
+        printf("Failed get current directory.");
+        return ret;
+    }
+#endif
+    ret = buffer;
+    ret = ret + "/";
+    return ret;
+}
 
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -76,8 +108,9 @@ std::string convertFullpath(const std::string& path)
     if (path.find("/") == 0) {
         return path;
     } else {
-        std::string exedir = getBinaryDir();
-        std::string fullpath = exedir + path;
+        //std::string exedir = getBinaryDir();
+        std::string currDir = getCurrentDir();
+        std::string fullpath = currDir + path;
         return fullpath;
     }
 #endif
