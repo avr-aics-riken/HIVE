@@ -40,6 +40,20 @@ std::string getBinaryDir()
     return fullpath;
 }
 
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <direct.h>
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
+#define strcasecmp _stricmp
+#define strncasecmp _strnicmp
+#define chdir _chdir
+#else
+#include <unistd.h>
+#endif
+#include <string>
+
+
 std::string getCurrentDir()
 {
     char buffer[1024] = {0};
@@ -72,20 +86,6 @@ std::string getCurrentDir()
     return ret;
 }
 
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <direct.h>
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
-#define strcasecmp _stricmp
-#define strncasecmp _strnicmp
-#define chdir _chdir
-#else
-#include <unistd.h>
-#endif
-#include <string>
-
-
 void changeFileDir(const std::string& filefullpath)
 {
 #if _WIN32
@@ -108,9 +108,10 @@ std::string convertFullpath(const std::string& path)
     if (path.find("/") == 0) {
         return path;
     } else {
-        //std::string exedir = getBinaryDir();
-        std::string currDir = getCurrentDir();
-        std::string fullpath = currDir + path;
+        std::string exedir = getBinaryDir();
+        std::string fullpath = exedir + path;
+        //std::string currDir = getCurrentDir();
+        //std::string fullpath = currDir + path;
         return fullpath;
     }
 #endif
