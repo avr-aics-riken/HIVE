@@ -17,6 +17,7 @@
 #include "Connection_Lua.h"
 #include "BufferMeshData_Lua.h"
 #include "BufferVolumeData_Lua.h"
+#include "BufferPointData_Lua.h"
 #include "ObjLoader_Lua.h"
 #include "StlLoader_Lua.h"
 #include "VolLoader_Lua.h"
@@ -43,6 +44,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "Connection",          LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
+    SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
