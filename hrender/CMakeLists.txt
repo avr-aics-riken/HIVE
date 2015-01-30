@@ -178,4 +178,16 @@ file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
 file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
 # ------------------
 
+add_test(NAME loader_obj.scn             COMMAND hrender  ../../hrender/test/loader_obj.scn           )
+add_test(NAME loader_sph.scn             COMMAND hrender  ../../hrender/test/loader_sph.scn           )
+add_test(NAME loader_stl.scn             COMMAND hrender  ../../hrender/test/loader_stl.scn           )
+add_test(NAME loader_vol.scn             COMMAND hrender  ../../hrender/test/loader_vol.scn           )
+add_test(NAME render_basic.scn           COMMAND hrender  ../../hrender/test/render_basic.scn         )
+add_test(NAME render_camera.scn          COMMAND hrender  ../../hrender/test/render_camera.scn        )
+add_test(NAME render_camera2.scn         COMMAND hrender  ../../hrender/test/render_camera2.scn       )
+add_test(NAME render_obj.scn             COMMAND hrender  ../../hrender/test/render_obj.scn           )
+add_test(NAME render_sph.scn             COMMAND hrender  ../../hrender/test/render_sph.scn           )
+add_test(NAME render_vol.scn             COMMAND hrender  ../../hrender/test/render_vol.scn           )
+add_test(NAME render_stl.scn             COMMAND hrender  ../../hrender/test/render_stl.scn           )
+add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_transform_sph.scn )
 
