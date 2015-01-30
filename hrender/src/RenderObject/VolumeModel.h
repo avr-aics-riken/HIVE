@@ -1,7 +1,9 @@
 #ifndef _VOLUMEMODEL_H_
 #define _VOLUMEMODEL_H_
 
+#include <string>
 #include "RenderObject.h"
+#include "BufferVolumeData.h"
 
 class BufferVolumeData;
 

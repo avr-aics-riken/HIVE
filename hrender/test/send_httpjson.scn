@@ -1,9 +1,8 @@
+print('Send JSON through http')
 
-print('Send basic')
-
-local network = Http()
+local network = Connection()
 
 local json = "{ AAA: 'BBB', CCC:10 }"
-network:Connect('http://localhost:1337')
-network:send(json)
+network:Connect('http://localhost:8080/')
+network:SendJSON(json)
 network:Close()
