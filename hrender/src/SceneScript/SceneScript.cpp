@@ -41,6 +41,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
     SetFunction(L, "PointModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointModel_Lua));
