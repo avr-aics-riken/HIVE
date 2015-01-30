@@ -13,6 +13,7 @@
 // --- Script Classes ----
 #include "PolygonModel_Lua.h"
 #include "VolumeModel_Lua.h"
+#include "PointModel_Lua.h"
 #include "Camera_Lua.h"
 #include "Connection_Lua.h"
 #include "BufferMeshData_Lua.h"
@@ -29,10 +30,12 @@ void RegisterSceneClass(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, PolygonModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VolumeModel_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, PointModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, BufferPointData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
@@ -40,6 +43,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
+    SetFunction(L, "PointModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointModel_Lua));
     SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
     SetFunction(L, "Connection",          LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
