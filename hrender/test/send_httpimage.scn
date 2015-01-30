@@ -1,0 +1,7 @@
+print('Send image through http')
+
+local network = Connection()
+network:Connect('http://localhost:8080')
+network:SendImage('render_obj.jpg')
+network:Close()
+

@@ -101,6 +101,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
 	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
+	${PROJECT_SOURCE_DIR}/../hrender/src/Network
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
 	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
 	${PROJECT_SOURCE_DIR}/../hrender/src/Core
@@ -131,6 +132,9 @@ set(SOURCES
 	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
+	src/Network/Connection.cpp
+	src/Network/easywsclient.cpp
+	src/Network/happyhttp.cpp
 	src/RenderObject/Camera.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
