@@ -121,6 +121,7 @@ set(SOURCES
 	src/Core/main.cpp
 	src/Core/Path.cpp
 	src/Analyzer/PolygonAnalyzer.cpp
+	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
 	src/Buffer/BufferVolumeData.cpp
@@ -178,6 +179,9 @@ file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
 file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
 # ------------------
 
+#
+# for TEST
+#
 add_test(NAME loader_obj.scn             COMMAND hrender  ../../hrender/test/loader_obj.scn           )
 add_test(NAME loader_sph.scn             COMMAND hrender  ../../hrender/test/loader_sph.scn           )
 add_test(NAME loader_stl.scn             COMMAND hrender  ../../hrender/test/loader_stl.scn           )
@@ -190,4 +194,12 @@ add_test(NAME render_sph.scn             COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_vol.scn             COMMAND hrender  ../../hrender/test/render_vol.scn           )
 add_test(NAME render_stl.scn             COMMAND hrender  ../../hrender/test/render_stl.scn           )
 add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_transform_sph.scn )
+
+#ERROR CASE
+add_test(NAME loader_obj_err.scn         COMMAND hrender ../../hrender/test/err/loader_obj_err.scn           )
+add_test(NAME loader_sph_err.scn         COMMAND hrender ../../hrender/test/err/loader_sph_err.scn           )
+add_test(NAME loader_stl_err.scn         COMMAND hrender ../../hrender/test/err/loader_stl_err.scn           )
+add_test(NAME loader_vol_err.scn         COMMAND hrender ../../hrender/test/err/loader_vol_err.scn           )
+add_test(NAME render_obj_err.scn         COMMAND hrender ../../hrender/test/err/render_obj_err.scn           )
+add_test(NAME render_sph_err.scn         COMMAND hrender ../../hrender/test/err/render_sph_err.scn           )
 

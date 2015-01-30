@@ -44,12 +44,25 @@ bool VolumeAnalyzer::Execute(VolumeModel *model)
 {
     VolumeAnalyzerProc proc;
     std::vector<float> m_volHist[3];
-    if(model->GetMesh()) {
-        int number = model->GetVolume()->Position()->GetNum();
-        const float* buffer = static_cast<const float*>(model->GetVolume()->Position()->GetBuffer());
-        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
+    if(model->GetVolume()) {
+        BufferVolumeData *volume = model->GetVolume();
+        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+
+        int temp_num[3] = {
+            volume->m_dim[0],
+            volume->m_dim[1],
+            volume->m_dim[2]
+        };
+
+        int fnum = volume->m_dim[0] + volume->m_dim[1] + volume->m_dim[2];
+        if(fnum <= 0)
+        {
+            printf("Volume data empty\n");
+            return false;
+        }
+        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
     } else {
-        printf("Mesh data not found.");
+        printf("Volume data not found.");
     }
     return true;
 }

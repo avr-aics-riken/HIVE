@@ -1,0 +1,9 @@
+
+print('load STL')
+
+local stl = STLLoader()
+stl:Load('invalid.stl')
+
+local mesh = stl:MeshData()
+print(mesh)
+

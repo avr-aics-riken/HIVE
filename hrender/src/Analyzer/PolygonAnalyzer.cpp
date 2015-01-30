@@ -48,6 +48,10 @@ bool PolygonAnalyzer::Execute(PolygonModel *model)
     if(model->GetMesh()) {
         int number = model->GetMesh()->Position()->GetNum();
         const float* buffer = static_cast<const float*>(model->GetMesh()->Position()->GetBuffer());
+        if(number <= 0) {
+            printf("Mesh vertex numver is ZERO.");
+            return false;
+        }
         proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
     } else {
         printf("Mesh data not found.");
