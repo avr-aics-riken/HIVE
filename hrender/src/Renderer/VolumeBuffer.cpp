@@ -135,6 +135,7 @@ void VolumeBuffer::Render() const
     //SetUniform3fv_SGL(getProgram(), "offset", m_trans);
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     BindTexture3D_SGL(m_sgl_voltex);
+    SetUniform1i_SGL(getProgram(), "tex0", 0);
     if (m_index_id)
     {
         DrawElements_SGL(m_index_num);
