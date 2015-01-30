@@ -1,0 +1,7 @@
+
+print('load SPH')
+
+local sph = SPHLoader()
+sph:Load('invalid.sph')
+
+

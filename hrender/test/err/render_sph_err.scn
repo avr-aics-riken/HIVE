@@ -1,0 +1,25 @@
+
+print('Render Obj')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local sph = SPHLoader()
+sph:Load('fvel_0000001470.sph')
+
+local volume = VolumeModel()
+local volumedata = sph:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('invalid.frag')
+render {camera, volume}
+
+
