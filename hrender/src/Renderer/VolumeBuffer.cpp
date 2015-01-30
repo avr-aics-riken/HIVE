@@ -107,16 +107,20 @@ bool VolumeBuffer::Create(const VolumeModel* model)
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
         printf("[Error]Not set shader\n");
+        return false;
     }
 
     // make VolumeData
     BufferVolumeData* volume = model->GetVolume();
-    float sw = volume->Width();
-    float sh = volume->Height();
-    float sd = volume->Depth();
-    r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer());
-
-    MakeBox(sw,sh,sd);
+    if(volume->Buffer()) {
+        float sw = volume->Width();
+        float sh = volume->Height();
+        float sd = volume->Depth();
+        r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer());
+        MakeBox(sw,sh,sd);
+    } else {
+        printf("[Error] Not load buffer\n");
+    }
     return r;
 }
 
