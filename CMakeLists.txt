@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
+enable_testing()
+
 PROJECT(HIVE)
 
 # PROJECT OUTPUT SETTING
