@@ -18,11 +18,11 @@ public:
 	~BufferMeshData();
 	void Clear();
 	void print();
-	Vec3Buffer  *Position() ;
-	Vec3Buffer  *Normal()   ;
-	Vec2Buffer  *Texcoord() ;
-	UintBuffer  *Index()    ;
-	FloatBuffer *Material() ;
+	Vec3Buffer*  Position() ;
+	Vec3Buffer*  Normal()   ;
+	Vec2Buffer*  Texcoord() ;
+	UintBuffer*  Index()    ;
+	FloatBuffer* Material() ;
 };
 
 #endif //_BUFFERMESHDATA_H_
