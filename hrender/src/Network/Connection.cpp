@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <stdint.h>
 
 #include "happyhttp.h"
 #include "easywsclient.hpp"
@@ -145,7 +146,7 @@ public:
         printf("send image : %s\n", filepath.c_str());
         
         // load image
-        std::ifstream ifs(filepath, std::ios_base::in | std::ios_base::binary);
+        std::ifstream ifs(filepath.c_str(), std::ios::in | std::ios::binary);
         if (!ifs.good()) {
             printf("File Open Error");
             return false;
