@@ -22,7 +22,7 @@ model:SetShader('white.frag')
 
 model:SetTranslate(30, 40, 20)
 model:SetRotate(30, 60, 40);
-model:SetScale(2, 1, 1);
+model:SetScale(10, 1, 1);
 
 local analy = PolygonAnalyzer()
 analy:Execute(model)
