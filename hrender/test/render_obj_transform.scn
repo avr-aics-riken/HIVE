@@ -1,0 +1,39 @@
+
+print('Render Obj')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_obj_transform.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local obj = OBJLoader()
+obj:Load('bunny.obj')
+
+local model = PolygonModel()
+local meshdata = obj:MeshData()
+model:Create(meshdata)
+model:SetShader('white.frag')
+
+model:SetTransform(30, 40, 20)
+model:SetRotation(30, 60, 40);
+model:SetScale(2, 1, 1);
+
+local analy = PolygonAnalyzer()
+analy:Execute(model)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+
+render {camera, model}
+
+
