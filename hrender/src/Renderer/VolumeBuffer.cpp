@@ -141,12 +141,12 @@ void VolumeBuffer::Render() const
 
     // TODO: not supported yet rotation
     VX::Math::vec3 scale = m_model->GetScale();
-    float volumescale[] = {
-        m_boxsize[0] * scale.x,
-        m_boxsize[1] * scale.y,
-        m_boxsize[2] * scale.z
-    };
-    //float volumescale[] = {m_boxsize[0],m_boxsize[1],m_boxsize[2]};
+    //float volumescale[] = {
+    //    m_boxsize[0] * scale.x,
+    //    m_boxsize[1] * scale.y,
+    //    m_boxsize[2] * scale.z
+    //};
+    float volumescale[] = {m_boxsize[0],m_boxsize[1],m_boxsize[2]};
     printf("%f %f %f\n", volumescale[0], volumescale[1], volumescale[2]);
     
     const unsigned int prg = getProgram();
