@@ -514,8 +514,8 @@ Error Connection::pump()
 
 
 Response::Response( const char* method, Connection& conn ) :
-  m_Connection( conn ),
   m_State( STATUSLINE ),
+  m_Connection( conn ),
   m_Method( method ),
   m_Version( 0 ),
   m_Status(0),

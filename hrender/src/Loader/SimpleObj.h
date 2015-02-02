@@ -670,7 +670,7 @@ private:
         unsigned int* faces = &m_face[0].i0;
         float* vertices = &m_pos[0].x;
         float* uvs = &m_uv[0].x;
-        float* normals = &m_normal[0].x;
+        //float* normals = &m_normal[0].x;
         for (size_t i = 0; i < shapes.size(); i++) {
             
             for (size_t f = 0; f < shapes[i].mesh.indices.size() / 3; f++) {
