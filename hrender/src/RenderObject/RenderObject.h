@@ -29,14 +29,20 @@ public:
     //--------------------------------------------------
     //Get
     //--------------------------------------------------
-    const VX::Math::vec3&                        GetTranslate() const { return m_trans; }
-    const VX::Math::vec3&                        GetRotate()    const { return m_rotat; }
-    const VX::Math::vec3&                        GetScale()     const { return m_scale; }
-    const std::map<std::string, VX::Math::vec4>& GetVec4()      const { return m_vec4s; }
-    const std::map<std::string, VX::Math::vec3>& GetVec3()      const { return m_vec3s; }
-    const std::map<std::string, VX::Math::vec2>& GetVec2()      const { return m_vec2s; }
-    const std::map<std::string, float>&          GetFloat()     const { return m_floats; }
+    const VX::Math::vec3&  GetTranslate() const { return m_trans; }
+    const VX::Math::vec3&  GetRotate()    const { return m_rotat; }
+    const VX::Math::vec3&  GetScale()     const { return m_scale; }
+    
+    typedef std::map<std::string, VX::Math::vec4> Vec4Map;
+    typedef std::map<std::string, VX::Math::vec3> Vec3Map;
+    typedef std::map<std::string, VX::Math::vec2> Vec2Map;
+    typedef std::map<std::string, float>         FloatMap;
+    const Vec4Map&  GetUniformVec4 () const { return m_vec4s;  }
+    const Vec3Map&  GetUniformVec3 () const { return m_vec3s;  }
+    const Vec2Map&  GetUniformVec2 () const { return m_vec2s;  }
+    const FloatMap& GetUniformFloat() const { return m_floats; }
 
+protected:
     //--------------------------------------------------
     //Set
     //--------------------------------------------------
@@ -75,7 +81,6 @@ public:
         m_floats[name] = x;
     }
 
-protected:
     RenderObject(MODE_TYPE t) : m_type(t) 
     {
         m_trans =  VX::Math::vec3(0, 0, 0);
