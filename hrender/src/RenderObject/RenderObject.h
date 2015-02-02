@@ -35,6 +35,7 @@ public:
     std::map<std::string, VX::Math::vec4>& GetVec4()      { return m_vec4s; }
     std::map<std::string, VX::Math::vec3>& GetVec3()      { return m_vec3s; }
     std::map<std::string, VX::Math::vec2>& GetVec2()      { return m_vec2s; }
+    std::map<std::string, float>&          GetFloat()     { return m_floats; }
 
     //--------------------------------------------------
     //Set
@@ -75,7 +76,12 @@ public:
     }
 
 protected:
-    RenderObject(MODE_TYPE t) : m_type(t) {};
+    RenderObject(MODE_TYPE t) : m_type(t) 
+    {
+        m_trans =  VX::Math::vec3(0, 0, 0);
+        m_rotat =  VX::Math::vec3(0, 0, 0);
+        m_scale =  VX::Math::vec3(1, 1, 1);
+    };
     ~RenderObject() {};
 private:
     // Transform↲
