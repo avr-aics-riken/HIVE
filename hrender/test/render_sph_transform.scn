@@ -20,8 +20,9 @@ local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
 
-volume:SetTransform(50,50,20)
-volume:SetRotation(30, 40, 50)
+volume:SetTranslate(50,50,20)
+--volume:SetRotation(30, 40, 50)
+volume:SetRotate(30, 40, 50)
 volume:SetScale(2,2,1)
 
 volume:SetShader('def_volume_raymarch.frag')
