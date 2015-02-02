@@ -1,9 +1,9 @@
 
-print('Render SPH')
+print('Render SPH Transform')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
-camera:SetFilename('image_sph.jpg')
+camera:SetFilename('image_sph_transform.jpg')
 
 camera:LookAt(
 	0,0,300,
@@ -19,6 +19,11 @@ sph:Load('fvel_0000001470.sph')
 local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
+
+volume:SetTransform(50,50,20)
+volume:SetRotation(30, 40, 50)
+volume:SetScale(2,2,1)
+
 volume:SetShader('def_volume_raymarch.frag')
 render {camera, volume}
 
