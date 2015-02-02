@@ -24,6 +24,7 @@ VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_volHist[0].clear();
     m_volHist[1].clear();
     m_volHist[2].clear();
+    m_model      = NULL;
 }
 
 VolumeBuffer::~VolumeBuffer()
@@ -112,6 +113,10 @@ bool VolumeBuffer::Create(const VolumeModel* model)
 
     // make VolumeData
     BufferVolumeData* volume = model->GetVolume();
+    if(!volume) {
+        printf("[Error] BufferVolumeData is NULL\n");
+        return false;
+    }
     if(volume->Buffer()) {
         float sw = volume->Width();
         float sh = volume->Height();
