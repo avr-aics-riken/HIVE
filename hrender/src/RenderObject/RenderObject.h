@@ -29,12 +29,12 @@ public:
     //--------------------------------------------------
     //Get
     //--------------------------------------------------
-    VX::Math::vec3&                        GetTranslate() { return m_trans; }
-    VX::Math::vec3&                        GetRotate()    { return m_rotat; }
-    VX::Math::vec3&                        GetScale()     { return m_scale; }
-    std::map<std::string, VX::Math::vec4>& GetVec4()      { return m_vec4s; }
-    std::map<std::string, VX::Math::vec3>& GetVec3()      { return m_vec3s; }
-    std::map<std::string, VX::Math::vec2>& GetVec2()      { return m_vec2s; }
+    const VX::Math::vec3&                        GetTranslate() const { return m_trans; }
+    const VX::Math::vec3&                        GetRotate()    const { return m_rotat; }
+    const VX::Math::vec3&                        GetScale()     const { return m_scale; }
+    const std::map<std::string, VX::Math::vec4>& GetVec4()      const { return m_vec4s; }
+    const std::map<std::string, VX::Math::vec3>& GetVec3()      const { return m_vec3s; }
+    const std::map<std::string, VX::Math::vec2>& GetVec2()      const { return m_vec2s; }
 
     //--------------------------------------------------
     //Set

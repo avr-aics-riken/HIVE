@@ -1,7 +1,7 @@
 
 print('Render Obj')
 local camera = Camera()
-camera:SetScreenSize(1024, 1024)
+camera:SetScreenSize(256, 256)
 camera:SetFilename('render_obj_transform.jpg')
 
 camera:LookAt(
@@ -20,8 +20,8 @@ local meshdata = obj:MeshData()
 model:Create(meshdata)
 model:SetShader('white.frag')
 
-model:SetTransform(30, 40, 20)
-model:SetRotation(30, 60, 40);
+model:SetTranslate(30, 40, 20)
+model:SetRotate(30, 60, 40);
 model:SetScale(2, 1, 1);
 
 local analy = PolygonAnalyzer()
