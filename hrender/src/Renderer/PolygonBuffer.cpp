@@ -57,13 +57,10 @@ void PolygonBuffer::Render() const
     if (!m_model) {
         printf("[Error] Not setpolygonmodel\n");
     }
-    
-    const VX::Math::vec3& scale = m_model->GetScale();
-    
+   
     const unsigned int prg = getProgram();
-    const VX::Math::vec3& translate = m_model->GetTranslate();
-    SetUniform3fv_SGL(prg, "offset", reinterpret_cast<const float*>(&translate));
-    SetUniform3fv_SGL(prg, "scale", reinterpret_cast<const float*>(&scale));
+    const VX::Math::matrix& mat = m_model->GetTransformMatrix();
+    SetUniformMatrix_SGL(prg, "lsgl_World", &mat.f[0]);
     
     const RenderObject::Vec4Map& vec4array = m_model->GetUniformVec4();
     RenderObject::Vec4Map::const_iterator it4, eit4 = vec4array.end();
