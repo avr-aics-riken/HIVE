@@ -127,12 +127,28 @@ bool VolumeBuffer::Create(const VolumeModel* model)
 void VolumeBuffer::Render() const
 {
     // TODO: not supported yet rotation
-    //float volumescale[] = {m_boxsize[0]*m_scale[0],m_boxsize[1]*m_scale[1],m_boxsize[2]*m_scale[2]};
+/*
+    VX::Math::vec3 scale = m_volumeModel->GetScale();
+    float volumescale[] = {m_boxsize[0] * scale.x,m_boxsize[1] * scale.y,m_boxsize[2] * scale.z]};
+ */
     float volumescale[] = {m_boxsize[0],m_boxsize[1],m_boxsize[2]};
     printf("%f %f %f\n", volumescale[0], volumescale[1], volumescale[2]);
-    SetUniform3fv_SGL(getProgram(), "volumescale", volumescale);
-    SetUniform3fv_SGL(getProgram(), "volumedim", m_voldim);
-    //SetUniform3fv_SGL(getProgram(), "offset", m_trans);
+    
+    const unsigned int prg = getProgram();
+    SetUniform3fv_SGL(prg, "volumescale", volumescale);
+    SetUniform3fv_SGL(prg, "volumedim", m_voldim);
+/*
+    VX::Math::vec3 translate = m_volumeModel->GetTranslate();
+    SetUniform3fv_SGL(prg, "offset", translate);
+    
+    const std::map<std::string, VX::Math::vec4>& vec4array = m_volumeModel->GetVec4();
+    const std::map<std::string, VX::Math::vec4>::const_iterator it, eit = vec4array.end();
+    for (it = vec4array.begin(); it != eit; ++it) {
+        SetUniform4fv_SGL(prg, it->first.c_str(), it->second.x, it->second.y, it->second.z, it->second.w);
+    }
+    // TODO: vec3, vec2, float
+*/
+    
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     BindTexture3D_SGL(m_sgl_voltex);
     SetUniform1i_SGL(getProgram(), "tex0", 0);
