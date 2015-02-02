@@ -5,6 +5,7 @@
 
 #include <vector>
 #include "BaseBuffer.h"
+#include "../Core/Ref.h"
 
 class VolumeModel;
 class BufferVolumeData;
@@ -26,7 +27,7 @@ private:
     unsigned int       m_sgl_voltex;
     std::vector<float> m_volHist[3];
 
-    VolumeModel*       m_model;
+    RefPtr<const VolumeModel> m_model;
 
     bool MakeBox(float width, float height, float depth);
     bool CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata);

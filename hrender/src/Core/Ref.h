@@ -13,9 +13,9 @@ protected:
     virtual ~RefCount(){};
     void* m_userData;
 public:
-    int Ref()          { return ++m_ref; }
+    int Ref()    const { return ++m_ref; }
     int GetRef() const { return m_ref; }
-    int Unref()        {
+    int Unref()  const {
         const int ref = --m_ref;
         assert(ref >= 0);
         if (!ref)
@@ -24,7 +24,7 @@ public:
     }
     void SetUserData(void* userData) { m_userData = userData; }
 private:
-    int m_ref;
+    mutable int m_ref;
 };
 
 template<class T>

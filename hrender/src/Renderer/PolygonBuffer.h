@@ -17,6 +17,7 @@ private:
     unsigned int m_index_id;
     unsigned int m_vertex_num;
     unsigned int m_index_num;
+    RefPtr<const PolygonModel> m_model;
     
 public:
     PolygonBuffer(RENDER_MODE mode);
