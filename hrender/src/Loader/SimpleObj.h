@@ -672,8 +672,10 @@ private:
         float* uvs = &m_uv[0].x;
         //float* normals = &m_normal[0].x;
         for (size_t i = 0; i < shapes.size(); i++) {
+            const size_t numSVertices = shapes[i].mesh.positions.size() / 3;
+            const size_t numSFaces= shapes[i].mesh.indices.size() / 3;
             
-            for (size_t f = 0; f < shapes[i].mesh.indices.size() / 3; f++) {
+            for (size_t f = 0; f < numSFaces; f++) {
                 faces[3*(faceIdxOffset+f)+0] = shapes[i].mesh.indices[3*f+0];
                 faces[3*(faceIdxOffset+f)+1] = shapes[i].mesh.indices[3*f+1];
                 faces[3*(faceIdxOffset+f)+2] = shapes[i].mesh.indices[3*f+2];
@@ -683,25 +685,25 @@ private:
                 faces[3*(faceIdxOffset+f)+2] += vertexIdxOffset;
             }
             
-            for (size_t v = 0; v < shapes[i].mesh.positions.size() / 3; v++) {
+            for (size_t v = 0; v < numSVertices; v++) {
                 vertices[3*(vertexIdxOffset+v)+0] = shapes[i].mesh.positions[3*v+0];
                 vertices[3*(vertexIdxOffset+v)+1] = shapes[i].mesh.positions[3*v+1];
                 vertices[3*(vertexIdxOffset+v)+2] = shapes[i].mesh.positions[3*v+2];
             }
             
             if ( shapes[i].mesh.texcoords.size()) {
-                for (size_t f = 0; f < numFaces; ++f) {
-                    uvs[2*(vertexIdxOffset + m_face[f].i0) + 0] = shapes[i].mesh.texcoords[2 * m_face[f].i0 + 0];
-                    uvs[2*(vertexIdxOffset + m_face[f].i0) + 1] = shapes[i].mesh.texcoords[2 * m_face[f].i0 + 1];
-                    uvs[2*(vertexIdxOffset + m_face[f].i1) + 0] = shapes[i].mesh.texcoords[2 * m_face[f].i1 + 0];
-                    uvs[2*(vertexIdxOffset + m_face[f].i1) + 1] = shapes[i].mesh.texcoords[2 * m_face[f].i1 + 1];
-                    uvs[2*(vertexIdxOffset + m_face[f].i2) + 0] = shapes[i].mesh.texcoords[2 * m_face[f].i2 + 0];
-                    uvs[2*(vertexIdxOffset + m_face[f].i2) + 1] = shapes[i].mesh.texcoords[2 * m_face[f].i2 + 1];
+                for (size_t f = 0; f < numSFaces; ++f) {
+                    uvs[2*(m_face[faceIdxOffset+f].i0) + 0] = shapes[i].mesh.texcoords[2 * (m_face[faceIdxOffset+f].i0 - vertexIdxOffset) + 0];
+                    uvs[2*(m_face[faceIdxOffset+f].i0) + 1] = shapes[i].mesh.texcoords[2 * (m_face[faceIdxOffset+f].i0 - vertexIdxOffset) + 1];
+                    uvs[2*(m_face[faceIdxOffset+f].i1) + 0] = shapes[i].mesh.texcoords[2 * (m_face[faceIdxOffset+f].i1 - vertexIdxOffset) + 0];
+                    uvs[2*(m_face[faceIdxOffset+f].i1) + 1] = shapes[i].mesh.texcoords[2 * (m_face[faceIdxOffset+f].i1 - vertexIdxOffset) + 1];
+                    uvs[2*(m_face[faceIdxOffset+f].i2) + 0] = shapes[i].mesh.texcoords[2 * (m_face[faceIdxOffset+f].i2 - vertexIdxOffset) + 0];
+                    uvs[2*(m_face[faceIdxOffset+f].i2) + 1] = shapes[i].mesh.texcoords[2 * (m_face[faceIdxOffset+f].i2 - vertexIdxOffset) + 1];
                 }
             }
 
-            vertexIdxOffset += shapes[i].mesh.positions.size() / 3;
-            faceIdxOffset   += shapes[i].mesh.indices.size() / 3;
+            vertexIdxOffset += numSVertices;
+            faceIdxOffset   += numSFaces;
         }
         for (size_t i = 0; i < numVertices; i++)
             m_normal[i] = vec3(0,0,0);
