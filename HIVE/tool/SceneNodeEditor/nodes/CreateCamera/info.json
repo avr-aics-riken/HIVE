@@ -1,0 +1,13 @@
+{
+	"name": "CreateCamera",
+	"pos": [100, 100],
+	"varname": "instCreateCamera",
+	"funcname": "",
+	"customfuncfile":"createcamera.lua",
+	"deletable": true,
+	"input": [
+	],
+	"output": [
+		{"name": "camera", "type": "RenderObject"}
+	]
+}
