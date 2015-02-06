@@ -75,7 +75,7 @@ var server = http.createServer(function (req, res) {
 		}(res)));
     } else {
         try {
-            file = fs.readFileSync('./root' + req.url.length);
+            file = fs.readFileSync('./root' + req.url);
             res.end(file);
         } catch (e) {
             res.writeHead(404, {'Content-Type': 'text/plain'});
