@@ -177,7 +177,7 @@ void VolumeBuffer::Render() const
     RenderObject::FloatMap::const_iterator itf, eitf = floatarray.end();
     for (itf = floatarray.begin(); itf != eitf; ++itf) {
         const float vf = itf->second;
-        SetUniform1f_SGL(prg, it2->first.c_str(), vf);
+        SetUniform1f_SGL(prg, itf->first.c_str(), vf);
     }
 
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
