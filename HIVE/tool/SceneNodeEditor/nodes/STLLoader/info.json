@@ -1,0 +1,13 @@
+{
+	"name": "STLLoader",
+	"pos": [100, 100],
+	"varname": "instSTLLoader",
+	"funcname": "Load",
+	"deletable": true,
+	"input": [
+		{"name": "filepath", "type": "string", "value": "bunny.stl"}
+	],
+	"output": [
+		{"name": "MeshData", "type": "MeshData"}
+	]
+}
