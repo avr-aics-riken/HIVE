@@ -24,18 +24,25 @@ function makeNodeList(callback) {
 		}
 
 		fileCounter = 0;
+		function finishLoad() {
+			fileCounter = fileCounter - 1;
+			if (fileCounter === 0) {
+				callback(null, nodelist);
+			}
+		}
 		function loadFunc(nodeDirPath) {
 			return function (err, data) {
-				var json = JSON.parse(data);
-				if (json.customfuncfile !== undefined) {
-					customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
-					json.customfunc = customFuncLua;
+				try {
+					var json = JSON.parse(data);
+					if (json.customfuncfile !== undefined) {
+						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
+						json.customfunc = customFuncLua;
+					}
+					nodelist.push(json);
+				} catch (e) {
+					console.log('[Error] Failed Load:' + nodeDirPath + "/info.json");
 				}
-				nodelist.push(json);
-				fileCounter = fileCounter - 1;
-				if (fileCounter === 0) {
-					callback(null, nodelist);
-				}
+				finishLoad();
 			};
 		}
 		for (i in files) {
