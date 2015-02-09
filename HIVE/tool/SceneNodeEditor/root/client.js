@@ -45,13 +45,14 @@ var staticNodeData = {
 				"pos": [450, 300],
 				"varname": "instPolygonModel",
 				"funcname": "create",
-				"customfunc" : "function CreatePolygonModel() return { create=function(self) return self.m_cam end, create=function(self) self.m_cam = PolygonModel(); self.m_cam:SetShader('white.frag') end} end\n",
+				//"customfunc" : "function CreatePolygonModel(mesh) local m_cam = PolygonModel(); m_cam:Create(mesh); m_cam:SetShader('white.frag'); return m_cam; end\n",
+				"customfunc" : "function CreatePolygonModel() return { model=function(self) return self.m_cam end, create=function(self, model) self.m_cam = PolygonModel(); self.m_cam:Create(model); self.m_cam:SetShader('white.frag'); end} end\n",
 				"deletable": false,
 				"input": [
 					{"name": "mesh", "type": "MeshData"}
 				],
 				"output": [
-					{"name": "", "type": "RenderObject"}
+					{"name": "model", "type": "RenderObject"}
 					]
 			},
 			{
@@ -71,7 +72,7 @@ var staticNodeData = {
 		],
 		"plugData":[
 			{"output": {"node": "instOBJLoader",    "plug": "MeshData"}, "input": {"node": "instPolygonModel", "plug": "mesh"}},
-			{"output": {"node": "instPolygonModel", "plug": ""},     "input": {"node": "root",             "plug": "RenderObject"}},
+			{"output": {"node": "instPolygonModel", "plug": "model"},     "input": {"node": "root",             "plug": "RenderObject"}},
 			{"output": {"node": "instCamera",       "plug": "camera"},     "input": {"node": "root",             "plug": "Camera"}},
 		]
 	};
