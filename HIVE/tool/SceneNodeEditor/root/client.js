@@ -33,7 +33,6 @@
 				}
 				inner += '</select>';
 				d.innerHTML = inner;
-				d.onChange = OnSelectNodeList;
 			}
 		});
 	}
@@ -61,6 +60,7 @@
 	function ButtonAdd(e) {
 		var ele = document.getElementsByName('NodeList');
 		var index = ele[0].selectedIndex;
+		console.log('SELECT INDEX >' + index);
 		nodeData.nodeData.push(nodelist[index]);
 		console.log(nodeData);
 		nui.clearNodes();
@@ -76,7 +76,7 @@
 	//---------------------------------------------------------------------------
 	function init() {
 		//init canvas.
-		var draw = SVG('nodecanvas').size(1024, 768);
+		var draw = SVG('nodecanvas').size(1280, 768);
 		nui      = svgNodeUI(draw);
 		nui.clearNodes();
 
