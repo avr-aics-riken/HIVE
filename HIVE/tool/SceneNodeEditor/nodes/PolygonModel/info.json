@@ -1,0 +1,14 @@
+{
+	"name": "CreatePolygonModel",
+	"pos": [450, 300],
+	"varname": "instPolygonModel",
+	"funcname": "create",
+	"customfunc" : "function CreatePolygonModel() return { model=function(self) return self.m_cam end, create=function(self, model) self.m_cam = PolygonModel(); self.m_cam:Create(model); self.m_cam:SetShader('white.frag'); end} end\n",
+	"deletable": false,
+	"input": [
+		{"name": "mesh", "type": "MeshData"}
+	],
+	"output": [
+		{"name": "model", "type": "RenderObject"}
+	]
+}
