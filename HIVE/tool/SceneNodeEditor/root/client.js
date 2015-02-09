@@ -4,6 +4,7 @@
 
 var nui;
 var nodeData;
+var socket = io.connect();
 
 var staticNodeData = {
 		"nodeData":[
@@ -149,10 +150,7 @@ function ButtonEvent(id)
 		{
 			"Script" : customlua
 		};
-		var socket = io.connect();
-		socket.on('connect', function () {
-			socket.emit('sendScene', JSON.stringify({scene: customlua}));
-		});
+        socket.emit('sendScene', JSON.stringify({scene: customlua}));
 	}
 
 	if(id === 'Open') {
