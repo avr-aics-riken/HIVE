@@ -73,8 +73,9 @@ function writeFile(data, filepath, callback) {
 }
 function renderScene(scene, socket) {
 	"use strict";
+	console.log('TRY RENDER');
 	writeFile(scene, "./scene.scn", function () {
-		var process = spawn('./hrender', ['scene.scn'], function (err) {
+		var process = spawn('hrender.exe', ['scene.scn'], function (err) {
 			if (!err) { return; }
 			console.log('Failed run hrender.');
 		});
