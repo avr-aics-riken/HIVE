@@ -1,9 +1,10 @@
 /*jslint devel:true */
-/*global SVG, svgNodeUI, io */
+/*global SVG, svgNodeUI, io, fs */
 
 
 var nui;
 var nodeData;
+var socket = io.connect();
 
 var staticNodeData = {
 		"nodeData":[
@@ -25,7 +26,6 @@ var staticNodeData = {
 				"pos"       : [150, 100],
 				"varname"   : "instCamera",
 				"funcname"  : "create",
-				//"customfunc" : "function SetLookAt() return function(instCamera, px, py, pz, ax, ay, az, ux, uy, uz, fov) instCamera::SetScreenSize(1024, 1024); instCamera:SetFilename('render_obj.jpg');instCamera::LookAt(px, py, pz, ax, ay, az, ux, uy, uz, fov) end end\n",
 				"customfunc" : "function CreateCamera() return { camera=function(self) return self.m_cam end, create=function(self) self.m_cam = Camera(); self.m_cam:SetScreenSize(1024, 1024); self.m_cam:SetFilename('render_obj.jpg'); self.m_cam:LookAt(0, 0, -300, 0, 0, 0, 0, 1, 0, 60) end} end\n",
 				"deletable": false,
 				"cameradata" : [
@@ -41,10 +41,11 @@ var staticNodeData = {
 				]
 			},
 			{
-				"name": "PolygonModel",
+				"name": "CreatePolygonModel",
 				"pos": [450, 300],
 				"varname": "instPolygonModel",
-				"funcname": "Create",
+				"funcname": "create",
+				"customfunc" : "function CreatePolygonModel() return { create=function(self) return self.m_cam end, create=function(self) self.m_cam = PolygonModel(); self.m_cam:SetShader('white.frag') end} end\n",
 				"deletable": false,
 				"input": [
 					{"name": "mesh", "type": "MeshData"}
@@ -113,22 +114,12 @@ window.addEventListener('load', function () {
 			console.log('stderr', data);
 		});
 	});
+
 	var	draw = SVG('nodecanvas').size(1024, 768);
 	nui = svgNodeUI(draw);
 	nodeData = staticNodeData;
-	
 	nui.clearNodes();
 	nui.makeNodes(nodeData);
-	
-	/*
-	document.addEventListener('keydown', function () {
-		var customlua = nui.exportLua();
-		//console.log(customlua);
-	});
-	*/
-	
-
-	//document.getElementById('Open').addEventListener('change', readSingleFile, false);
 });
 
 
@@ -145,14 +136,7 @@ function ButtonEvent(id)
 		
 		//debug
 		console.log(customlua);
-		var senddata =
-		{
-			"Script" : customlua
-		};
-		var socket = io.connect();
-		socket.on('connect', function () {
-			socket.emit('sendScene', JSON.stringify({scene: customlua}));
-		});
+        socket.emit('sendScene', JSON.stringify({scene: customlua}));
 	}
 
 	if(id === 'Open') {
