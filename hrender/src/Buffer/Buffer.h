@@ -30,8 +30,9 @@ public:
     BufferType GetType() const { return BUFFER_VEC2; }
     
     int Create(int num);
-    int GetNum();
+    int GetNum() const;
     float* GetBuffer();
+    const float* GetBuffer() const;
     
 private:
     struct vec2{ float x,y; };
@@ -46,9 +47,10 @@ public:
 	BufferType GetType() const { return BUFFER_VEC3; }
 	
 	int Create(int num);
-	int GetNum();
-	float* GetBuffer();
-	
+	int GetNum() const;
+    float* GetBuffer();
+    const float* GetBuffer() const;
+    
 private:
 	struct vec3{ float x,y,z; };
 	std::vector<vec3> m_buffer;
@@ -62,8 +64,9 @@ public:
 	BufferType GetType() const { return BUFFER_VEC4; }
 	
 	int Create(int num);
-	int GetNum();
-	float* GetBuffer();
+	int GetNum() const;
+    float* GetBuffer();
+    const float* GetBuffer() const;
 	int Set(int i, float x, float y, float z, float w);
 	
 private:
@@ -79,9 +82,10 @@ public:
 	BufferType GetType() const { return BUFFER_FLOAT; }
 	
 	int Create(int num);
-	int GetNum();
+	int GetNum() const;
 	float* GetBuffer();
-	
+    const float* GetBuffer() const;
+
 protected:
 	std::vector<float> m_buffer;
 };
@@ -94,8 +98,9 @@ public:
 	BufferType GetType() const { return BUFFER_INDEX; }
 	
 	int Create(int num);
-	int GetNum();
-	unsigned int* GetBuffer();
+	int GetNum() const;
+    unsigned int* GetBuffer();
+    const unsigned int* GetBuffer() const;
 	
 private:
 	std::vector<unsigned int> m_buffer;

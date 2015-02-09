@@ -27,14 +27,13 @@ bool VOLLoader::Load(const char* filename)
         printf("Failed to load VOL volume: %s\n", filename);
         return false;
     }
-    m_volume.m_buffer = new FloatBuffer();
-    m_volume.m_dim[0] = vol.GetDim(0);
-    m_volume.m_dim[1] = vol.GetDim(1);
-    m_volume.m_dim[2] = vol.GetDim(2);
-    m_volume.m_comp = vol.GetComponent();
-    const int fnum = m_volume.m_dim[0] * m_volume.m_dim[1] * m_volume.m_dim[2] * m_volume.m_comp;
-    m_volume.m_buffer->Create(fnum);
-    memcpy(m_volume.m_buffer->GetBuffer(), buf, fnum * sizeof(float));
+    
+    const int w = vol.GetDim(0);
+    const int h = vol.GetDim(1);
+    const int d = vol.GetDim(2);
+    const int c = vol.GetComponent();
+    m_volume.Create(w, h, d, c);
+    memcpy(m_volume.Buffer()->GetBuffer(), buf, w * h * d * c * sizeof(float));
     delete [] buf;
 
     return true;
