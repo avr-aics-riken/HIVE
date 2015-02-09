@@ -92,11 +92,20 @@ IF (SURFACE_BUILD_K_CROSS_COMPILE)
 ENDIF()
 # --------------------------------------
 
+# --------------------------------------
+# third party lib flags
+#
+IF(HIVE_BUILD_WITH_CDMLIB)
+  add_definitions(-DHIVE_WITH_CDMLIB)
+ENDIF()
+# --------------------------------------
+
 # Headers
 set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/lua/src
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
+	${PROJECT_SOURCE_DIR}/../third_party/local/include
 	${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
@@ -150,14 +159,33 @@ set(SOURCES
 	src/SceneScript/SceneScript.cpp
 )
 
+IF(HIVE_BUILD_WITH_CDMLIB)
+
+  IF(NOT HIVE_BUILD_WITH_MPI)
+    add_definitions(-D_CDM_WITHOUT_MPI_)	# Use stub MPI defines(provided in CDMlib/include/mpi_stubs.h)
+  ENDIF()
+
+  SET(CDMLIB_SOURCES
+    src/Loader/CDMLoader.cpp
+  )
+
+  SET(CDMLIB_LIBS
+    CDM TP
+  )
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/lib)
+  
+ENDIF()
+
 IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
 
-add_executable (hrender ${SOURCES})
+add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES})
 
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
+target_link_libraries(hrender ${CDMLIB_LIBS})
+
 
 # Additional Libraries
 if (APPLE)
