@@ -28,14 +28,14 @@ bool SPHLoader::Load(const char* filename)
         printf("Failed to load SPH volume: %s\n", filename);
         return false;
     }
-    m_volume.m_buffer = new FloatBuffer();
-    m_volume.m_dim[0] = sph.GetDim(0);
-    m_volume.m_dim[1] = sph.GetDim(1);
-    m_volume.m_dim[2] = sph.GetDim(2);
-    m_volume.m_comp = sph.GetComponent();
-    const int fnum = m_volume.m_dim[0] * m_volume.m_dim[1] * m_volume.m_dim[2] * m_volume.m_comp;
-    m_volume.m_buffer->Create(fnum);
-    memcpy(m_volume.m_buffer->GetBuffer(), buf, fnum*sizeof(float));
+    const int w = sph.GetDim(0);
+    const int h = sph.GetDim(1);
+    const int d = sph.GetDim(2);
+    const int c = sph.GetComponent();
+    m_volume.Create(w, h, d, c);
+    FloatBuffer* buffer = m_volume.Buffer();
+    const int fnum = w * h * d * c;
+    memcpy(buffer->GetBuffer(), buf, fnum * sizeof(float));
     delete [] buf;
 
     return true;
