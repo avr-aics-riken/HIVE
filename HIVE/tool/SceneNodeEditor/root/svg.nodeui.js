@@ -10,7 +10,8 @@ function svgNodeUI(draw) {
 		draggingPlug = null,
 		nodeArray = {},
 		plugArray = {};
-
+	
+	
 	function getPlugVarName(nodeName, plugName) {
 		return nodeName + ':' + plugName;
 	}
@@ -36,6 +37,7 @@ function svgNodeUI(draw) {
 		this.line = draw.path('').fill('none').stroke({ width: 4, color: '#ef8815' });
 		this.drawCurve(this.line, sx, sy, ex, ey);
 	}
+
 	PlugClass.prototype = {
 		drawCurve: function () {
 			var midx = (this.sx + this.ex) * 0.5,
@@ -96,6 +98,7 @@ function svgNodeUI(draw) {
 		this.hole = hole;
 		holeSets.add(hole);
 	}
+
 	NodeConnector.prototype = {
 		fit: function () {
 			this.hole.center(this.px + this.svgparent.x(), this.py + this.svgparent.y());
@@ -210,7 +213,102 @@ function svgNodeUI(draw) {
 			this.line = null;
 		}
 	};
+	
+	//------//------//------//------//------//------//------//------
+	// sasaki S customfunclist
+	//------//------//------//------//------//------//------//------
+	function showProparty(nodeData)
+	{
+		console.log(nodeData);
+		var to = document.getElementById("proparty");
+		to.innerHTML = '';
+		if(nodeData.name) {
+			to.innerHTML += "[name]     : " + nodeData.name + '\n';
+			to.innerHTML += '<hr><br>';
+		}
+		if(nodeData.varname) {
+			to.innerHTML += "[varname]  : " + nodeData.varname + '\n';
+			to.innerHTML += '<hr><br>';
+		}
+		/*
+		if(nodeData.funcname) {
+			to.innerHTML += "[funcname] : " + nodeData.funcname + '\n';
+			to.innerHTML += '<hr><br>';
+		}
+		*/
+		
+		if(nodeData.name === "OBJLoader") {
+			
+			if(nodeData.input) {
+				for(var i = 0 ; i < nodeData.input.length; i += 1) {
+					if(nodeData.input[i].value) {
+						to.innerHTML += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="'+nodeData.input[i].value+'">' + '\n';
+					}
+				}
+				to.innerHTML += '<hr><br>';
+			}
+		}
+		
+		if(nodeData.name === "CreateCamera")
+		{
+			var cameradata = [];
+			for(var i = 0 ; i < nodeData.cameradata.length; i += 1) {
+				cameradata[i] = nodeData.cameradata[i];
+				console.log(nodeData.cameradata[i]);
+			}
+			
+			
+			//--------------------------------------------------------------------
+			// Camera Data
+			//--------------------------------------------------------------------
+			var pxyz = ['X', 'Y', 'Z'];
+			var index = 0;
+			to.innerHTML += '<hr>';
+			to.innerHTML += 'LookAt<br><br>';
+			to.innerHTML += 'Pos    ';
+			for(var i = 0 ; i < 3; i += 1) {
+				to.innerHTML += pxyz[i] + '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
+				index++;
+			}
+			to.innerHTML += '<br>'
+			to.innerHTML += 'At   ';
+			for(var i = 0 ; i < 3; i += 1) {
+				to.innerHTML += pxyz[i] + '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
+				index++;
+			}
+			to.innerHTML += '<br>'
+			to.innerHTML += 'Up   ';
+			for(var i = 0 ; i < 3; i += 1) {
+				to.innerHTML += pxyz[i] + '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
+				index++;
+			}
+			to.innerHTML += '<br>'
+			to.innerHTML += '<br>'
+			to.innerHTML += 'Fov<br>';
+			to.innerHTML += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">:';
+			to.innerHTML += '<hr>';
 
+			
+		}
+		
+		/*
+		if(nodeData.customfunc) {
+			to.innerHTML += "[customfunc] : " + nodeData.customfunc	 + '\n';
+			to.innerHTML += '<hr><br>';
+		}
+		*/
+	}
+	
+	function getNodeInfo(data) {
+		var nodeData = data.nodeData;
+		var i = data.nodeData.length;
+		showProparty(nodeData);
+		//console.log("ERROR : unknown show type\n");
+	}
+	//------//------//------//------//------//------//------//------
+	// sasaki E customfunclist
+	//------//------//------//------//------//------//------//------
+	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
 			nodebase = draw.rect(220, 60).radius(10).attr({'fill': "#424542", 'fill-opacity': "0.8", 'stroke': "none"}),
@@ -220,6 +318,7 @@ function svgNodeUI(draw) {
 				return function (delta, event) {
 					event.stopPropagation();
 					self.front();
+					getNodeInfo(self);
 				};
 			},
 			groupDragMove = function (self) {
@@ -368,6 +467,7 @@ function svgNodeUI(draw) {
 		}
 	}
 
+
 	function exportLua() {
 		var i,
 			j,
@@ -377,11 +477,25 @@ function svgNodeUI(draw) {
 			plugname,
 			src = '';
 		
-		
 		pushNextNode(nodeArray.root, dependency);
 		console.log(dependency);
+
+		//------//------//------//------//------//------//------//------
+		// sasaki S customfunclist
+		//------//------//------//------//------//------//------//------
+		var customfunclist = '';
+		for (i = dependency.length - 1; i >= 0; i -= 1) {
+			node = dependency[i].nodeData;
+			if (node.customfunc) {
+				customfunclist += node.customfunc + '\n';
+			}
+		}
+		console.log(customfunclist);
+		//------//------//------//------//------//------//------//------
+		// sasaki E customfunclist
+		//------//------//------//------//------//------//------//------
 		
-		console.log('Export:');
+		console.log('Export:dependency.length: ' + dependency.length);
 		for (i = dependency.length - 1; i >= 0; i -= 1) {
 			node = dependency[i].nodeData;
 			if (node.define) {
@@ -397,7 +511,12 @@ function svgNodeUI(draw) {
 				for (j = 0; j < node.input.length; j += 1) {
 					plugname = getPlugVarName(node.varname, node.input[j].name);
 					if (plugArray[plugname]) {
-						src += plugArray[plugname].varname + '()';
+						var temp = plugArray[plugname].varname;
+						if(temp.substr(temp.length - 1, temp.length) === ':') {
+							src += temp.substr(0, temp.length - 1);
+						} else {
+                            src += plugArray[plugname].varname + '()';
+						}
 					} else if (node.input[j].value) {
 						src += node.input[j].value;
 					} else {
@@ -411,6 +530,7 @@ function svgNodeUI(draw) {
 			}
 			src += ')\n';
 		}
+		src = customfunclist + src;
 		console.log(src);
 		return src;
 	}
@@ -471,6 +591,7 @@ function svgNodeUI(draw) {
 			node = new Node(nodeData[i].name, nodeData[i]);
 			node.move(nodeData[i].pos[0], nodeData[i].pos[1]);
 		}
+		
 		for (i = 0; i < plugData.length; i += 1) {
 			outputPlug = getNode(plugData[i].output.node).getConnector(plugData[i].output.plug);
 			inputNode = getNode(plugData[i].input.node).getConnector(plugData[i].input.plug);
@@ -479,6 +600,7 @@ function svgNodeUI(draw) {
 			}
 		}
 	}
+	
 	function getNodeData() {
 		//nodeArray
 		var i, node, plug, nodeData = [], plugData = [];
@@ -499,6 +621,8 @@ function svgNodeUI(draw) {
 		}
 		return {nodeData: nodeData, plugData: plugData};
 	}
+	
+	
 	function clearNodes() {
 		var i;
 		for (i in nodeArray) {
