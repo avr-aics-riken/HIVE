@@ -5,13 +5,19 @@
 	'use strict';
 	var nui;
 	var nodeData;
-	var socket = io.connect();
 	var nodelist;
+	var socket = io.connect();
+	
+	function ClearNode()
+	{
+		nui.clearNodes();
+		nodeData = nui.getNodeData();
+	}
 
 	//---------------------------------------------------------------------------
 	// request node info
 	//---------------------------------------------------------------------------
-	function loadNodeList(url) {
+	function reloadNodeList(url) {
 		var ret;
 		var req = new XMLHttpRequest();
 		req.open('GET', url);
@@ -40,9 +46,17 @@
 	//---------------------------------------------------------------------------
 	// buttons
 	//---------------------------------------------------------------------------
+	function clone(obj) {
+		if (null == obj || "object" != typeof obj) return obj;
+		var copy = obj.constructor();
+		for (var attr in obj) {
+		if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+		}
+		return copy;
+	}
+	
 	function ButtonClear(e) {
-		console.log(e);
-		nui.clearNodes();
+		ClearNode();
 	}
 
 	function ButtonRender(e) {
@@ -52,7 +66,7 @@
 	}
 
 	function ButtonOpen(e) {
-		nodeData = loadNodeList('nodelist.json');
+		nodeData = reloadNodeList('nodelist.json');
 		//nui.clearNodes();
 		//nui.makeNodes(nodeData);
 	}
@@ -61,14 +75,15 @@
 		var ele = document.getElementsByName('NodeList');
 		var index = ele[0].selectedIndex;
 		console.log('SELECT INDEX >' + index);
-		nodeData.nodeData.push(nodelist[index]);
-		console.log(nodeData);
-		nui.clearNodes();
-		nui.makeNodes(nodeData);
-	}
-
-	function OnSelectNodeList(e) {
-		console.log('SELECT!!!!!!!!!!!!!!!!!!!');
+		if(index >= 0) {
+			var node = clone(nodelist[index]);
+			node.pos = [ Math.random() * 200 + 200,  Math.random() * 200 + 200];
+			nodeData = nui.getNodeData();
+			nodeData.nodeData.push(node);
+			nui.clearNodes();
+			nui.makeNodes(nodeData);
+			console.log(nodeData);
+		}
 	}
 
 	//---------------------------------------------------------------------------
@@ -76,7 +91,7 @@
 	//---------------------------------------------------------------------------
 	function init() {
 		//init canvas.
-		var draw = SVG('nodecanvas').size(1280, 768);
+		var draw = SVG('nodecanvas').size(2048, 768);
 		nui      = svgNodeUI(draw);
 		nui.clearNodes();
 
@@ -94,9 +109,8 @@
 		addbutton.onclick    = ButtonAdd;
 
 		//Initialize.
-		nodeData = {"nodeData":[], "plugData":[]};
-		console.log(nodeData);
-		loadNodeList('nodelist.json');
+		ClearNode()
+		reloadNodeList('nodelist.json');
 	}
 
 	window.onload = init;

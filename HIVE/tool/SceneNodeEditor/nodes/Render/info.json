@@ -1,0 +1,14 @@
+{
+	"name": "Render",
+	"pos": [700, 100],
+	"varname": "root",
+	"funcname": "",
+	"customfunc" : "function Render() return function(...) render({...}) end end\n",
+	"deletable": false,
+	"input": [
+		{"name": "Camera",       "type": "Camera"},
+		{"name": "RenderObject", "type": "RenderObject"}
+	],
+	"output": [
+	]
+}
