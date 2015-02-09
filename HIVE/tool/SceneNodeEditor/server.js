@@ -5,7 +5,10 @@
 //
 var http = require('http'),
     fs = require('fs'),
-    port = 8080;
+	socketio = require('socket.io'),
+	exec = require('child_process').exec,
+	spawn = require('child_process').spawn,
+	port = 8080;
 
 //-----------------------------------------------------
 
@@ -58,6 +61,42 @@ function makeNodeList(callback) {
 }
 
 //------------------------------------------------------
+function writeFile(data, filepath, callback) {
+	"use strict";
+	fs.writeFile(filepath, data, function (err) {
+		if (err) {
+			console.log(err);
+			return;
+		}
+		callback();
+	});
+}
+function renderScene(scene, socket) {
+	"use strict";
+	writeFile(scene, "./scene.scn", function () {
+		var process = spawn('./hrender', ['scene.scn'], function (err) {
+			if (!err) { return; }
+			console.log('Failed run hrender.');
+		});
+		process.stdout.on('data', function (data) {
+			console.log('stdout: ' + data);
+			socket.emit('stdout', data.toString());
+		});
+		process.stderr.on('data', function (data) {
+			console.log('stderr: ' + data);
+			socket.emit('stderr', data.toString());
+		});
+		process.on('exit', function (code) {
+			console.log('exit code: ' + code);
+		});
+		process.on('error', function (err) {
+			console.log('process error', err);
+			socket.emit('stderr', "can't execute program\n");
+		});
+	});
+}
+
+//------------------------------------------------------
 
 var server = http.createServer(function (req, res) {
     'use strict';
@@ -88,5 +127,21 @@ if (process.argv.length > 2) {
 }
 server.listen(port);
 console.log('start server "http://localhost:' + port + '/"');
+
+//------------------------------------------------------------
+
+var io = socketio(server);
+io.on('connection', function (socket) {
+	"use strict";
+	console.log('connected');
+	socket.on('sendScene', function (jsondata) {
+		try {
+			var data = JSON.parse(jsondata);
+			renderScene(data.scene, socket);
+		} catch (e) {
+			console.log('[Error] Failed to render scene');
+		}
+	});
+});
 
 

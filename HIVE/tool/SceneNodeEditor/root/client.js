@@ -1,8 +1,21 @@
 /*jslint devel:true */
-/*global SVG, svgNodeUI */
+/*global SVG, svgNodeUI, io */
 
 window.addEventListener('load', function () {
 	'use strict';
+	var socket = io.connect();
+	socket.on('connect', function () {
+		console.log('connected');
+		var sceneFile = 'print("AAA");render{}';
+		socket.emit('sendScene', JSON.stringify({scene: sceneFile}));
+		socket.on('stdio', function (data) {
+			console.log('stdio', data);
+		});
+		socket.on('stderr', function (data) {
+			console.log('stderr', data);
+		});
+	});
+	
 	var	draw = SVG('nodecanvas').size(4000, 4000),
 		nui = svgNodeUI(draw),
 		nodeData = {
