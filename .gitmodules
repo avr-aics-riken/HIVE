@@ -12,3 +12,12 @@
 [submodule "third_party/CDMlib"]
 	path = third_party/CDMlib
 	url = git@github.com:avr-aics-riken/CDMlib.git
+[submodule "third_party/PDMlib"]
+	path = third_party/PDMlib
+	url = git@github.com:avr-aics-riken/PDMlib.git
+[submodule "third_party/HDMlib"]
+	path = third_party/HDMlib
+	url = git@github.com:avr-aics-riken/HDMlib.git
+[submodule "third_party/BCMTools"]
+	path = third_party/BCMTools
+	url = git@github.com:avr-aics-riken/BCMTools.git
