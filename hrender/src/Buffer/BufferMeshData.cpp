@@ -17,6 +17,15 @@ BufferMeshData::BufferMeshData(BufferMeshData* inst)
 	this->m_mat      = inst->m_mat     ;
 }
 
+void BufferMeshData::Create(Vec3Buffer* pos, Vec3Buffer* normal, Vec2Buffer* texcoord, UintBuffer* index, FloatBuffer* mat)
+{
+    m_pos      = pos;
+    m_normal   = normal;
+    m_texcoord = texcoord;
+    m_index    = index;
+    m_mat      = mat;
+}
+
 void BufferMeshData::Clear()
 {
 	m_pos      = 0;
