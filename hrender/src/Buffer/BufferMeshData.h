@@ -17,7 +17,7 @@ public:
     BufferMeshData(BufferMeshData* inst);
 	BufferMeshData();
 	~BufferMeshData();
-    void Create(Vec3Buffer* pos, Vec3Buffer* normal, Vec2Buffer* texcoord, UintBuffer* index, FloatBuffer* mat);
+    void Create(int vertexnum, int indexnum);
 	void Clear();
 	void print();
 	Vec3Buffer*  Position() ;

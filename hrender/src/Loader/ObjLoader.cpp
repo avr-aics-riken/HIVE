@@ -14,13 +14,17 @@ bool OBJLoader::Load(const char* filename){
 	Clear();
 	SimpleObj obj;
 	bool r = obj.Load(filename);
+    if (!r)
+        return false;
     
-    Vec3Buffer* pos = new Vec3Buffer();
-    Vec3Buffer* normal = new Vec3Buffer();
-    FloatBuffer* mat = new FloatBuffer();
-    UintBuffer* index = new UintBuffer();
-    Vec2Buffer* texcoord = new Vec2Buffer();
-    
+    mesh.Create(obj.GetVertexNum(), obj.GetIndexNum());
+    Vec3Buffer* pos      = mesh.Position();
+    Vec3Buffer* normal   = mesh.Normal();
+    FloatBuffer* mat     = mesh.Material();
+    UintBuffer* index    = mesh.Index();
+    Vec2Buffer* texcoord = mesh.Texcoord();
+
+
 	pos->Create(obj.GetVertexNum());
 	float* pp = pos->GetBuffer();
 	memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
@@ -37,7 +41,7 @@ bool OBJLoader::Load(const char* filename){
 	index->Create(obj.GetIndexNum());
 	memcpy(index->GetBuffer(), obj.GetIndex(), sizeof(unsigned int) * index->GetNum());
     
-    mesh.Create(pos, normal, texcoord, index, mat);
+
 	
 	return r;
 }
