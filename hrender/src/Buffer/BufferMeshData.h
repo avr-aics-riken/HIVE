@@ -7,15 +7,17 @@
 
 class BufferMeshData : public RefCount
 {
-public:
-	BufferMeshData(BufferMeshData* inst);
+private:
 	RefPtr<Vec3Buffer >  m_pos;
 	RefPtr<Vec3Buffer >  m_normal;
 	RefPtr<Vec2Buffer >  m_texcoord;
 	RefPtr<UintBuffer >  m_index;
 	RefPtr<FloatBuffer>  m_mat;
+public:
+    BufferMeshData(BufferMeshData* inst);
 	BufferMeshData();
 	~BufferMeshData();
+    void Create(int vertexnum, int indexnum);
 	void Clear();
 	void print();
 	Vec3Buffer*  Position() ;
@@ -23,6 +25,12 @@ public:
 	Vec2Buffer*  Texcoord() ;
 	UintBuffer*  Index()    ;
 	FloatBuffer* Material() ;
+    Vec3Buffer*  Position() const;
+    Vec3Buffer*  Normal()   const;
+    Vec2Buffer*  Texcoord() const;
+    UintBuffer*  Index()    const;
+    FloatBuffer* Material() const;
+
 };
 
 #endif //_BUFFERMESHDATA_H_
