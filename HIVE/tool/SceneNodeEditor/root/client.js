@@ -3,13 +3,13 @@
 
 (function () {
 	'use strict';
-	var nui;
-	var nodeData;
-	var nodelist;
-	var socket = io.connect();
-	var instance_no = 1;
+	var nui,
+		nodeData,
+		nodelist,
+		socket = io.connect(),
+		instance_no = 1;
 	
-	function ClearNode() {
+	function clearNode() {
 		nui.clearNodes();
 		nodeData = nui.getNodeData();
 		document.getElementById("proparty").innerHTML = '';
@@ -19,23 +19,27 @@
 	// request node info
 	//---------------------------------------------------------------------------
 	function reloadNodeList(url) {
-		var ret;
-		var req = new XMLHttpRequest();
+		var ret,
+			req = new XMLHttpRequest();
 		req.open('GET', url);
 		req.send();
-		req.addEventListener("load",function(ev) {
-			var resp = ev.srcElement.responseText;
-			var json = JSON.parse(resp);
+		req.addEventListener("load", function (ev) {
+			var resp = ev.srcElement.responseText,
+				json = JSON.parse(resp),
+				d    = document.getElementById('NodeListBox'),
+				inner,
+				i,
+				name;
+			
 			nodelist = json;
 			console.log(resp);
 
-			//create list 
-			var d    = document.getElementById('NodeListBox');
-			if(d) {
-				var inner = '<select name="NodeList" size=' + json.length + '>';
-				for(var i = 0 ; i < json.length; i += 1) {
+			//create list
+			if (d) {
+				inner = '<select name="NodeList" size=' + json.length + '>';
+				for (i = 0; i < json.length; i = i + 1) {
 					console.log(json[i]);
-					var name = json[i].name;
+					name = json[i].name;
 					inner += '<option value="' + name + '">' + name + '</option>';
 				}
 				inner += '</select>';
@@ -48,16 +52,22 @@
 	// buttons
 	//---------------------------------------------------------------------------
 	function clone(obj) {
-		if (null == obj || "object" != typeof obj) return obj;
-		var copy = obj.constructor();
-		for (var attr in obj) {
-			if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+		return JSON.parse(JSON.stringify(obj));
+		/*if (null === obj || "object" !== typeof obj) {
+			return obj;
 		}
-		return copy;
+		var copy = obj.constructor(),
+			attr;
+		for (attr in obj) {
+			if (obj.hasOwnProperty(attr)) {
+				copy[attr] = obj[attr];
+			}
+		}
+		return copy;*/
 	}
 	
 	function ButtonClear(e) {
-		ClearNode();
+		clearNode();
 	}
 
 	function ButtonRender(e) {
@@ -71,16 +81,18 @@
 	}
 
 	function ButtonAdd(e) {
-		var ele = document.getElementsByName('NodeList');
-		var index = ele[0].selectedIndex;
+		var ele = document.getElementsByName('NodeList'),
+			index = ele[0].selectedIndex,
+			node,
+			instNode;
 		console.log('SELECT INDEX >' + index);
-		if(index >= 0) {
-			var node = nodelist[index];
+		if (index >= 0) {
+			node = nodelist[index];
 			nodeData = nui.getNodeData();
-			nodeData.nodeData.push(node);
-			if(node.varname === 'root') {
-			} else {
-				node.varname += instance_no;
+			instNode = clone(node);
+			nodeData.nodeData.push(instNode);
+			if (instNode.varname !== 'root') {
+				instNode.varname += instance_no;
 			}
 			instance_no += 1;
 			nui.clearNodes();
@@ -93,17 +105,18 @@
 	// init
 	//---------------------------------------------------------------------------
 	function init() {
-		//init canvas.
-		var draw = SVG('nodecanvas').size(1280, 768);
-		nui      = svgNodeUI(draw);
-		nui.clearNodes();
-
 		//create button
 		var openbutton   = document.getElementById('Open'),
 			renderbutton = document.getElementById('Render'),
 			clearbutton  = document.getElementById('Clear'),
 			addbutton    = document.getElementById('Add'),
-			nodelistbox  = document.getElementById('NodeList');
+			nodelistbox  = document.getElementById('NodeList'),
+
+		//init canvas.
+			draw = SVG('nodecanvas').size(1280, 768);
+		nui      = svgNodeUI(draw);
+		nui.clearNodes();
+
 
 		//handle
 		openbutton.onclick   = ButtonOpen;
@@ -112,7 +125,7 @@
 		addbutton.onclick    = ButtonAdd;
 
 		//Initialize.
-		ClearNode()
+		clearNode();
 		reloadNodeList('nodelist.json');
 	}
 

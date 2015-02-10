@@ -2,7 +2,7 @@
 	"name": "CreateCamera",
 	"pos": [100, 100],
 	"varname": "instCreateCamera",
-	"funcname": "",
+	"funcname": "create",
 	"outputfilename": "test.jpg",
 	"customfuncfile":"createcamera.lua",
 	"customfunc" : "function CreateCamera() return { camera=function(self) \n return self.m_cam end, create=function(self) self.m_cam = Camera(); self.m_cam:SetScreenSize(1024, 1024); self.m_cam:SetFilename('render_obj.jpg'); self.m_cam:LookAt(0, 0, -300, 0, 0, 0, 0, 1, 0, 60) end} end\n",

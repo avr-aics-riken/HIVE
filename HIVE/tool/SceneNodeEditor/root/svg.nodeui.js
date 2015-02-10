@@ -219,14 +219,23 @@ function svgNodeUI(draw) {
 	//------//------//------//------//------//------//------//------
 	function showProparty(nodeData) {
 		console.log(nodeData);
-		var to = document.getElementById("proparty");
-		var html = '';
+		var to = document.getElementById("proparty"),
+			html = '',
+			i,
+			k,
+			cameradata,
+			desc = ['Pos', 'At', 'UP'],
+			pxyz = ['X', 'Y', 'Z'],
+			index = 0,
+			ele;
+
+		
 		html = '<br><br><table  bgcolor="#e3f0fb"><tr><td>';
-		if(nodeData.name) {
+		if (nodeData.name) {
 			html += "[name]     : " + nodeData.name + '\n';
 			html += '<br><br>';
 		}
-		if(nodeData.varname) {
+		if (nodeData.varname) {
 			html += "[varname]  : " + nodeData.varname + '\n';
 			html += '<br><br>';
 		}
@@ -237,11 +246,11 @@ function svgNodeUI(draw) {
 		}
 		*/
 		
-		if(nodeData.name === "OBJLoader" || nodeData.name === "STLLoader") {
-			if(nodeData.input) {
-				for(var i = 0 ; i < nodeData.input.length; i += 1) {
-					if(nodeData.input[i].value) {
-						html += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="'+nodeData.input[i].value+'">' + '\n';
+		if (nodeData.name === "OBJLoader" || nodeData.name === "STLLoader") {
+			if (nodeData.input) {
+				for (i = 0; i < nodeData.input.length; i = i + 1) {
+					if (nodeData.input[i].value) {
+						html += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="' + nodeData.input[i].value + '">' + '\n';
 					}
 				}
 				html += '<br><br>';
@@ -252,35 +261,31 @@ function svgNodeUI(draw) {
 		//--------------------------------------------------------------------
 		// Camera Data
 		//--------------------------------------------------------------------
-		if(nodeData.name === "CreateCamera")
-		{
-			var cameradata = [];
-			for(var i = 0 ; i < nodeData.cameradata.length; i += 1) {
+		if (nodeData.name === "CreateCamera") {
+			cameradata = [];
+			for (i = 0; i < nodeData.cameradata.length; i = i + 1) {
 				cameradata[i] = nodeData.cameradata[i];
 			}
 			html += '<br>';
 			html += '[LookAt]<br>';
-			var desc = ['Pos', 'At', 'UP'];
-			var pxyz = ['X', 'Y', 'Z'];
-			var index = 0;
-			for(var k = 0 ; k < 3; k += 1) {
+			for (k = 0; k < 3; k = k + 1) {
 				html += desc[k] + '<br>';
-				for(var i = 0 ; i < 3; i += 1) {
+				for (i = 0; i < 3; i = i + 1) {
 					html += pxyz[i] + '<input size=10 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
-					index++;
+					index = index + 1;
 				}
 				html += '<br><br>';
 			}
 			
 			//FOV
-			html += '<br>'
-			html += '<br>'
+			html += '<br>';
+			html += '<br>';
 			html += 'Fov<br>';
 			html += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
 			html += '<br>';
 		}
 		
-		if(nodeData.customfunc) {
+		if (nodeData.customfunc) {
 			html += "[customfunc] : " + nodeData.customfunc	 + '\n';
 			html += '<br><br>';
 		}
@@ -288,9 +293,9 @@ function svgNodeUI(draw) {
 		to.innerHTML = html;
 
 		//setup handler
-		var ele = document.getElementById("ObjTextBox");
-		if(ele) {
-			ele.addEventListener("keyup", function() {
+		ele = document.getElementById("ObjTextBox");
+		if (ele) {
+			ele.addEventListener("keyup", function () {
 				nodeData.input[0].value = ele.value;
 				console.log(nodeData.input[0].value, ele.value);
 			});
@@ -300,8 +305,8 @@ function svgNodeUI(draw) {
 	}
 	
 	function getNodeInfo(data) {
-		var nodeData = data.nodeData;
-		var i = data.nodeData.length;
+		var nodeData = data.nodeData,
+			i = data.nodeData.length;
 		showProparty(nodeData);
 		//console.log("ERROR : unknown show type\n");
 	}
@@ -475,13 +480,14 @@ function svgNodeUI(draw) {
 			dependency = [],
 			plug,
 			plugname,
-			src = '';
+			src = '',
+			customfunclist = '',
+			temp;
 		
 		pushNextNode(nodeArray.root, dependency);
 		console.log(dependency);
 
 		//Add Custom Func
-		var customfunclist = '';
 		for (i = dependency.length - 1; i >= 0; i -= 1) {
 			node = dependency[i].nodeData;
 			console.log(node);
@@ -508,14 +514,14 @@ function svgNodeUI(draw) {
 				for (j = 0; j < node.input.length; j += 1) {
 					plugname = getPlugVarName(node.varname, node.input[j].name);
 					if (plugArray[plugname]) {
-						var temp = plugArray[plugname].varname;
-						if(temp.substr(temp.length - 1, temp.length) === ':') {
+						temp = plugArray[plugname].varname;
+						if (temp.substr(temp.length - 1, temp.length) === ':') {
 							src += temp.substr(0, temp.length - 1);
 						} else {
                             src += plugArray[plugname].varname + '()';
 						}
 					} else if (node.input[j].value) {
-						if(node.input[j].type === 'string') {
+						if (node.input[j].type === 'string') {
 							src += '\'' + node.input[j].value + '\'';
 						} else {
 							src += node.input[j].value;
