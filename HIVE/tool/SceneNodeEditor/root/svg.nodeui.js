@@ -247,14 +247,6 @@ function svgNodeUI(draw) {
 				html += '<br><br>';
 			}
 			
-			//change name
-			var ele = document.getElementById("ObjTextBox");
-			if(ele) {
-				ele.addEventListener("keyup", function() {
-					nodeData.input[0].value = ele.value;
-					console.log(nodeData.input[0].value, ele.value);
-				});
-			}
 		}
 		
 		//--------------------------------------------------------------------
@@ -294,6 +286,17 @@ function svgNodeUI(draw) {
 		}
 		html += '</td><tr><table>';
 		to.innerHTML = html;
+
+		//setup handler
+		var ele = document.getElementById("ObjTextBox");
+		if(ele) {
+			ele.addEventListener("keyup", function() {
+				nodeData.input[0].value = ele.value;
+				console.log(nodeData.input[0].value, ele.value);
+			});
+		} else {
+			console.log('cant create ele\n');
+		}
 	}
 	
 	function getNodeInfo(data) {
