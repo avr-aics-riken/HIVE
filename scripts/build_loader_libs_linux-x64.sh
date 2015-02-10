@@ -2,8 +2,13 @@
 
 # <<Setup>>
 #
-# Ubuntu 14.04
+# Ubuntu 14.04:
 # $ sudo apt-get install libhdf5-dev
+#
+# CentOS 6:
+# $ sudo yum install epel-release
+# $ sudo yum install hdf5-devel
+# $ sudo yum install cmake28
 # 
 
 topdir=`pwd`
@@ -29,6 +34,7 @@ function build_tp {
 	fi
 
 	# TODO: MPI build of TP.
+	autoreconf -ivf
 	./configure --prefix=${installdir} && make && make install
 	cd ${topdir}
 }
@@ -42,6 +48,7 @@ function build_cdmlib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
+	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} --with-MPI=yes && make && make install
 	cd ${topdir}
 }
@@ -55,6 +62,7 @@ function build_polylib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
+	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} && make && make install
 	cd ${topdir}
 }
@@ -68,6 +76,7 @@ function build_bcmtools {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
+	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} --with-polylib=${installdir} && make && make install
 	cd ${topdir}
 }
@@ -81,6 +90,7 @@ function build_hdmlib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
+	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} --with-bcm=${installdir} && make && make install
 	cd ${topdir}
 }
@@ -117,10 +127,10 @@ function build_pdmlib {
 	cd ${topdir}
 }
 
-clean_install_dir
-build_tp
-build_cdmlib
-build_polylib
-build_bcmtools
-build_hdmlib
+#clean_install_dir
+#build_tp
+#build_cdmlib
+#build_polylib
+#build_bcmtools
+#build_hdmlib
 build_pdmlib
