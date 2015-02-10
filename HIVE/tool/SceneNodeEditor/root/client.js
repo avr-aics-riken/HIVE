@@ -9,10 +9,10 @@
 	var socket = io.connect();
 	var instance_no = 1;
 	
-	function ClearNode()
-	{
+	function ClearNode() {
 		nui.clearNodes();
 		nodeData = nui.getNodeData();
+		document.getElementById("proparty").innerHTML = '';
 	}
 
 	//---------------------------------------------------------------------------
@@ -68,8 +68,6 @@
 
 	function ButtonOpen(e) {
 		nodeData = reloadNodeList('nodelist.json');
-		//nui.clearNodes();
-		//nui.makeNodes(nodeData);
 	}
 
 	function ButtonAdd(e) {
@@ -77,11 +75,14 @@
 		var index = ele[0].selectedIndex;
 		console.log('SELECT INDEX >' + index);
 		if(index >= 0) {
-			var node = clone(nodelist[index]);
-			var pos  = [ Math.random() * 200 + 200,  Math.random() * 200 + 200];
-			node.pos = pos;
+			var node = nodelist[index];
 			nodeData = nui.getNodeData();
 			nodeData.nodeData.push(node);
+			if(node.varname === 'root') {
+			} else {
+				node.varname += instance_no;
+			}
+			instance_no += 1;
 			nui.clearNodes();
 			nui.makeNodes(nodeData);
 			console.log(nodeData);
