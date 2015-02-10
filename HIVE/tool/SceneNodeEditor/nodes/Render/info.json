@@ -7,7 +7,11 @@
 	"deletable": false,
 	"input": [
 		{"name": "Camera",       "type": "Camera"},
-		{"name": "RenderObject", "type": "RenderObject"}
+		{"name": "RenderObject0", "type": "RenderObject"},
+		{"name": "RenderObject1", "type": "RenderObject"},
+		{"name": "RenderObject2", "type": "RenderObject"},
+		{"name": "RenderObject3", "type": "RenderObject"},
+		{"name": "RenderObject4", "type": "RenderObject"}
 	],
 	"output": [
 	]

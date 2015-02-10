@@ -5,52 +5,11 @@
 	'use strict';
 	var nui,
 		nodeData,
-		nodelist,
+		nodeList,
+		nodeListTable,
 		socket = io.connect(),
 		instance_no = 1;
 	
-	function clearNode() {
-		nui.clearNodes();
-		nodeData = nui.getNodeData();
-		document.getElementById("proparty").innerHTML = '';
-	}
-
-	//---------------------------------------------------------------------------
-	// request node info
-	//---------------------------------------------------------------------------
-	function reloadNodeList(url) {
-		var ret,
-			req = new XMLHttpRequest();
-		req.open('GET', url);
-		req.send();
-		req.addEventListener("load", function (ev) {
-			var resp = ev.srcElement.responseText,
-				json = JSON.parse(resp),
-				d    = document.getElementById('NodeListBox'),
-				inner,
-				i,
-				name;
-			
-			nodelist = json;
-			console.log(resp);
-
-			//create list
-			if (d) {
-				inner = '<select name="NodeList" size=' + json.length + '>';
-				for (i = 0; i < json.length; i = i + 1) {
-					console.log(json[i]);
-					name = json[i].name;
-					inner += '<option value="' + name + '">' + name + '</option>';
-				}
-				inner += '</select>';
-				d.innerHTML = inner;
-			}
-		});
-	}
-
-	//---------------------------------------------------------------------------
-	// buttons
-	//---------------------------------------------------------------------------
 	function clone(obj) {
 		return JSON.parse(JSON.stringify(obj));
 		/*if (null === obj || "object" !== typeof obj) {
@@ -65,6 +24,88 @@
 		}
 		return copy;*/
 	}
+	
+	function addNode(nodename) {
+		console.log('ADD:' + nodename);
+		console.log(nodeListTable);
+		var node = nodeListTable[nodename],
+			instNode;
+		if (!node) {
+			return;
+		}
+		nodeData = nui.getNodeData();
+		instNode = clone(node);
+		nodeData.nodeData.push(instNode);
+		if (instNode.varname !== 'root') {
+			instNode.varname += instance_no;
+		}
+		instance_no += 1;
+		nui.clearNodes();
+		nui.makeNodes(nodeData);
+		console.log(nodeData);
+	}
+	
+	function clearNode() {
+		nui.clearNodes();
+		nodeData = nui.getNodeData();
+		document.getElementById("proparty").innerHTML = '';
+		
+		addNode("Render");
+	}
+	
+	function createNodeListUI() {
+		var d = document.getElementById('NodeListBox'),
+			inner,
+			name,
+			i;
+		inner = '<select name="NodeList" size=' + 20 + '>';
+		for (i in nodeListTable) {
+			if (nodeListTable.hasOwnProperty(i)) {
+				console.log(nodeListTable[i]);
+				name = nodeListTable[i].name;
+				inner += '<option value="' + name + '">' + name + '</option>';
+			}
+		}
+		inner += '</select>';
+		d.innerHTML = inner;
+	}
+
+	//---------------------------------------------------------------------------
+	// request node info
+	//---------------------------------------------------------------------------
+	
+	function reloadNodeList(url, cb) {
+		var ret,
+			req = new XMLHttpRequest();
+		req.open('GET', url);
+		req.send();
+		req.addEventListener("load", (function (callback) {
+			return function (ev) {
+				var resp = ev.srcElement.responseText,
+					i;
+
+				// store node list
+				nodeList = JSON.parse(resp);
+
+				// create nodelist table
+				nodeListTable = {};
+				for (i = 0; i < nodeList.length; i = i + 1) {
+					nodeListTable[nodeList[i].name] = nodeList[i];
+				}
+
+				//create List UI
+				createNodeListUI();
+
+				if (callback) {
+					callback();
+				}
+			};
+		}(cb)));
+	}
+
+	//---------------------------------------------------------------------------
+	// buttons
+	//---------------------------------------------------------------------------
 	
 	function ButtonClear(e) {
 		clearNode();
@@ -83,11 +124,18 @@
 	function ButtonAdd(e) {
 		var ele = document.getElementsByName('NodeList'),
 			index = ele[0].selectedIndex,
+			text,
 			node,
 			instNode;
-		console.log('SELECT INDEX >' + index);
+		if (index === -1) {
+			return;
+		}
+		text = ele[0].options[index].text;
+		
+		addNode(text);
+		/*
 		if (index >= 0) {
-			node = nodelist[index];
+			node = nodeList[index];
 			nodeData = nui.getNodeData();
 			instNode = clone(node);
 			nodeData.nodeData.push(instNode);
@@ -98,7 +146,7 @@
 			nui.clearNodes();
 			nui.makeNodes(nodeData);
 			console.log(nodeData);
-		}
+		}*/
 	}
 
 	//---------------------------------------------------------------------------
@@ -125,8 +173,9 @@
 		addbutton.onclick    = ButtonAdd;
 
 		//Initialize.
-		clearNode();
-		reloadNodeList('nodelist.json');
+		reloadNodeList('nodelist.json', function () {
+			clearNode();
+		});
 	}
 
 	window.onload = init;
