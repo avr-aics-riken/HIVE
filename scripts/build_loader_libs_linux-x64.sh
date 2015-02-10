@@ -1,10 +1,18 @@
-#!/bin/sh
+#!/bin/bash
+
+# <<Setup>>
+#
+# Ubuntu 14.04
+# $ sudo apt-get install libhdf5-dev
+# 
 
 topdir=`pwd`
 installdir=`pwd`/third_party/local
 c_compiler=mpicc
 cxx_compiler=mpicxx
-cmake_bin=cmake
+if [ -z "${CMAKE_BIN+x}" ]; then
+  CMAKE_BIN=cmake
+fi
 
 function clean_install_dir {
 	rm -rf ${installdir}
@@ -60,7 +68,7 @@ function build_bcmtools {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} --with-polylib=${installdir} && make && make install
 	cd ${topdir}
 }
 
@@ -105,7 +113,7 @@ function build_pdmlib {
 	rm -rf PDMlib_build
 	mkdir PDMlib_build
 	cd PDMlib_build/
-	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir} -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir} ../PDMlib && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DTP_ROOT=${installdir} -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir} ../PDMlib && make && make install
 	cd ${topdir}
 }
 
