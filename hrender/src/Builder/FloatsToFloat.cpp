@@ -9,12 +9,13 @@ int FloatsToFloat::Create(BufferVolumeData *volume, int offset){
         return 0;
     const int component = volume->Component();
     const int n = volume->Buffer()->GetNum() / component;
-    m_volume->m_buffer = new FloatBuffer();
+    // TODO: FIX
+/*    m_volume->m_buffer = new FloatBuffer();
     m_volume->Buffer()->Create(n);
     printf("%p :  %d %p %p\n", m_volume, n, volume->Buffer(), m_volume->Buffer());
     for (int i = 0; i < n; ++i){
         (m_volume->Buffer()->GetBuffer())[i] = volume->Buffer()->GetBuffer()[component * i + offset];
-    }
+    }*/
     return volume->Buffer()->GetNum();
 }
 

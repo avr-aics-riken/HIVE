@@ -84,7 +84,7 @@ void PolygonBuffer::Render() const
     RenderObject::FloatMap::const_iterator itf, eitf = floatarray.end();
     for (itf = floatarray.begin(); itf != eitf; ++itf) {
         const float vf = itf->second;
-        SetUniform1f_SGL(prg, it2->first.c_str(), vf);
+        SetUniform1f_SGL(prg, itf->first.c_str(), vf);
     }
 
     

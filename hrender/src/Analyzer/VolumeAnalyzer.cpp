@@ -49,12 +49,12 @@ bool VolumeAnalyzer::Execute(VolumeModel *model)
         const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
 
         int temp_num[3] = {
-            volume->m_dim[0],
-            volume->m_dim[1],
-            volume->m_dim[2]
+            volume->Width(),
+            volume->Height(),
+            volume->Depth()
         };
 
-        int fnum = volume->m_dim[0] + volume->m_dim[1] + volume->m_dim[2];
+        const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
         if(fnum <= 0)
         {
             printf("Volume data empty\n");

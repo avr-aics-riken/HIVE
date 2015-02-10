@@ -1,0 +1,89 @@
+{
+	"nodeData": [
+		{
+			"name": "OBJLoader",
+			"pos": [200, 100],
+			"varname": "instOBJLoader",
+			"funcname": "Load",
+			"deletable": false,
+			"input": [
+				{"name": "filepath", "type": "string", "value": "bunny.obj"}
+			],
+			"output": [
+				{"name": "MeshData", "type": "MeshData"}
+			]
+		},
+		{
+			"name": "PolygonModel",
+			"pos": [500, 100],
+			"varname": "instPolygonLoader",
+			"funcname": "Create",
+			"deletable": false,
+			"input": [
+				{"name": "mesh", "type": "MeshData"},
+			],
+			"output": [
+				{"name": "this", "type": "RenderObject"}
+			]
+		},
+		{
+			"name": "STLLoader",
+			"pos": [200, 100],
+			"varname": "instSTLLoader",
+			"funcname": "Load",
+			"deletable": false,
+			"input": [
+				{"name": "filepath", "type": "string", "value": "bunny.stl"}
+			],
+			"output": [
+				{"name": "MeshData", "type": "MeshData"}
+			]
+		},
+		{
+			"name": "SPHLoader",
+			"pos": [200, 100],
+			"varname": "instSPHLoader",
+			"funcname": "Load",
+			"deletable": false,
+			"input": [
+				{"name": "filepath", "type": "string", "value": ""}
+			],
+			"output": [
+				{"name": "Volume", "type": "VolumeBufferData"}
+			]
+		},
+		{
+			"name": "FloatsToFloatBuffer",
+			"pos": [200, 300],
+			"varname": "instFloatToFloatBuffer",
+			"funcname": "Create",
+			"deletable": false,
+			"input": [
+				{"name": "Volume", "type": "VolumeBufferData"},
+				{"name": "RED", "type": "int", "value": "0"}
+			],
+			"output": [
+				{"name": "Volume", "type": "VolumeBufferData"}
+			]
+		},
+		{
+			"name": "VolumeModel",
+			"pos": [700, 100],
+			"varname": "root",
+			"funcname": "Create",
+			"deletable": false,
+			"input": [
+				{"name": "Volume", "type": "VolumeBufferData"}
+			],
+			"output": [
+				{"name": "this", "type": "RenderObject"}
+			]
+		}
+	],
+	"plugData": [
+		{"output": {"node": "inst1", "plug": "Position"}, "input": {"node": "root", "plug": "vertexbuf"}},
+		{"output": {"node": "inst1", "plug": "Normal"}, "input": {"node": "root", "plug": "normalbuf"}},
+		{"output": {"node": "inst1", "plug": "Material"}, "input": {"node": "root", "plug": "materialbuf"}},
+		{"output": {"node": "inst1", "plug": "Index"}, "input": {"node": "root", "plug": "indexbuf"}}
+	]
+}

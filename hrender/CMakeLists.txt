@@ -134,7 +134,8 @@ set(SOURCES
 	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
-	src/Buffer/BufferVolumeData.cpp
+  src/Buffer/BufferVolumeData.cpp
+  src/Buffer/BufferSparseVolumeData.cpp
 	src/Buffer/BufferPointData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
