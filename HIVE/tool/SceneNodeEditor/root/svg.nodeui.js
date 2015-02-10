@@ -266,7 +266,7 @@ function svgNodeUI(draw) {
 			for(var k = 0 ; k < 3; k += 1) {
 				html += desc[k] + '<br>';
 				for(var i = 0 ; i < 3; i += 1) {
-					html += pxyz[i] + '<input size=2 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
+					html += pxyz[i] + '<input size=10 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
 					index++;
 				}
 				html += '<br><br>';
@@ -484,6 +484,7 @@ function svgNodeUI(draw) {
 		var customfunclist = '';
 		for (i = dependency.length - 1; i >= 0; i -= 1) {
 			node = dependency[i].nodeData;
+			console.log(node);
 			if (node.customfunc) {
 				customfunclist += node.customfunc + '\n';
 			}
