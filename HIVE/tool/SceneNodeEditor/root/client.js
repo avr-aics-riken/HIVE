@@ -7,6 +7,7 @@
 	var nodeData;
 	var nodelist;
 	var socket = io.connect();
+	var instance_no = 1;
 	
 	function ClearNode()
 	{
@@ -50,7 +51,7 @@
 		if (null == obj || "object" != typeof obj) return obj;
 		var copy = obj.constructor();
 		for (var attr in obj) {
-		if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+			if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
 		}
 		return copy;
 	}
@@ -77,7 +78,8 @@
 		console.log('SELECT INDEX >' + index);
 		if(index >= 0) {
 			var node = clone(nodelist[index]);
-			node.pos = [ Math.random() * 200 + 200,  Math.random() * 200 + 200];
+			var pos  = [ Math.random() * 200 + 200,  Math.random() * 200 + 200];
+			node.pos = pos;
 			nodeData = nui.getNodeData();
 			nodeData.nodeData.push(node);
 			nui.clearNodes();
@@ -91,7 +93,7 @@
 	//---------------------------------------------------------------------------
 	function init() {
 		//init canvas.
-		var draw = SVG('nodecanvas').size(2048, 768);
+		var draw = SVG('nodecanvas').size(1280, 768);
 		nui      = svgNodeUI(draw);
 		nui.clearNodes();
 
