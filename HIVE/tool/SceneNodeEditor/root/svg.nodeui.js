@@ -220,19 +220,20 @@ function svgNodeUI(draw) {
 	function showProparty(nodeData) {
 		console.log(nodeData);
 		var to = document.getElementById("proparty");
-		to.innerHTML = '<br><br>';
+		var html = '';
+		html = '<br><br><table  bgcolor="#e3f0fb"><tr><td>';
 		if(nodeData.name) {
-			to.innerHTML += "[name]     : " + nodeData.name + '\n';
-			to.innerHTML += '<hr><br>';
+			html += "[name]     : " + nodeData.name + '\n';
+			html += '<br><br>';
 		}
 		if(nodeData.varname) {
-			to.innerHTML += "[varname]  : " + nodeData.varname + '\n';
-			to.innerHTML += '<hr><br>';
+			html += "[varname]  : " + nodeData.varname + '\n';
+			html += '<br><br>';
 		}
 		/*
 		if(nodeData.funcname) {
-			to.innerHTML += "[funcname] : " + nodeData.funcname + '\n';
-			to.innerHTML += '<hr><br>';
+			html += "[funcname] : " + nodeData.funcname + '\n';
+			html += '<hr><br>';
 		}
 		*/
 		
@@ -240,10 +241,10 @@ function svgNodeUI(draw) {
 			if(nodeData.input) {
 				for(var i = 0 ; i < nodeData.input.length; i += 1) {
 					if(nodeData.input[i].value) {
-						to.innerHTML += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="'+nodeData.input[i].value+'">' + '\n';
+						html += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="'+nodeData.input[i].value+'">' + '\n';
 					}
 				}
-				to.innerHTML += '<hr><br>';
+				html += '<br><br>';
 			}
 			
 			//change name
@@ -265,32 +266,34 @@ function svgNodeUI(draw) {
 			for(var i = 0 ; i < nodeData.cameradata.length; i += 1) {
 				cameradata[i] = nodeData.cameradata[i];
 			}
-			to.innerHTML += '<hr>';
-			to.innerHTML += 'LookAt<br><br>';
+			html += '<br>';
+			html += '[LookAt]<br>';
 			var desc = ['Pos', 'At', 'UP'];
 			var pxyz = ['X', 'Y', 'Z'];
 			var index = 0;
 			for(var k = 0 ; k < 3; k += 1) {
-				to.innerHTML += desc[k] + '<br>';
+				html += desc[k] + '<br>';
 				for(var i = 0 ; i < 3; i += 1) {
-					to.innerHTML += pxyz[i] + '<input size=2 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
+					html += pxyz[i] + '<input size=2 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
 					index++;
 				}
-				to.innerHTML += '<br><br>';
+				html += '<br><br>';
 			}
 			
 			//FOV
-			to.innerHTML += '<br>'
-			to.innerHTML += '<br>'
-			to.innerHTML += 'Fov<br>';
-			to.innerHTML += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
-			to.innerHTML += '<hr>';
+			html += '<br>'
+			html += '<br>'
+			html += 'Fov<br>';
+			html += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
+			html += '<br>';
 		}
 		
 		if(nodeData.customfunc) {
-			to.innerHTML += "[customfunc] : " + nodeData.customfunc	 + '\n';
-			to.innerHTML += '<hr><br>';
+			html += "[customfunc] : " + nodeData.customfunc	 + '\n';
+			html += '<br><br>';
 		}
+		html += '</td><tr><table>';
+		to.innerHTML = html;
 	}
 	
 	function getNodeInfo(data) {
@@ -482,6 +485,7 @@ function svgNodeUI(draw) {
 				customfunclist += node.customfunc + '\n';
 			}
 		}
+		console.log('Export:customfunc');
 		console.log(customfunclist);
 		
 		console.log('Export:dependency.length: ' + dependency.length);
