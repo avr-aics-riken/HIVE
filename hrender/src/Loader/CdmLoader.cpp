@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "CDMLoader.h"
+#include "CdmLoader.h"
 #include "SimpleVOL.h"
 
 #ifndef HIVE_WITH_CDMLIB

@@ -127,10 +127,10 @@ function build_pdmlib {
 	cd ${topdir}
 }
 
-#clean_install_dir
-#build_tp
-#build_cdmlib
-#build_polylib
-#build_bcmtools
-#build_hdmlib
+clean_install_dir
+build_tp
+build_cdmlib
+build_polylib
+build_bcmtools
+build_hdmlib
 build_pdmlib
