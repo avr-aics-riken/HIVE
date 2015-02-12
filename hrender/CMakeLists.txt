@@ -100,6 +100,13 @@ IF(HIVE_BUILD_WITH_CDMLIB)
 ENDIF()
 # --------------------------------------
 
+# --------------------------------------
+# MPI
+IF(HIVE_BUILD_WITH_MPI)
+  add_definitions(-DHIVE_ENABLE_MPI)
+ENDIF()
+# --------------------------------------
+
 # Headers
 set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/lua/src
