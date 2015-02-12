@@ -9,7 +9,8 @@ function svgNodeUI(draw) {
 		holeSets = draw.set(),
 		draggingPlug = null,
 		nodeArray = {},
-		plugArray = {};
+		plugArray = {},
+		nodeClickFunction = null;
 	
 	
 	function getPlugVarName(nodeName, plugName) {
@@ -214,105 +215,12 @@ function svgNodeUI(draw) {
 		}
 	};
 	
-	//------//------//------//------//------//------//------//------
-	// sasaki S customfunclist
-	//------//------//------//------//------//------//------//------
-	function showProparty(nodeData) {
-		console.log(nodeData);
-		var to = document.getElementById("proparty"),
-			html = '',
-			i,
-			k,
-			cameradata,
-			desc = ['Pos', 'At', 'UP'],
-			pxyz = ['X', 'Y', 'Z'],
-			index = 0,
-			ele;
-
-		
-		html = '<br><br><table  bgcolor="#e3f0fb"><tr><td>';
-		if (nodeData.name) {
-			html += "[name]     : " + nodeData.name + '\n';
-			html += '<br><br>';
-		}
-		if (nodeData.varname) {
-			html += "[varname]  : " + nodeData.varname + '\n';
-			html += '<br><br>';
-		}
-		/*
-		if(nodeData.funcname) {
-			html += "[funcname] : " + nodeData.funcname + '\n';
-			html += '<hr><br>';
-		}
-		*/
-		
-		if (nodeData.name === "OBJLoader" || nodeData.name === "STLLoader") {
-			if (nodeData.input) {
-				for (i = 0; i < nodeData.input.length; i = i + 1) {
-					if (nodeData.input[i].value) {
-						html += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="' + nodeData.input[i].value + '">' + '\n';
-					}
-				}
-				html += '<br><br>';
-			}
-			
-		}
-		
-		//--------------------------------------------------------------------
-		// Camera Data
-		//--------------------------------------------------------------------
-		if (nodeData.name === "CreateCamera") {
-			cameradata = [];
-			for (i = 0; i < nodeData.cameradata.length; i = i + 1) {
-				cameradata[i] = nodeData.cameradata[i];
-			}
-			html += '<br>';
-			html += '[LookAt]<br>';
-			for (k = 0; k < 3; k = k + 1) {
-				html += desc[k] + '<br>';
-				for (i = 0; i < 3; i = i + 1) {
-					html += pxyz[i] + '<input size=10 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
-					index = index + 1;
-				}
-				html += '<br><br>';
-			}
-			
-			//FOV
-			html += '<br>';
-			html += '<br>';
-			html += 'Fov<br>';
-			html += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
-			html += '<br>';
-		}
-		
-		if (nodeData.customfunc) {
-			html += "[customfunc] : " + nodeData.customfunc	 + '\n';
-			html += '<br><br>';
-		}
-		html += '</td><tr><table>';
-		to.innerHTML = html;
-
-		//setup handler
-		ele = document.getElementById("ObjTextBox");
-		if (ele) {
-			ele.addEventListener("keyup", function () {
-				nodeData.input[0].value = ele.value;
-				console.log(nodeData.input[0].value, ele.value);
-			});
-		} else {
-			console.log('cant create ele\n');
-		}
-	}
-	
 	function getNodeInfo(data) {
-		var nodeData = data.nodeData,
-			i = data.nodeData.length;
-		showProparty(nodeData);
-		//console.log("ERROR : unknown show type\n");
+		var nodeData = data.nodeData;
+		if (nodeClickFunction) {
+			nodeClickFunction(nodeData);
+		}
 	}
-	//------//------//------//------//------//------//------//------
-	// sasaki E customfunclist
-	//------//------//------//------//------//------//------//------
 	
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
@@ -481,7 +389,9 @@ function svgNodeUI(draw) {
 			plug,
 			plugname,
 			src = '',
-			customfunclist = '',
+			customfuncs = {},
+			customfuncSrc = '',
+			fn,
 			temp;
 		
 		pushNextNode(nodeArray.root, dependency);
@@ -492,13 +402,12 @@ function svgNodeUI(draw) {
 			node = dependency[i].nodeData;
 			console.log(node);
 			if (node.customfunc) {
-				customfunclist += node.customfunc + '\n';
+				//customfunclist += node.customfunc + '\n';
+				customfuncs[node.name] = node;
 			}
 		}
-		console.log('Export:customfunc');
-		console.log(customfunclist);
 		
-		console.log('Export:dependency.length: ' + dependency.length);
+		//console.log('Export:dependency.length: ' + dependency.length);
 		for (i = dependency.length - 1; i >= 0; i -= 1) {
 			node = dependency[i].nodeData;
 			if (node.define) {
@@ -537,7 +446,12 @@ function svgNodeUI(draw) {
 			}
 			src += ')\n';
 		}
-		src = customfunclist + src;
+		for (fn in customfuncs) {
+			if (customfuncs.hasOwnProperty(fn)) {
+				customfuncSrc += customfuncs[fn].customfunc + '\n';
+			}
+		}
+		src = customfuncSrc + src;
 		console.log(src);
 		return src;
 	}
@@ -649,6 +563,9 @@ function svgNodeUI(draw) {
 		holeSets.remove();
 		holeSets = draw.set();
 	}
+	function nodeClickEvent(func) {
+		nodeClickFunction = func;
+	}
 	
 	return {
 		PlugClass: PlugClass,
@@ -661,7 +578,8 @@ function svgNodeUI(draw) {
 		dump: dump,
 		makeNodes: makeNodes,
 		getNodeData: getNodeData,
-		clearNodes: clearNodes
+		clearNodes: clearNodes,
+		nodeClickEvent: nodeClickEvent
 	};
 }
 

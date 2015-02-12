@@ -48,7 +48,7 @@
 	function clearNode() {
 		nui.clearNodes();
 		nodeData = nui.getNodeData();
-		document.getElementById("proparty").innerHTML = '';
+		document.getElementById("property").innerHTML = '';
 		
 		addNode("Render");
 	}
@@ -68,6 +68,96 @@
 		}
 		inner += '</select>';
 		d.innerHTML = inner;
+	}
+	
+	//------//------//------//------//------//------//------//------
+	// sasaki S customfunclist
+	//------//------//------//------//------//------//------//------
+	function showProparty(nodeData) {
+		console.log(nodeData);
+		var to = document.getElementById("property"),
+			html = '',
+			i,
+			k,
+			cameradata,
+			desc = ['Pos', 'At', 'UP'],
+			pxyz = ['X', 'Y', 'Z'],
+			index = 0,
+			ele;
+
+		
+		html = '<br><br><table  bgcolor="#e3f0fb"><tr><td>';
+		if (nodeData.name) {
+			html += "[name]     : " + nodeData.name + '\n';
+			html += '<br><br>';
+		}
+		if (nodeData.varname) {
+			html += "[varname]  : " + nodeData.varname + '\n';
+			html += '<br><br>';
+		}
+		/*
+		if(nodeData.funcname) {
+			html += "[funcname] : " + nodeData.funcname + '\n';
+			html += '<hr><br>';
+		}
+		*/
+		
+		if (nodeData.name === "OBJLoader" || nodeData.name === "STLLoader") {
+			if (nodeData.input) {
+				for (i = 0; i < nodeData.input.length; i = i + 1) {
+					if (nodeData.input[i].value) {
+						html += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="' + nodeData.input[i].value + '">' + '\n';
+					}
+				}
+				html += '<br><br>';
+			}
+			
+		}
+		
+		//--------------------------------------------------------------------
+		// Camera Data
+		//--------------------------------------------------------------------
+		if (nodeData.name === "CreateCamera") {
+			cameradata = [];
+			for (i = 0; i < nodeData.cameradata.length; i = i + 1) {
+				cameradata[i] = nodeData.cameradata[i];
+			}
+			html += '<br>';
+			html += '[LookAt]<br>';
+			for (k = 0; k < 3; k = k + 1) {
+				html += desc[k] + '<br>';
+				for (i = 0; i < 3; i = i + 1) {
+					html += pxyz[i] + '<input size=10 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
+					index = index + 1;
+				}
+				html += '<br><br>';
+			}
+			
+			//FOV
+			html += '<br>';
+			html += '<br>';
+			html += 'Fov<br>';
+			html += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
+			html += '<br>';
+		}
+		
+		if (nodeData.customfunc) {
+			html += "[customfunc] : " + nodeData.customfunc	 + '\n';
+			html += '<br><br>';
+		}
+		html += '</td><tr><table>';
+		to.innerHTML = html;
+
+		//setup handler
+		ele = document.getElementById("ObjTextBox");
+		if (ele) {
+			ele.addEventListener("keyup", function () {
+				nodeData.input[0].value = ele.value;
+				console.log(nodeData.input[0].value, ele.value);
+			});
+		} else {
+			console.log('cant create ele\n');
+		}
 	}
 
 	//---------------------------------------------------------------------------
@@ -161,10 +251,11 @@
 			nodelistbox  = document.getElementById('NodeList'),
 
 		//init canvas.
-			draw = SVG('nodecanvas').size(1280, 768);
+			draw = SVG('nodecanvas');//.size(1280, 768);
 		nui      = svgNodeUI(draw);
 		nui.clearNodes();
 
+		nui.nodeClickEvent(showProparty);
 
 		//handle
 		openbutton.onclick   = ButtonOpen;
@@ -176,9 +267,18 @@
 		reloadNodeList('nodelist.json', function () {
 			clearNode();
 		});
+		
+		/*function resize() {
+			var canvas = document.getElementById('nodecanvas');
+			draw.resize(window.innerWidth, window.innerHeight);
+		}
+		window.addEventListener('resize', resize, false);*/
 	}
+	
+	window.addEventListener('load', init, false);
 
-	window.onload = init;
+	
+	
 
 }());
 
