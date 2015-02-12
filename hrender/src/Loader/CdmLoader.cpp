@@ -33,6 +33,12 @@ bool CDMLoader::Load(const char* filename)
     //
     // NOTE: Assume MPI_Init() was already called in hrender::main()
     //
+
+	//
+	// TODO: - load voxel size from .dfi
+	// 	     - support various volume data type
+	// 	     - test with K environment
+
     int GVoxel[3] = { 10, 5, 7 }; // @fixme.
     int GDiv[3]   = { 1, 1, 1 }; // @fixme.
     int head[3] = { 1, 1, 1 }; // @fixme.
@@ -58,7 +64,7 @@ bool CDMLoader::Load(const char* filename)
     if (DFI_IN->GetDataType() == CDM::E_CDM_FLOAT32) {
         // OK
     } else {
-        printf("Unsupported data type: %s\n", DFI_IN->GetDataTypeString().c_str());
+        printf("[CdmLoader] Unsupported data type: %s\n", DFI_IN->GetDataTypeString().c_str());
         return CDM::E_CDM_ERROR;
     }
 
@@ -85,8 +91,8 @@ bool CDMLoader::Load(const char* filename)
 
     // data size
     size_t dataSize = (GVoxel[0]+2*virtualCellSize)*(GVoxel[1]+2*virtualCellSize)*(GVoxel[2]+2*virtualCellSize);
-    printf("dataSize: %d\n", dataSize);
-    float* d_v = new float[dataSize];
+    printf("DBG: dataSize: %d\n", dataSize);
+    float* d_v = new float[dataSize*numVariables];
 
     ret =  DFI_IN->ReadData(d_v,                ///< pointer to buffer
                             step,               ///< timestep
@@ -101,7 +107,7 @@ bool CDMLoader::Load(const char* filename)
                             f_dummy );
         
     if( ret != CDM::E_CDM_SUCCESS ) {
-      printf("Error reading CDM data.");
+      printf("[CdmLoader] Error reading CDM data.");
       //delete [] d_v;
       delete DFI_IN;
       return false;
@@ -110,7 +116,6 @@ bool CDMLoader::Load(const char* filename)
     //
     // Create volume data by stripping virtual cells.
     //
-#if 0
     m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables); // @fixme
     float* dst = m_volume.Buffer()->GetBuffer();
 
@@ -128,11 +133,11 @@ bool CDMLoader::Load(const char* filename)
             }
         }
     }
-#endif
-    //delete [] d_v;
+
+    delete [] d_v;
     delete DFI_IN;
 
-    printf("DBG: CDM load OK\n");
+    printf("[CdmLoader] CDM load OK\n");
 
     return true;
 }
