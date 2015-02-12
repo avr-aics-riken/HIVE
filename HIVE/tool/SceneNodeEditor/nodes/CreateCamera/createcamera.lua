@@ -3,6 +3,8 @@ function CreateCamera()
 	function create()
 		print('create camera')
 		cam = Camera()
+		cam:SetScreenSize(512,512)
+		cam:SetFilename('output.jpg')
 		cam:LookAt(
 			0,0,300,
 			0,0,0,
