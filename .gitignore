@@ -1,2 +1,3 @@
-build
 hrender/test/*.jpg
+HIVE/tool/SceneNodeEditor/node_modules
+HIVE/tool/glsl
