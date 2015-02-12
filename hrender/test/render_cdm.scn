@@ -1,0 +1,25 @@
+
+print('Render CDM')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_cdm.jpg')
+
+camera:LookAt(
+	20,20,20,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local cdm = CDMLoader()
+cdm:Load('cdm_sample.dfi')
+
+local volume = VolumeModel()
+local volumedata = cdm:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('def_volume_raymarch.frag')
+render {camera, volume}
+
+
