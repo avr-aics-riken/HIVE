@@ -174,7 +174,7 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   ENDIF()
 
   SET(CDMLIB_SOURCES
-    src/Loader/CDMLoader.cpp
+    src/Loader/CdmLoader.cpp
   )
 
   SET(CDMLIB_LIBS
