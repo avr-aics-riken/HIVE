@@ -1,0 +1,6 @@
+
+print('load pdb')
+
+local pdb = PDBLoader()
+pdb:Load('4CL8.pdb')
+

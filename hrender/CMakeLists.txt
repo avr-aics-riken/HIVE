@@ -150,6 +150,8 @@ set(SOURCES
 	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
+	src/Loader/PdbLoader.cpp
+	src/Loader/tiny_pdb.cpp
 	src/Network/Connection.cpp
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp
@@ -232,6 +234,7 @@ add_test(NAME loader_obj.scn             COMMAND hrender  ../../hrender/test/loa
 add_test(NAME loader_sph.scn             COMMAND hrender  ../../hrender/test/loader_sph.scn           )
 add_test(NAME loader_cdm.scn             COMMAND hrender  ../../hrender/test/loader_cdm.scn           )
 add_test(NAME loader_stl.scn             COMMAND hrender  ../../hrender/test/loader_stl.scn           )
+add_test(NAME loader_pdb.scn             COMMAND hrender  ../../hrender/test/loader_pdb.scn           )
 add_test(NAME loader_vol.scn             COMMAND hrender  ../../hrender/test/loader_vol.scn           )
 add_test(NAME render_basic.scn           COMMAND hrender  ../../hrender/test/render_basic.scn         )
 add_test(NAME render_camera.scn          COMMAND hrender  ../../hrender/test/render_camera.scn        )
@@ -241,6 +244,7 @@ add_test(NAME render_sph.scn             COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_cdm.scn             COMMAND hrender  ../../hrender/test/render_cdm.scn           )
 add_test(NAME render_vol.scn             COMMAND hrender  ../../hrender/test/render_vol.scn           )
 add_test(NAME render_stl.scn             COMMAND hrender  ../../hrender/test/render_stl.scn           )
+add_test(NAME render_pdb.scn             COMMAND hrender  ../../hrender/test/render_pdb.scn           )
 add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/render_obj_transform.scn )
 add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_sph_transform.scn )
 
