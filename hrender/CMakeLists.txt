@@ -141,8 +141,8 @@ set(SOURCES
 	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
-  src/Buffer/BufferVolumeData.cpp
-  src/Buffer/BufferSparseVolumeData.cpp
+	src/Buffer/BufferVolumeData.cpp
+	src/Buffer/BufferSparseVolumeData.cpp
 	src/Buffer/BufferPointData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
@@ -164,6 +164,7 @@ set(SOURCES
 	src/Renderer/VolumeBuffer.cpp
 	src/Renderer/PointBuffer.cpp
 	src/Renderer/RenderCore.cpp
+	src/SceneScript/SceneScript.cpp
 	src/SceneScript/SceneScript.cpp
 )
 
@@ -229,6 +230,7 @@ file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
 #
 add_test(NAME loader_obj.scn             COMMAND hrender  ../../hrender/test/loader_obj.scn           )
 add_test(NAME loader_sph.scn             COMMAND hrender  ../../hrender/test/loader_sph.scn           )
+add_test(NAME loader_cdm.scn             COMMAND hrender  ../../hrender/test/loader_cdm.scn           )
 add_test(NAME loader_stl.scn             COMMAND hrender  ../../hrender/test/loader_stl.scn           )
 add_test(NAME loader_vol.scn             COMMAND hrender  ../../hrender/test/loader_vol.scn           )
 add_test(NAME render_basic.scn           COMMAND hrender  ../../hrender/test/render_basic.scn         )
@@ -236,6 +238,7 @@ add_test(NAME render_camera.scn          COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_camera2.scn         COMMAND hrender  ../../hrender/test/render_camera2.scn       )
 add_test(NAME render_obj.scn             COMMAND hrender  ../../hrender/test/render_obj.scn           )
 add_test(NAME render_sph.scn             COMMAND hrender  ../../hrender/test/render_sph.scn           )
+add_test(NAME render_cdm.scn             COMMAND hrender  ../../hrender/test/render_cdm.scn           )
 add_test(NAME render_vol.scn             COMMAND hrender  ../../hrender/test/render_vol.scn           )
 add_test(NAME render_stl.scn             COMMAND hrender  ../../hrender/test/render_stl.scn           )
 add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/render_obj_transform.scn )
