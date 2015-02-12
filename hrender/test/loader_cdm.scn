@@ -1,0 +1,9 @@
+
+print('load CDM')
+
+local cdm = CDMLoader()
+
+-- @todo { Add `step` parameter } 
+cdm:Load('cdm_sample.dfi')
+
+
