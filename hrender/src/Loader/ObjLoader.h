@@ -13,6 +13,8 @@ private:
     RefPtr<BufferMeshData> m_mesh;
     RefPtr<BufferPointData> m_point;
     
+    SimpleObj*  m_obj;
+    
     BufferMeshData*  createMeshData(const SimpleObj& obj) const;
     BufferPointData* createPointData(const SimpleObj& obj) const;
 
