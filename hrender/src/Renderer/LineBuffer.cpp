@@ -78,6 +78,9 @@ void LineBuffer::Render() const
     
     bindUniforms(m_model);
     
+    float w = m_model->GetLineWidth();
+    LineWidth_SGL(w);
+    
     BindPointVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
     if (!m_indexnum)
         DrawLineArrays_SGL(m_vtxnum);
