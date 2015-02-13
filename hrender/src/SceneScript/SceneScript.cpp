@@ -23,6 +23,8 @@
 #include "StlLoader_Lua.h"
 #include "VolLoader_Lua.h"
 #include "SphLoader_Lua.h"
+#include "CdmLoader_Lua.h"
+#include "PdbLoader_Lua.h"
 #include "PolygonAnalyzer_Lua.h"
 #include "FloatsToFloat_Lua.h"
 
@@ -40,6 +42,8 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHLoader_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, CDMLoader_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
@@ -54,6 +58,8 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
     SetFunction(L, "SPHLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
+    SetFunction(L, "CDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(CDMLoader_Lua));
+    SetFunction(L, "PDBLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
     SetFunction(L, "PolygonAnalyzer",     LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonAnalyzer_Lua));
     SetFunction(L, "FloatsToFloat",       LUA_SCRIPTCLASS_NEW_FUNCTION(FloatsToFloat_Lua));
 }

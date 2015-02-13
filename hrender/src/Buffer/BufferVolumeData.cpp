@@ -17,6 +17,10 @@ BufferVolumeData::BufferVolumeData(BufferVolumeData* inst)
     this->m_dim[2] = inst->m_dim[2];
     this->m_comp   = inst->m_comp;
     this->m_buffer = inst->m_buffer;
+    this->m_isNonUniform = inst->m_isNonUniform;
+    this->m_spacingX = inst->m_spacingX;
+    this->m_spacingY = inst->m_spacingY;
+    this->m_spacingZ = inst->m_spacingZ;
 }
 
 void BufferVolumeData::Create(int w, int h, int d, int component)
@@ -37,6 +41,7 @@ void BufferVolumeData::Create(int w, int h, int d, int component)
     this->m_spacingX = spacingX;
     this->m_spacingY = spacingY;
     this->m_spacingZ = spacingZ;
+    this->m_isNonUniform = false;
 }
 
 void BufferVolumeData::Clear()
@@ -44,6 +49,7 @@ void BufferVolumeData::Clear()
     m_dim[0] = m_dim[1] = m_dim[2] = 0;
     m_comp   = 0;
     m_buffer = 0;
+    m_isNonUniform = false;
 }
 
 void BufferVolumeData::print()
@@ -70,3 +76,6 @@ FloatBuffer *BufferVolumeData::Buffer() {
     return m_buffer;
 }
 
+bool& BufferVolumeData::NonUniform() {
+    return m_isNonUniform;
+}
