@@ -24,6 +24,15 @@ void BufferPointData::Clear()
     m_radius = 0;
 }
 
+void BufferPointData::Create(int vertexnum)
+{
+    m_pos    = new Vec3Buffer();
+    m_mat    = new FloatBuffer();
+    m_radius = new FloatBuffer();
+    m_pos->Create(vertexnum);
+    m_mat->Create(vertexnum);
+    m_radius->Create(vertexnum);
+}
 
 Vec3Buffer* BufferPointData::Position() {
     return m_pos;
@@ -34,6 +43,18 @@ FloatBuffer* BufferPointData::Material() {
 }
 
 FloatBuffer* BufferPointData::Radius() {
+    return m_radius;
+}
+
+Vec3Buffer* BufferPointData::Position() const {
+    return m_pos;
+}
+
+FloatBuffer* BufferPointData::Material() const {
+    return m_mat;
+}
+
+FloatBuffer* BufferPointData::Radius() const {
     return m_radius;
 }
 

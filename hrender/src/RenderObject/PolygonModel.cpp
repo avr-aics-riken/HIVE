@@ -1,17 +1,17 @@
 #include <string>
 #include "PolygonModel.h"
+#include "BufferMeshData.h"
 
 class PolygonModel::Impl
 {
 public:
     Impl()
     {
-        
+        m_mesh = 0;
     }
     
     ~Impl()
     {
-        
     }
     
     bool SetShader(const std::string& shaderfile)
@@ -22,7 +22,7 @@ public:
     
     bool Create(BufferMeshData* m)
     {
-        m_mesh   = m;
+        m_mesh = m;
         return true;
     }
     
@@ -36,7 +36,7 @@ public:
     }
     
 private:
-    BufferMeshData* m_mesh;
+    RefPtr<BufferMeshData> m_mesh;
     std::string m_shaderfile;
 };
 

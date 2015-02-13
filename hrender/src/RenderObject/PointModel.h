@@ -3,7 +3,6 @@
 
 #include <string>
 #include "RenderObject.h"
-#include "BufferPointData.h"
 
 class BufferPointData;
 

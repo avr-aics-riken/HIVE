@@ -21,7 +21,7 @@ public:
     
     bool Create(BufferVolumeData* volume)
     {
-        m_volume   = volume;
+        m_volume = volume;
         return true;
     }
     
@@ -35,7 +35,7 @@ public:
     }
 
 private:
-    BufferVolumeData* m_volume;
+    RefPtr<BufferVolumeData> m_volume;
     std::string m_shaderfile;
 
 };

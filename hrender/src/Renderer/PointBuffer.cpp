@@ -14,6 +14,7 @@ PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_vtx_id      = 0;
     m_radius_id   = 0;
     m_material_id = 0;
+    m_model       = 0;
 }
 
 PointBuffer::~PointBuffer()
@@ -27,6 +28,8 @@ bool PointBuffer::Create(const PointModel* model)
         printf("Failed to create volume: ");
         return false;
     }
+    
+    m_model = model;
 
     // load shader
     const std::string& shadername = model->GetShader();
@@ -53,19 +56,23 @@ bool PointBuffer::Create(const PointModel* model)
     m_vtxnum   = particlenum;
     m_indexnum = 0;
 
-    //CreateVBRM_GL(particlenum, posbuffer, radiusbuffer, matbuffer,
-    //        m_ogl.vtx, m_ogl.radius, m_ogl.material);
-    //m_ogl.vtxnum   = particlenum;
-    //m_ogl.indexnum = 0;
-
+    CreateVBRM_GL(particlenum,
+                  point->Position()->GetBuffer(),
+                  point->Radius()->GetBuffer(),
+                  point->Material()->GetBuffer(),
+                  m_vtx_id, m_radius_id, m_material_id);
+    
     return r;
 }
 
 void PointBuffer::Render() const
 {
-    //VX::Math::matrix mat = getTransformMatrix();↲
-    //SetUniformMatrix_GL(m_sgl.prog, "lWorld", &mat.f[0]);↲
-    //bindShaderParams(mode, m_sgl.prog);
+    if (!m_model) {
+        printf("[Error] Not setpointmodel\n");
+    }
+    
+    bindUniforms(m_model);
+    
     BindPointVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
     DrawPointArrays_SGL(m_vtxnum);
 }

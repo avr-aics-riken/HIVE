@@ -9,6 +9,7 @@
 #include "../Core/Ref.h"
 
 class Camera;
+class RenderObject;
 
 class BaseBuffer : public RefCount
 {
@@ -33,6 +34,7 @@ public:
 protected:
     bool loadShaderSrc(const char* srcname);
     unsigned int getProgram() const;
+    void bindUniforms(const RenderObject* obj) const;
     
 };
 

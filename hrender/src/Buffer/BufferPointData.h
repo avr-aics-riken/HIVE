@@ -7,17 +7,22 @@
 
 class BufferPointData : public RefCount
 {
-public:
+private:
     RefPtr<Vec3Buffer>  m_pos;
     RefPtr<FloatBuffer> m_radius;
     RefPtr<FloatBuffer> m_mat;
+public:
     BufferPointData();
     BufferPointData(BufferPointData* inst);
     ~BufferPointData();
+    void Create(int vertexnum);
     void Clear();
-    Vec3Buffer*  Position() ;
+    Vec3Buffer*  Position();
     FloatBuffer* Radius();
-    FloatBuffer* Material() ;
+    FloatBuffer* Material();
+    Vec3Buffer*  Position() const;
+    FloatBuffer* Radius()   const;
+    FloatBuffer* Material() const;
 };
 
 #endif //_BUFFERPOINTDATA_H_

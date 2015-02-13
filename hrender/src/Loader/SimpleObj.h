@@ -736,15 +736,15 @@ public:
     
     }
     
-    float* GetPositionBuffer()
+    const float* GetPositionBuffer() const
     {
         return &m_pos[0].x;
     }
-    float* GetNormalBuffer()
+    const float* GetNormalBuffer() const
     {
         return &m_normal[0].x;
     }
-    float* GetUVBuffer()
+    const float* GetUVBuffer() const
     {
         if (m_uv.size())
             return &m_uv[0].x;
@@ -752,7 +752,7 @@ public:
             return 0;
     }
     
-    unsigned int* GetIndex()
+    const unsigned int* GetIndex() const
     {
         return &m_face[0].i0;
     }
