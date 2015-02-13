@@ -215,6 +215,7 @@ target_link_libraries(hrender ${CDMLIB_LIBS})
 
 # Additional Libraries
 if (APPLE)
+    add_definitions(-D__BLOCKS__=0)
 	find_library(COCOA Cocoa)
 	if (NOT COCOA)
 	    message(FATAL_ERROR "Cocoa Framework not found")
