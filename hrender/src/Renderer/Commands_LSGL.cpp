@@ -429,6 +429,12 @@ void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_rad
 	}
 }
 
+void LineWidth_SGL(float w)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glLineWidth(w);
+}
+
 void GenTextures_SGL(int n, unsigned int* tex)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();

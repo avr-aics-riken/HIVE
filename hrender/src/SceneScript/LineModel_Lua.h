@@ -22,6 +22,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(LineModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetLineWidth, float)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferLineData_Lua*)
     LUA_SCRIPTCLASS_END();
 };
