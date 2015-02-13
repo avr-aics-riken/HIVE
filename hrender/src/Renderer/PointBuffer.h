@@ -13,6 +13,8 @@ private:
     unsigned int m_vtx_id     ;
     unsigned int m_radius_id  ;
     unsigned int m_material_id;
+    RefPtr<const PointModel> m_model;
+    
 public:
     PointBuffer(RENDER_MODE mode);
     ~PointBuffer();

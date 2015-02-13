@@ -1,12 +1,13 @@
 #include <string>
 #include "PointModel.h"
+#include "BufferPointData.h"
 
 class PointModel::Impl
 {
 public:
     Impl()
     {
-        
+        m_point = 0;
     }
     ~Impl()
     {
@@ -19,14 +20,14 @@ public:
         return true;
     }
     
-    bool Create(BufferPointData* volume)
+    bool Create(BufferPointData* pointdata)
     {
-        m_volume   = volume;
+        m_point = pointdata;
         return true;
     }
     
     BufferPointData* GetPoint() const {
-        return m_volume;
+        return m_point;
     }
     
     const std::string& GetShader() const
@@ -35,7 +36,7 @@ public:
     }
 
 private:
-    BufferPointData* m_volume;
+    RefPtr<BufferPointData> m_point;
     std::string m_shaderfile;
 
 };
@@ -54,9 +55,9 @@ bool PointModel::SetShader(const std::string& shaderfile)
     return m_imp->SetShader(shaderfile);
 }
 
-bool PointModel::Create(BufferPointData* volume)
+bool PointModel::Create(BufferPointData* pointdata)
 {
-    return m_imp->Create(volume);
+    return m_imp->Create(pointdata);
 }
 
 BufferPointData* PointModel::GetPoint() const
