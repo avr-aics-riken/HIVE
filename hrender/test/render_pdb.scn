@@ -5,30 +5,19 @@ camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_pdb.jpg')
 
 camera:LookAt(
-	0,0,300,
+	0,0,200,
 	0,0,0,
 	0,1,0,
 	60
 )
 
 
-local pbb = PDBLoader()
+local pdb = PDBLoader()
 pdb:Load('4CL8.pdb')
 
 local model = PointModel()
-local balldata = pdb:BallData()
-model:Create(ballhdata)
+local pointdata = pdb:BallData()
+model:Create(pointdata)
 model:SetShader('white.frag')
 
--- local analy = PolygonAnalyzer()
--- analy:Execute(model)
--- print(analy:MinX())
--- print(analy:MaxX())
--- print(analy:MinY())
--- print(analy:MaxY())
--- print(analy:MinZ())
--- print(analy:MaxZ())
-
 render {camera, model}
-
-
