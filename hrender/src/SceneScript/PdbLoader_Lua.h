@@ -23,9 +23,14 @@ public:
         return new BufferPointData_Lua(PDBLoader::BallData());
     }
 
+    BufferLineData_Lua* StickData() {
+        return new BufferLineData_Lua(PDBLoader::StickData());
+    }
+
     LUA_SCRIPTCLASS_BEGIN(PDBLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferPointData_Lua*, BallData)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*, StickData)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(PDBLoader_Lua);

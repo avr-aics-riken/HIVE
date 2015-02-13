@@ -5,7 +5,7 @@ camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_pdb.jpg')
 
 camera:LookAt(
-	0,0,200,
+	0,0,80,
 	0,0,0,
 	0,1,0,
 	60
@@ -15,9 +15,15 @@ camera:LookAt(
 local pdb = PDBLoader()
 pdb:Load('4CL8.pdb')
 
-local model = PointModel()
-local pointdata = pdb:BallData()
-model:Create(pointdata)
-model:SetShader('white.frag')
+local ballmodel = PointModel()
+local balldata = pdb:BallData()
+ballmodel:Create(balldata)
+ballmodel:SetShader('white.frag')
 
-render {camera, model}
+local stickmodel = LineModel()
+local stickdata = pdb:StickData()
+stickmodel:Create(stickdata)
+stickmodel:SetLineWidth(0.20);
+stickmodel:SetShader('white.frag')
+
+render {camera, ballmodel, stickmodel}

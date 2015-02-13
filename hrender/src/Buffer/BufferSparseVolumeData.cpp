@@ -32,26 +32,30 @@ void BufferSparseVolumeData::print()
 }
 int BufferSparseVolumeData::Width()
 {
-    
+    return -1; // @todo    
 }
 int BufferSparseVolumeData::Height()
 {
-    
+    return -1; // @todo    
 }
 int BufferSparseVolumeData::Depth()
 {
-    
+    return -1; // @todo    
 }
 int BufferSparseVolumeData::Component()
 {
-    
+    return 1; // @todo   
 }
 const std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::Buffers() const
 {
-    
+    // @todo
+    static std::vector<BufferSparseVolumeData::VolumeBlock> tmp;
+    return tmp;
 }
 std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::Buffers()
 {
-    
+    // @todo
+    static std::vector<BufferSparseVolumeData::VolumeBlock> tmp;
+    return tmp;
 }
 
