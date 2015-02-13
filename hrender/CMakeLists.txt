@@ -132,7 +132,8 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
 	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
 	${PROJECT_SOURCE_DIR}/../hrender/src/Core
-	${CMAKE_BINARY_DIR}/third_party/lua
+    ${CMAKE_BINARY_DIR}/third_party/lua
+    ${PROJECT_SOURCE_DIR}/../third_party/local/include
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
