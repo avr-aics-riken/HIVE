@@ -79,10 +79,12 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj& obj) const
 {
     BufferLineData* line = new BufferLineData();
     
-    line->Create(obj.GetVertexNum());
+    const int indexnum = 0;//obj.GetIndexNum()
+    line->Create(obj.GetVertexNum(), indexnum);
     Vec3Buffer*  pos     = line->Position();
     FloatBuffer* mat     = line->Material();
     FloatBuffer* radius  = line->Radius();
+    UintBuffer*  idx     = line->Index();
     
     const int vnum = obj.GetVertexNum();
     float* pp = pos->GetBuffer();
@@ -92,6 +94,10 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj& obj) const
         rad[i] = 1.0f;
     }
     memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
+    
+    if (indexnum)
+        memcpy(idx->GetBuffer(), obj.GetIndex(), sizeof(unsigned int) * idx->GetNum());
+    
     return line;
 }
 

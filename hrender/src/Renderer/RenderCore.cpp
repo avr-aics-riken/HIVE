@@ -13,6 +13,7 @@
 #include "../RenderObject/RenderObject.h"
 #include "../RenderObject/PolygonModel.h"
 #include "../RenderObject/PointModel.h"
+#include "../RenderObject/LineModel.h"
 #include "../RenderObject/VolumeModel.h"
 #include "../RenderObject/Camera.h"
 #include "../RenderObject/PolygonModel.h"
@@ -22,6 +23,7 @@
 
 #include "PolygonBuffer.h"
 #include "PointBuffer.h"
+#include "LineBuffer.h"
 #include "VolumeBuffer.h"
 
 #include "../Image/SimpleJPG.h"
@@ -182,6 +184,10 @@ private:
             PointBuffer* pbuf = new PointBuffer(RENDER_LSGL);
             pbuf->Create(static_cast<const PointModel*>(robj));
             buffer = pbuf;
+        } else if (robj->GetType() == RenderObject::TYPE_LINE) {
+            LineBuffer* lbuf = new LineBuffer(RENDER_LSGL);
+            lbuf->Create(static_cast<const LineModel*>(robj));
+            buffer = lbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
              VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));

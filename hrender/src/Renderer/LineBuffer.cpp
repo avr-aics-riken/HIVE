@@ -14,6 +14,7 @@ LineBuffer::LineBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_vtx_id      = 0;
     m_radius_id   = 0;
     m_material_id = 0;
+    m_idx_id      = 0;
     m_model       = 0;
 }
 
@@ -41,20 +42,30 @@ bool LineBuffer::Create(const LineModel* model)
     }
 
     // make LineData
-    BufferLineData *point = model->GetLine();
-    unsigned int particlenum = point->Position()->GetNum();
-    if (particlenum <= 0) {
+    BufferLineData* line = model->GetLine();
+    unsigned int linePointNum = line->Position()->GetNum();
+    if (linePointNum <= 0) {
         printf("[Error]Point vertex empty\n");
         return false;
     }
-    CreateVBRM_SGL(
-            particlenum,
-            point->Position()->GetBuffer(),
-            point->Radius()->GetBuffer(),
-            point->Material()->GetBuffer(),
-            m_vtx_id, m_radius_id, m_material_id);
-    m_vtxnum   = particlenum;
-    m_indexnum = 0;
+    
+    m_vtxnum   = linePointNum;
+    m_indexnum = line->Index()->GetNum();
+    if (!m_indexnum) {
+        CreateVBRM_SGL(linePointNum,
+                       line->Position()->GetBuffer(),
+                       line->Radius()->GetBuffer(),
+                       line->Material()->GetBuffer(),
+                       m_vtx_id, m_radius_id, m_material_id);
+    } else {
+        CreateVBIBRM_SGL(linePointNum,
+                         line->Position()->GetBuffer(),
+                         line->Radius()->GetBuffer(),
+                         line->Material()->GetBuffer(),
+                         m_indexnum,
+                         line->Index()->GetBuffer(),
+                         m_vtx_id, m_radius_id, m_material_id, m_idx_id);
+    }
     
     return r;
 }
@@ -67,9 +78,11 @@ void LineBuffer::Render() const
     
     bindUniforms(m_model);
     
-    // TODO
-    //BindLineVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
-    //DrawLineArrays_SGL(m_vtxnum);
+    BindPointVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
+    if (!m_indexnum)
+        DrawLineArrays_SGL(m_vtxnum);
+    else
+        DrawLineArrays_SGL(m_indexnum);
 }
 
 
