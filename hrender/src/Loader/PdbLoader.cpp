@@ -1,6 +1,8 @@
 #include "PdbLoader.h"
 #include "tiny_pdb.h"
 
+#include <cstring>
+
 PDBLoader::PDBLoader(){}
 PDBLoader::~PDBLoader(){};
 
@@ -18,40 +20,32 @@ bool PDBLoader::Load(const char* filename){
         return false;
     }
 
-    bool r = false;
+    const size_t numAtoms = pdb.GetAtoms().size();
 
-	//SimplePdb obj;
-	//bool r = obj.Load(filename);
-    //if (!r)
-    //    return false;
-    //
-    //mesh.Create(obj.GetVertexNum(), obj.GetIndexNum());
-    //Vec3Buffer* pos      = mesh.Position();
-    //Vec3Buffer* normal   = mesh.Normal();
-    //FloatBuffer* mat     = mesh.Material();
-    //UintBuffer* index    = mesh.Index();
-    //Vec2Buffer* texcoord = mesh.Texcoord();
+    ball.Create(numAtoms);
+    Vec3Buffer*  pos     = ball.Position();
+    FloatBuffer* mat     = ball.Material();
+    FloatBuffer* radius  = ball.Radius();
 
+	printf("[PDBLoader] # of atoms: %ld\n", numAtoms);
 
-	//pos->Create(obj.GetVertexNum());
-	//float* pp = pos->GetBuffer();
-	//memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
-	//normal->Create(obj.GetVertexNum());
-	//memcpy(normal->GetBuffer(), obj.GetNormalBuffer(), sizeof(float)*3*obj.GetVertexNum());
-	//float* objuv = obj.GetUVBuffer();
-	//if (objuv) {
-	//	texcoord->Create(obj.GetVertexNum());
-	//	float* uv = texcoord->GetBuffer();
-	//	memcpy(uv, objuv, sizeof(float)*2*(obj.GetVertexNum()));
-	//}
-	//mat->Create(obj.GetVertexNum());
-	//memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
-	//index->Create(obj.GetIndexNum());
-	//memcpy(index->GetBuffer(), obj.GetIndex(), sizeof(unsigned int) * index->GetNum());
-    
+    float* pp = pos->GetBuffer();
+	for (size_t i = 0; i < numAtoms; i++) {
+		pp[3*i+0] = pdb.GetAtoms()[i].GetX();
+		pp[3*i+1] = pdb.GetAtoms()[i].GetY();
+		pp[3*i+2] = pdb.GetAtoms()[i].GetZ();
+	}
 
-	
-	return r;
+	// @todo
+    float* rad = radius->GetBuffer();
+    for (int i = 0; i < numAtoms; ++i) {
+        rad[i] = 1.0f;
+    }
+
+	// @todo
+    memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
+
+	return true;
 }
 
 BufferPointData *PDBLoader::BallData()
