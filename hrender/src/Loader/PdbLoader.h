@@ -3,6 +3,7 @@
 
 #include "Ref.h"
 #include "BufferPointData.h"
+#include "BufferLineData.h"
 
 class PDBLoader : public RefCount
 {
@@ -11,10 +12,11 @@ public:
 	~PDBLoader();
 	void Clear();
 	BufferPointData ball;
-  // @todo { stick as line primitive. }
+	BufferLineData stick;
 protected:
 	bool Load(const char* filename);
 	BufferPointData* BallData();
+	BufferLineData* StickData();
 };
 
 #endif //_PDBLOADERNATIVE_H
