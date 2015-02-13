@@ -7,14 +7,18 @@ OBJLoader::OBJLoader()
 {
     m_mesh  = 0;
     m_point = 0;
+    m_obj   = 0;
 }
 
 OBJLoader::~OBJLoader()
 {
+    delete m_obj;
 }
 
 void OBJLoader::Clear()
 {
+    delete m_obj;
+    m_obj   = 0;
     m_mesh  = 0;
     m_point = 0;
 }
@@ -71,24 +75,30 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj& obj) const
 bool OBJLoader::Load(const char* filename){
 	Clear();
     
-	SimpleObj obj;
-	bool r = obj.Load(filename);
-    if (!r)
+	m_obj = new SimpleObj();
+	bool r = m_obj->Load(filename);
+    if (!r) {
+        delete m_obj;
         return false;
-    
-    m_mesh  = createMeshData(obj);
-    m_point = createPointData(obj);
+    }
+    m_mesh  = 0;
+    m_point = 0;
     
 	return r;
 }
 
 BufferMeshData *OBJLoader::MeshData()
 {
+    if (!m_mesh)
+        m_mesh  = createMeshData(*m_obj);
 	return m_mesh;
 }
 
 BufferPointData *OBJLoader::PointData()
 {
+    if (!m_point)
+        m_point = createPointData(*m_obj);
+
     return m_point;
 }
 
