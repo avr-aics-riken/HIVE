@@ -2,7 +2,7 @@
 //  hrender
 //
 
-#ifdef ENABLE_MPI
+#ifdef HIVE_ENABLE_MPI
 #include <mpi.h>
 #endif
 
@@ -30,7 +30,7 @@ void renderScene(const char* scenefile)
 
 int main(int argc, char* argv[])
 {
-#ifdef ENABLE_MPI
+#ifdef HIVE_ENABLE_MPI
     int rank = 0;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -51,6 +51,9 @@ int main(int argc, char* argv[])
     
     if (argc <= 1 || scenefile == 0) {
         printf("\n  Usage: hrender scenefile.scn\n\n");
+#ifdef HIVE_ENABLE_MPI
+        MPI_Finalize();
+#endif
         return 0;
     }
     
@@ -58,7 +61,8 @@ int main(int argc, char* argv[])
     
     printf("Exit hrender.\n");
     
-#ifdef ENABLE_MPI
+#ifdef HIVE_ENABLE_MPI
+    printf("[MPI] finalize at rank: %d\n", rank);
     MPI_Finalize();
 #endif
     return 0;
