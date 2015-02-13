@@ -125,8 +125,9 @@ set(SOURCES
 	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
 	src/Buffer/BufferMeshData.cpp
-  src/Buffer/BufferVolumeData.cpp
-  src/Buffer/BufferSparseVolumeData.cpp
+    src/Buffer/BufferVolumeData.cpp
+    src/Buffer/BufferLineData.cpp
+    src/Buffer/BufferSparseVolumeData.cpp
 	src/Buffer/BufferPointData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
@@ -140,12 +141,14 @@ set(SOURCES
 	src/RenderObject/Camera.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
+	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
 	src/Renderer/BaseBuffer.cpp
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp
 	src/Renderer/PolygonBuffer.cpp
 	src/Renderer/VolumeBuffer.cpp
+    src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
 	src/Renderer/RenderCore.cpp
 	src/SceneScript/SceneScript.cpp
