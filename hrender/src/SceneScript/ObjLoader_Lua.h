@@ -37,6 +37,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferPointData_Lua*, PointData)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*, LineData)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(OBJLoader_Lua);

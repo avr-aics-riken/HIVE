@@ -110,6 +110,29 @@ void CreateVBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuffe
 	//sgl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
 }
 
+void CreateVBIBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                      unsigned int indexnum, unsigned int* indexbuffer,
+                    unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &vtx_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, posbuffer, GL_STATIC_DRAW);
+    
+    sgl.glGenBuffers(1, &radius_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, radius_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, radiusbuffer, GL_STATIC_DRAW);
+    //sgl.lsglSetPointSizev(vertexnum, radiusbuffer); // deprecated.
+    
+    sgl.glGenBuffers(1, &mat_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, mat_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, matbuffer, GL_STATIC_DRAW);
+    
+    sgl.glGenBuffers(1, &index_id);
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_id);
+    sgl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
+}
+
 void ReleaseBufferVBIB_SGL(unsigned int buffer_id)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
@@ -218,6 +241,12 @@ void DrawElements_SGL(unsigned int indexnum)
 	sgl.glDrawElements(GL_TRIANGLES, indexnum, GL_UNSIGNED_INT, (void*)0);
 }
 
+void DrawLineElements_SGL(unsigned int indexnum)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glDrawElements(GL_LINES, indexnum, GL_UNSIGNED_INT, (void*)0);
+}
+
 void DrawArrays_SGL(unsigned int vtxnum)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
@@ -228,6 +257,12 @@ void DrawPointArrays_SGL(unsigned int vtxnum)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glDrawArrays(GL_POINTS, 0, vtxnum);
+}
+
+void DrawLineArrays_SGL(unsigned int vtxnum)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glDrawArrays(GL_LINES, 0, vtxnum);
 }
 
 void SampleCoverage_SGL(float a, bool invert)

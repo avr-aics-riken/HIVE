@@ -19,6 +19,9 @@ void CreateVBIB_SGL(unsigned int vertexnum, float* posbuffer, float* normalbuffe
 void ReleaseBufferVBIB_SGL(unsigned int buffer_id);
 void CreateVBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
 					unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id);
+void CreateVBIBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                      unsigned int indexnum, unsigned int* indexbuffer,
+                      unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id);
 
 void BindProgram_SGL(unsigned int prg);
 void SetUniform1i_SGL(unsigned int prg, const char* name, int val);
@@ -31,8 +34,10 @@ void SetUniformMatrix_SGL(unsigned int prg, const char* name, const float* val);
 void SetCamera_SGL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov);
 void SetStereoEnvCamera_SGL(unsigned int prg, const float* eye, const float* lookat, const float* up, float zeroParallax, float eyeSeparation);
 void DrawElements_SGL(unsigned int indexnum);
+void DrawLineElements_SGL(unsigned int indexnum);
 void DrawArrays_SGL(unsigned int vtxnum);
 void DrawPointArrays_SGL(unsigned int vertexnum);
+void DrawLineArrays_SGL(unsigned int vertexnum);
 void SampleCoverage_SGL(float a, bool invert);
 void PixelStep_SGL(int n);
 void SetShaderCompiler_SGL(const char* path, const char* opt);
