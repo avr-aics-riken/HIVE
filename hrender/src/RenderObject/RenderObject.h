@@ -18,6 +18,7 @@ public:
         TYPE_CAMERA,
         TYPE_VOLUME,
         TYPE_POLYGON,
+        TYPE_LINE,
         TYPE_POINT,
         TYPE_MAX,
     };

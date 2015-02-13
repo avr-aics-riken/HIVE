@@ -1,13 +1,13 @@
 #include <string>
 
 #include "Analyzer.h"
-#include "PointBuffer.h"
-#include "BufferPointData.h"
-#include "../RenderObject/PointModel.h"
+#include "LineBuffer.h"
+#include "BufferLineData.h"
+#include "../RenderObject/LineModel.h"
 
 #include "Commands.h"
 
-PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+LineBuffer::LineBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_vtxnum      = 0;
     m_indexnum    = 0;
@@ -17,15 +17,15 @@ PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_model       = 0;
 }
 
-PointBuffer::~PointBuffer()
+LineBuffer::~LineBuffer()
 {
 }
 
-bool PointBuffer::Create(const PointModel* model)
+bool LineBuffer::Create(const LineModel* model)
 {
     bool r = true;
     if (!model) {
-        printf("Failed to create point: ");
+        printf("Failed to create line: ");
         return false;
     }
     
@@ -40,8 +40,8 @@ bool PointBuffer::Create(const PointModel* model)
         return false;
     }
 
-    // make PointData
-    BufferPointData *point = model->GetPoint();
+    // make LineData
+    BufferLineData *point = model->GetLine();
     unsigned int particlenum = point->Position()->GetNum();
     if (particlenum <= 0) {
         printf("[Error]Point vertex empty\n");
@@ -55,26 +55,21 @@ bool PointBuffer::Create(const PointModel* model)
             m_vtx_id, m_radius_id, m_material_id);
     m_vtxnum   = particlenum;
     m_indexnum = 0;
-
-    CreateVBRM_GL(particlenum,
-                  point->Position()->GetBuffer(),
-                  point->Radius()->GetBuffer(),
-                  point->Material()->GetBuffer(),
-                  m_vtx_id, m_radius_id, m_material_id);
     
     return r;
 }
 
-void PointBuffer::Render() const
+void LineBuffer::Render() const
 {
     if (!m_model) {
-        printf("[Error] Not setpointmodel\n");
+        printf("[Error] Not set linemodel\n");
     }
     
     bindUniforms(m_model);
     
-    BindPointVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
-    DrawPointArrays_SGL(m_vtxnum);
+    // TODO
+    //BindLineVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
+    //DrawLineArrays_SGL(m_vtxnum);
 }
 
 
