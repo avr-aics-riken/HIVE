@@ -30,8 +30,8 @@ BufferMeshData* OBJLoader::createMeshData(const SimpleObj& obj) const
     Vec2Buffer* texcoord = mesh->Texcoord();
     
     pos->Create(obj.GetVertexNum());
-    const float* pp = pos->GetBuffer();
-    memcpy(&pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
+    float* pp = pos->GetBuffer();
+    memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
     normal->Create(obj.GetVertexNum());
     memcpy(normal->GetBuffer(), obj.GetNormalBuffer(), sizeof(float)*3*obj.GetVertexNum());
     const float* objuv = obj.GetUVBuffer();
@@ -58,15 +58,12 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj& obj) const
     FloatBuffer* radius  = point->Radius();
 
     const int vnum = obj.GetVertexNum();
-    pos->Create(vnum);
-    const float* pp = pos->GetBuffer();
-    memcpy(&pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
-    radius->Create(vnum);
+    float* pp = pos->GetBuffer();
+    memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
     float* rad = radius->GetBuffer();
     for (int i = 0; i < vnum; ++i) {
         rad[i] = 1.0f;
     }
-    mat->Create(obj.GetVertexNum());
     memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
     return point;
 }
@@ -79,8 +76,8 @@ bool OBJLoader::Load(const char* filename){
     if (!r)
         return false;
     
-    createMeshData(obj);
-    createPointData(obj);
+    m_mesh  = createMeshData(obj);
+    m_point = createPointData(obj);
     
 	return r;
 }

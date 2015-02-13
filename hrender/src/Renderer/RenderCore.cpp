@@ -179,9 +179,9 @@ private:
             pbuf->Create(static_cast<const PolygonModel*>(robj));
             buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_POINT) {
-            /*PointBuffer* pbuf = new PointBuffer(RENDER_LSGL);
+            PointBuffer* pbuf = new PointBuffer(RENDER_LSGL);
             pbuf->Create(static_cast<const PointModel*>(robj));
-            buffer = pbuf;*/
+            buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
              VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));

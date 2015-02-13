@@ -6,7 +6,7 @@
 class BufferPointData_Lua : public BufferPointData
 {
 public:
-    BufferPointData_Lua(BufferPointData* vol) : BufferPointData(vol) { }
+    BufferPointData_Lua(BufferPointData* pnt) : BufferPointData(pnt) { }
     BufferPointData_Lua() {}
     ~BufferPointData_Lua() {}
     LUA_SCRIPTCLASS_BEGIN(BufferPointData_Lua)
