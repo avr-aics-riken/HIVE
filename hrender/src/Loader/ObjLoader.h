@@ -5,6 +5,7 @@
 
 class BufferMeshData;
 class BufferPointData;
+class BufferLineData;
 class SimpleObj;
 
 class OBJLoader : public RefCount
@@ -12,11 +13,13 @@ class OBJLoader : public RefCount
 private:
     RefPtr<BufferMeshData> m_mesh;
     RefPtr<BufferPointData> m_point;
+    RefPtr<BufferLineData> m_line;
     
     SimpleObj*  m_obj;
     
-    BufferMeshData*  createMeshData(const SimpleObj& obj) const;
+    BufferMeshData*  createMeshData(const SimpleObj& obj)  const;
     BufferPointData* createPointData(const SimpleObj& obj) const;
+    BufferLineData* createLineData(const SimpleObj& obj)   const;
 
 public:
 	OBJLoader();
@@ -25,8 +28,9 @@ public:
     
 protected:
 	bool Load(const char* filename);
-    BufferMeshData* MeshData();
+    BufferMeshData*  MeshData();
     BufferPointData* PointData();
+    BufferLineData*  LineData();
 };
 
 #endif //_OBJLOADERNATIVE_H

@@ -5,6 +5,7 @@
 #include "Buffer.h"
 #include "BufferMeshData_Lua.h"
 #include "BufferPointData_Lua.h"
+#include "BufferLineData_Lua.h"
 #include "ObjLoader.h"
 
 //------//------//------//------//------//------//------//------//------
@@ -26,6 +27,10 @@ public:
 
     BufferPointData_Lua* PointData() {
         return new BufferPointData_Lua(OBJLoader::PointData());
+    }
+
+    BufferLineData_Lua* LineData() {
+        return new BufferLineData_Lua(OBJLoader::LineData());
     }
 
     LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
