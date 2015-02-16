@@ -26,8 +26,6 @@
 	}
 	
 	function addNode(nodename) {
-		console.log('ADD:' + nodename);
-		console.log(nodeListTable);
 		var node = nodeListTable[nodename],
 			instNode;
 		if (!node) {
@@ -35,6 +33,7 @@
 		}
 		nodeData = nui.getNodeData();
 		instNode = clone(node);
+		console.log(instNode);
 		nodeData.nodeData.push(instNode);
 		if (instNode.varname !== 'root') {
 			instNode.varname += instance_no;
@@ -42,7 +41,21 @@
 		instance_no += 1;
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
-		console.log(nodeData);
+	}
+	
+	function deleteNode(node) {
+		console.log('DELETE:', node);
+		
+		var nodeData = nui.getNodeData(),
+			nodeList = nodeData.nodeData,
+			i;
+		for (i = 0; i < nodeList.length; i = i + 1) {
+			if (nodeList[i].varname === node.varname) {
+				nodeList.splice(i, 1);
+			}
+		}
+		nui.clearNodes();
+		nui.makeNodes(nodeData);
 	}
 	
 	function clearNode() {
@@ -70,11 +83,37 @@
 		d.innerHTML = inner;
 	}
 	
-	//------//------//------//------//------//------//------//------
-	// sasaki S customfunclist
-	//------//------//------//------//------//------//------//------
+	function makeItemNode(name, text) {
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			textNode = document.createElement('div');
+		itemNode.classList.add('flexboxrow');
+		nameNode.innerHTML = '[' + name + ']';
+		textNode.innerHTML = text;
+		itemNode.appendChild(nameNode);
+		itemNode.appendChild(textNode);
+		return itemNode;
+	}
+	function makeItemTextNode(name, text, node) {
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			textNode = document.createElement('input');
+		textNode.setAttribute('type', 'text');
+		itemNode.classList.add('flexboxrow');
+		nameNode.innerHTML = '[' + name + ']';
+		textNode.value = text;
+		itemNode.appendChild(nameNode);
+		itemNode.appendChild(textNode);
+		textNode.addEventListener('keyup', (function (nodeData, txt) {
+			return function (e) {
+				nodeData.value = txt.value;
+			};
+		}(node, textNode)));
+		return itemNode;
+	}
+
 	function showProparty(nodeData) {
-		console.log(nodeData);
+		//console.log(nodeData);
 		var to = document.getElementById("property"),
 			html = '',
 			i,
@@ -83,80 +122,31 @@
 			desc = ['Pos', 'At', 'UP'],
 			pxyz = ['X', 'Y', 'Z'],
 			index = 0,
-			ele;
-
+			ele,
+			prop = document.createElement('div'),
+			itemNode,
+			inode;
 		
-		html = '<br><br><table  bgcolor="#e3f0fb"><tr><td>';
-		if (nodeData.name) {
-			html += "[name]     : " + nodeData.name + '\n';
-			html += '<br><br>';
-		}
-		if (nodeData.varname) {
-			html += "[varname]  : " + nodeData.varname + '\n';
-			html += '<br><br>';
-		}
-		/*
-		if(nodeData.funcname) {
-			html += "[funcname] : " + nodeData.funcname + '\n';
-			html += '<hr><br>';
-		}
-		*/
+		to.innerHTML = ''; // clear
+		to.appendChild(makeItemNode('name', nodeData.name));
+		to.appendChild(makeItemNode('varname', nodeData.varname));
+		//to.appendChild(makeItemNode('funcname', nodeData.funcname));
 		
-		if (nodeData.name === "OBJLoader" || nodeData.name === "STLLoader") {
-			if (nodeData.input) {
-				for (i = 0; i < nodeData.input.length; i = i + 1) {
-					if (nodeData.input[i].value) {
-						html += '[FileName] : <input id="ObjTextBox" type="text"' + ' value="' + nodeData.input[i].value + '">' + '\n';
-					}
+		to.appendChild(prop);
+		//console.log(nodeData.input);
+		if (!nodeData.input) {
+			return;
+		}
+		for (i = 0; i < nodeData.input.length; i = i + 1) {
+			if (nodeData.input.hasOwnProperty(i)) {
+				inode = nodeData.input[i];
+				if (inode.type === 'string'	|| inode.type === 'float' || inode.type === 'number') {
+					itemNode = makeItemTextNode(inode.name, inode.value, inode);
+				} else {
+					itemNode = makeItemNode(inode.name, '(Object)');
 				}
-				html += '<br><br>';
+				prop.appendChild(itemNode);
 			}
-			
-		}
-		
-		//--------------------------------------------------------------------
-		// Camera Data
-		//--------------------------------------------------------------------
-		if (nodeData.name === "CreateCamera") {
-			cameradata = [];
-			for (i = 0; i < nodeData.cameradata.length; i = i + 1) {
-				cameradata[i] = nodeData.cameradata[i];
-			}
-			html += '<br>';
-			html += '[LookAt]<br>';
-			for (k = 0; k < 3; k = k + 1) {
-				html += desc[k] + '<br>';
-				for (i = 0; i < 3; i = i + 1) {
-					html += pxyz[i] + '<input size=10 id="LookAt" type="text"' + ' value="' + cameradata[index] + '">';
-					index = index + 1;
-				}
-				html += '<br><br>';
-			}
-			
-			//FOV
-			html += '<br>';
-			html += '<br>';
-			html += 'Fov<br>';
-			html += '<input size=2 id="CameraTextBox" type="text"' + ' value="' + cameradata[index] + '">';
-			html += '<br>';
-		}
-		
-		if (nodeData.customfunc) {
-			html += "[customfunc] : " + nodeData.customfunc	 + '\n';
-			html += '<br><br>';
-		}
-		html += '</td><tr><table>';
-		to.innerHTML = html;
-
-		//setup handler
-		ele = document.getElementById("ObjTextBox");
-		if (ele) {
-			ele.addEventListener("keyup", function () {
-				nodeData.input[0].value = ele.value;
-				console.log(nodeData.input[0].value, ele.value);
-			});
-		} else {
-			console.log('cant create ele\n');
 		}
 	}
 
@@ -223,20 +213,6 @@
 		text = ele[0].options[index].text;
 		
 		addNode(text);
-		/*
-		if (index >= 0) {
-			node = nodeList[index];
-			nodeData = nui.getNodeData();
-			instNode = clone(node);
-			nodeData.nodeData.push(instNode);
-			if (instNode.varname !== 'root') {
-				instNode.varname += instance_no;
-			}
-			instance_no += 1;
-			nui.clearNodes();
-			nui.makeNodes(nodeData);
-			console.log(nodeData);
-		}*/
 	}
 
 	//---------------------------------------------------------------------------
@@ -256,6 +232,7 @@
 		nui.clearNodes();
 
 		nui.nodeClickEvent(showProparty);
+		nui.nodeDeleteEvent(deleteNode);
 
 		//handle
 		openbutton.onclick   = ButtonOpen;

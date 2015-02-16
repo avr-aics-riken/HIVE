@@ -11,6 +11,7 @@ camera:LookAt(
 	60
 )
 
+camera:SetNetworkAddress('http://localhost:8080');
 
 local obj = OBJLoader()
 obj:Load('bunny.obj')
