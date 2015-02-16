@@ -46,6 +46,7 @@ bool CreateProgramBinary_SGL(const char* soname, unsigned int& prg);
 bool DeleteProgram_SGL(unsigned int prg);
 void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx);
 void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material);
+void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx);
 void LineWidth_SGL(float w);
 
 void GenTextures_SGL(int n, unsigned int* tex);

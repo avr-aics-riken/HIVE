@@ -26,7 +26,7 @@ void BufferLineData::Clear()
     m_index  = 0;
 }
 
-void BufferLineData::Create(int vertexnum, int indexnum)
+void BufferLineData::Create(int vertexnum, int indexnum, bool useRadius)
 {
     m_pos    = new Vec3Buffer();
     m_mat    = new FloatBuffer();
@@ -34,7 +34,8 @@ void BufferLineData::Create(int vertexnum, int indexnum)
     m_index  = new UintBuffer();
     m_pos->Create(vertexnum);
     m_mat->Create(vertexnum);
-    m_radius->Create(vertexnum);
+    if (useRadius)
+        m_radius->Create(vertexnum);
     if (indexnum)
         m_index->Create(indexnum);
 }

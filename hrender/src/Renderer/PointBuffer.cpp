@@ -10,15 +10,25 @@
 PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_vtxnum      = 0;
-    m_indexnum    = 0;
+    m_model       = 0;
     m_vtx_id      = 0;
     m_radius_id   = 0;
     m_material_id = 0;
-    m_model       = 0;
 }
 
 PointBuffer::~PointBuffer()
 {
+}
+
+void PointBuffer::Clear()
+{
+    if (m_vtx_id)      ReleaseBufferVBIB_SGL(m_vtx_id);
+    if (m_radius_id)   ReleaseBufferVBIB_SGL(m_radius_id);
+    if (m_material_id) ReleaseBufferVBIB_SGL(m_material_id);
+    m_vtx_id      = 0;
+    m_radius_id   = 0;
+    m_material_id = 0;
+    m_vtxnum      = 0;
 }
 
 bool PointBuffer::Create(const PointModel* model)
@@ -59,7 +69,6 @@ bool PointBuffer::Create(const PointModel* model)
             point->Material()->GetBuffer(),
             m_vtx_id, m_radius_id, m_material_id);
     m_vtxnum   = particlenum;
-    m_indexnum = 0;
 
     CreateVBRM_GL(particlenum,
                   point->Position()->GetBuffer(),
