@@ -157,6 +157,7 @@ set(SOURCES
 	src/Buffer/BufferLineData.cpp
 	src/Buffer/BufferSparseVolumeData.cpp
 	src/Buffer/BufferPointData.cpp
+	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
 	src/Loader/ObjLoader.cpp
@@ -165,6 +166,8 @@ set(SOURCES
 	src/Loader/VolLoader.cpp
 	src/Loader/PdbLoader.cpp
 	src/Loader/tiny_pdb.cpp
+	src/Loader/ImageLoader.cpp
+	src/Loader/ImageSaver.cpp
 	src/Network/Connection.cpp
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp
