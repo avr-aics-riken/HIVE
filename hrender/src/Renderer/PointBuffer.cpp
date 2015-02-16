@@ -4,7 +4,7 @@
 #include "PointBuffer.h"
 #include "BufferPointData.h"
 #include "../RenderObject/PointModel.h"
-
+#include "Buffer.h"
 #include "Commands.h"
 
 PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)

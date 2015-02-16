@@ -4,7 +4,7 @@
 #include "LineBuffer.h"
 #include "BufferLineData.h"
 #include "../RenderObject/LineModel.h"
-
+#include "Buffer.h"
 #include "Commands.h"
 
 LineBuffer::LineBuffer(RENDER_MODE mode) : BaseBuffer(mode)

@@ -2,6 +2,7 @@
 
 #include "StlLoader.h"
 #include "SimpleSTLB.h"
+#include "Buffer.h"
 
 STLLoader::STLLoader()
 {
