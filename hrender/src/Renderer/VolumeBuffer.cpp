@@ -5,7 +5,7 @@
 #include "BufferVolumeData.h"
 #include "../RenderObject/VolumeModel.h"
 #include "../Buffer/BufferMeshData.h"
-
+#include "Buffer.h"
 #include "Commands.h"
 
 VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)

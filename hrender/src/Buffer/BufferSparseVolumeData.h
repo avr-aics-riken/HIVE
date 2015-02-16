@@ -2,24 +2,22 @@
 #define _BUFFERSPARSEVOLUMEDATA_H_
 
 #include "Ref.h"
-#include "Buffer.h"
-#include "BufferVolumeData.h"
 #include <vector>
+
+class BufferVolumeData;
 
 class BufferSparseVolumeData : public RefCount
 {
+private:
+    class Impl;
+    Impl* m_imp;
+
 public:
     typedef struct {
         int offset[3];
         BufferVolumeData* volume;
     } VolumeBlock;
 
-private:
-    int m_dim[3];
-    int m_comp;
-    std::vector<VolumeBlock> m_volumes;
-    
-public:
     BufferSparseVolumeData();
     BufferSparseVolumeData(BufferSparseVolumeData* inst);
     ~BufferSparseVolumeData();

@@ -3,7 +3,7 @@
 #include "PolygonBuffer.h"
 #include "../RenderObject/PolygonModel.h"
 #include "../Buffer/BufferMeshData.h"
-
+#include "Buffer.h"
 #include "Commands.h"
 
 PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)

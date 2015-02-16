@@ -1,6 +1,6 @@
 #include "PdbLoader.h"
 #include "tiny_pdb.h"
-
+#include "Buffer.h"
 #include <cstring>
 
 PDBLoader::PDBLoader(){}
