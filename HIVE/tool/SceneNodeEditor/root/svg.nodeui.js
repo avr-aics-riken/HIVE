@@ -10,7 +10,8 @@ function svgNodeUI(draw) {
 		draggingPlug = null,
 		nodeArray = {},
 		plugArray = {},
-		nodeClickFunction = null;
+		nodeClickFunction = null,
+		nodeDeleteFunction = null;
 	
 	
 	function getPlugVarName(nodeName, plugName) {
@@ -225,7 +226,11 @@ function svgNodeUI(draw) {
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
 			nodebase = draw.rect(220, 60).radius(10).attr({'fill': "#424542", 'fill-opacity': "0.8", 'stroke': "none"}),
+			erasebtn = draw.rect(15, 15).radius(5).attr({'fill': "#ea4412", 'fill-opacity': "0.8", 'stroke': "none"}),
+			eraseA = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(45),
+			eraseB = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(-45),
 			titletext = draw.text(typename).fill('#ef8815').move(15, 5),
+			eraseG = draw.group().move(200, 5),
 			group = draw.group(),
 			groupDragStart = function (self) {
 				return function (delta, event) {
@@ -242,6 +247,7 @@ function svgNodeUI(draw) {
 					self.fit();
 				};
 			},
+			
 			i,
 			nodeText,
 			inoutNum = 0,
@@ -249,9 +255,22 @@ function svgNodeUI(draw) {
 			plugConnectors = {};
 		
 		nodeArray[varName] = this;
-
+		eraseG.add(erasebtn);
+		eraseG.add(eraseA);
+		eraseG.add(eraseB);
+		eraseG.on('mousedown', (function (node) {
+			return function () {
+				if (nodeDeleteFunction) {
+					setTimeout(function () {
+						nodeDeleteFunction(node.nodeData);
+					}, 0);
+				}
+			};
+		}(this)));
+		
 		group.add(nodebase);
 		group.add(titletext);
+		group.add(eraseG);
 		group.draggable();
 		group.dragstart = groupDragStart(this);
 		group.dragmove = groupDragMove(this);
@@ -566,6 +585,9 @@ function svgNodeUI(draw) {
 	function nodeClickEvent(func) {
 		nodeClickFunction = func;
 	}
+	function nodeDeleteEvent(func) {
+		nodeDeleteFunction = func;
+	}
 	
 	return {
 		PlugClass: PlugClass,
@@ -579,7 +601,8 @@ function svgNodeUI(draw) {
 		makeNodes: makeNodes,
 		getNodeData: getNodeData,
 		clearNodes: clearNodes,
-		nodeClickEvent: nodeClickEvent
+		nodeClickEvent: nodeClickEvent,
+		nodeDeleteEvent: nodeDeleteEvent
 	};
 }
 

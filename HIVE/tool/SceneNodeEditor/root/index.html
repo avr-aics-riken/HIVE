@@ -8,16 +8,18 @@
       <script type="text/javascript" src="svg.draggable.js"></script>
       <script type="text/javascript" src="svg.nodeui.js"></script>
       <script type="text/javascript" src="client.js"></script>
+	  <link rel="stylesheet" href="style.css" type="text/css" />
       <title>NodeEditor</title>
   </head>
 <body bgcolor=white>
   <svg id="nodecanvas" style="position:absolute;left:0px;top:0px;right:0px; bottom:0px;"    ></svg>
-  <div style="background-color:rgba(39, 39, 39, 0.49);position:fixed;right:0px;top:0px;width:480px;height:350px"></div>
-  <input type="button"  value="Add"     id="Add"    style="position:fixed;right:430px;top:20px;">
-  <input type="button"  value="Render"  id="Render" style="position:fixed;right:280px;top:20px;">
-  <input type="button"  value="Clear"   id="Clear"  style="position:fixed;right:200px;top:20px;">
-  <input type="button"  value="Reload"  id="Open"   style="position:fixed;right:120px;top:20px;">
-  <div id="NodeListBox" style="position:fixed;right:0px;top:50px;width:480px;height:300px"></div>
-  <div id="property"    style="position:fixed;right:0px;top:300px;width:480px"></div>
+  <div style="background-color:rgba(39, 39, 39, 0.49);position:fixed;right:0px;top:0px;width:480px;bottom:0px;overflow:auto;">
+	  <input type="button"  value="Add"     id="Add"    style="position:absolute;right:430px;top:20px;">
+	  <input type="button"  value="Render"  id="Render" style="position:absolute;right:280px;top:20px;">
+	  <input type="button"  value="Clear"   id="Clear"  style="position:absolute;right:200px;top:20px;">
+	  <input type="button"  value="Reload"  id="Open"   style="position:absolute;right:120px;top:20px;">
+	  <div id="NodeListBox" style="position:absolute;top:50px;height:300px"></div>
+	  <div id="property"    style="position:absolute;top:350px;padding:10px 10px 10px"></div>
+  </div>
 </body>
 </html>
