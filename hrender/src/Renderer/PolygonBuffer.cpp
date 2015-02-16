@@ -23,20 +23,27 @@ PolygonBuffer::~PolygonBuffer()
 
 bool PolygonBuffer::Create(const PolygonModel* model)
 {
-    bool r = true;
+    if (!model) {
+        printf("[Error] Invalid polygon model\n");
+        return false;
+    }
     
     m_model = model;
     
     // load shader
     const std::string& shadername = model->GetShader();
 
-    r &= loadShaderSrc(shadername.c_str());
+    bool r = loadShaderSrc(shadername.c_str());
     if (!r) {
         printf("[Error]Not set shader\n");
     }
         
     // make VB/IB
     BufferMeshData* mesh = model->GetMesh();
+    if (!mesh) {
+        printf("[Error] Invalid mesh data\n");
+        return false;
+    }
     const int vnum = mesh->Position()->GetNum();
     const int inum = mesh->Index()->GetNum();
     

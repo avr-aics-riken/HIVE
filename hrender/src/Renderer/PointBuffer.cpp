@@ -42,6 +42,11 @@ bool PointBuffer::Create(const PointModel* model)
 
     // make PointData
     BufferPointData *point = model->GetPoint();
+    if (!point) {
+        printf("[Error]Invalid point data\n");
+        return false;
+    }
+        
     unsigned int particlenum = point->Position()->GetNum();
     if (particlenum <= 0) {
         printf("[Error]Point vertex empty\n");
