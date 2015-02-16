@@ -22,6 +22,7 @@ public:
 
     bool Create(const LineModel* point);
     void Render() const;
+    void Clear();
 };
 
 #endif //_LINEBUFFER_H_

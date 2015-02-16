@@ -17,7 +17,7 @@ public:
     BufferLineData();
     BufferLineData(BufferLineData* inst);
     ~BufferLineData();
-    void Create(int vertexnum, int indexnum);
+    void Create(int vertexnum, int indexnum, bool useRadius = false);
     void Clear();
     Vec3Buffer*  Position();
     FloatBuffer* Radius();

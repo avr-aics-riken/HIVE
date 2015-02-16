@@ -96,18 +96,16 @@ void CreateVBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuffe
 	sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_id);
 	sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, posbuffer, GL_STATIC_DRAW);
 
-	sgl.glGenBuffers(1, &radius_id);
-	sgl.glBindBuffer(GL_ARRAY_BUFFER, radius_id);
-	sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, radiusbuffer, GL_STATIC_DRAW);
-	//sgl.lsglSetPointSizev(vertexnum, radiusbuffer); // deprecated.
-
-	sgl.glGenBuffers(1, &mat_id);
-	sgl.glBindBuffer(GL_ARRAY_BUFFER, mat_id);
-	sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, matbuffer, GL_STATIC_DRAW);
-
-	//sgl.glGenBuffers(1, &index_id);
-	//sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_id);
-	//sgl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
+    if (radiusbuffer) {
+        sgl.glGenBuffers(1, &radius_id);
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, radius_id);
+        sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, radiusbuffer, GL_STATIC_DRAW);
+    }
+    if (matbuffer) {
+        sgl.glGenBuffers(1, &mat_id);
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, mat_id);
+        sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, matbuffer, GL_STATIC_DRAW);
+    }
 }
 
 void CreateVBIBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
@@ -119,14 +117,16 @@ void CreateVBIBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuf
     sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_id);
     sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, posbuffer, GL_STATIC_DRAW);
     
-    sgl.glGenBuffers(1, &radius_id);
-    sgl.glBindBuffer(GL_ARRAY_BUFFER, radius_id);
-    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, radiusbuffer, GL_STATIC_DRAW);
-    //sgl.lsglSetPointSizev(vertexnum, radiusbuffer); // deprecated.
-    
-    sgl.glGenBuffers(1, &mat_id);
-    sgl.glBindBuffer(GL_ARRAY_BUFFER, mat_id);
-    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, matbuffer, GL_STATIC_DRAW);
+    if (radiusbuffer) {
+        sgl.glGenBuffers(1, &radius_id);
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, radius_id);
+        sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, radiusbuffer, GL_STATIC_DRAW);
+    }
+    if (mat_id) {
+        sgl.glGenBuffers(1, &mat_id);
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, mat_id);
+        sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, matbuffer, GL_STATIC_DRAW);
+    }
     
     sgl.glGenBuffers(1, &index_id);
     sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_id);
@@ -379,7 +379,7 @@ void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
 	GLint attrNormal = sgl.glGetAttribLocation(prg, "mnormal");
 	GLint attrPos    = sgl.glGetAttribLocation(prg, "position");
     GLint attrTex    = sgl.glGetAttribLocation(prg, "texcoord");
-    if (attrTex >= 0 && texidx > 0) {
+    if (attrTex != -1 && texidx != -1) {
         sgl.glBindBuffer(GL_ARRAY_BUFFER, texidx);
         sgl.glVertexAttribPointer(attrTex, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
         sgl.glEnableVertexAttribArray(attrTex);
@@ -401,8 +401,7 @@ void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
 		sgl.glVertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 		sgl.glEnableVertexAttribArray(attrPos);
 	}
-	
-	sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
 void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material)
@@ -412,21 +411,47 @@ void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_rad
 	GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
 	GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
 	
-	if (attrRadius >= 0) {
+	if (attrRadius != -1) {
 		sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_radius);
 		sgl.glVertexAttribPointer(attrRadius, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
 		sgl.glEnableVertexAttribArray(attrRadius);
 	}
-	if (attrMaterial >= 0) {
+	if (attrMaterial != -1) {
 		sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_material);
 		sgl.glVertexAttribPointer(attrMaterial, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
 		sgl.glEnableVertexAttribArray(attrMaterial);
 	}
-	if (attrPos >= 0) {
+	if (attrPos != -1) {
 		sgl.glBindBuffer(GL_ARRAY_BUFFER, vtxidx);
 		sgl.glVertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 		sgl.glEnableVertexAttribArray(attrPos);
 	}
+}
+
+void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attrRadius   = sgl.glGetAttribLocation(prg, "lsgl_LineWidth");
+    GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+    GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    
+    if (attrRadius != -1 && vtx_radius > 0) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_radius);
+        sgl.glVertexAttribPointer(attrRadius, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        sgl.glEnableVertexAttribArray(attrRadius);
+    }
+    if (attrMaterial != -1 && vtx_material > 0) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_material);
+        sgl.glVertexAttribPointer(attrMaterial, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        sgl.glEnableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtxidx);
+        sgl.glVertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        sgl.glEnableVertexAttribArray(attrPos);
+    }
+
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
 void LineWidth_SGL(float w)
