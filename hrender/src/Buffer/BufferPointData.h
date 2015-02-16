@@ -2,15 +2,16 @@
 #define _BUFFERPOINTDATA_H_
 
 #include "Ref.h"
-#include "Buffer.h"
-#include <vector>
+
+class Vec3Buffer;
+class FloatBuffer;
 
 class BufferPointData : public RefCount
 {
 private:
-    RefPtr<Vec3Buffer>  m_pos;
-    RefPtr<FloatBuffer> m_radius;
-    RefPtr<FloatBuffer> m_mat;
+    class Impl;
+    Impl* m_imp;
+    
 public:
     BufferPointData();
     BufferPointData(BufferPointData* inst);

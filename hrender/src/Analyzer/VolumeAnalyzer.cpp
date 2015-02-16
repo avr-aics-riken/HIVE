@@ -1,6 +1,7 @@
 #include "VolumeAnalyzer.h"
 #include "Analyzer.h"
 #include "../Buffer/BufferMeshData.h"
+#include "Buffer.h"
 
 VolumeAnalyzer::VolumeAnalyzer()
 {
