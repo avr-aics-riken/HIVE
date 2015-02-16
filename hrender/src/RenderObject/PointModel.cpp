@@ -22,6 +22,8 @@ public:
     
     bool Create(BufferPointData* pointdata)
     {
+        if (!pointdata)
+            return false;
         m_point = pointdata;
         return true;
     }

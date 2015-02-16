@@ -43,6 +43,10 @@ bool LineBuffer::Create(const LineModel* model)
 
     // make LineData
     BufferLineData* line = model->GetLine();
+    if (!line) {
+        printf("[Error]Invalid line data\n");
+        return false;
+    }
     unsigned int linePointNum = line->Position()->GetNum();
     if (linePointNum <= 0) {
         printf("[Error]Point vertex empty\n");

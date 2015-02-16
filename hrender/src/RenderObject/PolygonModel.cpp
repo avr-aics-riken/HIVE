@@ -22,6 +22,9 @@ public:
     
     bool Create(BufferMeshData* m)
     {
+        if (!m) {
+            return false;
+        }
         m_mesh = m;
         return true;
     }
