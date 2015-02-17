@@ -552,17 +552,23 @@ function svgNodeUI(draw) {
 			node,
 			outputPlug,
 			inputNode,
-			i;
+			i,
+			outNode,
+			inpNode;
 		for (i = 0; i < nodeData.length; i += 1) {
 			node = new Node(nodeData[i].name, nodeData[i]);
 			node.move(nodeData[i].pos[0], nodeData[i].pos[1]);
 		}
 		
 		for (i = 0; i < plugData.length; i += 1) {
-			outputPlug = getNode(plugData[i].output.node).getConnector(plugData[i].output.plug);
-			inputNode = getNode(plugData[i].input.node).getConnector(plugData[i].input.plug);
-			if (outputPlug && inputNode) {
-				inputNode.connectPlug(outputPlug);
+			outNode = getNode(plugData[i].output.node);
+			inpNode = getNode(plugData[i].input.node);
+			if (outNode && inpNode) {
+				outputPlug = outNode.getConnector(plugData[i].output.plug);
+				inputNode  = inpNode.getConnector(plugData[i].input.plug);
+				if (outputPlug && inputNode) {
+					inputNode.connectPlug(outputPlug);
+				}
 			}
 		}
 	}

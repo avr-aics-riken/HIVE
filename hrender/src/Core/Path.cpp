@@ -6,6 +6,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #elif __APPLE__
+#undef __BLOCKS__ // avoid BCMLib::block.h miss include
 #include <CoreFoundation/CFBundle.h>
 #else
 #include <unistd.h>
