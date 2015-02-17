@@ -35,9 +35,7 @@
 		instNode = clone(node);
 		console.log(instNode);
 		nodeData.nodeData.push(instNode);
-		if (instNode.varname !== 'root') {
-			instNode.varname += instance_no;
-		}
+		instNode.varname += instance_no;
 		instance_no += 1;
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
@@ -62,10 +60,11 @@
 		nui.clearNodes();
 		nodeData = nui.getNodeData();
 		document.getElementById("property").innerHTML = '';
-		
-		addNode("Render");
 	}
 	
+	//
+	// TODO: refactro me!!
+	//
 	function createNodeListUI() {
 		var d = document.getElementById('NodeListBox'),
 			inner,
