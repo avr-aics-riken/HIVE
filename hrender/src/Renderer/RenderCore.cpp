@@ -27,7 +27,7 @@
 #include "VolumeBuffer.h"
 
 #include "../Buffer/Buffer.h"
-#include "../Buffer/BufferIMageData.h"
+#include "../Buffer/BufferImageData.h"
 #include "../Image/ImageSaver.h"
 
 #include "../Core/Path.h"

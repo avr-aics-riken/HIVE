@@ -128,7 +128,8 @@ ENDIF()
 
 # Headers
 set(INCLUDES
-	${PROJECT_SOURCE_DIR}/../third_party/lua/src
+  ${PROJECT_SOURCE_DIR}/../third_party/lua/src
+  ${CMAKE_BINARY_DIR}/third_party/lua/
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
 	${PROJECT_SOURCE_DIR}/../third_party/local
@@ -142,8 +143,6 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
 	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
 	${PROJECT_SOURCE_DIR}/../hrender/src/Core
-    ${CMAKE_BINARY_DIR}/third_party/lua
-    ${PROJECT_SOURCE_DIR}/../third_party/local/include
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
@@ -282,7 +281,9 @@ target_link_libraries(hrender ${BCMTOOLS_LIBS})
 
 # Additional Libraries
 if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_definitions(-U__BLOCKS__) # work around with BCMlib's Block.h header
+    if(HIVE_BUILD_WITH_BCMTOOLS)
+    	add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
+    endif()
 	find_library(COCOA Cocoa)
 	if (NOT COCOA)
 	    message(FATAL_ERROR "Cocoa Framework not found")
