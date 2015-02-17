@@ -1,11 +1,10 @@
 {
 	"name": "LoadSTL",
 	"funcname": "LoadSTL",
+	"info":"STLファイルを読み込むためのノード",
 	"pos": [100, 100],
 	"varname": "instSTLLoader",
 	"customfuncfile":"stlloader.lua",
-	"deletable": true,
-	"info":"STLファイルを読み込むためのノード",
 	"input": [
 		{"name": "filepath", "type": "string", "value": "bunny.stl"}
 	],

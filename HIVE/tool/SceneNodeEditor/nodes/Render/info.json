@@ -1,14 +1,13 @@
 {
 	"name": "Render",
 	"funcname": "Render",
-	"pos": [700, 100],
+	"info":"レンダリングを行うためのノード",
+	"pos": [500, 100],
 	"varname": "root",
 	"customfuncfile":"render.lua",
-	"deletable": false,
 	"rootnode":true,
-	"info":"レンダリングを行うためのノード",
 	"input": [
-		{"name": "Camera",       "type": "Camera"},
+		{"name": "Camera",        "type": "RenderObject"},
 		{"name": "RenderObject0", "type": "RenderObject"},
 		{"name": "RenderObject1", "type": "RenderObject"},
 		{"name": "RenderObject2", "type": "RenderObject"},

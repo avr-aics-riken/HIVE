@@ -1,11 +1,10 @@
 {
 	"name": "CreatePolygonModel",
 	"funcname": "CreatePolygonModel",
+	"info":"メッシュデータを表示させるためのノード",
 	"pos": [450, 300],
 	"varname": "instPolygonModel",
 	"customfuncfile": "createPolygonModel.lua",
-	"deletable": false,
-	"info":"メッシュデータを表示させるためのノード",
 	"input": [
 		{"name": "mesh", "type": "MeshData"},
 		{"name": "shadername", "type": "string", "value":"white.frag"}
