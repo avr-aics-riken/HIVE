@@ -3,7 +3,7 @@
 #include "PolygonBuffer.h"
 #include "../RenderObject/PolygonModel.h"
 #include "../Buffer/BufferMeshData.h"
-
+#include "Buffer.h"
 #include "Commands.h"
 
 PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)
@@ -19,6 +19,23 @@ PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 }
 PolygonBuffer::~PolygonBuffer()
 {
+    Clear();
+}
+
+void PolygonBuffer::Clear()
+{
+    if (m_vtx_id)    ReleaseBufferVBIB_SGL(m_vtx_id);
+    if (m_mat_id)    ReleaseBufferVBIB_SGL(m_mat_id);
+    if (m_normal_id) ReleaseBufferVBIB_SGL(m_normal_id);
+    if (m_tex_id)    ReleaseBufferVBIB_SGL(m_tex_id);
+    if (m_index_id)  ReleaseBufferVBIB_SGL(m_index_id);
+    m_vtx_id     = 0;
+    m_normal_id  = 0;
+    m_mat_id     = 0;
+    m_tex_id     = 0;
+    m_index_id   = 0;
+    m_vertex_num = 0;
+    m_index_num  = 0;
 }
 
 bool PolygonBuffer::Create(const PolygonModel* model)

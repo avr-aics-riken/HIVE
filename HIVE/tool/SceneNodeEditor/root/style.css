@@ -1,0 +1,21 @@
+.flexboxrow
+{
+	display: -webkit-flex;
+	-webkit-flex-direction: row;
+
+	display: flex;
+	flex-direction: row;
+}
+
+.flexboxrow > div
+{
+	width:200px;
+	-webkit-flex: 1 1 auto;
+	flex: 1 1 auto;
+}
+.flexboxrow > input
+{
+	width:50px;
+	-webkit-flex: 1 1 auto;
+	flex: 1 1 auto;
+}

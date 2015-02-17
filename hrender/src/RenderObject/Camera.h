@@ -3,6 +3,8 @@
 
 #include "RenderObject.h"
 
+class BufferImageData;
+
 class Camera : public RenderObject {
     
 public:
@@ -18,6 +20,8 @@ public:
     int                GetScreenHeight() const;
     const CameraInfo*  GetCameraInfo() const;
     const std::string& GetOutputFile() const;
+    BufferImageData*   GetImageBuffer();
+    BufferImageData*   GetDepthBuffer();
     
 private:
     class Impl;

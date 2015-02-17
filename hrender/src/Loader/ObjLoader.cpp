@@ -3,6 +3,7 @@
 #include "BufferMeshData.h"
 #include "BufferPointData.h"
 #include "BufferLineData.h"
+#include "Buffer.h"
 
 OBJLoader::OBJLoader()
 {

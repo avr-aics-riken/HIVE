@@ -2,6 +2,7 @@
 #include "PolygonAnalyzer.h"
 #include "Analyzer.h"
 #include "../Buffer/BufferMeshData.h"
+#include "Buffer.h"
 
 PolygonAnalyzer::PolygonAnalyzer()
 {

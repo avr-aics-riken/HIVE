@@ -9,7 +9,6 @@ class PointBuffer : public BaseBuffer
 {
 private:
     unsigned int m_vtxnum     ;
-    unsigned int m_indexnum   ;
     unsigned int m_vtx_id     ;
     unsigned int m_radius_id  ;
     unsigned int m_material_id;
@@ -21,6 +20,7 @@ public:
 
     bool Create(const PointModel* point);
     void Render() const;
+    void Clear();
 };
 
 #endif //_POINTBUFFER_H_

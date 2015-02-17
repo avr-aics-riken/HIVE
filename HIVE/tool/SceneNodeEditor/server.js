@@ -51,11 +51,13 @@ function makeNodeList(callback) {
 		}
 		for (i in files) {
 			if (files.hasOwnProperty(i)) {
-				nodeDirPath = nodeDir + "/" + files[i];
-				infofile = nodeDirPath + "/info.json";
-				console.log(infofile);
-				fileCounter = fileCounter + 1;
-				fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
+				if (files[i].substr(0, 1) !== '.') {
+					nodeDirPath = nodeDir + "/" + files[i];
+					infofile = nodeDirPath + "/info.json";
+					console.log(infofile);
+					fileCounter = fileCounter + 1;
+					fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
+				}
 			}
 		}
 	});

@@ -10,7 +10,8 @@ function svgNodeUI(draw) {
 		draggingPlug = null,
 		nodeArray = {},
 		plugArray = {},
-		nodeClickFunction = null;
+		nodeClickFunction = null,
+		nodeDeleteFunction = null;
 	
 	
 	function getPlugVarName(nodeName, plugName) {
@@ -225,7 +226,11 @@ function svgNodeUI(draw) {
 	function Node(typename, inouts) {
 		var varName = inouts.varname,
 			nodebase = draw.rect(220, 60).radius(10).attr({'fill': "#424542", 'fill-opacity': "0.8", 'stroke': "none"}),
+			erasebtn = draw.rect(15, 15).radius(5).attr({'fill': "#ea4412", 'fill-opacity': "0.8", 'stroke': "none"}),
+			eraseA = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(45),
+			eraseB = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(-45),
 			titletext = draw.text(typename).fill('#ef8815').move(15, 5),
+			eraseG = draw.group().move(200, 5),
 			group = draw.group(),
 			groupDragStart = function (self) {
 				return function (delta, event) {
@@ -242,6 +247,7 @@ function svgNodeUI(draw) {
 					self.fit();
 				};
 			},
+			
 			i,
 			nodeText,
 			inoutNum = 0,
@@ -249,9 +255,22 @@ function svgNodeUI(draw) {
 			plugConnectors = {};
 		
 		nodeArray[varName] = this;
-
+		eraseG.add(erasebtn);
+		eraseG.add(eraseA);
+		eraseG.add(eraseB);
+		eraseG.on('mousedown', (function (node) {
+			return function () {
+				if (nodeDeleteFunction) {
+					setTimeout(function () {
+						nodeDeleteFunction(node.nodeData);
+					}, 0);
+				}
+			};
+		}(this)));
+		
 		group.add(nodebase);
 		group.add(titletext);
+		group.add(eraseG);
 		group.draggable();
 		group.dragstart = groupDragStart(this);
 		group.dragmove = groupDragMove(this);
@@ -392,9 +411,19 @@ function svgNodeUI(draw) {
 			customfuncs = {},
 			customfuncSrc = '',
 			fn,
-			temp;
-		
-		pushNextNode(nodeArray.root, dependency);
+			temp,
+			rootList = [];
+	
+		for (i in nodeArray) {
+			if (nodeArray.hasOwnProperty(i)) {
+				if (nodeArray[i].nodeData.rootnode) {
+					rootList.push(nodeArray[i]);
+				}
+			}
+		}
+		for (i = 0; i < rootList.length; i = i + 1) {
+			pushNextNode(rootList[i], dependency);
+		}
 		console.log(dependency);
 
 		//Add Custom Func
@@ -413,38 +442,54 @@ function svgNodeUI(draw) {
 			if (node.define) {
 				src += node.define;
 			}
-			src += 'local ' + node.varname + ' = ' + node.name + '()\n';
+			/*src += 'local ' + node.varname + ' = ' + node.name + '()\n';
 			if (node.funcname) {
 				src += node.varname + ':' + node.funcname + '(';
 			} else {
 				src += node.varname + '(';
-			}
+			}*/
+			src += 'local ' + node.varname + ' = ' + node.funcname + '({';
 			if (node.input) {
 				for (j = 0; j < node.input.length; j += 1) {
 					plugname = getPlugVarName(node.varname, node.input[j].name);
 					if (plugArray[plugname]) {
 						temp = plugArray[plugname].varname;
 						if (temp.substr(temp.length - 1, temp.length) === ':') {
-							src += temp.substr(0, temp.length - 1);
+							src += node.input[j].name + '=' + temp.substr(0, temp.length - 1);
 						} else {
-                            src += plugArray[plugname].varname + '()';
+                            src += node.input[j].name + '=' + plugArray[plugname].varname + '()';
 						}
 					} else if (node.input[j].value) {
 						if (node.input[j].type === 'string') {
-							src += '\'' + node.input[j].value + '\'';
-						} else {
-							src += node.input[j].value;
+							src += node.input[j].name + '=\'' + node.input[j].value + '\'';
+						} else if (node.input[j].type === 'vec4') {
+							src += node.input[j].name + '={';
+							src += node.input[j].value[0] + ',';
+							src += node.input[j].value[1] + ',';
+							src += node.input[j].value[2] + ',';
+							src += node.input[j].value[3] + '}';
+						} else if (node.input[j].type === 'vec3') {
+							src += node.input[j].name + '={';
+							src += node.input[j].value[0] + ',';
+							src += node.input[j].value[1] + ',';
+							src += node.input[j].value[2] + '}';
+						} else if (node.input[j].type === 'vec2') {
+							src += node.input[j].name + '={';
+							src += node.input[j].value[0] + ',';
+							src += node.input[j].value[1] + '}';
+						} else if (node.input[j].type === 'float') {
+							src += node.input[j].name + ' = ' + node.input[j].value;
 						}
 					} else {
 						src += 'nil';
 					}
 					if (j !== node.input.length - 1) {
-						src += ',';
+						src += ', ';
 					}
 					
 				}
 			}
-			src += ')\n';
+			src += '})\n';
 		}
 		for (fn in customfuncs) {
 			if (customfuncs.hasOwnProperty(fn)) {
@@ -566,6 +611,9 @@ function svgNodeUI(draw) {
 	function nodeClickEvent(func) {
 		nodeClickFunction = func;
 	}
+	function nodeDeleteEvent(func) {
+		nodeDeleteFunction = func;
+	}
 	
 	return {
 		PlugClass: PlugClass,
@@ -579,7 +627,8 @@ function svgNodeUI(draw) {
 		makeNodes: makeNodes,
 		getNodeData: getNodeData,
 		clearNodes: clearNodes,
-		nodeClickEvent: nodeClickEvent
+		nodeClickEvent: nodeClickEvent,
+		nodeDeleteEvent: nodeDeleteEvent
 	};
 }
 

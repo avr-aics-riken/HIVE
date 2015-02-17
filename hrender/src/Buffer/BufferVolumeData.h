@@ -2,19 +2,15 @@
 #define _BUFFERVOLUMEDATA_H_
 
 #include "Ref.h"
-#include "Buffer.h"
-#include <vector>
+
+class FloatBuffer;
 
 class BufferVolumeData : public RefCount
 {
 private:
-    int m_dim[3];
-    int m_comp;
-    bool m_isNonUniform;
-    RefPtr<FloatBuffer>  m_buffer;
-    RefPtr<FloatBuffer>  m_spacingX;
-    RefPtr<FloatBuffer>  m_spacingY;
-    RefPtr<FloatBuffer>  m_spacingZ;
+    class Impl;
+    Impl* m_imp;
+    
 public:
     BufferVolumeData();
     BufferVolumeData(BufferVolumeData* inst);
