@@ -1,10 +1,11 @@
 {
 	"name": "Render",
+	"funcname": "Render",
 	"pos": [700, 100],
 	"varname": "root",
-	"funcname": "",
-	"customfunc" : "function Render() return function(...) render({...}) end end\n",
+	"customfuncfile":"render.lua",
 	"deletable": false,
+	"info":"レンダリングを行うためのノード",
 	"input": [
 		{"name": "Camera",       "type": "Camera"},
 		{"name": "RenderObject0", "type": "RenderObject"},
