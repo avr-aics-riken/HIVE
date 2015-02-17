@@ -21,7 +21,7 @@ function build_tp {
 	fi
 
 	# TODO: MPI build of TP.
-	./configure --prefix=${installdir} && make && make install
+	./configure --prefix=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
 
@@ -34,7 +34,8 @@ function build_cdmlib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} --with-MPI=yes && make && make install
+	autoreconf -ivf
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
 	cd ${topdir}
 }
 
@@ -47,7 +48,7 @@ function build_polylib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
  
@@ -60,7 +61,8 @@ function build_bcmtools {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} && make && make install
+	autoreconf -ivf
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib && make && make install
 	cd ${topdir}
 }
 
@@ -73,7 +75,7 @@ function build_hdmlib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} --with-parser=${installdir} --with-bcm=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
 	cd ${topdir}
 }
 
@@ -85,6 +87,8 @@ function build_pdmlib {
 	# TODO: Provide our own Makefile
 	make
 	cd ..
+	mkdir -p ${installdir}/include
+	mkdir -p ${installdir}/lib
 	cp -Rf inc/* ${installdir}/include/
 	cp -Rf lib/* ${installdir}/lib/
 	cd ${topdir}
@@ -105,14 +109,14 @@ function build_pdmlib {
 	rm -rf PDMlib_build
 	mkdir PDMlib_build
 	cd PDMlib_build/
-	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir} -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir} ../PDMlib && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
 	cd ${topdir}
 }
 
-clean_install_dir
-build_tp
-build_cdmlib
-build_polylib
+#clean_install_dir
+#build_tp
+#build_cdmlib
+#build_polylib
 build_bcmtools
-build_hdmlib
-build_pdmlib
+#build_hdmlib
+#build_pdmlib

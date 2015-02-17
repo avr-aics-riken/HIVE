@@ -281,8 +281,8 @@ target_link_libraries(hrender ${BCMTOOLS_LIBS})
 
 
 # Additional Libraries
-if (APPLE)
-    add_definitions(-D__BLOCKS__=0)
+if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_definitions(-U__BLOCKS__) # work around with BCMlib's Block.h header
 	find_library(COCOA Cocoa)
 	if (NOT COCOA)
 	    message(FATAL_ERROR "Cocoa Framework not found")
