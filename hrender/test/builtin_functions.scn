@@ -1,0 +1,9 @@
+print('-- [ Builtin functions ] --')
+
+print('Platform = ' .. platform())
+print('DLL      = ' .. dllExtension())
+print('Endian   = ' .. endian())
+
+print('MPI      = ' .. tostring(mpiMode()))
+print('MPI_RANK = ' .. mpiRank())
+print('MPI_SIZE = ' .. mpiSize())
