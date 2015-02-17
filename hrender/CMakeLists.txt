@@ -120,20 +120,20 @@ ENDIF()
 
 # Headers
 set(INCLUDES
-	${PROJECT_SOURCE_DIR}/../third_party/lua/src
-	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
-	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
-	${PROJECT_SOURCE_DIR}/../third_party/local/include
-	${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
-	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
-	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
-	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
-	${PROJECT_SOURCE_DIR}/../hrender/src/Network
-	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
-	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
-	${PROJECT_SOURCE_DIR}/../hrender/src/Core
-    ${CMAKE_BINARY_DIR}/third_party/lua
     ${PROJECT_SOURCE_DIR}/../third_party/local/include
+    ${PROJECT_SOURCE_DIR}/../third_party/lua/src
+    ${CMAKE_BINARY_DIR}/third_party/lua
+    ${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
+    ${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
+    ${PROJECT_SOURCE_DIR}/../third_party/local/include
+    ${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
+    ${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
+    ${PROJECT_SOURCE_DIR}/../hrender/src/Builder
+    ${PROJECT_SOURCE_DIR}/../hrender/src/Loader
+    ${PROJECT_SOURCE_DIR}/../hrender/src/Network
+    ${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
+    ${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
+    ${PROJECT_SOURCE_DIR}/../hrender/src/Core
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
@@ -218,7 +218,6 @@ target_link_libraries(hrender ${CDMLIB_LIBS})
 
 # Additional Libraries
 if (APPLE)
-    add_definitions(-D__BLOCKS__=0)
 	find_library(COCOA Cocoa)
 	if (NOT COCOA)
 	    message(FATAL_ERROR "Cocoa Framework not found")
