@@ -1,12 +1,10 @@
 {
 	"name": "CreateCamera",
 	"funcname": "CreateCamera",
+	"info":"カメラをつくるためのノード",
 	"pos": [100, 100],
 	"varname": "instCreateCamera",
-	"outputfilename": "test.jpg",
 	"customfuncfile":"createcamera.lua",
-	"deletable": true,
-	"info":"カメラをつくるためのノード",
 	"input": [
 		{"name": "position", "type": "vec3", "value": [ 0,0,-300]},
 		{"name": "target", "type": "vec3", "value": [ 0,0,0]},
@@ -16,6 +14,6 @@
 		{"name": "filename", "type": "string", "value": "output.jpg"}
 	],
 	"output": [
-		{"name": "camera", "type": "Camera"}
+		{"name": "camera", "type": "RenderObject"}
 	]
 }
