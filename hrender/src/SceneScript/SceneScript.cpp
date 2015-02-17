@@ -10,6 +10,10 @@
 
 #include "../Renderer/RenderCore.h"
 
+#ifdef HIVE_ENABLE_MPI
+#include <mpi.h>
+#endif
+
 // --- Script Classes ----
 #include "PolygonModel_Lua.h"
 #include "VolumeModel_Lua.h"
@@ -111,6 +115,76 @@ void RegisterSceneClass(lua_State* L)
 }
 // ------------------------
 
+/*
+    Util Functions
+ */
+int mpiMode(lua_State* L)
+{
+#ifdef HIVE_ENABLE_MPI
+    lua_pushboolean(L, 1);
+#else
+    lua_pushboolean(L, 0);
+#endif
+    return 1;
+}
+
+int mpiRank(lua_State* L)
+{
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+    lua_pushnumber(L, rank);
+    return 1;
+}
+
+int mpiSize(lua_State* L)
+{
+    int size = 1;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+#endif
+    lua_pushnumber(L, size);
+    return 1;
+}
+
+int platform(lua_State* L)
+{
+#if _WIN32
+    lua_pushstring(L, "Windows");
+#elif __APPLE__
+    lua_pushstring(L, "MacOSX");
+#else
+    lua_pushstring(L, "Linux");
+#endif
+    return 1;
+}
+
+int dllExtension(lua_State* L)
+{
+#if _WIN32
+    lua_pushstring(L, "dll");
+#else
+    lua_pushstring(L, "so");
+#endif
+    return 1;
+}
+
+int endian(lua_State* L)
+{
+    int x=1; // 0x00000001
+    if (*(char*)&x) {
+        /* little endian. memory image 01 00 00 00 */
+        lua_pushstring(L, "little");
+    }else{
+        /* big endian. memory image 00 00 00 01 */
+        lua_pushstring(L, "big");
+    }
+    return 1;
+}
+
+
+// ------------------------
 int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
 {
     lua_pushvalue(L, n); // stack on top
@@ -161,6 +235,13 @@ int render(lua_State* L)
 void registerFuncs(lua_State* L)
 {
     SetFunction(L, "render", render);
+    SetFunction(L, "mpiMode", mpiMode);
+    SetFunction(L, "mpiRank", mpiRank);
+    SetFunction(L, "mpiSize", mpiSize);
+    SetFunction(L, "platform", platform);
+    SetFunction(L, "dllExtension", dllExtension);
+    SetFunction(L, "endian", endian);
+
     RegisterSceneClass(L);
 }
 
