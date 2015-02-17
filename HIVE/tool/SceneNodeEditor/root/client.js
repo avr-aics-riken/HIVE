@@ -111,7 +111,7 @@
 		}(node, textNode)));
 		return itemNode;
 	}
-	function makeItemVecNode(name, text, node, n) {
+	function makeItemVecNode(name, vals, node, n) {
 		var itemNode = document.createElement('div'),
 			nameNode = document.createElement('div'),
 			valNode,
@@ -121,16 +121,17 @@
 		nameNode.innerHTML = '[' + name + ']';
 		itemNode.appendChild(nameNode);
 
-		function valChange(nodeData, txt) {
+		function valChange(nodeData, txt, i) {
 			return function (e) {
-				nodeData.value = txt.value;
+				nodeData.value[i] = txt.value;
 			};
 		}
 		for (i = 0; i < n; i = i + 1) {
 			valNode = document.createElement('input');
 			valNode.setAttribute('type', 'text');
+			valNode.value = vals[i];
 			itemNode.appendChild(valNode);
-			valNode.addEventListener('keyup', valChange(node, valNode));
+			valNode.addEventListener('keyup', valChange(node, valNode, i));
 		}
 		return itemNode;
 	}
