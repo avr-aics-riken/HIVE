@@ -67,7 +67,17 @@ public:
             }
             else if (ext == "jpg" || ext == "jpeg")
             {
-                
+                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                if (data->Format() == BufferImageData::RGBA8)
+                {
+                    unsigned char* jpgbuffer = NULL;
+                    int bytes = SimpleJPGSaverRGBA((void**)&jpgbuffer, width, height, srcbuffer);
+                    if (bytes && jpgbuffer)
+                    {
+                        result = SaveFile(path, jpgbuffer, bytes);
+                    }
+                    delete [] jpgbuffer;
+                }
             }
             else if (ext == "tga")
             {
@@ -86,6 +96,9 @@ public:
             else if (ext == "hdr")
             {
             }
+        }
+        if (result) {
+            printf("Save:%s\n", filename);
         }
         return result;
     }

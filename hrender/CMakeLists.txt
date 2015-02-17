@@ -160,14 +160,14 @@ set(SOURCES
 	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
+	src/Image/ImageLoader.cpp
+	src/Image/ImageSaver.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
 	src/Loader/PdbLoader.cpp
 	src/Loader/tiny_pdb.cpp
-	src/Loader/ImageLoader.cpp
-	src/Loader/ImageSaver.cpp
 	src/Network/Connection.cpp
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp

@@ -17,7 +17,8 @@ public:
         INVALID,
         RGB8,
         RGBA8,
-        RGBA32F
+        R32F,
+        RGBA32F,
     };
     
     BufferImageData();
