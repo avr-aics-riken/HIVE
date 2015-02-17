@@ -41,6 +41,9 @@ public:
         } else if (type == RGBA8) {
             m_bytebuffer = new ByteBuffer();
             m_bytebuffer->Create(w * h * 4);
+        } else if (type == R32F) {
+            m_floatbuffer = new FloatBuffer();
+            m_floatbuffer->Create(w * h);
         } else if (type == RGBA32F) {
             m_floatbuffer = new FloatBuffer();
             m_floatbuffer->Create(w * h * 4);
@@ -80,6 +83,8 @@ public:
             return wxh * 4;
         } else if (m_format == RGB8) {
             return wxh * 3;
+        } else if (m_format == R32F) {
+            return wxh * 4;
         } else if (m_format == RGBA32F) {
             return wxh * 4 * 4;
         }

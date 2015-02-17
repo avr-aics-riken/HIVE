@@ -2,7 +2,7 @@
 #define _IMAGESAVER_LUA_H_
 
 #include "LuaUtil.h"
-#include "ImageSaver.h"
+#include "../Image/ImageSaver.h"
 #include "BufferImageData_Lua.h"
 
 class ImageSaver_Lua : public ImageSaver

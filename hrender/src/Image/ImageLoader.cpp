@@ -80,8 +80,8 @@ public:
         bool result = SimpleHDRLoader(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
-            m_image.Create(BufferImageData::RGBA8, width, height);
-            memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * width * height);
+            m_image.Create(BufferImageData::RGBA32F, width, height);
+            memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
         }
         delete [] srcbuffer;
         delete [] dstbuffer;

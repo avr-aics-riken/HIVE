@@ -2,7 +2,7 @@
 #define _IMAGELOADER_LUA_H_
 
 #include "LuaUtil.h"
-#include "ImageLoader.h"
+#include "../Image/ImageLoader.h"
 #include "BufferImageData_Lua.h"
 
 class ImageLoader_Lua : public ImageLoader
