@@ -411,9 +411,19 @@ function svgNodeUI(draw) {
 			customfuncs = {},
 			customfuncSrc = '',
 			fn,
-			temp;
-		
-		pushNextNode(nodeArray.root, dependency);
+			temp,
+			rootList = [];
+	
+		for (i in nodeArray) {
+			if (nodeArray.hasOwnProperty(i)) {
+				if (nodeArray[i].nodeData.rootnode) {
+					rootList.push(nodeArray[i]);
+				}
+			}
+		}
+		for (i = 0; i < rootList.length; i = i + 1) {
+			pushNextNode(rootList[i], dependency);
+		}
 		console.log(dependency);
 
 		//Add Custom Func

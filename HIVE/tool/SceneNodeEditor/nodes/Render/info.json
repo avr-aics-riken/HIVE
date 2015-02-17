@@ -5,6 +5,7 @@
 	"varname": "root",
 	"customfuncfile":"render.lua",
 	"deletable": false,
+	"rootnode":true,
 	"info":"レンダリングを行うためのノード",
 	"input": [
 		{"name": "Camera",       "type": "Camera"},
