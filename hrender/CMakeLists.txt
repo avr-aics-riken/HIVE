@@ -19,6 +19,11 @@ SET(HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also n
 
 message(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR})
 
+# CDMlib depends on BCMTOOLS
+IF(HIVE_BUILD_WITH_CDMLIB)
+  SET(HIVE_BUILD_WITH_BCMTOOLS On)
+ENDIF()
+
 # --------------------------------------
 # 
 #  SAME Build Option with SURFACE
@@ -109,6 +114,18 @@ ENDIF()
 IF(HIVE_BUILD_WITH_CDMLIB)
   add_definitions(-DHIVE_WITH_CDMLIB)
 ENDIF()
+
+IF(HIVE_BUILD_WITH_BCMTOOLS)
+  add_definitions(-DHIVE_WITH_BCMTOOLS)
+ENDIF()
+
+IF(HIVE_BUILD_WITH_PDMLIB)
+  add_definitions(-DHIVE_WITH_PDMLIB)
+ENDIF()
+
+IF(HIVE_BUILD_WITH_HDMLIB)
+  add_definitions(-DHIVE_WITH_HDMLIB)
+ENDIF()
 # --------------------------------------
 
 # --------------------------------------
@@ -123,7 +140,9 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/lua/src
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
+	${PROJECT_SOURCE_DIR}/../third_party/local
 	${PROJECT_SOURCE_DIR}/../third_party/local/include
+	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/include
 	${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
@@ -141,6 +160,7 @@ INCLUDE_DIRECTORIES(${INCLUDES})
 # Links
 set(LIBS
 	${CMAKE_BINARY_DIR}/third_party/lua
+	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/lib
 )
 link_directories(${LIBS})
 
@@ -198,7 +218,55 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   SET(CDMLIB_LIBS
     CDM TP
   )
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/lib)
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/lib)
+  
+ENDIF()
+
+IF(HIVE_BUILD_WITH_BCMTOOLS)
+
+  SET(BCMTOOLS_SOURCES
+    src/Loader/BcmLoader.cpp
+  )
+
+  SET(BCMTOOLS_LIBS
+    BCM TP
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/lib)
+  
+ENDIF()
+
+IF(HIVE_BUILD_WITH_HDMLIB)
+
+  SET(HDMLIB_SOURCES
+    src/Loader/HdmLoader.cpp
+  )
+
+  SET(HDMLIB_LIBS
+    HDM TP
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/lib)
+  
+ENDIF()
+
+IF(HIVE_BUILD_WITH_PDMLIB)
+
+  SET(PDMLIB_SOURCES
+    src/Loader/PdmLoader.cpp
+  )
+
+  SET(PDMLIB_LIBS
+    PDM TP 
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PDMlib/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PDMlib/lib)
   
 ENDIF()
 
@@ -206,11 +274,15 @@ IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
 
-add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES})
+add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES}
+	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} )
 
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
 target_link_libraries(hrender ${CDMLIB_LIBS})
+target_link_libraries(hrender ${HDMLIB_LIBS})
+target_link_libraries(hrender ${PDMLIB_LIBS})
+target_link_libraries(hrender ${BCMTOOLS_LIBS})
 
 
 # Additional Libraries

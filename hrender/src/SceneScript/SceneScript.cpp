@@ -27,6 +27,15 @@
 #ifdef HIVE_WITH_CDMLIB
 #include "CdmLoader_Lua.h"
 #endif
+#ifdef HIVE_WITH_PDMLIB
+#include "PdmLoader_Lua.h"
+#endif
+#ifdef HIVE_WITH_HDMLIB
+#include "HdmLoader_Lua.h"
+#endif
+#ifdef HIVE_WITH_BCMTOOLS
+#include "BcmLoader_Lua.h"
+#endif
 #include "PdbLoader_Lua.h"
 #include "PolygonAnalyzer_Lua.h"
 #include "FloatsToFloat_Lua.h"
@@ -50,6 +59,15 @@ void RegisterSceneClass(lua_State* L)
 #ifdef HIVE_WITH_CDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, CDMLoader_Lua);
 #endif
+#ifdef HIVE_WITH_PDMLIB
+    LUA_SCRIPTCLASS_REGISTER(L, PDMLoader_Lua);
+#endif
+#ifdef HIVE_WITH_HDMLIB
+    LUA_SCRIPTCLASS_REGISTER(L, HDMLoader_Lua);
+#endif
+#ifdef HIVE_WITH_BCMTOOLS
+    LUA_SCRIPTCLASS_REGISTER(L, BCMLoader_Lua);
+#endif
     LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
@@ -69,6 +87,15 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "SPHLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
 #ifdef HIVE_WITH_CDMLIB
     SetFunction(L, "CDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(CDMLoader_Lua));
+#endif
+#ifdef HIVE_WITH_PDMLIB
+    SetFunction(L, "PDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDMLoader_Lua));
+#endif
+#ifdef HIVE_WITH_HDMLIB
+    SetFunction(L, "HDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(HDMLoader_Lua));
+#endif
+#ifdef HIVE_WITH_BCMTOOLS
+    SetFunction(L, "BCMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(BCMLoader_Lua));
 #endif
     SetFunction(L, "PDBLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
     SetFunction(L, "PolygonAnalyzer",     LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonAnalyzer_Lua));
