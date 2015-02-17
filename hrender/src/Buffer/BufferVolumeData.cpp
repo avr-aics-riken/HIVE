@@ -154,7 +154,7 @@ int BufferVolumeData::Depth() {
 }
 
 int BufferVolumeData::Component() {
-    return m_imp->Depth();
+    return m_imp->Component();
 }
 
 FloatBuffer *BufferVolumeData::Buffer() {
