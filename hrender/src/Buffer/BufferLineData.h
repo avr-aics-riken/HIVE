@@ -2,22 +2,22 @@
 #define _BUFFERLINEDATA_H_
 
 #include "Ref.h"
-#include "Buffer.h"
-#include <vector>
+
+class Vec3Buffer;
+class FloatBuffer;
+class UintBuffer;
 
 class BufferLineData : public RefCount
 {
 private:
-    RefPtr<Vec3Buffer>  m_pos;
-    RefPtr<FloatBuffer> m_radius;
-    RefPtr<FloatBuffer> m_mat;
-    RefPtr<UintBuffer>  m_index;
+    class Impl;
+    Impl* m_imp;
     
 public:
     BufferLineData();
     BufferLineData(BufferLineData* inst);
     ~BufferLineData();
-    void Create(int vertexnum, int indexnum);
+    void Create(int vertexnum, int indexnum, bool useRadius = false);
     void Clear();
     Vec3Buffer*  Position();
     FloatBuffer* Radius();

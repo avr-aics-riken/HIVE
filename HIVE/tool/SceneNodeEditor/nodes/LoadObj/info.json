@@ -1,9 +1,11 @@
 {
-	"name": "OBJLoader",
+	"name": "LoadOBJ",
+	"funcname": "LoadOBJ",
 	"pos": [100, 100],
 	"varname": "instOBJLoader",
-	"funcname": "Load",
+	"customfuncfile":"objloader.lua",
 	"deletable": true,
+	"info":"OBJファイルを読み込むためのノード",
 	"input": [
 		{"name": "filepath", "type": "string", "value": "bunny.obj"}
 	],

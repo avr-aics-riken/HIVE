@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string>
 #include "Camera.h"
+#include "BufferImageData.h"
 
 class Camera::Impl
 {
@@ -70,6 +71,8 @@ public:
     int                       GetScreenHeight() const { return m_height;     }
     const Camera::CameraInfo* GetCameraInfo()   const { return &m_info;      }
     const std::string&        GetOutputFile()   const { return m_outputfile; }
+    BufferImageData*          GetImageBuffer()        { return &m_imagebuffer; }
+    BufferImageData*          GetDepthBuffer()        { return &m_depthbuffer; }
 
 private:
     unsigned int m_width;
@@ -78,6 +81,8 @@ private:
     std::string  m_networkaddress;
     CameraInfo m_info;
     float m_clearcolor[4];
+    BufferImageData m_imagebuffer;
+    BufferImageData m_depthbuffer;
 
 };
 
@@ -127,5 +132,7 @@ int                       Camera::GetScreenWidth()  const { return m_imp->GetScr
 int                       Camera::GetScreenHeight() const { return m_imp->GetScreenHeight(); }
 const Camera::CameraInfo* Camera::GetCameraInfo()   const { return m_imp->GetCameraInfo();   }
 const std::string&        Camera::GetOutputFile()   const { return m_imp->GetOutputFile();   }
+BufferImageData*          Camera::GetImageBuffer()        { return m_imp->GetImageBuffer();  }
+BufferImageData*          Camera::GetDepthBuffer()        { return m_imp->GetDepthBuffer();  }
 
 

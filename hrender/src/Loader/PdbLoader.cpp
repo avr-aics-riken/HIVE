@@ -1,6 +1,6 @@
 #include "PdbLoader.h"
 #include "tiny_pdb.h"
-
+#include "Buffer.h"
 #include <cstring>
 
 PDBLoader::PDBLoader(){}
@@ -78,7 +78,7 @@ bool PDBLoader::Load(const char* filename){
 
         printf("[PDBLoader] # of bonds: %ld\n", numBonds);
 
-        stick.Create(numBondVertices, /* index num = */0);
+        stick.Create(numBondVertices, /* index num = */0, /* use radius */true);
         Vec3Buffer*  pos     = stick.Position();
         FloatBuffer* mat     = stick.Material();
         FloatBuffer* radius  = stick.Radius();

@@ -2,17 +2,18 @@
 #define _BUFFERMESHDATA_H_
 
 #include "Ref.h"
-#include "Buffer.h"
-#include <vector>
+
+class Vec3Buffer;
+class Vec2Buffer;
+class FloatBuffer;
+class UintBuffer;
 
 class BufferMeshData : public RefCount
 {
 private:
-	RefPtr<Vec3Buffer >  m_pos;
-	RefPtr<Vec3Buffer >  m_normal;
-	RefPtr<Vec2Buffer >  m_texcoord;
-	RefPtr<UintBuffer >  m_index;
-	RefPtr<FloatBuffer>  m_mat;
+    class Impl;
+    Impl* m_imp;
+    
 public:
     BufferMeshData(BufferMeshData* inst);
 	BufferMeshData();

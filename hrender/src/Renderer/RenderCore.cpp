@@ -26,27 +26,12 @@
 #include "LineBuffer.h"
 #include "VolumeBuffer.h"
 
-#include "../Image/SimpleJPG.h"
+#include "../Buffer/Buffer.h"
+#include "../Buffer/BufferIMageData.h"
+#include "../Image/ImageSaver.h"
 
 #include "../Core/Path.h"
 
-namespace {
-    bool tempSave(const unsigned char* rgba, int w, int h, const char* imageFile)
-    {
-        if (std::string(imageFile) == "")
-            return false;
-        if (!rgba)
-            return false;
-        void* jpgbuf = 0;
-        int fsize = SimpleJPGSaverRGBA(&jpgbuf, w, h, rgba);
-        FILE* fp = fopen(imageFile, "wb");
-        fwrite(jpgbuf, 1, fsize, fp);
-        fclose(fp);
-        free(jpgbuf);
-        printf("Save:%s\n", imageFile);
-        return true;
-    }
-}
 
 class RenderCore::Impl {
 
@@ -56,8 +41,6 @@ private:
     RENDER_MODE m_mode;
     
     // Framebuffers
-    unsigned char* m_imgbuf;
-    float* m_depthbuf;
     unsigned int m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer;
     unsigned int m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer;
     VX::Math::vec4 m_clearcolor;
@@ -78,22 +61,20 @@ private:
     typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
     BufferMap m_buffers_SGL;
     BufferMap m_buffers_GL;
-
+    
+    ImageSaver m_imagesaver;
     
 public:
     Impl()
     {
         m_mode   = RENDER_LSGL;//RENDER_OPENGL;
         m_clearcolor = VX::Math::vec4(0,0,0,0);
-        m_imgbuf   = 0;
-        m_depthbuf = 0;
         m_sgl_depthbuffer = 0;
         m_sgl_colorbuffer = 0;
         m_sgl_framebuffer = 0;
         m_gl_depthbuffer  = 0;
         m_gl_colorbuffer  = 0;
         m_gl_framebuffer  = 0;
-        resize(512, 512); // default size
 
 #ifndef USE_GLSL_CONFIG
         LSGL_CompilerSetting();
@@ -148,14 +129,17 @@ public:
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
                 Camera* camera = static_cast<Camera*>(it->Get());
-                const int w = camera->GetScreenWidth();
-                const int h = camera->GetScreenHeight();
                 const std::string& outfile = camera->GetOutputFile();
-                setCurrentCamera(camera);
-                renderObjects();
-                readbackImage();
+                BufferImageData* color = camera->GetImageBuffer();
+                BufferImageData* depth = camera->GetDepthBuffer();
                 
-                tempSave(m_imgbuf, w, h, outfile.c_str());
+                resize(camera);
+                setCurrentCamera(camera);
+                renderObjects(color, depth);
+                readbackImage(color);
+                if (!outfile.empty()) {
+                    m_imagesaver.Save(outfile.c_str(), color);
+                }
             }
         }
     }
@@ -165,12 +149,7 @@ private:
     void setCurrentCamera(const Camera* camera)
     {
         m_currentCamera = camera;
-        
-        const int w = camera->GetScreenWidth();
-        const int h = camera->GetScreenHeight();
-        
         m_clearcolor = VX::Math::vec4(camera->GetClearColor());
-        resize(w, h);
     }
     
     const BaseBuffer* createBufferSGL(const RenderObject* robj)
@@ -242,10 +221,12 @@ private:
          (*it)->Render(RENDER_OPENGL);*/
     }
 
-    void readbackImage()
+    void readbackImage(BufferImageData* color)
     {
+        unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
+
         if (m_mode == RENDER_LSGL)
-            GetColorBuffer_SGL(m_width, m_height, m_imgbuf);
+            GetColorBuffer_SGL(m_width, m_height, imgbuf);
         //else
         //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
         
@@ -256,16 +237,16 @@ private:
         // merge to bgcolor
         for (int y = 0; y < m_height; ++y) {
             for (int x = 0; x < m_width; ++x) {
-                const double alp = m_imgbuf[4*(x + y * m_width) + 3]/255.0;
-                m_imgbuf[4*(x + y * m_width) + 0] = m_imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r * (1.0 - alp);
-                m_imgbuf[4*(x + y * m_width) + 1] = m_imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g * (1.0 - alp);
-                m_imgbuf[4*(x + y * m_width) + 2] = m_imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b * (1.0 - alp);
-                m_imgbuf[4*(x + y * m_width) + 3] = 0xFF;
+                const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
+                imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r * (1.0 - alp);
+                imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g * (1.0 - alp);
+                imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b * (1.0 - alp);
+                imgbuf[4*(x + y * m_width) + 3] = 0xFF;
             }
         }
 
     }
-    void renderObjects()
+    void renderObjects(BufferImageData* color, BufferImageData* depth)
     {
         printf("RenderCore::RENDER!!!!\n");
         
@@ -295,16 +276,23 @@ private:
             BindProgram_GL(0);
             
             // Get buffer!
-            GetColorBuffer_GL(m_width, m_height, m_imgbuf);
-            GetDepthBuffer_GL(m_width, m_height, m_depthbuf);
+            unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
+            float * depthbuf = depth->FloatImageBuffer()->GetBuffer();
+            GetColorBuffer_GL(m_width, m_height, imgbuf);
+            GetDepthBuffer_GL(m_width, m_height,  depthbuf);
             
             //unbindGLBuffer();
         }
  
     }
     
-    void resize(int w, int h)
+    void resize(Camera* camera)
     {
+        BufferImageData* color = camera->GetImageBuffer();
+        BufferImageData* depth = camera->GetDepthBuffer();
+        const int w = camera->GetScreenWidth();
+        const int h = camera->GetScreenHeight();
+        
         if (m_sgl_framebuffer || m_sgl_colorbuffer || m_sgl_depthbuffer)
             ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
         //		if (m_gl_framebuffer || m_gl_colorbuffer || m_gl_depthbuffer)
@@ -316,17 +304,15 @@ private:
         m_width  = w;
         m_height = h;
         
-        delete [] m_imgbuf;
-        m_imgbuf = 0;
-        delete [] m_depthbuf;
-        m_depthbuf = 0;
-        
+        color->Clear();
+        depth->Clear();
         if (w != 0 && h != 0) {
-            m_imgbuf = new unsigned char[w * h * 4];
-            m_depthbuf = new float[w * h];
+            color->Create(BufferImageData::RGBA8, w, h);
+            depth->Create(BufferImageData::R32F, w, h);
+            float* depthbuf = depth->FloatImageBuffer()->GetBuffer();
             for(int y = 0; y < h; ++y){
                 for(int x = 0; x < w; ++x){
-                    m_depthbuf[x + y * w] = x / (float)w;
+                    depthbuf[x + y * w] = x / (float)w;
                 }
             }
         }

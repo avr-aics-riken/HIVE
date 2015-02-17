@@ -169,8 +169,11 @@ set(SOURCES
 	src/Buffer/BufferLineData.cpp
 	src/Buffer/BufferSparseVolumeData.cpp
 	src/Buffer/BufferPointData.cpp
+	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Image/jpge.cpp
+	src/Image/ImageLoader.cpp
+	src/Image/ImageSaver.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp

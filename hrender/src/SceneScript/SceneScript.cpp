@@ -24,6 +24,8 @@
 #include "StlLoader_Lua.h"
 #include "VolLoader_Lua.h"
 #include "SphLoader_Lua.h"
+#include "ImageLoader_Lua.h"
+#include "ImageSaver_Lua.h"
 #ifdef HIVE_WITH_CDMLIB
 #include "CdmLoader_Lua.h"
 #endif
@@ -52,10 +54,13 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, BufferLineData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferPointData_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, BufferImageData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHLoader_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
 #ifdef HIVE_WITH_CDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, CDMLoader_Lua);
 #endif
@@ -81,10 +86,13 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
     SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
+    SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
     SetFunction(L, "SPHLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
+    SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
+    SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
 #ifdef HIVE_WITH_CDMLIB
     SetFunction(L, "CDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(CDMLoader_Lua));
 #endif

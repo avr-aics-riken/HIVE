@@ -11,7 +11,8 @@ enum BufferType{
 	BUFFER_VEC3,
 	BUFFER_VEC4,
 	BUFFER_FLOAT,
-	BUFFER_INDEX
+	BUFFER_INDEX,
+    BUFFER_BYTE
 };
 
 class BaseArrayBuffer : public RefCount
@@ -104,6 +105,22 @@ public:
 	
 private:
 	std::vector<unsigned int> m_buffer;
+};
+
+class ByteBuffer : public BaseArrayBuffer
+{
+public:
+    ByteBuffer() : BaseArrayBuffer() {}
+    ~ByteBuffer(){}
+    BufferType GetType() const { return BUFFER_BYTE; }
+    
+    int Create(int num);
+    int GetNum() const;
+    unsigned char* GetBuffer();
+    const unsigned char* GetBuffer() const;
+    
+private:
+    std::vector<unsigned char> m_buffer;
 };
 
 #endif //_BUFFER_H_

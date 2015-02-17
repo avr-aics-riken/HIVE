@@ -631,6 +631,11 @@ private:
     {
         std::vector<tinyobj::shape_t> shapes;
         
+        if (!filename) {
+            std::cerr << "[LoadOBJ] file name is empty" << std::endl;
+            return false;
+        }
+        
         std::string err = tinyobj::LoadObj(shapes, filename);
         
         if (!err.empty()) {

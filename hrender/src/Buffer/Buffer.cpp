@@ -134,3 +134,28 @@ const unsigned int* UintBuffer::GetBuffer() const
     return &m_buffer[0];
 }
 
+//------------------------------------------------------------------------------
+
+int ByteBuffer::Create(int num)
+{
+    m_buffer.resize(num);
+    return num;
+}
+int ByteBuffer::GetNum() const
+{
+    return static_cast<int>(m_buffer.size());
+}
+unsigned char* ByteBuffer::GetBuffer()
+{
+    if (m_buffer.empty())
+        return 0;
+    return &m_buffer[0];
+}
+
+const unsigned char* ByteBuffer::GetBuffer() const
+{
+    if (m_buffer.empty())
+        return 0;
+    return &m_buffer[0];
+}
+
