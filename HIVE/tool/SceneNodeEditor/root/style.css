@@ -15,7 +15,7 @@
 }
 .flexboxrow > input
 {
-	width:200px;
+	width:50px;
 	-webkit-flex: 1 1 auto;
 	flex: 1 1 auto;
 }

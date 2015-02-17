@@ -111,6 +111,29 @@
 		}(node, textNode)));
 		return itemNode;
 	}
+	function makeItemVecNode(name, text, node, n) {
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			valNode,
+			i;
+		
+		itemNode.classList.add('flexboxrow');
+		nameNode.innerHTML = '[' + name + ']';
+		itemNode.appendChild(nameNode);
+
+		function valChange(nodeData, txt) {
+			return function (e) {
+				nodeData.value = txt.value;
+			};
+		}
+		for (i = 0; i < n; i = i + 1) {
+			valNode = document.createElement('input');
+			valNode.setAttribute('type', 'text');
+			itemNode.appendChild(valNode);
+			valNode.addEventListener('keyup', valChange(node, valNode));
+		}
+		return itemNode;
+	}
 
 	function showProparty(nodeData) {
 		//console.log(nodeData);
@@ -140,8 +163,14 @@
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			if (nodeData.input.hasOwnProperty(i)) {
 				inode = nodeData.input[i];
-				if (inode.type === 'string'	|| inode.type === 'float' || inode.type === 'number') {
+				if (inode.type === 'string' || inode.type === 'float') {
 					itemNode = makeItemTextNode(inode.name, inode.value, inode);
+				} else if (inode.type === 'vec4') {
+					itemNode = makeItemVecNode(inode.name, inode.value, inode, 4);
+				} else if (inode.type === 'vec3') {
+					itemNode = makeItemVecNode(inode.name, inode.value, inode, 3);
+				} else if (inode.type === 'vec2') {
+					itemNode = makeItemVecNode(inode.name, inode.value, inode, 2);
 				} else {
 					itemNode = makeItemNode(inode.name, '(Object)');
 				}

@@ -432,38 +432,54 @@ function svgNodeUI(draw) {
 			if (node.define) {
 				src += node.define;
 			}
-			src += 'local ' + node.varname + ' = ' + node.name + '()\n';
+			/*src += 'local ' + node.varname + ' = ' + node.name + '()\n';
 			if (node.funcname) {
 				src += node.varname + ':' + node.funcname + '(';
 			} else {
 				src += node.varname + '(';
-			}
+			}*/
+			src += 'local ' + node.varname + ' = ' + node.funcname + '({';
 			if (node.input) {
 				for (j = 0; j < node.input.length; j += 1) {
 					plugname = getPlugVarName(node.varname, node.input[j].name);
 					if (plugArray[plugname]) {
 						temp = plugArray[plugname].varname;
 						if (temp.substr(temp.length - 1, temp.length) === ':') {
-							src += temp.substr(0, temp.length - 1);
+							src += node.input[j].name + '=' + temp.substr(0, temp.length - 1);
 						} else {
-                            src += plugArray[plugname].varname + '()';
+                            src += node.input[j].name + '=' + plugArray[plugname].varname + '()';
 						}
 					} else if (node.input[j].value) {
 						if (node.input[j].type === 'string') {
-							src += '\'' + node.input[j].value + '\'';
-						} else {
-							src += node.input[j].value;
+							src += node.input[j].name + '=\'' + node.input[j].value + '\'';
+						} else if (node.input[j].type === 'vec4') {
+							src += node.input[j].name + '={';
+							src += node.input[j].value[0] + ',';
+							src += node.input[j].value[1] + ',';
+							src += node.input[j].value[2] + ',';
+							src += node.input[j].value[3] + '}';
+						} else if (node.input[j].type === 'vec3') {
+							src += node.input[j].name + '={';
+							src += node.input[j].value[0] + ',';
+							src += node.input[j].value[1] + ',';
+							src += node.input[j].value[2] + '}';
+						} else if (node.input[j].type === 'vec2') {
+							src += node.input[j].name + '={';
+							src += node.input[j].value[0] + ',';
+							src += node.input[j].value[1] + '}';
+						} else if (node.input[j].type === 'float') {
+							src += node.input[j].name + ' = ' + node.input[j].value;
 						}
 					} else {
 						src += 'nil';
 					}
 					if (j !== node.input.length - 1) {
-						src += ',';
+						src += ', ';
 					}
 					
 				}
 			}
-			src += ')\n';
+			src += '})\n';
 		}
 		for (fn in customfuncs) {
 			if (customfuncs.hasOwnProperty(fn)) {

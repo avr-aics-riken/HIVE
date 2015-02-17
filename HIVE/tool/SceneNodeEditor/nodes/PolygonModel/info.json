@@ -1,12 +1,14 @@
 {
 	"name": "CreatePolygonModel",
+	"funcname": "CreatePolygonModel",
 	"pos": [450, 300],
 	"varname": "instPolygonModel",
-	"funcname": "create",
-	"customfunc" : "function CreatePolygonModel() return { model=function(self) return self.m_cam end, create=function(self, model) self.m_cam = PolygonModel(); self.m_cam:Create(model); self.m_cam:SetShader('white.frag'); end} end\n",
+	"customfuncfile": "createPolygonModel.lua",
 	"deletable": false,
+	"info":"メッシュデータを表示させるためのノード",
 	"input": [
-		{"name": "mesh", "type": "MeshData"}
+		{"name": "mesh", "type": "MeshData"},
+		{"name": "shadername", "type": "string", "value":"white.frag"}
 	],
 	"output": [
 		{"name": "model", "type": "RenderObject"}
