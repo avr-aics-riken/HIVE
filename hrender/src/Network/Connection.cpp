@@ -286,6 +286,11 @@ bool Connection::SendText(const std::string& text)
     return m_imp->SendText(text);
 }
 
+bool Connection::SendJSON(const std::string& text)
+{
+    return m_imp->SendJSON(text);
+}
+
 bool Connection::SendBinary(const char* binary, int size)
 {
     return m_imp->SendBinary(binary, size);
