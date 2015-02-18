@@ -102,6 +102,40 @@ public:
         }
         return result;
     }
+    
+    std::string SaveMemory(unsigned int format, BufferImageData* data)
+    {
+        if (!data) { return NULL; }
+        if (data->Bytes() <= 0) { return NULL; }
+        const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+        const int width = data->Width();
+        const int height = data->Height();
+        char* dstbuffer = NULL;
+        
+        if (format == ImageSaver::JPG)
+        {
+            const int bytes = SimpleJPGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
+            if (bytes && dstbuffer) {
+                std::string memory = std::string(dstbuffer, bytes);
+                delete [] dstbuffer;
+                return memory;
+            }
+        }
+        else if (format == ImageSaver::TGA)
+        {
+            const int bytes = SimpleTGASaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
+            if (bytes && dstbuffer) {
+                std::string memory = std::string(dstbuffer, bytes);
+                delete [] dstbuffer;
+                return memory;
+            }
+        }
+        else if (format == ImageSaver::HDR)
+        {
+            // not implemented
+        }
+        return "";
+    }
 };
 
 /// constructor
@@ -119,4 +153,9 @@ ImageSaver::~ImageSaver()
 bool ImageSaver::Save(const char* filename, BufferImageData* data)
 {
     return m_imp->Save(filename, data);
+}
+
+std::string ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
+{
+    return m_imp->SaveMemory(format, data);
 }
