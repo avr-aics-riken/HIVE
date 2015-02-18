@@ -242,7 +242,7 @@ template <> inline int LUAPUSH<float>(lua_State* L, float val) {
 	return 1;
 }
 template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
-    lua_pushstring(L, val.c_str());
+    lua_pushlstring(L, val.c_str(), val.size());
 	return 1;
 }
 

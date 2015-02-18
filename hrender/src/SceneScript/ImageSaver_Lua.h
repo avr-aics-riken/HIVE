@@ -1,6 +1,7 @@
 #ifndef _IMAGESAVER_LUA_H_
 #define _IMAGESAVER_LUA_H_
 
+#include <string>
 #include "LuaUtil.h"
 #include "../Image/ImageSaver.h"
 #include "BufferImageData_Lua.h"
@@ -17,6 +18,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(ImageSaver_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG2(bool,Save,const char*,BufferImageData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_ARG2(std::string,SaveMemory,unsigned int,BufferImageData_Lua*)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(ImageSaver_Lua);
