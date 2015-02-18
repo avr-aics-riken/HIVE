@@ -1,0 +1,25 @@
+print('load save image')
+
+local loader = ImageLoader()
+local saver = ImageSaver()
+
+-- load from file
+local isloaded = loader:Load("loader_saver_image.tga")
+print(isloaded)
+local img = loader:ImageData()
+
+-- save to file
+local issaved = saver:Save("loader_saver_image_copy.jpg", img)
+print(issaved)
+
+-- save to memory
+print("savememory..")
+local buffer = saver:SaveMemory(1, img)
+print(#buffer, "bytes")
+
+-- send image by websocket
+local network = Connection()
+network:Connect('ws://localhost:8080/')
+network:SendBinary(buffer, #buffer)
+network:Close()
+

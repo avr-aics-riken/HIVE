@@ -1,7 +1,13 @@
+//
+// TODO: - support various volume data type
+// 	     - test with K environment
+//
+
 #include <stdio.h>
 #include <string.h>
 
 #include <string>
+#include <fstream>
 
 #include "CdmLoader.h"
 #include "SimpleVOL.h"
@@ -11,6 +17,7 @@
 #endif
 
 #include "cdm_DFI.h"
+#include "cdm_TextParser.h"
 
 CDMLoader::CDMLoader()
 {
@@ -34,18 +41,96 @@ bool CDMLoader::Load(const char* filename)
     // NOTE: Assume MPI_Init() was already called in hrender::main()
     //
 
-	//
-	// TODO: - load voxel size from .dfi
-	// 	     - support various volume data type
-	// 	     - test with K environment
+    if (!std::ifstream(filename).good()) {
+        fprintf(stderr, "[CDMLoader] File not found: %s\n", filename);
+        return false;
+    }
+        
 
-    int GVoxel[3] = { 10, 5, 7 }; // @fixme.
-    int GDiv[3]   = { 1, 1, 1 }; // @fixme.
+    // Read info from .dfi
+    std::string tpFilename(filename);
+    std::string dirName = CDM::cdmPath_DirName(tpFilename); // path to index.dfi
+
+    cdm_TextParser tp;
+    tp.getTPinstance();
+    {
+        int error = tp.readTPfile(tpFilename);
+        if (error) {
+            fprintf(stderr, "[CDMLoader] Failed to read .dfi file: %s\n", tpFilename.c_str());
+            return false;
+        }
+    }
+
+    cdm_FileInfo fileInfo;
+    {
+        if (fileInfo.Read(tp) != CDM::E_CDM_SUCCESS) {
+            fprintf(stderr, "[CDMLoader] Failed to read FileInfo from .dfi file: %s\n", tpFilename.c_str());
+            return false;
+        }
+    }
+
+    cdm_FilePath path;
+    {
+        if( path.Read(tp) != CDM::E_CDM_SUCCESS )
+        {
+            fprintf(stderr, "[CDMLoader] Failed to read FilePath from .dfi file: %s\n", tpFilename.c_str());
+            return false;
+        }
+    }
+
+    //
+    //  Remove current TextParser instance and swtich to read `proc.dfi`, then continue to read content of proc.dfi to get
+    //  domain information.
+    //
+    tp.remove();
+
+    std::string procfile = CDM::cdmPath_ConnectPath(dirName, CDM::cdmPath_FileName(path.ProcDFIFile, ".dfi"));
+    if (!std::ifstream(procfile.c_str()).good()) {
+        fprintf(stderr, "[CDMLoader] File not found: %s\n", procfile.c_str());
+        return false;
+    }
+
+    {
+        int error = tp.readTPfile(procfile);
+        if (error) {
+            fprintf(stderr, "[CDMLoader] Failed to read .dfi file: %s\n", procfile.c_str());
+            return false;
+        }
+    }
+
+    // Read Domain from proc.dfi
+    cdm_Domain domain;
+    {
+        if (domain.Read(tp, dirName) != CDM::E_CDM_SUCCESS) {
+            fprintf(stderr, "[CDMLoader] Failed to read Doamin info from .dfi file: %s\n", procfile.c_str());
+            return false;
+        }
+    }
+
+    tp.remove();
+
+    m_globalVoxel[0] = domain.GlobalVoxel[0];
+    m_globalVoxel[1] = domain.GlobalVoxel[1];
+    m_globalVoxel[2] = domain.GlobalVoxel[2];
+
+    m_globalDiv[0] = domain.GlobalDivision[0];
+    m_globalDiv[1] = domain.GlobalDivision[1];
+    m_globalDiv[2] = domain.GlobalDivision[2];
+
+    m_globalOffset[0] = domain.GlobalOrigin[0];
+    m_globalOffset[1] = domain.GlobalOrigin[1];
+    m_globalOffset[2] = domain.GlobalOrigin[2];
+
+    m_globalRegion[0] = domain.GlobalRegion[0];
+    m_globalRegion[1] = domain.GlobalRegion[1];
+    m_globalRegion[2] = domain.GlobalRegion[2];
+
+    int GVoxel[3] = { m_globalVoxel[0], m_globalVoxel[1], m_globalVoxel[2] }; 
+    int GDiv[3]   = { m_globalDiv[0], m_globalDiv[1], m_globalDiv[2] }; 
     int head[3] = { 1, 1, 1 }; // @fixme.
-    int tail[3] = { 10, 5, 7 }; // @fixme.
+    int tail[3] = { m_globalVoxel[0], m_globalVoxel[1], m_globalVoxel[2] }; // @fixme.
     int virtualCellSize = 1; // @fixme.
-    unsigned step = 10; // timestep @fixme.
-
+    unsigned step = 10; // @fixme { timestep }
 
     std::string dfi_filename = std::string(filename);
     
