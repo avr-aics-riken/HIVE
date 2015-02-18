@@ -1,21 +1,53 @@
-.flexboxrow
+.nodeProperty
 {
-	display: -webkit-flex;
-	-webkit-flex-direction: row;
-
-	display: flex;
-	flex-direction: row;
+	display: table;
 }
 
-.flexboxrow > div
+.nodePropertyRow
+{
+	display:table-row;
+	background-color: #aeaeae;
+}
+
+.nodePropertyName
+{
+	display:table-cell;
+	width: 200px;
+	background-color: #ccc;
+	border: 1px solid #868686;
+	padding: 3px;
+}
+
+.nodePropertyConst
 {
 	width:200px;
-	-webkit-flex: 1 1 auto;
-	flex: 1 1 auto;
+	display:table-cell;
+	border: 1px solid #868686;
+	background-color: #aeaeae;
+	padding: 3px;
 }
-.flexboxrow > input
+
+.nodePropertyValue
 {
-	width:50px;
-	-webkit-flex: 1 1 auto;
-	flex: 1 1 auto;
+	width:200px;
+	display:table-cell;
+	border: 1px solid #868686;
+	background-color: #eee ;
+	padding: 3px;
+}
+
+.nodePropertyTop
+{
+	background-color: #868686;
+}
+
+.menuTab
+{
+	background-color:rgba(180, 180, 180, 0.5);
+	position:fixed;
+	right:0px;
+	top:0px;
+	width:480px;
+	bottom:0px;
+	overflow:auto;
 }
