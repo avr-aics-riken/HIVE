@@ -249,6 +249,9 @@ function svgNodeUI(draw) {
 			},
 			
 			i,
+			j,
+			inode,
+			connectCnt = 0,
 			nodeText,
 			inoutNum = 0,
 			nodeVarName,
@@ -283,17 +286,39 @@ function svgNodeUI(draw) {
 		this.group = group;
 		this.plugConnectors = plugConnectors;
 		
+		
+		function newNodeConnector(group, inNode, thisptr, i) {
+			var nodeText = draw.text(inNode.name).fill('#fff').move(20, 30 + i * 20),
+				nodeVarName = getPlugVarName(varName, inNode.name);
+			group.add(nodeText);
+			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 40 + i * 20);
+		}
+			
 		// Node Params
+		connectCnt = 0;
 		if (inouts) {
 			if (inouts.input) {
-				inoutNum = Math.max(inoutNum, inouts.input.length);
+				//inoutNum = Math.max(inoutNum, inouts.input.length);
+				console.log(inouts.input);
 				for (i = 0; i < inouts.input.length; i += 1) {
-					nodeText = draw.text(inouts.input[i].name).fill('#fff').move(20, 30 + i * 20);
-					group.add(nodeText);
-					nodeVarName = getPlugVarName(varName, inouts.input[i].name);
-					plugConnectors[inouts.input[i].name] = new NodeConnector(nodeVarName, inouts.input[i].type, group, this, 0, 40 + i * 20);
+					inode = inouts.input[i];
+					if (inode.array) {
+						for (j = 0; j < inode.array.length; j = j + 1) {
+							plugConnectors[inode.array[j].name] = newNodeConnector(group, inode.array[j], this, connectCnt);
+							connectCnt = connectCnt + 1;
+						}
+					} else {
+						plugConnectors[inouts.input[i].name] = newNodeConnector(group, inode, this, connectCnt);
+						connectCnt = connectCnt + 1;
+
+						/*nodeText = draw.text(inouts.input[i].name).fill('#fff').move(20, 30 + i * 20);
+						group.add(nodeText);
+						nodeVarName = getPlugVarName(varName, inouts.input[i].name);
+						plugConnectors[inouts.input[i].name] = new NodeConnector(nodeVarName, inouts.input[i].type, group, this, 0, 40 + i * 20);*/
+					}
 				}
 			}
+			inoutNum = Math.max(inoutNum, connectCnt);
 			if (inouts.output) {
 				inoutNum = Math.max(inoutNum, inouts.output.length);
 				for (i = 0; i < inouts.output.length; i += 1) {
@@ -403,6 +428,7 @@ function svgNodeUI(draw) {
 	function exportLua() {
 		var i,
 			j,
+			k,
 			node,
 			dependency = [],
 			plug,
@@ -437,6 +463,49 @@ function svgNodeUI(draw) {
 		}
 		
 		//console.log('Export:dependency.length: ' + dependency.length);
+		function makeValueSrc(node) {
+			var src = '';
+			if (node.type === 'string') {
+				src += node.name + '=\'' + node.value + '\'';
+			} else if (node.type === 'vec4') {
+				src += node.name + '={';
+				src += node.value[0] + ',';
+				src += node.value[1] + ',';
+				src += node.value[2] + ',';
+				src += node.value[3] + '}';
+			} else if (node.type === 'vec3') {
+				src += node.name + '={';
+				src += node.value[0] + ',';
+				src += node.value[1] + ',';
+				src += node.value[2] + '}';
+			} else if (node.type === 'vec2') {
+				src += node.name + '={';
+				src += node.value[0] + ',';
+				src += node.value[1] + '}';
+			} else if (node.type === 'float') {
+				src += node.name + ' = ' + node.value;
+			} else { // Unknown primitive
+				src += 'nil';
+			}
+			return src;
+		}
+		function makePlugValueSrc(nodevarname, node) {
+			var src = '',
+				plugname = getPlugVarName(nodevarname, node.name);
+			if (plugArray[plugname]) {
+				temp = plugArray[plugname].varname;
+				if (temp.substr(temp.length - 1, temp.length) === ':') {
+					src += node.name + '=' + temp.substr(0, temp.length - 1);
+				} else {
+					src += node.name + '=' + plugArray[plugname].varname + '()';
+				}
+			} else if (node.value) {
+				src += makeValueSrc(node);
+			} else {
+				src += 'nil';
+			}
+			return src;
+		}
 		for (i = dependency.length - 1; i >= 0; i -= 1) {
 			node = dependency[i].nodeData;
 			if (node.define) {
@@ -451,42 +520,34 @@ function svgNodeUI(draw) {
 			src += 'local ' + node.varname + ' = ' + node.funcname + '({';
 			if (node.input) {
 				for (j = 0; j < node.input.length; j += 1) {
-					plugname = getPlugVarName(node.varname, node.input[j].name);
-					if (plugArray[plugname]) {
-						temp = plugArray[plugname].varname;
-						if (temp.substr(temp.length - 1, temp.length) === ':') {
-							src += node.input[j].name + '=' + temp.substr(0, temp.length - 1);
-						} else {
-                            src += node.input[j].name + '=' + plugArray[plugname].varname + '()';
+					if (Array.isArray(node.input[j].array)) {
+						src += node.input[j].name + '={';
+						for (k = 0; k < node.input[j].array.length; k = k + 1) {
+							src += makePlugValueSrc(node.varname, node.input[j].array[k]);
+							if (k !== node.input[j].array.length - 1) {
+								src += ', ';
+							}
 						}
-					} else if (node.input[j].value) {
-						if (node.input[j].type === 'string') {
-							src += node.input[j].name + '=\'' + node.input[j].value + '\'';
-						} else if (node.input[j].type === 'vec4') {
-							src += node.input[j].name + '={';
-							src += node.input[j].value[0] + ',';
-							src += node.input[j].value[1] + ',';
-							src += node.input[j].value[2] + ',';
-							src += node.input[j].value[3] + '}';
-						} else if (node.input[j].type === 'vec3') {
-							src += node.input[j].name + '={';
-							src += node.input[j].value[0] + ',';
-							src += node.input[j].value[1] + ',';
-							src += node.input[j].value[2] + '}';
-						} else if (node.input[j].type === 'vec2') {
-							src += node.input[j].name + '={';
-							src += node.input[j].value[0] + ',';
-							src += node.input[j].value[1] + '}';
-						} else if (node.input[j].type === 'float') {
-							src += node.input[j].name + ' = ' + node.input[j].value;
-						}
+						src += '}';
 					} else {
-						src += 'nil';
+						/*plugname = getPlugVarName(node.varname, node.input[j].name);
+						if (plugArray[plugname]) {
+							temp = plugArray[plugname].varname;
+							if (temp.substr(temp.length - 1, temp.length) === ':') {
+								src += node.input[j].name + '=' + temp.substr(0, temp.length - 1);
+							} else {
+								src += node.input[j].name + '=' + plugArray[plugname].varname + '()';
+							}
+						} else if (node.input[j].value) {
+							src += makeValueSrc(node.input[j]);
+						} else {
+							src += 'nil';
+						}*/
+						src += makePlugValueSrc(node.varname, node.input[j]);
+						if (j !== node.input.length - 1) {
+							src += ', ';
+						}
 					}
-					if (j !== node.input.length - 1) {
-						src += ', ';
-					}
-					
 				}
 			}
 			src += '})\n';

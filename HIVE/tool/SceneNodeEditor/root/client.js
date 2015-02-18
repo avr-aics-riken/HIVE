@@ -62,6 +62,12 @@
 		document.getElementById("property").innerHTML = '';
 	}
 	
+	function updateNode() {
+		var nodeData = nui.getNodeData();
+		nui.clearNodes();
+		nui.makeNodes(nodeData);
+	}
+	
 	//
 	// TODO: refactro me!!
 	//
@@ -82,30 +88,78 @@
 		d.innerHTML = inner;
 	}
 	
-	function makeItemNode(name, text) {
+	function makeItemNode(name, text, top) {
 		var itemNode = document.createElement('div'),
 			nameNode = document.createElement('div'),
 			textNode = document.createElement('div');
-		itemNode.classList.add('flexboxrow');
-		nameNode.innerHTML = '[' + name + ']';
+
+		itemNode.classList.add('nodePropertyRow');
+		nameNode.innerHTML = name;
 		textNode.innerHTML = text;
+		nameNode.classList.add('nodePropertyName');
+		textNode.classList.add('nodePropertyConst');
+		if (top) {
+			nameNode.classList.add('nodePropertyTop');
+			textNode.classList.add('nodePropertyTop');
+		}
 		itemNode.appendChild(nameNode);
 		itemNode.appendChild(textNode);
 		return itemNode;
 	}
-	function makeItemTextNode(name, text, node) {
+	function makeItemTextNode(name, text, node, type) {
 		var itemNode = document.createElement('div'),
 			nameNode = document.createElement('div'),
 			textNode = document.createElement('input');
-		textNode.setAttribute('type', 'text');
-		itemNode.classList.add('flexboxrow');
+		if (type) {
+			textNode.setAttribute('type', type);
+		} else {
+			textNode.setAttribute('type', 'text');
+		}
+		itemNode.classList.add('nodePropertyRow');
 		nameNode.innerHTML = '[' + name + ']';
 		textNode.value = text;
+		nameNode.classList.add('nodePropertyName');
+		textNode.classList.add('nodePropertyValue');
 		itemNode.appendChild(nameNode);
 		itemNode.appendChild(textNode);
+		
 		textNode.addEventListener('keyup', (function (nodeData, txt) {
 			return function (e) {
 				nodeData.value = txt.value;
+			};
+		}(node, textNode)));
+		return itemNode;
+	}
+	function makeItemArrayNumNode(name, text, node) {
+		var itemNode = document.createElement('div'),
+			nameNode = document.createElement('div'),
+			textNode = document.createElement('input');
+		
+		textNode.setAttribute('type', 'number');
+		itemNode.classList.add('nodePropertyRow');
+		nameNode.innerHTML = '[' + name + ']';
+		textNode.value = text;
+		nameNode.classList.add('nodePropertyName');
+		textNode.classList.add('nodePropertyValue');
+		itemNode.appendChild(nameNode);
+		itemNode.appendChild(textNode);
+		
+		textNode.addEventListener('blur', (function (nodeData, txt) {
+			return function (e) {
+				// resize array
+				var l = parseInt(txt.value, 10),
+					i;
+				if (!isNaN(l) && l > 0) {
+					nodeData.array.length = l;
+					for (i = 0; i < l; i = i + 1) {
+						if (nodeData.array[i] === undefined) {
+							nodeData.array[i] = {};
+							nodeData.array[i].name = nodeData.name + i;
+							nodeData.array[i].type = nodeData.type;
+						}
+					}
+					updateNode();
+				}
 			};
 		}(node, textNode)));
 		return itemNode;
@@ -116,8 +170,9 @@
 			valNode,
 			i;
 		
-		itemNode.classList.add('flexboxrow');
+		itemNode.classList.add('nodePropertyRow');
 		nameNode.innerHTML = '[' + name + ']';
+		nameNode.classList.add('nodePropertyName');
 		itemNode.appendChild(nameNode);
 
 		function valChange(nodeData, txt, i) {
@@ -129,6 +184,7 @@
 			valNode = document.createElement('input');
 			valNode.setAttribute('type', 'text');
 			valNode.value = vals[i];
+			valNode.classList.add('nodePropertyValue');
 			itemNode.appendChild(valNode);
 			valNode.addEventListener('keyup', valChange(node, valNode, i));
 		}
@@ -151,6 +207,7 @@
 			inode;
 		
 		to.innerHTML = ''; // clear
+		to.appendChild(makeItemNode('Property Name', 'Value', true));
 		to.appendChild(makeItemNode('name', nodeData.name));
 		to.appendChild(makeItemNode('varname', nodeData.varname));
 		//to.appendChild(makeItemNode('funcname', nodeData.funcname));
@@ -160,21 +217,49 @@
 		if (!nodeData.input) {
 			return;
 		}
+		
+		function addArrayItem(inode, n) {
+			var itemNode;
+			if (inode.type === 'string' || inode.type === 'float') {
+				itemNode = makeItemTextNode('', inode.array[n], inode);
+			} else if (inode.type === 'vec4') {
+				itemNode = makeItemVecNode('', inode.array[n], inode, 4);
+			} else if (inode.type === 'vec3') {
+				itemNode = makeItemVecNode('', inode.array[n], inode, 3);
+			} else if (inode.type === 'vec2') {
+				itemNode = makeItemVecNode('', inode.array[n], inode, 2);
+			} else {
+				itemNode = makeItemNode('', '(Object)');
+			}
+			return itemNode;
+		}
+		function addItems(inode) {
+			var itemNode;
+			if (inode.type === 'string' || inode.type === 'float') {
+				itemNode = makeItemTextNode(inode.name, inode.value, inode);
+			} else if (inode.type === 'vec4') {
+				itemNode = makeItemVecNode(inode.name, inode.value, inode, 4);
+			} else if (inode.type === 'vec3') {
+				itemNode = makeItemVecNode(inode.name, inode.value, inode, 3);
+			} else if (inode.type === 'vec2') {
+				itemNode = makeItemVecNode(inode.name, inode.value, inode, 2);
+			} else {
+				itemNode = makeItemNode(inode.name, '(Object)');
+			}
+			return itemNode;
+		}
 		for (i = 0; i < nodeData.input.length; i = i + 1) {
 			if (nodeData.input.hasOwnProperty(i)) {
 				inode = nodeData.input[i];
-				if (inode.type === 'string' || inode.type === 'float') {
-					itemNode = makeItemTextNode(inode.name, inode.value, inode);
-				} else if (inode.type === 'vec4') {
-					itemNode = makeItemVecNode(inode.name, inode.value, inode, 4);
-				} else if (inode.type === 'vec3') {
-					itemNode = makeItemVecNode(inode.name, inode.value, inode, 3);
-				} else if (inode.type === 'vec2') {
-					itemNode = makeItemVecNode(inode.name, inode.value, inode, 2);
+				if (Array.isArray(inode.array)) {
+					itemNode = makeItemArrayNumNode(inode.name, inode.array.length, inode);
+					to.appendChild(itemNode);
+					for (k = 0; k < inode.array.length; k = k + 1) {
+						to.appendChild(addItems(inode.array[k]));
+					}
 				} else {
-					itemNode = makeItemNode(inode.name, '(Object)');
+					to.appendChild(addItems(inode));
 				}
-				prop.appendChild(itemNode);
 			}
 		}
 	}

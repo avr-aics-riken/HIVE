@@ -1,3 +1,3 @@
-function Render(renderobjects)
-	render(renderobjects)
+function Render(arg)
+	render(arg.RenderObject)
 end
