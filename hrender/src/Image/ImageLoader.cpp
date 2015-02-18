@@ -44,7 +44,7 @@ public:
         std::ifstream ifs(filepath.c_str(), std::ios::in | std::ios::binary);
         if (!ifs.good()) {
             printf("File Open Error");
-            return false;
+            return NULL;
         }
         ifs.seekg(0, std::ifstream::end);
         const unsigned int fsize = ifs.tellg();
