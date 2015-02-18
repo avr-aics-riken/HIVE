@@ -312,8 +312,22 @@
 	}
 
 	function ButtonOpen(e) {
-		nodeData = reloadNodeList('nodelist.json');
+		
 	}
+	
+	function ButtonSave(e) {
+		//
+		// TODO: safari
+		//
+		var a = document.createElement('a'),
+			nodeData = JSON.stringify(nui.getNodeData()),
+			href = "data:application/octet-stream," + encodeURIComponent(nodeData);
+
+		a.href = href;
+		a.download = 'scenenodes.json';
+		a.click();
+	}
+
 
 	function ButtonAdd(e) {
 		var ele = document.getElementsByName('NodeList'),
@@ -335,6 +349,7 @@
 	function init() {
 		//create button
 		var openbutton   = document.getElementById('Open'),
+			savebutton   = document.getElementById('Save'),
 			renderbutton = document.getElementById('Render'),
 			clearbutton  = document.getElementById('Clear'),
 			addbutton    = document.getElementById('Add'),
@@ -350,6 +365,7 @@
 
 		//handle
 		openbutton.onclick   = ButtonOpen;
+		savebutton.onclick   = ButtonSave;
 		renderbutton.onclick = ButtonRender;
 		clearbutton.onclick  = ButtonClear;
 		addbutton.onclick    = ButtonAdd;
