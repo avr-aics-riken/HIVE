@@ -139,6 +139,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
 	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
+	${PROJECT_SOURCE_DIR}/../hrender/src/Saver
 	${PROJECT_SOURCE_DIR}/../hrender/src/Network
 	${PROJECT_SOURCE_DIR}/../hrender/src/RenderObject
 	${PROJECT_SOURCE_DIR}/../hrender/src/SceneScript
@@ -253,10 +254,11 @@ IF(HIVE_BUILD_WITH_PDMLIB)
 
   SET(PDMLIB_SOURCES
     src/Loader/PdmLoader.cpp
+    src/Saver/PdmSaver.cpp
   )
 
   SET(PDMLIB_LIBS
-    PDM TP fpzip zoltan
+    PDM TP fpzip zoltan z
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PDMlib/include)
