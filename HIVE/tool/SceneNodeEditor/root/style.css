@@ -83,40 +83,59 @@ body {
 	min-width:100%;
 	min-height:100%;
 	background:transparent;
-	z-index: -1;
 }
 
 .consoleOutput
 {
 	position: absolute;
-	height:800px;
+	height:400px;
 	bottom:10px;
 	background:transparent;
 	overflow: auto;
-	z-index: -1;
 }
 
 .consoleTextBlock
 {
 	bottom:30px;
 	width:800px;
-	height:800px;
+	height:400px;
 	display: table-cell;
 	vertical-align: bottom;
 	background:transparent;
-	z-index: -1;
 }
 
 .stdout
 {
 	font-size: 12px;
 	color:white;
-	z-index: -1;
 }
 
 .stderr
 {
 	font-size: 12px;
 	color:red;
+}
+
+.closeMenuTabArea
+{
+	position: relative;
+	min-width:100%;
+	min-height:100%;
+	margin: 0;
+	padding: 0;
 	z-index: -1;
+}
+
+.closeMenuTab
+{
+	position: absolute;
+	bottom: 0px;
+	z-index: 2;
+}
+
+.closeConsoleOutput
+{
+	position: absolute;
+	left:0px;
+	top:0px;
 }
