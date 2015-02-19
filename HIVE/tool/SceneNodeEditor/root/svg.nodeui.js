@@ -13,6 +13,9 @@ function svgNodeUI(draw) {
 		nodeClickFunction = null,
 		nodeDeleteFunction = null;
 	
+	/*
+		TODO: read from setting JSON file
+	*/
 	function getTypeColor(type) {
 		if (type === "string") {
 			return "#14a271";
@@ -28,9 +31,13 @@ function svgNodeUI(draw) {
 			return "#ad3b78";
 		} else if (type === "Uniform") {
 			return "#b19e14";
-		} else if (type === "MeshData") {
+		} else if (type === "BufferMeshData") {
 			return "#be1656";
-		} else if (type === "VolumeData") {
+		} else if (type === "BufferPointData") {
+			return "#e023e0";
+		} else if (type === "BufferLineData") {
+			return "#20cae0";
+		} else if (type === "BufferVolumeData") {
 			return "#17d042";
 		} else if (type === "Any") {
 			return "#ef8815";

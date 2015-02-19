@@ -15,7 +15,7 @@ OBJLoader::OBJLoader()
 
 OBJLoader::~OBJLoader()
 {
-    delete m_obj;
+    Clear();
 }
 
 void OBJLoader::Clear()
@@ -91,8 +91,10 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj& obj) const
     float* pp = pos->GetBuffer();
     memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
     float* rad = radius->GetBuffer();
-    for (int i = 0; i < vnum; ++i) {
-        rad[i] = 1.0f;
+    if (rad) {
+        for (int i = 0; i < vnum; ++i) {
+            rad[i] = 1.0f;
+        }
     }
     memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
     
@@ -112,9 +114,6 @@ bool OBJLoader::Load(const char* filename){
         delete m_obj;
         return false;
     }
-    m_mesh  = 0;
-    m_point = 0;
-    m_line  = 0;
     
 	return r;
 }

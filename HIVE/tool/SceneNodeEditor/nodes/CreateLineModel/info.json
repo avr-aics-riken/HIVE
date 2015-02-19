@@ -1,0 +1,21 @@
+{
+	"name": "CreateLineModel",
+	"funcname": "CreateLineModel",
+	"info":"Lineデータを表示させるためのノード",
+	"pos": [450, 300],
+	"varname": "instLineModel",
+	"customfuncfile": "createLineModel.lua",
+	"input": [
+		{"name": "line", "type": "BufferLineData"},
+		{"name": "width", "type": "float"},
+		{"name": "shadername", "type": "string", "value":"white.frag"},
+		{"name": "Uniform",  "type": "Uniform", "array": [
+			{"name": "Uniform0",  "type": "Uniform"},
+			{"name": "Uniform1",  "type": "Uniform"},
+			{"name": "Uniform2",  "type": "Uniform"}
+		]}
+	],
+	"output": [
+		{"name": "model", "type": "RenderObject"}
+	]
+}

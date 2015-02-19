@@ -9,6 +9,6 @@
 		{"name": "filepath", "type": "string", "value": "bunny.stl"}
 	],
 	"output": [
-		{"name": "MeshData", "type": "MeshData"}
+		{"name": "MeshData", "type": "BufferMeshData"}
 	]
 }

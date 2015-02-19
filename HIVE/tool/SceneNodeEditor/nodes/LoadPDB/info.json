@@ -1,0 +1,15 @@
+{
+	"name": "LoadPDB",
+	"funcname": "LoadPDB",
+	"info":"PDBファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instPDBLoader",
+	"customfuncfile":"pdbloader.lua", 
+	"input": [
+		{"name": "filepath", "type": "string", "value": "data.obj"}
+	],
+	"output": [
+		{"name": "BallData", "type": "BufferPointData"},
+		{"name": "StickData",  "type": "BufferLineData"}
+	]
+}

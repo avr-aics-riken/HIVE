@@ -1,0 +1,20 @@
+{
+	"name": "CreatePolygonModel",
+	"funcname": "CreatePolygonModel",
+	"info":"メッシュデータを表示させるためのノード",
+	"pos": [450, 300],
+	"varname": "instPolygonModel",
+	"customfuncfile": "createPolygonModel.lua",
+	"input": [
+		{"name": "mesh", "type": "BufferMeshData"},
+		{"name": "shadername", "type": "string", "value":"white.frag"},
+		{"name": "Uniform",  "type": "Uniform", "array": [
+			{"name": "Uniform0",  "type": "Uniform"},
+			{"name": "Uniform1",  "type": "Uniform"},
+			{"name": "Uniform2",  "type": "Uniform"}
+		]}
+	],
+	"output": [
+		{"name": "model", "type": "RenderObject"}
+	]
+}
