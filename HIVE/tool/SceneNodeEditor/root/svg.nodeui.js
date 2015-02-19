@@ -15,23 +15,27 @@ function svgNodeUI(draw) {
 	
 	function getTypeColor(type) {
 		if (type === "string") {
-			return "#1ce39e";
+			return "#14a271";
 		} else if (type === "float") {
-			return "#1cd4e3";
+			return "#139aa5";
 		} else if (type === "vec4") {
-			return "#1cb5e3";
+			return "#1b6ad6";
 		} else if (type === "vec3") {
-			return "#7fa3e8";
+			return "#566f9f";
 		} else if (type === "vec2") {
-			return "#9127b9";
+			return "#8222a7";
 		} else if (type === "RenderObject") {
-			return "#e2509e";
+			return "#ad3b78";
 		} else if (type === "Uniform") {
-			return "#e3cc1c";
+			return "#b19e14";
+		} else if (type === "MeshData") {
+			return "#be1656";
+		} else if (type === "VolumeData") {
+			return "#17d042";
 		} else if (type === "Any") {
 			return "#ef8815";
 		} else { // Object
-			return "#e32b1c";
+			return "#c12417";
 		}
 	}
 	
@@ -103,7 +107,7 @@ function svgNodeUI(draw) {
 		this.connected = null;
 		this.line = null;
 
-		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('rgb(200, 200, 200)'),
+		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
 			holeMouseUp = function (self) {
 				return function () {
 					if (draggingPlug !== null) {
@@ -250,7 +254,7 @@ function svgNodeUI(draw) {
 			erasebtn = draw.rect(15, 15).radius(5).attr({'fill': "#ea4412", 'fill-opacity': "0.8", 'stroke': "none"}),
 			eraseA = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(45),
 			eraseB = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(-45),
-			titletext = draw.text(typename).fill('#fff').move(15, 5), //#ef8815
+			titletext = draw.text(typename).fill('#ef8815').move(15, 5),
 			eraseG = draw.group().move(200, 5),
 			group = draw.group(),
 			groupDragStart = function (self) {
@@ -308,13 +312,13 @@ function svgNodeUI(draw) {
 		this.plugConnectors = plugConnectors;
 		
 		function newNodeConnector(group, inNode, thisptr, i) {
-			var nodeText = draw.text(inNode.name).fill(getTypeColor(inNode.type)).move(20, 30 + i * 20),
+			var nodeText = draw.text(inNode.name).fill('#eee').move(20, 30 + i * 20),
 				nodeVarName = getPlugVarName(varName, inNode.name);
 			group.add(nodeText);
 			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 40 + i * 20);
 		}
 		function newNodeOutConnector(group, outNode, thisptr, i) {
-			var nodeText = draw.text(outNode.name).fill(getTypeColor(outNode.type)).move(130, 30 + i * 20),
+			var nodeText = draw.text(outNode.name).fill('#eee').move(130, 30 + i * 20),
 				nodeVarName = getPlugVarName(varName, outNode.name);
 			group.add(nodeText);
 			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 40 + i * 20);
