@@ -16,7 +16,6 @@ public:
     }
 
     bool SetPointData(BufferPointData_Lua* p) {
-        printf("setpointdata: %p\n", p);
         PDMSaver::SetPointData(p);
         return true;
     }
