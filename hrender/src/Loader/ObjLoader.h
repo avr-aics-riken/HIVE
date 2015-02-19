@@ -17,9 +17,9 @@ private:
     
     SimpleObj*  m_obj;
     
-    BufferMeshData*  createMeshData(const SimpleObj& obj)  const;
-    BufferPointData* createPointData(const SimpleObj& obj) const;
-    BufferLineData* createLineData(const SimpleObj& obj)   const;
+    BufferMeshData*  createMeshData(const SimpleObj* obj)  const;
+    BufferPointData* createPointData(const SimpleObj* obj) const;
+    BufferLineData* createLineData(const SimpleObj* obj)   const;
 
 public:
 	OBJLoader();

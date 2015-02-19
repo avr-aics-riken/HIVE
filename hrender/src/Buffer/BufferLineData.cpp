@@ -26,24 +26,23 @@ public:
     
     ~Impl()
     {
-        Clear();
-    }
-    
-    void Clear()
-    {
         m_pos    = 0;
         m_mat    = 0;
         m_radius = 0;
         m_index  = 0;
     }
     
-    void Create(int vertexnum, int indexnum, bool useRadius)
+    void Clear()
     {
         m_pos    = new Vec3Buffer();
         m_mat    = new FloatBuffer();
         m_radius = new FloatBuffer();
         m_index  = new UintBuffer();
-        m_pos->Create(vertexnum);
+    }
+    
+    void Create(int vertexnum, int indexnum, bool useRadius)
+    {
+       m_pos->Create(vertexnum);
         m_mat->Create(vertexnum);
         if (useRadius)
             m_radius->Create(vertexnum);

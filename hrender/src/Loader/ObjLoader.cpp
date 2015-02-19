@@ -27,47 +27,53 @@ void OBJLoader::Clear()
     m_line  = 0;
 }
 
-BufferMeshData* OBJLoader::createMeshData(const SimpleObj& obj) const
+BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
 {
     BufferMeshData* mesh  = new BufferMeshData();
-    mesh->Create(obj.GetVertexNum(), obj.GetIndexNum());
+    if (!obj) {
+        return mesh;
+    }
+    mesh->Create(obj->GetVertexNum(), obj->GetIndexNum());
     Vec3Buffer* pos      = mesh->Position();
     Vec3Buffer* normal   = mesh->Normal();
     FloatBuffer* mat     = mesh->Material();
     UintBuffer* index    = mesh->Index();
     Vec2Buffer* texcoord = mesh->Texcoord();
     
-    pos->Create(obj.GetVertexNum());
+    pos->Create(obj->GetVertexNum());
     float* pp = pos->GetBuffer();
-    memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
-    normal->Create(obj.GetVertexNum());
-    memcpy(normal->GetBuffer(), obj.GetNormalBuffer(), sizeof(float)*3*obj.GetVertexNum());
-    const float* objuv = obj.GetUVBuffer();
+    memcpy(pp, obj->GetPositionBuffer(), sizeof(float)*3*(obj->GetVertexNum()));
+    normal->Create(obj->GetVertexNum());
+    memcpy(normal->GetBuffer(), obj->GetNormalBuffer(), sizeof(float)*3*obj->GetVertexNum());
+    const float* objuv = obj->GetUVBuffer();
     if (objuv) {
-        texcoord->Create(obj.GetVertexNum());
+        texcoord->Create(obj->GetVertexNum());
         float* uv = texcoord->GetBuffer();
-        memcpy(uv, objuv, sizeof(float)*2*(obj.GetVertexNum()));
+        memcpy(uv, objuv, sizeof(float)*2*(obj->GetVertexNum()));
     }
-    mat->Create(obj.GetVertexNum());
+    mat->Create(obj->GetVertexNum());
     memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
-    index->Create(obj.GetIndexNum());
-    memcpy(index->GetBuffer(), obj.GetIndex(), sizeof(unsigned int) * index->GetNum());
+    index->Create(obj->GetIndexNum());
+    memcpy(index->GetBuffer(), obj->GetIndex(), sizeof(unsigned int) * index->GetNum());
 
     return mesh;
 }
 
-BufferPointData* OBJLoader::createPointData(const SimpleObj& obj) const
+BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
 {
     BufferPointData* point = new BufferPointData();
-    
-    point->Create(obj.GetVertexNum());
+    if (!obj) {
+        return point;
+    }
+
+    point->Create(obj->GetVertexNum());
     Vec3Buffer*  pos     = point->Position();
     FloatBuffer* mat     = point->Material();
     FloatBuffer* radius  = point->Radius();
 
-    const int vnum = obj.GetVertexNum();
+    const int vnum = obj->GetVertexNum();
     float* pp = pos->GetBuffer();
-    memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
+    memcpy(pp, obj->GetPositionBuffer(), sizeof(float)*3*(obj->GetVertexNum()));
     float* rad = radius->GetBuffer();
     for (int i = 0; i < vnum; ++i) {
         rad[i] = 1.0f;
@@ -76,20 +82,23 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj& obj) const
     return point;
 }
 
-BufferLineData* OBJLoader::createLineData(const SimpleObj& obj) const
+BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
 {
     BufferLineData* line = new BufferLineData();
-    
+    if (!line) {
+        return line;
+    }
+
     const int indexnum = 0;//obj.GetIndexNum()
-    line->Create(obj.GetVertexNum(), indexnum);
+    line->Create(obj->GetVertexNum(), indexnum);
     Vec3Buffer*  pos     = line->Position();
     FloatBuffer* mat     = line->Material();
     FloatBuffer* radius  = line->Radius();
     UintBuffer*  idx     = line->Index();
     
-    const int vnum = obj.GetVertexNum();
+    const int vnum = obj->GetVertexNum();
     float* pp = pos->GetBuffer();
-    memcpy(pp, obj.GetPositionBuffer(), sizeof(float)*3*(obj.GetVertexNum()));
+    memcpy(pp, obj->GetPositionBuffer(), sizeof(float)*3*(obj->GetVertexNum()));
     float* rad = radius->GetBuffer();
     if (rad) {
         for (int i = 0; i < vnum; ++i) {
@@ -99,7 +108,7 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj& obj) const
     memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
     
     if (indexnum)
-        memcpy(idx->GetBuffer(), obj.GetIndex(), sizeof(unsigned int) * idx->GetNum());
+        memcpy(idx->GetBuffer(), obj->GetIndex(), sizeof(unsigned int) * idx->GetNum());
     
     return line;
 }
@@ -112,6 +121,7 @@ bool OBJLoader::Load(const char* filename){
 	bool r = m_obj->Load(filename);
     if (!r) {
         delete m_obj;
+        m_obj = 0;
         return false;
     }
     
@@ -121,14 +131,14 @@ bool OBJLoader::Load(const char* filename){
 BufferMeshData *OBJLoader::MeshData()
 {
     if (!m_mesh)
-        m_mesh  = createMeshData(*m_obj);
+        m_mesh  = createMeshData(m_obj);
 	return m_mesh;
 }
 
 BufferPointData *OBJLoader::PointData()
 {
     if (!m_point)
-        m_point = createPointData(*m_obj);
+        m_point = createPointData(m_obj);
 
     return m_point;
 }
@@ -136,7 +146,7 @@ BufferPointData *OBJLoader::PointData()
 BufferLineData *OBJLoader::LineData()
 {
     if (!m_line)
-        m_line = createLineData(*m_obj);
+        m_line = createLineData(m_obj);
     
     return m_line;
 }

@@ -58,6 +58,7 @@ bool PointBuffer::Create(const PointModel* model)
     }
         
     unsigned int particlenum = point->Position()->GetNum();
+    m_vtxnum   = particlenum;
     if (particlenum <= 0) {
         printf("[Error]Point vertex empty\n");
         return false;
@@ -68,8 +69,6 @@ bool PointBuffer::Create(const PointModel* model)
             point->Radius()->GetBuffer(),
             point->Material()->GetBuffer(),
             m_vtx_id, m_radius_id, m_material_id);
-    m_vtxnum   = particlenum;
-
     CreateVBRM_GL(particlenum,
                   point->Position()->GetBuffer(),
                   point->Radius()->GetBuffer(),
@@ -83,6 +82,11 @@ void PointBuffer::Render() const
 {
     if (!m_model) {
         printf("[Error] Not setpointmodel\n");
+    }
+    
+    if (m_vtxnum == 0) {
+        printf("[Error] Not invalid point data\n");
+        return;
     }
     
     bindUniforms(m_model);
