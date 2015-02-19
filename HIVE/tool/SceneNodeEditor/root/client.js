@@ -1,6 +1,5 @@
 /*jslint devel:true */
 /*global SVG, svgNodeUI, io, fs, URL, FileReader */
-
 (function () {
 	'use strict';
 	var nui,
@@ -13,14 +12,14 @@
 	socket.on('stdout', function (data) {
 		var output = document.getElementById('consoleOutput'),
 			text = document.getElementById('consoleTextBlock');
-		text.innerHTML = text.innerHTML + "<div class='stdout'>" + data + "</div>";
+		text.innerHTML = text.innerHTML + "<pre class='stdout'>" + data + "</pre>";
 		output.scrollTop = output.scrollHeight;
 	});
 	
 	socket.on('stderr', function (data) {
 		var output = document.getElementById('consoleOutput'),
 			text = document.getElementById('consoleTextBlock');
-		text.innerHTML = text.innerHTML + "<div class='stderr'>" + data + "</div>";
+		text.innerHTML = text.innerHTML + "<pre class='stderr'>" + data + "</pre>";
 		output.scrollTop = output.scrollHeight;
 	});
 	
