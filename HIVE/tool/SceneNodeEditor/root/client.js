@@ -311,9 +311,41 @@
 		socket.emit('sendScene', JSON.stringify({scene: customlua}));
 	}
 
-	function ButtonOpen(e) {
-		nodeData = reloadNodeList('nodelist.json');
+	function ButtonOpen(evt) {
+		var files = evt.target.files,
+			i,
+			f,
+			reader,
+			data,
+			nodedata;
+		console.log(files);
+		for (i = 0; i < files.length; i = i + 1) {
+			f = files[i];
+			reader = new FileReader();
+			reader.onload = (function(theFile) {
+				return function(e) {
+					data = e.target.result;
+					nodedata = JSON.parse(data);
+					nui.clearNodes();
+					nui.makeNodes(nodedata);
+				};
+			})(f);
+			reader.readAsText(f);
+		}
 	}
+	function ButtonSave(e) {
+		//
+		// TODO: safari
+		//
+		var a = document.createElement('a'),
+			nodeData = JSON.stringify(nui.getNodeData()),
+			href = "data:application/octet-stream," + encodeURIComponent(nodeData);
+
+		a.href = href;
+		a.download = 'scenenodes.json';
+		a.click();
+	}
+
 
 	function ButtonAdd(e) {
 		var ele = document.getElementsByName('NodeList'),
@@ -335,6 +367,7 @@
 	function init() {
 		//create button
 		var openbutton   = document.getElementById('Open'),
+			savebutton   = document.getElementById('Save'),
 			renderbutton = document.getElementById('Render'),
 			clearbutton  = document.getElementById('Clear'),
 			addbutton    = document.getElementById('Add'),
@@ -349,7 +382,8 @@
 		nui.nodeDeleteEvent(deleteNode);
 
 		//handle
-		openbutton.onclick   = ButtonOpen;
+		openbutton.onchange  = ButtonOpen;
+		savebutton.onclick   = ButtonSave;
 		renderbutton.onclick = ButtonRender;
 		clearbutton.onclick  = ButtonClear;
 		addbutton.onclick    = ButtonAdd;

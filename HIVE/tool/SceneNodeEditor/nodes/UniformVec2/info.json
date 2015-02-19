@@ -1,0 +1,15 @@
+{
+	"name": "UniformVec2",
+	"funcname": "UniformVec2",
+	"info":"Uniform Vec2をつくるノード",
+	"pos": [110, 200],
+	"varname": "instUniformVec2",
+	"customfuncfile":"vec2.lua",
+	"input": [
+		{"name": "name",  "type": "string", "value": "univec2"},
+		{"name": "val",  "type": "vec4", "value": [0,0]}
+	],
+	"output": [
+		{"name": "uniform",  "type": "Uniform"}
+	]
+}
