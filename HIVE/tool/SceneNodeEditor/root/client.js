@@ -1,5 +1,5 @@
 /*jslint devel:true */
-/*global SVG, svgNodeUI, io, fs, URL */
+/*global SVG, svgNodeUI, io, fs, URL, FileReader */
 
 (function () {
 	'use strict';
@@ -319,17 +319,18 @@
 			data,
 			nodedata;
 		console.log(files);
+		function readfile(theFile) {
+			return function (e) {
+				data = e.target.result;
+				nodedata = JSON.parse(data);
+				nui.clearNodes();
+				nui.makeNodes(nodedata);
+			};
+		}
 		for (i = 0; i < files.length; i = i + 1) {
 			f = files[i];
 			reader = new FileReader();
-			reader.onload = (function(theFile) {
-				return function(e) {
-					data = e.target.result;
-					nodedata = JSON.parse(data);
-					nui.clearNodes();
-					nui.makeNodes(nodedata);
-				};
-			})(f);
+			reader.onload = readfile(f);
 			reader.readAsText(f);
 		}
 	}
