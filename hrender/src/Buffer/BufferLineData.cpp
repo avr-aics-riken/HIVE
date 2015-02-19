@@ -46,9 +46,9 @@ public:
         m_pos->Create(vertexnum);
         m_mat->Create(vertexnum);
         if (useRadius)
-        m_radius->Create(vertexnum);
+            m_radius->Create(vertexnum);
         if (indexnum)
-        m_index->Create(indexnum);
+            m_index->Create(indexnum);
     }
     
     Vec3Buffer* Position() {

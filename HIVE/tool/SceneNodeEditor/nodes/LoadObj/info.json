@@ -9,6 +9,8 @@
 		{"name": "filepath", "type": "string", "value": "bunny.obj"}
 	],
 	"output": [
-		{"name": "MeshData", "type": "MeshData"}
+		{"name": "MeshData",  "type": "BufferMeshData"},
+		{"name": "PointData", "type": "BufferPointData"},
+		{"name": "LineData",  "type": "BufferLineData"}
 	]
 }

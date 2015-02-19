@@ -1,12 +1,12 @@
 {
-	"name": "CreatePolygonModel",
-	"funcname": "CreatePolygonModel",
-	"info":"メッシュデータを表示させるためのノード",
+	"name": "CreatePointModel",
+	"funcname": "CreatePointModel",
+	"info":"Pointデータを表示させるためのノード",
 	"pos": [450, 300],
-	"varname": "instPolygonModel",
-	"customfuncfile": "createPolygonModel.lua",
+	"varname": "instPointModel",
+	"customfuncfile": "createPointModel.lua",
 	"input": [
-		{"name": "mesh", "type": "MeshData"},
+		{"name": "point", "type": "BufferPointData"},
 		{"name": "shadername", "type": "string", "value":"white.frag"},
 		{"name": "Uniform",  "type": "Uniform", "array": [
 			{"name": "Uniform0",  "type": "Uniform"},
