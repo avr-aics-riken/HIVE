@@ -35,6 +35,7 @@
 #endif
 #ifdef HIVE_WITH_PDMLIB
 #include "PdmLoader_Lua.h"
+#include "PdmSaver_Lua.h"
 #endif
 #ifdef HIVE_WITH_HDMLIB
 #include "HdmLoader_Lua.h"
@@ -70,6 +71,7 @@ void RegisterSceneClass(lua_State* L)
 #endif
 #ifdef HIVE_WITH_PDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, PDMLoader_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, PDMSaver_Lua);
 #endif
 #ifdef HIVE_WITH_HDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, HDMLoader_Lua);
@@ -102,6 +104,7 @@ void RegisterSceneClass(lua_State* L)
 #endif
 #ifdef HIVE_WITH_PDMLIB
     SetFunction(L, "PDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDMLoader_Lua));
+    SetFunction(L, "PDMSaver",            LUA_SCRIPTCLASS_NEW_FUNCTION(PDMSaver_Lua));
 #endif
 #ifdef HIVE_WITH_HDMLIB
     SetFunction(L, "HDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(HDMLoader_Lua));
