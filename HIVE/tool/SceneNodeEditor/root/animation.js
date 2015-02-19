@@ -10,6 +10,7 @@ $ready(function () {
 		menuMin = "30px",
 		menuMax = "480px";
 	$('closeConsoleOutput').addEventListener('click', function () {
+		$('consoleOutput').style.overflow = "hidden";
 		if (logShowState === 0) {
 			logShowState = 1;
 			$animate($('consoleTextBlock'), {
@@ -62,11 +63,13 @@ $ready(function () {
 				}
 			}, 1000, function () {
 				$('closeConsoleOutput').value = "v";
+				$('consoleOutput').style.overflow = "auto";
 				logShowState = 0;
 			});
 		}
 	});
 	$('closeMenuTab').addEventListener('click', function () {
+		$('menuTab').style.overflow = "hidden";
 		if (menuTabState === 0) {
 			menuTabState = 1;
 			$animate($('menuTab'), {
@@ -87,6 +90,7 @@ $ready(function () {
 				}
 			}, 1000, function () {
 				$('closeMenuTab').value = ">>";
+				$('menuTab').style.overflow = "auto";
 				menuTabState = 0;
 			});
 		}
