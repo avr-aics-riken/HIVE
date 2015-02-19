@@ -13,6 +13,7 @@ private:
 public:
     Impl()
     {
+        Clear();
     }
     
     Impl(BufferMeshData* inst)
@@ -26,15 +27,15 @@ public:
     
     ~Impl()
     {
+        m_pos      = 0;
+        m_normal   = 0;
+        m_texcoord = 0;
+        m_index    = 0;
+        m_mat      = 0;
     }
     
     void Create(int vertexnum, int indexnum)
     {
-        m_pos      = new Vec3Buffer();
-        m_normal   = new Vec3Buffer();
-        m_texcoord = new Vec2Buffer();
-        m_mat      = new FloatBuffer();
-        m_index    = new UintBuffer();
         m_pos->Create(vertexnum);
         m_normal->Create(vertexnum);
         m_texcoord->Create(vertexnum);
@@ -44,11 +45,11 @@ public:
     
     void Clear()
     {
-        m_pos      = 0;
-        m_normal   = 0;
-        m_texcoord = 0;
-        m_index    = 0;
-        m_mat      = 0;
+        m_pos      = new Vec3Buffer();
+        m_normal   = new Vec3Buffer();
+        m_texcoord = new Vec2Buffer();
+        m_mat      = new FloatBuffer();
+        m_index    = new UintBuffer();
     }
     
     void print()

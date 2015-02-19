@@ -66,13 +66,15 @@ bool PolygonBuffer::Create(const PolygonModel* model)
     
     m_vertex_num = vnum;
     m_index_num  = inum;
+    if (vnum == 0)
+        return false;
+    
     CreateVBIB_SGL(vnum, mesh->Position()->GetBuffer(),
                    mesh->Normal()->GetBuffer(),
                    mesh->Material()->GetBuffer(),
                    mesh->Texcoord()->GetBuffer(),
                    inum, mesh->Index()->GetBuffer(),
                    m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
-    
     
     return r;
 }
@@ -81,7 +83,12 @@ void PolygonBuffer::Render() const
     if (!m_model) {
         printf("[Error] Not setpolygonmodel\n");
     }
-   
+    
+    if (m_vertex_num == 0) {
+        printf("[Error] Not invalid point data\n");
+        return;
+    }
+    
     bindUniforms(m_model);
     
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);

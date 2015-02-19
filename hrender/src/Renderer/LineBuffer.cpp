@@ -70,6 +70,10 @@ bool LineBuffer::Create(const LineModel* model)
     
     m_vtxnum   = linePointNum;
     m_indexnum = line->Index()->GetNum();
+    if (linePointNum <= 0) {
+        printf("[Error]Line vertex empty\n");
+        return false;
+    }
     if (!m_indexnum) {
         CreateVBRM_SGL(linePointNum,
                        line->Position()->GetBuffer(),
@@ -95,6 +99,11 @@ void LineBuffer::Render() const
         printf("[Error] Not set linemodel\n");
     }
     
+    if (m_vtxnum == 0) {
+        printf("[Error] Invalide line data\n");
+        return;
+    }
+
     bindUniforms(m_model);
     
     float w = m_model->GetLineWidth();
