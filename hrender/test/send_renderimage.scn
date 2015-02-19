@@ -4,14 +4,14 @@ print('Send Render camera')
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
 camera:SetFilename('image.jpg')
-camera:SetNetworkAddress('http://localhost:1337/image')
+camera:SetNetworkAddress('http://localhost:8082/')
 
 camera:LookAt(
 	0,0,300,
 	0,0,0,
 	0,1,0,
 	60
-}
+)
 
 render {camera}
 
