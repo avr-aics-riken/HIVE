@@ -10,6 +10,25 @@
 		socket = io.connect(),
 		instance_no = 1;
 	
+	socket.on('stdout', function (data) {
+		var output = document.getElementById('consoleOutput'),
+			text = document.getElementById('consoleTextBlock');
+		text.innerHTML = text.innerHTML + "<div class='stdout'>" + data + "</div>";
+		output.scrollTop = output.scrollHeight;
+	});
+	
+	socket.on('stderr', function (data) {
+		var output = document.getElementById('consoleOutput'),
+			text = document.getElementById('consoleTextBlock');
+		text.innerHTML = text.innerHTML + "<div class='stderr'>" + data + "</div>";
+		output.scrollTop = output.scrollHeight;
+	});
+	
+	function clearConsoleOutput() {
+		var text = document.getElementById('consoleTextBlock');
+		text.innerHTML = "";
+	}
+
 	function clone(obj) {
 		return JSON.parse(JSON.stringify(obj));
 		/*if (null === obj || "object" !== typeof obj) {
@@ -303,11 +322,13 @@
 	
 	function ButtonClear(e) {
 		clearNode();
+		clearConsoleOutput();
 	}
 
 	function ButtonRender(e) {
 		var customlua = nui.exportLua();
 		console.log(customlua);
+		clearConsoleOutput();
 		socket.emit('sendScene', JSON.stringify({scene: customlua}));
 	}
 
