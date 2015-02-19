@@ -1,0 +1,15 @@
+{
+	"name": "UniformVec3",
+	"funcname": "UniformVec3",
+	"info":"Uniform Vec3をつくるノード",
+	"pos": [110, 200],
+	"varname": "instUniformVec3",
+	"customfuncfile":"vec3.lua",
+	"input": [
+		{"name": "name",  "type": "string", "value": "univec3"},
+		{"name": "val",  "type": "vec3", "value": [0,0,0]}
+	],
+	"output": [
+		{"name": "uniform",  "type": "Uniform"}
+	]
+}
