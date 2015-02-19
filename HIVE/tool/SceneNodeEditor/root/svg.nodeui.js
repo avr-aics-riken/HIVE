@@ -13,6 +13,27 @@ function svgNodeUI(draw) {
 		nodeClickFunction = null,
 		nodeDeleteFunction = null;
 	
+	function getTypeColor(type) {
+		if (type === "string") {
+			return "#1ce39e";
+		} else if (type === "float") {
+			return "#1cd4e3";
+		} else if (type === "vec4") {
+			return "#1cb5e3";
+		} else if (type === "vec3") {
+			return "#7fa3e8";
+		} else if (type === "vec2") {
+			return "#9127b9";
+		} else if (type === "RenderObject") {
+			return "#e2509e";
+		} else if (type === "Uniform") {
+			return "#e3cc1c";
+		} else if (type === "Any") {
+			return "#ef8815";
+		} else { // Object
+			return "#e32b1c";
+		}
+	}
 	
 	function getPlugVarName(nodeName, plugName) {
 		return nodeName + ':' + plugName;
@@ -31,12 +52,12 @@ function svgNodeUI(draw) {
 	}
 
 	/* NodeUI class */
-	function PlugClass(sx, sy, ex, ey) {
+	function PlugClass(sx, sy, ex, ey, width, color) {
 		this.sx = sx;
 		this.sy = sy;
 		this.ex = ex;
 		this.ey = ey;
-		this.line = draw.path('').fill('none').stroke({ width: 4, color: '#ef8815' });
+		this.line = draw.path('').fill('none').stroke({ width: width, color: color });
 		this.drawCurve(this.line, sx, sy, ex, ey);
 	}
 
@@ -145,10 +166,10 @@ function svgNodeUI(draw) {
 		this.px = x;
 		this.py = y;
 		this.connected = null;
-		this.line = new PlugClass(svgparent.x() + x, svgparent.y() + y, svgparent.x() + x, svgparent.y() + y, 4);
+		this.line = new PlugClass(svgparent.x() + x, svgparent.y() + y, svgparent.x() + x, svgparent.y() + y, 4, getTypeColor(vartype));
 
 		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#c7c7c7'),
-			pole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#ef8815'),
+			pole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
 			poleDragstart = function (self) {
 				return function (delta, event) {
 					event.stopPropagation();
@@ -229,7 +250,7 @@ function svgNodeUI(draw) {
 			erasebtn = draw.rect(15, 15).radius(5).attr({'fill': "#ea4412", 'fill-opacity': "0.8", 'stroke': "none"}),
 			eraseA = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(45),
 			eraseB = draw.rect(13, 2).radius(1).attr({'fill': "#edded9", 'fill-opacity': "1.0", 'stroke': "none"}).move(1, 6).rotate(-45),
-			titletext = draw.text(typename).fill('#ef8815').move(15, 5),
+			titletext = draw.text(typename).fill('#fff').move(15, 5), //#ef8815
 			eraseG = draw.group().move(200, 5),
 			group = draw.group(),
 			groupDragStart = function (self) {
@@ -286,14 +307,19 @@ function svgNodeUI(draw) {
 		this.group = group;
 		this.plugConnectors = plugConnectors;
 		
-		
 		function newNodeConnector(group, inNode, thisptr, i) {
-			var nodeText = draw.text(inNode.name).fill('#fff').move(20, 30 + i * 20),
+			var nodeText = draw.text(inNode.name).fill(getTypeColor(inNode.type)).move(20, 30 + i * 20),
 				nodeVarName = getPlugVarName(varName, inNode.name);
 			group.add(nodeText);
 			return new NodeConnector(nodeVarName, inNode.type, group, thisptr, 0, 40 + i * 20);
 		}
-			
+		function newNodeOutConnector(group, outNode, thisptr, i) {
+			var nodeText = draw.text(outNode.name).fill(getTypeColor(outNode.type)).move(130, 30 + i * 20),
+				nodeVarName = getPlugVarName(varName, outNode.name);
+			group.add(nodeText);
+			return new NodePlug(nodeVarName, outNode.type, group, thisptr, 220, 40 + i * 20);
+		}
+		
 		// Node Params
 		connectCnt = 0;
 		if (inouts) {
@@ -310,11 +336,6 @@ function svgNodeUI(draw) {
 					} else {
 						plugConnectors[inouts.input[i].name] = newNodeConnector(group, inode, this, connectCnt);
 						connectCnt = connectCnt + 1;
-
-						/*nodeText = draw.text(inouts.input[i].name).fill('#fff').move(20, 30 + i * 20);
-						group.add(nodeText);
-						nodeVarName = getPlugVarName(varName, inouts.input[i].name);
-						plugConnectors[inouts.input[i].name] = new NodeConnector(nodeVarName, inouts.input[i].type, group, this, 0, 40 + i * 20);*/
 					}
 				}
 			}
@@ -322,10 +343,7 @@ function svgNodeUI(draw) {
 			if (inouts.output) {
 				inoutNum = Math.max(inoutNum, inouts.output.length);
 				for (i = 0; i < inouts.output.length; i += 1) {
-					nodeText = draw.text(inouts.output[i].name).fill('#fff').move(130, 30 + i * 20);
-					group.add(nodeText);
-					nodeVarName = getPlugVarName(varName,  inouts.output[i].name);
-					plugConnectors[inouts.output[i].name] = new NodePlug(nodeVarName, inouts.output[i].type, group, this, 220, 40 + i * 20);
+					plugConnectors[inouts.output[i].name] = newNodeOutConnector(group, inouts.output[i], this, i);
 				}
 			}
 		}

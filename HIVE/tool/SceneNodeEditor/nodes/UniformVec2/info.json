@@ -7,7 +7,7 @@
 	"customfuncfile":"vec2.lua",
 	"input": [
 		{"name": "name",  "type": "string", "value": "univec2"},
-		{"name": "val",  "type": "vec4", "value": [0,0]}
+		{"name": "val",  "type": "vec2", "value": [0,0]}
 	],
 	"output": [
 		{"name": "uniform",  "type": "Uniform"}
