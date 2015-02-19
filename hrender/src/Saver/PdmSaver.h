@@ -17,12 +17,9 @@ public:
       m_pointData = pointData;
     }
 
-    void SetNumPoints(size_t num);
-
 private:
 
     const BufferPointData* m_pointData;
-    size_t                 m_numPoints;
 
 };
 
