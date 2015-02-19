@@ -14,15 +14,13 @@ public:
 
 
     void SetPointData(const BufferPointData* pointData) {
+      printf("setpointdata : %p\n", pointData);
       m_pointData = pointData;
     }
-
-    void SetNumPoints(size_t num);
 
 private:
 
     const BufferPointData* m_pointData;
-    size_t                 m_numPoints;
 
 };
 
