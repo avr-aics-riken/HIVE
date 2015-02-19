@@ -1,0 +1,14 @@
+{
+	"name": "FloatToString",
+	"funcname": "FloatToString",
+	"info":"Float値をStringにするノード",
+	"pos": [400, 100],
+	"varname": "instFloatToString",
+	"customfuncfile":"conv.lua",
+	"input": [
+		{"name": "Float",  "type": "float", "value":"0"}
+	],
+	"output": [
+		{"name": "String", "type": "string" }
+	]
+}
