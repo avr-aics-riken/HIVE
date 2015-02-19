@@ -1,0 +1,15 @@
+{
+	"name": "Print",
+	"funcname": "Print",
+	"info":"値をprint出力するノード",
+	"pos": [400, 100],
+	"varname": "instPrint",
+	"customfuncfile":"print.lua",
+	"rootnode":true,
+	"input": [
+		{"name": "Label",  "type": "string", "value":"PrintNode"},
+		{"name": "String", "type": "string" }
+	],
+	"output": [
+	]
+}

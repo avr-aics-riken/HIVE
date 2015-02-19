@@ -311,10 +311,28 @@
 		socket.emit('sendScene', JSON.stringify({scene: customlua}));
 	}
 
-	function ButtonOpen(e) {
-		
+	function ButtonOpen(evt) {
+		var files = evt.target.files,
+			i,
+			f,
+			reader,
+			data,
+			nodedata;
+		console.log(files);
+		for (i = 0; i < files.length; i = i + 1) {
+			f = files[i];
+			reader = new FileReader();
+			reader.onload = (function(theFile) {
+				return function(e) {
+					data = e.target.result;
+					nodedata = JSON.parse(data);
+					nui.clearNodes();
+					nui.makeNodes(nodedata);
+				};
+			})(f);
+			reader.readAsText(f);
+		}
 	}
-	
 	function ButtonSave(e) {
 		//
 		// TODO: safari
@@ -364,7 +382,7 @@
 		nui.nodeDeleteEvent(deleteNode);
 
 		//handle
-		openbutton.onclick   = ButtonOpen;
+		openbutton.onchange  = ButtonOpen;
 		savebutton.onclick   = ButtonSave;
 		renderbutton.onclick = ButtonRender;
 		clearbutton.onclick  = ButtonClear;

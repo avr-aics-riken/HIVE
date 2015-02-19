@@ -7,7 +7,12 @@
 	"customfuncfile": "createPolygonModel.lua",
 	"input": [
 		{"name": "mesh", "type": "MeshData"},
-		{"name": "shadername", "type": "string", "value":"white.frag"}
+		{"name": "shadername", "type": "string", "value":"white.frag"},
+		{"name": "Uniform",  "type": "Uniform", "array": [
+			{"name": "Uniform0",  "type": "Uniform"},
+			{"name": "Uniform1",  "type": "Uniform"},
+			{"name": "Uniform2",  "type": "Uniform"}
+		]}
 	],
 	"output": [
 		{"name": "model", "type": "RenderObject"}
