@@ -33,8 +33,15 @@ bool PDMSaver::Save(const char* filename){
         //PDMlib::PDMlib::GetInstance().SetBoundingBox(bbox);
     }
 
-    float* coordPtr = m_pointData->Position()->GetBuffer();
-    PDMlib::PDMlib::GetInstance().Write("Coordinate", m_numPoints, coordPtr, (float*)NULL, 3, /* timestep */0, /* time */0); // @todo { Write timestep and time }.
+    if (!m_pointData) {
+        fprintf(stderr, "[PDMSaver] Point data not set.\n");
+        return false;
+    }
 
-	return false;
+    float* coordPtr = m_pointData->Position()->GetBuffer();
+    int numPoints = m_pointData->Position()->GetNum();
+    PDMlib::PDMlib::GetInstance().Write("Coordinate", numPoints, coordPtr, (float*)NULL, 3, /* timestep */0, /* time */0); // @todo { Write timestep and time }.
+    printf("Wrote PDM data: %s\n", filename);
+
+	return true;
 }
