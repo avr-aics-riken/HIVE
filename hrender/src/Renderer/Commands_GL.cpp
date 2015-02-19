@@ -404,7 +404,7 @@ bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointSh
 	FILE *fp = fopen(fbuf, "rb");
 	//assert(fp);
 	if (!fp) {
-		printf("Can't open : %s\n",fbuf);
+		fprintf(stderr, "Can't open : %s\n",fbuf);
 		return false;
 	}
 	fseek(fp, 0, SEEK_END);
@@ -437,7 +437,7 @@ bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointSh
 	printf("VShader compiled=%d\n",val);
 	//assert(val == GL_TRUE && "failed to compile shader");
 	if (val!=GL_TRUE) {
-		printf("Error: failed to compile shader [%s]\n", srcname);
+		fprintf(stderr, "Error: failed to compile shader [%s]\n", srcname);
 		return false;
 	}
 	
@@ -451,7 +451,7 @@ bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointSh
 	printf("FShader compiled=%d\n",val);
 	//assert(val == GL_TRUE && "failed to compile shader");
 	if (val!=GL_TRUE) {
-		printf("Error: failed to compile shader [%s]\n", srcname);
+		fprintf(stderr, ("Error: failed to compile shader [%s]\n", srcname);
 		return false;
 	}
 	
@@ -464,7 +464,7 @@ bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointSh
 		printProgramInfoLog(&g, prg);
 	//assert(val == GL_TRUE && "failed to link shader");
 	if (val!=GL_TRUE) {
-		printf("Error: failed to compile shader [%s]\n", srcname);
+		fprintf(stderr, "Error: failed to compile shader [%s]\n", srcname);
 		return false;
 	}
 	

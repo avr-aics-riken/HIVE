@@ -43,7 +43,7 @@ public:
     {
         std::ifstream ifs(filepath.c_str(), std::ios::in | std::ios::binary);
         if (!ifs.good()) {
-            printf("File Open Error");
+            fprintf(stderr,"File Open Error");
             return NULL;
         }
         ifs.seekg(0, std::ifstream::end);

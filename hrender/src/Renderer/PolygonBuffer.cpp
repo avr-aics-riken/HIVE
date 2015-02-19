@@ -41,7 +41,7 @@ void PolygonBuffer::Clear()
 bool PolygonBuffer::Create(const PolygonModel* model)
 {
     if (!model) {
-        printf("[Error] Invalid polygon model\n");
+        fprintf(stderr,"[Error] Invalid polygon model\n");
         return false;
     }
     
@@ -52,13 +52,13 @@ bool PolygonBuffer::Create(const PolygonModel* model)
 
     bool r = loadShaderSrc(shadername.c_str());
     if (!r) {
-        printf("[Error]Not set shader\n");
+        fprintf(stderr,"[Error]Not set shader\n");
     }
         
     // make VB/IB
     BufferMeshData* mesh = model->GetMesh();
     if (!mesh) {
-        printf("[Error] Invalid mesh data\n");
+        fprintf(stderr,"[Error] Invalid mesh data\n");
         return false;
     }
     const int vnum = mesh->Position()->GetNum();
@@ -81,11 +81,11 @@ bool PolygonBuffer::Create(const PolygonModel* model)
 void PolygonBuffer::Render() const
 {
     if (!m_model) {
-        printf("[Error] Not setpolygonmodel\n");
+        fprintf(stderr,"[Error] Not setpolygonmodel\n");
     }
     
     if (m_vertex_num == 0) {
-        printf("[Error] Not invalid point data\n");
+        fprintf(stderr,"[Error] Not invalid point data\n");
         return;
     }
     

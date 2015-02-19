@@ -58,12 +58,12 @@ bool VolumeAnalyzer::Execute(VolumeModel *model)
         const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
         if(fnum <= 0)
         {
-            printf("Volume data empty\n");
+            fprintf(stderr,"Volume data empty\n");
             return false;
         }
         proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
     } else {
-        printf("Volume data not found.");
+        fprintf(stderr,"Volume data not found.");
     }
     return true;
 }

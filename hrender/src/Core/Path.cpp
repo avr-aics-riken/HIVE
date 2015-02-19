@@ -64,21 +64,21 @@ std::string getCurrentDir()
     DWORD dwRet = GetCurrentDirectory(sizeof(buffer), (LPTSTR)buffer);
     if(!dwRet)
     {
-        printf("Failed get current directory.");
+        fprintf(stderr,"Failed get current directory.");
         return ret;
     }
 #elif __APPLE__
     temp = getcwd(buffer, sizeof(buffer));
     if(!temp) 
     {
-        printf("Failed get current directory.");
+        fprintf(stderr,"Failed get current directory.");
         return ret;
     }
 #else // Linux
     temp = getcwd(buffer, sizeof(buffer));
     if(!temp) 
     {
-        printf("Failed get current directory.");
+        fprintf(stderr,"Failed get current directory.");
         return ret;
     }
 #endif

@@ -98,7 +98,7 @@ bool VolumeBuffer::Create(const VolumeModel* model)
 {
     bool r = true;
     if (!model) {
-        printf("Failed to create volume\n");
+        fprintf(stderr,"Failed to create volume\n");
         return false;
     }
 
@@ -111,14 +111,14 @@ bool VolumeBuffer::Create(const VolumeModel* model)
     printf("%s\n", shadername.c_str());
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
-        printf("[Error]Not set shader\n");
+        fprintf(stderr,"[Error]Not set shader\n");
         return false;
     }
 
     // make VolumeData
     BufferVolumeData* volume = model->GetVolume();
     if(!volume) {
-        printf("[Error] BufferVolumeData is NULL\n");
+        fprintf(stderr,"[Error] BufferVolumeData is NULL\n");
         return false;
     }
     if(volume->Buffer()) {
@@ -128,7 +128,7 @@ bool VolumeBuffer::Create(const VolumeModel* model)
         r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer());
         MakeBox(sw,sh,sd);
     } else {
-        printf("[Error] Not load buffer\n");
+        fprintf(stderr,"[Error] Not load buffer\n");
     }
     return r;
 }
@@ -136,7 +136,7 @@ bool VolumeBuffer::Create(const VolumeModel* model)
 void VolumeBuffer::Render() const
 {
     if (!m_model) {
-        printf("[Error] Not set volume\n");
+        fprintf(stderr,"[Error] Not set volume\n");
     }
 
     // TODO: not supported yet rotation
@@ -147,7 +147,7 @@ void VolumeBuffer::Render() const
     //    m_boxsize[2] * scale.z
     //};
     float volumescale[] = {m_boxsize[0],m_boxsize[1],m_boxsize[2]};
-    printf("%f %f %f\n", volumescale[0], volumescale[1], volumescale[2]);
+    printf("VolumeBuffer Size = (%f %f %f)\n", volumescale[0], volumescale[1], volumescale[2]);
     
     bindUniforms(m_model);
     

@@ -17,7 +17,7 @@ bool PDBLoader::Load(const char* filename){
 
     tinypdb::TinyPDB pdb(filename);
     if (pdb.Parse(/* isBondGenerated = */ true)) {
-        printf("[PDBLoader] PDB parsing failed: %s \n", filename);
+        fprintf(stderr,"[PDBLoader] PDB parsing failed: %s \n", filename);
         return false;
     }
 

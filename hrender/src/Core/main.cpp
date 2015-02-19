@@ -24,7 +24,7 @@ void renderScene(const char* scenefile)
     
     SceneScript script;
     if (!script.Execute(scenefullfile.c_str())) {
-        printf("[Error] scene file!! > %s\n", scenefullfile.c_str());
+        fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
     }
 }
 
