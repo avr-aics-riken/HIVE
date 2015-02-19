@@ -24,21 +24,20 @@ public:
     
     ~Impl()
     {
-        Clear();
-    }
-    
-    void Clear()
-    {
         m_pos    = 0;
         m_mat    = 0;
         m_radius = 0;
     }
     
-    void Create(int vertexnum)
+    void Clear()
     {
         m_pos    = new Vec3Buffer();
         m_mat    = new FloatBuffer();
         m_radius = new FloatBuffer();
+    }
+    
+    void Create(int vertexnum)
+    {
         m_pos->Create(vertexnum);
         m_mat->Create(vertexnum);
         m_radius->Create(vertexnum);
