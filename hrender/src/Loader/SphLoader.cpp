@@ -27,7 +27,7 @@ bool SPHLoader::Load(const char* filename)
     SimpleSPH sph;
     const float* buf = sph.Load(filename);
     if (!buf) {
-        printf("Failed to load SPH volume: %s\n", filename);
+        fprintf(stderr,"Failed to load SPH volume: %s\n", filename);
         return false;
     }
     const int w = sph.GetDim(0);

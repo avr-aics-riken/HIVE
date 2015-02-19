@@ -24,7 +24,7 @@ bool VOLLoader::Load(const char* filename)
     SimpleVOL vol;
     const float* buf = vol.Load(filename);
     if (!buf) {
-        printf("Failed to load VOL volume: %s\n", filename);
+        fprintf(stderr,"Failed to load VOL volume: %s\n", filename);
         return false;
     }
     

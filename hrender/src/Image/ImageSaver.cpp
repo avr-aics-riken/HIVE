@@ -42,7 +42,7 @@ public:
     {
         std::ofstream ofs(filepath.c_str(), std::ios::out | std::ios::binary);
         if (!ofs.good()) {
-            printf("File Open Error");
+            fprintf(stderr,"File Open Error");
             return false;
         }
         ofs.write(reinterpret_cast<const char*>(data), bytes);

@@ -41,7 +41,7 @@ bool LineBuffer::Create(const LineModel* model)
 {
     bool r = true;
     if (!model) {
-        printf("Failed to create line: ");
+        fprintf(stderr,"Failed to create line: ");
         return false;
     }
     
@@ -52,26 +52,26 @@ bool LineBuffer::Create(const LineModel* model)
     printf("%s\n", shadername.c_str());
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
-        printf("[Error]Not set shader\n");
+        fprintf(stderr,"[Error]Not set shader\n");
         return false;
     }
 
     // make LineData
     BufferLineData* line = model->GetLine();
     if (!line) {
-        printf("[Error]Invalid line data\n");
+        fprintf(stderr,"[Error]Invalid line data\n");
         return false;
     }
     unsigned int linePointNum = line->Position()->GetNum();
     if (linePointNum <= 0) {
-        printf("[Error]Point vertex empty\n");
+        fprintf(stderr,"[Error]Point vertex empty\n");
         return false;
     }
     
     m_vtxnum   = linePointNum;
     m_indexnum = line->Index()->GetNum();
     if (linePointNum <= 0) {
-        printf("[Error]Line vertex empty\n");
+        fprintf(stderr,"[Error]Line vertex empty\n");
         return false;
     }
     if (!m_indexnum) {
@@ -96,11 +96,11 @@ bool LineBuffer::Create(const LineModel* model)
 void LineBuffer::Render() const
 {
     if (!m_model) {
-        printf("[Error] Not set linemodel\n");
+        fprintf(stderr,"[Error] Not set linemodel\n");
     }
     
     if (m_vtxnum == 0) {
-        printf("[Error] Invalide line data\n");
+        fprintf(stderr,"[Error] Invalide line data\n");
         return;
     }
 

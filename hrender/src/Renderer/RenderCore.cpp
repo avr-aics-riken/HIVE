@@ -173,7 +173,7 @@ private:
              buffer = vbuf;
         } else {
             // Unknow type
-            printf("Unkown RenderObjet type:\n");
+            fprintf(stderr,"Unkown RenderObjet type:\n");
             assert(0);
         }
         return buffer;

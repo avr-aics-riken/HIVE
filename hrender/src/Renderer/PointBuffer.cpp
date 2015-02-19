@@ -35,7 +35,7 @@ bool PointBuffer::Create(const PointModel* model)
 {
     bool r = true;
     if (!model) {
-        printf("Failed to create point: ");
+        fprintf(stderr,"Failed to create point: ");
         return false;
     }
     
@@ -46,21 +46,21 @@ bool PointBuffer::Create(const PointModel* model)
     printf("%s\n", shadername.c_str());
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
-        printf("[Error]Not set shader\n");
+        fprintf(stderr,"[Error]Not set shader\n");
         return false;
     }
 
     // make PointData
     BufferPointData *point = model->GetPoint();
     if (!point) {
-        printf("[Error]Invalid point data\n");
+        fprintf(stderr, "[Error]Invalid point data\n");
         return false;
     }
         
     unsigned int particlenum = point->Position()->GetNum();
     m_vtxnum   = particlenum;
     if (particlenum <= 0) {
-        printf("[Error]Point vertex empty\n");
+        fprintf(stderr,"[Error]Point vertex empty\n");
         return false;
     }
     CreateVBRM_SGL(
@@ -81,11 +81,11 @@ bool PointBuffer::Create(const PointModel* model)
 void PointBuffer::Render() const
 {
     if (!m_model) {
-        printf("[Error] Not setpointmodel\n");
+        fprintf(stderr,"[Error] Not setpointmodel\n");
     }
     
     if (m_vtxnum == 0) {
-        printf("[Error] Not invalid point data\n");
+        fprintf(stderr,"[Error] Not invalid point data\n");
         return;
     }
     

@@ -149,7 +149,7 @@ inline bool doLua(lua_State* L, const char* lua)
     int r = luaL_dostring(L, lua);
     if (r){
         const char *err = lua_tostring(L, -1);
-        printf("ERROR: %s\n", err);
+        fprintf(stderr, "ERROR: %s\n", err);
         return false;
     }
     return true;

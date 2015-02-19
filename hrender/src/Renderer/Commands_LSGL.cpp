@@ -289,7 +289,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	static GLchar srcbuf[16384];
 	FILE *fp = fopen(srcname, "rb");
 	if (!fp){
-		printf("Error: Not found Program [%s]\n", srcname);
+		fprintf(stderr, "Error: Not found Program [%s]\n", srcname);
 		return false;
 	}
 	fseek(fp, 0, SEEK_END);
@@ -313,7 +313,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	sgl.glGetShaderiv(fragShader, GL_COMPILE_STATUS, &val);
 	//assert(val == GL_TRUE && "failed to compile shader");
 	if (val!=GL_TRUE) {
-		printf("Error: failed to compile shader [%s]\n", srcname);
+		fprintf(stderr, "Error: failed to compile shader [%s]\n", srcname);
 		return false;
 	}
 	
@@ -323,7 +323,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	sgl.glGetProgramiv(prg, GL_LINK_STATUS, &val);
 	//assert(val == GL_TRUE && "failed to link shader");
 	if (val!=GL_TRUE) {
-		printf("Error: failed to link shader [%s]\n", srcname);
+		fprintf(stderr, "Error: failed to link shader [%s]\n", srcname);
 		return false;
 	}
 	

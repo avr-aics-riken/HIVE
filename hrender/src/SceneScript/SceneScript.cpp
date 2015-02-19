@@ -209,7 +209,7 @@ int render(lua_State* L)
 {
     const int stnum = lua_gettop(L);
     if (stnum < 1) {
-        printf("Invalid function args: render({RenderObjects}");
+        fprintf(stderr,"Invalid function args: render({RenderObjects}");
         lua_pushnumber(L, 0);
         return 1;
     }
