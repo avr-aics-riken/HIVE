@@ -14,7 +14,6 @@ public:
 
 
     void SetPointData(const BufferPointData* pointData) {
-      printf("setpointdata : %p\n", pointData);
       m_pointData = pointData;
     }
 
