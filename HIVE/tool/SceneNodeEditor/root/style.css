@@ -1,3 +1,19 @@
+body {
+	width:100%;
+	height:100%;
+	background-color:rgb(50,50,50);
+}
+
+.noneselect
+{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
 .nodeProperty
 {
 	display: table;
@@ -59,5 +75,48 @@
 	top:0px;
 	right:0px;
 	bottom:0px;
-	background-color:rgb(50,50,50);
+}
+
+.consoleArea
+{
+	position: relative;
+	min-width:100%;
+	min-height:100%;
+	background:transparent;
+	z-index: -1;
+}
+
+.consoleOutput
+{
+	position: absolute;
+	height:800px;
+	bottom:10px;
+	background:transparent;
+	overflow: auto;
+	z-index: -1;
+}
+
+.consoleTextBlock
+{
+	bottom:30px;
+	width:800px;
+	height:800px;
+	display: table-cell;
+	vertical-align: bottom;
+	background:transparent;
+	z-index: -1;
+}
+
+.stdout
+{
+	font-size: 12px;
+	color:white;
+	z-index: -1;
+}
+
+.stderr
+{
+	font-size: 12px;
+	color:red;
+	z-index: -1;
 }
