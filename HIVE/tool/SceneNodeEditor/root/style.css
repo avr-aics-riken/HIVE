@@ -66,6 +66,7 @@ body {
 	width:480px;
 	bottom:0px;
 	overflow:auto;
+	z-index: 1;
 }
 
 .NodeCanvas
@@ -90,7 +91,7 @@ body {
 	position: absolute;
 	height:400px;
 	bottom:10px;
-	background:transparent;
+	background-color: rgba(70,70,70,0.5);
 	overflow: auto;
 }
 
