@@ -8,11 +8,15 @@ function StringFormat(arg)
 			return t[i], unpack(t, i + 1)
 		end
 	end
-	for i,v in pairs(arg.format.input) do -- TODO: Order
+	for i,v in pairs(arg.input) do -- TODO: Order
 		inputlist[cnt] = v
 		cnt = cnt + 1
 	end
-	local outstr = string.format(fmt, unpack(inputlist))
+
+	local outstr = ''
+	if #inputlist > 0 then
+		outstr = string.format(fmt, unpack(inputlist))
+	end
 	return {
 		String = function()
 			return outstr
