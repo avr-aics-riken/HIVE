@@ -279,7 +279,13 @@ function svgNodeUI(draw) {
 					self.fit();
 				};
 			},
-			
+			groupDragEnd = function (self) {
+				return function (delta, event) {
+					event.stopPropagation();
+					self.orgPos[0] = self.nodeData.pos[0];
+					self.orgPos[1] = self.nodeData.pos[1];
+				};
+			},
 			i,
 			j,
 			inode,
@@ -309,9 +315,7 @@ function svgNodeUI(draw) {
 		group.draggable();
 		group.dragstart = groupDragStart(this);
 		group.dragmove = groupDragMove(this);
-		group.dragend = function (delta, event) {
-			event.stopPropagation();
-		};
+		group.dragend = groupDragEnd(this);
 		this.nodeData = inouts;
 		this.orgPos = [0, 0];
 		
