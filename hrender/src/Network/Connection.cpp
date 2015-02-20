@@ -14,6 +14,14 @@
 #include "Connection.h"
 
 namespace {
+    // Assume single instance for websocket.
+    std::string gRecvBuffer;
+
+    void RecvCallback(const std::string& message) {
+        printf("msg: %s\n", message.c_str());
+        gRecvBuffer = message;
+    }
+
     // callback  for http
     void onBegin( const happyhttp::Response* r, void* userdata )
     {
@@ -191,6 +199,29 @@ public:
         }
         return false;
     }
+
+    bool Recv(std::string& msg) {
+
+        if (m_connection) {
+            // @todo
+            return false;
+        } else if (m_ws) {
+            if (m_ws->getReadyState() == easywsclient::WebSocket::CLOSED) {
+                return false;
+            }
+
+            // Assume single thread, single instance execution.
+            gRecvBuffer.clear();
+
+            m_ws->poll(1000); // @todo { fix timeout }
+            m_ws->dispatch(RecvCallback);
+
+            msg = gRecvBuffer;
+        }
+
+        return false;
+        
+    }
     
     bool Close()
     {
@@ -265,9 +296,11 @@ private:
         m_ws = easywsclient::WebSocket::from_url(url);
         return true;
     }
+
     
     easywsclient::WebSocket::pointer m_ws;
     happyhttp::Connection* m_connection;
+    std::string m_recvBuf;
 };
 
 Connection::Connection()
@@ -348,6 +381,38 @@ bool Connection::SendImage(const std::string& filepath)
     } else {
         return false;
     }
+}
+
+char* Connection::Recv()
+{
+    static std::string s_buf; // @fixme.
+
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+    std::string buf;
+    bool ret = false;
+    if (rank == 0) {
+        ret = m_imp->Recv(buf);
+    }
+        
+#ifdef HIVE_ENABLE_MPI
+    int len = buf.size();
+    MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    if (len > 0) {
+        if (rank != 0) {
+            buf.resize(len);
+        }
+
+        MPI_Bcast(&buf.at(0), len, MPI_BYTE, 0, MPI_COMM_WORLD);
+    }
+#endif
+
+    s_buf = buf;
+
+    return const_cast<char*>(s_buf.c_str()); // strip const for lua binding.
 }
 
 bool Connection::Close()
