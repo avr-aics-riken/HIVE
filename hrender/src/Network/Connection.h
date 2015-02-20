@@ -20,9 +20,9 @@ protected:
     bool SendBinary(const char* binary, int size);
     bool SendImage(const std::string& filepath);
 
-    // Recive message and return its content to `msg`.
-    // Return fail when timeout or recv() fails.
-    char* Recv(); // @fixme { add const }
+    // Recive message and return its content.
+    // Return fail(empty string) when timeout or recv() fails.
+    std::string Recv();
 
     bool Close();
 };

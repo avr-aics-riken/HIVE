@@ -17,7 +17,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1 (bool, SendJSON, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG2 (bool, SendBinary, const char*, int)
     LUA_SCRIPTCLASS_METHOD_ARG1 (bool, SendImage, const std::string&)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (char*, Recv)
+    LUA_SCRIPTCLASS_METHOD_ARG0 (std::string, Recv)
     LUA_SCRIPTCLASS_METHOD_ARG0 (bool, Close)
     LUA_SCRIPTCLASS_END();
 };
