@@ -99,6 +99,14 @@ public:
       return buf[2];
     }
 
+    int NumTimeSteps() {
+      return CDMLoader::NumTimeSteps();
+    }
+
+    int TimeStepAt(int i) {
+      return CDMLoader::GetTimeStep(i);
+    }
+
     bool Load(const char* filename) {
         return CDMLoader::Load(filename);
     }
@@ -118,6 +126,8 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalVoxelX)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalVoxelY)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalVoxelZ)
+    LUA_SCRIPTCLASS_METHOD_ARG0(int,NumTimeSteps)
+    LUA_SCRIPTCLASS_METHOD_ARG1(int,TimeStepAt,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalOffsetX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalOffsetY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalOffsetZ)
