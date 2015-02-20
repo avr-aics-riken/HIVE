@@ -41,7 +41,7 @@ inline void GenerateTetra(
   }
 }
 
-int VolumeToTetraData::Create(BufferVolumeData *volume, int divide)
+int VolumeToTetraData::Create(BufferVolumeData *volume, int divide) {
     if (!volume)
         return 0;
     
@@ -52,16 +52,16 @@ int VolumeToTetraData::Create(BufferVolumeData *volume, int divide)
     const int volume_num = volume->Buffer()->GetNum();
     int tetra_vertex_num = volume_num * 4;
     float *source        = volume->Buffer()->GetBuffer();
-    m_tetra->Buffer()->Create(tetra_vertex_num);
-    float *dest          = m_tetra->Buffer()->GetBuffer();
+    m_tetra->Create(tetra_vertex_num, tetra_vertex_num); //todoindex
+    float *dest          = m_tetra->Position()->GetBuffer();
     for (int i = 0; i < volume_num; ++i){
         GenerateTetra(&dest[i * 4], &source[i * 3], bmin, bmax, scale);
     }
-    return m_tetra->Buffer()->GetNum();
+    return m_tetra->Position()->GetNum();
 }
 
 
-BufferVolumeData* VolumeToTetraData::VolumeData()
+BufferTetraData* VolumeToTetraData::TetraData()
 {
     return m_tetra;
 }

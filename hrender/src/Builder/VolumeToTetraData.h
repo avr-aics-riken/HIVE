@@ -4,6 +4,7 @@
 #include "Ref.h"
 #include "Buffer.h"
 #include <vector>
+#include "BufferVolumeData.h"
 #include "BufferTetraData.h"
 
 class VolumeToTetraData : public RefCount
