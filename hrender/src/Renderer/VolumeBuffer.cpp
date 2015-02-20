@@ -149,6 +149,12 @@ void VolumeBuffer::Render() const
     float volumescale[] = {m_boxsize[0],m_boxsize[1],m_boxsize[2]};
     printf("VolumeBuffer Size = (%f %f %f)\n", volumescale[0], volumescale[1], volumescale[2]);
     
+    const unsigned int prg = getProgram();
+    SetUniform3fv_SGL(prg, "volumescale", volumescale);
+    SetUniform3fv_SGL(prg, "volumedim", m_voldim);
+    VX::Math::vec3 translate = m_model->GetTranslate();
+    SetUniform3fv_SGL(prg, "offset", (float *)&translate);
+    
     bindUniforms(m_model);
     
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
