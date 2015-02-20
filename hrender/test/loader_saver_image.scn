@@ -15,11 +15,12 @@ print(issaved)
 -- save to memory
 print("savememory..")
 local buffer = saver:SaveMemory(1, img)
-print(#buffer, "bytes")
+print(buffer)
+print(saver:MemorySize())
 
 -- send image by websocket
 local network = Connection()
 network:Connect('ws://localhost:8080/')
-network:SendBinary(buffer, #buffer)
+network:SendBinary(buffer, saver:MemorySize())
 network:Close()
 

@@ -21,7 +21,7 @@ namespace {
         printf("msg: %s\n", message.c_str());
         gRecvBuffer = message;
     }
-
+    
     // callback  for http
     void onBegin( const happyhttp::Response* r, void* userdata )
     {
@@ -53,7 +53,10 @@ namespace {
     }
 } // anonymouse namespace
 
-class Connection::Impl
+/**
+ * default implementaion
+ */
+class Impl : public ConnectionIF
 {
 public:
     Impl()
@@ -199,9 +202,8 @@ public:
         }
         return false;
     }
-
-    bool Recv(std::string& msg) {
-
+    
+    std::string Recv() {
         if (m_connection) {
             // @todo
             return false;
@@ -216,11 +218,9 @@ public:
             m_ws->poll(1000); // @todo { fix timeout }
             m_ws->dispatch(RecvCallback);
 
-            msg = gRecvBuffer;
+            return gRecvBuffer;
         }
-
-        return false;
-        
+        return NULL;
     }
     
     bool Close()
@@ -297,17 +297,108 @@ private:
         return true;
     }
 
-    
     easywsclient::WebSocket::pointer m_ws;
     happyhttp::Connection* m_connection;
     std::string m_recvBuf;
 };
 
+/**
+ * MPI implementaion
+ */
+#ifdef HIVE_ENABLE_MPI
+class MPIImpl : public ConnectionIF
+{
+public:
+    MPIImpl() {}
+    ~MPIImpl() {}
+    
+    bool isValid() const {
+        int rank = 0;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        return (rank == 0);
+    }
+    
+    bool Connect(const std::string& url)
+    {
+        if (!isValid()) { return false; }
+        return m_imp.Connect(url);
+    }
+    
+    bool SendText(const std::string& text)
+    {
+        if (!isValid()) { return false; }
+        return m_imp.SendText(text);
+    }
+    
+    bool SendJSON(const std::string& text)
+    {
+        if (!isValid()) { return false; }
+        return m_imp.SendText(text);
+    }
+    
+    bool SendBinary(const char* binary, int size)
+    {
+        if (!isValid()) { return false; }
+        return m_imp.SendBinary(binary, size);
+    }
+    
+    bool SendImage(const std::string& filepath)
+    {
+        if (!isValid()) { return false; }
+        return m_imp.SendImage(filepath);
+    }
+    
+    std::string Recv() {
+        int rank = 0;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        
+        const char* buf = NULL;
+        int len = 0;
+        if (rank == 0) {
+            buf = m_imp.Recv();
+            len = m_imp.RecvSize();
+        }
+        
+        MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
+        if (len > 0) {
+            if (rank != 0) {
+                buf.resize(len);
+            }
+            MPI_Bcast(buf, len, MPI_BYTE, 0, MPI_COMM_WORLD);
+        }
+        
+        if (len > 0) {
+            return std::string(buf, len);
+        } else {
+            return "";
+        }
+    }
+    
+    int RecvSize() const {
+        return static_cast<int>(m_recvBuf.size());
+    }
+    
+    bool Close() {
+        return m_imp.Close();
+    }
+    
+private:
+    Connection::Impl m_imp;
+};
+#endif // HIVE_ENABLE_MPI
+
+/// constructor.
+/// switch mpi or default impl
 Connection::Connection()
 {
+#ifdef HIVE_ENABLE_MPI
+    m_imp = new MPIImpl();
+#else
     m_imp = new Impl();
+#endif
 }
 
+/// destructor
 Connection::~Connection()
 {
     delete m_imp;
@@ -315,113 +406,36 @@ Connection::~Connection()
 
 bool Connection::Connect(const std::string& url)
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-    
-    if (rank == 0) {
-        return m_imp->Connect(url);
-    } else {
-        return false;
-    }
+    return m_imp->Connect(url);
 }
 
 bool Connection::SendText(const std::string& text)
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-
-    if (rank == 0) {
-        return m_imp->SendText(text);
-    } else {
-        return false;
-    }
+    return m_imp->SendText(text);
 }
 
 bool Connection::SendJSON(const std::string& text)
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-
-    if (rank == 0) {
-        return m_imp->SendJSON(text);
-    } else {
-        return false;
-    }
+    return m_imp->SendJSON(text);
 }
 
 bool Connection::SendBinary(const char* binary, int size)
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-
-    if (rank == 0) {
-        return m_imp->SendBinary(binary, size);
-    } else {
-        return false;
-    }
+    return m_imp->SendBinary(binary, size);
 }
 
 bool Connection::SendImage(const std::string& filepath)
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-
-    if (rank == 0) {
-        return m_imp->SendImage(filepath);
-    } else {
-        return false;
-    }
+    return m_imp->SendImage(filepath);
 }
 
 std::string Connection::Recv()
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-
-    std::string buf;
-    bool ret = false;
-    if (rank == 0) {
-        ret = m_imp->Recv(buf);
-    }
-        
-#ifdef HIVE_ENABLE_MPI
-    int len = buf.size();
-    MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    if (len > 0) {
-        if (rank != 0) {
-            buf.resize(len);
-        }
-
-        MPI_Bcast(&buf.at(0), len, MPI_BYTE, 0, MPI_COMM_WORLD);
-    }
-#endif
-
-    return buf;
+    return m_imp->Recv();
 }
 
 bool Connection::Close()
 {
-    int rank = 0;
-#ifdef HIVE_ENABLE_MPI
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-#endif
-
-    if (rank == 0) {
-        return m_imp->Close();
-    } else {
-        return false;
-    }
+    return m_imp->Close();
 }
 

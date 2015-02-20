@@ -241,6 +241,14 @@ template <> inline int LUAPUSH<float>(lua_State* L, float val) {
     lua_pushnumber(L, val);
 	return 1;
 }
+template <> inline int LUAPUSH<const char*>(lua_State* L, const char* val) {
+    lua_pushlightuserdata(L, (void*)val);
+    return 1;
+}
+template <> inline int LUAPUSH<void*>(lua_State* L, void* val) {
+    lua_pushlightuserdata(L, val);
+    return 1;
+}
 template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
     lua_pushlstring(L, val.c_str(), val.size());
 	return 1;

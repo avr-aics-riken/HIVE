@@ -24,6 +24,7 @@ class ImageSaver::Impl
 {
 private:
     BufferImageData m_image;
+    std::string m_memory;
     
 public:
     Impl() {
@@ -103,7 +104,7 @@ public:
         return result;
     }
     
-    std::string SaveMemory(unsigned int format, BufferImageData* data)
+    const char* SaveMemory(unsigned int format, BufferImageData* data)
     {
         if (!data) { return NULL; }
         if (data->Bytes() <= 0) { return NULL; }
@@ -116,18 +117,18 @@ public:
         {
             const int bytes = SimpleJPGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
-                std::string memory = std::string(dstbuffer, bytes);
-                delete [] dstbuffer;
-                return memory;
+                m_memory = std::string(dstbuffer, bytes);
+                //delete [] dstbuffer;
+                return m_memory.c_str();
             }
         }
         else if (format == ImageSaver::TGA)
         {
             const int bytes = SimpleTGASaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
-                std::string memory = std::string(dstbuffer, bytes);
-                delete [] dstbuffer;
-                return memory;
+                m_memory = std::string(dstbuffer, bytes);
+                //delete [] dstbuffer;
+                return m_memory.c_str();
             }
         }
         else if (format == ImageSaver::HDR)
@@ -135,6 +136,11 @@ public:
             // not implemented
         }
         return "";
+    }
+    
+    int MemorySize() const
+    {
+        return static_cast<int>(m_memory.size());
     }
 };
 
@@ -155,7 +161,12 @@ bool ImageSaver::Save(const char* filename, BufferImageData* data)
     return m_imp->Save(filename, data);
 }
 
-std::string ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
+const char* ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
 {
     return m_imp->SaveMemory(format, data);
+}
+
+int ImageSaver::MemorySize() const
+{
+    return m_imp->MemorySize();
 }
