@@ -16,7 +16,8 @@
         this.fixed()
       
       /* ensure constraint object */
-      constraint = constraint || {}
+      // constraint = constraint || {}
+      constraint = {} // disabled for bug.
       
       /* start dragging */
       start = function(event) {
