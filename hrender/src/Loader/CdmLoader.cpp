@@ -1,5 +1,6 @@
 //
-// TODO: - support various volume data type
+// TODO: - timestep support
+//       - support various volume data type
 // 	     - test with K environment
 //
 
@@ -78,6 +79,28 @@ bool CDMLoader::Load(const char* filename)
         }
     }
 
+    cdm_Unit unit;
+    {
+        if( unit.Read(tp) != CDM::E_CDM_SUCCESS )
+        {
+            fprintf(stderr, "[CDMLoader] Failed to read Unit Data from .dfi file: %s\n", tpFilename.c_str());
+            return false;
+        }
+    }
+
+    cdm_TimeSlice timeSlice;
+    {
+        if( timeSlice.Read(tp, fileInfo.FileFormat) != CDM::E_CDM_SUCCESS )
+        {
+            fprintf(stderr, "[CDMLoader] Failed to read TimeSlice Data from .dfi file: %s\n", tpFilename.c_str());
+            return false;
+        }
+    }
+
+    for (size_t i = 0; i < timeSlice.SliceList.size(); i++) {
+        m_timeSteps.push_back(timeSlice.SliceList[i].step);
+    } 
+
     //
     //  Remove current TextParser instance and swtich to read `proc.dfi`, then continue to read content of proc.dfi to get
     //  domain information.
@@ -130,7 +153,13 @@ bool CDMLoader::Load(const char* filename)
     int head[3] = { 1, 1, 1 }; // @fixme.
     int tail[3] = { m_globalVoxel[0], m_globalVoxel[1], m_globalVoxel[2] }; // @fixme.
     int virtualCellSize = 1; // @fixme.
-    unsigned step = 10; // @fixme { timestep }
+
+    unsigned int step = 0; 
+
+    // @fixme { Specify timestep from scene script }
+    if (m_timeSteps.size() > 0) {
+        step = m_timeSteps[0];
+    }
 
     std::string dfi_filename = std::string(filename);
     
@@ -176,7 +205,7 @@ bool CDMLoader::Load(const char* filename)
 
     // data size
     size_t dataSize = (GVoxel[0]+2*virtualCellSize)*(GVoxel[1]+2*virtualCellSize)*(GVoxel[2]+2*virtualCellSize);
-    printf("DBG: dataSize: %d\n", dataSize);
+    //printf("DBG: dataSize: %d\n", dataSize);
     float* d_v = new float[dataSize*numVariables];
 
     ret =  DFI_IN->ReadData(d_v,                ///< pointer to buffer

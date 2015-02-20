@@ -6,8 +6,9 @@ local cdm = CDMLoader()
 -- @todo { Add `step` parameter } 
 cdm:Load('cdm_sample.dfi')
 
-print("global voxel :", cdm:GlobalVoxelX(), cdm:GlobalVoxelY(), cdm:GlobalVoxelZ())
-print("global div   :", cdm:GlobalDivX(), cdm:GlobalDivY(), cdm:GlobalDivZ())
-print("global offset:", cdm:GlobalOffsetX(), cdm:GlobalOffsetY(), cdm:GlobalOffsetZ())
-print("global region:", cdm:GlobalRegionX(), cdm:GlobalRegionY(), cdm:GlobalRegionZ())
+print("global voxel  :", cdm:GlobalVoxelX(), cdm:GlobalVoxelY(), cdm:GlobalVoxelZ())
+print("global div    :", cdm:GlobalDivX(), cdm:GlobalDivY(), cdm:GlobalDivZ())
+print("global offset :", cdm:GlobalOffsetX(), cdm:GlobalOffsetY(), cdm:GlobalOffsetZ())
+print("global region :", cdm:GlobalRegionX(), cdm:GlobalRegionY(), cdm:GlobalRegionZ())
+print("# of timesteps:", cdm:NumTimeSteps())
 

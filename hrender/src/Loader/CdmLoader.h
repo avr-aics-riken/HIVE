@@ -41,11 +41,24 @@ public:
       ret[2] = m_globalDiv[2];
     }
 
+    int NumTimeSteps() {
+      return m_timeSteps.size();
+    }
+
+    ///< Get i'th timestep
+    int GetTimeStep(int i) {
+      if (i < m_timeSteps.size()) {
+        return m_timeSteps[i];
+      }
+      return 0;
+    }
+
     FloatBuffer* Buffer();
 
     BufferVolumeData *VolumeData();
 private:
     BufferVolumeData m_volume;
+    std::vector<unsigned int> m_timeSteps;
 
     double m_globalOffset[3];
     double m_globalRegion[3];
