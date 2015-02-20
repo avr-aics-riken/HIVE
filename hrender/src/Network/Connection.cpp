@@ -1,3 +1,7 @@
+#ifdef HIVE_ENABLE_MPI
+#include <mpi.h>
+#endif
+
 #include <string>
 #include <vector>
 #include <fstream>
@@ -278,31 +282,85 @@ Connection::~Connection()
 
 bool Connection::Connect(const std::string& url)
 {
-    return m_imp->Connect(url);
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+    
+    if (rank == 0) {
+        return m_imp->Connect(url);
+    } else {
+        return false;
+    }
 }
 
 bool Connection::SendText(const std::string& text)
 {
-    return m_imp->SendText(text);
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+    if (rank == 0) {
+        return m_imp->SendText(text);
+    } else {
+        return false;
+    }
 }
 
 bool Connection::SendJSON(const std::string& text)
 {
-    return m_imp->SendJSON(text);
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+    if (rank == 0) {
+        return m_imp->SendJSON(text);
+    } else {
+        return false;
+    }
 }
 
 bool Connection::SendBinary(const char* binary, int size)
 {
-    return m_imp->SendBinary(binary, size);
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+    if (rank == 0) {
+        return m_imp->SendBinary(binary, size);
+    } else {
+        return false;
+    }
 }
 
 bool Connection::SendImage(const std::string& filepath)
 {
-    return m_imp->SendImage(filepath);
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+    if (rank == 0) {
+        return m_imp->SendImage(filepath);
+    } else {
+        return false;
+    }
 }
 
 bool Connection::Close()
 {
-    return m_imp->Close();
+    int rank = 0;
+#ifdef HIVE_ENABLE_MPI
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#endif
+
+    if (rank == 0) {
+        return m_imp->Close();
+    } else {
+        return false;
+    }
 }
 
