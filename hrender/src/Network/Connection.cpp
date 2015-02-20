@@ -383,10 +383,8 @@ bool Connection::SendImage(const std::string& filepath)
     }
 }
 
-char* Connection::Recv()
+std::string Connection::Recv()
 {
-    static std::string s_buf; // @fixme.
-
     int rank = 0;
 #ifdef HIVE_ENABLE_MPI
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -410,9 +408,7 @@ char* Connection::Recv()
     }
 #endif
 
-    s_buf = buf;
-
-    return const_cast<char*>(s_buf.c_str()); // strip const for lua binding.
+    return buf;
 }
 
 bool Connection::Close()
