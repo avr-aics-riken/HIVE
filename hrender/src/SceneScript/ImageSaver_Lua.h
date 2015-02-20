@@ -18,7 +18,8 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(ImageSaver_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG2(bool,Save,const char*,BufferImageData_Lua*)
-    LUA_SCRIPTCLASS_METHOD_ARG2(std::string,SaveMemory,unsigned int,BufferImageData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_ARG2(const char*,SaveMemory,unsigned int,BufferImageData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_ARG0(int,MemorySize)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(ImageSaver_Lua);

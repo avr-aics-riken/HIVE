@@ -3,11 +3,28 @@
 
 #include "../Core/Ref.h"
 
-class Connection : public RefCount
+class ConnectionIF
+{
+public:
+    virtual bool Connect(const std::string& url) = 0;
+    virtual bool SendText(const std::string& text) = 0;
+    virtual bool SendJSON(const std::string& json) = 0;
+    virtual bool SendBinary(const char* binary, int size) = 0;
+    virtual bool SendImage(const std::string& filepath) = 0;
+    // Recive message and return its content to `msg`.
+    // Return fail when timeout or recv() fails.
+    virtual std::string Recv() = 0;
+    virtual bool Close() = 0;
+    
+    virtual ~ConnectionIF() {}
+protected:
+    ConnectionIF() {}
+};
+
+class Connection : public RefCount, public ConnectionIF
 {
 private:
-    class Impl;
-    Impl* m_imp;
+    ConnectionIF* m_imp;
     
 protected:
     // Script Access Only
@@ -19,11 +36,7 @@ protected:
     bool SendJSON(const std::string& json);
     bool SendBinary(const char* binary, int size);
     bool SendImage(const std::string& filepath);
-
-    // Recive message and return its content.
-    // Return fail(empty string) when timeout or recv() fails.
     std::string Recv();
-
     bool Close();
 };
 

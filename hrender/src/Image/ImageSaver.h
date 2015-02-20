@@ -22,7 +22,8 @@ public:
     ImageSaver();
     ~ImageSaver();
     bool Save(const char* filename, BufferImageData* data);
-    std::string SaveMemory(unsigned int format, BufferImageData* data);
+    const char* SaveMemory(unsigned int format, BufferImageData* data);
+    int MemorySize() const;
 };
 
 #endif //_IMAGESAVER_H_
