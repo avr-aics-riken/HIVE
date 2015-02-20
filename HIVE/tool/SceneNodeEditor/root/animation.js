@@ -1,11 +1,14 @@
 /*jslint devel:true */
-/*global SVG, svgNodeUI, io, fs, URL, FileReader */
+/*global $, $ready, $animate, io, fs, URL, FileReader */
 
 $ready(function () {
+	"use strict";
 	var logShowState = 0,
-		logMin = "40px",
+		logMin = "0px",
 		logMax = "400px",
 		logMaxW = "800px",
+		logCloseBottomMin = "10px",
+		logCloseBottomMax = "390px",
 		menuTabState = 0,
 		menuMin = "30px",
 		menuMax = "480px";
@@ -17,10 +20,10 @@ $ready(function () {
 				'height' : {
 					from: logMax,
 					to: logMin
-				}
-				,'width' : {
-					from: logMax,
-					to: logMin
+				},
+				'width' : {
+					from : logMax,
+					to : logMin
 				}
 			}, 1000, function () {
 				logShowState = 2;
@@ -29,8 +32,8 @@ $ready(function () {
 				'height' : {
 					from: logMax,
 					to: logMin
-				}
-				,'width' : {
+				},
+				'width' : {
 					from: logMax,
 					to: logMin
 				}
@@ -38,14 +41,22 @@ $ready(function () {
 				logShowState = 2;
 				$('closeConsoleOutput').value = "^";
 			});
+			$animate($('closeConsoleOutput'), {
+				'bottom': {
+					from: logCloseBottomMax,
+					to : logCloseBottomMin
+				}
+			}, 1000, function () {
+				logShowState = 2;
+			});
 		} else if (logShowState === 2) {
 			logShowState = 3;
 			$animate($('consoleTextBlock'), {
 				'height' : {
 					from: logMin,
 					to: logMax
-				}
-				,'width' : {
+				},
+				'width' : {
 					from: logMin,
 					to: logMaxW
 				}
@@ -56,14 +67,22 @@ $ready(function () {
 				'height' : {
 					from: logMin,
 					to: logMax
-				}
-				,'width' : {
+				},
+				'width' : {
 					from: logMin,
 					to: logMaxW
 				}
 			}, 1000, function () {
 				$('closeConsoleOutput').value = "v";
 				$('consoleOutput').style.overflow = "auto";
+				logShowState = 0;
+			});
+			$animate($('closeConsoleOutput'), {
+				'bottom': {
+					from: logCloseBottomMin,
+					to : logCloseBottomMax
+				}
+			}, 1000, function () {
 				logShowState = 0;
 			});
 		}

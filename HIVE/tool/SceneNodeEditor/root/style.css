@@ -137,6 +137,6 @@ body {
 .closeConsoleOutput
 {
 	position: absolute;
-	left:0px;
-	top:0px;
+	left:10px;
+	bottom:390px;
 }
