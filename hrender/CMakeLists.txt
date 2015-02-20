@@ -164,6 +164,7 @@ set(SOURCES
 	src/Analyzer/PolygonAnalyzer.cpp
 	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
+	src/Buffer/BufferTetraData.cpp
 	src/Buffer/BufferMeshData.cpp
 	src/Buffer/BufferVolumeData.cpp
 	src/Buffer/BufferLineData.cpp
@@ -171,6 +172,7 @@ set(SOURCES
 	src/Buffer/BufferPointData.cpp
 	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
+	src/Builder/VolumeToTetraData.cpp
 	src/Image/jpge.cpp
 	src/Image/ImageLoader.cpp
 	src/Image/ImageSaver.cpp
