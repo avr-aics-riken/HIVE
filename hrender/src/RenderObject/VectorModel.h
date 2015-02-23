@@ -1,26 +1,28 @@
-#ifndef _POLYGONMODEL_H_
-#define _POLYGONMODEL_H_
+#ifndef _VECTORMODEL_H_
+#define _VECTORMODEL_H_
 
 #include <string>
 #include "RenderObject.h"
 
-class BufferMeshData;
+class BufferLineData;
+class BufferTetraData;
 
-class PolygonModel : public RenderObject
+class VectorModel : public RenderObject
 {
 private:
     class Impl;
     Impl* m_imp;
     
 public:
-	PolygonModel();
-    ~PolygonModel();
+	VectorModel();
+    ~VectorModel();
     bool SetShader(const std::string& shaderfile);
-    bool Create(BufferMeshData *mesh);
-    BufferMeshData* GetMesh() const;
+    bool Create(BufferLineData *Line, BufferTetraData *Tetra);
+    BufferLineData* GetLine() const;
+    BufferTetraData* GetTetra() const;
     const std::string& GetShader() const;
 
 };
 
-#endif //_POLYGONMODEL_H_
+#endif //_VECTORMODEL_H_
 

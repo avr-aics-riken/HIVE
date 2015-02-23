@@ -1,13 +1,14 @@
 #include <string>
-#include "PolygonModel.h"
-#include "BufferMeshData.h"
+#include "VectorModel.h"
+#include "BufferLineData.h"
+#include "BufferTetraData.h"
 
-class PolygonModel::Impl
+class VectorModel::Impl
 {
 public:
     Impl()
     {
-        m_mesh = 0;
+        m_line = 0;
     }
     
     ~Impl()
@@ -20,55 +21,73 @@ public:
         return true;
     }
     
-    bool Create(BufferMeshData* m)
+    bool Create(BufferLineData* linedata, BufferTetraData* tetradata)
     {
-        if (!m) {
+        if (!linedata) {
             return false;
         }
-        m_mesh = m;
+        m_line = linedata;
+        
+        
+        /* //TEST
+        if (!tetradata) {
+            return false;
+        }
+        m_tetra = tetradata;
+        */
+        
         return true;
     }
     
-    BufferMeshData* GetMesh() const {
-        return m_mesh;
+    BufferLineData* GetLine() const {
+        return m_line;
     }
-    
-    const std::string& GetShader() const
-    {
+
+    BufferTetraData* GetTetra() const {
+        return m_tetra;
+    }
+        
+    const std::string& GetShader() const {
         return m_shaderfile;
     }
     
 private:
-    RefPtr<BufferMeshData> m_mesh;
+    RefPtr<BufferLineData>  m_line;
+    RefPtr<BufferTetraData> m_tetra;
     std::string m_shaderfile;
 };
 
-PolygonModel::PolygonModel() : RenderObject(TYPE_POLYGON)
+VectorModel::VectorModel() : RenderObject(TYPE_VECTOR) 
 {
     m_imp = new Impl();
 }
 
-PolygonModel::~PolygonModel()
+VectorModel::~VectorModel()
 {
     delete m_imp;
 }
 
-bool PolygonModel::SetShader(const std::string& shaderfile)
+bool VectorModel::SetShader(const std::string& shaderfile)
 {
     return m_imp->SetShader(shaderfile);
 }
 
-bool PolygonModel::Create(BufferMeshData* m)
+bool VectorModel::Create(BufferLineData* linedata, BufferTetraData* tetradata)
 {
-    return m_imp->Create(m);
+    return m_imp->Create(linedata, tetradata);
 }
 
-BufferMeshData* PolygonModel::GetMesh() const
+BufferLineData* VectorModel::GetLine() const
 {
-    return m_imp->GetMesh();
+    return m_imp->GetLine();
 }
 
-const std::string& PolygonModel::GetShader() const
+BufferTetraData* VectorModel::GetTetra() const
+{
+    return m_imp->GetTetra();
+}
+
+const std::string& VectorModel::GetShader() const
 {
     return m_imp->GetShader();
 }
