@@ -130,7 +130,7 @@ void CreateVBIBRM_SGL(unsigned int vertexnum, float* posbuffer, float* radiusbuf
     
     sgl.glGenBuffers(1, &index_id);
     sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_id);
-    sgl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
+    sgl.glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_DYNAMIC_DRAW);
 }
 
 void ReleaseBufferVBIB_SGL(unsigned int buffer_id)
