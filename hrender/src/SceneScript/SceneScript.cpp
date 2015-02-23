@@ -30,6 +30,7 @@
 #include "SphLoader_Lua.h"
 #include "ImageLoader_Lua.h"
 #include "ImageSaver_Lua.h"
+#include "BufferTetraData_Lua.h"
 #ifdef HIVE_WITH_CDMLIB
 #include "CdmLoader_Lua.h"
 #endif
@@ -93,6 +94,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
     SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
     SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
+    SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
