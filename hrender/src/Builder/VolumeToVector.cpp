@@ -1,5 +1,6 @@
 #include "VolumeToVector.h"
 #include "../Core/vxmath.h"
+#include <string.h>
 
 VolumeToVector::VolumeToVector(){
     m_tetra = new BufferTetraData();
