@@ -12,19 +12,19 @@ public:
     ~SPHLoader_Lua() {}
 
     int Width() {
-        return Width();
+        return SPHLoader::Width();
     }
 
     int Height() {
-        return Height();
+        return SPHLoader::Height();
     }
 
     int Depth() {
-        return Depth();
+        return SPHLoader::Depth();
     }
 
     int Component() {
-        return Component();
+        return SPHLoader::Component();
     }
 
     bool Load(const char* filename) {

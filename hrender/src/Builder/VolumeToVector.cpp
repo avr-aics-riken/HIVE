@@ -1,7 +1,9 @@
 #include "VolumeToVector.h"
+#include "../Core/vxmath.h"
 
 VolumeToVector::VolumeToVector(){
     m_tetra = new BufferTetraData();
+    m_line  = new BufferLineData();
 }
 
 
@@ -41,43 +43,66 @@ inline void GenerateTetra(
   }
 }
 
-int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius) {
+int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius_scale) {
     if (!volume || scale <= 0.0) {
         return 0;
     }
 
     //todo custom
-    double bmin[3] = {-1, -1, -1};
-    double bmax[3] = { 1,  1,  1};
+    const double bmin[3]          = {-1, -1, -1};
+    const double bmax[3]          = { 1,  1,  1};
+    const int    width            = volume->Width();
+    const int    height           = volume->Height();
+    const int    depth            = volume->Depth();
+    const int    volume_num       = (width * height * depth);
+    const int    line_vertex_num  = volume_num * 2;
+    const int    indexnum         = 0;//obj.GetIndexNum()
+    const float  offset_inc       = 1.0;
     
-    const  int width            = volume->Width();
-    const  int height           = volume->Height();
-    const  int depth            = volume->Depth();
-    const  int volume_num       = (width * height * depth);
-    
-    //Create line
-    const  int line_vertex_num  = volume_num * 2;
-    const  int indexnum         = 0;//obj.GetIndexNum()
-    m_line->Create(line_vertex_num, indexnum);
 
-    Vec3Buffer*  pos     = m_line->Position();
+    m_line->Create(line_vertex_num, indexnum);
+    UintBuffer*  idx     = m_line->Index();
     FloatBuffer* mat     = m_line->Material();
     FloatBuffer* radius  = m_line->Radius();
-    UintBuffer*  idx     = m_line->Index();
-
-    for(int k = 0; k < depth; k++) {
-        for(int j = 0; j < height; j++) {
-            for(int i = 0; i < width; i++) {
-                
-            }
+    float*       rad     = radius->GetBuffer();
+    if (rad) {
+        for (int i = 0; i < line_vertex_num; ++i) {
+            rad[i] = static_cast<float>(radius_scale);
         }
     }
+    memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
+    
+    //Create Line Data
+    Vec3Buffer*     pos        = reinterpret_cast<Vec3Buffer*>(m_line->Position());
+    Vec3Buffer*     volumedata = reinterpret_cast<Vec3Buffer*>(volume->Buffer());
+    VX::Math::vec3* volbuf     = reinterpret_cast<VX::Math::vec3*>(volumedata->GetBuffer());
+    VX::Math::vec3* linebuf    = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
+    float offsetZ    = static_cast<float>(depth  / 2) + 0.5;
+    for(int k = 0; k < depth; k++) {
+        float offsetY    = static_cast<float>(height / 2) - 0.5; //yUP
+        for(int j = 0; j < height; j++) {
+            float offsetX    = static_cast<float>(width  / 2) + 0.5;
+            for(int i = 0; i < width; i++) {
+                VX::Math::vec3 v0 = VX::Math::vec3(offsetX, offsetY, offsetZ);
+                VX::Math::vec3 v1 = *volbuf;
+                volbuf++;
+                v1 = normalize(v1);
 
+                *linebuf++ = v0;
+                *linebuf++ = v0 + v1;
+                
+                offsetX += offset_inc;
+            }
+            offsetY += offset_inc;
+        }
+        offsetZ += offset_inc;
+    }
+
+    /*
     //1cell 1tetra
     int tetra_vertex_num = volume_num * 4;
     
     //Create TetraData
-    float *source        = volume->Buffer()->GetBuffer();
     m_tetra->Create(tetra_vertex_num, tetra_vertex_num);
     float *dest          = m_tetra->Position()->GetBuffer();
     
@@ -86,45 +111,17 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
         GenerateTetra(&dest[i * 4], &source[i * 3], bmin, bmax, scale);
     }
 
-    /*
-    //Create TetraVertexBuffer
-    const int vnum = obj->GetVertexNum();
-
-    m_line->Create(vnum, indexnum);
-    Vec3Buffer*  pos     = m_line->Position();
-    FloatBuffer* mat     = m_line->Material();
-    FloatBuffer* radius  = m_line->Radius();
-    UintBuffer*  idx     = m_line->Index();
-
-    //position
-    float* pp = pos->GetBuffer();
-    
-    memcpy(pp, obj->GetPositionBuffer(), sizeof(float)*3*( vnum ));
-    
-    
-    float* rad = radius->GetBuffer();
-    if (rad) {
-        for (int i = 0; i < vnum; ++i) {
-            rad[i] = static_cast<float>(radius);
-        }
-    }
-    memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
-    
-    if (indexnum)
-        memcpy(idx->GetBuffer(), obj->GetIndex(), sizeof(unsigned int) * idx->GetNum());
-    */
-    
     return m_tetra->Position()->GetNum();
+    */
+    return m_tetra->Position()->GetNum();
+}
+
+BufferLineData* VolumeToVector::LineData()
+{
+    return m_line;
 }
 
 BufferTetraData* VolumeToVector::TetraData()
 {
     return m_tetra;
 }
-
-BufferTetraData* VolumeToVector::LineData()
-{
-    return m_line;
-}
-
-

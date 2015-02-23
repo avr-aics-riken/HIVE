@@ -15,7 +15,7 @@ private:
     BufferLineData*    m_line;
 public:
     VolumeToVector();
-    int Create(BufferVolumeData *volume, double scale = 0.04, double radius = 1.0);
+    int Create(BufferVolumeData *volume, double scale, double radius);
     BufferTetraData* TetraData();
     BufferLineData*  LineData();
 };
