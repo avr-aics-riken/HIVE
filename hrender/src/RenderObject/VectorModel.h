@@ -21,6 +21,8 @@ public:
     BufferLineData* GetLine() const;
     BufferTetraData* GetTetra() const;
     const std::string& GetShader() const;
+    float GetLineWidth();
+    float SetLineWidth(float w);
 
 };
 
