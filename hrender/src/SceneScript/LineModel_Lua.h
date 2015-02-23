@@ -20,6 +20,10 @@ public:
         return true;
     }
 
+    bool SetLineWidth(float w) {
+        return LineModel::SetLineWidth(w);
+    }
+
     LUA_SCRIPTCLASS_BEGIN(LineModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetLineWidth, float)

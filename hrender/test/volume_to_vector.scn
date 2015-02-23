@@ -1,14 +1,33 @@
+print('load SPH and convert VectorData')
 
-print('load SPH')
+local camera = Camera()
+camera:SetScreenSize(2048, 2048)
+camera:SetFilename('image_sph_vector.jpg')
+
+camera:LookAt(
+	0,0,80,
+	0,0,0,
+	0,1,0,
+	60
+)
 
 local sph = SPHLoader()
 sph:Load('fvel_0000001470.sph')
 
-
 local vtovec = VolumeToVector()
 local voldata = sph:VolumeData()
+print(vtovec)
 print(voldata)
 vtovec:Create(voldata, 0.04, 1.0)
+
 local line = vtovec:LineData()
-print(line)
+
+local model = LineModel()
+model:SetLineWidth(0.1)
+model:Create(line)
+model:SetShader('vector.frag')
+
+render {camera, model}
+
+
 

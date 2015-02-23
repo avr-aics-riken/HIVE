@@ -192,6 +192,7 @@ set(SOURCES
 	src/RenderObject/VolumeModel.cpp
 	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
+	src/RenderObject/VectorModel.cpp
 	src/Renderer/BaseBuffer.cpp
 	src/Renderer/Commands_GL.cpp
 	src/Renderer/Commands_LSGL.cpp
@@ -199,6 +200,7 @@ set(SOURCES
 	src/Renderer/VolumeBuffer.cpp
 	src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
+	src/Renderer/VectorBuffer.cpp
 	src/Renderer/RenderCore.cpp
 	src/SceneScript/SceneScript.cpp
 	src/SceneScript/SceneScript.cpp
@@ -326,6 +328,7 @@ add_test(NAME loader_cdm.scn             COMMAND hrender  ../../hrender/test/loa
 add_test(NAME loader_stl.scn             COMMAND hrender  ../../hrender/test/loader_stl.scn           )
 add_test(NAME loader_pdb.scn             COMMAND hrender  ../../hrender/test/loader_pdb.scn           )
 add_test(NAME loader_vol.scn             COMMAND hrender  ../../hrender/test/loader_vol.scn           )
+add_test(NAME volume_to_vector.scn       COMMAND hrender  ../../hrender/test/volume_to_vector.scn     )
 add_test(NAME render_basic.scn           COMMAND hrender  ../../hrender/test/render_basic.scn         )
 add_test(NAME render_camera.scn          COMMAND hrender  ../../hrender/test/render_camera.scn        )
 add_test(NAME render_camera2.scn         COMMAND hrender  ../../hrender/test/render_camera2.scn       )
@@ -339,6 +342,7 @@ add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_sph_transform.scn )
 add_test(NAME render_obj_point.scn       COMMAND hrender  ../../hrender/test/render_obj_point.scn     )
 add_test(NAME render_obj_line.scn        COMMAND hrender  ../../hrender/test/render_obj_line.scn      )
+add_test(NAME render_sph_vector.scn      COMMAND hrender  ../../hrender/test/render_sph_vector.scn    )
 
 #ERROR CASE
 add_test(NAME loader_obj_err.scn         COMMAND hrender ../../hrender/test/err/loader_obj_err.scn           )
