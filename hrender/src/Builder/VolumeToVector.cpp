@@ -78,11 +78,11 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
     Vec3Buffer*     volumedata = reinterpret_cast<Vec3Buffer*>(volume->Buffer());
     VX::Math::vec3* volbuf     = reinterpret_cast<VX::Math::vec3*>(volumedata->GetBuffer());
     VX::Math::vec3* linebuf    = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
-    float offsetZ    = static_cast<float>(depth  / 2) + 0.5;
+    float offsetZ    = static_cast<float>(-depth  / 2) + 0.5;
     for(int k = 0; k < depth; k++) {
-        float offsetY    = static_cast<float>(height / 2) - 0.5; //yUP
+        float offsetY    = static_cast<float>(-height / 2) - 0.5; //yUP
         for(int j = 0; j < height; j++) {
-            float offsetX    = static_cast<float>(width  / 2) + 0.5;
+            float offsetX    = static_cast<float>(-width  / 2) + 0.5;
             for(int i = 0; i < width; i++) {
                 VX::Math::vec3 v0 = VX::Math::vec3(offsetX, offsetY, offsetZ);
                 VX::Math::vec3 v1 = *volbuf;
