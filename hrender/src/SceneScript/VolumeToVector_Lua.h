@@ -23,10 +23,23 @@ public:
         return new BufferTetraData_Lua(VolumeToVector::TetraData());
     }
 
+    bool DividePitchX(double a) { VolumeToVector::DividePitchX(a);  return  true; }
+    bool DividePitchY(double a) { VolumeToVector::DividePitchY(a);  return  true; }
+    bool DividePitchZ(double a) { VolumeToVector::DividePitchZ(a);  return  true; }
+    bool DivideNumberX(double a){ VolumeToVector::DivideNumberX(a); return  true; }
+    bool DivideNumberY(double a){ VolumeToVector::DivideNumberY(a); return  true; }
+    bool DivideNumberZ(double a){ VolumeToVector::DivideNumberZ(a); return  true; }
+
     LUA_SCRIPTCLASS_BEGIN(VolumeToVector_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG3(int,Create,BufferVolumeData_Lua*, double, double)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*, LineData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*, TetraData)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, DividePitchX , double)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, DividePitchY , double)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, DividePitchZ , double)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, DivideNumberX, double)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, DivideNumberY, double)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, DivideNumberZ, double)
     LUA_SCRIPTCLASS_END()
 
 };

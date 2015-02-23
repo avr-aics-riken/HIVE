@@ -12,12 +12,22 @@ class VolumeToVector : public RefCount
 {
 private:
     BufferTetraData*  m_tetra;
-    BufferLineData*    m_line;
+    BufferLineData*   m_line;
+    double            m_pitchX;
+    double            m_pitchY;
+    double            m_pitchZ;
 public:
     VolumeToVector();
     int Create(BufferVolumeData *volume, double scale, double radius);
     BufferTetraData* TetraData();
     BufferLineData*  LineData();
+
+    void DividePitchX(double a) ;
+    void DividePitchY(double a) ;
+    void DividePitchZ(double a) ;
+    void DivideNumberX(double a);
+    void DivideNumberY(double a);
+    void DivideNumberZ(double a);
 };
 
 #endif //_VOLUMETOVECTOR_H_
