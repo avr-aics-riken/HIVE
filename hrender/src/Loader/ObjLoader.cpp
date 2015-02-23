@@ -89,7 +89,26 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
         return line;
     }
 
-    const int indexnum = 0;//obj.GetIndexNum()
+    // calc edge num
+    /*std::map<std::pair<unsigned int, unsigned int>, int> lines;
+    const unsigned int n = obj->GetIndexNum()/3;
+    for (unsigned int i = 0; i < n; ++i) {
+        unsigned int idx0 = obj->GetIndex()[3 * i + 0];
+        unsigned int idx1 = obj->GetIndex()[3 * i + 1];
+        unsigned int idx2 = obj->GetIndex()[3 * i + 2];
+        const unsigned int l0 = idx0 < idx1 ? idx0 : idx1;
+        const unsigned int l1 = idx0 > idx1 ? idx0 : idx1;
+        const unsigned int l2 = idx0 < idx2 ? idx0 : idx2;
+        const unsigned int l3 = idx0 > idx2 ? idx0 : idx2;
+        const unsigned int l4 = idx1 < idx2 ? idx1 : idx2;
+        const unsigned int l5 = idx1 > idx2 ? idx1 : idx2;
+        lines[std::make_pair(l0, l1)] = 0;
+        lines[std::make_pair(l2, l3)] = 0;
+        lines[std::make_pair(l4, l5)] = 0;
+    }*/
+    
+    //const int indexnum = lines.size() * 2;
+    const int indexnum = obj->GetIndexNum();
     line->Create(obj->GetVertexNum(), indexnum);
     Vec3Buffer*  pos     = line->Position();
     FloatBuffer* mat     = line->Material();
@@ -107,8 +126,16 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
     }
     memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
     
-    if (indexnum)
+    if (indexnum) {
         memcpy(idx->GetBuffer(), obj->GetIndex(), sizeof(unsigned int) * idx->GetNum());
+        /*std::map<std::pair<unsigned int, unsigned int>, int>::iterator it, eit = lines.end();
+        unsigned int cnt = 0;
+        unsigned int* p = idx->GetBuffer();
+        for (it = lines.begin(); it != eit; ++it) {
+            p[cnt] = it->first.first;  ++cnt;
+            p[cnt] = it->first.second; ++cnt;
+        }*/
+    }
     
     return line;
 }

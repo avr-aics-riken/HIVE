@@ -134,7 +134,7 @@ public:
         return false;
     }
     
-    bool SendBinary(const char* binary, int size)
+    bool SendBinary(const Binary binary, int size)
     {
         if (m_connection) {
             const unsigned char* body = reinterpret_cast<const unsigned char*>(binary);
@@ -148,7 +148,7 @@ public:
             }
             return true;
         } else if (m_ws) {
-            std::string body(binary, size);
+            std::string body(reinterpret_cast<const char*>(binary), size);
             m_ws->sendBinary(body);
             m_ws->poll();
             return true;
@@ -419,7 +419,7 @@ bool Connection::SendJSON(const std::string& text)
     return m_imp->SendJSON(text);
 }
 
-bool Connection::SendBinary(const char* binary, int size)
+bool Connection::SendBinary(const Binary binary, int size)
 {
     return m_imp->SendBinary(binary, size);
 }
