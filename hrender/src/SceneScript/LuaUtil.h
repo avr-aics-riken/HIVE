@@ -213,6 +213,9 @@ template <> inline const std::string& LUACAST<const std::string&>(lua_State* L, 
 template <> inline void* LUACAST<void*>(lua_State* L, int argi) {
     return lua_touserdata(L, argi);
 }
+template <> inline void* const LUACAST<void* const>(lua_State* L, int argi) {
+    return lua_touserdata(L, argi);
+}
 template <> inline const char* LUACAST<const char*>(lua_State* L, int argi) {
     return lua_tostring(L, argi);
 }
