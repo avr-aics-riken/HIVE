@@ -9,6 +9,8 @@ public:
     Impl()
     {
         m_line = 0;
+        m_width = 1.0;
+        m_tetra = 0;
     }
     
     ~Impl()
@@ -51,9 +53,16 @@ public:
         return m_shaderfile;
     }
     
+    float GetLineWidth() {
+        return m_width;
+    }
+    float SetLineWidth(float w) {
+        return m_width;
+    }
 private:
     RefPtr<BufferLineData>  m_line;
     RefPtr<BufferTetraData> m_tetra;
+    float                   m_width;
     std::string m_shaderfile;
 };
 
@@ -91,3 +100,12 @@ const std::string& VectorModel::GetShader() const
 {
     return m_imp->GetShader();
 }
+
+float VectorModel::GetLineWidth() {
+    return m_imp->GetLineWidth();
+}
+
+float VectorModel::SetLineWidth(float w) {
+    return m_imp->SetLineWidth(w);
+}
+

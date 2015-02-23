@@ -171,6 +171,10 @@ private:
              VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
              buffer = vbuf;
+        } else if (robj->GetType() == RenderObject::TYPE_VECTOR) {
+             LineBuffer* vbuf = new LineBuffer(RENDER_LSGL);
+             vbuf->Create(static_cast<const LineModel*>(robj));
+             buffer = vbuf;
         } else {
             // Unknow type
             fprintf(stderr,"Unkown RenderObjet type:\n");
