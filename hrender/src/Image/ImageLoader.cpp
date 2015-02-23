@@ -115,6 +115,17 @@ public:
         }
         return result;
     }
+    
+    const ImageLoader::Buffer ImageBuffer() const
+    {
+        unsigned char* buf = m_image.ImageBuffer()->GetBuffer();
+        return reinterpret_cast<ImageLoader::Buffer>(buf);
+    }
+    
+    int ImageBufferSize() const
+    {
+        return m_image.ImageBuffer()->GetNum();
+    }
 };
 
 /// constructor
@@ -139,3 +150,14 @@ BufferImageData* ImageLoader::ImageData()
     return m_imp->ImageData();
 }
 
+/// @retval no compressed buffer
+const ImageLoader::Buffer ImageLoader::ImageBuffer() const
+{
+    return m_imp->ImageBuffer();
+}
+
+/// @retval no compressed buffer size
+int ImageLoader::ImageBufferSize() const
+{
+    return m_imp->ImageBufferSize();
+}

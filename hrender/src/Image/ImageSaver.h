@@ -13,6 +13,8 @@ private:
     Impl* m_imp;
     
 public:
+    typedef void* Buffer;
+    
     enum Format {
         JPG = 1,
         TGA,
@@ -22,7 +24,7 @@ public:
     ImageSaver();
     ~ImageSaver();
     bool Save(const char* filename, BufferImageData* data);
-    const char* SaveMemory(unsigned int format, BufferImageData* data);
+    const Buffer SaveMemory(unsigned int format, BufferImageData* data);
     int MemorySize() const;
 };
 
