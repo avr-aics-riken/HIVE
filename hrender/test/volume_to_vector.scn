@@ -1,0 +1,14 @@
+
+print('load SPH')
+
+local sph = SPHLoader()
+sph:Load('fvel_0000001470.sph')
+
+
+local vtovec = VolumeToVector()
+local voldata = sph:VolumeData()
+print(voldata)
+vtovec:Create(voldata, 0.04, 1.0)
+local line = vtovec:LineData()
+print(line)
+
