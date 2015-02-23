@@ -132,6 +132,7 @@ set(INCLUDES
   ${CMAKE_BINARY_DIR}/third_party/lua/
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
+	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/render
 	${PROJECT_SOURCE_DIR}/../third_party/local
 	${PROJECT_SOURCE_DIR}/../third_party/local/include
 	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/include
@@ -172,6 +173,7 @@ set(SOURCES
 	src/Buffer/BufferPointData.cpp
 	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
+	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToTetraData.cpp
 	src/Image/jpge.cpp
 	src/Image/ImageLoader.cpp
