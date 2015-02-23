@@ -53,39 +53,46 @@ protected:
     //--------------------------------------------------
     //Set
     //--------------------------------------------------
-    void SetTranslate(float x, float y, float z) {
+    bool SetTranslate(float x, float y, float z) {
         m_trans[0] = x;
         m_trans[1] = y;
         m_trans[2] = z;
+        return true;
     }
  
 
-    void SetRotate(float x, float y, float z) {
+    bool SetRotate(float x, float y, float z) {
         m_rotat[0] = x;
         m_rotat[1] = y;
         m_rotat[2] = z;
+        return true;
     }
 
-    void SetScale(float x, float y, float z) {
+    bool SetScale(float x, float y, float z) {
         m_scale[0] = x;
         m_scale[1] = y;
         m_scale[2] = z;
+        return true;
     }
 
-    void SetVec4(const std::string& name, float x, float y, float z, float w) {
+    bool SetVec4(const std::string& name, float x, float y, float z, float w) {
         m_vec4s[name] = VX::Math::vec4(x,y,z,w);
+        return true;
     }
 
-    void SetVec3(const std::string& name, float x, float y, float z) {
+    bool SetVec3(const std::string& name, float x, float y, float z) {
         m_vec3s[name] = VX::Math::vec3(x,y,z);
+        return true;
     }
 
-    void SetVec2(const std::string& name, float x, float y) {
+    bool SetVec2(const std::string& name, float x, float y) {
         m_vec2s[name] = VX::Math::vec2(x,y);
+        return true;
     }
 
-    void SetFloat(const std::string& name, float x) {
+    bool SetFloat(const std::string& name, float x) {
         m_floats[name] = x;
+        return true;
     }
 
     RenderObject(MODE_TYPE t) : m_type(t) 
@@ -95,6 +102,7 @@ protected:
         m_scale =  VX::Math::vec3(1, 1, 1);
     };
     ~RenderObject() {};
+    
 private:
     // Transform↲
     VX::Math::vec3 m_trans;
