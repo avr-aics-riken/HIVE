@@ -6,10 +6,11 @@
 class ConnectionIF
 {
 public:
+    typedef void* Binary;
     virtual bool Connect(const std::string& url) = 0;
     virtual bool SendText(const std::string& text) = 0;
     virtual bool SendJSON(const std::string& json) = 0;
-    virtual bool SendBinary(const char* binary, int size) = 0;
+    virtual bool SendBinary(const Binary binary, int size) = 0;
     virtual bool SendImage(const std::string& filepath) = 0;
     // Recive message and return its content to `msg`.
     // Return fail when timeout or recv() fails.
@@ -34,7 +35,7 @@ protected:
     bool Connect(const std::string& url);
     bool SendText(const std::string& text);
     bool SendJSON(const std::string& json);
-    bool SendBinary(const char* binary, int size);
+    bool SendBinary(const Binary binary, int size);
     bool SendImage(const std::string& filepath);
     std::string Recv();
     bool Close();
