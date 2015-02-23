@@ -20,6 +20,7 @@ public:
         TYPE_POLYGON,
         TYPE_LINE,
         TYPE_POINT,
+        TYPE_VECTOR,
         TYPE_MAX,
     };
 
