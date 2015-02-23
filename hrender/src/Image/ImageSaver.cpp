@@ -104,7 +104,7 @@ public:
         return result;
     }
     
-    const char* SaveMemory(unsigned int format, BufferImageData* data)
+    const Buffer SaveMemory(unsigned int format, BufferImageData* data)
     {
         if (!data) { return NULL; }
         if (data->Bytes() <= 0) { return NULL; }
@@ -119,7 +119,7 @@ public:
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
                 //delete [] dstbuffer;
-                return m_memory.c_str();
+                return (const Buffer)m_memory.c_str();
             }
         }
         else if (format == ImageSaver::TGA)
@@ -128,14 +128,14 @@ public:
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
                 //delete [] dstbuffer;
-                return m_memory.c_str();
+                return (const Buffer)m_memory.c_str();
             }
         }
         else if (format == ImageSaver::HDR)
         {
             // not implemented
         }
-        return "";
+        return NULL;
     }
     
     int MemorySize() const
@@ -161,7 +161,7 @@ bool ImageSaver::Save(const char* filename, BufferImageData* data)
     return m_imp->Save(filename, data);
 }
 
-const char* ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
+const ImageSaver::Buffer ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
 {
     return m_imp->SaveMemory(format, data);
 }
