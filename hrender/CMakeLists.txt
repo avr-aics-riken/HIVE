@@ -174,7 +174,7 @@ set(SOURCES
 	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Builder/VolumeToMeshData.cpp
-	src/Builder/VolumeToTetraData.cpp
+	src/Builder/VolumeToVector.cpp
 	src/Image/jpge.cpp
 	src/Image/ImageLoader.cpp
 	src/Image/ImageSaver.cpp

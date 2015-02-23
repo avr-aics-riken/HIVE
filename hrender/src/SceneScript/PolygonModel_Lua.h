@@ -22,44 +22,11 @@ public:
         return true;
     }
 
-    bool SetTranslate(float x, float y, float z) {
-        RenderObject::SetTranslate(x, y, z);
-        return true;
-    }
-
-    bool SetRotate(float x, float y, float z) {
-        RenderObject::SetRotate(x, y, z);
-        return true;
-    }
-
-    bool SetScale(float x, float y, float z) {
-        RenderObject::SetScale(x, y, z);
-        return true;
-    }
-
-    bool SetVec4(const char* name, float x, float y, float z, float w) {
-        RenderObject::SetVec4(std::string(name), x, y, z, w);
-        return true;
-    }
-
-    bool SetVec3(const char* name, float x, float y, float z) {
-        RenderObject::SetVec3(std::string(name), x, y, z);
-        return true;
-    }
-
-    bool SetVec2(const char* name, float x, float y) {
-        RenderObject::SetVec2(std::string(name), x, y);
-        return true;
-    }
-
-    bool SetFloat(const char* name, float x) {
-        RenderObject::SetFloat(std::string(name), x);
-        return true;
-    }
-
     LUA_SCRIPTCLASS_BEGIN(PolygonModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferMeshData_Lua*)
+    
+    // RenderObject interface
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetRotate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetScale,float, float, float)

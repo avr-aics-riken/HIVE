@@ -78,25 +78,30 @@ function renderScene(scene, socket) {
 	"use strict";
 	console.log('TRY RENDER');
 	writeFile(scene, "./scene.scn", function () {
-		var process = spawn(HRENDER, ['scene.scn'], function (err) {
-			if (!err) { return; }
-			console.log('Failed run hrender.');
-		});
-		process.stdout.on('data', function (data) {
-			console.log('stdout: ' + data);
-			socket.emit('stdout', data.toString());
-		});
-		process.stderr.on('data', function (data) {
-			console.log('stderr: ' + data);
-			socket.emit('stderr', data.toString());
-		});
-		process.on('exit', function (code) {
-			console.log('exit code: ' + code);
-		});
-		process.on('error', function (err) {
-			console.log('process error', err);
-			socket.emit('stderr', "can't execute program\n");
-		});
+		try {
+			var process = spawn(HRENDER, ['scene.scn'], function (err) {
+				if (!err) { return; }
+				console.log('Failed run hrender.');
+			});
+			process.stdout.on('data', function (data) {
+				console.log('stdout: ' + data);
+				socket.emit('stdout', data.toString());
+			});
+			process.stderr.on('data', function (data) {
+				console.log('stderr: ' + data);
+				socket.emit('stderr', data.toString());
+			});
+			process.on('exit', function (code) {
+				console.log('exit code: ' + code);
+			});
+			process.on('error', function (err) {
+				console.log('process error', err);
+				socket.emit('stderr', "can't execute program:" + HRENDER + "\n");
+			});
+		} catch (e) {
+			console.log('process error', e);
+			socket.emit('stderr', "can't execute program:" + HRENDER + "\n");
+		}
 	});
 }
 
