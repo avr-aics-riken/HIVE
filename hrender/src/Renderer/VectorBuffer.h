@@ -8,15 +8,13 @@ class VectorModel;
 class VectorBuffer : public BaseBuffer
 {
 private:
-    //LINE DATA
-    unsigned int m_vtxnum     ;
-    unsigned int m_indexnum   ;
-    unsigned int m_vtx_id     ;
-    unsigned int m_radius_id  ;
-    unsigned int m_material_id;
-    unsigned int m_idx_id     ;
-    //TETRA DATA
-    unsigned int m_tetranum;
+
+    unsigned int m_line_vtx_id;
+    unsigned int m_tetra_vtx_id;
+    unsigned int m_mat_id;
+    unsigned int m_lines_vnum;
+    unsigned int m_tetra_vnum;
+
     RefPtr<const VectorModel> m_model;
     
 public:

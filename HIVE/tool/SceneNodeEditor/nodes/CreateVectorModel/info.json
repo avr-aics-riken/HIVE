@@ -1,0 +1,23 @@
+{
+	"name": "CreateVectorModel",
+	"funcname": "CreateVectorModel",
+	"info":"Vectorデータを表示させるためのノード",
+	"pos": [400, 300],
+	"varname": "instVectorModel",
+	"customfuncfile": "CreateVectorModel.lua",
+	"input": [
+		{"name": "vector", "type": "BufferVectorData"},
+		{"name": "linewidth", "type": "float", "value":0.5},
+		{"name": "arrowsize", "type": "float", "value":1.0},
+		{"name": "lengthscale", "type": "float", "value":2.0},
+		{"name": "shadername", "type": "string", "value":"white.frag"},
+		{"name": "Uniform",  "type": "Uniform", "array": [
+			{"name": "Uniform0",  "type": "Uniform"},
+			{"name": "Uniform1",  "type": "Uniform"},
+			{"name": "Uniform2",  "type": "Uniform"}
+		]}
+	],
+	"output": [
+		{"name": "model", "type": "RenderObject"}
+	]
+}
