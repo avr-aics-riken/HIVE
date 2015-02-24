@@ -164,12 +164,13 @@ set(SOURCES
 	src/Analyzer/PolygonAnalyzer.cpp
 	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
-	src/Buffer/BufferTetraData.cpp
 	src/Buffer/BufferMeshData.cpp
 	src/Buffer/BufferVolumeData.cpp
 	src/Buffer/BufferLineData.cpp
 	src/Buffer/BufferSparseVolumeData.cpp
 	src/Buffer/BufferPointData.cpp
+	src/Buffer/BufferVectorData.cpp
+	src/Buffer/BufferTetraData.cpp
 	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Builder/VolumeToVector.cpp
@@ -190,6 +191,7 @@ set(SOURCES
 	src/RenderObject/VolumeModel.cpp
 	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
+	src/RenderObject/TetraModel.cpp
 	src/RenderObject/VectorModel.cpp
 	src/Renderer/BaseBuffer.cpp
 	src/Renderer/Commands_GL.cpp
@@ -198,6 +200,7 @@ set(SOURCES
 	src/Renderer/VolumeBuffer.cpp
 	src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
+	src/Renderer/TetraBuffer.cpp
 	src/Renderer/VectorBuffer.cpp
 	src/Renderer/RenderCore.cpp
 	src/SceneScript/SceneScript.cpp
