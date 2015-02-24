@@ -93,14 +93,14 @@ bool VectorBuffer::Create(const VectorModel* model)
     const float arrowSize = 1.0;//m_model->GetArrowSize();
     for (unsigned int i = 0; i < vecNum; ++i) {
         vec3 dir   (d3[3 * i], d3[3 * i + 1], d3[3 * i + 2]);
-        vec3 center = vec3(v3[3 * i], v3[3 * i + 1], v3[3 * i + 2]) + dir * lengthScale;
+        const vec3 center = vec3(v3[3 * i], v3[3 * i + 1], v3[3 * i + 2]) + dir * lengthScale;
         dir = normalize(dir);
 
-        vec3 tnv = cross(dir, VX::Math::vec3(0,1,0));
+        const vec3 tangent = cross(dir, VX::Math::vec3(0,1,0)); // This is easy way, TODO: to calc correct tangent.
         tv3[4 * i    ] = center + dir * arrowSize;
-        tv3[4 * i + 1] = center + tnv * arrowSize;
-        tv3[4 * i + 2] = center + (RotationAxis(dir, 120) * vec4(tnv, 0.0)).xyz() * arrowSize;
-        tv3[4 * i + 3] = center + (RotationAxis(dir,-120) * vec4(tnv, 0.0)).xyz() * arrowSize;
+        tv3[4 * i + 1] = center + tangent * arrowSize;
+        tv3[4 * i + 2] = center + (RotationAxis(dir, 120) * vec4(tangent, 0.0)).xyz() * arrowSize;
+        tv3[4 * i + 3] = center + (RotationAxis(dir,-120) * vec4(tangent, 0.0)).xyz() * arrowSize;
     }
 
     // Create Line and tetra VB
