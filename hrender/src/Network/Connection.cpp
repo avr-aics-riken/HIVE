@@ -336,7 +336,7 @@ public:
         return m_imp.SendText(text);
     }
     
-    bool SendBinary(const char* binary, int size)
+    bool SendBinary(const Binary binary, int size)
     {
         if (!isValid()) { return false; }
         return m_imp.SendBinary(binary, size);
@@ -352,11 +352,11 @@ public:
         int rank = 0;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         
-        const char* buf = NULL;
+        std::string buf;
         int len = 0;
         if (rank == 0) {
             buf = m_imp.Recv();
-            len = m_imp.RecvSize();
+            len = buf.size();
         }
         
         MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -364,7 +364,7 @@ public:
             if (rank != 0) {
                 buf.resize(len);
             }
-            MPI_Bcast(buf, len, MPI_BYTE, 0, MPI_COMM_WORLD);
+            MPI_Bcast(&buf.at(0), len, MPI_BYTE, 0, MPI_COMM_WORLD);
         }
         
         if (len > 0) {
@@ -374,16 +374,16 @@ public:
         }
     }
     
-    int RecvSize() const {
-        return static_cast<int>(m_recvBuf.size());
-    }
+    //int RecvSize() const {
+    //    return static_cast<int>(m_recvBuf.size());
+    //}
     
     bool Close() {
         return m_imp.Close();
     }
     
 private:
-    Connection::Impl m_imp;
+    Impl m_imp;
 };
 #endif // HIVE_ENABLE_MPI
 

@@ -1,6 +1,19 @@
 #include "BufferVolumeData.h"
 #include "Buffer.h"
+
 #include <vector>
+#include <algorithm>
+
+namespace {
+
+inline float remap(float x, const float *table, int n) {
+  int idx = x * n;
+  idx = std::max(std::min(n - 1, idx), 0);
+
+  return table[idx];
+}
+
+} // namespace
 
 class BufferVolumeData::Impl
 {
@@ -91,7 +104,7 @@ public:
         return m_buffer;
     }
     
-    bool& NonUniform() {
+    bool NonUniform() {
         return m_isNonUniform;
     }
     
@@ -105,6 +118,43 @@ public:
     
     FloatBuffer* SpacingZ() {
         return m_spacingZ;
+    }
+
+    void Sample(float* ret, float x, float y, float z) {
+
+        float xx = xx;
+        float yy = yy;
+        float zz = zz;
+
+        if (m_isNonUniform) {
+
+            // remap coordinate.
+
+            if (SpacingX()->GetNum() > 0) {
+                xx = remap(xx, static_cast<const float*>(SpacingX()->GetBuffer()), SpacingX()->GetNum());
+            }
+
+            if (SpacingX()->GetNum() > 0) {
+                yy = remap(yy, static_cast<const float*>(SpacingY()->GetBuffer()), SpacingY()->GetNum());
+            }
+
+            if (SpacingX()->GetNum() > 0) {
+                zz = remap(zz, static_cast<const float*>(SpacingZ()->GetBuffer()), SpacingZ()->GetNum());
+            }
+
+        }
+
+        size_t ix = std::min(std::max((size_t)(xx * Width()), (size_t)(Width()-1)), (size_t)0);
+        size_t iy = std::min(std::max((size_t)(yy * Height()), (size_t)(Height()-1)), (size_t)0);
+        size_t iz = std::min(std::max((size_t)(zz * Depth()), (size_t)(Depth()-1)), (size_t)0);
+
+        size_t idx = Component() * (iz * Width() * Height() + iy * Width() + ix);
+
+        const float* buf = static_cast<const float*>(m_buffer->GetBuffer());
+        for (size_t c = 0; c < Component(); c++) {
+            ret[c] = buf[idx + c];
+        }
+
     }
 };
 
@@ -161,7 +211,7 @@ FloatBuffer *BufferVolumeData::Buffer() {
     return m_imp->Buffer();
 }
 
-bool& BufferVolumeData::NonUniform() {
+bool BufferVolumeData::NonUniform() {
     return m_imp->NonUniform();
 }
 
@@ -177,4 +227,7 @@ FloatBuffer* BufferVolumeData::SpacingZ() {
     return m_imp->SpacingZ();
 }
 
+void BufferVolumeData::Sample(float* ret, float x, float y, float z) {
+    m_imp->Sample(ret, x, y, z);
+}
 
