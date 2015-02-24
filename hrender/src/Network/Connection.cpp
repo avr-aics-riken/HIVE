@@ -336,7 +336,7 @@ public:
         return m_imp.SendText(text);
     }
     
-    bool SendBinary(const char* binary, int size)
+    bool SendBinary(const Binary binary, int size)
     {
         if (!isValid()) { return false; }
         return m_imp.SendBinary(binary, size);
