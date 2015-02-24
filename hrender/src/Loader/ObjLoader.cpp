@@ -147,6 +147,8 @@ BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
         return tetra;
     }
     
+    assert(0); // TODO: implementation
+    
     return tetra;
 }
 
@@ -156,6 +158,13 @@ BufferVectorData* OBJLoader::createNormalVectorData(const SimpleObj* obj) const
     if (!obj) {
         return vec;
     }
+    
+    const int vnum = obj->GetVertexNum();
+    vec->Create(vnum);
+    Vec3Buffer* pos    = vec->Position();
+    Vec3Buffer* normal = vec->Direction();
+    memcpy(pos->GetBuffer(),    obj->GetPositionBuffer(), sizeof(float) * 3 * vnum);
+    memcpy(normal->GetBuffer(), obj->GetNormalBuffer(),   sizeof(float) * 3 * vnum);
     
     return vec;
 }

@@ -4,8 +4,7 @@
 #include <string>
 #include "RenderObject.h"
 
-class BufferLineData;
-class BufferTetraData;
+class BufferVectorData;
 
 class VectorModel : public RenderObject
 {
@@ -17,13 +16,16 @@ public:
 	VectorModel();
     ~VectorModel();
     bool SetShader(const std::string& shaderfile);
-    bool Create(BufferLineData *Line, BufferTetraData *Tetra);
-    BufferLineData* GetLine() const;
-    BufferTetraData* GetTetra() const;
+    bool Create(BufferVectorData *vector);
+    const BufferVectorData* GetVector() const;
+    BufferVectorData* GetVector();
     const std::string& GetShader() const;
-    float GetLineWidth();
-    float SetLineWidth(float w);
-
+    float GetLineWidth() const;
+    void  SetLineWidth(float w);
+    float GetArrowSize() const;
+    void  SetArrowSize(float s);
+    float GetLengthScale() const;
+    void  SetLengthScale(float s);
 };
 
 #endif //_VECTORMODEL_H_

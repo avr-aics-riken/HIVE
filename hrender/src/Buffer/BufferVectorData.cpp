@@ -42,8 +42,8 @@ public:
         // TODO:
     }
     
-    Vec3Buffer  *Position()  { return m_pos; }
-    Vec3Buffer  *Direction() { return m_dir; }
+    Vec3Buffer  *Position()  const { return m_pos; }
+    Vec3Buffer  *Direction() const { return m_dir; }
 };
 
 /// constructor
@@ -77,4 +77,7 @@ void BufferVectorData::print()
 
 Vec3Buffer* BufferVectorData::Position()  { return m_imp->Position();  }
 Vec3Buffer* BufferVectorData::Direction() { return m_imp->Direction(); }
+
+const Vec3Buffer* BufferVectorData::Position()  const { return m_imp->Position();  }
+const Vec3Buffer* BufferVectorData::Direction() const { return m_imp->Direction(); }
 

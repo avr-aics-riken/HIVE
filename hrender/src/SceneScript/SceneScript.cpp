@@ -19,6 +19,8 @@
 #include "VolumeModel_Lua.h"
 #include "PointModel_Lua.h"
 #include "LineModel_Lua.h"
+#include "VectorModel_Lua.h"
+#include "TetraModel_Lua.h"
 #include "Camera_Lua.h"
 #include "Connection_Lua.h"
 #include "BufferMeshData_Lua.h"
@@ -57,6 +59,8 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, VolumeModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PointModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, LineModel_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, VectorModel_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, TetraModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
@@ -91,6 +95,8 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
     SetFunction(L, "PointModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointModel_Lua));
     SetFunction(L, "LineModel",           LUA_SCRIPTCLASS_NEW_FUNCTION(LineModel_Lua));
+    SetFunction(L, "VectorModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VectorModel_Lua));
+    SetFunction(L, "TetraModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(TetraModel_Lua));
     SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
     SetFunction(L, "Connection",          LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
