@@ -206,10 +206,10 @@ public:
     std::string Recv() {
         if (m_connection) {
             // @todo
-            return false;
+            return "";
         } else if (m_ws) {
             if (m_ws->getReadyState() == easywsclient::WebSocket::CLOSED) {
-                return false;
+                return "";
             }
 
             // Assume single thread, single instance execution.
@@ -220,7 +220,7 @@ public:
 
             return gRecvBuffer;
         }
-        return NULL;
+        return "";
     }
     
     bool Close()
