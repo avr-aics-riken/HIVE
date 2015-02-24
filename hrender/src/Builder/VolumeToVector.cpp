@@ -150,7 +150,6 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
     const double  offset_incX = m_pitchX;
     const double  offset_incY = m_pitchY;
     const double  offset_incZ = m_pitchZ;
-
     float offsetZ    = static_cast<float>(-depth  / 2) + 0.5;
     for(double k = 0; k < fdepth; k += offset_incZ)
     {
@@ -160,9 +159,9 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
             float offsetX    = static_cast<float>(-width / 2) + 0.5;
             for(double i = 0; i < fwidth; i += offset_incX)
             {
-                int buf_offset  = static_cast<int>(i);           //X
-                buf_offset     += static_cast<int>(j * fwidth);  //Y
-                buf_offset     += static_cast<int>(k * fheight); //Z
+                int buf_offset  = static_cast<int>(i);                  //X
+                buf_offset     += static_cast<int>(j) * width;          //Y
+                buf_offset     += static_cast<int>(k) * width * height; //Z
                 if(volumedata->GetNum() <= buf_offset) {
                     printf("ERROR : BOF bailout.\n");
                     goto bailout;
@@ -170,7 +169,6 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
 
                 VX::Math::vec3 v0 = VX::Math::vec3(offsetX, offsetY, offsetZ);
                 VX::Math::vec3 v1 = volbuf[buf_offset];
-
                 v1 = normalize(v1);
 
                 *linebuf++ = v0;
