@@ -7,7 +7,7 @@
 	"customfuncfile": "isosurf.lua",
 	"input": [
 		{"name": "volume", "type": "BufferVolumeData"},
-		{"name": "isovalue", "type": "float", "1.0"},
+		{"name": "isovalue", "type": "float", "value": 1.0}
 	],
 	"output": [
 		{"name": "MeshData", "type": "BufferMeshData"}

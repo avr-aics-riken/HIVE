@@ -1,5 +1,5 @@
 function Isosurf(property)
-	local vm = VolumeToMesh();
+	local vm = VolumeToMeshData();
 	vm:Create(property.volume, property.isovalue)
 	--vm:SetIsovalue(property.isovalue)
 	return vm

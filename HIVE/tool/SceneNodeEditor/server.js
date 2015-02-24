@@ -44,7 +44,7 @@ function makeNodeList(callback) {
 					}
 					nodelist.push(json);
 				} catch (e) {
-					console.log('[Error] Failed Load:' + nodeDirPath + "/info.json");
+					console.log('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
 				}
 				finishLoad();
 			};
