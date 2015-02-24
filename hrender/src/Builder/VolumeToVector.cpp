@@ -41,8 +41,7 @@ inline void GenerateTetra(
 
 
 VolumeToVector::VolumeToVector(){
-    m_tetra       = new BufferTetraData();
-    m_line        = new BufferLineData();
+    m_vector      = new BufferVectorData();
     m_pitchX      = 1.0;
     m_pitchY      = 1.0;
     m_pitchZ      = 1.0;
@@ -123,8 +122,8 @@ bool VolumeToVector::DivideNumber(int x, int y, int z) {
     return true;
 }
 
-int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius_scale) {
-    if (!volume || scale <= 0.0) {
+int VolumeToVector::Create(BufferVolumeData *volume) {
+    if (!volume) {
         return 0;
     }
 
@@ -155,7 +154,9 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
     //Create Line Data
     Vec3Buffer*     volumedata = reinterpret_cast<Vec3Buffer*>(volume->Buffer());
     VX::Math::vec3* volbuf     = reinterpret_cast<VX::Math::vec3*>(volumedata->GetBuffer());
-    std::vector<VX::Math::vec3> linebuf;  //need reserve?
+
+    std::vector<VX::Math::vec3> vposbuf;  //need reserve?
+    std::vector<VX::Math::vec3> vdirbuf;  //need reserve?
 
     float offsetZ    = static_cast<float>(-depth  / 2) + 0.5;
     for(double k = 0; k < fdepth; k += offset_incZ)
@@ -177,8 +178,8 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
                 VX::Math::vec3 v1 = volbuf[buf_offset];
                 v1 = normalize(v1);
 
-                linebuf.push_back(v0);
-                linebuf.push_back(v0 + v1);
+                vposbuf.push_back(v0);
+                vdirbuf.push_back(v1);
 
                 offsetX += offset_incX;
             }
@@ -186,53 +187,22 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
         }
         offsetZ += offset_incZ;
     }
-    printf("Builder : Line Num = %d\n", linebuf.size());
-    const int       line_vertex_num  = linebuf.size();
-    m_line->Create(line_vertex_num, indexnum);
-    UintBuffer*     idx     = m_line->Index();
-    FloatBuffer*    mat     = m_line->Material();
-    FloatBuffer*    radius  = m_line->Radius();
-    float*          rad     = radius->GetBuffer();
-    Vec3Buffer*     pos     = reinterpret_cast<Vec3Buffer*>(m_line->Position());
+    printf("Builder : Line Num = %d\n", vposbuf.size());
+    m_vector->Create(vposbuf.size());
+    Vec3Buffer*     pos     = reinterpret_cast<Vec3Buffer*>(m_vector->Position());
     VX::Math::vec3* posbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
-
-    //setup material
-    memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
-
-    //setup radius scale
-    if (rad) {
-        for (int i = 0; i < line_vertex_num; ++i) {
-            rad[i] = static_cast<float>(radius_scale);
-        }
-    }
+    Vec3Buffer*     dir     = reinterpret_cast<Vec3Buffer*>(m_vector->Direction());
+    VX::Math::vec3* dirbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
 
     //setup vertex
-    memcpy(posbuf, &linebuf[0], sizeof(VX::Math::vec3) * linebuf.size());
+    memcpy(posbuf, &vposbuf[0], sizeof(VX::Math::vec3) * vposbuf.size());
+    memcpy(dirbuf, &vdirbuf[0], sizeof(VX::Math::vec3) * vdirbuf.size());
 
-    /*
-    //1cell 1tetra
-    int tetra_vertex_num = volume_num * 4;
-    
-    //Create TetraData
-    m_tetra->Create(tetra_vertex_num, tetra_vertex_num);
-    float *dest          = m_tetra->Position()->GetBuffer();
-    
-    //GenerateTetra
-    for (int i = 0; i < volume_num; ++i){
-        GenerateTetra(&dest[i * 4], &source[i * 3], bmin, bmax, scale);
-    }
-
-    return m_tetra->Position()->GetNum();
-    */
-    return m_tetra->Position()->GetNum();
+    return vposbuf.size();
 }
 
-BufferLineData* VolumeToVector::LineData()
+BufferVectorData* VolumeToVector::VectorData()
 {
-    return m_line;
+    return m_vector;
 }
 
-BufferTetraData* VolumeToVector::TetraData()
-{
-    return m_tetra;
-}

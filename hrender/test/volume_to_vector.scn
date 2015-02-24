@@ -20,17 +20,20 @@ local vtovec = VolumeToVector()
 local voldata = sph:VolumeData()
 print(vtovec)
 print(voldata)
-vtovec:DividePitch(4,4,4)
---vtovec:DivideNumber(50,50,50)
-vtovec:Create(voldata, 1.0, 3.0)
+--vtovec:DividePitch(0.4,0.4,0.4)
+--vtovec:DivideNumber(5,5,5)
+vtovec:Create(voldata);
 
-local line = vtovec:LineData()
+local vdata = vtovec:VectorData()
 
-local model = LineModel()
-model:SetLineWidth(0.1)
-model:Create(line)
+local model = VectorModel()
+
+--model:SetLineWidth(0.1)
+--model:SetArrowSize(0.1)
+--model:SetLengthScale(1.0)
+
+model:Create(vdata)
 model:SetShader('normal.frag')
-
 render {camera, model}
 
 

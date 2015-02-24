@@ -11,16 +11,12 @@ class VolumeToVector_Lua : public VolumeToVector
 public:
     VolumeToVector_Lua(){}
 
-    int Create(BufferVolumeData_Lua* volume, double scale, double radius_scale) {
-        return VolumeToVector::Create(volume, scale, radius_scale);
+    int Create(BufferVolumeData_Lua* volume) {
+        return VolumeToVector::Create(volume);
     }
 
-    BufferLineData_Lua* LineData() {
-        return new BufferLineData_Lua(VolumeToVector::LineData());
-    }
-
-    BufferTetraData_Lua* TetraData() {
-        return new BufferTetraData_Lua(VolumeToVector::TetraData());
+    BufferVectorData_Lua* VectorData() {
+        return new BufferVectorData_Lua(VolumeToVector::VectorData());
     }
 
     bool DividePitchX(double a) {
@@ -54,9 +50,8 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(VolumeToVector_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG3(int,Create,BufferVolumeData_Lua*, double, double)
-    LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*, LineData)
-    LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*, TetraData)
+    LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferVectorData_Lua*, VectorData)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, DividePitch,   double, double, double)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, DivideNumber,  int, int, int)
     LUA_SCRIPTCLASS_END()
