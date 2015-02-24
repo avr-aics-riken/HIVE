@@ -7,9 +7,9 @@
 	"customfuncfile": "createVectorModel.lua",
 	"input": [
 		{"name": "vector", "type": "BufferVectorData"},
-		{"name": "linewidth", "type": "float"},
-		{"name": "arrowsize", "type": "float"},
-		{"name": "lengthscale", "type": "float"},
+		{"name": "linewidth", "type": "float", "value":0.5},
+		{"name": "arrowsize", "type": "float", "value":1.0},
+		{"name": "lengthscale", "type": "float", "value":2.0},
 		{"name": "shadername", "type": "string", "value":"white.frag"},
 		{"name": "Uniform",  "type": "Uniform", "array": [
 			{"name": "Uniform0",  "type": "Uniform"},
