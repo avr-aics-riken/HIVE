@@ -11,8 +11,8 @@ class VolumeToMeshData_Lua : public VolumeToMeshData
 public:
     VolumeToMeshData_Lua(){}
 
-    int Create(BufferVolumeData_Lua* volume, float isosurf) {
-        return VolumeToMeshData::Create(volume, static_cast<double>(isosurf));
+    int Create(BufferVolumeData_Lua* volume, float isovalue) {
+        return VolumeToMeshData::Create(volume, static_cast<double>(isovalue));
     }
 
     BufferMeshData_Lua* MeshData() {
