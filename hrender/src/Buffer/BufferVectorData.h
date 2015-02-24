@@ -21,10 +21,10 @@ public:
     void Create(int vertexnum);
     void Clear();
     void print();
-    Vec3Buffer*  Position() ;
-    Vec3Buffer*  Position() const;
-    Vec3Buffer*  Direction() ;
-    Vec3Buffer*  Direction() const;
+    Vec3Buffer*        Position();
+    const Vec3Buffer*  Position() const;
+    Vec3Buffer*        Direction() ;
+    const Vec3Buffer*  Direction() const;
 };
 
 #endif //_BUFFERVECTORDATA_H_
