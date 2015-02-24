@@ -3,14 +3,14 @@
 #include "BufferMeshData.h"
 #include "BufferPointData.h"
 #include "BufferLineData.h"
+#include "BufferTetraData.h"
+#include "BufferVectorData.h"
 #include "Buffer.h"
 
 OBJLoader::OBJLoader()
 {
-    m_mesh  = 0;
-    m_point = 0;
-    m_obj   = 0;
-    m_line  = 0;
+    m_obj    = 0;
+    Clear();
 }
 
 OBJLoader::~OBJLoader()
@@ -21,10 +21,12 @@ OBJLoader::~OBJLoader()
 void OBJLoader::Clear()
 {
     delete m_obj;
-    m_obj   = 0;
-    m_mesh  = 0;
-    m_point = 0;
-    m_line  = 0;
+    m_obj    = 0;
+    m_mesh   = 0;
+    m_point  = 0;
+    m_line   = 0;
+    m_normal = 0;
+    m_tetra  = 0;
 }
 
 BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
@@ -85,7 +87,7 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
 BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
 {
     BufferLineData* line = new BufferLineData();
-    if (!line) {
+    if (!obj) {
         return line;
     }
 
@@ -138,6 +140,35 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
     return line;
 }
 
+BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
+{
+    BufferTetraData* tetra = new BufferTetraData();
+    if (!obj) {
+        return tetra;
+    }
+    
+    assert(0); // TODO: implementation
+    
+    return tetra;
+}
+
+BufferVectorData* OBJLoader::createNormalVectorData(const SimpleObj* obj) const
+{
+    BufferVectorData* vec = new BufferVectorData();
+    if (!obj) {
+        return vec;
+    }
+    
+    const int vnum = obj->GetVertexNum();
+    vec->Create(vnum);
+    Vec3Buffer* pos    = vec->Position();
+    Vec3Buffer* normal = vec->Direction();
+    memcpy(pos->GetBuffer(),    obj->GetPositionBuffer(), sizeof(float) * 3 * vnum);
+    memcpy(normal->GetBuffer(), obj->GetNormalBuffer(),   sizeof(float) * 3 * vnum);
+    
+    return vec;
+}
+
 
 bool OBJLoader::Load(const char* filename){
 	Clear();
@@ -174,6 +205,22 @@ BufferLineData *OBJLoader::LineData()
         m_line = createLineData(m_obj);
     
     return m_line;
+}
+
+BufferTetraData *OBJLoader::TetraData()
+{
+    if (!m_tetra)
+        m_tetra = createTetraData(m_obj);
+    
+    return m_tetra;
+}
+
+BufferVectorData *OBJLoader::NormalData()
+{
+    if (!m_normal)
+        m_normal = createNormalVectorData(m_obj);
+    
+    return m_normal;
 }
 
 

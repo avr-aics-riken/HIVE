@@ -14,6 +14,8 @@
 #include "../RenderObject/PolygonModel.h"
 #include "../RenderObject/PointModel.h"
 #include "../RenderObject/LineModel.h"
+#include "../RenderObject/VectorModel.h"
+#include "../RenderObject/TetraModel.h"
 #include "../RenderObject/VolumeModel.h"
 #include "../RenderObject/Camera.h"
 #include "../RenderObject/PolygonModel.h"
@@ -25,6 +27,8 @@
 #include "PointBuffer.h"
 #include "LineBuffer.h"
 #include "VolumeBuffer.h"
+#include "VectorBuffer.h"
+#include "TetraBuffer.h"
 
 #include "../Buffer/Buffer.h"
 #include "../Buffer/BufferImageData.h"
@@ -171,9 +175,13 @@ private:
              VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
              buffer = vbuf;
+        } else if (robj->GetType() == RenderObject::TYPE_TETRA) {
+            TetraBuffer* tbuf = new TetraBuffer(RENDER_LSGL);
+            tbuf->Create(static_cast<const TetraModel*>(robj));
+            buffer = tbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VECTOR) {
-             LineBuffer* vbuf = new LineBuffer(RENDER_LSGL);
-             vbuf->Create(static_cast<const LineModel*>(robj));
+             VectorBuffer* vbuf = new VectorBuffer(RENDER_LSGL);
+             vbuf->Create(static_cast<const VectorModel*>(robj));
              buffer = vbuf;
         } else {
             // Unknow type
