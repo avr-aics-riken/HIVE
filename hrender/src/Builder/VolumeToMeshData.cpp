@@ -536,7 +536,7 @@ protected:
     if (cubetype == 0 || cubetype == 255)
       return;
 
-    size_t samples[12]; //
+    size_t samples[12];
     for (int i = 0; i < 12; i++) {
       samples[i] = (size_t)-1;
     }
@@ -680,12 +680,12 @@ public:
       CreateMarchingCubes<T> cmc(density_, nVoxels_, components_);
       cmc.run(thresoluld);
       vertices_.swap(cmc.vertices);
-      normals_.swap(cmc.normals);
+      //normals_.swap(cmc.normals);
       indices_.swap(cmc.indices);
 
       //printf("v: %d\n", vertices_.size());
       //printf("n: %d\n", normals_.size());
-      assert(vertices_.size() == normals_.size());
+      compute_smooth_normals(normals_, vertices_, indices_);
   }
 
 public:
@@ -752,15 +752,10 @@ int VolumeToMeshData::Create(BufferVolumeData *volume, double isovalue) {
         return 0;
 
     if (volume->Component() != 1) {
-        fprintf(stderr, "[VolumeToMeshData] At this time, the number of component of voxel must be 1.\n");
-        return 0;
+        fprintf(stderr, "[VolumeToMeshData] The number of component of voxel must be 1. Only see the first component of voxel data.\n");
+        //return 0;
     }
     
-    //todo custom
-    double bmin[3] = {-1, -1, -1};
-    double bmax[3] = { 1,  1,  1};
-    double scale   = 0.04;
-    const int volume_num = volume->Buffer()->GetNum();
     const float *source  = static_cast<const float*>(volume->Buffer()->GetBuffer());
     int dim[3];
     dim[0] = volume->Width();
@@ -794,17 +789,11 @@ int VolumeToMeshData::Create(BufferVolumeData *volume, double isovalue) {
     
     pos->Create(numVertices);
     float* pp = pos->GetBuffer();
-    memcpy(pp, &vertices.at(0), sizeof(float)*3*3*numVertices);
+    memcpy(pp, &vertices.at(0), sizeof(float)*3*numVertices);
+
     normal->Create(numVertices);
-    memcpy(normal->GetBuffer(), &normals.at(0), sizeof(float)*3*3*numVertices);
-    //const float* objuv = obj->GetUVBuffer();
-    //if (objuv) {
-    //    texcoord->Create(obj->GetVertexNum());
-    //    float* uv = texcoord->GetBuffer();
-    //    memcpy(uv, objuv, sizeof(float)*2*(obj->GetVertexNum()));
-    //}
-    //mat->Create(obj->GetVertexNum());
-    //memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
+    memcpy(normal->GetBuffer(), &normals.at(0), sizeof(float)*3*numVertices);
+
     index->Create(numIndices);
     unsigned int* idxDst = index->GetBuffer();
     for (size_t i = 0; i < numIndices; i++) {
