@@ -7,27 +7,34 @@
 #include "BufferVolumeData.h"
 #include "BufferTetraData.h"
 #include "BufferLineData.h"
+#include "BufferVectorData.h"
 
 class VolumeToVector : public RefCount
 {
 private:
-    BufferTetraData*  m_tetra;
-    BufferLineData*   m_line;
+    BufferVectorData* m_vector;
     double            m_pitchX;
     double            m_pitchY;
     double            m_pitchZ;
+    int               m_pitchIntX;
+    int               m_pitchIntY;
+    int               m_pitchIntZ;
+    bool              m_usePitchInt;
+
 public:
     VolumeToVector();
-    int Create(BufferVolumeData *volume, double scale, double radius);
-    BufferTetraData* TetraData();
-    BufferLineData*  LineData();
+    int Create(BufferVolumeData *volume);
+    BufferVectorData*  VectorData();
 
-    void DividePitchX(double a) ;
-    void DividePitchY(double a) ;
-    void DividePitchZ(double a) ;
-    void DivideNumberX(double a);
-    void DivideNumberY(double a);
-    void DivideNumberZ(double a);
+    bool DividePitchX(double a) ;
+    bool DividePitchY(double a) ;
+    bool DividePitchZ(double a) ;
+    bool DividePitch(double x, double y, double z);
+    bool DivideNumberX(int a);
+    bool DivideNumberY(int a);
+    bool DivideNumberZ(int a);
+    bool DivideNumber(int x, int y, int z);
+
 };
 
 #endif //_VOLUMETOVECTOR_H_

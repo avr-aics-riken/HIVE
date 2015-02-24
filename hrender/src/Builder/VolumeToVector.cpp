@@ -41,115 +41,123 @@ inline void GenerateTetra(
 
 
 VolumeToVector::VolumeToVector(){
-    m_tetra = new BufferTetraData();
-    m_line  = new BufferLineData();
-    m_pitchX = 1.0;
-    m_pitchY = 1.0;
-    m_pitchZ = 1.0;
+    m_vector      = new BufferVectorData();
+    m_pitchX      = 1.0;
+    m_pitchY      = 1.0;
+    m_pitchZ      = 1.0;
+    m_pitchIntX   = 1;
+    m_pitchIntY   = 1;
+    m_pitchIntZ   = 1;
+    m_usePitchInt = false;
 }
 
 
-void VolumeToVector::DividePitchX(double a) {
+bool VolumeToVector::DividePitchX(double a) {
     if(a <= 0) {
         printf("ERROR : Invalid PitchX\n");
-        return ;
+        return false;
     }
     m_pitchX = a;
+    return true;
 }
 
-void VolumeToVector::DividePitchY(double a) {
+bool VolumeToVector::DividePitchY(double a) {
     if(a <= 0) {
         printf("ERROR : Invalid PitchY\n");
-        return ;
+        return false;
     }
     m_pitchY = a;
+    return true;
 }
 
-void VolumeToVector::DividePitchZ(double a) {
+bool VolumeToVector::DividePitchZ(double a) {
     if(a <= 0) {
         printf("ERROR : Invalid PitchZ\n");
-        return ;
+        return false;
     }
     m_pitchZ = a;
+    return true;
 }
 
-void VolumeToVector::DivideNumberX(double a) {
-    DividePitchX(a);
+bool VolumeToVector::DivideNumberX(int a) {
+    if(a <= 0) {
+        printf("ERROR : Invalid NumberX\n");
+        return false;
+    }
+    m_pitchIntX = a;
+    return true;
 }
 
-void VolumeToVector::DivideNumberY(double a) {
-    DividePitchY(a);
+bool VolumeToVector::DivideNumberY(int a) {
+    if(a <= 0) {
+        printf("ERROR : Invalid NumberY\n");
+        return false;
+    }
+    m_pitchIntY = a;
+    return true;
 }
 
-void VolumeToVector::DivideNumberZ(double a) {
-    DividePitchZ(a);
+bool VolumeToVector::DivideNumberZ(int a) {
+    if(a <= 0) {
+        printf("ERROR : Invalid NumberZ\n");
+        return false;
+    }
+    m_pitchIntZ = a;
+    return true;
 }
 
+bool VolumeToVector::DividePitch(double x, double y, double z) {
+    DividePitchX(x);
+    DividePitchY(y);
+    DividePitchZ(z);
+    m_usePitchInt = false;
+    return true;
+}
 
-int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius_scale) {
-    if (!volume || scale <= 0.0) {
+bool VolumeToVector::DivideNumber(int x, int y, int z) {
+    DivideNumberX(x);
+    DivideNumberY(y);
+    DivideNumberZ(z);
+    m_usePitchInt = true;
+    return true;
+}
+
+int VolumeToVector::Create(BufferVolumeData *volume) {
+    if (!volume) {
         return 0;
     }
 
     //todo custom
-    const double bmin[3]          = {-1, -1, -1};
-    const double bmax[3]          = { 1,  1,  1};
-    const int    width            = volume->Width();
-    const int    height           = volume->Height();
-    const int    depth            = volume->Depth();
-    const int    volume_num       = (width * height * depth);
-    const int    line_vertex_num  = volume_num * 2;
-    const int    indexnum         = 0;//obj.GetIndexNum()
-    const float  offset_inc       = 1.0;
-
-    m_line->Create(line_vertex_num, indexnum);
-    UintBuffer*  idx     = m_line->Index();
-    FloatBuffer* mat     = m_line->Material();
-    FloatBuffer* radius  = m_line->Radius();
-    float*       rad     = radius->GetBuffer();
-    if (rad) {
-        for (int i = 0; i < line_vertex_num; ++i) {
-            rad[i] = static_cast<float>(radius_scale);
-        }
+    const double  bmin[3]      = {-1, -1, -1};
+    const double  bmax[3]      = { 1,  1,  1};
+    const int     width        = volume->Width();
+    const int     height       = volume->Height();
+    const int     depth        = volume->Depth();
+    const int     volume_num   = (width * height * depth);
+    const int     indexnum     = 0;//obj.GetIndexNum()
+    const float   offset_inc   = 1.0;
+    const double  fwidth       = static_cast<double>(width );
+    const double  fheight      = static_cast<double>(height);
+    const double  fdepth       = static_cast<double>(depth );
+    double        offset_incX  = m_pitchX;
+    double        offset_incY  = m_pitchY;
+    double        offset_incZ  = m_pitchZ;
+    if(m_usePitchInt) {
+        printf("Use PIch Int\n");
+        offset_incX = fwidth  / static_cast<double>(m_pitchIntX);
+        offset_incY = fheight / static_cast<double>(m_pitchIntY);
+        offset_incZ = fdepth  / static_cast<double>(m_pitchIntZ);
     }
-    memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
+    printf("VolumeNum  = %d(%d %d %d)\n", volume_num, width, height, depth);
+    printf("OFFSET_INC = %f %f %f\n", offset_incX, offset_incY, offset_incZ);
 
     //Create Line Data
-    Vec3Buffer*     pos        = reinterpret_cast<Vec3Buffer*>(m_line->Position());
     Vec3Buffer*     volumedata = reinterpret_cast<Vec3Buffer*>(volume->Buffer());
     VX::Math::vec3* volbuf     = reinterpret_cast<VX::Math::vec3*>(volumedata->GetBuffer());
-    VX::Math::vec3* linebuf    = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
 
-    //Create Buffer
-#if 0
-    float offsetZ    = static_cast<float>(-depth  / 2) + 0.5;
-    for(int k = 0; k < depth; k++) {
-        float offsetY    = static_cast<float>(-height / 2) - 0.5; //yUP
-        for(int j = 0; j < height; j++) {
-            float offsetX    = static_cast<float>(-width  / 2) + 0.5;
-            for(int i = 0; i < width; i++) {
-                VX::Math::vec3 v0 = VX::Math::vec3(offsetX, offsetY, offsetZ);
-                VX::Math::vec3 v1 = *volbuf;
-                volbuf++;
-                v1 = normalize(v1);
+    std::vector<VX::Math::vec3> vposbuf;  //need reserve?
+    std::vector<VX::Math::vec3> vdirbuf;  //need reserve?
 
-                *linebuf++ = v0;
-                *linebuf++ = v0 + v1;
-                
-                offsetX += offset_inc;
-            }
-            offsetY += offset_inc;
-        }
-        offsetZ += offset_inc;
-    }
-#endif
-
-    const double  fwidth      = static_cast<double>(width );
-    const double  fheight     = static_cast<double>(height);
-    const double  fdepth      = static_cast<double>(depth );
-    const double  offset_incX = m_pitchX;
-    const double  offset_incY = m_pitchY;
-    const double  offset_incZ = m_pitchZ;
     float offsetZ    = static_cast<float>(-depth  / 2) + 0.5;
     for(double k = 0; k < fdepth; k += offset_incZ)
     {
@@ -163,16 +171,15 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
                 buf_offset     += static_cast<int>(j) * width;          //Y
                 buf_offset     += static_cast<int>(k) * width * height; //Z
                 if(volumedata->GetNum() <= buf_offset) {
-                    printf("ERROR : BOF bailout.\n");
-                    goto bailout;
+                    printf("ERROR : BOF .\n");
                 }
 
                 VX::Math::vec3 v0 = VX::Math::vec3(offsetX, offsetY, offsetZ);
                 VX::Math::vec3 v1 = volbuf[buf_offset];
                 v1 = normalize(v1);
 
-                *linebuf++ = v0;
-                *linebuf++ = v0 + v1;
+                vposbuf.push_back(v0);
+                vdirbuf.push_back(v1);
 
                 offsetX += offset_incX;
             }
@@ -180,32 +187,22 @@ int VolumeToVector::Create(BufferVolumeData *volume, double scale, double radius
         }
         offsetZ += offset_incZ;
     }
+    printf("Builder : Line Num = %d\n", vposbuf.size());
+    m_vector->Create(vposbuf.size());
+    Vec3Buffer*     pos     = reinterpret_cast<Vec3Buffer*>(m_vector->Position());
+    VX::Math::vec3* posbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
+    Vec3Buffer*     dir     = reinterpret_cast<Vec3Buffer*>(m_vector->Direction());
+    VX::Math::vec3* dirbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
 
-    /*
-    //1cell 1tetra
-    int tetra_vertex_num = volume_num * 4;
-    
-    //Create TetraData
-    m_tetra->Create(tetra_vertex_num, tetra_vertex_num);
-    float *dest          = m_tetra->Position()->GetBuffer();
-    
-    //GenerateTetra
-    for (int i = 0; i < volume_num; ++i){
-        GenerateTetra(&dest[i * 4], &source[i * 3], bmin, bmax, scale);
-    }
+    //setup vertex
+    memcpy(posbuf, &vposbuf[0], sizeof(VX::Math::vec3) * vposbuf.size());
+    memcpy(dirbuf, &vdirbuf[0], sizeof(VX::Math::vec3) * vdirbuf.size());
 
-    return m_tetra->Position()->GetNum();
-    */
-bailout:
-    return m_tetra->Position()->GetNum();
+    return vposbuf.size();
 }
 
-BufferLineData* VolumeToVector::LineData()
+BufferVectorData* VolumeToVector::VectorData()
 {
-    return m_line;
+    return m_vector;
 }
 
-BufferTetraData* VolumeToVector::TetraData()
-{
-    return m_tetra;
-}
