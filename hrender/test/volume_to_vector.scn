@@ -25,7 +25,7 @@ local line = vtovec:LineData()
 local model = LineModel()
 model:SetLineWidth(0.1)
 model:Create(line)
-model:SetShader('vector.frag')
+model:SetShader('normal.frag')
 
 render {camera, model}
 
