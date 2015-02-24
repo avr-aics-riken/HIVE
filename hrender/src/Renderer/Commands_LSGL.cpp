@@ -70,12 +70,16 @@ void CreateVBIB_SGL(unsigned int vertexnum, float* posbuffer, float* normalbuffe
 	sgl.glGenBuffers(1, &vtx_id);
 	sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_id);
 	sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, posbuffer, GL_STATIC_DRAW);
-	sgl.glGenBuffers(1, &normal_id);
-	sgl.glBindBuffer(GL_ARRAY_BUFFER, normal_id);
-	sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, normalbuffer, GL_STATIC_DRAW);
-	sgl.glGenBuffers(1, &material_id);
-	sgl.glBindBuffer(GL_ARRAY_BUFFER, material_id);
-	sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, materialbuffer, GL_STATIC_DRAW);
+    if (normalbuffer) {
+        sgl.glGenBuffers(1, &normal_id);
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, normal_id);
+        sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, normalbuffer, GL_STATIC_DRAW);
+    }
+    if (materialbuffer) {
+        sgl.glGenBuffers(1, &material_id);
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, material_id);
+        sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, materialbuffer, GL_STATIC_DRAW);
+    }
     if (texbuffer) {
         sgl.glGenBuffers(1, &tex_id);
         sgl.glBindBuffer(GL_ARRAY_BUFFER, tex_id);
@@ -265,6 +269,12 @@ void DrawLineArrays_SGL(unsigned int vtxnum)
     sgl.glDrawArrays(GL_LINES, 0, vtxnum);
 }
 
+void DrawTetraArrays_SGL(unsigned int vtxnum)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glDrawArrays(GL_TETRAHEDRONS_EXT, 0, vtxnum);
+}
+
 void SampleCoverage_SGL(float a, bool invert)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
@@ -451,6 +461,27 @@ void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_ra
         sgl.glEnableVertexAttribArray(attrPos);
     }
 
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+}
+
+
+void BindTetraVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+    GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    
+    if (attrMaterial != -1 && vtx_material > 0) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_material);
+        sgl.glVertexAttribPointer(attrMaterial, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        sgl.glEnableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtxidx);
+        sgl.glVertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        sgl.glEnableVertexAttribArray(attrPos);
+    }
+    
     sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 

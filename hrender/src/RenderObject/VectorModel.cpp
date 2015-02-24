@@ -1,16 +1,16 @@
 #include <string>
 #include "VectorModel.h"
-#include "BufferLineData.h"
-#include "BufferTetraData.h"
+#include "BufferVectorData.h"
 
 class VectorModel::Impl
 {
 public:
     Impl()
     {
-        m_line = 0;
-        m_width = 1.0;
-        m_tetra = 0;
+        m_vector      = 0;
+        m_linewidth   = 0.5f;
+        m_arrowsize   = 1.0f;
+        m_lengthscale = 1.0f;
     }
     
     ~Impl()
@@ -23,46 +23,50 @@ public:
         return true;
     }
     
-    bool Create(BufferLineData* linedata, BufferTetraData* tetradata)
+    bool Create(BufferVectorData* vectordata)
     {
-        if (!linedata) {
+        if (!vectordata) {
             return false;
         }
-        m_line = linedata;
-        
-        
-        /* //TEST
-        if (!tetradata) {
-            return false;
-        }
-        m_tetra = tetradata;
-        */
+        m_vector = vectordata;
         
         return true;
     }
     
-    BufferLineData* GetLine() const {
-        return m_line;
+    BufferVectorData* GetVector() const {
+        return m_vector;
     }
-
-    BufferTetraData* GetTetra() const {
-        return m_tetra;
-    }
-        
+    
     const std::string& GetShader() const {
         return m_shaderfile;
     }
     
-    float GetLineWidth() {
-        return m_width;
+    float GetLineWidth() const {
+        return m_linewidth;
     }
     float SetLineWidth(float w) {
-        return m_width;
+        return m_linewidth;
     }
+    float GetArrowSize() const {
+        return m_arrowsize;
+    }
+    void SetArrowSize(float w) {
+        m_arrowsize = w;
+    }
+    
+    float GetLengthScale() const {
+        return m_lengthscale;
+    }
+    
+    void SetLengthScale(float s) {
+        m_lengthscale = s;
+    }
+
 private:
-    RefPtr<BufferLineData>  m_line;
-    RefPtr<BufferTetraData> m_tetra;
-    float                   m_width;
+    RefPtr<BufferVectorData>  m_vector;
+    float m_linewidth;
+    float m_arrowsize;
+    float m_lengthscale;
     std::string m_shaderfile;
 };
 
@@ -81,19 +85,19 @@ bool VectorModel::SetShader(const std::string& shaderfile)
     return m_imp->SetShader(shaderfile);
 }
 
-bool VectorModel::Create(BufferLineData* linedata, BufferTetraData* tetradata)
+bool VectorModel::Create(BufferVectorData* vectordata)
 {
-    return m_imp->Create(linedata, tetradata);
+    return m_imp->Create(vectordata);
 }
 
-BufferLineData* VectorModel::GetLine() const
+BufferVectorData* VectorModel::GetVector()
 {
-    return m_imp->GetLine();
+    return m_imp->GetVector();
 }
 
-BufferTetraData* VectorModel::GetTetra() const
+const BufferVectorData* VectorModel::GetVector() const
 {
-    return m_imp->GetTetra();
+    return m_imp->GetVector();
 }
 
 const std::string& VectorModel::GetShader() const
@@ -101,11 +105,27 @@ const std::string& VectorModel::GetShader() const
     return m_imp->GetShader();
 }
 
-float VectorModel::GetLineWidth() {
+float VectorModel::GetLineWidth() const {
     return m_imp->GetLineWidth();
 }
 
-float VectorModel::SetLineWidth(float w) {
-    return m_imp->SetLineWidth(w);
+void VectorModel::SetLineWidth(float s) {
+    m_imp->SetLineWidth(s);
+}
+
+float VectorModel::GetArrowSize() const {
+    return m_imp->GetArrowSize();
+}
+
+void VectorModel::SetArrowSize(float s) {
+    m_imp->SetArrowSize(s);
+}
+
+float VectorModel::GetLengthScale() const {
+    return m_imp->GetLengthScale();
+}
+
+void VectorModel::SetLengthScale(float s) {
+    m_imp->SetLengthScale(s);
 }
 

@@ -220,7 +220,7 @@ public:
 
             return gRecvBuffer;
         }
-        return NULL;
+        return "";
     }
     
     bool Close()
