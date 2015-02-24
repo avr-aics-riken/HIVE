@@ -12,6 +12,6 @@
 		{"name": "MeshData",  "type": "BufferMeshData"},
 		{"name": "PointData", "type": "BufferPointData"},
 		{"name": "LineData",  "type": "BufferLineData"},
-		{"name": "NormalData", "type": "BufferVectorData"},
+		{"name": "NormalData", "type": "BufferVectorData"}
 	]
 }

@@ -4,7 +4,7 @@
 	"info":"Vectorデータを表示させるためのノード",
 	"pos": [400, 300],
 	"varname": "instVectorModel",
-	"customfuncfile": "createVectorModel.lua",
+	"customfuncfile": "CreateVectorModel.lua",
 	"input": [
 		{"name": "vector", "type": "BufferVectorData"},
 		{"name": "linewidth", "type": "float", "value":0.5},
