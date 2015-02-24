@@ -1,7 +1,9 @@
 print('load SPH and convert VectorData')
 
 local camera = Camera()
+--camera:SetScreenSize(256, 256)
 camera:SetScreenSize(2048, 2048)
+--camera:SetScreenSize(8192, 8192) --250[sec]
 camera:SetFilename('image_sph_vector.jpg')
 
 camera:LookAt(
@@ -18,7 +20,9 @@ local vtovec = VolumeToVector()
 local voldata = sph:VolumeData()
 print(vtovec)
 print(voldata)
-vtovec:Create(voldata, 0.04, 1.0)
+vtovec:DividePitch(4,4,4)
+--vtovec:DivideNumber(50,50,50)
+vtovec:Create(voldata, 1.0, 3.0)
 
 local line = vtovec:LineData()
 
