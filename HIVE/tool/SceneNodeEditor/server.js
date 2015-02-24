@@ -79,10 +79,7 @@ function renderScene(scene, socket) {
 	console.log('TRY RENDER');
 	writeFile(scene, "./scene.scn", function () {
 		try {
-			var process = spawn(HRENDER, ['scene.scn'], function (err) {
-				if (!err) { return; }
-				console.log('Failed run hrender.');
-			});
+			var process = spawn(HRENDER, ['scene.scn']);
 			process.stdout.on('data', function (data) {
 				console.log('stdout: ' + data);
 				socket.emit('stdout', data.toString());
