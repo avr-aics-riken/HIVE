@@ -76,6 +76,9 @@ bool VectorBuffer::Create(const VectorModel* model)
     const float* v3 = vec->Position()->GetBuffer();
     const float* d3 = vec->Direction()->GetBuffer();
     const float lengthScale = m_model->GetLengthScale();
+    const float arrowSize   = m_model->GetArrowSize();
+    const float lineWidth   = m_model->GetLineWidth();
+    printf("LengthScale = %.5f, arrowSize = %.5f, LineWidth = %.5f\n", lengthScale, arrowSize, lineWidth);
     for (unsigned int i = 0; i < vecNum; ++i) {
         l3[2 * 3 * i    ] = v3[3 * i    ];
         l3[2 * 3 * i + 1] = v3[3 * i + 1];
@@ -90,17 +93,23 @@ bool VectorBuffer::Create(const VectorModel* model)
     tetraBuf->Create(m_tetra_vnum);
     using namespace VX::Math;
     vec3* tv3 = reinterpret_cast<vec3*>(tetraBuf->GetBuffer());
-    const float arrowSize = 1.0;//m_model->GetArrowSize();
     for (unsigned int i = 0; i < vecNum; ++i) {
-        vec3 dir   (d3[3 * i], d3[3 * i + 1], d3[3 * i + 2]);
+        vec3 dir = vec3(d3[3 * i], d3[3 * i + 1], d3[3 * i + 2]);
         const vec3 center = vec3(v3[3 * i], v3[3 * i + 1], v3[3 * i + 2]) + dir * lengthScale;
-        dir = normalize(dir);
-
-        const vec3 tangent = cross(dir, VX::Math::vec3(0,1,0)); // This is easy way, TODO: to calc correct tangent.
-        tv3[4 * i    ] = center + dir * arrowSize;
-        tv3[4 * i + 1] = center + tangent * arrowSize;
-        tv3[4 * i + 2] = center + (RotationAxis(dir, 120) * vec4(tangent, 0.0)).xyz() * arrowSize;
-        tv3[4 * i + 3] = center + (RotationAxis(dir,-120) * vec4(tangent, 0.0)).xyz() * arrowSize;
+        float len = length(dir);
+        if (len < 0.00001) {
+            tv3[4 * i    ] = vec3(0,0,0);
+            tv3[4 * i + 1] = vec3(0,0,0);
+            tv3[4 * i + 2] = vec3(0,0,0);
+            tv3[4 * i + 3] = vec3(0,0,0);
+        } else {
+            dir = normalize(dir);
+            const vec3 tangent = cross(dir, VX::Math::vec3(0,1,0)); // This is easy way, TODO: to calc correct tangent.
+            tv3[4 * i    ] = center + dir * arrowSize;
+            tv3[4 * i + 1] = center + tangent * arrowSize;
+            tv3[4 * i + 2] = center + (RotationAxis(dir, 120) * vec4(tangent, 0.0)).xyz() * arrowSize;
+            tv3[4 * i + 3] = center + (RotationAxis(dir,-120) * vec4(tangent, 0.0)).xyz() * arrowSize;
+        }
     }
 
     // Create Line and tetra VB

@@ -4,6 +4,64 @@ body {
 	background-color:rgb(50,50,50);
 }
 
+.menuButtonClass {
+	font-size:20px;
+	padding: 2px;
+	text-align: center;
+	border-radius: 5px;
+	cursor: pointer;
+}
+/* --- TODO: beautiful----*/
+#Add {
+	position:absolute;
+	right:150px;
+	top:60px;
+	width: 120px;
+	height:25px;
+	background-color:#e5923e;
+	color:#FFF;
+}
+
+#Render {
+	position:absolute;
+	right:150px;
+	top:28px;
+	width: 120px;
+	height:25px;
+	background-color:#e53e78;
+	color:#FFF;
+}
+
+#Clear {
+	position:absolute;
+	right:10px;
+	top:60px;
+	width: 120px;
+	height:25px;
+	background-color:#e5923e;
+	color:#FFF;
+}
+
+#Save {
+	position:absolute;
+	right:210px;
+	top:5px;
+	width: 60px;
+}
+#Open {
+	position:absolute;
+	right:0px;
+	top:5px;
+	width: 200px;
+}
+/*------------------*/
+
+.nodeListBox {
+	position:absolute;
+	top:90px;
+	height:300px;
+}
+
 .noneselect
 {
 	-webkit-touch-callout: none;
@@ -17,6 +75,10 @@ body {
 .nodeProperty
 {
 	display: table;
+	
+	position:absolute;
+	top:370px;
+	padding:10px 10px 10px;
 }
 
 .nodePropertyRow
@@ -28,7 +90,7 @@ body {
 .nodePropertyName
 {
 	display:table-cell;
-	width: 200px;
+	width: 150px;
 	background-color: #ccc;
 	border: 1px solid #868686;
 	padding: 3px;
@@ -36,7 +98,7 @@ body {
 
 .nodePropertyConst
 {
-	width:200px;
+	width:150px;
 	display:table-cell;
 	border: 1px solid #868686;
 	background-color: #aeaeae;
@@ -45,7 +107,7 @@ body {
 
 .nodePropertyValue
 {
-	width:200px;
+	width:150px;
 	display:table-cell;
 	border: 1px solid #868686;
 	background-color: #eee ;
@@ -63,7 +125,7 @@ body {
 	position:fixed;
 	right:0px;
 	top:0px;
-	width:480px;
+	width:280px;
 	bottom:0px;
 	overflow:auto;
 	z-index: 1;
