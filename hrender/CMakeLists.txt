@@ -117,6 +117,13 @@ ENDIF()
 IF(HIVE_BUILD_WITH_HDMLIB)
   add_definitions(-DHIVE_WITH_HDMLIB)
 ENDIF()
+
+IF(HIVE_BUILD_WITH_COMPOSITOR)
+  IF(NOT HIVE_BUILD_WITH_MPI)
+    message(FATAL_ERROR "HIVE_BUILD_WITH_MPID must be defined when HIVE_BUILD_WITH_COMPOSIOR is enabled")
+  ENDIF()
+  add_definitions(-DHIVE_WITH_COMPOSITOR)
+ENDIF()
 # --------------------------------------
 
 # --------------------------------------
@@ -275,6 +282,17 @@ IF(HIVE_BUILD_WITH_PDMLIB)
   
 ENDIF()
 
+IF(HIVE_BUILD_WITH_COMPOSITOR)
+
+  SET(COMPOSITOR_LIBS
+    234comp
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/lib)
+  
+ENDIF()
+
 IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
@@ -288,6 +306,7 @@ target_link_libraries(hrender ${CDMLIB_LIBS})
 target_link_libraries(hrender ${HDMLIB_LIBS})
 target_link_libraries(hrender ${PDMLIB_LIBS})
 target_link_libraries(hrender ${BCMTOOLS_LIBS})
+target_link_libraries(hrender ${COMPOSITOR_LIBS})
 
 
 # Additional Libraries

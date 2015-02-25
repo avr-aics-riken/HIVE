@@ -113,10 +113,23 @@ function build_pdmlib {
 	cd ${topdir}
 }
 
-#clean_install_dir
-#build_tp
-#build_cdmlib
-#build_polylib
+function build_compositor {
+
+	cd third_party/ 
+	cd 234Compositor/
+	if [ -f "Makefile" ]; then
+		make distclean
+	fi
+
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/234Compositor && make && make install
+	cd ${topdir}
+}
+
+clean_install_dir
+build_tp
+build_cdmlib
+build_polylib
 build_bcmtools
-#build_hdmlib
-#build_pdmlib
+build_hdmlib
+build_pdmlib
+build_compositor
