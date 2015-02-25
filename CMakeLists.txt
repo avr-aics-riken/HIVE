@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
+# cpack is already included in thrid_party/lua 
+# INCLUDE(CPack)
+
 enable_testing()
 
 PROJECT(HIVE)
@@ -28,4 +31,16 @@ add_subdirectory(tools)
 # build
 add_subdirectory(hrender)
 add_subdirectory(HIVE)
+
+
+# For cpack
+set(CPACK_PACKAGE_NAME "HIVE")
+set(CPACK_PACKAGE_VENDOR "RIKEN")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HIVE, Heterogeneously Integrated Visualization Environment.")
+set(CPACK_PACKAGE_VERSION "0.9.0")
+set(CPACK_PACKAGE_VERSION_MAJOR "0")
+set(CPACK_PACKAGE_VERSION_MINOR "9")
+set(CPACK_PACKAGE_VERSION_PATCH "0")
+# set(CPACK_PACKAGE_INSTALL_DIRECTORY "CPack Component Example")
+include(CPack)
 
