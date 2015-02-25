@@ -44,14 +44,14 @@ public:
     float GetLineWidth() const {
         return m_linewidth;
     }
-    float SetLineWidth(float w) {
-        return m_linewidth;
+    void SetLineWidth(float w) {
+        m_linewidth = w;
     }
     float GetArrowSize() const {
         return m_arrowsize;
     }
-    void SetArrowSize(float w) {
-        m_arrowsize = w;
+    void SetArrowSize(float s) {
+        m_arrowsize = s;
     }
     
     float GetLengthScale() const {
