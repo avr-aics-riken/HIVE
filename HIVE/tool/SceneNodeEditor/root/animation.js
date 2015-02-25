@@ -11,7 +11,7 @@ $ready(function () {
 		logCloseBottomMax = "390px",
 		menuTabState = 0,
 		menuMin = "30px",
-		menuMax = "480px";
+		menuMax = "280px";
 	$('closeConsoleOutput').addEventListener('click', function () {
 		$('consoleOutput').style.overflow = "hidden";
 		if (logShowState === 0) {
