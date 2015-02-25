@@ -10,10 +10,17 @@
 class VolumeToMeshData : public RefCount
 {
 private:
-    BufferMeshData*  m_mesh;
+    BufferMeshData*           m_mesh;
+    double                    m_isovalue;
+    BufferVolumeData*         m_volume;   // mutable
 public:
     VolumeToMeshData();
-    int Create(BufferVolumeData *volume, double isovalue);
+    int Create(BufferVolumeData *volume);
+    void SetIsoValue(double isovalue);
+
+    // Build isosurface mesh.
+    int IsoSurface();
+
     BufferMeshData* MeshData();
 };
 

@@ -742,28 +742,44 @@ protected:
 
 } // namespace
 
-VolumeToMeshData::VolumeToMeshData() {
+VolumeToMeshData::VolumeToMeshData() : m_isovalue(0.0), m_volume(NULL) {
     m_mesh = new BufferMeshData();
 }
 
+void VolumeToMeshData::SetIsoValue(double isovalue) {
+    m_isovalue = isovalue;
+}
 
-int VolumeToMeshData::Create(BufferVolumeData *volume, double isovalue) {
+int VolumeToMeshData::Create(BufferVolumeData *volume) {
     if (!volume)
         return 0;
 
     if (volume->Component() != 1) {
         fprintf(stderr, "[VolumeToMeshData] The number of component of voxel must be 1. Only see the first component of voxel data.\n");
-        //return 0;
+    }
+
+    // Store pointer reference.
+    m_volume = volume;
+
+    return 1; // @fixme
+}
+
+int VolumeToMeshData::IsoSurface() {
+    if (!m_volume)
+        return 0;
+
+    if (m_volume->Component() != 1) {
+        fprintf(stderr, "[VolumeToMeshData] The number of component of voxel must be 1. Only see the first component of voxel data.\n");
     }
     
-    const float *source  = static_cast<const float*>(volume->Buffer()->GetBuffer());
+    const float *source  = static_cast<const float*>(m_volume->Buffer()->GetBuffer());
     int dim[3];
-    dim[0] = volume->Width();
-    dim[1] = volume->Height();
-    dim[2] = volume->Depth();
+    dim[0] = m_volume->Width();
+    dim[1] = m_volume->Height();
+    dim[2] = m_volume->Depth();
 
-    marching_cubes_generator<float> generator(source, dim, volume->Component());
-    generator.generate(isovalue);
+    marching_cubes_generator<float> generator(source, dim, m_volume->Component());
+    generator.generate(m_isovalue);
 
     const std::vector<float>& vertices = generator.get_vertices();
     const std::vector<float>& normals = generator.get_normals();
