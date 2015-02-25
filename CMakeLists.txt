@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
 
-# cpack is already included in thrid_party/lua 
-# INCLUDE(CPack)
-
 enable_testing()
 
 PROJECT(HIVE)
