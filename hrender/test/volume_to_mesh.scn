@@ -27,14 +27,13 @@ local surfacer = VolumeToMeshData()
 print(surfacer)
 
 local isovalue = 0.0005
-print("surf gen")
-surfacer:Create(volumedata, isovalue)
-print("surf end")
+surfacer:Create(volumedata)
+surfacer:SetIsoValue(isovalue)
+surfacer:IsoSurface()
 
 local model = PolygonModel()
 
 local isosurface = surfacer:MeshData()
-print("isosurf", isosurface)
 
 model:Create(isosurface)
 model:SetShader('normal.frag')

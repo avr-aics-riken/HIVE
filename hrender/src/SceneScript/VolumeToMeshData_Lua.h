@@ -11,16 +11,31 @@ class VolumeToMeshData_Lua : public VolumeToMeshData
 public:
     VolumeToMeshData_Lua(){}
 
-    int Create(BufferVolumeData_Lua* volume, float isovalue) {
-        return VolumeToMeshData::Create(volume, static_cast<double>(isovalue));
+    int Create(BufferVolumeData_Lua* volume) {
+        return VolumeToMeshData::Create(volume);
     }
 
+    bool SetIsoValue(float isovalue) {
+        VolumeToMeshData::SetIsoValue(static_cast<double>(isovalue));
+        return true;
+    }
+
+    /// Generate isosurface mesh.
+    /// Valid after SetIsoValue()
+    int IsoSurface() {
+        return VolumeToMeshData::IsoSurface();
+    }
+
+    /// Retrieve isosurface mesh.
+    /// Valid after IsoSurface()
     BufferMeshData_Lua* MeshData() {
         return new BufferMeshData_Lua(VolumeToMeshData::MeshData());
     }
 
     LUA_SCRIPTCLASS_BEGIN(VolumeToMeshData_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG2(int,Create,BufferVolumeData_Lua*, float)
+    LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferVolumeData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_ARG1(int,SetIsoValue, float)
+    LUA_SCRIPTCLASS_METHOD_ARG0(bool, IsoSurface)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*,MeshData)
     LUA_SCRIPTCLASS_END()
 
