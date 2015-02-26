@@ -7,7 +7,7 @@ camera:SetScreenSize(2048, 2048)
 camera:SetFilename('image_sph_vector.jpg')
 
 camera:LookAt(
-	0,0,80,
+	80,80,80,
 	0,0,0,
 	0,1,0,
 	60
@@ -28,9 +28,9 @@ local vdata = vtovec:VectorData()
 
 local model = VectorModel()
 
---model:SetLineWidth(0.1)
---model:SetArrowSize(0.1)
---model:SetLengthScale(1.0)
+model:SetLineWidth(0.25)
+model:SetArrowSize(0.5)
+model:SetLengthScale(0.5)
 
 model:Create(vdata)
 model:SetShader('normal.frag')
