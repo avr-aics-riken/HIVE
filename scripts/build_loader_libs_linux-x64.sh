@@ -33,9 +33,9 @@ function build_tp {
 		make distclean
 	fi
 
-	# TODO: MPI build of TP.
+	# Assume CXX and CC is set to use MPI compiler.
 	autoreconf -ivf
-	./configure --prefix=${installdir}/TextParser && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
 
@@ -129,10 +129,10 @@ function build_pdmlib {
 	cd ${topdir}
 }
 
-#clean_install_dir
-#build_tp
-#build_cdmlib
-#build_polylib
-#build_bcmtools
+clean_install_dir
+build_tp
+build_cdmlib
+build_polylib
+build_bcmtools
 build_hdmlib
-#build_pdmlib
+build_pdmlib
