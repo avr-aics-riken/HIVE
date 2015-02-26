@@ -4,6 +4,7 @@
 
 * cmake 2.8 or later
 * HDF5
+* MPI compiler(optional for macosx and linux x64 environment)
 
 ## git clone
 

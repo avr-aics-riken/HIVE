@@ -192,7 +192,7 @@ int VolumeToVector::Create(BufferVolumeData *volume) {
     Vec3Buffer*     pos     = reinterpret_cast<Vec3Buffer*>(m_vector->Position());
     VX::Math::vec3* posbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
     Vec3Buffer*     dir     = reinterpret_cast<Vec3Buffer*>(m_vector->Direction());
-    VX::Math::vec3* dirbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());
+    VX::Math::vec3* dirbuf  = reinterpret_cast<VX::Math::vec3*>(dir->GetBuffer());
 
     //setup vertex
     memcpy(posbuf, &vposbuf[0], sizeof(VX::Math::vec3) * vposbuf.size());
