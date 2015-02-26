@@ -220,7 +220,7 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   )
 
   SET(CDMLIB_LIBS
-    CDM TP
+    CDM TPmpi
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/include)
@@ -235,7 +235,7 @@ IF(HIVE_BUILD_WITH_BCMTOOLS)
   )
 
   SET(BCMTOOLS_LIBS
-    BCM TP
+    BCM TPmpi
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
@@ -250,7 +250,7 @@ IF(HIVE_BUILD_WITH_HDMLIB)
   )
 
   SET(HDMLIB_LIBS
-    HDM TP
+    HDM TPmpi
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
@@ -267,7 +267,7 @@ IF(HIVE_BUILD_WITH_PDMLIB)
   )
 
   SET(PDMLIB_LIBS
-    PDM TP fpzip zoltan z
+    PDM TPmpi fpzip zoltan z
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PDMlib/include)
