@@ -342,6 +342,11 @@ file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
 # ------------------
 
 #
+# For INSTALL
+#
+install(TARGETS hrender DESTINATION bin)
+
+#
 # for TEST
 #
 add_test(NAME loader_obj.scn             COMMAND hrender  ../../hrender/test/loader_obj.scn           )
