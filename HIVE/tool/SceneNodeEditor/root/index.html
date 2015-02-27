@@ -8,7 +8,7 @@
       <script type="text/javascript" src="svg.draggable.js"></script>
       <script type="text/javascript" src="svg.nodeui.js"></script>
 	  <script type="text/javascript" src="qatrix-1.1.js"></script>
-	  <script type="text/javascript" src="animation.js"></script>
+	  <script type="text/javascript" src="animtab.js"></script>
       <script type="text/javascript" src="client.js"></script>
 	  <link rel="stylesheet" href="style.css" type="text/css" />
       <title>NodeEditor</title>
@@ -24,15 +24,25 @@
   	  <input type="file"    value="Open"    id="Open">
 	  <div id="NodeListBox" class="nodeListBox noneselect"></div>
 	  <div id="property"    class="nodeProperty"></div>
-	  
-	  <div class="closeMenuTabArea">
-	  	<input type="button" value=">>" id="closeMenuTab" class="closeMenuTab">
-	  </div>
   </div>
 	<div id="consoleOutput" class="consoleOutput">
 		<span id="consoleTextBlock" class="consoleTextBlock">
 		</span>
 	</div>
-	<input type="button"  value="v" id="closeConsoleOutput" class="closeConsoleOutput">
+	
+	<script>
+		window.animtab.create('bottom', {
+				'bottomTab' : { min : '10px', max : 'auto' },
+			}, {
+				'consoleOutput' : { min : '0px', max : '400px' }
+			}, 'v', '^'
+		);
+		window.animtab.create('right', {
+				'rightTab' : { min : '0px', max : '280px' },
+			}, {
+				'menuTab' : { min : '0px', max : '280px' },
+			}, '>', '<'
+		);
+	</script>
 </body>
 </html>
