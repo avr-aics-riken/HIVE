@@ -26,11 +26,14 @@
 			diffButtonTargetMax = 0;
 		
 		diffButtonTargetMax = to_num(button[buttonID].max) - to_num(targets[targetID].max);
-		console.log("diffButtonTargetMax" + diffButtonTargetMax);
+		//console.log("diffButtonTargetMax" + diffButtonTargetMax);
 		
 		separator.onmousedown = function (e) {
 			var target,
 				id;
+			
+			e.preventDefault();
+			
 			dragging = true;
 			for (id in targets) {
 				if (targets.hasOwnProperty(id)) {
@@ -40,6 +43,8 @@
 			}
 		};
 		separator.onmouseover = function (e) {
+			//e.preventDefault();
+			
 			if (direction === 'left') {
 				separator.style.cursor = "w-resize";
 			} else if (direction === 'right') {
@@ -53,6 +58,9 @@
 		document.addEventListener('mouseup', function (e) {
 			var target,
 				id;
+			
+			e.preventDefault();
+			
 			dragging = false;
 			for (id in targets) {
 				if (targets.hasOwnProperty(id)) {
@@ -62,6 +70,8 @@
 			}
 		});
 		document.addEventListener('mousemove', function (e) {
+			e.preventDefault();
+			
 			var offset,
 				pos,
 				i,
@@ -99,7 +109,7 @@
 		});
 	}
 	
-	function create(direction, button, targets, beforeLabel, afterLabel) {
+	function create(direction, button, targets, textlabel) {
 		var buttonElem = document.createElement("input"),
 			separatorElem = document.createElement("span"),
 			buttonID = Object.keys(button)[0],
@@ -107,7 +117,7 @@
 			buttonMax = button[buttonID].max,
 			whstr,
 			json,
-			time = 1000,
+			time = 500,
 			state = 0,
 			targetElem,
 			targetMin,
@@ -117,33 +127,31 @@
 			temp,
 			id;
 		
+		/*
 		buttonElem.type = "button";
 		buttonElem.id = buttonID;
 		buttonElem.className = buttonID;
 		buttonElem.style.position = "absolute";
 		buttonElem.value = beforeLabel;
+		*/
+		separatorElem.innerHTML = textlabel;
 		
 		if (direction === 'bottom' || direction === 'top') {
 			whstr = 'height';
-			separatorElem.style.width = "100px";
-			separatorElem.style.height = "20px";
+			//separatorElem.style.width = "100px";
+			//separatorElem.style.height = "20px";
 		} else if (direction === 'right' || direction === 'left') {
 			whstr = 'width';
-			separatorElem.style.width = "20px";
-			separatorElem.style.height = "100px";
+			//separatorElem.style.width = "20px";
+			//separatorElem.style.height = "100px";
 		}
-		separatorElem.id = buttonID + "_separator";
-		separatorElem.className = buttonID + "_separator";
-		separatorElem.style.background = "rgba(100, 100, 100, 0.5)";
+		separatorElem.id = buttonID;
+		separatorElem.className = buttonID;
 		separatorElem.style.position = "absolute";
-		separatorElem.style.border = "solid";
-		separatorElem.style.borderRadius = "6px";
-		separatorElem.style.MozBorderRadius = "6px";
-		separatorElem.style.WebkitBorderRadius = "6px";
 		
 		// add elements
 		document.body.appendChild(separatorElem);
-		document.body.appendChild(buttonElem);
+		//document.body.appendChild(buttonElem);
 		
 		for (id in targets) {
 			if (targets.hasOwnProperty(id)) {
@@ -156,13 +164,13 @@
 					minimum = temp;
 				}
 				temp = to_num(targetMax);
-				console.log(temp);
+				//console.log(temp);
 				if (temp > maximum) {
 					maximum = temp;
 				}
 			}
 		}
-		console.log("maximum:" + maximum);
+		//console.log("maximum:" + maximum);
 		separatorElem.style[direction] = maximum + 'px';
 		if (buttonMin === 'auto') {
 			buttonMin = minimum + 'px';
@@ -170,14 +178,14 @@
 		if (buttonMax === 'auto') {
 			buttonMax = maximum + 'px';
 		}
-		console.log("buttonMin:" + buttonMin);
-		console.log("buttonMax:" + buttonMax);
+		//console.log("buttonMin:" + buttonMin);
+		//console.log("buttonMax:" + buttonMax);
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
 		setupSeparator(direction, separatorElem, button, targets, whstr);
 			
-		function createAnimateButton() {
+		function createAnimateButton(e) {
 			var i = 0,
 				id,
 				targetElem,
@@ -197,11 +205,11 @@
 			}
 			
 			function beforeButton() {
-				buttonElem.value = afterLabel;
+				//buttonElem.value = afterLabel;
 			}
 			
 			function afterButton() {
-				buttonElem.value = beforeLabel;
+				//buttonElem.value = beforeLabel;
 			}
 			
 			function beforeSep() {}
@@ -216,12 +224,12 @@
 					if (state === 0) {
 						state = 1;
 						$animate(targetElem, to_json(whstr, { from: targetMax, to: targetMin }), time, beforeTarget);
-						$animate(buttonElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeButton);
+						//$animate(buttonElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeButton);
 						$animate(separatorElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeSep);
 					} else if (state === 2) {
 						state = 3;
 						$animate(targetElem, to_json(whstr, { from: targetMin, to: targetMax }), time, afterTarget);
-						$animate(buttonElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterButton);
+						//$animate(buttonElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterButton);
 						$animate(separatorElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterSep);
 					}
 				}
@@ -229,12 +237,12 @@
 		}
 		
 		function createButton(direction, targets) {
-			buttonElem.addEventListener('click', createAnimateButton);
+			separatorElem.addEventListener('click', createAnimateButton);
 		}
 		
-		$ready((function (direction, button, targets, beforeLabel, afterLabel) { return function () {
-			createButton(direction, button, targets, beforeLabel, afterLabel);
-		}; }(direction, button, targets, beforeLabel, afterLabel)));
+		$ready((function (direction, button, targets, textlabel) { return function () {
+			createButton(direction, button, targets, textlabel);
+		}; }(direction, button, targets, textlabel)));
 	}
 	
 	window.animtab = animtab;

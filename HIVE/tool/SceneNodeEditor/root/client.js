@@ -7,7 +7,8 @@
 		nodeList,
 		nodeListTable,
 		socket = io.connect(),
-		instance_no = 1;
+		instance_no = 1,
+		popupNodeList = null;
 	
 	socket.on('stdout', function (data) {
 		var output = document.getElementById('consoleOutput'),
@@ -30,6 +31,8 @@
 
 	function clone(obj) {
 		return JSON.parse(JSON.stringify(obj));
+		
+		// TODO: recursive
 		/*if (null === obj || "object" !== typeof obj) {
 			return obj;
 		}
@@ -43,7 +46,7 @@
 		return copy;*/
 	}
 	
-	function addNode(nodename) {
+	function addNode(nodename, nx, ny) {
 		var node = nodeListTable[nodename],
 			instNode;
 		if (!node) {
@@ -55,6 +58,10 @@
 		nodeData.nodeData.push(instNode);
 		instNode.varname += instance_no;
 		instance_no += 1;
+		if (nx !== undefined && ny !== undefined) {
+			instNode.pos[0] = nx;
+			instNode.pos[1] = ny;
+		}
 		nui.clearNodes();
 		nui.makeNodes(nodeData);
 	}
@@ -86,25 +93,103 @@
 		nui.makeNodes(nodeData);
 	}
 	
-	//
-	// TODO: refactro me!!
-	//
-	function createNodeListUI() {
-		var d = document.getElementById('NodeListBox'),
-			inner,
-			name,
-			i;
-		inner = '<select name="NodeList" size=' + 20 + '>';
+	//-----------------------------------------------------------
+	
+	//<div class="menuButtonClass noneselect">Add</div>
+	function buttonAdd(lst, cb, nx, ny) {
+		return function (e) {
+			var index = lst.selectedIndex,
+				text,
+				node,
+				instNode;
+			if (index === -1) {
+				return;
+			}
+			text = lst.options[index].text;
+			if (nx === undefined || ny === undefined) {
+				// center
+				addNode(text, window.innerWidth/4, window.innerHeight/4);
+			} else {
+				// specific pos
+				addNode(text, nx, ny);
+			}
+			if (cb) {
+				cb();
+			}
+		};
+	}
+	
+	function updateNodeList(lst, txtval) {
+		var i, name, item;
+		lst.innerHTML = ''; // clear
 		for (i in nodeListTable) {
 			if (nodeListTable.hasOwnProperty(i)) {
-				console.log(nodeListTable[i]);
+				//console.log(nodeListTable[i]);
 				name = nodeListTable[i].name;
-				inner += '<option value="' + name + '">' + name + '</option>';
+
+				if (txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) {
+					item = document.createElement('option');
+					item.setAttribute('value', name);
+					item.appendChild(document.createTextNode(name));
+					lst.appendChild(item);
+				}
 			}
 		}
-		inner += '</select>';
-		d.innerHTML = inner;
 	}
+	
+	function createNodeListUI(addcallback, mx, my) {
+		var tray = document.createElement('div'),
+			addbtn = document.createElement('div'),
+			txt = document.createElement('input'),
+			lst = document.createElement('select'),
+			item,
+			name,
+			i,
+			width = '150px';
+		
+		addbtn.addEventListener('click', buttonAdd(lst, addcallback, mx, my));
+		addbtn.classList.add('menuButtonClass');
+		addbtn.classList.add('noneselect');
+		addbtn.classList.add('AddButton');
+		addbtn.innerHTML = 'Add';
+		tray.appendChild(addbtn);
+		tray.appendChild(txt);
+		tray.appendChild(document.createElement('div'));
+		tray.appendChild(lst);
+		txt.setAttribute('type', 'input');
+		txt.setAttribute('placeholder', 'filter...');
+		txt.style.width = width;
+		lst.style.width = width;
+		lst.setAttribute('size', 15);
+		lst.setAttribute('name', 'NodeList');
+		
+		txt.timer    = null;
+		txt.prev_val = txt.value;
+		txt.new_val  = '';
+		txt.addEventListener("focus", (function (lst, txt) {
+			return function () {
+				window.clearInterval(txt.timer);
+				txt.timer = window.setInterval(function () {
+					txt.new_val = txt.value;
+					if (txt.prev_val !== txt.new_val) {
+						updateNodeList(lst, txt.new_val);
+					}
+					txt.prev_val = txt.new_val;
+				}, 10);
+			};
+		}(lst, txt)), false);
+		txt.addEventListener("blur", (function (lst, txt) {
+			return function () {
+				window.clearInterval(txt.timer);
+			};
+		}(lst, txt)), false);
+		
+		updateNodeList(lst, ''); // show AllNode
+		
+		return tray;
+	}
+	
+	//----------------------------------------------------
 	
 	function makeItemNode(name, text, top) {
 		var itemNode = document.createElement('div'),
@@ -137,7 +222,7 @@
 		nameNode.innerHTML = '[' + name + ']';
 		textNode.value = text;
 		nameNode.classList.add('nodePropertyName');
-		textNode.classList.add('nodePropertyValue');
+		textNode.classList.add('nodePropertyText');
 		itemNode.appendChild(nameNode);
 		itemNode.appendChild(textNode);
 		
@@ -281,6 +366,38 @@
 			}
 		}
 	}
+	
+	
+	
+	function colorFunction(type) {
+		if (type === "string") {
+			return "#14a271";
+		} else if (type === "float") {
+			return "#139aa5";
+		} else if (type === "vec4") {
+			return "#1b6ad6";
+		} else if (type === "vec3") {
+			return "#566f9f";
+		} else if (type === "vec2") {
+			return "#8222a7";
+		} else if (type === "RenderObject") {
+			return "#ad3b78";
+		} else if (type === "Uniform") {
+			return "#b19e14";
+		} else if (type === "BufferMeshData") {
+			return "#be1656";
+		} else if (type === "BufferPointData") {
+			return "#e023e0";
+		} else if (type === "BufferLineData") {
+			return "#20cae0";
+		} else if (type === "BufferVolumeData") {
+			return "#17d042";
+		} else if (type === "Any") {
+			return "#ef8815";
+		} else { // Object
+			return "#c12417";
+		}
+	}
 
 	//---------------------------------------------------------------------------
 	// request node info
@@ -294,7 +411,8 @@
 		req.addEventListener("load", (function (callback) {
 			return function (ev) {
 				var resp = ev.srcElement.responseText,
-					i;
+					i,
+					d;
 
 				// store node list
 				nodeList = JSON.parse(resp);
@@ -306,7 +424,8 @@
 				}
 
 				//create List UI
-				createNodeListUI();
+				d = document.getElementById('NodeListBox');
+				d.appendChild(createNodeListUI());
 
 				if (callback) {
 					callback();
@@ -366,22 +485,42 @@
 		a.download = 'scenenodes.json';
 		a.click();
 	}
-
-
-	function ButtonAdd(e) {
-		var ele = document.getElementsByName('NodeList'),
-			index = ele[0].selectedIndex,
-			text,
-			node,
-			instNode;
-		if (index === -1) {
-			return;
+	
+	function showAddNodeMenu(show, sx, sy, popupmode) {
+		var callback = null;
+		if (show === true) {
+			if (popupmode) {
+				callback = function () {
+					document.body.removeChild(popupNodeList);
+					popupNodeList = null;
+				};
+			}
+			popupNodeList = createNodeListUI(callback, sx, sy);
+			popupNodeList.setAttribute('style', 'position:absolute;top:' + sy + 'px;left:' + sx + 'px');
+			document.body.appendChild(popupNodeList);
+			
+			// filter focus
+			if (popupmode) {
+				popupNodeList.children[1].focus();
+			}
+		} else {
+			if (popupNodeList !== null) {
+				document.body.removeChild(popupNodeList);
+			}
+			popupNodeList = null;
 		}
-		text = ele[0].options[index].text;
-		
-		addNode(text);
 	}
-
+	
+	function DblClickCanvas(e) {
+		showAddNodeMenu(true, e.clientX, e.clientY, true);
+	}
+	function ClickCanvas(e) {
+		//console.log(e.clientX, e.clientY);
+		showAddNodeMenu(false);
+	}
+	
+	
+	
 	//---------------------------------------------------------------------------
 	// init
 	//---------------------------------------------------------------------------
@@ -391,14 +530,14 @@
 			savebutton   = document.getElementById('Save'),
 			renderbutton = document.getElementById('Render'),
 			clearbutton  = document.getElementById('Clear'),
-			addbutton    = document.getElementById('Add'),
-			nodelistbox  = document.getElementById('NodeList'),
+			nodecanvas   = document.getElementById('nodecanvas'),
 
 		//init canvas.
 			draw = SVG('nodecanvas');//.size(1280, 768);
 		nui      = svgNodeUI(draw);
 		nui.clearNodes();
 
+		nui.setTypeColorFunction(colorFunction);
 		nui.nodeClickEvent(showProparty);
 		nui.nodeDeleteEvent(deleteNode);
 
@@ -407,24 +546,24 @@
 		savebutton.onclick   = ButtonSave;
 		renderbutton.onclick = ButtonRender;
 		clearbutton.onclick  = ButtonClear;
-		addbutton.onclick    = ButtonAdd;
-
+		
+		nodecanvas.ondblclick = DblClickCanvas;
+		nodecanvas.onclick = ClickCanvas;
+		
 		//Initialize.
 		reloadNodeList('nodelist.json', function () {
 			clearNode();
 		});
 		
-		/*function resize() {
-			var canvas = document.getElementById('nodecanvas');
-			draw.resize(window.innerWidth, window.innerHeight);
-		}
-		window.addEventListener('resize', resize, false);*/
 	}
 	
-	window.addEventListener('load', init, false);
-
+	// disable right click menu
+	document.oncontextmenu = function () {
+		return false;
+	};
 	
+	// start up
+	window.onload = init;
 	
-
 }());
 
