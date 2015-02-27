@@ -501,7 +501,7 @@
 			
 			// filter focus
 			if (popupmode) {
-				console.log(popupNodeList.children[1].focus());
+				popupNodeList.children[1].focus();
 			}
 		} else {
 			if (popupNodeList !== null) {
@@ -525,7 +525,6 @@
 	// init
 	//---------------------------------------------------------------------------
 	function init() {
-		console.log('aaa');
 		//create button
 		var openbutton   = document.getElementById('Open'),
 			savebutton   = document.getElementById('Save'),

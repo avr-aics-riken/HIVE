@@ -26,11 +26,14 @@
 			diffButtonTargetMax = 0;
 		
 		diffButtonTargetMax = to_num(button[buttonID].max) - to_num(targets[targetID].max);
-		console.log("diffButtonTargetMax" + diffButtonTargetMax);
+		//console.log("diffButtonTargetMax" + diffButtonTargetMax);
 		
 		separator.onmousedown = function (e) {
 			var target,
 				id;
+			
+			e.preventDefault();
+			
 			dragging = true;
 			for (id in targets) {
 				if (targets.hasOwnProperty(id)) {
@@ -40,6 +43,8 @@
 			}
 		};
 		separator.onmouseover = function (e) {
+			//e.preventDefault();
+			
 			if (direction === 'left') {
 				separator.style.cursor = "w-resize";
 			} else if (direction === 'right') {
@@ -53,6 +58,9 @@
 		document.addEventListener('mouseup', function (e) {
 			var target,
 				id;
+			
+			e.preventDefault();
+			
 			dragging = false;
 			for (id in targets) {
 				if (targets.hasOwnProperty(id)) {
@@ -62,6 +70,8 @@
 			}
 		});
 		document.addEventListener('mousemove', function (e) {
+			e.preventDefault();
+			
 			var offset,
 				pos,
 				i,
@@ -158,13 +168,13 @@
 					minimum = temp;
 				}
 				temp = to_num(targetMax);
-				console.log(temp);
+				//console.log(temp);
 				if (temp > maximum) {
 					maximum = temp;
 				}
 			}
 		}
-		console.log("maximum:" + maximum);
+		//console.log("maximum:" + maximum);
 		separatorElem.style[direction] = maximum + 'px';
 		if (buttonMin === 'auto') {
 			buttonMin = minimum + 'px';
@@ -172,14 +182,14 @@
 		if (buttonMax === 'auto') {
 			buttonMax = maximum + 'px';
 		}
-		console.log("buttonMin:" + buttonMin);
-		console.log("buttonMax:" + buttonMax);
+		//console.log("buttonMin:" + buttonMin);
+		//console.log("buttonMax:" + buttonMax);
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
 		setupSeparator(direction, separatorElem, button, targets, whstr);
 			
-		function createAnimateButton() {
+		function createAnimateButton(e) {
 			var i = 0,
 				id,
 				targetElem,
