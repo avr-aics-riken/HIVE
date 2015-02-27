@@ -19,7 +19,7 @@
 			buttonMax = button[buttonID].max,
 			whstr,
 			json,
-			time = 1000,
+			time = 500,
 			state = 0,
 			initialTargetMin = {},
 			initialTargetMax = {};

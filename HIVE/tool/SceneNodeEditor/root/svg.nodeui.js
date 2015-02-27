@@ -11,39 +11,20 @@ function svgNodeUI(draw) {
 		nodeArray = {},
 		plugArray = {},
 		nodeClickFunction = null,
-		nodeDeleteFunction = null;
+		nodeDeleteFunction = null,
+		colorTableFunction = null;
 	
 	/*
 		TODO: read from setting JSON file
 	*/
+	function setTypeColorFunction(typeColorFunc) {
+		colorTableFunction = typeColorFunc;
+	}
 	function getTypeColor(type) {
-		if (type === "string") {
-			return "#14a271";
-		} else if (type === "float") {
-			return "#139aa5";
-		} else if (type === "vec4") {
-			return "#1b6ad6";
-		} else if (type === "vec3") {
-			return "#566f9f";
-		} else if (type === "vec2") {
-			return "#8222a7";
-		} else if (type === "RenderObject") {
-			return "#ad3b78";
-		} else if (type === "Uniform") {
-			return "#b19e14";
-		} else if (type === "BufferMeshData") {
-			return "#be1656";
-		} else if (type === "BufferPointData") {
-			return "#e023e0";
-		} else if (type === "BufferLineData") {
-			return "#20cae0";
-		} else if (type === "BufferVolumeData") {
-			return "#17d042";
-		} else if (type === "Any") {
-			return "#ef8815";
-		} else { // Object
-			return "#c12417";
+		if (colorTableFunction !== null) {
+			return colorTableFunction(type);
 		}
+		return "#c12417";
 	}
 	
 	function getPlugVarName(nodeName, plugName) {
@@ -728,7 +709,8 @@ function svgNodeUI(draw) {
 		getNodeData: getNodeData,
 		clearNodes: clearNodes,
 		nodeClickEvent: nodeClickEvent,
-		nodeDeleteEvent: nodeDeleteEvent
+		nodeDeleteEvent: nodeDeleteEvent,
+		setTypeColorFunction: setTypeColorFunction
 	};
 }
 
