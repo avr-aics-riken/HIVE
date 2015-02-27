@@ -165,7 +165,7 @@ body {
 {
 	position: absolute;
 	height:400px;
-	bottom:10px;
+	bottom:0px;
 	background-color: rgba(70,70,70,0.5);
 	overflow: auto;
 }
@@ -207,6 +207,8 @@ body {
 {
 	top : 0px;
 	right : 280px;
+	width: 20px;
+	height : 80px;
 	bottom: 0px;
 	z-index: 2;
 }
@@ -215,6 +217,6 @@ body {
 {
 	left : 10px;
 	bottom : 400px;
-	width: 20px;
+	width: 80px;
 	height: 20px;
 }
