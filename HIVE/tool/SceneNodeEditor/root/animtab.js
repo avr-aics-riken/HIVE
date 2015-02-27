@@ -117,23 +117,25 @@
 			temp,
 			id;
 		
+		/*
 		buttonElem.type = "button";
 		buttonElem.id = buttonID;
 		buttonElem.className = buttonID;
 		buttonElem.style.position = "absolute";
 		buttonElem.value = beforeLabel;
+		*/
 		
 		if (direction === 'bottom' || direction === 'top') {
 			whstr = 'height';
-			separatorElem.style.width = "100px";
-			separatorElem.style.height = "20px";
+			//separatorElem.style.width = "100px";
+			//separatorElem.style.height = "20px";
 		} else if (direction === 'right' || direction === 'left') {
 			whstr = 'width';
-			separatorElem.style.width = "20px";
-			separatorElem.style.height = "100px";
+			//separatorElem.style.width = "20px";
+			//separatorElem.style.height = "100px";
 		}
-		separatorElem.id = buttonID + "_separator";
-		separatorElem.className = buttonID + "_separator";
+		separatorElem.id = buttonID;
+		separatorElem.className = buttonID;
 		separatorElem.style.background = "rgba(100, 100, 100, 0.5)";
 		separatorElem.style.position = "absolute";
 		separatorElem.style.border = "solid";
@@ -143,7 +145,7 @@
 		
 		// add elements
 		document.body.appendChild(separatorElem);
-		document.body.appendChild(buttonElem);
+		//document.body.appendChild(buttonElem);
 		
 		for (id in targets) {
 			if (targets.hasOwnProperty(id)) {
@@ -216,12 +218,12 @@
 					if (state === 0) {
 						state = 1;
 						$animate(targetElem, to_json(whstr, { from: targetMax, to: targetMin }), time, beforeTarget);
-						$animate(buttonElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeButton);
+						//$animate(buttonElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeButton);
 						$animate(separatorElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeSep);
 					} else if (state === 2) {
 						state = 3;
 						$animate(targetElem, to_json(whstr, { from: targetMin, to: targetMax }), time, afterTarget);
-						$animate(buttonElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterButton);
+						//$animate(buttonElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterButton);
 						$animate(separatorElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterSep);
 					}
 				}
@@ -229,7 +231,7 @@
 		}
 		
 		function createButton(direction, targets) {
-			buttonElem.addEventListener('click', createAnimateButton);
+			separatorElem.addEventListener('click', createAnimateButton);
 		}
 		
 		$ready((function (direction, button, targets, beforeLabel, afterLabel) { return function () {
