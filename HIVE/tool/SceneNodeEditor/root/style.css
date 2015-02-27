@@ -2,6 +2,7 @@ body {
 	width:100%;
 	height:100%;
 	background-color:rgb(50,50,50);
+	font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
 }
 
 .menuButtonClass {
@@ -236,6 +237,7 @@ body {
 	-webkit-transform-origin: 85% 50%;
 	-o-transform-origin: 85% 50%;
 	-ms-transform-origin: 85% 50%;
+	transform-origin: 85% 50%;
 	-moz-transform: rotate(-90deg);
 	-webkit-transform: rotate(-90deg);
 	-o-transform: rotate(-90deg);
