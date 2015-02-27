@@ -194,6 +194,7 @@ body {
 {
 	top : 0px;
 	right : 280px;
+	height : 40px;
 	bottom: 0px;
 	z-index: 2;
 }
@@ -202,6 +203,6 @@ body {
 {
 	left : 10px;
 	bottom : 400px;
-	width: 20px;
+	width: 40px;
 	height: 20px;
 }
