@@ -12,30 +12,33 @@ body {
 	cursor: pointer;
 }
 /* --- TODO: beautiful----*/
-#Add {
-	position:absolute;
+.AddButton {
+	/*position:absolute;
 	right:150px;
-	top:60px;
-	width: 120px;
+	top:60px;*/
+	margin: 0px;
+	width: 150px;
 	height:25px;
 	background-color:#e5923e;
 	color:#FFF;
 }
 
 #Render {
-	position:absolute;
+	/*position:absolute;
 	right:150px;
-	top:28px;
-	width: 120px;
+	top:28px;*/
+	margin: 5px;
+	width: 150px;
 	height:25px;
 	background-color:#e53e78;
 	color:#FFF;
 }
 
 #Clear {
-	position:absolute;
+	/*position:absolute;
 	right:10px;
-	top:60px;
+	top:60px;*/
+	margin: 5px;
 	width: 120px;
 	height:25px;
 	background-color:#e5923e;
@@ -43,23 +46,24 @@ body {
 }
 
 #Save {
-	position:absolute;
+	/*position:absolute;
 	right:210px;
-	top:5px;
+	top:5px;*/
+	margin: 5px;
 	width: 60px;
 }
 #Open {
-	position:absolute;
+	/*position:absolute;
 	right:0px;
-	top:5px;
+	top:5px;*/
+	margin: 5px;
 	width: 200px;
 }
 /*------------------*/
 
 .nodeListBox {
-	position:absolute;
-	top:90px;
-	height:300px;
+	/*position:absolute;*/
+	margin: 5px;
 }
 
 .noneselect
@@ -72,12 +76,21 @@ body {
 	user-select: none;
 }
 
+.spacer
+{
+	margin: 10px;
+	height: 1px;
+	width: 250px;
+	background-color: #FFF;
+}
+
 .nodeProperty
 {
 	display: table;
 	
-	position:absolute;
-	top:370px;
+	/*position:absolute;
+	top:370px;*/
+	margin: 5px;
 	padding:10px 10px 10px;
 }
 
