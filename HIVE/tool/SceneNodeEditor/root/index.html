@@ -17,13 +17,15 @@
   <svg id="nodecanvas" class="NodeCanvas noneselect">
   </svg>
   <div class="menuTab" id="menuTab">
-	  <div id="Add" class="menuButtonClass noneselect">Add</div>
-	  <div id="Render" class="menuButtonClass noneselect">Render</div>
-	  <div id="Clear" class="menuButtonClass noneselect">ClearAll</div>
-  	  <input type="button"  value="Save"    id="Save">
-  	  <input type="file"    value="Open"    id="Open">
-	  <div id="NodeListBox" class="nodeListBox noneselect"></div>
-	  <div id="property"    class="nodeProperty"></div>
+	<input type="button"  value="Save"    id="Save">
+	<input type="file"    value="Open"    id="Open">
+	<div id="Clear" class="menuButtonClass noneselect">ClearAll</div>
+	<div class="spacer"></div>
+	<div id="Render" class="menuButtonClass noneselect">Render</div>
+	<div class="spacer"></div>
+	<div id="NodeListBox" class="nodeListBox noneselect"></div>
+	<div class="spacer"></div>
+	<div id="property"    class="nodeProperty"></div>
   </div>
 	<div id="consoleOutput" class="consoleOutput">
 		<span id="consoleTextBlock" class="consoleTextBlock">
@@ -35,14 +37,14 @@
 				'bottomTab' : { min : '10px', max : '400' },
 			}, {
 				'consoleOutput' : { min : '0px', max : '400px' }
-			}, 'v', '^'
+			}, 'console'
 		);
 		
 		window.animtab.create('right', {
 				'rightTab' : { min : '0px', max : 'auto' },
 			}, {
-				'menuTab' : { min : '0px', max : '280px' },
-			}, '>', '<'
+				'menuTab' : { min : '0px', max : '300px' },
+			}, 'Property'
 		);
 	</script>
 </body>
