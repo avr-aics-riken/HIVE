@@ -80,7 +80,8 @@ body {
 {
 	margin: 10px;
 	height: 1px;
-	width: 250px;
+	left:5px;
+	right:5px;
 	background-color: #FFF;
 }
 
@@ -142,6 +143,13 @@ body {
 	bottom:0px;
 	overflow:auto;
 	z-index: 1;
+	
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .NodeCanvas
