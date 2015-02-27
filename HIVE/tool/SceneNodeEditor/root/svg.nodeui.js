@@ -49,6 +49,7 @@ function svgNodeUI(draw) {
 		this.sy = sy;
 		this.ex = ex;
 		this.ey = ey;
+		this.connected = null;
 		this.line = draw.path('').fill('none').stroke({ width: width, color: color });
 		this.drawCurve(this.line, sx, sy, ex, ey);
 	}
@@ -75,12 +76,17 @@ function svgNodeUI(draw) {
 			this.drawCurve();
 		},
 		reset: function () {
+			this.connected = null;
 			this.ex = this.sx;
 			this.ey = this.sy;
 			this.drawCurve();
 		},
 		erase: function () {
+			this.connected = null;
 			this.line.remove();
+		},
+		disconnect: function () {
+			this.erase();
 		}
 	};
 
@@ -98,12 +104,11 @@ function svgNodeUI(draw) {
 		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
 			holeMouseUp = function (self) {
 				return function () {
+					if (self.connected) {
+						self.connected.disconnect();
+						self.disconnect();
+					}
 					if (draggingPlug !== null) {
-						if (self.connected) {
-							self.connected.disconnect();
-							self.disconnect();
-						}
-						
 						self.connectPlug(draggingPlug);
 						draggingPlug = null;
 					}
@@ -130,6 +135,7 @@ function svgNodeUI(draw) {
 			delete plugArray[this.varname];
 		},
 		connectPlug: function (plug) {
+			var plugline;
 			if (this.vartype !== plug.vartype) {
 				console.log('Error invalid data type.', this.vartype, plug.vartype);
 				return;
@@ -137,9 +143,20 @@ function svgNodeUI(draw) {
 			
 			plugArray[this.varname] = plug;
 			
-			this.line = plug.line;
-			this.connected = plug;
-			plug.connected = this;
+			if (draggingPlug) {
+				plugline = draggingPlug.line[plug.line.length - 1];
+			} else {
+				plugline = new PlugClass(plug.svgparent.x(), plug.svgparent.y(),
+										 plug.svgparent.x(), plug.svgparent.y(),
+										 4, getTypeColor(plug.vartype));
+				plug.line.push(plugline);
+			}
+			plugline.front();
+			
+			this.line = plugline;
+			this.connected = plugline;
+			plugline.connected = this;
+			
 			this.fit();
 			plug.fit();
 		},
@@ -157,30 +174,31 @@ function svgNodeUI(draw) {
 		this.parentNode = parentNode;
 		this.px = x;
 		this.py = y;
-		this.connected = null;
-		this.line = new PlugClass(svgparent.x() + x, svgparent.y() + y, svgparent.x() + x, svgparent.y() + y, 4, getTypeColor(vartype));
+		this.line = [];
 
 		var hole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill('#c7c7c7'),
 			pole = draw.circle(holeSize).center(svgparent.x() + x, svgparent.y() + y).fill(getTypeColor(vartype)),
+			newline,
 			poleDragstart = function (self) {
 				return function (delta, event) {
 					event.stopPropagation();
-					this.line.front();
+					newline = new PlugClass(svgparent.x() + x, svgparent.y() + y,
+												 svgparent.x() + x, svgparent.y() + y,
+												 4, getTypeColor(vartype));
+					this.line.push(newline);
+					newline.front();
 					this.front();
 					holeSets.front();
 					draggingPlug = self;
-					if (self.connected) {
-						self.connected.disconnect();
-						self.disconnect();
-					}
 				};
 			},
 			poleDragend = function (self) {
 				return function (delta, event) {
+					var line = self.line[self.line.length - 1];
 					event.stopPropagation();
-					if (!self.connected) {
+					if (!line.connected) {
 						draggingPlug = null;
-						self.line.endPos(self.px + self.svgparent.x(), self.py + self.svgparent.y());
+						line.endPos(self.px + self.svgparent.x(), self.py + self.svgparent.y());
 					}
 					this.center(self.px + self.svgparent.x(), self.py + self.svgparent.y());
 				};
@@ -188,22 +206,27 @@ function svgNodeUI(draw) {
 		this.pole = pole;
 		this.hole = hole;
 		pole.front();
-		pole.line = this.line;
+		pole.line = this.line; // reference
 		pole.draggable();
 		pole.dragstart = poleDragstart(this);
 		pole.dragmove = function (delta, event) {
 			event.stopPropagation();
-			this.line.endPos(event.pageX, event.pageY);
+			this.line[this.line.length - 1].endPos(event.pageX, event.pageY);
 		};
 		pole.dragend = poleDragend(this);
 	}
 	NodePlug.prototype = {
 		fit: function () {
-			this.line.startPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
+			var i;
+			for (i = 0; i < this.line.length; i = i + 1) {
+				this.line[i].startPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
+			}
 			this.hole.center(this.px + this.svgparent.x(), this.py + this.svgparent.y());
 			this.pole.center(this.px + this.svgparent.x(), this.py + this.svgparent.y());
-			if (!this.connected) {
-				this.line.endPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
+			for (i = 0; i < this.line.length; i = i + 1) {
+				if (!this.line[i].connected) {
+					this.line[i].endPos(this.px + this.svgparent.x(), this.py + this.svgparent.y());
+				}
 			}
 		},
 		front: function () {
@@ -211,21 +234,26 @@ function svgNodeUI(draw) {
 			this.pole.front();
 		},
 		disconnect: function () {
+			var i;
 			if (plugArray[this]) {
 				delete plugArray[this];
 			}
-			this.connected = null;
-			this.line.reset();
+			for (i = 0; i < this.line.length; i = i + 1) {
+				this.line[i].reset();
+			}
 		},
 		erase: function () {
+			var i;
 			this.disconnect();
 			this.pole.remove();
 			this.hole.remove();
 			this.pole = null;
 			this.hole = null;
-			this.line.erase();
-			delete this.line;
-			this.line = null;
+			for (i = 0; i < this.line.length; i = i + 1) {
+				this.line[i].erase();
+				delete this.line[i];
+			}
+			this.line = [];
 		}
 	};
 	
@@ -320,8 +348,6 @@ function svgNodeUI(draw) {
 		connectCnt = 0;
 		if (inouts) {
 			if (inouts.input) {
-				//inoutNum = Math.max(inoutNum, inouts.input.length);
-				console.log(inouts.input);
 				for (i = 0; i < inouts.input.length; i += 1) {
 					inode = inouts.input[i];
 					if (inode.array) {
