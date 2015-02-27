@@ -222,7 +222,7 @@
 		nameNode.innerHTML = '[' + name + ']';
 		textNode.value = text;
 		nameNode.classList.add('nodePropertyName');
-		textNode.classList.add('nodePropertyValue');
+		textNode.classList.add('nodePropertyText');
 		itemNode.appendChild(nameNode);
 		itemNode.appendChild(textNode);
 		
