@@ -54,7 +54,7 @@
 		}
 		nodeData = nui.getNodeData();
 		instNode = clone(node);
-		console.log(instNode);
+		//console.log(instNode);
 		nodeData.nodeData.push(instNode);
 		instNode.varname += instance_no;
 		instance_no += 1;
