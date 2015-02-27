@@ -182,7 +182,7 @@ body {
 {
 	bottom:30px;
 	width:800px;
-	height:400px;
+	/*height:400px;*/
 	display: table-cell;
 	vertical-align: bottom;
 	background:transparent;
