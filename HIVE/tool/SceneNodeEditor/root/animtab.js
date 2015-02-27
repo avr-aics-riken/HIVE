@@ -109,7 +109,7 @@
 		});
 	}
 	
-	function create(direction, button, targets, beforeLabel, afterLabel) {
+	function create(direction, button, targets, textlabel) {
 		var buttonElem = document.createElement("input"),
 			separatorElem = document.createElement("span"),
 			buttonID = Object.keys(button)[0],
@@ -134,6 +134,7 @@
 		buttonElem.style.position = "absolute";
 		buttonElem.value = beforeLabel;
 		*/
+		separatorElem.innerHTML = textlabel;
 		
 		if (direction === 'bottom' || direction === 'top') {
 			whstr = 'height';
@@ -146,12 +147,7 @@
 		}
 		separatorElem.id = buttonID;
 		separatorElem.className = buttonID;
-		separatorElem.style.background = "rgba(100, 100, 100, 0.5)";
 		separatorElem.style.position = "absolute";
-		separatorElem.style.border = "solid";
-		separatorElem.style.borderRadius = "6px";
-		separatorElem.style.MozBorderRadius = "6px";
-		separatorElem.style.WebkitBorderRadius = "6px";
 		
 		// add elements
 		document.body.appendChild(separatorElem);
@@ -209,11 +205,11 @@
 			}
 			
 			function beforeButton() {
-				buttonElem.value = afterLabel;
+				//buttonElem.value = afterLabel;
 			}
 			
 			function afterButton() {
-				buttonElem.value = beforeLabel;
+				//buttonElem.value = beforeLabel;
 			}
 			
 			function beforeSep() {}
@@ -244,9 +240,9 @@
 			separatorElem.addEventListener('click', createAnimateButton);
 		}
 		
-		$ready((function (direction, button, targets, beforeLabel, afterLabel) { return function () {
-			createButton(direction, button, targets, beforeLabel, afterLabel);
-		}; }(direction, button, targets, beforeLabel, afterLabel)));
+		$ready((function (direction, button, targets, textlabel) { return function () {
+			createButton(direction, button, targets, textlabel);
+		}; }(direction, button, targets, textlabel)));
 	}
 	
 	window.animtab = animtab;

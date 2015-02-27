@@ -88,11 +88,7 @@ body {
 .nodeProperty
 {
 	display: table;
-	
-	/*position:absolute;
-	top:370px;*/
 	margin: 5px;
-	padding:10px 10px 10px;
 }
 
 .nodePropertyRow
@@ -104,7 +100,7 @@ body {
 .nodePropertyName
 {
 	display:table-cell;
-	width: 150px;
+	/*width: 150px;*/
 	background-color: #ccc;
 	border: 1px solid #868686;
 	padding: 3px;
@@ -112,7 +108,7 @@ body {
 
 .nodePropertyConst
 {
-	width:150px;
+	/*width:150px;*/
 	display:table-cell;
 	border: 1px solid #868686;
 	background-color: #aeaeae;
@@ -121,12 +117,22 @@ body {
 
 .nodePropertyValue
 {
-	width:150px;
+	width: 50px;
 	display:table-cell;
 	border: 1px solid #868686;
 	background-color: #eee ;
 	padding: 3px;
 }
+
+.nodePropertyText
+{
+	width: 150px;
+	display:table-cell;
+	border: 1px solid #868686;
+	background-color: #eee ;
+	padding: 3px;
+}
+
 
 .nodePropertyTop
 {
@@ -139,7 +145,7 @@ body {
 	position:fixed;
 	right:0px;
 	top:0px;
-	width:280px;
+	width:300px;
 	bottom:0px;
 	overflow:auto;
 	z-index: 1;
@@ -215,10 +221,26 @@ body {
 {
 	top : 0px;
 	right : 280px;
-	width: 20px;
-	height : 80px;
+	width: 80px;
+	height : 20px;
 	bottom: 0px;
 	z-index: 2;
+	background-color: rgba(100, 100, 100, 0.5);
+	color: #898989;
+	padding: 3px;
+
+	border: solid 1px;
+	border-radius:1px;
+	
+	-moz-transform-origin: 85% 50%;
+	-webkit-transform-origin: 85% 50%;
+	-o-transform-origin: 85% 50%;
+	-ms-transform-origin: 85% 50%;
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 
 .bottomTab
@@ -227,4 +249,10 @@ body {
 	bottom : 400px;
 	width: 80px;
 	height: 20px;
+	padding: 3px;
+	background-color: rgba(100, 100, 100, 0.5);
+	color: #898989;
+
+	border: solid 1px;
+	border-radius:1px;
 }
