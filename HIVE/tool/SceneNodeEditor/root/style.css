@@ -2,6 +2,7 @@ body {
 	width:100%;
 	height:100%;
 	background-color:rgb(50,50,50);
+	font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
 }
 
 .menuButtonClass {
@@ -12,30 +13,33 @@ body {
 	cursor: pointer;
 }
 /* --- TODO: beautiful----*/
-#Add {
-	position:absolute;
+.AddButton {
+	/*position:absolute;
 	right:150px;
-	top:60px;
-	width: 120px;
+	top:60px;*/
+	margin: 0px;
+	width: 150px;
 	height:25px;
 	background-color:#e5923e;
 	color:#FFF;
 }
 
 #Render {
-	position:absolute;
+	/*position:absolute;
 	right:150px;
-	top:28px;
-	width: 120px;
+	top:28px;*/
+	margin: 5px;
+	width: 150px;
 	height:25px;
 	background-color:#e53e78;
 	color:#FFF;
 }
 
 #Clear {
-	position:absolute;
+	/*position:absolute;
 	right:10px;
-	top:60px;
+	top:60px;*/
+	margin: 5px;
 	width: 120px;
 	height:25px;
 	background-color:#e5923e;
@@ -43,23 +47,24 @@ body {
 }
 
 #Save {
-	position:absolute;
+	/*position:absolute;
 	right:210px;
-	top:5px;
+	top:5px;*/
+	margin: 5px;
 	width: 60px;
 }
 #Open {
-	position:absolute;
+	/*position:absolute;
 	right:0px;
-	top:5px;
+	top:5px;*/
+	margin: 5px;
 	width: 200px;
 }
 /*------------------*/
 
 .nodeListBox {
-	position:absolute;
-	top:90px;
-	height:300px;
+	/*position:absolute;*/
+	margin: 5px;
 }
 
 .noneselect
@@ -72,13 +77,19 @@ body {
 	user-select: none;
 }
 
+.spacer
+{
+	margin: 10px;
+	height: 1px;
+	left:5px;
+	right:5px;
+	background-color: #FFF;
+}
+
 .nodeProperty
 {
 	display: table;
-	
-	position:absolute;
-	top:370px;
-	padding:10px 10px 10px;
+	margin: 5px;
 }
 
 .nodePropertyRow
@@ -90,7 +101,7 @@ body {
 .nodePropertyName
 {
 	display:table-cell;
-	width: 150px;
+	/*width: 150px;*/
 	background-color: #ccc;
 	border: 1px solid #868686;
 	padding: 3px;
@@ -98,7 +109,7 @@ body {
 
 .nodePropertyConst
 {
-	width:150px;
+	/*width:150px;*/
 	display:table-cell;
 	border: 1px solid #868686;
 	background-color: #aeaeae;
@@ -107,12 +118,22 @@ body {
 
 .nodePropertyValue
 {
-	width:150px;
+	width: 50px;
 	display:table-cell;
 	border: 1px solid #868686;
 	background-color: #eee ;
 	padding: 3px;
 }
+
+.nodePropertyText
+{
+	width: 150px;
+	display:table-cell;
+	border: 1px solid #868686;
+	background-color: #eee ;
+	padding: 3px;
+}
+
 
 .nodePropertyTop
 {
@@ -125,10 +146,17 @@ body {
 	position:fixed;
 	right:0px;
 	top:0px;
-	width:280px;
+	width:300px;
 	bottom:0px;
 	overflow:auto;
 	z-index: 1;
+	
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .NodeCanvas
@@ -152,8 +180,8 @@ body {
 {
 	position: absolute;
 	height:400px;
-	bottom:10px;
-	background-color: rgba(70,70,70,0.5);
+	bottom:0px;
+	background-color:rgba(100, 100, 100, 0.5);
 	overflow: auto;
 }
 
@@ -161,7 +189,7 @@ body {
 {
 	bottom:30px;
 	width:800px;
-	height:400px;
+	/*height:400px;*/
 	display: table-cell;
 	vertical-align: bottom;
 	background:transparent;
@@ -178,7 +206,7 @@ body {
 	font-size: 12px;
 	color:red;
 }
-
+/*
 .closeMenuTabArea
 {
 	position: relative;
@@ -188,17 +216,45 @@ body {
 	padding: 0;
 	z-index: -1;
 }
+*/
 
-.closeMenuTab
+.rightTab
 {
-	position: absolute;
+	top : 0px;
+	right : 280px;
+	width: 80px;
+	height : 20px;
 	bottom: 0px;
 	z-index: 2;
+	background-color: rgba(100, 100, 100, 0.5);
+	color: #898989;
+	padding: 3px;
+
+	border: solid 1px;
+	border-radius:1px;
+	
+	-moz-transform-origin: 85% 50%;
+	-webkit-transform-origin: 85% 50%;
+	-o-transform-origin: 85% 50%;
+	-ms-transform-origin: 85% 50%;
+	transform-origin: 85% 50%;
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 
-.closeConsoleOutput
+.bottomTab
 {
-	position: absolute;
-	left:10px;
-	bottom:390px;
+	left : 10px;
+	bottom : 400px;
+	width: 80px;
+	height: 20px;
+	padding: 3px;
+	background-color: rgba(100, 100, 100, 0.5);
+	color: #898989;
+
+	border: solid 1px;
+	border-radius:1px;
 }
