@@ -8,7 +8,7 @@
       <script type="text/javascript" src="svg.draggable.js"></script>
       <script type="text/javascript" src="svg.nodeui.js"></script>
 	  <script type="text/javascript" src="qatrix-1.1.js"></script>
-	  <script type="text/javascript" src="animation.js"></script>
+	  <script type="text/javascript" src="animtab.js"></script>
       <script type="text/javascript" src="client.js"></script>
 	  <link rel="stylesheet" href="style.css" type="text/css" />
       <title>NodeEditor</title>
@@ -17,22 +17,35 @@
   <svg id="nodecanvas" class="NodeCanvas noneselect">
   </svg>
   <div class="menuTab" id="menuTab">
-	  <div id="Add" class="menuButtonClass noneselect">Add</div>
-	  <div id="Render" class="menuButtonClass noneselect">Render</div>
-	  <div id="Clear" class="menuButtonClass noneselect">ClearAll</div>
-  	  <input type="button"  value="Save"    id="Save">
-  	  <input type="file"    value="Open"    id="Open">
-	  <div id="NodeListBox" class="nodeListBox noneselect"></div>
-	  <div id="property"    class="nodeProperty"></div>
-	  
-	  <div class="closeMenuTabArea">
-	  	<input type="button" value=">>" id="closeMenuTab" class="closeMenuTab">
-	  </div>
+	<input type="button"  value="Save"    id="Save">
+	<input type="file"    value="Open"    id="Open">
+	<div id="Clear" class="menuButtonClass noneselect">ClearAll</div>
+	<div class="spacer"></div>
+	<div id="Render" class="menuButtonClass noneselect">Render</div>
+	<div class="spacer"></div>
+	<div id="NodeListBox" class="nodeListBox noneselect"></div>
+	<div class="spacer"></div>
+	<div id="property"    class="nodeProperty"></div>
   </div>
 	<div id="consoleOutput" class="consoleOutput">
 		<span id="consoleTextBlock" class="consoleTextBlock">
 		</span>
 	</div>
-	<input type="button"  value="v" id="closeConsoleOutput" class="closeConsoleOutput">
+	
+	<script>
+		window.animtab.create('bottom', {
+				'bottomTab' : { min : '10px', max : '400' },
+			}, {
+				'consoleOutput' : { min : '0px', max : '400px' }
+			}, 'console'
+		);
+		
+		window.animtab.create('right', {
+				'rightTab' : { min : '0px', max : 'auto' },
+			}, {
+				'menuTab' : { min : '0px', max : '300px' },
+			}, 'Property'
+		);
+	</script>
 </body>
 </html>
