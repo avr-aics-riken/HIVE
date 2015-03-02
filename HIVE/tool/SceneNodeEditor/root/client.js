@@ -108,7 +108,7 @@
 			text = lst.options[index].text;
 			if (nx === undefined || ny === undefined) {
 				// center
-				addNode(text, window.innerWidth/4, window.innerHeight/4);
+				addNode(text, window.innerWidth / 4, window.innerHeight / 4);
 			} else {
 				// specific pos
 				addNode(text, nx, ny);
@@ -120,14 +120,15 @@
 	}
 	
 	function updateNodeList(lst, txtval) {
-		var i, name, item;
+		var i, name, visible, item;
 		lst.innerHTML = ''; // clear
 		for (i in nodeListTable) {
 			if (nodeListTable.hasOwnProperty(i)) {
 				//console.log(nodeListTable[i]);
 				name = nodeListTable[i].name;
-
-				if (txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) {
+				visible = nodeListTable[i].visible;
+				
+				if ((txtval === '' || name.toLowerCase().indexOf(txtval.toLocaleLowerCase()) >= 0) && visible !== false) {
 					item = document.createElement('option');
 					item.setAttribute('value', name);
 					item.appendChild(document.createTextNode(name));
@@ -403,6 +404,23 @@
 	// request node info
 	//---------------------------------------------------------------------------
 	
+	function storeNodeList(resp, callback) {
+		var i;
+
+		// store node list
+		nodeList = JSON.parse(resp);
+
+		// create nodelist table
+		nodeListTable = {};
+		for (i = 0; i < nodeList.length; i = i + 1) {
+			nodeListTable[nodeList[i].name] = nodeList[i];
+		}
+
+		if (callback) {
+			callback();
+		}
+	}
+	
 	function reloadNodeList(url, cb) {
 		var ret,
 			req = new XMLHttpRequest();
@@ -410,26 +428,8 @@
 		req.send();
 		req.addEventListener("load", (function (callback) {
 			return function (ev) {
-				var resp = ev.srcElement.responseText,
-					i,
-					d;
-
-				// store node list
-				nodeList = JSON.parse(resp);
-
-				// create nodelist table
-				nodeListTable = {};
-				for (i = 0; i < nodeList.length; i = i + 1) {
-					nodeListTable[nodeList[i].name] = nodeList[i];
-				}
-
-				//create List UI
-				d = document.getElementById('NodeListBox');
-				d.appendChild(createNodeListUI());
-
-				if (callback) {
-					callback();
-				}
+				var resp = ev.srcElement.responseText;
+				storeNodeList(resp, callback);
 			};
 		}(cb)));
 	}
@@ -540,7 +540,7 @@
 		nui.setTypeColorFunction(colorFunction);
 		nui.nodeClickEvent(showProparty);
 		nui.nodeDeleteEvent(deleteNode);
-
+		
 		//handle
 		openbutton.onchange  = ButtonOpen;
 		savebutton.onclick   = ButtonSave;
@@ -552,6 +552,23 @@
 		
 		//Initialize.
 		reloadNodeList('nodelist.json', function () {
+			var headerNode = null,
+				footerNode = null,
+				d = document.getElementById('NodeListBox');
+
+			//create List UI
+			d.appendChild(createNodeListUI());
+
+			// set header/footer
+			headerNode = nodeListTable.header;
+			footerNode = nodeListTable.footer;
+			if (headerNode) {
+				nui.setHeaderCode(headerNode.customfunc);
+			}
+			if (footerNode) {
+				nui.setFooterCode(footerNode.customfunc);
+			}
+
 			clearNode();
 		});
 		
