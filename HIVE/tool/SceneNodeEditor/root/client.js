@@ -409,6 +409,13 @@
 
 		// store node list
 		nodeList = JSON.parse(resp);
+		
+		// sort list
+		nodeList.sort(
+			function (a, b) {
+				return a.name > b.name;
+			}
+		);
 
 		// create nodelist table
 		nodeListTable = {};
