@@ -187,7 +187,7 @@ int VolumeToVector::Create(BufferVolumeData *volume) {
         }
         offsetZ += offset_incZ;
     }
-    printf("Builder : Line Num = %d\n", vposbuf.size());
+    printf("Builder : Line Num = %zu\n", vposbuf.size());
     m_vector->Create(vposbuf.size());
     Vec3Buffer*     pos     = reinterpret_cast<Vec3Buffer*>(m_vector->Position());
     VX::Math::vec3* posbuf  = reinterpret_cast<VX::Math::vec3*>(pos->GetBuffer());

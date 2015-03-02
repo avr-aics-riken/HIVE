@@ -1,0 +1,10 @@
+print('save SPH')
+
+local sph = SPHLoader()
+sph:Load('fvel_0000001470.sph')
+
+local saver = SPHSaver()
+saver:SetVolumeData(sph:VolumeData())
+saver:Save('output.sph')
+
+

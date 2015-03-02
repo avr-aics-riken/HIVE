@@ -191,23 +191,23 @@ void BufferVolumeData::print()
     m_imp->print();
 }
 
-int BufferVolumeData::Width() {
+int BufferVolumeData::Width() const {
     return m_imp->Width();
 }
 
-int BufferVolumeData::Height() {
+int BufferVolumeData::Height() const {
     return m_imp->Height();
 }
 
-int BufferVolumeData::Depth() {
+int BufferVolumeData::Depth() const {
     return m_imp->Depth();
 }
 
-int BufferVolumeData::Component() {
+int BufferVolumeData::Component() const {
     return m_imp->Component();
 }
 
-FloatBuffer *BufferVolumeData::Buffer() {
+FloatBuffer *BufferVolumeData::Buffer() const {
     return m_imp->Buffer();
 }
 
