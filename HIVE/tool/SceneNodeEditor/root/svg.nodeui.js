@@ -12,7 +12,9 @@ function svgNodeUI(draw) {
 		plugArray = {},
 		nodeClickFunction = null,
 		nodeDeleteFunction = null,
-		colorTableFunction = null;
+		colorTableFunction = null,
+		headerCode = '',
+		footerCode = '';
 	
 	/*
 		TODO: read from setting JSON file
@@ -473,7 +475,7 @@ function svgNodeUI(draw) {
 			dependency = [],
 			plug,
 			plugname,
-			src = '',
+			src = headerCode + '\n\n',
 			customfuncs = {},
 			customfuncSrc = '',
 			fn,
@@ -598,7 +600,8 @@ function svgNodeUI(draw) {
 			}
 		}
 		src = customfuncSrc + src;
-		console.log(src);
+		src += footerCode + '\n';
+		//console.log(src);
 		return src;
 	}
 	
@@ -722,6 +725,14 @@ function svgNodeUI(draw) {
 		nodeDeleteFunction = func;
 	}
 	
+	function setHeaderCode(codes) {
+		headerCode = codes;
+	}
+	function setFooterCode(codes) {
+		footerCode = codes;
+	}
+
+	
 	return {
 		PlugClass: PlugClass,
 		NodePlug: NodePlug,
@@ -736,7 +747,9 @@ function svgNodeUI(draw) {
 		clearNodes: clearNodes,
 		nodeClickEvent: nodeClickEvent,
 		nodeDeleteEvent: nodeDeleteEvent,
-		setTypeColorFunction: setTypeColorFunction
+		setTypeColorFunction: setTypeColorFunction,
+		setHeaderCode: setHeaderCode,
+		setFooterCode: setFooterCode
 	};
 }
 
