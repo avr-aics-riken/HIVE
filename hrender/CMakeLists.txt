@@ -181,6 +181,7 @@ set(SOURCES
 	src/Buffer/BufferTetraData.cpp
 	src/Buffer/BufferImageData.cpp
 	src/Builder/FloatsToFloat.cpp
+	src/Builder/PointToVolume.cpp
 	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToVector.cpp
 	src/Image/jpge.cpp
@@ -192,6 +193,7 @@ set(SOURCES
 	src/Loader/VolLoader.cpp
 	src/Loader/PdbLoader.cpp
 	src/Loader/tiny_pdb.cpp
+	src/Saver/SphSaver.cpp
 	src/Network/Connection.cpp
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp

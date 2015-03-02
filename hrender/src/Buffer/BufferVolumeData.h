@@ -22,11 +22,11 @@ public:
     bool NonUniform();
     void Clear();
     void print();
-    int Width() ;
-    int Height();
-    int Depth() ;
-    int Component();
-    FloatBuffer *Buffer();
+    int Width() const;
+    int Height() const;
+    int Depth() const;
+    int Component() const;
+    FloatBuffer *Buffer() const;
 
     // Fetch voxel data. `ret` pointer must have enough storage space to store voxel data,
     // larger than # of compoents in this volume data.
