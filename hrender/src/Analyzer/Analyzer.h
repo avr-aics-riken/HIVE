@@ -39,12 +39,16 @@ class Histogram {
 public:
 	Histogram(int numBins, double minVal, double maxVal)
 	: minVal_(minVal), maxVal_(maxVal), totalCount_(0) {
+		double range = maxVal - minVal;
 		histogram_.resize(numBins);
 		
 		assert(numBins >= 1);
 		assert(maxVal_ >= minVal_);
 		
-		invRange_ = 1.0 / (maxVal - minVal);
+		if(range == 0.0) {
+			range = 1.0;
+		}
+		invRange_ = 1.0 / range;
 	}
 	~Histogram() {};
 	
@@ -212,9 +216,7 @@ public:
 	void AnalyzeVector(std::vector<float> outHistograms[3],
 							 double minVal[3], double maxVal[3], const T *vol,
 							 int size, int numBins = 256, int component = 3) {
-		
 		for (int k = 0; k < 3; k++) {
-			
 			// 1. find min and max value;
 			minVal[k] = std::numeric_limits<double>::max();
 			maxVal[k] = -std::numeric_limits<double>::max();
@@ -223,14 +225,6 @@ public:
 				minVal[k] = std::min((double)vol[component * i + k], minVal[k]);
 				maxVal[k] = std::max((double)vol[component * i + k], maxVal[k]);
 			}
-			
-			// 2. compute histogram;
-			Histogram hist(numBins, minVal[k], maxVal[k]);
-			for (size_t i = 0; i < size; i++) {
-				hist.Contribute(vol[component * i + k]);
-			}
-			
-			hist.GetNormalizedHistogram(outHistograms[k]);
 		}
 	}
 	

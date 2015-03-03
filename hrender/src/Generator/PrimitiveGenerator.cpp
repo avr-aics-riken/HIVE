@@ -5,6 +5,7 @@
 #include "BufferTetraData.h"
 #include "BufferVectorData.h"
 #include "Buffer.h"
+#include <string.h>
 
 PrimitiveGenerator::PrimitiveGenerator()
 {
