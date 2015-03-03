@@ -13,11 +13,27 @@
 
 topdir=`pwd`
 installdir=`pwd`/third_party/local
-c_compiler=mpicc
-cxx_compiler=mpicxx
+
 if [ -z "${CMAKE_BIN+x}" ]; then
   CMAKE_BIN=cmake
 fi
+
+if [ -z "${CC+x}" ]; then
+  c_compiler=mpicc
+  CC=mpicc
+else
+  c_compiler=${CC}
+fi
+
+if [ -z "${CXX+x}" ]; then
+  cxx_compiler=mpicxx
+  CXX=mpicxx
+else
+  cxx_compiler=${CXX}
+fi
+
+echo "C compiler  : " ${CC}
+echo "CXX compiler: " ${CXX}
 
 function clean_install_dir {
 	rm -rf ${installdir}
@@ -36,6 +52,7 @@ function build_tp {
 	# Assume CXX and CC is set to use MPI compiler.
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/TextParser && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -50,6 +67,7 @@ function build_cdmlib {
 	fi
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -64,6 +82,7 @@ function build_polylib {
 	fi
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
  
@@ -78,6 +97,7 @@ function build_bcmtools {
 	fi
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -92,6 +112,7 @@ function build_hdmlib {
 	fi
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -116,6 +137,7 @@ function build_pdmlib {
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 
 	#
@@ -126,6 +148,7 @@ function build_pdmlib {
 	mkdir PDMlib_build
 	cd PDMlib_build/
 	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -139,6 +162,7 @@ function build_compositor {
 
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/234Compositor && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
