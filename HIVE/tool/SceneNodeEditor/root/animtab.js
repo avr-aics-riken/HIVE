@@ -5,7 +5,8 @@
 
 	var animtab = {},
 		buttonNum = 0,
-		initialOverflow = {};
+		initialOverflow = {},
+		isMoving = {};
 	
 	function to_json(key, value) {
 		var json = {};
@@ -19,7 +20,7 @@
 	
 	/// initialize dialog and set separator 
 	function setupSeparator(direction, separator, button, targets, whstr) {
-		var dragging = false,
+		var dragging = "no", // "no", "ready", "yes"
 			buttonID = Object.keys(button)[0],
 			targetID = Object.keys(targets)[0],
 			buttonElem = document.getElementById(buttonID),
@@ -34,7 +35,7 @@
 			
 			e.preventDefault();
 			
-			dragging = true;
+			dragging = "ready";
 			for (id in targets) {
 				if (targets.hasOwnProperty(id)) {
 					target = document.getElementById(id);
@@ -61,7 +62,7 @@
 			
 			e.preventDefault();
 			
-			dragging = false;
+			dragging = "no";
 			for (id in targets) {
 				if (targets.hasOwnProperty(id)) {
 					target = document.getElementById(id);
@@ -77,7 +78,9 @@
 				i,
 				target,
 				id;
-			if (dragging) {
+			if (dragging === "yes") {
+				isMoving[separator] = true;
+				
 				if (direction === 'left') {
 					offset = window.pageXOffset || document.documentElement.scrollLeft;
 					pos = offset + e.clientX;
@@ -91,9 +94,6 @@
 					offset = window.pageYOffset || document.documentElement.scrollTop;
 					pos = document.documentElement.clientHeight - (offset + e.clientY);
 				}
-				if (pos < 5) {
-					pos = 0;
-				}
 				//console.log(direction + ":" + pos);
 				for (id in targets) {
 					if (targets.hasOwnProperty(id)) {
@@ -105,6 +105,9 @@
 				separator.style[direction] = pos + 'px';
 				buttonElem.style[direction] = (pos + diffButtonTargetMax) + 'px';
 				button[buttonID].max = (pos + diffButtonTargetMax) + 'px';
+			}
+			if (dragging === "ready") {
+				dragging = "yes";
 			}
 		});
 	}
@@ -125,7 +128,8 @@
 			minimum = Number.MAX_VALUE,
 			maximum = Number.MIN_VALUE,
 			temp,
-			id;
+			id,
+			isDragging = "no";
 		
 		/*
 		buttonElem.type = "button";
@@ -183,8 +187,9 @@
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
-		setupSeparator(direction, separatorElem, button, targets, whstr);
-			
+		isMoving[separatorElem] = false;
+		setupSeparator(direction, separatorElem, button, targets, whstr, createAnimateButton);
+		
 		function createAnimateButton(e) {
 			var i = 0,
 				id,
@@ -237,7 +242,15 @@
 		}
 		
 		function createButton(direction, targets) {
-			separatorElem.addEventListener('click', createAnimateButton);
+			separatorElem.addEventListener('click', function () {
+				if (isMoving.hasOwnProperty(separatorElem)) {
+					//console.log("isMoving:" + isMoving[separatorElem]);
+					if (!isMoving[separatorElem]) {
+						createAnimateButton();
+					}
+					isMoving[separatorElem] = false;
+				}
+			});
 		}
 		
 		$ready((function (direction, button, targets, textlabel) { return function () {
