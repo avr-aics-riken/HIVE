@@ -197,6 +197,7 @@ set(SOURCES
 	src/Loader/tiny_pdb.cpp
 	src/Saver/SphSaver.cpp
 	src/Network/Connection.cpp
+	src/Network/MetaBinary.cpp
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp
 	src/RenderObject/Camera.cpp
