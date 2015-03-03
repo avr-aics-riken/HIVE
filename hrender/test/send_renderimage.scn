@@ -1,9 +1,9 @@
 
-print('Send Render camera')
+print('Send Render Image')
 
 local camera = Camera()
-camera:SetScreenSize(1024, 1024)
-camera:SetFilename('image.jpg')
+camera:SetScreenSize(512, 512)
+camera:SetFilename('image.tga')
 camera:SetNetworkAddress('http://localhost:8082/')
 
 camera:LookAt(
@@ -13,5 +13,38 @@ camera:LookAt(
 	60
 )
 
-render {camera}
+local obj = OBJLoader()
+obj:Load('bunny.obj')
+local model = PolygonModel()
+local meshdata = obj:MeshData()
+model:Create(meshdata)
+model:SetShader('white.frag')
+
+render {camera, model}
+
+
+-- load tga, save as jpg 
+local loader = ImageLoader()
+local saver = ImageSaver()
+loader:Load('image.tga')
+local imageBuffer = saver:SaveMemory(1, loader:ImageData())
+local imageBufferSize = saver:MemorySize()
+
+-- create metabinary
+local metabin = MetaBinary()
+local json = [[{
+ "command" : "reqAddContent",
+ "type" : "image",
+ "posx" : "100",
+ "posy" : "100",
+ "width" : "512",
+ "height" : "512"}
+ ]]
+metabin:Create(json, imageBuffer, imageBufferSize) 
+
+-- send through websockt
+local network = Connection()
+network:Connect('ws://localhost:8082/v1/')
+network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
+network:Close()
 
