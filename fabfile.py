@@ -83,6 +83,8 @@ def build_hive():
     remote_build_dir = config['config'][env.host_string]['remote_build_dir']
     host_type = config['config'][env.host_string]['type']
     build_cmake = config['config'][env.host_string]['build_cmake']
+    c_compiler = config['config'][env.host_string]['c_compiler']
+    cxx_compiler = config['config'][env.host_string]['cxx_compiler']
 
     local('./scripts/git-archive-all.sh --prefix HIVE-master/ deploy/HIVE-master.tar') # --format tar.gz doesn't work well.
     local('gzip -f deploy/HIVE-master.tar')
@@ -107,6 +109,12 @@ def build_hive():
     if build_cmake == True:
         cmake_bin_path = os.path.join(config['config'][env.host_string]['remote_build_dir'], "tools/bin/cmake")
         loader_build_script = "CMAKE_BIN=" + cmake_bin_path + ' ' + loader_build_script
+
+    if c_compiler is not None:
+        loader_build_script = "CC=" + c_compiler + ' ' + loader_build_script
+
+    if cxx_compiler is not None:
+        loader_build_script = "CXX=" + cxx_compiler + ' ' + loader_build_script
 
     with cd(remote_build_dir + '/HIVE-master'):
         run(loader_build_script)

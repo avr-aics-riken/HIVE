@@ -8,6 +8,8 @@
      "myhost" : { "type": "linux64"
                , "remote_build_dir": "/tmp"
                , "build_cmake": true
+               , "c_compiler": "mpicc"
+               , "cxx_compiler": "mpicxx"
                }
   } 
 }
