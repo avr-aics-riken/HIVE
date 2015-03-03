@@ -3,7 +3,6 @@ print('Send Render Image')
 
 local camera = Camera()
 camera:SetScreenSize(512, 512)
-camera:SetFilename('image.tga')
 camera:SetNetworkAddress('http://localhost:8082/')
 
 camera:LookAt(
@@ -22,12 +21,9 @@ model:SetShader('white.frag')
 
 render {camera, model}
 
-
--- load tga, save as jpg 
-local loader = ImageLoader()
+-- save render image as jpg on memory
 local saver = ImageSaver()
-loader:Load('image.tga')
-local imageBuffer = saver:SaveMemory(1, loader:ImageData())
+local imageBuffer = saver:SaveMemory(1, camera:GetImageBuffer())
 local imageBufferSize = saver:MemorySize()
 
 -- create metabinary
