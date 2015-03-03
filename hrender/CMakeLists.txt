@@ -146,6 +146,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../hrender/src/Analyzer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Buffer
 	${PROJECT_SOURCE_DIR}/../hrender/src/Builder
+	${PROJECT_SOURCE_DIR}/../hrender/src/Generator
 	${PROJECT_SOURCE_DIR}/../hrender/src/Loader
 	${PROJECT_SOURCE_DIR}/../hrender/src/Saver
 	${PROJECT_SOURCE_DIR}/../hrender/src/Network
@@ -184,6 +185,7 @@ set(SOURCES
 	src/Builder/PointToVolume.cpp
 	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToVector.cpp
+	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
 	src/Image/ImageLoader.cpp
 	src/Image/ImageSaver.cpp

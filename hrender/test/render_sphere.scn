@@ -1,0 +1,25 @@
+
+print('Render Sphere')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_sphere.jpg')
+
+camera:LookAt(
+	0,0,30,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local gen = PrimitiveGenerator()
+
+local radius = 2
+
+local model = PointModel()
+local spheredata = gen:Sphere(radius)
+model:Create(spheredata)
+model:SetShader('white.frag')
+
+render {camera, model}
+
+
