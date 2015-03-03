@@ -22,14 +22,14 @@ local meshdata = gen:Quad(width, height)
 model:Create(meshdata)
 model:SetShader('white.frag')
 
--- local analy = PolygonAnalyzer()
--- analy:Execute(model)
--- print(analy:MinX())
--- print(analy:MaxX())
--- print(analy:MinY())
--- print(analy:MaxY())
--- print(analy:MinZ())
--- print(analy:MaxZ())
+local analy = PolygonAnalyzer()
+analy:Execute(model)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
 
 render {camera, model}
 
