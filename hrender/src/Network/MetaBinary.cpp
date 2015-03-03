@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdint.h>
+#include <string.h>
 
 #include "../Buffer/Buffer.h"
 #include "MetaBinary.h"
