@@ -14,7 +14,7 @@ public:
 	BufferPointData ball;
 	BufferLineData stick;
 protected:
-	bool Load(const char* filename);
+	bool Load(const char* filename, bool generateBond = false);
 	BufferPointData* BallData();
 	BufferLineData* StickData();
 };
