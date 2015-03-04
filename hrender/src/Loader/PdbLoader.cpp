@@ -12,11 +12,11 @@ void PDBLoader::Clear()
 	stick.Clear();
 }
 
-bool PDBLoader::Load(const char* filename){
+bool PDBLoader::Load(const char* filename, bool generateBond){
 	Clear();
 
     tinypdb::TinyPDB pdb(filename);
-    if (pdb.Parse(/* isBondGenerated = */ true)) {
+    if (pdb.Parse(/* isBondGenerated = */ generateBond)) {
         fprintf(stderr,"[PDBLoader] PDB parsing failed: %s \n", filename);
         return false;
     }
@@ -49,7 +49,7 @@ bool PDBLoader::Load(const char* filename){
     }
 
 
-    {
+    if (generateBond) {
 
         // We reprent Bond as line primitives.
         // @todo { remove duplicated bonds. }
@@ -78,10 +78,10 @@ bool PDBLoader::Load(const char* filename){
 
         printf("[PDBLoader] # of bonds: %ld\n", numBonds);
 
-        stick.Create(numBondVertices, /* index num = */0, /* use radius */true);
+        stick.Create(numBondVertices, /* index num = */0, /* use vrying radius */false);
         Vec3Buffer*  pos     = stick.Position();
         FloatBuffer* mat     = stick.Material();
-        FloatBuffer* radius  = stick.Radius();
+        //FloatBuffer* radius  = stick.Radius();
         //UintBuffer*  index   = stick.Index();  // not used.
 
         float* pp = pos->GetBuffer();
@@ -91,15 +91,16 @@ bool PDBLoader::Load(const char* filename){
             pp[3*i+2] = bondLines[3*i+2];
         }
 
-        // @todo
-        float* rad = radius->GetBuffer();
-        for (int i = 0; i < numBondVertices; ++i) {
-            rad[i] = 1.0f;
-        }
+		// Don't use varying radius.
+		//float* rad = radius->GetBuffer();
+		//for (int i = 0; i < numBondVertices; ++i) {
+		//	rad[i] = 1.0f;
+		//}
 
-        // @todo
-        memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
-    }
+		// @todo
+		memset(mat->GetBuffer(), 0, sizeof(float) * mat->GetNum());
+
+	}
 
 	return true;
 }
