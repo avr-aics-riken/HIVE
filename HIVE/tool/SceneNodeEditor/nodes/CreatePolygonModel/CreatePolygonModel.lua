@@ -1,7 +1,11 @@
 function CreatePolygonModel(property)
 	local pm = PolygonModel();
 	pm:Create(property.mesh);
+	pm:SetTranslate(property.translate[1], property.translate[2], property.translate[3])
+	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])
+	pm:SetScale(property.scale[1], property.scale[2], property.scale[3])
 	pm:SetShader(property.shadername)
+
 	local uniforms = property.Uniform
 	for i,v in pairs(uniforms) do
 		if v.type == 'vec4' then
