@@ -187,7 +187,7 @@
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
-		function createAnimateButton() {
+		function createAnimateButton(isOpen) {
 			var i = 0,
 				id,
 				targetElem,
@@ -196,7 +196,19 @@
 			
 			buttonMin = button[buttonID].min;
 			buttonMax = button[buttonID].max;
-
+			
+			if (state === 0 && isOpen === true) {
+				return;
+			} else if (state === 2 && isOpen === false) {
+				return;
+			}
+			
+			if (isOpen === true) {
+				state = 2;
+			} else if (isOpen === false) {
+				state = 0;
+			}
+			
 			function beforeTarget() {
 				state = 2;
 			}
