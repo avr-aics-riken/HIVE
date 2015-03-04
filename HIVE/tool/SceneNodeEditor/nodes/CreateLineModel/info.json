@@ -4,7 +4,7 @@
 	"info":"Lineデータを表示させるためのノード",
 	"pos": [450, 300],
 	"varname": "instLineModel",
-	"customfuncfile": "createLineModel.lua",
+	"customfuncfile": "CreateLineModel.lua",
 	"input": [
 		{"name": "line", "type": "BufferLineData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},

@@ -4,7 +4,7 @@
 	"info":"Pointデータを表示させるためのノード",
 	"pos": [450, 300],
 	"varname": "instPointModel",
-	"customfuncfile": "createPointModel.lua",
+	"customfuncfile": "CreatePointModel.lua",
 	"input": [
 		{"name": "point", "type": "BufferPointData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
