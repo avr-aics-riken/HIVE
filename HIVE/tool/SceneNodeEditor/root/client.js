@@ -8,7 +8,9 @@
 		nodeListTable,
 		socket = io.connect(),
 		instance_no = 1,
-		popupNodeList = null;
+		popupNodeList = null,
+		consoleTab,
+		propertyTab;
 	
 	socket.on('stdout', function (data) {
 		var output = document.getElementById('consoleOutput'),
@@ -451,6 +453,8 @@
 	}
 
 	function ButtonRender(e) {
+		console.log(propertyTab);
+		consoleTab(true);
 		var customlua = nui.exportLua();
 		console.log(customlua);
 		clearConsoleOutput();
@@ -547,6 +551,19 @@
 		nui.setTypeColorFunction(colorFunction);
 		nui.nodeClickEvent(showProparty);
 		nui.nodeDeleteEvent(deleteNode);
+
+		// Create Tab
+		consoleTab = window.animtab.create('bottom', {
+				'bottomTab' : { min : '10px', max : '400' },
+			}, {
+				'consoleOutput' : { min : '0px', max : '400px' }
+			}, 'console');
+
+		propertyTab = window.animtab.create('right', {
+				'rightTab' : { min : '0px', max : 'auto' },
+			}, {
+				'menuTab' : { min : '0px', max : '300px' },
+			}, 'Property');
 		
 		//handle
 		openbutton.onchange  = ButtonOpen;
@@ -585,6 +602,7 @@
 	document.oncontextmenu = function () {
 		return false;
 	};
+	
 	
 	// start up
 	window.onload = init;
