@@ -37,9 +37,9 @@ public:
     const VX::Math::vec3&  GetScale()     const { return m_scale; }
     const VX::Math::matrix GetTransformMatrix() const
     {
-        return VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]) // Y,X,Z
+        return VX::Math::Translation(m_trans[0], m_trans[1], m_trans[2])
              * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
-             * VX::Math::Translation(m_trans[0], m_trans[1], m_trans[2]);
+             * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
     }
     
     typedef std::map<std::string, VX::Math::vec4> Vec4Map;

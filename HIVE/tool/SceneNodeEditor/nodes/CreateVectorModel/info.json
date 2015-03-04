@@ -7,6 +7,9 @@
 	"customfuncfile": "CreateVectorModel.lua",
 	"input": [
 		{"name": "vector", "type": "BufferVectorData"},
+		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
+		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},
+		{"name": "scale", "type": "vec3", "value": [1.0, 1.0, 1.0]},
 		{"name": "linewidth", "type": "float", "value":0.5},
 		{"name": "arrowsize", "type": "float", "value":1.0},
 		{"name": "lengthscale", "type": "float", "value":2.0},
