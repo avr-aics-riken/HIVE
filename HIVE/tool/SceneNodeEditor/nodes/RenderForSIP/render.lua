@@ -1,8 +1,8 @@
 function RenderForSIP(arg)
 	render(arg.RenderObject)
 	for i,v in pairs(arg.RenderObject) do
-		print('AAA',i,v)
-		if v:GetType() == 'Camera' then
+		print(i, v:GetType())
+		if v:GetType() == 'CAMERA' then
 			-- save render image as jpg on memory
 			local saver = ImageSaver()
 			local imageBuffer = saver:SaveMemory(1, v:GetImageBuffer())
@@ -20,9 +20,10 @@ function RenderForSIP(arg)
 			 ]]
 			metabin:Create(json, imageBuffer, imageBufferSize) 
 
+			print('Send:', arg.send);
 			-- send through websockt
 			local network = Connection()
-			network:Connect('ws://localhost:8082/v1/')
+			network:Connect(arg.send) --'ws://localhost:8082/v1/')
 			network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
 			network:Close()
 		end
