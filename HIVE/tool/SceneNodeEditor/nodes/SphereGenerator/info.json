@@ -1,0 +1,14 @@
+{
+	"name": "SphereGenerator",
+	"funcname": "SphereGenerator",
+	"info":"Sphereを生成するためのノード",
+	"pos": [100, 100],
+	"varname": "instSphereGen",
+	"customfuncfile":"generator.lua", 
+	"input": [
+		{"name": "size", "type": "float", "value": 1.0}
+	],
+	"output": [
+		{"name": "PointData",  "type": "BufferPointData"}
+	]
+}
