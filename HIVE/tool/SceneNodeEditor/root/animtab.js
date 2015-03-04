@@ -187,7 +187,7 @@
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
-		function createAnimateButton(e) {
+		function createAnimateButton() {
 			var i = 0,
 				id,
 				targetElem,
@@ -239,7 +239,7 @@
 		}
 		
 		isMoving[separatorElem] = false;
-		setupSeparator(direction, separatorElem, button, targets, whstr, createAnimateButton);
+		setupSeparator(direction, separatorElem, button, targets, whstr);
 		
 		function createButton(direction, targets) {
 			separatorElem.addEventListener('click', function () {
@@ -256,6 +256,8 @@
 		$ready((function (direction, button, targets, textlabel) { return function () {
 			createButton(direction, button, targets, textlabel);
 		}; }(direction, button, targets, textlabel)));
+		
+		return createAnimateButton;
 	}
 	
 	window.animtab = animtab;
