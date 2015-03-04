@@ -13,7 +13,7 @@ class RenderObject : public RefCount
 {
 public:
     enum MODE_TYPE {
-        TYPE_NONE,
+        TYPE_NONE = 0,
         TYPE_SETTING,
         TYPE_CAMERA,
         TYPE_VOLUME,
@@ -27,6 +27,21 @@ public:
 
     MODE_TYPE GetType() const {
         return m_type;
+    }
+
+    std::string GetTypeString() const {
+        static const char* modeString[] = {
+            "NONE",
+            "SETTING",
+            "CAMERA",
+            "VOLUME",
+            "POLYGON",
+            "LINE",
+            "POINT",
+            "TETRA",
+            "VECTOR"
+        };
+        return std::string(modeString[m_type]);
     }
 
     //--------------------------------------------------

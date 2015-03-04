@@ -21,12 +21,16 @@ public:
         PolygonModel::Create(mesh);
         return true;
     }
+    std::string GetType() {
+        return GetTypeString();
+    }
 
     LUA_SCRIPTCLASS_BEGIN(PolygonModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferMeshData_Lua*)
     
     // RenderObject interface
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetType)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetRotate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetScale,float, float, float)
