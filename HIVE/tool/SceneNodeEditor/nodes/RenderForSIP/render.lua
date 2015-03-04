@@ -1,4 +1,4 @@
-function RenderWithSIP(arg)
+function RenderForSIP(arg)
 	render(arg.RenderObject)
 	for i,v in pairs(arg.RenderObject) do
 		print('AAA',i,v)

@@ -1,6 +1,6 @@
 {
-	"name": "RenderWithSIP",
-	"funcname": "RenderWithSIP",
+	"name": "RenderForSIP",
+	"funcname": "RenderForSIP",
 	"info":"レンダリングしてSIPに画像を送信するためのノード",
 	"pos": [500, 100],
 	"varname": "renderSIP",
