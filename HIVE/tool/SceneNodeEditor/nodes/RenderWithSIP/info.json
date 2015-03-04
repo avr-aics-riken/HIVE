@@ -1,0 +1,18 @@
+{
+	"name": "RenderWithSIP",
+	"funcname": "RenderWithSIP",
+	"info":"レンダリングしてSIPに画像を送信するためのノード",
+	"pos": [500, 100],
+	"varname": "renderSIP",
+	"customfuncfile":"render.lua",
+	"rootnode":true,
+	"input": [
+		{"name": "RenderObject",  "type": "RenderObject", "array": [
+			{"name": "RenderObject0",  "type": "RenderObject"},
+			{"name": "RenderObject1",  "type": "RenderObject"},
+			{"name": "RenderObject2",  "type": "RenderObject"}
+		]}
+	],
+	"output": [
+	]
+}
