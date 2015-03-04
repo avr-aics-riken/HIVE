@@ -433,12 +433,12 @@
 			req = new XMLHttpRequest();
 		req.open('GET', url);
 		req.send();
-		req.addEventListener("load", (function (callback) {
+		req.addEventListener("load", (function (req, callback) {
 			return function (ev) {
-				var resp = ev.srcElement.responseText;
+				var resp = req.responseText;// ev.srcElement.responseText;
 				storeNodeList(resp, callback);
 			};
-		}(cb)));
+		}(req, cb)));
 	}
 
 	//---------------------------------------------------------------------------
