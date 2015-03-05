@@ -100,7 +100,7 @@ public:
             };
             happyhttp::Error error = m_connection->request("POST", "/postparam", header, body, size);
             if (error) {
-                printf("Connection Error: %s¥n", error->c_str());
+                fprintf(stderr, "Connection Error: %s¥n", error->c_str());
                 return false;
             }
             return true;
@@ -122,7 +122,7 @@ public:
             };
             happyhttp::Error error = m_connection->request("POST", "/postparam", header, body, size);
             if (error) {
-                printf("Connection Error: %s\n", error->c_str());
+                fprintf(stderr, "Connection Error: %s\n", error->c_str());
                 return false;
             }
             return true;
@@ -143,7 +143,7 @@ public:
             };
             happyhttp::Error error = m_connection->request("POST", "/postparam", header, body, size);
             if (error) {
-                printf("Connection Error: %s\n", error->c_str());
+                fprintf(stderr, "Connection Error: %s\n", error->c_str());
                 return false;
             }
             return true;
@@ -163,7 +163,7 @@ public:
         // load image
         std::ifstream ifs(filepath.c_str(), std::ios::in | std::ios::binary);
         if (!ifs.good()) {
-            printf("File Open Error");
+            fprintf(stderr, "File Open Error");
             return false;
         }
         ifs.seekg(0, std::ifstream::end);
@@ -187,7 +187,7 @@ public:
             delete [] buffer;
             delete [] base64buffer;
             if (error) {
-                printf("Connection Error: %s\n", error->c_str());
+                fprintf(stderr, "Connection Error: %s\n", error->c_str());
                 return false;
             }
             return true;
@@ -279,7 +279,7 @@ private:
         m_connection->setcallbacks( onBegin, onData, onComplete, 0 );
         happyhttp::Error error = m_connection->connect();
         if (error) {
-            printf("Connection Error: %s\n", error->c_str());
+            fprintf(stderr, "Connection Error: %s\n", error->c_str());
             return false;
         }
         while (m_connection->outstanding()) {
