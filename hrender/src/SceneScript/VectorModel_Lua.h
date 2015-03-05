@@ -20,6 +20,9 @@ public:
         VectorModel::Create(vec);
         return true;
     }
+    std::string GetType() {
+        return GetTypeString();
+    }
 
     bool SetLineWidth(float w) {
         VectorModel::SetLineWidth(w);
@@ -44,6 +47,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetLengthScale, float)
 
     // RenderObject interface
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetType)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetRotate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetScale,float, float, float)

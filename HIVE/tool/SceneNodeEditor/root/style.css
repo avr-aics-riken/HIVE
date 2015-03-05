@@ -3,6 +3,7 @@ body {
 	height:100%;
 	background-color:rgb(50,50,50);
 	font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+	overflow:hidden;
 }
 
 .menuButtonClass {

@@ -4,7 +4,7 @@
 	"info":"メッシュデータを表示させるためのノード",
 	"pos": [450, 300],
 	"varname": "instPolygonModel",
-	"customfuncfile": "createPolygonModel.lua",
+	"customfuncfile": "CreatePolygonModel.lua",
 	"input": [
 		{"name": "mesh", "type": "BufferMeshData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
