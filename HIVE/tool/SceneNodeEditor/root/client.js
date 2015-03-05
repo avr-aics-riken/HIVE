@@ -1,5 +1,5 @@
 /*jslint devel:true */
-/*global SVG, svgNodeUI, io, fs, URL, FileReader */
+/*global SVG, svgNodeUI, io, fs, URL, FileReader, saveAs, Blob */
 (function () {
 	'use strict';
 	var nui,
@@ -461,40 +461,48 @@
 		socket.emit('sendScene', JSON.stringify({scene: customlua}));
 	}
 
-	function ButtonOpen(evt) {
-		var files = evt.target.files,
-			i,
-			f,
-			reader,
-			data,
-			nodedata;
-		console.log(files);
-		function readfile(theFile) {
-			return function (e) {
-				data = e.target.result;
-				nodedata = JSON.parse(data);
-				nui.clearNodes();
-				nui.makeNodes(nodedata);
-			};
-		}
-		for (i = 0; i < files.length; i = i + 1) {
-			f = files[i];
-			reader = new FileReader();
-			reader.onload = readfile(f);
-			reader.readAsText(f);
-		}
+	function buttonOpen(opbtn) {
+		return function (evt) {
+			if (opbtn.value === '') {
+				return;
+			}
+			var files = evt.target.files,
+				i,
+				f,
+				reader,
+				data,
+				nodedata;
+			console.log(files);
+			function readfile(theFile) {
+				return function (e) {
+					data = e.target.result;
+					nodedata = JSON.parse(data);
+					nui.clearNodes();
+					nui.makeNodes(nodedata);
+				};
+			}
+			for (i = 0; i < files.length; i = i + 1) {
+				f = files[i];
+				reader = new FileReader();
+				reader.onload = readfile(f);
+				reader.readAsText(f);
+			}
+			opbtn.value = '';
+		};
 	}
 	function ButtonSave(e) {
 		//
 		// TODO: safari
 		//
-		var a = document.createElement('a'),
-			nodeData = JSON.stringify(nui.getNodeData()),
-			href = "data:application/octet-stream," + encodeURIComponent(nodeData);
-
-		a.href = href;
+		var nodeData = JSON.stringify(nui.getNodeData()),
+			//a = document.createElement('a'),
+			//href = "data:application/octet-stream," + encodeURIComponent(nodeData);
+			blob = new Blob([nodeData], {type: "text/plain;charset=utf-8"});
+		
+		saveAs(blob, "scenenodes.json");
+		/*a.href = href;
 		a.download = 'scenenodes.json';
-		a.click();
+		a.click();*/
 	}
 	
 	function showAddNodeMenu(show, sx, sy, popupmode) {
@@ -554,19 +562,19 @@
 
 		// Create Tab
 		consoleTab = window.animtab.create('bottom', {
-				'bottomTab' : { min : '10px', max : '400' },
-			}, {
-				'consoleOutput' : { min : '0px', max : '400px' }
-			}, 'console');
+			'bottomTab' : { min : '10px', max : '400' }
+		}, {
+			'consoleOutput' : { min : '0px', max : '400px' }
+		}, 'console');
 
 		propertyTab = window.animtab.create('right', {
-				'rightTab' : { min : '0px', max : 'auto' },
-			}, {
-				'menuTab' : { min : '0px', max : '300px' },
-			}, 'Property');
+			'rightTab' : { min : '0px', max : 'auto' }
+		}, {
+			'menuTab' : { min : '0px', max : '300px' }
+		}, 'Property');
 		
 		//handle
-		openbutton.onchange  = ButtonOpen;
+		openbutton.onchange  = buttonOpen(openbutton);
 		savebutton.onclick   = ButtonSave;
 		renderbutton.onclick = ButtonRender;
 		clearbutton.onclick  = ButtonClear;
@@ -606,6 +614,12 @@
 	
 	// start up
 	window.onload = init;
+	
+	// Stop page exit
+	window.onbeforeunload = function (event) {
+		event = event || window.event;
+		event.returnValue = 'Exit?';
+	};
 	
 }());
 
