@@ -131,8 +131,9 @@ void TinyPDB::FixedIdentifier(std::string& identifier, int length) {
     --length;
   }
 
+  // @todo { Read non-space characters. }
   while ((('A' <= Char() && Char() <= 'Z') ||
-         ('0' <= Char() && Char() <= '9')) &&
+         ('0' <= Char() && Char() <= '9') || (Char() == '\'')) &&
          length > 0) {
     identifier += Char();
     Consume();
@@ -247,7 +248,7 @@ void TinyPDB::Consume(int amount) {
 namespace {
 
 float GetBondLengthLimit(const Atom& a, const Atom& b) {
-  if (a.GetName().size() >= 2 && (a.GetName()[2] == 'S' || b.GetName()[2] == 'S')) {
+  if ((a.GetName().length() > 2 && b.GetName().length() > 2) && (a.GetName()[2] == 'S' || b.GetName()[2] == 'S')) {
     return 1.9;
   } else {
     return 1.7;
