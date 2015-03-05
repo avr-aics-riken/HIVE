@@ -25,7 +25,7 @@ ENDIF()
 IF (CMAKE_SYSTEM_PROCESSOR MATCHES "s64fx")
 
   # Use native Fujitsu compiler
-  IF (SURFACE_BUILD_WITH_MPI)
+  IF (HIVE_BUILD_WITH_MPI)
     SET(CMAKE_C_COMPILER mpifcc)
     SET(CMAKE_CXX_COMPILER mpiFCC)
   ELSE()
@@ -60,10 +60,10 @@ IF (CMAKE_SYSTEM_PROCESSOR MATCHES "s64fx")
 ENDIF()
 
 # K cross compiling
-IF (SURFACE_BUILD_K_CROSS_COMPILE)
+IF (HIVE_BUILD_K_CROSS_COMPILE)
 
   # Use Fujitsu cross compiler
-  IF (SURFACE_BUILD_WITH_MPI)
+  IF (HIVE_BUILD_WITH_MPI)
     SET(CMAKE_C_COMPILER mpifccpx)
     SET(CMAKE_CXX_COMPILER mpiFCCpx)
   ELSE()
@@ -247,11 +247,12 @@ IF(HIVE_BUILD_WITH_BCMTOOLS)
   )
 
   SET(BCMTOOLS_LIBS
-    BCM TPmpi
+    BCM POLYmpi TPmpi
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
   link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/lib)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/lib)
   
 ENDIF()
 
