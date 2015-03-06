@@ -16,6 +16,7 @@ public:
     // Return fail when timeout or recv() fails.
     virtual std::string Recv() = 0;
     virtual bool Close() = 0;
+    virtual bool SetTimeout(int timeout) = 0;
     
     virtual ~ConnectionIF() {}
 protected:
@@ -39,6 +40,8 @@ protected:
     bool SendImage(const std::string& filepath);
     std::string Recv();
     bool Close();
+    bool SetTimeout(int timeout);
+
 };
 
 #endif //_CONNECTION_H_
