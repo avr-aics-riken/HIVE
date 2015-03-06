@@ -1,3 +1,9 @@
+#ifndef HIVE_WITH_HDMLIB
+#error "HIVE_WITH_HDMLIB must be defined when you compile HDMLoader module"
+#endif
+
+#include <mpi.h> // must include mpi.h befor stdio.h for Intel MPI compiler.
+
 #include <stdio.h>
 #include <string.h>
 
@@ -6,9 +12,6 @@
 #include "HdmLoader.h"
 #include "SimpleVOL.h"
 
-#ifndef HIVE_WITH_HDMLIB
-#error "HIVE_WITH_HDMLIB must be defined when you compile HDMLoader module"
-#endif
 
 #include "BlockFactory.h"
 #include "Block.h"

@@ -1,8 +1,13 @@
 //
 // TODO: - timestep support
 //       - support various volume data type
-// 	     - test with K environment
 //
+
+#ifndef HIVE_WITH_CDMLIB
+#error "HIVE_WITH_CDMLIB must be defined when you compile CDMLoader module"
+#endif
+
+#include <mpi.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -12,10 +17,6 @@
 
 #include "CdmLoader.h"
 #include "SimpleVOL.h"
-
-#ifndef HIVE_WITH_CDMLIB
-#error "HIVE_WITH_CDMLIB must be defined when you compile CDMLoader module"
-#endif
 
 #include "cdm_DFI.h"
 #include "cdm_TextParser.h"
