@@ -1,3 +1,7 @@
+#ifdef HIVE_WITH_COMPOSITOR
+#include <mpi.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +39,12 @@
 #include "../Image/ImageSaver.h"
 
 #include "../Core/Path.h"
+
+#ifdef HIVE_WITH_COMPOSITOR
+extern "C" {
+#include "234compositor.h"
+}
+#endif
 
 
 class RenderCore::Impl {
@@ -242,9 +252,20 @@ private:
         //else
         //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
         
+#ifdef HIVE_WITH_COMPOSITOR
+        int rank;
+        int nnodes;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+
+        // @fixme { pixel format. }
+        Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+#endif
+
         float clearcolor_r = 0.0;
         float clearcolor_g = 0.0;
         float clearcolor_b = 0.0;
+
         
         // merge to bgcolor
         for (int y = 0; y < m_height; ++y) {
@@ -312,6 +333,23 @@ private:
         
         CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
         //		CreateBuffer_GL  (w, h, m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);  // todo nothing here
+
+#ifdef HIVE_WITH_COMPOSITOR
+        int rank;
+        int nnodes;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+
+        // Re-allocate compositor buffer for the change of screen resolution.
+        // @fixme { Support various image format. Currently only RGBA 8bit allowd. }
+        if (m_width != w || m_height != h) {
+            if (m_width == 0 || m_height ==0) { // Assume first call of resize() function.
+            } else {
+                Destroy_234Composition(ID_RGBA32);
+            }
+            Init_234Composition (rank, nnodes, w, h, ID_RGBA32);
+        }
+#endif
         
         m_width  = w;
         m_height = h;
