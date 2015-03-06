@@ -1,0 +1,7 @@
+
+print('load VOL')
+
+local vol = VOLLoader()
+vol:Load('test.vol')
+
+

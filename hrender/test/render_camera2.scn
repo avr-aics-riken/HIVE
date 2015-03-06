@@ -1,0 +1,27 @@
+
+print('Render camera2')
+
+local camera1 = Camera()
+camera1:SetScreenSize(1024, 1024)
+camera1:ClearColor(1,0,0,1);
+camera1:SetFilename('render_camera2_image1.jpg')
+camera1:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local camera2 = Camera()
+camera2:SetScreenSize(512, 512)
+camera2:ClearColor(0,1,0,1);
+camera2:SetFilename('render_camera2_image2.jpg')
+camera2:LookAt(
+	0,300,300,
+	0,0,0,
+	0,1,0,
+	45
+)
+
+render {camera1, camera2}
+

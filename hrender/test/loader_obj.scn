@@ -1,0 +1,6 @@
+
+print('load obj')
+
+local obj = OBJLoader()
+obj:Load('bunny.obj')
+

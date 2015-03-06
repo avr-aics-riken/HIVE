@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+      <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+      <script type="text/javascript" src="svg.min.js"></script>
+      <script type="text/javascript" src="svg.draggable.js"></script>
+      <script type="text/javascript" src="svg.nodeui.js"></script>
+	  <script type="text/javascript" src="qatrix-1.1.js"></script>
+	  <script type="text/javascript" src="animtab.js"></script>
+      <script type="text/javascript" src="FileSaver.js"></script>
+      <script type="text/javascript" src="client.js"></script>
+	  <link rel="stylesheet" href="style.css" type="text/css" />
+      <title>NodeEditor</title>
+  </head>
+<body bgcolor=white>
+  <svg id="nodecanvas" class="NodeCanvas noneselect">
+  </svg>
+  <div class="menuTab" id="menuTab">
+	<input type="button"  value="Save"    id="Save">
+	<input type="file"    value="Open"    id="Open">
+	<div id="Clear" class="menuButtonClass noneselect">ClearAll</div>
+	<div class="spacer"></div>
+	<div id="Render" class="menuButtonClass noneselect">Render</div>
+	<div class="spacer"></div>
+	<div id="NodeListBox" class="nodeListBox noneselect"></div>
+	<div class="spacer"></div>
+	<div id="property"    class="nodeProperty"></div>
+  </div>
+	<div id="consoleOutput" class="consoleOutput">
+		<span id="consoleTextBlock" class="consoleTextBlock">
+		</span>
+	</div>
+	
+	<script>
+		
+	</script>
+</body>
+</html>

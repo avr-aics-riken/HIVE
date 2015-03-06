@@ -1,0 +1,17 @@
+{
+	"name": "LoadOBJ",
+	"funcname": "LoadOBJ",
+	"info":"OBJファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instOBJLoader",
+	"customfuncfile":"objloader.lua", 
+	"input": [
+		{"name": "filepath", "type": "string", "value": "bunny.obj"}
+	],
+	"output": [
+		{"name": "MeshData",  "type": "BufferMeshData"},
+		{"name": "PointData", "type": "BufferPointData"},
+		{"name": "LineData",  "type": "BufferLineData"},
+		{"name": "NormalData", "type": "BufferVectorData"}
+	]
+}

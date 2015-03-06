@@ -1,0 +1,20 @@
+print('Send image through ws')
+
+local clock = os.clock
+function sleep(n)  -- seconds
+  local t0 = clock()
+  while clock() - t0 <= n do end
+end
+
+local network = Connection()
+network:Connect('ws://localhost:8080/')
+network:SendImage('render_obj.jpg')
+
+--for i = 1, 99 do
+--    local file = "testimage/" .. i .. ".jpg"
+--    network:SendImage(file)
+--    sleep(0.5);
+--end
+
+network:Close()
+

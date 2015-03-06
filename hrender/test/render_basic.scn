@@ -1,0 +1,4 @@
+
+print('Render basic')
+
+render({})

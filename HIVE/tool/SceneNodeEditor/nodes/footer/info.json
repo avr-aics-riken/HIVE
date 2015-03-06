@@ -1,0 +1,13 @@
+{
+	"name": "footer",
+	"funcname": "footer",
+	"info":"",
+	"visible": false,
+	"pos": [100, 100],
+	"varname": "instFooter",
+	"customfunc":"-- Generated Footer by NodeEditor",
+	"input": [
+	],
+	"output": [
+	]
+}

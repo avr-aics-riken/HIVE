@@ -1,0 +1,46 @@
+
+print('Send Render Image')
+
+local camera = Camera()
+camera:SetScreenSize(512, 512)
+camera:SetNetworkAddress('http://localhost:8082/')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local obj = OBJLoader()
+obj:Load('bunny.obj')
+local model = PolygonModel()
+local meshdata = obj:MeshData()
+model:Create(meshdata)
+model:SetShader('white.frag')
+
+render {camera, model}
+
+-- save render image as jpg on memory
+local saver = ImageSaver()
+local imageBuffer = saver:SaveMemory(1, camera:GetImageBuffer())
+local imageBufferSize = saver:MemorySize()
+
+-- create metabinary
+local metabin = MetaBinary()
+local json = [[{
+ "command" : "reqAddContent",
+ "type" : "image",
+ "posx" : "100",
+ "posy" : "100",
+ "width" : "512",
+ "height" : "512"}
+ ]]
+metabin:Create(json, imageBuffer, imageBufferSize) 
+
+-- send through websockt
+local network = Connection()
+network:Connect('ws://localhost:8082/v1/')
+network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
+network:Close()
+

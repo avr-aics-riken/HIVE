@@ -1,0 +1,14 @@
+{
+	"name": "QuadGenerator",
+	"funcname": "QuadGenerator",
+	"info":"Quadを生成するためのノード",
+	"pos": [100, 100],
+	"varname": "instQuadGen",
+	"customfuncfile":"generator.lua", 
+	"input": [
+		{"name": "size", "type": "vec2", "value": [1.0, 1.0]}
+	],
+	"output": [
+		{"name": "MeshData",  "type": "BufferMeshData"}
+	]
+}

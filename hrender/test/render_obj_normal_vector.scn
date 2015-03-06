@@ -1,0 +1,105 @@
+function LoadOBJ(property)
+	local objloader
+	objloader = OBJLoader()
+	objloader:Load(property.filepath)
+	return objloader
+end
+
+function CreateLineModel(property)
+	local lm = LineModel();
+	lm:Create(property.line);
+	lm:SetShader(property.shadername)
+	lm:SetLineWidth(property.width)
+	local uniforms = property.Uniform
+	for i,v in pairs(uniforms) do
+		if v.type == 'vec4' then
+			print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
+			lm:SetVec4(v.name, v.value[1], v.value[2], v.value[3], v.value[4])
+		end
+		if v.type == 'vec3' then
+			print('vec3[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], ')')
+			lm:SetVec3(v.name, v.value[1], v.value[2], v.value[3])
+		end
+		if v.type == 'vec2' then
+			print('vec2[' .. v.name .. '] = (', v.value[1], v.value[2], ')')
+			lm:SetVec2(v.name, v.value[1], v.value[2])
+		end
+		if v.type == 'float' then
+			print('float[' .. v.name .. '] = (', v.value, ')')
+			lm:SetFloat(v.name, v.value)
+		end
+	end
+	function getModel()
+		return lm
+	end
+	return {
+		model=getModel
+	}
+end
+
+function CreateVectorModel(property)
+	local vm = VectorModel();
+	vm:Create(property.vector);
+	vm:SetShader(property.shadername)
+	vm:SetLineWidth(property.linewidth)
+	vm:SetArrowSize(property.arrowsize)
+	vm:SetLengthScale(property.lengthscale)
+	local uniforms = property.Uniform
+	for i,v in pairs(uniforms) do
+		if v.type == 'vec4' then
+			print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
+			lm:SetVec4(v.name, v.value[1], v.value[2], v.value[3], v.value[4])
+		end
+		if v.type == 'vec3' then
+			print('vec3[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], ')')
+			lm:SetVec3(v.name, v.value[1], v.value[2], v.value[3])
+		end
+		if v.type == 'vec2' then
+			print('vec2[' .. v.name .. '] = (', v.value[1], v.value[2], ')')
+			lm:SetVec2(v.name, v.value[1], v.value[2])
+		end
+		if v.type == 'float' then
+			print('float[' .. v.name .. '] = (', v.value, ')')
+			lm:SetFloat(v.name, v.value)
+		end
+	end
+	function getModel()
+		return vm
+	end
+	return {
+		model = getModel
+	}
+end
+
+
+function CreateCamera(property)
+	local cam;	
+	print('create camera',
+		property.screensize[1], property.screensize[2],
+		property.filename)
+	cam = Camera()
+	cam:SetScreenSize(property.screensize[1], property.screensize[2])
+	cam:SetFilename(property.filename)
+	cam:LookAt(
+		property.position[1], property.position[2], property.position[3],
+		property.target[1], property.target[2], property.target[3],
+		property.up[1], property.up[2], property.up[3],
+		property.fov
+	)
+	
+	function camera()
+		return cam
+	end
+	return {
+		camera = camera
+	}
+end
+
+function Render(arg)
+	render(arg.RenderObject)
+end
+local instOBJLoader7 = LoadOBJ({filepath='bunny.obj'})
+--local instLineModel8 = CreateLineModel({line=instOBJLoader7:LineData(), width = 1, shadername='normal.frag', Uniform={nil, nil, nil}})
+local instLineModel8 = CreateVectorModel({vector=instOBJLoader7:NormalData(), linewidth = 1, arrowsize=3, lengthscale=4.0, shadername='normal.frag', Uniform={nil, nil, nil}})
+local instCreateCamera1 = CreateCamera({position={0,0,100}, target={0,0,0}, up={0,1,0}, fov = 60, screensize={1024, 1024}, filename='render_obj_normal_vector.jpg'})
+local root3 = Render({RenderObject={RenderObject0=instCreateCamera1:camera(), RenderObject1=instLineModel8:model(), nil}})

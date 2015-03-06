@@ -1,0 +1,29 @@
+
+print('Render PDB')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_pdb.jpg')
+
+camera:LookAt(
+	0,0,80,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local pdb = PDBLoader()
+pdb:Load('4CL8.pdb')
+
+local ballmodel = PointModel()
+local balldata = pdb:BallData()
+ballmodel:Create(balldata)
+ballmodel:SetShader('white.frag')
+
+local stickmodel = LineModel()
+local stickdata = pdb:StickData()
+stickmodel:Create(stickdata)
+stickmodel:SetLineWidth(0.20);
+stickmodel:SetShader('white.frag')
+
+render {camera, ballmodel, stickmodel}

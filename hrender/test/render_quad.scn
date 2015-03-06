@@ -1,0 +1,36 @@
+
+print('Render Quad')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_quad.jpg')
+
+camera:LookAt(
+	0,0,30,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local gen = PrimitiveGenerator()
+
+local width  = 2
+local height = 1.5
+
+
+local model = PolygonModel()
+local meshdata = gen:Quad(width, height)
+model:Create(meshdata)
+model:SetShader('white.frag')
+
+local analy = PolygonAnalyzer()
+analy:Execute(model)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+render {camera, model}
+
+

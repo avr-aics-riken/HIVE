@@ -1,0 +1,14 @@
+{
+	"name": "LoadSTL",
+	"funcname": "LoadSTL",
+	"info":"STLファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instSTLLoader",
+	"customfuncfile":"stlloader.lua",
+	"input": [
+		{"name": "filepath", "type": "string", "value": "bunny.stl"}
+	],
+	"output": [
+		{"name": "MeshData", "type": "BufferMeshData"}
+	]
+}

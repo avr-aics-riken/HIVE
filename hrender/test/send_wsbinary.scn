@@ -1,0 +1,16 @@
+print('Send image through ws')
+
+local file = io.open("render_obj.jpg", "rb")
+
+local current = file:seek()
+local dataSize = file:seek("end")
+file:seek("set", current)
+print("datasize" .. dataSize)
+
+local data = file:read("*a")
+
+local network = Connection()
+network:Connect('ws://localhost:8080/')
+network:SendBinary(data, dataSize)
+network:Close()
+

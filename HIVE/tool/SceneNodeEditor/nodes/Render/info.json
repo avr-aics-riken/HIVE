@@ -1,0 +1,18 @@
+{
+	"name": "Render",
+	"funcname": "Render",
+	"info":"レンダリングを行うためのノード",
+	"pos": [500, 100],
+	"varname": "root",
+	"customfuncfile":"render.lua",
+	"rootnode":true,
+	"input": [
+		{"name": "RenderObject",  "type": "RenderObject", "array": [
+			{"name": "RenderObject0",  "type": "RenderObject"},
+			{"name": "RenderObject1",  "type": "RenderObject"},
+			{"name": "RenderObject2",  "type": "RenderObject"}
+		]}
+	],
+	"output": [
+	]
+}

@@ -1,0 +1,26 @@
+
+print('Render Obj')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_obj_line.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local obj = OBJLoader()
+obj:Load('bunny.obj')
+
+local model = LineModel()
+model:SetLineWidth(0.25)
+local linedata = obj:LineData()
+model:Create(linedata)
+model:SetShader('white.frag')
+
+render {camera, model}
+
+

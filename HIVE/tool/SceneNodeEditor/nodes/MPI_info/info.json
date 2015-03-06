@@ -1,0 +1,14 @@
+{
+	"name": "MPI_Info",
+	"funcname": "MPI_Info",
+	"info":"MPIの情報を取得するノード",
+	"pos": [110, 200],
+	"varname": "instMPI",
+	"customfuncfile":"mpi.lua",
+	"input": [
+	],
+	"output": [
+		{"name": "rank",  "type": "float"},
+		{"name": "size",  "type": "float"}
+	]
+}

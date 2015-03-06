@@ -1,0 +1,29 @@
+
+print('Render Obj')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_sph_trans.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local sph = SPHLoader()
+sph:Load('fvel_0000001470.sph')
+
+local f2f = FloatsToFloat()
+f2f:Create(sph:VolumeData(), 2) -- RED channel
+
+local volume = VolumeModel()
+local volumedata = f2f:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('def_volume_raymarch.frag')
+
+render {camera, volume}
+
+
