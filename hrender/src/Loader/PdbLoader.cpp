@@ -3,13 +3,14 @@
 #include "Buffer.h"
 #include <cstring>
 
-PDBLoader::PDBLoader(){}
+PDBLoader::PDBLoader() {}
 PDBLoader::~PDBLoader(){};
 
 void PDBLoader::Clear()
 {
 	ball.Clear();
 	stick.Clear();
+	m_atoms.clear();
 }
 
 bool PDBLoader::Load(const char* filename, bool generateBond){
@@ -21,7 +22,9 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
         return false;
     }
 
-    const size_t numAtoms = pdb.GetAtoms().size();
+	m_atoms = pdb.GetAtoms(); // copy
+
+    int numAtoms = static_cast<int>(pdb.GetAtoms().size());
 
     {
         ball.Create(numAtoms);
@@ -113,4 +116,22 @@ BufferPointData *PDBLoader::BallData()
 BufferLineData *PDBLoader::StickData()
 {
 	return &stick;
+}
+
+void PDBLoader::SetMaterial(int i, float matID) {
+    FloatBuffer* mat     = ball.Material();
+	if (i < 0 || i >= mat->GetNum()) {
+		return;
+	}
+
+	mat->GetBuffer()[i] = matID;
+}
+
+std::string PDBLoader::AtomElementSymbol(int i)
+{
+	if (i < 0 || i >= m_atoms.size()) {
+		return "";
+	}
+
+	return m_atoms[i].GetElementSymbol();
 }
