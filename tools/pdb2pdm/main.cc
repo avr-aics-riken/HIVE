@@ -1,3 +1,7 @@
+#ifdef HIVE_ENABLE_MPI
+#include <mpi.h>
+#endif
+
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
@@ -6,10 +10,6 @@
 #include <string>
 
 #include "tiny_pdb.h"
-
-#ifdef HIVE_ENABLE_MPI
-#include <mpi.h>
-#endif
 
 int main(int argc, char **argv) {
 #ifdef HIVE_ENABLE_MPI

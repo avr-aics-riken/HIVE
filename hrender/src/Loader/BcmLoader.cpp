@@ -1,16 +1,16 @@
+#ifndef HIVE_WITH_BCMTOOLS
+#error "HIVE_WITH_BCMTOOLS must be defined when you compile BCMLoader module"
+#endif
+
+#include <mpi.h>
+
 #include <stdio.h>
 #include <string.h>
 
 #include <string>
 
-#include <mpi.h>
-
 #include "BcmLoader.h"
 #include "SimpleVOL.h"
-
-#ifndef HIVE_WITH_BCMTOOLS
-#error "HIVE_WITH_BCMTOOLS must be defined when you compile BCMLoader module"
-#endif
 
 #include "BCMTools.h"
 #include "BCMOctree.h"
