@@ -63,6 +63,7 @@ public:
     {
         m_connection = NULL;
         m_ws = NULL;
+        m_timeout = 1000;
     }
     
     ~Impl()
@@ -205,7 +206,7 @@ public:
     
     std::string Recv() {
         if (m_connection) {
-            // @todo
+            fprintf(stderr, "No connection Error");
             return "";
         } else if (m_ws) {
             if (m_ws->getReadyState() == easywsclient::WebSocket::CLOSED) {
@@ -215,12 +216,20 @@ public:
             // Assume single thread, single instance execution.
             gRecvBuffer.clear();
 
-            m_ws->poll(1000); // @todo { fix timeout }
+            m_ws->poll(m_timeout);
             m_ws->dispatch(RecvCallback);
 
             return gRecvBuffer;
         }
         return "";
+    }
+    
+    bool SetTimeout(int timeout) {
+        if (timeout < 0) {
+            return false;
+        }
+        m_timeout = timeout;
+        return true;
     }
     
     bool Close()
@@ -300,6 +309,7 @@ private:
     easywsclient::WebSocket::pointer m_ws;
     happyhttp::Connection* m_connection;
     std::string m_recvBuf;
+    int m_timeout;
 };
 
 /**
@@ -374,6 +384,10 @@ public:
         }
     }
     
+    bool SetTimeout(int timeout) {
+        return m_imp.SetTimeout(timeout);
+    }
+    
     //int RecvSize() const {
     //    return static_cast<int>(m_recvBuf.size());
     //}
@@ -437,5 +451,10 @@ std::string Connection::Recv()
 bool Connection::Close()
 {
     return m_imp->Close();
+}
+
+bool Connection::SetTimeout(int timeout)
+{
+    return m_imp->SetTimeout(timeout);
 }
 
