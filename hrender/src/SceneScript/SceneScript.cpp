@@ -1,3 +1,6 @@
+#ifdef HIVE_ENABLE_MPI
+#include <mpi.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,10 +12,6 @@
 #include <vector>
 
 #include "../Renderer/RenderCore.h"
-
-#ifdef HIVE_ENABLE_MPI
-#include <mpi.h>
-#endif
 
 // --- Script Classes ----
 #include "PolygonModel_Lua.h"

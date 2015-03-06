@@ -1,8 +1,10 @@
-#include "PdmSaver.h"
-
 #ifndef HIVE_WITH_PDMLIB
 #error "HIVE_WITH_PDMLIB must be defined when you compile CDMSaver module"
 #endif
+
+#include <mpi.h>
+
+#include "PdmSaver.h"
 
 #include <cstring>
 
