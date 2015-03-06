@@ -32,7 +32,7 @@ public:
     }
 
 	bool SetMaterial(int i, float matID) {
-        PDBLoader::SetMaterial(i, matID);
+        PDBLoader::SetMaterial(i-1, matID);
 		return true;
 	}
 
