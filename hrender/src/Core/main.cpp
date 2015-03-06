@@ -43,7 +43,8 @@ int main(int argc, char* argv[])
     for (int i = 1; i < argc; ++i) {
         //const char* arg = &argv[i][0];
         size_t na = strlen(argv[i]);
-        if (na > 4 && strncasecmp(&argv[i][na-4],".scn",4)==0)
+        if (na > 4
+        && (strncasecmp(&argv[i][na-4],".scn",4) == 0 || strncasecmp(&argv[i][na-4],".lua",4) == 0))
         {
             scenefile = argv[i];
         }
