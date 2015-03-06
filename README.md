@@ -1,4 +1,6 @@
-# HIVE
+#HIVE
+
+HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" and is built on SURFACE.
 
 ## Requirements
 
@@ -33,7 +35,7 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     $ ./scripts/build_loader_libs_macosx.sh
 
 
-## How to build
+## How to HIVE build
 
     $ cd HIVE
     $ mkdir build
@@ -41,4 +43,12 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     $ cmake ../
     $ make
 
+### MacOSX OpenMP build with GCC
 
+Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
+
+    $ cd HIVE
+    $ mkdir build
+    $ ../scripts/cmake_macosx_omp.sh
+    $ make
+    
