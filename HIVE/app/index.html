@@ -10,7 +10,7 @@
 		
 		ws.addEventListener('open', function (event) {
 			console.log('connected');
-			sendMsg(ws, {mode: 'CLIENT'});
+			sendMsg(ws, {mode: 'client'});
 		});
 		ws.addEventListener('message', function (event) {
 			if (event.data.indexOf('print(') == 0) { // skip type mode
