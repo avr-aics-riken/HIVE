@@ -1,0 +1,33 @@
+print('Render PDB')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_pdb2.jpg')
+
+camera:LookAt(
+	480,480,480,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local pdb = PDBLoader()
+pdb:Load('frame_1.pdb', false)
+
+local n = pdb:NumAtoms()
+print("# of atoms:", n)
+
+-- Assign the material ID from element symbol name.
+-- Assume hex string for an element symbol name.
+for i = 1, n do
+  local sym = pdb:AtomElementSymbol(i)
+  local id = tonumber(sym, 16)
+  pdb:SetMaterial(i, id)
+end
+
+local ballmodel = PointModel()
+local balldata = pdb:BallData()
+ballmodel:Create(balldata)
+ballmodel:SetShader('pdb.frag')
+
+render {camera, ballmodel}
