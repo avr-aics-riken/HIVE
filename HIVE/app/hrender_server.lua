@@ -6,7 +6,7 @@ package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
 function ClientType()
-	return "RENDER"
+	return "renderer"
 end
 
 local network = Connection()

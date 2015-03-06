@@ -30,7 +30,7 @@ ws.on('request', function (request) {
 	
 	
 	retlua = "{mode = ClientType()}";
-	connection.send('print("Connected with HIVE master")\n return JSON.encode(' + retlua + ')');
+	connection.send('print("Connected with HIVE master")\n return JSON.encode(' + retlua + ')'); // TODO: renderer open event
 	//connection.send('return JSON.encode({aaa=tostring(JSON)})');
 	
 	connection.on('message', (function (conn) { return function (message) {
@@ -59,10 +59,10 @@ ws.on('request', function (request) {
 					}
 					
 					// Renderer or Client
-					if (data.mode === "RENDER") {
+					if (data.mode === 'renderer') {
 						console.log('Connected Renderer');
 						renderNode = conn;
-					} else if (data.mode === "CLIENT") {
+					} else if (data.mode === 'client') {
 						console.log('Connected client');
 						clientNode = conn;
 					}
