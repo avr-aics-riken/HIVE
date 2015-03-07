@@ -27,7 +27,7 @@ class Vec2Buffer : public BaseArrayBuffer
 {
 public:
     Vec2Buffer() : BaseArrayBuffer() {}
-    ~Vec2Buffer(){ m_buffer.clear(); std::vector<vec2>(m_buffer).swap(m_buffer); }
+    ~Vec2Buffer(){}
     BufferType GetType() const { return BUFFER_VEC2; }
     
     int Create(int num);
@@ -44,7 +44,7 @@ class Vec3Buffer : public BaseArrayBuffer
 {
 public:
 	Vec3Buffer() : BaseArrayBuffer() {}
-    ~Vec3Buffer(){ m_buffer.clear(); std::vector<vec3>(m_buffer).swap(m_buffer); }
+    ~Vec3Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC3; }
 	
 	int Create(int num);
@@ -61,7 +61,7 @@ class Vec4Buffer : public BaseArrayBuffer
 {
 public:
 	Vec4Buffer() : BaseArrayBuffer() {}
-	~Vec4Buffer(){ m_buffer.clear(); std::vector<vec4>(m_buffer).swap(m_buffer); }
+    ~Vec4Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC4; }
 	
 	int Create(int num);
@@ -79,7 +79,7 @@ class FloatBuffer : public BaseArrayBuffer
 {
 public:
 	FloatBuffer() : BaseArrayBuffer() {}
-    ~FloatBuffer(){ m_buffer.clear(); std::vector<float>(m_buffer).swap(m_buffer); }
+    ~FloatBuffer(){}
 	BufferType GetType() const { return BUFFER_FLOAT; }
 	
 	int Create(int num);
@@ -95,7 +95,7 @@ class UintBuffer : public BaseArrayBuffer
 {
 public:
 	UintBuffer() : BaseArrayBuffer() {}
-	~UintBuffer(){ m_buffer.clear(); std::vector<unsigned int>(m_buffer).swap(m_buffer); }
+    ~UintBuffer(){}
 	BufferType GetType() const { return BUFFER_INDEX; }
 	
 	int Create(int num);
@@ -111,7 +111,7 @@ class ByteBuffer : public BaseArrayBuffer
 {
 public:
     ByteBuffer() : BaseArrayBuffer() {}
-    ~ByteBuffer(){ m_buffer.clear(); std::vector<unsigned char>(m_buffer).swap(m_buffer); }
+    ~ByteBuffer(){}
     BufferType GetType() const { return BUFFER_BYTE; }
     
     int Create(int num);
