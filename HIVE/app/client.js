@@ -1,5 +1,5 @@
 /*jslint devel:true*/
-/*global WebSocket*/
+/*global HiveConnect*/
 
 (function (window) {
 	'use strict';
@@ -7,6 +7,14 @@
 
 	window.addEventListener('keydown', function (event) {
 		var scr = "print('AAA') return JSON.encode({BBB='ABC'})";
-		conn.sendMsg({script: scr});
+		conn.rendererMethod('runscript', {script: scr}, function (res) {
+			console.log('!!!CALLBACKED!!!', res);
+		});
+		
+		var scr = "print('BBB') return JSON.encode({CCCC='ZCXY'})";
+		conn.rendererMethod('runscript', {script: scr}, function (res) {
+			console.log('!!!CALLBACKED!!!', JSON.parse(res));
+		});
+
 	});
 }(window));
