@@ -13,8 +13,8 @@ var http = require('http'),
 							   autoAcceptConnections : false}),
 	ws_connections = {},
 	id_counter = 0,
-	renderNode = null,
-	clientNode = null;
+	renderNode = null, // one renderer
+	clientNode = null; // one client
 	
 
 ws.on('request', function (request) {
@@ -22,18 +22,13 @@ ws.on('request', function (request) {
 	var connection = request.accept(null, request.origin),
 		retlua;
 
-	console.log((new Date()) + " ServerImager Connection accepted : " + id_counter);
+	console.log((new Date()) + "[CONNECTION] Connection accepted : " + id_counter);
 	// save connection with id
 	connection.id = id_counter;
 	ws_connections.id_counter = connection;
 	id_counter = id_counter + 1;
 	
-	
-	retlua = "{mode = ClientType()}";
-	connection.send('print("Connected with HIVE master")\n return JSON.encode(' + retlua + ')'); // TODO: renderer open event
-	//connection.send('return JSON.encode({aaa=tostring(JSON)})');
-	
-	connection.on('message', (function (conn) { return function (message) {
+	connection.on('message', function (message) {
 		var ret, data;
 		//console.log('message:', message);
 		if (message.type === 'utf8') {
@@ -42,48 +37,49 @@ ws.on('request', function (request) {
 				ret = JSON.parse(message.utf8Data);
 				if (ret.error) {
 					console.error('[Error]:', ret.error);
-					if (clientNode) {
-						clientNode.send(message.utf8Data);
-					}
 				} else if (ret.result) {
 					console.error('[Result]:', ret.result);
+					
+					// syntax sugar
 					if (typeof ret.result === 'object') {
 						data = ret.result;
 					} else {
 						data = JSON.parse(ret.result);
 					}
+										
+					// Register Renderer or Client
+					if (data.mode === 'renderer') {
+						console.log('[CONNECTION] Connected Renderer id = ' + connection.id);
+						connection.type = 'renderer';
+						renderNode = connection;
+					} else if (data.mode === 'client') {
+						console.log('[CONNECTION] Connected client id = ' + connection.id);
+						connection.type = 'client';
+						clientNode = connection;
+					}
 					
-					// echo
-					if (clientNode && data.from !== 'client') {
+					// response routing
+					if (clientNode && ret.from !== 'client') { // for client
 						clientNode.send(JSON.stringify(data));
 					}
-					
-					// Renderer or Client
-					if (data.mode === 'renderer') {
-						console.log('Connected Renderer');
-						renderNode = conn;
-					} else if (data.mode === 'client') {
-						console.log('Connected client');
-						clientNode = conn;
-					}
-					
-					if (data.script) {
-						console.log('Script request:', data.script);
-						if (renderNode) {
-							console.log('Send script');
-							renderNode.send(data.script);
+					if (renderNode && ret.from !== 'renderer') { // for renderer
+						if (data.script) {
+							console.log('[SCRIPT] Script request:', data.script);
+							if (renderNode) {
+								console.log('Send script');
+								renderNode.send(data.script);
+							}
 						}
 					}
 				}
 			} catch (e) {
-				console.error('Invalid JSON data:-->\n' + message.utf8Data + '\n', e);
+				console.error('[ERROR] Invalid JSON data:-->\n' + message.utf8Data + '\n', e);
 			}
 		}
-	}; }(connection)));
+	});
 	
 	connection.on('close', function () {
 		delete ws_connections[connection.id];
-		console.log('connection closed :' + connection.id);
+		console.log('[CONNECTION] Connection closed : type = [' + connection.type + "] id = " + connection.id);
 	});
-	
 });

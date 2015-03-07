@@ -10,9 +10,6 @@ function ClientType()
 end
 
 local network = Connection()
-local function connectHIVE()
-	return network:Connect('ws://localhost:8080/')
-end
 
 local function mysleep(sec)
 	local start = os.time()
@@ -27,6 +24,14 @@ end
 local function sendResult(ret)
 	local retval = JSON.encode({jsonrpc = "2.0", result = ret});
 	network:SendText(retval)
+end
+
+local function connectHIVE()
+	local r = network:Connect('ws://localhost:8080/')
+	if r then
+		sendResult(JSON.encode({mode = ClientType()}))
+	end
+	return r
 end
 
 local function eval(src)
