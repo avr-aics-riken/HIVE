@@ -15,6 +15,8 @@ public:
     // Recive message and return its content to `msg`.
     // Return fail when timeout or recv() fails.
     virtual std::string Recv() = 0;
+    virtual std::string GetState() = 0;
+
     virtual bool Close() = 0;
     virtual bool SetTimeout(int timeout) = 0;
     
@@ -39,6 +41,7 @@ protected:
     bool SendBinary(const Binary binary, int size);
     bool SendImage(const std::string& filepath);
     std::string Recv();
+    std::string GetState();
     bool Close();
     bool SetTimeout(int timeout);
 
