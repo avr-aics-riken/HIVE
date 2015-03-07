@@ -76,9 +76,10 @@ function renderMethod(method, param, id)
 	local err
 	local jsonSuccess
 	local rjson
+	print('============= RUN ============')
 	print('[DEBUG] method = ', method)
 	if method == 'runscript' then
-		print('----------- RUN --------------')
+		print('------------------------------')
 		ret, err = eval(param.script)
 		print('------------------------------')
 		print('[DEBUG] eval -> Return=', ret, 'Err=', err)
@@ -95,6 +96,7 @@ function renderMethod(method, param, id)
 			end
 		end
 	end
+	print('==============================')
 end
 
 function mainloop()
@@ -104,7 +106,7 @@ function mainloop()
 	while true do
 		src = network:Recv()
 		if src ~= '' then
-			print('SRC:', src);
+			--print('[DEBUG] SRC:', src);
 			data = JSON.decode(src)
 			if data.method == 'end' then
 				network:Close()
