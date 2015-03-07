@@ -126,6 +126,12 @@ public:
         compilerCmd += std::string(" --mesacc=\"")   + mesaPath + std::string("\"");
         SetShaderCompiler_SGL(compilerCmd.c_str(), NULL);
     }
+    
+    void ClearBuffers()
+    {
+        m_buffers_SGL.clear();
+        m_buffers_GL.clear();
+    }
 
     void AddRenderObject(RenderObject* robj)
     {
@@ -166,9 +172,9 @@ private:
         m_clearcolor = VX::Math::vec4(camera->GetClearColor());
     }
     
-    const BaseBuffer* createBufferSGL(const RenderObject* robj)
+    BaseBuffer* createBufferSGL(const RenderObject* robj)
     {
-        const BaseBuffer* buffer = 0;
+        BaseBuffer* buffer = 0;
         if (robj->GetType() == RenderObject::TYPE_POLYGON) {
             PolygonBuffer* pbuf = new PolygonBuffer(RENDER_LSGL);
             pbuf->Create(static_cast<const PolygonModel*>(robj));
@@ -212,7 +218,9 @@ private:
         if (it != m_buffers_SGL.end()) {
             buffer = it->second.Get();
         } else {
-            buffer = createBufferSGL(robj);
+            BaseBuffer* buf = createBufferSGL(robj);
+            m_buffers_SGL[robj] = buf;
+            buffer = buf;
         }
 
         assert(buffer);
@@ -397,5 +405,10 @@ void RenderCore::Render()
 void RenderCore::ClearRenderObject()
 {
     m_imp->ClearRenderObject();
+}
+
+void RenderCore::ClearBuffers()
+{
+    m_imp->ClearBuffers();
 }
 

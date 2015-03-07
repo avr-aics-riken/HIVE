@@ -17,6 +17,8 @@ public:
     void Render();
     void ClearRenderObject();
     
+    void ClearBuffers(); // Clear RenderBuffer resouces
+    
 private:
     RenderCore();
     ~RenderCore();

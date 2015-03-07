@@ -41,6 +41,9 @@
 		function sceneClear() {
 			var src = '';
 			src += "ObjectTable = {}\n";
+			src += "clearCache()\n";
+			src += "collectgarbage('collect')\n";
+			src += "print('MEMORY=', collectgarbage('count') .. '[KB]')\n";
 			src += "return 'ClearObject'\n";
 			renderScript(src);
 			sceneCreateCamera('camera');
