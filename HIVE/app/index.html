@@ -1,0 +1,33 @@
+
+<html>
+	<script>
+		var url = "ws://localhost:8080/",
+			ws = new WebSocket(url);
+		
+		function sendMsg(ws, data) {
+			ws.send(JSON.stringify({jsonrpc:"2.0", result:data}));
+		}
+		
+		ws.addEventListener('open', function (event) {
+			console.log('connected');
+			sendMsg(ws, {mode: 'client'});
+		});
+		ws.addEventListener('message', function (event) {
+			if (event.data.indexOf('print(') == 0) { // skip type mode
+				return;
+			}
+			
+			console.log(event.data);
+		});
+		ws.addEventListener('error', function (event) {
+			console.log(event);
+		});
+		ws.addEventListener('close', function (event) {
+			console.log(event);
+		});
+		window.addEventListener('keydown', function (event) {
+			var scr = "print('AAA') return JSON.encode({BBB='ABC'})";
+			sendMsg(ws, {script:scr, from:'client'});
+		});
+	</script>
+</html>

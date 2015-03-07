@@ -82,7 +82,7 @@ public:
                 return false;
             }
         }
-        printf("connect : %s  \n", url.c_str());
+        printf("connect > %s  \n", url.c_str());
         if (url.find("http://") != std::string::npos) {
             return connectHTTP(url);
         } else if (url.find("ws://") != std::string::npos) {
@@ -204,10 +204,34 @@ public:
         return false;
     }
     
+    std::string GetState() {
+        if (m_connection) {
+            
+            // TODO:
+            fprintf(stderr, "Not implemented yet");
+            
+            return std::string("NOT_IMPLEMETED_YET");
+            
+        } else if (m_ws) {
+            easywsclient::WebSocket::readyStateValues state = m_ws->getReadyState();
+            if (state == easywsclient::WebSocket::CLOSED) {
+                return std::string("CLOSED");
+            } else if (state == easywsclient::WebSocket::CLOSING) {
+                return std::string("CLOSING");
+            } else if (state == easywsclient::WebSocket::CONNECTING) {
+                return std::string("CONNECTING");
+            } else if (state == easywsclient::WebSocket::OPEN) {
+                return std::string("OPEN");
+            }
+        } else {
+            return std::string("NOT_CONNECTED");
+        }
+    }
+    
     std::string Recv() {
         if (m_connection) {
             fprintf(stderr, "No connection Error");
-            return "";
+            return "NOT_IMPLEMETED_YET";
         } else if (m_ws) {
             if (m_ws->getReadyState() == easywsclient::WebSocket::CLOSED) {
                 return "";
@@ -241,6 +265,9 @@ public:
         }
         if (m_ws) {
             m_ws->close();
+            /*
+             don't delete m_ws for reconnection.
+             */
         }
         return true;
     }
@@ -303,6 +330,8 @@ private:
     
     bool connectWS(const std::string& url) {
         m_ws = easywsclient::WebSocket::from_url(url);
+        if (!m_ws)
+            return false;
         return true;
     }
 
@@ -384,6 +413,10 @@ public:
         }
     }
     
+    std::string GetState() {
+        return m_imp.GetState();
+    }
+    
     bool SetTimeout(int timeout) {
         return m_imp.SetTimeout(timeout);
     }
@@ -446,6 +479,11 @@ bool Connection::SendImage(const std::string& filepath)
 std::string Connection::Recv()
 {
     return m_imp->Recv();
+}
+
+std::string Connection::GetState()
+{
+    return m_imp->GetState();
 }
 
 bool Connection::Close()
