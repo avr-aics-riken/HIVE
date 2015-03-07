@@ -1,36 +1,16 @@
 
 <html>
 	<head>
-		<script src="HiveConnect.js"></script>
-		<script src="client.js"></script>
-		<script id = 'renderScript' type="text/lua">
-			
-print('Render Sphere')
-local camera = Camera()
-camera:SetScreenSize(512, 512)
-camera:SetFilename('render_sphere.jpg')
-
-camera:LookAt(
-	0,0,30,
-	0,0,0,
-	0,1,0,
-	60
-)
-
-local gen = PrimitiveGenerator()
-local radius = 2
-
-local model = PointModel()
-local spheredata = gen:Sphere(radius)
-model:Create(spheredata)
-model:SetShader('white.frag')
-
-render {camera, model}
-
-return {AAA=tostring(camera)}
-
-		</script>
+		<script src="js/HiveConnect.js"></script>
+		<script src="js/client.js"></script>
+		<script src="js/metabinary.js"></script>
 	</head>
 	<body>
+		<input type="button" value="clear" id="clearbtn">
+		<input type="button" value="loadOBJ" id="loadbtn">
+		<input type="button" value="getOBJ" id="getbtn">
+		<input type="button" value="obj render" id="objrenderbtn">
+		<input type="button" value="render" id="renderbtn">
+		<div id="imgdiv"><img id="img"></img></div>
 	</body>
 </html>
