@@ -6,15 +6,20 @@
 	var conn = new HiveConnect();
 
 	window.addEventListener('keydown', function (event) {
-		var scr = "print('AAA') return JSON.encode({BBB='ABC'})";
+		/*var scr = "print('AAA') return {BBB='ABC'}";
 		conn.rendererMethod('runscript', {script: scr}, function (res) {
 			console.log('!!!CALLBACKED!!!', res);
 		});
 		
-		var scr = "print('BBB') return JSON.encode({CCCC='ZCXY'})";
+		var scr = "print('BBB') return {CCCC='ZCXY'}";
 		conn.rendererMethod('runscript', {script: scr}, function (res) {
 			console.log('!!!CALLBACKED!!!', JSON.parse(res));
+		});*/
+		
+		var scr = document.getElementById('renderScript').textContent;
+		//console.log(scr);
+		conn.rendererMethod('runscript', {script: scr}, function (res) {
+			console.log('result:', res);
 		});
-
 	});
 }(window));

@@ -61,7 +61,7 @@ local function eval(src)
 	end
 	
 	success, ret = pcall(func)
-	print('Run:', success, 'Result:', ret)
+	
 	if success then
 		if ret then
 			return ret, nil
@@ -72,14 +72,27 @@ local function eval(src)
 end
 
 function renderMethod(method, param, id)
+	local ret
+	local err
+	local jsonSuccess
+	local rjson
 	print('[DEBUG] method = ', method)
 	if method == 'runscript' then
+		print('----------- RUN --------------')
 		ret, err = eval(param.script)
-		print('[DEBUG] eval->', ret, err)
+		print('------------------------------')
+		print('[DEBUG] eval -> Return=', ret, 'Err=', err)
 		if err then
 			sendClientError(err, id)
 		else
-			sendClientResult(ret, id)
+			jsonSuccess, rjson = pcall(function ()
+				return JSON.encode(ret)
+			end)
+			if jsonSuccess then
+				sendClientResult(rjson,id);
+			else -- json error
+				sendClientError(rjson, id)
+			end
 		end
 	end
 end
