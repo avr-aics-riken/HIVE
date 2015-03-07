@@ -9,19 +9,19 @@
 			loadbtn = document.getElementById('loadbtn'),
 			getbtn = document.getElementById('getbtn'),
 			objrenderbtn = document.getElementById('objrenderbtn'),
-			renderbtn = document.getElementById('renderbtn');
+			resetcamerabtn = document.getElementById('resetcamerabtn'),
+			imgdiv = document.getElementById('imgdiv'),
+			leftpress = false,
+			rightpress = false,
+			oldmouse_x,
+			oldmouse_y,
+			camera_pos = [0, 0, 300];
 
 		function renderScript(src) {
 			conn.rendererMethod('runscript', {script: src}, function (res) {
 				console.log('runscript result:', res, {script: src});
 			});
 		}
-		conn.method('renderedImage', function (param, data) {
-			var img = document.getElementById('img');
-			if (param.type === 'jpg') {
-				img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
-			}
-		});
 		
 		//------------------
 		function sceneCreateCamera(name) {
@@ -97,12 +97,75 @@
 			var src = '';
 			src += 'local lst = {}\n';
 			src += 'for i,v in pairs(ObjectTable) do\n';
-			src += '  lst[#lst + 1] = i\n';
+			src += '  lst[#lst + 1] = {name=i, type=v:GetType()}\n';
 			src += 'end\n';
 			src += 'return lst';
 			renderScript(src);
 		}
+		function sceneCameraPos(name, camerapos) {
+			var src = '';
+			src += "local camera = ObjectTable['" + name + "']\n";
+			src += "if camera == nil then return 'Not found camera' end\n";
+			src += "camera:LookAt(\n";
+			src += "	" + camerapos[0] + "," + camerapos[1] + "," + camerapos[2] + ",\n";
+			src += "	0,0,0,\n";
+			src += "	0,1,0,\n";
+			src += "	60\n";
+			src += ")\n";
+			src += "return 'MoveCamera:" + name + "'";
+			renderScript(src);
+			sceneRenderObjects();
+		}
+		//----------
+		conn.method('renderedImage', function (param, data) {
+			var img = document.getElementById('img');
+			if (param.type === 'jpg') {
+				img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+			}
+			// redraw
+			//sceneRenderObjects();
+		});
+
+		
 		//------------------
+
+		imgdiv.addEventListener('mousedown', function (e) {
+			e.preventDefault();
+			if (e.button === 0) {
+				leftpress = true;
+			} else if (e.button === 2) {
+				rightpress = true;
+			}
+			oldmouse_x = e.clientX;
+			oldmouse_y = e.clientY;
+		});
+		imgdiv.addEventListener('mousemove', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			var dx, dy;
+			dx = e.clientX - oldmouse_x;
+			dy = e.clientY - oldmouse_y;
+			if (leftpress) {
+				camera_pos[0] += dx;
+				camera_pos[1] += dy;
+				sceneCameraPos('camera', camera_pos);
+			}
+			if (rightpress) {
+				camera_pos[2] += (dx + dy);
+				sceneCameraPos('camera', camera_pos);
+			}
+			oldmouse_x = e.clientX;
+			oldmouse_y = e.clientY;
+		});
+		imgdiv.addEventListener('mouseup', function (e) {
+			e.preventDefault();
+			if (e.button === 0) {
+				leftpress = false;
+			} else if (e.button === 2) {
+				rightpress = false;
+			}
+
+		});
 
 		loadbtn.addEventListener('click', function (e) {
 			sceneLoadObj('model', 'bunny.obj', 'white.frag');
@@ -116,7 +179,16 @@
 		objrenderbtn.addEventListener('click', function (e) {
 			sceneRenderObjects();
 		});
+		resetcamerabtn.addEventListener('click', function (e) {
+			camera_pos[0] = 0;
+			camera_pos[1] = 0;
+			camera_pos[2] = 300;
+			sceneCameraPos('camera', camera_pos);
+		});
 
 	}
 	window.addEventListener('load', init);
+	window.addEventListener('contextmenu', function (e) {
+		e.preventDefault();
+	});
 }(window));
