@@ -6,6 +6,7 @@
 #include <sstream>
 #include "BufferImageData.h"
 #include "../Image/SimpleJPG.h"
+#include "../Image/SimplePNG.h"
 #include "../Image/SimpleTGA.h"
 #include "../Image/SimpleHDR.h"
 #include "Buffer.h"
@@ -63,8 +64,20 @@ public:
             const std::string ext = make_lowercase(path.substr(pos+1));
             const int width = data->Width();
             const int height = data->Height();
-            if (ext == "png")
+            if (ext == "png" || ext == "PNG")
             {
+                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                if (data->Format() == BufferImageData::RGBA8)
+                {
+                    unsigned char* pngbuffer = NULL;
+                    int bytes = SimplePNGSaverRGBA((void**)&pngbuffer, width, height, srcbuffer);
+                    //printf("PNG: bytes: %d\n", bytes);
+                    if (bytes && pngbuffer)
+                    {
+                        result = SaveFile(path, pngbuffer, bytes);
+                    }
+                    delete [] pngbuffer;
+                }
             }
             else if (ext == "jpg" || ext == "jpeg")
             {

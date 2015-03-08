@@ -187,6 +187,7 @@ set(SOURCES
 	src/Builder/VolumeToVector.cpp
 	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
+	src/Image/lodepng.cpp
 	src/Image/ImageLoader.cpp
 	src/Image/ImageSaver.cpp
 	src/Loader/ObjLoader.cpp
