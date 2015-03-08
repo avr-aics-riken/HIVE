@@ -1,33 +1,16 @@
 
 <html>
-	<script>
-		var url = "ws://localhost:8080/",
-			ws = new WebSocket(url);
-		
-		function sendMsg(ws, data) {
-			ws.send(JSON.stringify({jsonrpc:"2.0", result:data}));
-		}
-		
-		ws.addEventListener('open', function (event) {
-			console.log('connected');
-			sendMsg(ws, {mode: 'client'});
-		});
-		ws.addEventListener('message', function (event) {
-			if (event.data.indexOf('print(') == 0) { // skip type mode
-				return;
-			}
-			
-			console.log(event.data);
-		});
-		ws.addEventListener('error', function (event) {
-			console.log(event);
-		});
-		ws.addEventListener('close', function (event) {
-			console.log(event);
-		});
-		window.addEventListener('keydown', function (event) {
-			var scr = "print('AAA') return JSON.encode({BBB='ABC'})";
-			sendMsg(ws, {script:scr, from:'client'});
-		});
-	</script>
+	<head>
+		<script src="js/HiveConnect.js"></script>
+		<script src="js/client.js"></script>
+		<script src="js/metabinary.js"></script>
+	</head>
+	<body>
+		<input type="button" value="clear" id="clearbtn">
+		<input type="button" value="loadOBJ" id="loadbtn">
+		<input type="button" value="getOBJ" id="getbtn">
+		<input type="button" value="obj render" id="objrenderbtn">
+		<input type="button" value="reset camera" id="resetcamerabtn">
+		<div id="imgdiv" style="width:512px;height:512px;"><img id="img"></img></div>
+	</body>
 </html>

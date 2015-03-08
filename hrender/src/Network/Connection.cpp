@@ -18,7 +18,7 @@ namespace {
     std::string gRecvBuffer;
 
     void RecvCallback(const std::string& message) {
-        printf("msg: %s\n", message.c_str());
+        //printf("msg: %s\n", message.c_str());
         gRecvBuffer = message;
     }
     

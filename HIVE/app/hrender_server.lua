@@ -5,28 +5,49 @@
 package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
-function ClientType()
-	return "renderer"
-end
-
 local network = Connection()
-local function connectHIVE()
-	return network:Connect('ws://localhost:8080/')
-end
+network:SetTimeout(100)
+
 
 local function mysleep(sec)
 	local start = os.time()
 	while os.time() - start < sec do end
 end
 
-local function sendError(err)
-	local errtxt = JSON.encode({jsonrpc = "2.0", error = err});
+--[[
+local function sendMasterError(err)
+	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = 'master'});
 	network:SendText(errtxt)
 end
 
-local function sendResult(ret)
+local function sendMasterResult(ret)
 	local retval = JSON.encode({jsonrpc = "2.0", result = ret});
 	network:SendText(retval)
+end
+--]]
+
+local function sendClientError(err, id)
+	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = 'client', id = id});
+	network:SendText(errtxt)
+end
+
+local function sendClientResult(ret, id)
+	local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = 'client', id = id});
+	network:SendText(retval)
+end
+
+local function sendMasterMethod(method, param)
+	local retval = JSON.encode({jsonrpc = "2.0", method = method, param = param, to = 'master'});
+	network:SendText(retval)
+end
+
+
+local function connectHIVE()
+	local r = network:Connect('ws://localhost:8080/')
+	if r then
+		sendMasterMethod('register', {mode = 'renderer'})
+	end
+	return r
 end
 
 local function eval(src)
@@ -36,48 +57,83 @@ local function eval(src)
 	local ret
 	func, err = load(src)
 	if func == nil or err then
-		print(err)
-		sendError(err)
-		return
+		return nil, err
 	end
 	
 	success, ret = pcall(func)
-	print('Run:', success, 'Result:', ret)
+	
 	if success then
 		if ret then
-			sendResult(ret)
+			return ret, nil
 		end
 	else -- error
-		sendError(ret)
+		return nil, ret
 	end
 end
+
+function renderMethod(method, param, id)
+	local ret
+	local err
+	local jsonSuccess
+	local rjson
+	print('============= RUN ============')
+	print('[DEBUG] method = ', method)
+	if method == 'runscript' then
+		print('------------------------------')
+		ret, err = eval(param.script)
+		print('------------------------------')
+		print('[DEBUG] eval -> Return=', ret, 'Err=', err)
+		if err then
+			sendClientError(err, id)
+		else
+			jsonSuccess, rjson = pcall(function ()
+				return JSON.encode(ret)
+			end)
+			if jsonSuccess then
+				sendClientResult(rjson,id);
+			else -- json error
+				sendClientError(rjson, id)
+			end
+		end
+	end
+	print('==============================')
+end
+
+function mainloop()
+	local src
+	local data
+	local err
+	while true do
+		src = network:Recv()
+		if src ~= '' then
+			--print('[DEBUG] SRC:', src);
+			data = JSON.decode(src)
+			if data.method == 'end' then
+				network:Close()
+				print('Exit.');
+				return;
+			else
+				renderMethod(data.method, data.param, data.id)
+			end
+		else
+			r = network:GetState()
+			-- Reconnection
+			if r == "CLOSED" or r == "NOT_CONNECTED" then
+				mysleep(1)
+				r = connectHIVE();
+				if r then
+					print('[Connection] Reconnected')
+				end
+			end
+		end
+	end
+end
+
+----------------------------------
 
 print('HIVE renderer START');
 local r = connectHIVE()
 if r then
 	print("Connected")
 end
-
-network:SetTimeout(10)
-while true do
-	local src = network:Recv()
-	if src ~= '' then
-		print('SRC:', src);
-		if src == 'END' then
-			network:Close()
-			print('Exit.');
-			return;
-		else
-			eval(src)
-		end
-	else
-		r = network:GetState()
-		if r == "CLOSED" or r == "NOT_CONNECTED" then
-			mysleep(1)
-			r = connectHIVE();
-			if r then
-				print('Reconnected')
-			end
-		end
-	end
-end
+mainloop()

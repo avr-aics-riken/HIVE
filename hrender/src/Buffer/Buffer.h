@@ -44,7 +44,7 @@ class Vec3Buffer : public BaseArrayBuffer
 {
 public:
 	Vec3Buffer() : BaseArrayBuffer() {}
-	~Vec3Buffer(){}
+    ~Vec3Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC3; }
 	
 	int Create(int num);
@@ -61,7 +61,7 @@ class Vec4Buffer : public BaseArrayBuffer
 {
 public:
 	Vec4Buffer() : BaseArrayBuffer() {}
-	~Vec4Buffer(){}
+    ~Vec4Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC4; }
 	
 	int Create(int num);
@@ -79,7 +79,7 @@ class FloatBuffer : public BaseArrayBuffer
 {
 public:
 	FloatBuffer() : BaseArrayBuffer() {}
-	~FloatBuffer(){}
+    ~FloatBuffer(){}
 	BufferType GetType() const { return BUFFER_FLOAT; }
 	
 	int Create(int num);
@@ -95,7 +95,7 @@ class UintBuffer : public BaseArrayBuffer
 {
 public:
 	UintBuffer() : BaseArrayBuffer() {}
-	~UintBuffer(){}
+    ~UintBuffer(){}
 	BufferType GetType() const { return BUFFER_INDEX; }
 	
 	int Create(int num);
