@@ -263,9 +263,19 @@ int render(lua_State* L)
     return 1;
 }
 
+int clearCache(lua_State* L)
+{
+    RenderCore* core = RenderCore::GetInstance();
+    core->ClearBuffers();
+    lua_pushnumber(L, 1);
+    return 1;
+}
+
 void registerFuncs(lua_State* L)
 {
     SetFunction(L, "render", render);
+    SetFunction(L, "clearCache", clearCache);
+
     SetFunction(L, "mpiMode", mpiMode);
     SetFunction(L, "mpiRank", mpiRank);
     SetFunction(L, "mpiSize", mpiSize);
