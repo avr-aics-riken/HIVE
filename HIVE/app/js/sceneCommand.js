@@ -38,7 +38,7 @@
 			src += "return 'LoadOBJ:' .. tostring(ret)";
 			return src;
 		},
-		render : function () {
+		render : function (w, h) {
 			var src = '';
 			src += 'local r = render(ObjectTable)\n';
 			src += '-- save jpg\n';
@@ -54,8 +54,8 @@
 			src += '  "method" : "renderedImage",\n';
 			src += '  "param" : {\n';
 			src += '    "type": "jpg",\n';
-			src += '    "width" : 512,\n';
-			src += '	"height" : 512\n';
+			src += '    "width" : ]] .. camera:GetScreenWidth() .. [[,\n';
+			src += '	"height" : ]] .. camera:GetScreenHeight() .. [[\n';
 			src += '  },\n';
 			src += '  "to": "client",\n';
 			src += '  "id": 0\n';
@@ -63,7 +63,7 @@
 			src += 'metabin:Create(json, imageBuffer, imageBufferSize)\n';
 			src += '-- send through websockt\n';
 			src += 'network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())\n';
-			src += 'return "Render:" .. tostring(r)\n';
+			src += 'return {objectnum=tostring(r), width=camera:GetScreenWidth(), height=camera:GetScreenHeight()}\n';
 			return src;
 		},
 		getObjectList : function () {
@@ -73,6 +73,13 @@
 			src += '  lst[#lst + 1] = {name=i, type=v:GetType()}\n';
 			src += 'end\n';
 			src += 'return lst';
+			return src;
+		},
+		cameraScreenSize : function (name, width, height) {
+			var src = '';
+			src += "local camera = ObjectTable['" + name + "']\n";
+			src += "if camera == nil then return 'Not found camera' end\n";
+			src += "camera:SetScreenSize(" + width + ", " + height + ")\n";
 			return src;
 		},
 		cameraPos : function (name, camerapos) {
