@@ -15,7 +15,8 @@
 			rightpress = false,
 			oldmouse_x,
 			oldmouse_y,
-			camera_pos = [0, 0, 300];
+			camera_pos = [0, 0, 300],
+			renderQue = [];
 
 		function renderScript(src) {
 			conn.rendererMethod('runscript', {script: src}, function (res) {
@@ -24,10 +25,22 @@
 		}
  		
 		//----------
+		conn.method('open', function (res) {
+			renderScript(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+		});
+		
 		conn.method('renderedImage', function (param, data) {
-			var img = document.getElementById('img');
+			var img = document.getElementById('img'),
+				scriptQue,
+				camscript = "";
 			if (param.type === 'jpg') {
 				img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+			}
+			
+			if (renderQue.length > 0) {
+				scriptQue = renderQue.pop();
+				renderScript(scriptQue);
+				renderQue.length = 0;
 			}
 		});
 		
@@ -51,13 +64,23 @@
 			if (leftpress) {
 				camera_pos[0] -= dx;
 				camera_pos[1] += dy;
-				renderScript(sceneCommands.cameraPos('camera', camera_pos));
-				renderScript(sceneCommands.render());
+				
+				renderQue.push(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+				setTimeout(function () {
+					if (renderQue.length === 1) {
+						renderScript(renderQue[0]);
+					}
+				}, 1);
 			}
 			if (rightpress) {
-				camera_pos[2] += (dx + dy);
-				renderScript(sceneCommands.cameraPos('camera', camera_pos));
-				renderScript(sceneCommands.render());
+				camera_pos[2] -= (dx + dy);
+				
+				renderQue.push(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+				setTimeout(function () {
+					if (renderQue.length === 1) {
+						renderScript(renderQue[0]);
+					}
+				}, 1);
 			}
 			oldmouse_x = e.clientX;
 			oldmouse_y = e.clientY;
@@ -89,7 +112,7 @@
 			camera_pos[0] = 0;
 			camera_pos[1] = 0;
 			camera_pos[2] = 300;
-			renderScript(sceneCommands.cameraPos('camera', camera_pos));
+			renderScript(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
 		});
 
 	}

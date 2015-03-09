@@ -56,6 +56,9 @@
 			return function (event) {
 				console.log('[NETWORK] Connected.');
 				self.masterMethod('register', {mode: 'client'}); // Initial response
+				if (self.methodFuncs.open) {
+					self.methodFuncs.open();
+				}
 			};
 		}(this)));
 
