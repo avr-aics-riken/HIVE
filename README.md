@@ -35,12 +35,14 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     $ ./scripts/build_loader_libs_macosx.sh
 
 
-## How to HIVE build
+## How to build HIVE
 
     $ cd HIVE
     $ mkdir build
     $ cd build
     $ cmake ../
+    # Enable OpenMP build(optional)
+    $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
     $ make
 
 ### MacOSX OpenMP build with GCC
