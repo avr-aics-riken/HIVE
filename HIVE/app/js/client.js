@@ -16,7 +16,12 @@
 			oldmouse_x,
 			oldmouse_y,
 			camera_pos = [0, 0, 300],
-			renderQue = [];
+			camera_defsize = [64, 64],
+			camera_maxsize = [512, 512],
+			camera_size = [128, 128],
+			renderQue = [],
+			isRendering = false;
+		
 
 		function renderScript(src) {
 			conn.rendererMethod('runscript', {script: src}, function (res) {
@@ -26,21 +31,36 @@
  		
 		//----------
 		conn.method('open', function (res) {
-			renderScript(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+			var cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]);
+			cmd += sceneCommands.cameraPos('camera', camera_pos);
+			cmd += sceneCommands.render();
+			renderScript(cmd);
 		});
 		
 		conn.method('renderedImage', function (param, data) {
 			var img = document.getElementById('img'),
 				scriptQue,
-				camscript = "";
+				camscript = "",
+				cmd;
 			if (param.type === 'jpg') {
 				img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+				img.setAttribute('width', '512px');
+				img.setAttribute('height', '512px');
 			}
 			
 			if (renderQue.length > 0) {
 				scriptQue = renderQue.pop();
 				renderScript(scriptQue);
 				renderQue.length = 0;
+			} else {
+				if (param.width < camera_maxsize[0] || param.height < camera_maxsize[1]) {
+					console.log('RENDER!', param.width * 2, param.height * 2);
+					cmd = sceneCommands.cameraScreenSize('camera', param.width * 2, param.height * 2);
+					cmd += sceneCommands.render();
+					renderScript(cmd);
+				} else {
+					isRendering = false;
+				}
 			}
 		});
 		
@@ -64,21 +84,31 @@
 			if (leftpress) {
 				camera_pos[0] -= dx;
 				camera_pos[1] += dy;
+				camera_size[0] = camera_defsize[0];
+				camera_size[1] = camera_defsize[1];
 				
-				renderQue.push(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+				renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
 				setTimeout(function () {
-					if (renderQue.length === 1) {
-						renderScript(renderQue[0]);
+					var cmd;
+					if (!isRendering && renderQue.length > 1) {
+						isRendering = true;
+						cmd = renderQue.pop();
+						renderScript(cmd);
 					}
 				}, 1);
 			}
 			if (rightpress) {
 				camera_pos[2] -= (dx + dy);
+				camera_size[0] = camera_defsize[0];
+				camera_size[1] = camera_defsize[1];
 				
-				renderQue.push(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+				renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
 				setTimeout(function () {
-					if (renderQue.length === 1) {
-						renderScript(renderQue[0]);
+					var cmd;
+					if (!isRendering && renderQue.length > 1) {
+						isRendering = true;
+						cmd = renderQue.pop();
+						renderScript(cmd);
 					}
 				}, 1);
 			}
@@ -112,7 +142,11 @@
 			camera_pos[0] = 0;
 			camera_pos[1] = 0;
 			camera_pos[2] = 300;
-			renderScript(sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+	
+			camera_size[0] = camera_defsize[0];
+			camera_size[1] = camera_defsize[1];
+
+			renderScript(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
 		});
 
 	}

@@ -92,7 +92,7 @@
 							return;
 						}
 						if (self.callbacks[data.id]) {
-							self.callbacks[data.id](data.result, data.id);
+							self.callbacks[data.id](JSON.parse(data.result), data.id);
 						}
 					}
 				}
