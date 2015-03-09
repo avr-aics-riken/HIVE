@@ -2,10 +2,24 @@
 	hrender server for HIVE
 --]]
 
+arg = {...}
+
+local connectAddress = 'ws://localhost:8080/'
+if arg[1] and arg[1]:sub(1,5) == 'ws://' then
+	connectAddress = arg[1]
+end
+
+print('HIVE renderer START. Connect to', connectAddress);
+
+
+local Log = function() end
+-- for Debug
+Log = print
+
 package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
-local network = Connection()
+network = Connection()
 network:SetTimeout(100)
 
 
@@ -43,7 +57,7 @@ end
 
 
 local function connectHIVE()
-	local r = network:Connect('ws://localhost:8080/')
+	local r = network:Connect(connectAddress)
 	if r then
 		sendMasterMethod('register', {mode = 'renderer'})
 	end
@@ -76,13 +90,13 @@ function renderMethod(method, param, id)
 	local err
 	local jsonSuccess
 	local rjson
-	print('============= RUN ============')
-	print('[DEBUG] method = ', method)
+	Log('============= RUN ============')
+	Log('[DEBUG] method = ', method)
 	if method == 'runscript' then
-		print('------------------------------')
+		Log('------------------------------')
 		ret, err = eval(param.script)
-		print('------------------------------')
-		print('[DEBUG] eval -> Return=', ret, 'Err=', err)
+		Log('------------------------------')
+		Log('[DEBUG] eval -> Return=', ret, 'Err=', err)
 		if err then
 			sendClientError(err, id)
 		else
@@ -96,7 +110,7 @@ function renderMethod(method, param, id)
 			end
 		end
 	end
-	print('==============================')
+	Log('==============================')
 end
 
 function mainloop()
@@ -106,7 +120,7 @@ function mainloop()
 	while true do
 		src = network:Recv()
 		if src ~= '' then
-			--print('[DEBUG] SRC:', src);
+			--Log('[DEBUG] SRC:', src);
 			data = JSON.decode(src)
 			if data.method == 'end' then
 				network:Close()
@@ -122,7 +136,7 @@ function mainloop()
 				mysleep(1)
 				r = connectHIVE();
 				if r then
-					print('[Connection] Reconnected')
+					Log('[Connection] Reconnected')
 				end
 			end
 		end
@@ -131,9 +145,8 @@ end
 
 ----------------------------------
 
-print('HIVE renderer START');
 local r = connectHIVE()
 if r then
-	print("Connected")
+	Log("Connected")
 end
 mainloop()
