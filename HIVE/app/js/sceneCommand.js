@@ -85,7 +85,7 @@
 			src += "	0,1,0,\n";
 			src += "	60\n";
 			src += ")\n";
-			src += "return 'MoveCamera:" + name + "'";
+			//src += "return 'MoveCamera:" + name + "'";
 			return src;
 		}
 	};
