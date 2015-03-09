@@ -25,6 +25,8 @@ private:
     
 public:
     LUA_SCRIPTCLASS_BEGIN(Camera_Lua)
+    LUA_SCRIPTCLASS_METHOD_ARG0 (int, GetScreenWidth)
+    LUA_SCRIPTCLASS_METHOD_ARG0 (int, GetScreenHeight)
     LUA_SCRIPTCLASS_METHOD_ARG2 (bool, SetScreenSize, unsigned int, unsigned int)
     LUA_SCRIPTCLASS_METHOD_ARG1 (bool, SetFilename, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG1 (bool, SetNetworkAddress, const std::string&)
