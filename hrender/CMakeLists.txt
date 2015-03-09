@@ -96,6 +96,18 @@ IF (HIVE_BUILD_K_CROSS_COMPILE)
   # flags based on the compier ID.
   SET(OMP_FLAG_Fujitsu "-Kopenmp")
   
+ELSE()
+  IF (CMAKE_SYSTEM_PROCESSOR MATCHES "s64fx")
+  ELSE () # assume gcc + linux or macosx
+    # PIC flag
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+
+    IF (HIVE_BUILD_WITH_OPENMP)
+      SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+    ENDIF()
+  ENDIF()
 ENDIF()
 # --------------------------------------
 
