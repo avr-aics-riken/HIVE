@@ -74,13 +74,16 @@
 		},
 		render : function (w, h) {
 			var src = '';
+			src += 'local starttm = os.clock()\n';
 			src += 'local r = render(HIVE_ObjectTable, fetchEvent)\n';
 			src += '-- save jpg\n';
 			src += 'local saver = ImageSaver()\n';
 			src += 'local camera = HIVE_ObjectTable["camera"]\n';
 			src += 'if camera == nil then return "No Camera" end\n';
+			src += 'local rendertm = os.clock()\n';
 			src += 'local imageBuffer = saver:SaveMemory(1, camera:GetImageBuffer())\n';
 			src += 'local imageBufferSize = saver:MemorySize()\n';
+			src += 'local savetm = os.clock()\n';
 			src += '-- make metabin\n';
 			src += 'local metabin = MetaBinary()\n';
 			src += 'local json = [[{\n';
@@ -96,8 +99,11 @@
 			src += '  "id": 0\n';
 			src += '}]]\n';
 			src += 'metabin:Create(json, imageBuffer, imageBufferSize)\n';
+			src += 'local createtm = os.clock()\n';
 			src += '-- send through websockt\n';
 			src += 'network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())\n';
+			src += 'local sendtm = os.clock()\n';
+			//src += 'print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)\n';
 			src += 'return {objectnum=tostring(r), width=camera:GetScreenWidth(), height=camera:GetScreenHeight()}\n';
 			return src;
 		},

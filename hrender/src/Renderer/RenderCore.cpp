@@ -188,13 +188,19 @@ public:
                 BufferImageData* color = camera->GetImageBuffer();
                 BufferImageData* depth = camera->GetDepthBuffer();
                 
+                const double starttm = GetTimeCount();
                 resize(camera);
+                const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects(color, depth);
+                const double rendertm = GetTimeCount();
                 readbackImage(color);
+                const double readbacktm = GetTimeCount();
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
                 }
+                const double savetm = GetTimeCount();
+                printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
         }
     }
