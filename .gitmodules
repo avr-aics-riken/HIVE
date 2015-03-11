@@ -22,7 +22,7 @@
 	url = git@github.com:avr-aics-riken/Polylib.git
 [submodule "third_party/SURFACE"]
 	path = third_party/SURFACE
-	url = git@github.com:digirea/SURFACE.git
+url=git@github.com:avr-aics-riken/SURFACE.git
 [submodule "third_party/234Compositor"]
 	path = third_party/234Compositor
 	url = https://github.com/avr-aics-riken/234Compositor
