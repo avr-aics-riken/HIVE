@@ -83,7 +83,8 @@
 						console.error(event.data);
 					}
 					if (data.error) {
-						console.error('[Error] Response => ', data.error);
+						//console.error('[Error] Response => ', data.error);
+						self.callbacks[data.id](data.error, null);
 					} else if (data.result) {
 						//console.log('[DEBUG] Result => ', data.result);
 						if (!data.id) {
@@ -92,7 +93,7 @@
 							return;
 						}
 						if (self.callbacks[data.id]) {
-							self.callbacks[data.id](JSON.parse(data.result), data.id);
+							self.callbacks[data.id](null, JSON.parse(data.result), data.id);
 						}
 					}
 				}

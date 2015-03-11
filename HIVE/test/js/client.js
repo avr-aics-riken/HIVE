@@ -6,7 +6,8 @@
 	function init() {
 		var conn = new HiveConnect(),
 			clearbtn = document.getElementById('clearbtn'),
-			loadbtn = document.getElementById('loadbtn'),
+			loadobjbtn = document.getElementById('loadobjbtn'),
+			loadpdbbtn = document.getElementById('loadpdbbtn'),
 			getbtn = document.getElementById('getbtn'),
 			objrenderbtn = document.getElementById('objrenderbtn'),
 			resetcamerabtn = document.getElementById('resetcamerabtn'),
@@ -16,22 +17,27 @@
 			oldmouse_x,
 			oldmouse_y,
 			camera_pos = [0, 0, 300],
-			camera_defsize = [64, 64],
-			camera_maxsize = [512, 512],
+			camera_defsize = [32, 32],
+			camera_maxsize = [2048, 2048],
 			camera_size = [128, 128],
 			renderQue = [],
 			isRendering = false;
 		
 
 		function renderScript(src) {
-			conn.rendererMethod('runscript', {script: src}, function (res) {
-				console.log('runscript result:', res, {script: src});
+			conn.rendererMethod('runscript', {script: src}, function (err, res) {
+				if (err) {
+					console.error('runscript error:', err, {script: src});
+				} else {
+					console.log('runscript result:', res, {script: src});
+				}
 			});
 		}
  		
 		//----------
 		conn.method('open', function (res) {
-			var cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]);
+			var cmd = sceneCommands.createCamera('camera');
+			cmd += sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]);
 			cmd += sceneCommands.cameraPos('camera', camera_pos);
 			cmd += sceneCommands.render();
 			renderScript(cmd);
@@ -47,7 +53,17 @@
 				img.setAttribute('width', '512px');
 				img.setAttribute('height', '512px');
 			}
-			
+
+			console.log(param);
+			if (!param.canceled) {
+				if (param.width < camera_maxsize[0] || param.height < camera_maxsize[1]) {
+					console.log('REFINE RENDER!', param.width * 2, param.height * 2);
+					cmd = sceneCommands.cameraScreenSize('camera', param.width * 2, param.height * 2);
+					cmd += sceneCommands.render();
+					renderScript(cmd);
+				}
+			}
+			/*
 			if (renderQue.length > 0) {
 				scriptQue = renderQue.pop();
 				renderScript(scriptQue);
@@ -61,7 +77,7 @@
 				} else {
 					isRendering = false;
 				}
-			}
+			}*/
 		});
 		
 		//------------------
@@ -87,7 +103,10 @@
 				camera_size[0] = camera_defsize[0];
 				camera_size[1] = camera_defsize[1];
 				
-				renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+				//renderQue.clear();
+				var cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
+				renderScript(cmd);
+				/*renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
 				setTimeout(function () {
 					var cmd;
 					if (!isRendering && renderQue.length > 1) {
@@ -95,14 +114,17 @@
 						cmd = renderQue.pop();
 						renderScript(cmd);
 					}
-				}, 1);
+				}, 1);*/
 			}
 			if (rightpress) {
 				camera_pos[2] -= (dx + dy);
 				camera_size[0] = camera_defsize[0];
 				camera_size[1] = camera_defsize[1];
-				
-				renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
+
+				//renderQue.clear();
+				var cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
+				renderScript(cmd);				
+				/*renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
 				setTimeout(function () {
 					var cmd;
 					if (!isRendering && renderQue.length > 1) {
@@ -110,7 +132,7 @@
 						cmd = renderQue.pop();
 						renderScript(cmd);
 					}
-				}, 1);
+				}, 1);*/
 			}
 			oldmouse_x = e.clientX;
 			oldmouse_y = e.clientY;
@@ -125,8 +147,11 @@
 
 		});
 
-		loadbtn.addEventListener('click', function (e) {
+		loadobjbtn.addEventListener('click', function (e) {
 			renderScript(sceneCommands.loadObj('model', 'bunny.obj', 'normal.frag'));
+		});
+		loadpdbbtn.addEventListener('click', function (e) {
+			renderScript(sceneCommands.loadPDB('model', '4CL8.pdb', 'normal.frag'));
 		});
 		clearbtn.addEventListener('click', function (e) {
 			renderScript(sceneCommands.clearObjects());

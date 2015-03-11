@@ -19,6 +19,8 @@ public:
     
     void ClearBuffers(); // Clear RenderBuffer resouces
     
+    void SetProgressCallback(bool (*func)(double));
+
 private:
     RenderCore();
     ~RenderCore();

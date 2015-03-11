@@ -9,6 +9,7 @@
 #include "RenderCore.h"
 
 #include "Commands.h"
+#include "Time.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -46,6 +47,22 @@ extern "C" {
 }
 #endif
 
+namespace {
+    // for LSGL progress callback
+    typedef bool (CallBackFunction)(int, int, int, void*);
+    static void* g_callback_userptr = 0;
+    CallBackFunction* g_callbackFunc = 0;
+    static void SetProgressCalbackFunction(CallBackFunction* func, void* ptr) {
+        g_callbackFunc     = func;
+        g_callback_userptr = ptr;
+    }
+    static bool progressCallbackFuncSGL(int progress, int y, int height) {
+        if (!g_callbackFunc)
+            return true;
+        return g_callbackFunc(progress, y, height, g_callback_userptr);
+    }
+}
+
 
 class RenderCore::Impl {
 
@@ -78,6 +95,31 @@ private:
     
     ImageSaver m_imagesaver;
     
+    double m_renderTimeout;
+    double m_oldCallbackTime;
+    bool (*m_progressCallback)(double);
+    
+    static bool progressCallbackFunc_(int progress, int y, int height, void* ptr) {
+        return static_cast<Impl*>(ptr)->progressCallbackFunc(progress, y, height);
+    }
+    bool progressCallbackFunc(int progress, int y, int height) {
+        const double tm = GetTimeCount();
+        const int minimumRenderingHeight = 64; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
+        if (height > minimumRenderingHeight
+        && (tm - m_oldCallbackTime > m_renderTimeout)) {
+            m_oldCallbackTime = tm;
+            if (!m_progressCallback)
+                return true;
+            return m_progressCallback(static_cast<double>(progress));
+        }
+        return true;
+    }
+    static bool defaultProgressCallbackFunc(double progress) {
+        printf("[Rendering] %3d%%\n", static_cast<int>(progress));
+        return true;
+    }
+    
+    
 public:
     Impl()
     {
@@ -90,9 +132,15 @@ public:
         m_gl_colorbuffer  = 0;
         m_gl_framebuffer  = 0;
 
+        m_renderTimeout    = 0.2; // sec
+        m_oldCallbackTime  = 0.0;
+        m_progressCallback = defaultProgressCallbackFunc;
+        
 #ifndef USE_GLSL_CONFIG
         LSGL_CompilerSetting();
 #endif
+        SetCallback_SGL(progressCallbackFuncSGL); // for global
+        SetProgressCalbackFunction(progressCallbackFunc_, this); // for instance
     }
     
     ~Impl() {
@@ -142,8 +190,14 @@ public:
         m_renderObjects.clear();
     }
     
+    void SetProgressCallback(bool (*func)(double))
+    {
+        m_progressCallback = func;
+    }
+    
     void Render()
     {
+        m_oldCallbackTime = 0.0;
         RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
@@ -379,7 +433,6 @@ private:
     
 };
 
-
 // ----------------------------------------------------
 
 RenderCore* RenderCore::GetInstance()
@@ -410,5 +463,10 @@ void RenderCore::ClearRenderObject()
 void RenderCore::ClearBuffers()
 {
     m_imp->ClearBuffers();
+}
+
+void RenderCore::SetProgressCallback(bool (*func)(double))
+{
+    m_imp->SetProgressCallback(func);
 }
 
