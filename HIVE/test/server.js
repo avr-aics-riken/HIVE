@@ -1,13 +1,31 @@
 /*jslint devel:true*/
-/*global require, Error*/
+/*global require, Error, process*/
 
-var http = require('http'),
+var	HRENDER = '../hrender',
+	HRENDER_ARG = ['hrender_server.lua'],
+	port = process.argv.length > 2 ? process.argv[2] : 8080,
+	http = require('http'),
 	metabin = require('./metabinary'),
+	fs = require('fs'),
+	spawn = require('child_process').spawn,
 	seserver = http.createServer(function (req, res) {
 		'use strict';
 		console.log('REQ>', req.url);
-		res.end("websocket sender");
-	}).listen(8080),
+		var file, fname;
+		if (req.url === '/') {
+			file = fs.readFileSync('index.html');
+			res.end(file);
+		} else {
+			try {
+				fname = req.url.substr(1, req.url.length); // remove '/'
+				file = fs.readFileSync(fname);
+				res.end(file);
+			} catch (e) {
+				res.writeHead(404, {'Content-Type': 'text/plain'});
+				res.end('not found\n');
+			}
+		}
+	}).listen(port),
 	websocket = require('websocket'),
 	ws = new websocket.server({httpServer : seserver,
 							   maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
@@ -16,6 +34,19 @@ var http = require('http'),
 	id_counter = 0,
 	renderNode = null, // one renderer
 	clientNode = null; // one client
+
+function sendErrorMessage(ws_node, msgstr, id) {
+	'use strict';
+	if (!ws_node) {
+		return;
+	}
+	
+	ws_node.send(JSON.stringify({
+		JSONRPC: "2.0",
+		error: msgstr,
+		id: id
+	}));
+}
 
 ws.on('request', function (request) {
 	"use strict";
@@ -84,10 +115,18 @@ ws.on('request', function (request) {
 
 			if (ret.to === 'master') {
 				masterMethod(ret.method, param);
-			} else if (clientNode && ret.to === 'client') { // for client
-				clientNode.send(JSON.stringify(ret));
-			} else if (renderNode && ret.to === 'renderer') { // for renderer
-				renderNode.send(JSON.stringify(ret));
+			} else if (ret.to === 'client') { // for client
+				if (clientNode) {
+					clientNode.send(JSON.stringify(ret));
+				} else {
+					sendErrorMessage(renderNode, 'Not connected ClientNode', ret.id);
+				}
+			} else if (ret.to === 'renderer') { // for renderer
+				if (renderNode) {
+					renderNode.send(JSON.stringify(ret));
+				} else {
+					sendErrorMessage(clientNode, 'Not connected RenderNode', ret.id);
+				}
 			}
 		}
 	}
@@ -139,5 +178,32 @@ ws.on('request', function (request) {
 	connection.on('close', function () {
 		delete ws_connections[connection.id];
 		console.log('[CONNECTION] Connection closed : type = [' + connection.type + "] id = " + connection.id);
+		if (connection.type === 'renderer') {
+			renderNode = null;
+		} else if (connection.type === 'client') {
+			clientNode = null;
+		}
 	});
 });
+
+function startupHRenderServer() {
+	'use strict';
+	try {
+		var process = spawn(HRENDER, HRENDER_ARG);
+		process.stdout.on('data', function (data) {
+			console.log('stdout: ' + data);
+		});
+		process.stderr.on('data', function (data) {
+			console.log('stderr: ' + data);
+		});
+		process.on('exit', function (code) {
+			console.log('exit code: ' + code);
+		});
+		process.on('error', function (err) {
+			console.log('process error', err);
+		});
+	} catch (e) {
+		console.log('process error', e);
+	}
+}
+startupHRenderServer();

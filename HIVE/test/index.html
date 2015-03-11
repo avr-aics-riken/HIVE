@@ -8,11 +8,19 @@
 	</head>
 	<body>
 		<input type="button" value="clear" id="clearbtn">
-		<input type="button" value="loadOBJ" id="loadobjbtn">
-		<input type="button" value="loadPDB" id="loadpdbbtn">
-		<input type="button" value="getOBJ" id="getbtn">
 		<input type="button" value="obj render" id="objrenderbtn">
-		<input type="button" value="reset camera" id="resetcamerabtn">
+		<input type="button" value="reset camera" id="resetcamerabtn"><br>
+		<input type="text" id="objfilepath" value="bunny.obj" placeholder="relative or absolute path">
+		<input type="text" id="objshaderpath" value="normal.frag" placeholder="shader.frag">
+		<input type="button" value="Load OBJ File" id="loadobjbtn"><br>
+		<input type="text" id="stlfilepath" value="bunny.stl" placeholder="relative or absolute path">
+		<input type="text" id="stlshaderpath" value="normal.frag" placeholder="shader.frag">
+		<input type="button" value="Load STL File" id="loadstlbtn"><br>
+		<input type="text" id="pdbfilepath" value="4CL8.pdb" placeholder="relative or absolute path">
+		<input type="text" id="pdbshaderpath" value="normal.frag" placeholder="shader.frag">
+		<input type="button" value="Load PDB File" id="loadpdbbtn"><br>
+		<!--<input type="button" value="getOBJ" id="getbtn">-->
+
 		<div id="imgdiv" style="width:512px;height:512px;"><img id="img"></img></div>
 	</body>
 </html>

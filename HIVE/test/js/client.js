@@ -7,6 +7,7 @@
 		var conn = new HiveConnect(),
 			clearbtn = document.getElementById('clearbtn'),
 			loadobjbtn = document.getElementById('loadobjbtn'),
+			loadstlbtn = document.getElementById('loadstlbtn'),
 			loadpdbbtn = document.getElementById('loadpdbbtn'),
 			getbtn = document.getElementById('getbtn'),
 			objrenderbtn = document.getElementById('objrenderbtn'),
@@ -17,20 +18,17 @@
 			oldmouse_x,
 			oldmouse_y,
 			camera_pos = [0, 0, 300],
-			camera_defsize = [32, 32],
+			camera_defsize = [16, 16],
 			camera_maxsize = [2048, 2048],
-			camera_size = [128, 128],
-			renderQue = [],
-			isRendering = false;
-		
+			camera_size = [128, 128];
 
 		function renderScript(src) {
 			conn.rendererMethod('runscript', {script: src}, function (err, res) {
 				if (err) {
 					console.error('runscript error:', err, {script: src});
-				} else {
+				}/* else {
 					console.log('runscript result:', res, {script: src});
-				}
+				}*/
 			});
 		}
  		
@@ -54,30 +52,14 @@
 				img.setAttribute('height', '512px');
 			}
 
-			console.log(param);
 			if (!param.canceled) {
 				if (param.width < camera_maxsize[0] || param.height < camera_maxsize[1]) {
-					console.log('REFINE RENDER!', param.width * 2, param.height * 2);
+					//console.log('REFINE RENDER!', param.width * 2, param.height * 2);
 					cmd = sceneCommands.cameraScreenSize('camera', param.width * 2, param.height * 2);
 					cmd += sceneCommands.render();
 					renderScript(cmd);
 				}
 			}
-			/*
-			if (renderQue.length > 0) {
-				scriptQue = renderQue.pop();
-				renderScript(scriptQue);
-				renderQue.length = 0;
-			} else {
-				if (param.width < camera_maxsize[0] || param.height < camera_maxsize[1]) {
-					console.log('RENDER!', param.width * 2, param.height * 2);
-					cmd = sceneCommands.cameraScreenSize('camera', param.width * 2, param.height * 2);
-					cmd += sceneCommands.render();
-					renderScript(cmd);
-				} else {
-					isRendering = false;
-				}
-			}*/
 		});
 		
 		//------------------
@@ -94,7 +76,7 @@
 		imgdiv.addEventListener('mousemove', function (e) {
 			e.preventDefault();
 			e.stopPropagation();
-			var dx, dy;
+			var dx, dy, cmd;
 			dx = e.clientX - oldmouse_x;
 			dy = e.clientY - oldmouse_y;
 			if (leftpress) {
@@ -103,36 +85,16 @@
 				camera_size[0] = camera_defsize[0];
 				camera_size[1] = camera_defsize[1];
 				
-				//renderQue.clear();
-				var cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
+				cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
 				renderScript(cmd);
-				/*renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
-				setTimeout(function () {
-					var cmd;
-					if (!isRendering && renderQue.length > 1) {
-						isRendering = true;
-						cmd = renderQue.pop();
-						renderScript(cmd);
-					}
-				}, 1);*/
 			}
 			if (rightpress) {
 				camera_pos[2] -= (dx + dy);
 				camera_size[0] = camera_defsize[0];
 				camera_size[1] = camera_defsize[1];
 
-				//renderQue.clear();
-				var cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
-				renderScript(cmd);				
-				/*renderQue.push(sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render());
-				setTimeout(function () {
-					var cmd;
-					if (!isRendering && renderQue.length > 1) {
-						isRendering = true;
-						cmd = renderQue.pop();
-						renderScript(cmd);
-					}
-				}, 1);*/
+				cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
+				renderScript(cmd);
 			}
 			oldmouse_x = e.clientX;
 			oldmouse_y = e.clientY;
@@ -148,18 +110,57 @@
 		});
 
 		loadobjbtn.addEventListener('click', function (e) {
-			renderScript(sceneCommands.loadObj('model', 'bunny.obj', 'normal.frag'));
+			var objfilepath = document.getElementById('objfilepath'),
+				objshaderpath = document.getElementById('objshaderpath'),
+				filepath,
+				shaderpath;
+			if (objfilepath) {
+				filepath = objfilepath.value;
+			}
+			if (objshaderpath) {
+				shaderpath = objshaderpath.value;
+			}
+			if (filepath && filepath !== '') {
+				renderScript(sceneCommands.loadObj('model', filepath, shaderpath));
+			}
+		});
+		loadstlbtn.addEventListener('click', function (e) {
+			var stlfilepath = document.getElementById('stlfilepath'),
+				stlshaderpath = document.getElementById('stlshaderpath'),
+				filepath,
+				shaderpath;
+			if (stlfilepath) {
+				filepath = stlfilepath.value;
+			}
+			if (stlshaderpath) {
+				shaderpath = stlshaderpath.value;
+			}
+			if (filepath && filepath !== '') {
+				renderScript(sceneCommands.loadStl('model', filepath, shaderpath));
+			}
 		});
 		loadpdbbtn.addEventListener('click', function (e) {
-			renderScript(sceneCommands.loadPDB('model', '4CL8.pdb', 'normal.frag'));
+			var pdbfilepath = document.getElementById('pdbfilepath'),
+				pdbshaderpath = document.getElementById('pdbshaderpath'),
+				filepath,
+				shaderpath;
+			if (pdbfilepath) {
+				filepath = pdbfilepath.value;
+			}
+			if (pdbshaderpath) {
+				shaderpath = pdbshaderpath.value;
+			}
+			if (filepath && filepath !== '') {
+				renderScript(sceneCommands.loadPDB('model', filepath, shaderpath));
+			}
 		});
 		clearbtn.addEventListener('click', function (e) {
 			renderScript(sceneCommands.clearObjects());
 			renderScript(sceneCommands.createCamera('camera'));
 		});
-		getbtn.addEventListener('click', function (e) {
+		/*getbtn.addEventListener('click', function (e) {
 			renderScript(sceneCommands.getObjectList());
-		});
+		});*/
 		objrenderbtn.addEventListener('click', function (e) {
 			renderScript(sceneCommands.render());
 		});
