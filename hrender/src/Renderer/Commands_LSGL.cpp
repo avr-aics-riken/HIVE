@@ -557,10 +557,10 @@ void EvalFragmentShader_SGL()
 	sgl.lsglEvalFragmentShader();
 }
 
-void SetCallback_SGL(LSGLProgressCallback callback)
+void SetCallback_SGL(LSGLProgressCallback callback, void* userptr)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
-	sgl.lsglSetProgressCallback(callback);
+	sgl.lsglSetProgressCallback(callback, userptr);
 }
 
 

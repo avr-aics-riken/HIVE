@@ -118,7 +118,7 @@ HIVE_nextEvent = ''
 HIVE_isRenderCanceled = false
 function fetchEvent(progress)
 	HIVE_nextEvent = network:Recv()
-	print('progress = ', progress .. '%', HIVE_nextEvent)
+	print('Rendering: ', progress .. '%', HIVE_nextEvent)
 	if HIVE_nextEvent ~= '' then
 		HIVE_isRenderCanceled = true
 		return false
