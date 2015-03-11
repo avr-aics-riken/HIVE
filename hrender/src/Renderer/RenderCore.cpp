@@ -47,23 +47,6 @@ extern "C" {
 }
 #endif
 
-namespace {
-    // for LSGL progress callback
-    typedef bool (CallBackFunction)(int, int, int, void*);
-    static void* g_callback_userptr = 0;
-    CallBackFunction* g_callbackFunc = 0;
-    static void SetProgressCalbackFunction(CallBackFunction* func, void* ptr) {
-        g_callbackFunc     = func;
-        g_callback_userptr = ptr;
-    }
-    static bool progressCallbackFuncSGL(int progress, int y, int height) {
-        if (!g_callbackFunc)
-            return true;
-        return g_callbackFunc(progress, y, height, g_callback_userptr);
-    }
-}
-
-
 class RenderCore::Impl {
 
 private:
@@ -98,7 +81,6 @@ private:
     double m_renderTimeout;
     double m_oldCallbackTime;
     bool (*m_progressCallback)(double);
-    
     static bool progressCallbackFunc_(int progress, int y, int height, void* ptr) {
         return static_cast<Impl*>(ptr)->progressCallbackFunc(progress, y, height);
     }
@@ -139,8 +121,7 @@ public:
 #ifndef USE_GLSL_CONFIG
         LSGL_CompilerSetting();
 #endif
-        SetCallback_SGL(progressCallbackFuncSGL); // for global
-        SetProgressCalbackFunction(progressCallbackFunc_, this); // for instance
+        SetCallback_SGL(Impl::progressCallbackFunc_, this);
     }
     
     ~Impl() {

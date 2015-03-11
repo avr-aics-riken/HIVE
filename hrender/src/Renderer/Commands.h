@@ -59,7 +59,7 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
 
 void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata);
 void EvalFragmentShader_SGL();
-void SetCallback_SGL(bool (*callback)(int progress, int y, int height) );
+void SetCallback_SGL(bool (*callback)(int progress, int y, int height, void* userptr), void* userptr);
 void Finish_SGL();
 
 #ifndef USE_OPENGL
