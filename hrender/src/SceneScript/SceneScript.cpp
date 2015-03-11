@@ -233,6 +233,23 @@ int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& ro
     return num;
 }
 
+static lua_State* g_L = 0;
+static bool progressCallback(double val)
+{
+    lua_pushvalue(g_L, 2); // funciton
+    lua_pushnumber(g_L, val); // arg
+    //dumpStack(g_L);
+    if (lua_pcall(g_L, 1, 1, 0)) { // arg:1, ret:1
+        // error
+        fprintf(stderr,"Invalid call renderer callback function: %s\n", lua_tostring(g_L, -1));
+    } else {
+        const bool r = lua_toboolean(g_L, -1); // ret
+        return r;
+    }
+    lua_pop(g_L, 1);  // pop returned value
+    return true; // true:continue, false: exit
+}
+
 int render(lua_State* L)
 {
     const int stnum = lua_gettop(L);
@@ -248,6 +265,12 @@ int render(lua_State* L)
     printf("RenderObjects Num = %d\n", modelnum);
  
     RenderCore* core = RenderCore::GetInstance();
+
+    if (stnum > 1 && lua_type(L, 2) == LUA_TFUNCTION) { // progress callback function
+        g_L = L;
+        core->SetProgressCallback(progressCallback);
+    }
+
     
     for (size_t i = 0; i < robjs.size(); ++i) {
         core->AddRenderObject(robjs[i]);

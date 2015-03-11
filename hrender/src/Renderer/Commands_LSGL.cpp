@@ -562,3 +562,5 @@ void SetCallback_SGL(LSGLProgressCallback callback)
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.lsglSetProgressCallback(callback);
 }
+
+

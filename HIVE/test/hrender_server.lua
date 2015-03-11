@@ -22,6 +22,7 @@ JSON = require('dkjson')
 network = Connection()
 network:SetTimeout(100)
 
+HIVE_ObjectTable = {} -- Global
 
 local function mysleep(sec)
 	local start = os.time()
@@ -113,12 +114,31 @@ function renderMethod(method, param, id)
 	Log('==============================')
 end
 
+HIVE_nextEvent = ''
+HIVE_isRenderCanceled = false
+function fetchEvent(progress)
+	HIVE_nextEvent = network:Recv()
+	print('progress = ', progress .. '%', HIVE_nextEvent)
+	if HIVE_nextEvent ~= '' then
+		HIVE_isRenderCanceled = true
+		return false
+	else
+		return true
+	end
+end
+
 function mainloop()
 	local src
 	local data
 	local err
+	HIVE_nextEvent = ''
 	while true do
-		src = network:Recv()
+		if HIVE_nextEvent ~= '' then
+			src = HIVE_nextEvent
+			HIVE_nextEvent = ''
+		else
+			src = network:Recv()
+		end
 		if src ~= '' then
 			--Log('[DEBUG] SRC:', src);
 			data = JSON.decode(src)
@@ -127,6 +147,7 @@ function mainloop()
 				print('Exit.');
 				return;
 			else
+				HIVE_isRenderCanceled = false
 				renderMethod(data.method, data.param, data.id)
 			end
 		else

@@ -37,7 +37,7 @@ public:
     
     // RenderObject interface
     LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetType)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float)
+    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate, float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetRotate,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetScale,float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetVec2,  const char*, float, float)
