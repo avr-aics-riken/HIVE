@@ -86,7 +86,7 @@ private:
     }
     bool progressCallbackFunc(int progress, int y, int height) {
         const double tm = GetTimeCount();
-        const int minimumRenderingHeight = 64; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
+        const int minimumRenderingHeight = 16; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
         if (height > minimumRenderingHeight
         && (tm - m_oldCallbackTime > m_renderTimeout)) {
             m_oldCallbackTime = tm;
@@ -178,7 +178,7 @@ public:
     
     void Render()
     {
-        m_oldCallbackTime = 0.0;
+        m_oldCallbackTime = 0.0;//GetTimeCount();
         RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {

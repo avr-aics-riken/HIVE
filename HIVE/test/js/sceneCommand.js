@@ -38,6 +38,20 @@
 			src += "return 'LoadOBJ:' .. tostring(ret)\n";
 			return src;
 		},
+		loadStl : function (name, filename, shader) {
+			var src = '';
+			src += "local stl = STLLoader()\n";
+			src += "local ret = stl:Load('" + filename + "')\n";
+			src += "if ret then\n";
+			src += "	local model = PolygonModel()\n";
+			src += "	local meshdata = stl:MeshData()\n";
+			src += "	model:Create(meshdata)\n";
+			src += "	model:SetShader('" + shader + "')\n";
+			src += "	HIVE_ObjectTable['" + name + "_stl'] = model\n";
+			src += "end\n";
+			src += "return 'LoadSTL:' .. tostring(ret)\n";
+			return src;
+		},
 		loadPDB : function (name, filename, shader) {
 			var src = '';
 			src += "local pdb = PDBLoader()\n";
