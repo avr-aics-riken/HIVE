@@ -48,8 +48,6 @@
 				cmd;
 			if (param.type === 'jpg') {
 				img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
-				img.setAttribute('width', '512px');
-				img.setAttribute('height', '512px');
 			}
 
 			if (!param.canceled) {
@@ -63,6 +61,52 @@
 		});
 		
 		//------------------
+		if (window.TouchEvent) {
+			imgdiv.addEventListener('touchstart', function (e) {
+				e.preventDefault();
+				var touches = e.touches;
+				oldmouse_x = touches[0].clientX;
+				oldmouse_y = touches[0].clientX;
+				if (touches.length === 1) {
+					leftpress = true;
+				} else {
+					rightpress = true;
+				}
+			});
+			imgdiv.addEventListener('touchend', function (e) {
+				e.preventDefault();
+				leftpress = false;
+				rightpress = false;
+			});
+			imgdiv.addEventListener('touchmove', function (ev) {
+				ev.preventDefault();
+				ev.stopPropagation();
+				var dx, dy, cmd, e;
+				e = ev.touches[0];
+				dx = e.clientX - oldmouse_x;
+				dy = e.clientX - oldmouse_y;
+				//console.log(dx, dy);
+				if (leftpress) {
+					camera_pos[0] -= dx;
+					camera_pos[1] += dy;
+					camera_size[0] = camera_defsize[0];
+					camera_size[1] = camera_defsize[1];
+					
+					cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
+					renderScript(cmd);
+				}
+				if (rightpress) {
+					camera_pos[2] -= (dx + dy);
+					camera_size[0] = camera_defsize[0];
+					camera_size[1] = camera_defsize[1];
+
+					cmd = sceneCommands.cameraScreenSize('camera', camera_size[0], camera_size[1]) + sceneCommands.cameraPos('camera', camera_pos) + sceneCommands.render();
+					renderScript(cmd);
+				}
+				oldmouse_x = e.clientX;
+				oldmouse_y = e.clientX;
+			});
+		}
 		imgdiv.addEventListener('mousedown', function (e) {
 			e.preventDefault();
 			if (e.button === 0) {
