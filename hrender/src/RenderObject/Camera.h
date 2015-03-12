@@ -37,7 +37,6 @@ protected:
 	~Camera();
 	bool SetScreenSize(unsigned int width, unsigned int height);
 	bool SetFilename(const std::string& outputfile);
-    bool SetNetworkAddress(const std::string& address);
     
 	bool LookAt(float eye_x, float eye_y, float eye_z,
 				float tar_x, float tar_y, float tar_z,
