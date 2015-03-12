@@ -5,3 +5,4 @@ build
 build2
 HIVE/app/node_modules
 HIVE/test/node_modules
+HIVE/HIVE/node_modules
