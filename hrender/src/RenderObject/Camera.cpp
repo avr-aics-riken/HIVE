@@ -37,13 +37,6 @@ public:
         return true;
     }
     
-    bool SetNetworkAddress(const std::string& address)
-    {
-        m_networkaddress = address;
-        printf("Debug: Network = %s\n", address.c_str());
-        return true;
-    }
-    
     bool LookAt(float eye_x, float eye_y, float eye_z,
                         float tar_x, float tar_y, float tar_z,
                         float up_x,  float up_y,  float up_z,
@@ -82,7 +75,6 @@ private:
     unsigned int m_width;
     unsigned int m_height;
     std::string  m_outputfile;
-    std::string  m_networkaddress;
     CameraInfo m_info;
     float m_clearcolor[4];
     BufferImageData m_imagebuffer;
@@ -108,11 +100,6 @@ bool Camera::SetScreenSize(unsigned int w, unsigned int h)
 bool Camera::SetFilename(const std::string& filename)
 {
     return m_imp->SetFilename(filename);
-}
-
-bool Camera::SetNetworkAddress(const std::string& address)
-{
-    return m_imp->SetNetworkAddress(address);
 }
 
 bool Camera::LookAt(float eye_x, float eye_y, float eye_z,
