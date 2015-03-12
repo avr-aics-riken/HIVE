@@ -22,6 +22,10 @@ public:
     const std::string& GetOutputFile() const;
     BufferImageData*   GetImageBuffer();
     BufferImageData*   GetDepthBuffer();
+
+    VX::Math::vec3 GetPosition() const;
+    VX::Math::vec3 GetTarget() const;
+    VX::Math::vec3 GetUp() const;
     
 private:
     class Impl;
