@@ -66,6 +66,10 @@ public:
         return true;
     }
     
+    VX::Math::vec3     GetPosition()     const { return VX::Math::vec3(m_info.eye[0], m_info.eye[1], m_info.eye[2]); }
+    VX::Math::vec3     GetTarget()       const { return VX::Math::vec3(m_info.tar[0], m_info.tar[1], m_info.tar[2]); }
+    VX::Math::vec3     GetUp()           const { return VX::Math::vec3(m_info.up [0], m_info.up [1], m_info.up [2]); }
+
     const float*              GetClearColor()   const { return m_clearcolor; }
     int                       GetScreenWidth()  const { return m_width;      }
     int                       GetScreenHeight() const { return m_height;     }
@@ -134,5 +138,9 @@ const Camera::CameraInfo* Camera::GetCameraInfo()   const { return m_imp->GetCam
 const std::string&        Camera::GetOutputFile()   const { return m_imp->GetOutputFile();   }
 BufferImageData*          Camera::GetImageBuffer()        { return m_imp->GetImageBuffer();  }
 BufferImageData*          Camera::GetDepthBuffer()        { return m_imp->GetDepthBuffer();  }
+
+VX::Math::vec3 Camera::GetPosition()                const { return m_imp->GetPosition();     }
+VX::Math::vec3 Camera::GetTarget()                  const { return m_imp->GetTarget();       }
+VX::Math::vec3 Camera::GetUp()                      const { return m_imp->GetUp();           }
 
 
