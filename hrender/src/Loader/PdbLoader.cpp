@@ -55,7 +55,6 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
     if (generateBond) {
 
         // We reprent Bond as line primitives.
-        // @todo { remove duplicated bonds. }
         std::vector<float> bondLines;
         for (unsigned int i = 0; i < numAtoms; i++) {
 
@@ -63,6 +62,10 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
 
           for (unsigned int j = 0; j < atom.GetBonds().size(); j++) {
             const tinypdb::Atom* dst = atom.GetBonds()[j];
+
+            if (dst->Visited()) {
+              continue;
+            }
 
             bondLines.push_back(atom.GetX());
             bondLines.push_back(atom.GetY());
@@ -73,6 +76,8 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
             bondLines.push_back(dst->GetZ());
 
           }
+
+          atom.SetVisited(true); 
 
         }
 
