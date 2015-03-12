@@ -76,8 +76,7 @@ protected:
         m_trans[2] = z;
         return true;
     }
- 
-
+    
     bool SetRotate(float x, float y, float z) {
         m_rotat[0] = x;
         m_rotat[1] = y;

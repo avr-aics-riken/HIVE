@@ -12,6 +12,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 #include <assert.h>
+#include <vector>
 #include <map>
 #include <string>
 
@@ -159,6 +160,7 @@ inline void closeLua(lua_State* L)
 {
     lua_close(L);
 }
+
 
 // ---------- Lua Class wrapper --------------
 #ifdef SCRIPT_DEBUG
@@ -405,6 +407,135 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 #define LUA_SCRIPTCLASS_NEW_FUNCTION(CLASSNAME) CLASSNAME::LUA_CLASS_NEW
 #define LUA_SCRIPTCLASS_REGISTER(L,CLASSNAME) CLASSNAME::LUA_CLASS_CREATEMETATABLE(L)
 
+//-------------------------
+// LuaTable class
+class LuaTable
+{
+public:
+    enum VALUE_TYPE {
+        TYPE_NUMBER,
+        TYPE_STRING,
+        TYPE_ARRAY,
+        TYPE_MAP,
+    };
+private:
+    std::vector<LuaTable> m_table;
+    std::map<std::string, LuaTable> m_map;
+    VALUE_TYPE m_type;
+    double m_number;
+    std::string m_string;
+    
+public:
+    LuaTable() : m_type(TYPE_ARRAY), m_number(0.0) {}
+    VALUE_TYPE GetType() const { return m_type; }
+
+    //---------------------------------
+    // for initialization
+    LuaTable(double num) : m_type(TYPE_NUMBER), m_number(num) {}
+    LuaTable(const std::string& str) : m_type(TYPE_STRING), m_number(0.0), m_string(str) {}
+    LuaTable(double x, double y, double z, double w) : m_type(TYPE_ARRAY), m_number(0.0) {
+        m_table.push_back(x);
+        m_table.push_back(y);
+        m_table.push_back(z);
+        m_table.push_back(w);
+    }
+    LuaTable(double x, double y, double z) : m_type(TYPE_ARRAY), m_number(0.0) {
+        m_table.push_back(x);
+        m_table.push_back(y);
+        m_table.push_back(z);
+    }
+    LuaTable(double x, double y) : m_type(TYPE_ARRAY), m_number(0.0) {
+        m_table.push_back(x);
+        m_table.push_back(y);
+    }
+    
+    // from Lua stack
+    LuaTable(lua_State* L, int stacki) {
+        m_type = TYPE_ARRAY;
+    }
+
+    //---------------------------------
+    // for scalar input operation
+    double operator=(double v) {
+        m_type = TYPE_NUMBER;
+        m_number = v;
+        return m_number;
+    }
+    const std::string& operator=(std::string v) {
+        m_type = TYPE_STRING;
+        m_string = v;
+        return m_string;
+    }
+    
+    //---------------------------------
+    // for array operation
+    void push(const LuaTable& val)                            { m_type = TYPE_ARRAY; m_table.push_back(val);           }
+    void push(double val)                                     { m_type = TYPE_ARRAY; m_table.push_back(LuaTable(val)); }
+    void push(const char* val)                                { m_type = TYPE_ARRAY; m_table.push_back(LuaTable(val)); }
+    void push(const std::string& val)                         { m_type = TYPE_ARRAY; m_table.push_back(val);           }
+    //---------------------------------
+    // for map operation
+    void map(const std::string& name, const LuaTable& val)    { m_type = TYPE_MAP; m_map[name] = val;           }
+    void map(const std::string& name, double val)             { m_type = TYPE_MAP; m_map[name] = LuaTable(val); }
+    void map(const std::string& name, const char* val)        { m_type = TYPE_MAP; m_map[name] = LuaTable(val); }
+    void map(const std::string& name, const std::string& val) { m_type = TYPE_MAP; m_map[name] = LuaTable(val); }
+    //---------------------------------
+    // Get methods
+    double GetNumber() const                                  { return m_number; }
+    const std::string& GetString() const                      { return m_string; }
+    const std::vector<LuaTable>& GetTable() const             { return m_table;  }
+    const std::map<std::string, LuaTable>& GetMap() const     { return m_map;    }
+
+    //---------------------------------
+    // for Lua binding
+    //
+    void pushLuaTableValue(lua_State* L) const
+    {
+        const LuaTable::VALUE_TYPE type = GetType();
+        if (type == LuaTable::TYPE_ARRAY) {
+            lua_newtable(L);
+            const std::vector<LuaTable>& table = GetTable();
+            for (int i = 0; i < table.size(); ++i) {
+                lua_pushnumber(L, i + 1);
+                table[i].pushLuaTableValue(L);
+                lua_settable(L, -3);
+            }
+        } else if (type == LuaTable::TYPE_MAP) {
+            lua_newtable(L);
+            std::map<std::string, LuaTable>::const_iterator it, eit = GetMap().end();
+            for (it = GetMap().begin(); it != eit; ++it) {
+                lua_pushstring(L, it->first.c_str());
+                it->second.pushLuaTableValue(L);
+                lua_settable(L, -3);
+            }
+        } else if (type == LuaTable::TYPE_NUMBER){
+            lua_pushnumber(L, GetNumber());
+        } else if (type == LuaTable::TYPE_STRING){
+            lua_pushstring(L, GetString().c_str());
+        } else {
+            assert(0); // Unknown type
+        }
+    }
+};
+
+template <> inline int LUAPUSH<LuaTable>(lua_State* L, LuaTable val)
+{
+    val.pushLuaTableValue(L);
+    return 1;
+}
+
+template <> inline int LUAPUSH<const LuaTable&>(lua_State* L, const LuaTable& val)
+{
+    val.pushLuaTableValue(L);
+    return 1;
+}
+
+template <> inline LuaTable LUACAST<LuaTable>(lua_State* L, int argi) {
+    return LuaTable(L, argi);
+}
+
+
+//-------------------
 
 
 #endif // INCLUDE_MOE_LUAUTIL_H
