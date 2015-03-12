@@ -1,0 +1,25 @@
+
+print('get table test')
+
+local poly = PolygonModel()
+poly:SetTranslate(2,3,4)
+
+poly:SetVec4('color1', 0.1, 0.2, 0.3, 0.4)
+poly:SetVec4('color2', 0.2, 0.4, 0.6, 0.8)
+poly:SetVec4('color3', 0.3, 0.6, 0.9, 1.0)
+
+local t = poly:GetTranslate()
+print('Translate = ', t, ' -> {', t[1], t[2], t[3] ,"}")
+
+local m = poly:GetVec4Table()
+for i,v in pairs(m) do
+	print(i,v);
+	if (type(v)) then
+		for i2,v2 in pairs(v) do
+			print(i2,v2);
+		end
+	end
+end
+
+local pp = poly:GetVec4('color1')
+print('color1 = ', pp[1], pp[2], pp[3] , pp[4] ,"}")
