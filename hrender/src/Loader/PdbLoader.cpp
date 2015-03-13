@@ -3,7 +3,7 @@
 #include "Buffer.h"
 #include <cstring>
 
-PDBLoader::PDBLoader() {}
+PDBLoader::PDBLoader(){}
 PDBLoader::~PDBLoader(){};
 
 void PDBLoader::Clear()
