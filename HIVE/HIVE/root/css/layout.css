@@ -188,6 +188,14 @@ body {
 	overflow-y: scroll;
 }
 
+#newscenebtn{
+	position: absolute;
+	top:15px;
+	right:225px;
+	z-index: 5;
+	width: 100px;
+}
+
 #loadscenebtn{
 	position: absolute;
 	top:15px;

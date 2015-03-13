@@ -195,10 +195,12 @@ function startupHRenderServer() {
 			console.log('stdout: ' + data);
 		});
 		process.stderr.on('data', function (data) {
-			console.log('stderr: ' + data);
+			console.error('stderr: ' + data);
 		});
 		process.on('exit', function (code) {
+			console.error('-------------------------\nhrender is terminated.\n-------------------------');
 			console.log('exit code: ' + code);
+			startupHRenderServer(); // reboot
 		});
 		process.on('error', function (err) {
 			console.log('process error', err);
@@ -207,4 +209,4 @@ function startupHRenderServer() {
 		console.log('process error', e);
 	}
 }
-startupHRenderServer();
+//startupHRenderServer();

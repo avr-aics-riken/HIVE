@@ -4,6 +4,18 @@
 
 arg = {...}
 
+hcmd = require('HiveCommand')
+
+if hcmd == nil then
+	print('[Error] Not found HiveCommand.lua')
+else
+	print('----[HiveCommand]----')
+	for i,v in pairs(hcmd) do
+		print('hcmd.' .. i)
+	end
+	print('---------------------')
+end
+
 local connectAddress = 'ws://localhost:8080/'
 if arg[1] and arg[1]:sub(1,5) == 'ws://' then
 	connectAddress = arg[1]
@@ -19,10 +31,22 @@ Log = print
 package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
+-- Global Weboket Connection
 network = Connection()
 network:SetTimeout(100)
 
-HIVE_ObjectTable = {} -- Global
+-- Global Jpeg Saver
+HIVE_ImageSaver = ImageSaver()
+
+-- Global Metabin
+HIVE_metabin = MetaBinary()
+
+
+local defaultCamera = Camera()
+defaultCamera:SetScreenSize(256,256)
+defaultCamera:LookAt(0,0,300, 0,0,0, 0,1,0, 60)
+HIVE_ObjectTable = {view={defaultCamera}} -- Global: All Object List
+HIVE_DataTable   = {} -- Global: Data List
 
 local function mysleep(sec)
 	local start = os.time()
@@ -66,6 +90,9 @@ local function connectHIVE()
 end
 
 local function eval(src)
+	if src == nil then
+		return nik, '[Error] Script src == nil'
+	end
 	local func
 	local err
 	local success
@@ -116,7 +143,7 @@ end
 
 HIVE_nextEvent = ''
 HIVE_isRenderCanceled = false
-function fetchEvent(progress)
+function HIVE_fetchEvent(progress)
 	HIVE_nextEvent = network:Recv()
 	print('Rendering: ', progress .. '%', HIVE_nextEvent)
 	if HIVE_nextEvent ~= '' then
