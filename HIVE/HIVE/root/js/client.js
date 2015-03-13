@@ -30,7 +30,7 @@
 		// disable context menu
 		window.addEventListener('contextmenu', function (e) {
 			//console.log('context');
-			core.loadObj('bunny.obj', 'normal.frag');
+			core.loadOBJ('bunny.obj', 'normal.frag');
 			e.preventDefault();
 		});
 
@@ -49,6 +49,20 @@
 		});
 		$('showconsole').addEventListener('click', function (ev) {
 			$toggle($('consoleArea'), 500);
+		});
+		
+		$('resultdiv').addEventListener('mousedown', function (ev) {
+			ev.preventDefault();
+		});
+		$('resultdiv').addEventListener('mouseup', function (ev) {
+			ev.preventDefault();
+		});
+		$('resultdiv').addEventListener('mousemove', function (ev) {
+			ev.preventDefault();
+		});
+		$('newscenebtn').addEventListener('click', function (ev) {
+			ev.preventDefault();
+			core.newScene();
 		});
 		//----------------------------
 	}
