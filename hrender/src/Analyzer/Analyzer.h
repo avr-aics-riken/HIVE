@@ -48,7 +48,7 @@ public:
 		
 		assert(numBins >= 1);
 		//assert(maxVal_ >= minVal_); // Allow invalid range input
-		if (maxVal_ >= minVal_) {
+		if (maxVal_ < minVal_) {
 			fprintf(stderr, "Invalid histgram range: %f, %f\n", minVal_, maxVal_);
 			invalid_ = true; 
 		}
@@ -64,7 +64,7 @@ public:
 		minVal_ = minVal;
 		maxVal_ = maxVal;
 
-		if (maxVal_ >= minVal_) {
+		if (maxVal_ < minVal_) {
 			fprintf(stderr, "Invalid histgram range: %f, %f\n", minVal_, maxVal_);
 			invalid_ = true; 
 		}
