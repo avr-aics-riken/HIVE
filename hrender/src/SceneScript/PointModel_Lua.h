@@ -12,9 +12,6 @@ class PointModel_Lua : public PointModel
 public:
     PointModel_Lua() {}
     ~PointModel_Lua() {}
-    bool SetShader(const std::string& shaderfile) {
-        return PointModel::SetShader(shaderfile);
-    }
 
     bool Create(BufferPointData_Lua *mesh) {
         PointModel::Create(mesh);
@@ -26,6 +23,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(PointModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferPointData_Lua*)
     
     // RenderObject interface

@@ -30,9 +30,12 @@
 			hiveCore.updateSceneInformation();
 		});
 
-		hiveCore.conn.method('updateInfo', infoCallback);/*function (param, data) {
-			console.log('AAAAAAAA:updateInfo', param, data);
-		});*/
+		hiveCore.conn.method('updateInfo', (function (core, infoCallback) {
+			return function (param) {
+				core.sceneInfo = param;
+				infoCallback(param);
+			};
+		}(hiveCore, infoCallback)));
 		
 		hiveCore.conn.method('renderedImage', function (param, data) {
 			if (param.type === 'jpg') {
@@ -60,7 +63,7 @@
 		this.resize(width, height);
 		this.modelCount = 0;
 		this.viewCamera = {pos: vec3(0, 0, 300), tar: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60};
-		this.objectList = [];
+		this.sceneInfo = {};
 		this.updateSceneCallback = infoCallback;
 		registerMethods(this, resultElement, infoCallback);
 	};
@@ -88,18 +91,22 @@
 	//
 	HiveCore.prototype.loadOBJ = function (filepath, shaderpath) {
 		var cmd = HiveCommand.loadOBJ('model' + this.modelCount, filepath, shaderpath);
+		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadSTL = function (filepath, shaderpath) {
 		var cmd = HiveCommand.loadSTL('model' + this.modelCount, filepath, shaderpath);
+		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadPDB = function (filepath, shaderpath) {
 		var cmd = HiveCommand.loadPDB('model' + this.modelCount, filepath, shaderpath);
+		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadSPH = function (filepath, shaderpath) {
 		var cmd = HiveCommand.loadSPH('model' + this.modelCount, filepath, shaderpath);
+		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 
@@ -109,6 +116,10 @@
 	HiveCore.prototype.updateSceneInformation = function () {
 		var cmd = HiveCommand.updateSceneInformation();
 		runScript(this.conn, cmd);
+	};
+	
+	HiveCore.prototype.getSceneData = function () {
+		return this.sceneInfo;
 	};
 	
 	//----------------------------------------------------------------------------------------------
@@ -133,8 +144,6 @@
 	};
 	
 	HiveCore.prototype.deleteObject = function (name) {
-		// delete
-		//TODO:
 		runScript(this.conn, HiveCommand.deleteObject(name));
 	};
 	

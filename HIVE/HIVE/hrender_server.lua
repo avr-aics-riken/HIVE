@@ -45,7 +45,7 @@ HIVE_metabin = MetaBinary()
 local defaultCamera = Camera()
 defaultCamera:SetScreenSize(256,256)
 defaultCamera:LookAt(0,0,300, 0,0,0, 0,1,0, 60)
-HIVE_ObjectTable = {view={defaultCamera}} -- Global: All Object List
+HIVE_ObjectTable = {view=defaultCamera} -- Global: All Object List
 HIVE_DataTable   = {} -- Global: Data List
 
 local function mysleep(sec)
@@ -185,6 +185,9 @@ function mainloop()
 				r = connectHIVE();
 				if r then
 					Log('[Connection] Reconnected')
+					-- For debug force reload
+					package.loaded['HiveCommand'] = nil
+					hcmd = require('HiveCommand')
 				end
 			end
 		end

@@ -12,9 +12,6 @@ class VolumeModel_Lua : public VolumeModel
 public:
     VolumeModel_Lua() {}
     ~VolumeModel_Lua() {}
-    bool SetShader(const std::string& shaderfile) {
-        return VolumeModel::SetShader(shaderfile);
-    }
 
     bool Create(BufferVolumeData_Lua *mesh) {
         VolumeModel::Create(mesh);
@@ -26,6 +23,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(VolumeModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferVolumeData_Lua*)
     
     // RenderObject interface

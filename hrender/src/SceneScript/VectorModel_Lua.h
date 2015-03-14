@@ -13,10 +13,6 @@ public:
     VectorModel_Lua(){}
     ~VectorModel_Lua(){}
 
-    bool SetShader(const std::string& shaderfile) {
-        return VectorModel::SetShader(shaderfile);
-    }
-
     bool Create(BufferVectorData_Lua *vec) {
         VectorModel::Create(vec);
         return true;
@@ -41,6 +37,7 @@ public:
     
     LUA_SCRIPTCLASS_BEGIN(VectorModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferVectorData_Lua*)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetLineWidth, float)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetArrowSize, float)

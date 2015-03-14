@@ -7,20 +7,99 @@
 (function (window) {
 	'use strict';
 	
-	function updateProperty(objname) {
+	function setPropertyMode(type) {
+		if (type === 'CAMERA') {
+			$('object-transformshader').style.display = 'none';
+			$('object-viewsyncbutton').style.display = '';
+		} else {
+			$('object-transformshader').style.display = '';
+			$('object-viewsyncbutton').style.display = 'none';
+		}
+	}
+	function setObjectProperty(name, objprop) {
+		$('objname').value = name;
+		$('translate_x').value = objprop.translate[0];
+		$('translate_y').value = objprop.translate[1];
+		$('translate_z').value = objprop.translate[2];
+		$('rotate_x').value = objprop.rotate[0];
+		$('rotate_y').value = objprop.rotate[1];
+		$('rotate_z').value = objprop.rotate[2];
+		$('scale_x').value = objprop.scale[0];
+		$('scale_y').value = objprop.scale[1];
+		$('scale_z').value = objprop.scale[2];
+		var shadername = objprop.shader,
+			targetShader = null,
+			i;
+		//$('shader_name').Clear();
+/*		for (i in shaderList) {
+			if (shaderList[i].param.type !== dt[name].modeltype) {
+				continue;
+			}
+			if (shaderList[i].file == shadername)
+				targetShader = shaderList[i];
+			
+			var idname = shaderList[i].file.replace('.','_');
+			idname = 'SHADERITEM_' + idname;
+			$('shader_name').AddItem(shaderList[i].file, shaderList[i].image, idname);
 		
+			var it = document.getElementById(idname),
+				slist = document.getElementById('shader_name');
+			it.onclick = function (filename,it,slist) { return function() {
+				$('shader_name').Select(filename);
+			}}(shaderList[i].file,it,slist);
+		}
+		$('shader_name').Select(dt[name].shader); // add shader parameters after SELECT.
+		*/
+	}
+	function updateProperty(core, objname) {
+		var scenedata = core.getSceneData(),
+			objprop = null,
+			i;
+		if (!scenedata || !scenedata.objectlist) {
+			console.error('Not found scene data:');
+		}
+		for (i = 0; i < scenedata.objectlist.length; i = i + 1) {
+			if (scenedata.objectlist[i].name === objname) {
+				objprop = scenedata.objectlist[i];
+				break;
+			}
+		}
+		if (!objprop) {
+			console.error('Not found object:', objname, scenedata.objectlist);
+		} else {
+			setPropertyMode(objprop.type);
+			setObjectProperty(objname, objprop.info);
+		}
 	}
 	
 	function objectClick(core, objname) {
 		return function () {
-			updateProperty(objname);
+			updateProperty(core, objname);
 		};
 	}
 	function dustClick(core, objname) {
 		return function () {
-			console.log('dust:', objname);
 			core.deleteObject(objname);
 		};
+	}
+	function getIconColor(type) {
+		if (type === 'CAMERA') {
+			return "#ff9d00";
+		} else if (type === "POLYGON") {
+			return "#0F0";
+		} else if (type === "VOLUME") {
+			return "#F00";
+		} else if (type === "POINT") {
+			return "#00F";
+		} else if (type === "LINE") {
+			return "#0FF";
+		} else if (type === "TETRA") {
+			return "#FF0";
+		} else if (type === "VECTOR") {
+			return "#F0F";
+		} else {
+			return "#FFF";
+		}
 	}
 	
 	function init() {
@@ -34,14 +113,28 @@
 				objlist = sceneInfo.objectlist,
 				lst = kUI('list-itemlist'),
 				dust,
+				icon,
+				item,
 				itemid;
 			lst.Clear();
 			for (i = 0; i < objlist.length; i = i + 1) {
 				//objList[i].name, objList[i].type
 				itemid = 'listitem-' + objlist[i].name;
 				lst.AddItem(objlist[i].name, itemid);
-				$(itemid).addEventListener('click', objectClick(core, objlist[i].name));
-				$(itemid + '-dustbtn').addEventListener('click', dustClick(core, objlist[i].name));
+				item = $(itemid);
+				item.addEventListener('click', objectClick(core, objlist[i].name, objlist.type));
+				
+				// Dust icon
+				dust = $(itemid + '-dustbtn');
+				if (objlist[i].name === 'view') {
+					dust.setAttribute('style', 'display:none'); // undeletable
+				} else {
+					dust.addEventListener('click', dustClick(core, objlist[i].name));
+				}
+				
+				// Color icon
+				icon = item.getElementsByClassName('KList-Item-Icon')[0];
+				icon.style.backgroundColor = getIconColor(objlist[i].type);
 			}
 			core.render();
 		}
