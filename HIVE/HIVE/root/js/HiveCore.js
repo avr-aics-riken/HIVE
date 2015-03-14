@@ -33,6 +33,24 @@
 		hiveCore.conn.method('updateInfo', (function (core, infoCallback) {
 			return function (param) {
 				core.sceneInfo = param;
+				// find viewCamera
+				var view = null,
+					i;
+				if (!core.sceneInfo.objectlist) {
+					console.erorr('Not find objectlist');
+					return;
+				}
+				for (i = 0; i < core.sceneInfo.objectlist.length; i = i + 1) {
+					if (core.sceneInfo.objectlist[i].name === 'view') {
+						view = core.sceneInfo.objectlist[i].info;
+						break;
+					}
+				}
+				if (!view) {
+					console.erorr('Not find view camera');
+				} else {
+					core.viewCamera = view;
+				}
 				infoCallback(param);
 			};
 		}(hiveCore, infoCallback)));
@@ -62,7 +80,7 @@
 		this.conn = new HiveConnect();
 		this.resize(width, height);
 		this.modelCount = 0;
-		this.viewCamera = {pos: vec3(0, 0, 300), tar: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60};
+		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60};
 		this.sceneInfo = {};
 		this.updateSceneCallback = infoCallback;
 		registerMethods(this, resultElement, infoCallback);
@@ -80,7 +98,7 @@
 		var cmd = '';//sceneCommands.createCamera('camera');
 		//cmd += sceneCommands.cameraScreenSize('camera', this.screenSize[0], this.screenSize[1]);
 		//cmd += HiveCommand.cameraPos('view', [0, 0, 300]);
-		cmd += HiveCommand.cameraLookat('view', this.viewCamera.pos, this.viewCamera.tar, this.viewCamera.up, this.viewCamera.fov);
+		cmd += HiveCommand.cameraLookat('view', this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
 		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 8, 10), parseInt(this.screenSize[1] / 8, 10), 'view');
 		runScript(this.conn, cmd);
 	};
@@ -151,21 +169,21 @@
 	// View operation
 	//
 	HiveCore.prototype.Rotate = function (rotx, roty) {
-		var eyedir = subtract(this.viewCamera.pos, this.viewCamera.tar),
+		var eyedir = subtract(this.viewCamera.position, this.viewCamera.target),
 			v = vec4(eyedir[0], eyedir[1], eyedir[2], 0.0),
 			rx = rotate(roty, vec3(0, 1, 0)),
 			ry = rotate(rotx, vec3(1, 0, 0));
 		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
-		this.viewCamera.pos = add(this.viewCamera.tar, v);
+		this.viewCamera.position = add(this.viewCamera.target, v);
 		this.render();
 	};
 	HiveCore.prototype.Zoom = function (zoom) {
-		var v = subtract(this.viewCamera.pos, this.viewCamera.tar),
+		var v = subtract(this.viewCamera.position, this.viewCamera.target),
 			r = 1.0 - (zoom / 1000.0);
 		v = scale(r, v);
 		console.log(v);
-		this.viewCamera.pos = add(this.viewCamera.tar, v);
+		this.viewCamera.position = add(this.viewCamera.target, v);
 		this.render();
 	};
 	HiveCore.prototype.Translate = function (tx, ty) {
@@ -173,13 +191,13 @@
 			TODO: FIX ME
 		*/
 		var mv = vec3(-tx, ty, 0.0),
-			az = normalize(subtract(this.viewCamera.pos, this.viewCamera.tar)),
+			az = normalize(subtract(this.viewCamera.position, this.viewCamera.target)),
 			ax = normalize(cross(vec3(0, 1, 0), az)),
 			ay = normalize(cross(az, ax)),
 			mx = transpose(mat3(ax, ay, az)),
 			mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));
-		this.viewCamera.pos = add(this.viewCamera.pos, mm);
-		this.viewCamera.tar = add(this.viewCamera.tar, mm);
+		this.viewCamera.position = add(this.viewCamera.position, mm);
+		this.viewCamera.target = add(this.viewCamera.target, mm);
 		this.render();
 	};
 	

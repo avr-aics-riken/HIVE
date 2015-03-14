@@ -43,7 +43,7 @@ protected:
 				float up_x,  float up_y,  float up_z,
 				float fov);
     bool ClearColor(float red, float green, float blue, float alpha);
-
+    float GetFov() const;
 };
 
 #endif //_CAMERA_H_

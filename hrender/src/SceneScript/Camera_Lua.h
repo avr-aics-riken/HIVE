@@ -60,6 +60,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetPosition)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTarget)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetUp)
+    LUA_SCRIPTCLASS_METHOD_ARG0(float,    GetFov)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetClearColor)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetScreenSize)
 

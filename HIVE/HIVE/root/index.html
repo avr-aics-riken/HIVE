@@ -146,6 +146,54 @@
 							</div>
 						</div>
 					</div>
+					<div id="camera-information" style="display:none">
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Name:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_name"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Position:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="position_x" type="number" step="0.01"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="position_y" type="number" step="0.01"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="position_z" type="number" step="0.01"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Target:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="target_x" type="number" step="10"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="target_y" type="number" step="10"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="target_z" type="number" step="10"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Up:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="up_x" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="up_y" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="up_z" type="number"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Fov:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_fov"></div>
+							</div>
+						</div>
+						
+						<!-- shader list -->
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Shader:</div></div>
+								<div class="ppCell"><div class="KShaderList" id="shader_name"></div></div>
+									<!--<select class="KDropdownList" id="shader_name" ></select>-->
+							</div>
+						</div>
+					</div>
+
 					<div id="uniformproperty"></div>
 				</div>
 			</div>
