@@ -209,4 +209,4 @@ function startupHRenderServer() {
 		console.log('process error', e);
 	}
 }
-//startupHRenderServer();
+startupHRenderServer();

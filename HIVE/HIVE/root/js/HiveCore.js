@@ -40,7 +40,6 @@
 			}
 			
 			// Refine render
-			/*
 			if (!param.canceled) {
 				if (param.width <= hiveCore.screenSize[0] && param.height <= hiveCore.screenSize[1]) {
 					//console.log('REFINE RENDER!', param.width * 2, param.height * 2);
@@ -49,7 +48,7 @@
 						cmd = HiveCommand.renderCamera(w, h, 'view');
 					runScript(hiveCore.conn, cmd);
 				}
-			}*/
+			}
 		});
 	}
 	
