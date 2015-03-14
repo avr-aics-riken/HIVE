@@ -12,9 +12,6 @@ class LineModel_Lua : public LineModel
 public:
     LineModel_Lua() {}
     ~LineModel_Lua() {}
-    bool SetShader(const std::string& shaderfile) {
-        return LineModel::SetShader(shaderfile);
-    }
 
     bool Create(BufferLineData_Lua *mesh) {
         LineModel::Create(mesh);
@@ -30,6 +27,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(LineModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetLineWidth, float)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferLineData_Lua*)
 

@@ -14,10 +14,6 @@ public:
     PolygonModel_Lua(){}
     ~PolygonModel_Lua(){}
 
-    bool SetShader(const std::string& shaderfile) {
-        return PolygonModel::SetShader(shaderfile);
-    }
-
     bool Create(BufferMeshData_Lua *mesh) {
         PolygonModel::Create(mesh);
         return true;
@@ -28,6 +24,7 @@ public:
     
     LUA_SCRIPTCLASS_BEGIN(PolygonModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferMeshData_Lua*)
     
     // RenderObject interface

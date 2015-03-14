@@ -13,10 +13,6 @@ public:
     TetraModel_Lua(){}
     ~TetraModel_Lua(){}
 
-    bool SetShader(const std::string& shaderfile) {
-        return TetraModel::SetShader(shaderfile);
-    }
-
     bool Create(TetraModel *tetra) {
         TetraModel_Lua::Create(tetra);
         return true;
@@ -27,6 +23,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(TetraModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, TetraModel*)
     
     // RenderObject interface
