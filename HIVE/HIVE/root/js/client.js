@@ -2,11 +2,13 @@
 /*global HiveCore*/            // HiveCore
 /*global kvtoolsUI_init, kUI*/ // kvtoolsUI
 /*global $, $toggle*/          // qatrix
-/*global */
+/*global FileDialog*/          // Filedlg
 
 (function (window) {
 	'use strict';
-	
+	function showFiledialog(show) {
+		
+	}
 	function setPropertyMode(type) {
 		if (type === 'CAMERA') {
 			$('object-transformshader').style.display = 'none';
@@ -216,6 +218,21 @@
 			core.addCamera();
 		});
 
+		$('list-addbutton').addEventListener('click', function (ev) {
+			var fdlg = new FileDialog("dataDialog", true, false);
+			fdlg.OpenFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)),
+						function (filepath) {
+					console.log("FileDialog Select:" + filepath);
+				
+				});
+		});
 		//$('savescenebtn').addEventListener('click', function (ev) {
 			//core.getSceneInformation(function (objList) {
 			//);
@@ -248,12 +265,15 @@
 
 			if (mouseState.Left) {
 				core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
+				updateProperty(core, 'view');
 			}
 			if (mouseState.Right) {
 				core.Zoom(dx + dy);
+				updateProperty(core, 'view');
 			}
 			if (mouseState.Center) {
 				core.Translate(dx, dy);
+				updateProperty(core, 'view');
 			}
 			mouseState.x = e.clientX;
 			mouseState.y = e.clientY;

@@ -196,10 +196,21 @@
 			ay = normalize(cross(az, ax)),
 			mx = transpose(mat3(ax, ay, az)),
 			mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));
-		this.viewCamera.position = add(this.viewCamera.position, mm);
-		this.viewCamera.target = add(this.viewCamera.target, mm);
+		//this.viewCamera.position = add(this.viewCamera.position, mm);
+		//this.viewCamera.target = add(this.viewCamera.target, mm);
+		this.viewCamera.position = add(add(this.viewCamera.position, scale(-tx, ax)), scale(ty, ay));
+		this.viewCamera.target   = add(add(this.viewCamera.target,   scale(-tx, ax)), scale(ty, ay));
+		
 		this.render();
 	};
+	
+	//----------------------------------------------------------------------------------------------
+	// Filelist
+	//
+	HiveCore.prototype.getFileList = function (dir, callback) {
+		this.conn.masterMethod('requestFileList', {path: dir}, callback);
+	};
+	
 	
 	//----------------------------------------------------------------------------------------------
 	// Callback
