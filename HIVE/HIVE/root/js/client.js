@@ -10,11 +10,26 @@
 	function setPropertyMode(type) {
 		if (type === 'CAMERA') {
 			$('object-transformshader').style.display = 'none';
+			$('camera-information').style.display = '';
 			$('object-viewsyncbutton').style.display = '';
 		} else {
 			$('object-transformshader').style.display = '';
+			$('camera-information').style.display = 'none';
 			$('object-viewsyncbutton').style.display = 'none';
 		}
+	}
+	function setCameraProperty(name, objprop) {
+		$('camera_name').value = name;
+		$('position_x').value = objprop.position[0];
+		$('position_y').value = objprop.position[1];
+		$('position_z').value = objprop.position[2];
+		$('target_x').value = objprop.target[0];
+		$('target_y').value = objprop.target[1];
+		$('target_z').value = objprop.target[2];
+		$('up_x').value = objprop.up[0];
+		$('up_y').value = objprop.up[1];
+		$('up_z').value = objprop.up[2];
+		$('camera_fov').value = objprop.fov;
 	}
 	function setObjectProperty(name, objprop) {
 		$('objname').value = name;
@@ -30,6 +45,7 @@
 		var shadername = objprop.shader,
 			targetShader = null,
 			i;
+
 		//$('shader_name').Clear();
 /*		for (i in shaderList) {
 			if (shaderList[i].param.type !== dt[name].modeltype) {
@@ -68,7 +84,11 @@
 			console.error('Not found object:', objname, scenedata.objectlist);
 		} else {
 			setPropertyMode(objprop.type);
-			setObjectProperty(objname, objprop.info);
+			if (objprop.type === "CAMERA") {
+				setCameraProperty(objname, objprop.info);
+			} else {
+				setObjectProperty(objname, objprop.info);
+			}
 		}
 	}
 	
