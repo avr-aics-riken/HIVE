@@ -169,7 +169,7 @@ ws.on('request', function (request) {
 		} else if (message.type === 'binary') {
 			metabin.loadMetaBinary(message.binaryData, (function (binData) {
 				return function (meta, content) {
-					console.log('[DEBUG] MetaBin:', meta);
+					//console.log('[DEBUG] MetaBin:', meta);
 					eventBinaryMessage(meta, binData);
 				};
 			}(message.binaryData)));
