@@ -62,7 +62,7 @@
 					//console.log('REFINE RENDER!', param.width * 2, param.height * 2);
 					var w = Math.min(param.width * 2, hiveCore.screenSize[0] * 2),
 						h = Math.min(param.height * 2, hiveCore.screenSize[1] * 2),
-						cmd = HiveCommand.renderCamera(w, h, 'view');
+						cmd = HiveCommand.renderCamera(w, h, hiveCore.activeCamera);
 					runScript(hiveCore.conn, cmd);
 				}
 			}
@@ -79,6 +79,7 @@
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60};
 		this.sceneInfo = {};
 		this.updateSceneCallback = infoCallback;
+		this.activeCamera = 'view';
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -91,34 +92,42 @@
 	
 	HiveCore.prototype.render = function () {
 		// TODO: Temp camera
-		var cmd = '';//sceneCommands.createCamera('camera');
-		//cmd += sceneCommands.cameraScreenSize('camera', this.screenSize[0], this.screenSize[1]);
-		//cmd += HiveCommand.cameraPos('view', [0, 0, 300]);
-		cmd += HiveCommand.cameraLookat('view', this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
-		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), 'view');
+		var cmd = '';
+		cmd += HiveCommand.cameraLookat(this.activeCamera, this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
+		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera);
 		runScript(this.conn, cmd);
 	};
 	
 	//----------------------------------------------------------------------------------------------
 	// Loader
 	//
+	function genModelname(fpath) {
+		var fileTypes = fpath.split("/"),
+			len = fileTypes.length;
+		if (len === 0) { return fpath; }
+		return fileTypes[len - 1].replace('.', '_');
+	}
 	HiveCore.prototype.loadOBJ = function (filepath, shaderpath) {
-		var cmd = HiveCommand.loadOBJ('model' + this.modelCount, filepath, shaderpath);
+		var name = genModelname(filepath) + this.modelCount,
+			cmd = HiveCommand.loadOBJ(name, filepath, shaderpath);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadSTL = function (filepath, shaderpath) {
-		var cmd = HiveCommand.loadSTL('model' + this.modelCount, filepath, shaderpath);
+		var name = genModelname(filepath) + this.modelCount,
+			cmd = HiveCommand.loadSTL(name, filepath, shaderpath);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadPDB = function (filepath, shaderpath) {
-		var cmd = HiveCommand.loadPDB('model' + this.modelCount, filepath, shaderpath);
+		var name = genModelname(filepath) + this.modelCount,
+			cmd = HiveCommand.loadPDB(name, filepath, shaderpath);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadSPH = function (filepath, shaderpath) {
-		var cmd = HiveCommand.loadSPH('model' + this.modelCount, filepath, shaderpath);
+		var name = genModelname(filepath) + this.modelCount,
+			cmd = HiveCommand.loadSPH(name, filepath, shaderpath);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
@@ -183,6 +192,7 @@
 			console.error('[Error] Not found object:', objname);
 			return;
 		}
+		obj.info.shader = shaderpath;
 		runScript(this.conn, HiveCommand.setModelShader(objname, shaderpath));
 	};
 	HiveCore.prototype.setModelTranslate = function (objname, trans, redraw) {
@@ -319,6 +329,10 @@
 			}(this));
 		}
 		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
+	};
+	
+	HiveCore.prototype.getActiveCamera = function () {
+		return this.activeCamera;
 	};
 
 	//----------------------------------------------------------------------------------------------
