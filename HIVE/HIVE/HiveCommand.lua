@@ -108,6 +108,22 @@ local function CameraScreenSize(name, width, height)
 	return 'ScreenSize:' .. name
 end
 
+local function SetModelShader(name, shaderpath)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetShader(shaderpath)
+	return 'SetModelShader:' .. name .. '<=' .. shaderpath
+end
+
+local function SetModelTranslation(name, trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, scale_x, scale_y, scale_z)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetTranslate(trans_x, trans_y, trans_z)
+	model:SetRotate(rot_x, rot_y, rot_z)
+	model:SetScale(scale_x, scale_y, scale_z)
+	return 'SetModelTranslation:' .. name 
+end
+
 local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
 	if obj == nil then return 'Not found object' end
@@ -194,7 +210,13 @@ local function RenderCamera(w, h, cameraname)
 	    end
 	end
 	--print('RenderObject = ', #renderList)
+	local prefetchNextEvent = HIVE_fetchEvent(0)
+	if prefetchNextEvent == false then -- false is any queued
+		print('Skip rendering')
+		return 'Skip rendering'
+	end
 	local r = render(renderList, HIVE_fetchEvent)
+	
 	--print('Render Ret = ', r)
 	
 	-- save jpg
@@ -236,6 +258,8 @@ return {
 	CreateCamera = CreateCamera,
 	CameraPos = CameraPos,
 	CameraScreenSize = CameraScreenSize,
+	SetModelShader = SetModelShader,
+	SetModelTranslation = SetModelTranslation,
 	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,

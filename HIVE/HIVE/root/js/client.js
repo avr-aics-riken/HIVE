@@ -20,7 +20,31 @@
 			$('object-viewsyncbutton').style.display = 'none';
 		}
 	}
-	function setCameraProperty(name, objprop) {
+	function clearTextChangeEvent() {
+		$('objname').onchange     = function () {};
+		$('translate_x').onchange = function () {};
+		$('translate_y').onchange = function () {};
+		$('translate_z').onchange = function () {};
+		$('rotate_x').onchange    = function () {};
+		$('rotate_y').onchange    = function () {};
+		$('rotate_z').onchange    = function () {};
+		$('scale_x').onchange     = function () {};
+		$('scale_y').onchange     = function () {};
+		$('scale_z').onchange     = function () {};
+		$('camera_name').onchange = function () {};
+		$('position_x').onchange  = function () {};
+		$('position_y').onchange  = function () {};
+		$('position_z').onchange  = function () {};
+		$('target_x').onchange    = function () {};
+		$('target_y').onchange    = function () {};
+		$('target_z').onchange    = function () {};
+		$('up_x').onchange        = function () {};
+		$('up_y').onchange        = function () {};
+		$('up_z').onchange        = function () {};
+		$('camera_fov').onchange  = function () {};
+	}
+	function setCameraProperty(name, objprop, core) {
+		clearTextChangeEvent();
 		$('camera_name').value = name;
 		$('position_x').value = objprop.position[0];
 		$('position_y').value = objprop.position[1];
@@ -32,23 +56,113 @@
 		$('up_y').value = objprop.up[1];
 		$('up_z').value = objprop.up[2];
 		$('camera_fov').value = objprop.fov;
+		
+		function valueChangePosition(name, pos, i, core) {
+			return function (ev) {
+				pos[i] = parseFloat(ev.target.value);
+				core.setCameraPosition(name, pos, true);
+			};
+		}
+		function valueChangeTarget(name, tar, i, core) {
+			return function (ev) {
+				tar[i] = parseFloat(ev.target.value);
+				core.setCameraTarget(name, tar, true);
+			};
+		}
+		function valueChangeUp(name, up, i, core) {
+			return function (ev) {
+				up[i] = parseFloat(ev.target.value);
+				core.setCameraUp(name, up, true);
+			};
+		}
+		function valueChangeFov(name, core) {
+			return function (ev) {
+				var fov = parseFloat(ev.target.value);
+				core.setCameraFov(name, fov, true);
+			};
+		}
+
+		$('position_x').onchange = valueChangePosition(name, objprop.position, 0, core);
+		$('position_y').onchange = valueChangePosition(name, objprop.position, 1, core);
+		$('position_z').onchange = valueChangePosition(name, objprop.position, 2, core);
+		$('target_x').onchange   = valueChangeTarget(name, objprop.target, 0, core);
+		$('target_y').onchange   = valueChangeTarget(name, objprop.target, 1, core);
+		$('target_z').onchange   = valueChangeTarget(name, objprop.target, 2, core);
+		$('up_x').onchange       = valueChangeUp(name, objprop.up, 0, core);
+		$('up_y').onchange       = valueChangeUp(name, objprop.up, 1, core);
+		$('up_z').onchange       = valueChangeUp(name, objprop.up, 2, core);
+		$('camera_fov').onchange = valueChangeFov(name, core);
 	}
-	function setObjectProperty(name, objprop) {
-		$('objname').value = name;
+	function changeShader(shaderpath, objectname, core) {
+		return function (ev) {
+			console.log('[DEBUG] CHANGE SHADER', objectname, shaderpath);
+			core.setModelShader(objectname, shaderpath);
+			core.render();
+		};
+	}
+	
+	function setObjectProperty(name, objprop, core) {
+		clearTextChangeEvent();
+		$('objname').value     = name;
 		$('translate_x').value = objprop.translate[0];
 		$('translate_y').value = objprop.translate[1];
 		$('translate_z').value = objprop.translate[2];
-		$('rotate_x').value = objprop.rotate[0];
-		$('rotate_y').value = objprop.rotate[1];
-		$('rotate_z').value = objprop.rotate[2];
-		$('scale_x').value = objprop.scale[0];
-		$('scale_y').value = objprop.scale[1];
-		$('scale_z').value = objprop.scale[2];
+		$('rotate_x').value    = objprop.rotate[0];
+		$('rotate_y').value    = objprop.rotate[1];
+		$('rotate_z').value    = objprop.rotate[2];
+		$('scale_x').value     = objprop.scale[0];
+		$('scale_y').value     = objprop.scale[1];
+		$('scale_z').value     = objprop.scale[2];
+		function valueChangeTranslate(name, trans, i, core) {
+			return function (ev) {
+				trans[i] = parseFloat(ev.target.value);
+				core.setModelTranslate(name, trans, true);
+			};
+		}
+		function valueChangeRotate(name, rot, i, core) {
+			return function (ev) {
+				rot[i] = parseFloat(ev.target.value);
+				core.setModelRotate(name, rot, true);
+			};
+		}
+		function valueChangeScale(name, scale, i, core) {
+			return function (ev) {
+				scale[i] = parseFloat(ev.target.value);
+				core.setModelScale(name, scale, true);
+			};
+		}
+
+		$('translate_x').onchange = valueChangeTranslate(name, objprop.translate, 0, core);
+		$('translate_y').onchange = valueChangeTranslate(name, objprop.translate, 1, core);
+		$('translate_z').onchange = valueChangeTranslate(name, objprop.translate, 2, core);
+		$('rotate_x').onchange    = valueChangeRotate(name, objprop.rotate, 0, core);
+		$('rotate_y').onchange    = valueChangeRotate(name, objprop.rotate, 1, core);
+		$('rotate_z').onchange    = valueChangeRotate(name, objprop.rotate, 2, core);
+		$('scale_x').onchange     = valueChangeScale(name, objprop.scale, 0, core);
+		$('scale_y').onchange     = valueChangeScale(name, objprop.scale, 1, core);
+		$('scale_z').onchange     = valueChangeScale(name, objprop.scale, 2, core);
+								  
 		var shadername = objprop.shader,
 			targetShader = null,
-			i;
+			i,
+			shaderList = core.getShaderList((function (core) {
+				return function (err, res) {
+					console.log('SHADER_LIST', err, res);
+					var shaderList = res,
+						idname,
+						i,
+						lst = kUI('shader_name');
 
-		//$('shader_name').Clear();
+					for (i = 0; i < shaderList.length; i = i + 1) {
+						idname = shaderList[i].path.replace('.', '_');
+						idname = 'SHADERITEM_' + idname;
+						lst.AddItem(shaderList[i].name, shaderList[i].path.replace('.frag', '.jpg'), idname);
+						$(idname).addEventListener('click', changeShader(shaderList[i].path, name, core));
+					}
+				};
+			}(core)));
+
+		kUI('shader_name').Clear();
 /*		for (i in shaderList) {
 			if (shaderList[i].param.type !== dt[name].modeltype) {
 				continue;
@@ -87,9 +201,9 @@
 		} else {
 			setPropertyMode(objprop.type);
 			if (objprop.type === "CAMERA") {
-				setCameraProperty(objname, objprop.info);
+				setCameraProperty(objname, objprop.info, core);
 			} else {
-				setObjectProperty(objname, objprop.info);
+				setObjectProperty(objname, objprop.info, core);
 			}
 		}
 	}
