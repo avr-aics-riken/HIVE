@@ -88,12 +88,19 @@ function requestShaderList(msg_id) {
 	'use strict';
 	var files = [],
 		shaderlist = [],
-		i;
+		i,
+		infofile;
 	console.log('[DEBUG] requestShaderList');
 	getFile('./shader', files);
 	for (i = 0; i < files.length; i = i + 1) {
 		if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
-			shaderlist.push(files[i]);
+			infofile = files[i].path.replace('.frag', '.json');
+			try {
+				files[i].info = JSON.parse(fs.readFileSync(infofile));
+				shaderlist.push(files[i]);
+			} catch (e) {
+				console.error('[Error] Failed to read: ' + infofile);
+			}
 		}
 	}
 	clientNode.send(JSON.stringify({

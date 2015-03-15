@@ -1,8 +1,8 @@
 /*jslint devel:true*/
-/*global HiveCore*/            // HiveCore
-/*global kvtoolsUI_init, kUI*/ // kvtoolsUI
-/*global $, $toggle*/          // qatrix
-/*global FileDialog*/          // Filedlg
+/*global HiveCore*/                              // HiveCore
+/*global kvtoolsUI_init, kvtoolsUI_update, kUI*/ // kvtoolsUI
+/*global $, $toggle*/                            // qatrix
+/*global FileDialog*/                            // Filedlg
 
 (function (window) {
 	'use strict';
@@ -93,14 +93,86 @@
 		$('up_z').onchange       = valueChangeUp(name, objprop.up, 2, core);
 		$('camera_fov').onchange = valueChangeFov(name, core);
 	}
-	function changeShader(shaderpath, objectname, core) {
+	
+	function splitfilename(fpath) {
+		var fileTypes = fpath.split("/"),
+			len = fileTypes.length;
+		if (len === 0) { return fpath; }
+		return fileTypes[len - 1];
+	}
+	function updateShaderParameters(uniforms) {
+		// Uniforms
+		var unif = uniforms,
+			paramname,
+			d,
+			i,
+			pp = document.getElementById('uniformproperty');
+		pp.innerHTML = ''; // clear
+		// Add UIs
+		for (i in unif) {
+			if (unif.hasOwnProperty(i)) {
+				if (unif[i].ui === 'colorpicker') {
+					paramname = unif[i].name;
+					d = document.createElement('div');
+					d.classList.add('ppTable');
+					d.innerHTML = '<div class="ppRow">' +
+								'<div class="ppCell ppTri"><div class="KCaption">' + unif[i].label + ':</div></div>' +
+								'<div class="ppCell"><div class="KColorPicker" id="' + paramname + '"></div></div>' +
+								'</div>';
+					pp.appendChild(d);
+				} else if (unif[i].ui === 'slider') {
+					paramname = unif[i].name;
+					d = document.createElement('div');
+					d.classList.add('ppTable');
+					d.innerHTML = '<div class="ppRow"><div class="ppCell ppTri">' +
+						'<div class="KCaption">' + unif[i].label + ':</div></div>' +
+						'<div class="ppCell"><div class="KSlider" id="' + paramname + '"></div>' +
+						'</div></div>';
+					pp.appendChild(d);
+				} else if (unif[i].ui === 'vec3') {
+					paramname = unif[i].name;
+					d = document.createElement('div');
+					d.classList.add('ppTable');
+					d.innerHTML = '<div class="ppRow">' +
+						'<div class="ppCell ppTri"><div class="KCaption">' + unif[i].label + ':</div></div>' +
+						'<div class="ppCell"><input class="KInput ppFull" id="' + paramname + '_x" type="number"></div>' +
+						'<div class="ppCell"><input class="KInput ppFull" id="' + paramname + '_y" type="number"></div>' +
+						'<div class="ppCell"><input class="KInput ppFull" id="' + paramname + '_z" type="number"></div>' +
+						'</div>';
+					pp.appendChild(d);
+
+				} else if (unif[i].ui === 'transferfunction') {
+					paramname = unif[i].name;
+					d = document.createElement('div');
+					d.classList.add('ppTable');
+					d.innerHTML = '<div class="ppRow"><div class="ppCell ppTri"><div class="KCaption">' + unif[i].label + ':</div></div></div>';
+					pp.appendChild(d);
+
+					d = document.createElement('div');
+					d.classList.add('ppTable');
+					d.innerHTML = '<div class="ppRow">' +
+						'<div class="ppCell" style="width:8px"></div>' +
+						'<div class="ppCell">' +
+						'<div class="KTransferFunction" id="' + paramname + '"></div>' +
+						'</div></div>';
+					pp.appendChild(d);
+				} else {
+					console.log('Error: Unkown UI type -> ' + unif[i].ui + ' - ' + unif[i].name);
+				}
+			}
+		}
+		kvtoolsUI_update(pp);
+	}
+	function changeShader(shaderpath, info, objectname, core) {
 		return function (ev) {
 			console.log('[DEBUG] CHANGE SHADER', objectname, shaderpath);
+			kUI('shader_name').Select(splitfilename(shaderpath));
+			
+			updateShaderParameters(info.uniforms);
 			core.setModelShader(objectname, shaderpath);
 			core.render();
 		};
 	}
-	
 	function setObjectProperty(name, objprop, core) {
 		clearTextChangeEvent();
 		$('objname').value     = name;
@@ -144,23 +216,39 @@
 								  
 		var shadername = objprop.shader,
 			targetShader = null,
-			i,
-			shaderList = core.getShaderList((function (core) {
-				return function (err, res) {
-					console.log('SHADER_LIST', err, res);
-					var shaderList = res,
-						idname,
-						i,
-						lst = kUI('shader_name');
-
-					for (i = 0; i < shaderList.length; i = i + 1) {
+			i;
+		core.getShaderList((function (core, name) {
+			return function (err, res) {
+				console.log('SHADER_LIST', err, res);
+				var shaderList = res,
+					idname,
+					obj = core.findObject(name),
+					selshader,
+					i,
+					lst = kUI('shader_name'),
+					targetShader = null;
+				
+				for (i = 0; i < shaderList.length; i = i + 1) {
+					if (obj.type === shaderList[i].info.type) {
+						if (obj.info.shader === shaderList[i].path) {
+							targetShader = shaderList[i];
+						}
 						idname = shaderList[i].path.replace('.', '_');
 						idname = 'SHADERITEM_' + idname;
 						lst.AddItem(shaderList[i].name, shaderList[i].path.replace('.frag', '.jpg'), idname);
-						$(idname).addEventListener('click', changeShader(shaderList[i].path, name, core));
+						$(idname).addEventListener('click', changeShader(shaderList[i].path, shaderList[i].info, name, core));
 					}
-				};
-			}(core)));
+				}
+				
+				if (targetShader) {
+					updateShaderParameters(targetShader.info.uniforms);
+				}
+				selshader = splitfilename(obj.info.shader);
+				kUI('shader_name').Select(selshader);
+				
+				
+			};
+		}(core, name)));
 
 		kUI('shader_name').Clear();
 /*		for (i in shaderList) {
@@ -298,9 +386,6 @@
 
 		// disable context menu
 		window.addEventListener('contextmenu', function (e) {
-			//console.log('context');
-			//core.loadOBJ('bunny.obj', 'normal.frag');
-			//core.render();
 			e.preventDefault();
 		});
 
@@ -325,7 +410,7 @@
 			core.newScene();
 		});
 		$('loadscenebtn').addEventListener('click', function (ev) {
-			core.loadOBJ('bunny.obj', 'normal.frag');
+			//core.loadOBJ('bunny.obj', 'normal.frag');
 			core.render();
 		});
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {
@@ -342,9 +427,19 @@
 					});
 				};
 			}(core, fdlg)),
-						function (filepath) {
+				function (filepath) {
 					console.log("FileDialog Select:" + filepath);
-				
+					if (filepath.substr(filepath.length - 4) === ".obj") {
+						core.loadOBJ(filepath, 'normal.frag');
+					} else if (filepath.substr(filepath.length - 4) === ".stl") {
+						core.loadSTL(filepath, 'normal.frag');
+					} else if (filepath.substr(filepath.length - 4) === ".pdb") {
+						core.loadPDB(filepath, 'normal.frag');
+					} else if (filepath.substr(filepath.length - 4) === ".sph") {
+						core.loadSPH(filepath, 'normal.frag');
+					} else {
+						console.error('Not supported file type:', filepath);
+					}
 				});
 		});
 		//$('savescenebtn').addEventListener('click', function (ev) {
@@ -379,15 +474,15 @@
 
 			if (mouseState.Left) {
 				core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
-				updateProperty(core, 'view');
+				updateProperty(core, core.getActiveCamera());
 			}
 			if (mouseState.Right) {
 				core.Zoom(dx + dy);
-				updateProperty(core, 'view');
+				updateProperty(core, core.getActiveCamera());
 			}
 			if (mouseState.Center) {
 				core.Translate(dx, dy);
-				updateProperty(core, 'view');
+				updateProperty(core, core.getActiveCamera());
 			}
 			mouseState.x = e.clientX;
 			mouseState.y = e.clientY;
