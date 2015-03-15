@@ -85,6 +85,11 @@
 					if (data.error) {
 						//console.error('[Error] Response => ', data.error);
 						self.callbacks[data.id](data.error, null);
+					} else if (data.method) {
+						if (self.methodFuncs[data.method]) {
+							//console.log('[DEBUG] Call Method=>', data.method);
+							self.methodFuncs[data.method](data.param, null);
+						}
 					} else if (data.result) {
 						//console.log('[DEBUG] Result => ', data.result);
 						if (!data.id) {

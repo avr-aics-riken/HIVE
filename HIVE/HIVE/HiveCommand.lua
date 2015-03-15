@@ -1,4 +1,53 @@
 
+local function getObjectList()
+	local lst = {}
+	for i,v in pairs(HIVE_ObjectTable) do
+		print(i, v)
+		local robj = v
+		local info = {}
+		info.translate = robj:GetTranslate()
+		info.rotate    = robj:GetRotate()
+		info.scale     = robj:GetScale()
+		info.vec4      = robj:GetVec4Table()
+		info.vec3      = robj:GetVec3Table()
+		info.vec2      = robj:GetVec2Table()
+		info.float     = robj:GetFloatTable()
+		if robj:GetType() == 'CAMERA' then
+			info.position = robj:GetPosition()
+			info.target = robj:GetTarget()
+			info.up = robj:GetUp()
+			info.fov = robj:GetFov()
+			info.screensize = robj:GetScreenSize()
+			info.clearcolor = robj:GetClearColor()
+			info.outputfile = robj:GetOutputFile()
+		else
+			info.shader = robj:GetShader()
+		end
+		lst[#lst + 1] = {name = i, type = robj:GetType(), info = info}
+	end
+	return lst
+end
+
+local function updateInfo()
+	local objlst = getObjectList()
+	local data = {
+		JSONRPC = "2.0",
+		method  = "updateInfo",
+		param   = {
+			objectlist = objlst,
+		},
+		to = "client",
+		id = 0
+	}
+	local json = JSON.encode(data)
+	print('XXXXXXXXXXXXX', json)
+	network:SendText(json)
+end
+
+local function UpdateSceneInformation()
+	updateInfo();
+	return 'UpdateSceneInformation: send updateInfo';
+end
 
 local function ClearObjects()
 	HIVE_ObjectTable = {}
@@ -17,14 +66,15 @@ local function CreateCamera(name)
 		0,1,0,
 		60
 	)
-	HIVE_ObjectTable[name] = {camera}
-	print('ADD CAEMRA: '.. name)
+	HIVE_ObjectTable[name] = camera
+	updateInfo()
 	return 'CreateCamera:' .. name
 end
 
 local function NewScene()
 	ClearObjects()
 	CreateCamera('view')
+	updateInfo();
 	return 'NewScene!'
 end
 
@@ -32,7 +82,7 @@ end
 local function CameraPos(name, camerapos_x, camerapos_y, camerapos_z)
 	local camera = HIVE_ObjectTable[name]
 	if camera == nil then return 'Not found camera' end
-	camera[1]:LookAt(
+	camera:LookAt(
 		camerapos_x, camerapos_y, camerapos_z,
 		0,0,0,
 		0,1,0,
@@ -40,19 +90,45 @@ local function CameraPos(name, camerapos_x, camerapos_y, camerapos_z)
 	)
 end
 
+local function CameraLookat(name, pos_x, pos_y, pos_z, tar_x, tar_y, ctar_z, up_x, up_y, up_z, fov)
+	local camera = HIVE_ObjectTable[name]
+	if camera == nil then return 'Not found camera' end
+	camera:LookAt(
+		pos_x, pos_y, pos_z,
+		tar_x, tar_y, tar_z,
+		up_x,  up_y,  up_z,
+		fov
+	)
+end
+
 local function CameraScreenSize(name, width, height)
 	local camera = HIVE_ObjectTable[name]
 	if camera == nil then return 'Not found camera' end
-	camera[1]:SetScreenSize(width, height)
+	camera:SetScreenSize(width, height)
 	return 'ScreenSize:' .. name
 end
 
-local function GetObjectList()
-	local lst = {}
-	for i,v in pairs(HIVE_ObjectTable) do
-		lst[#lst + 1] = {name = i, type = v[1]:GetType()}
-	end
-	return lst
+local function SetModelShader(name, shaderpath)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetShader(shaderpath)
+	return 'SetModelShader:' .. name .. '<=' .. shaderpath
+end
+
+local function SetModelTranslation(name, trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, scale_x, scale_y, scale_z)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetTranslate(trans_x, trans_y, trans_z)
+	model:SetRotate(rot_x, rot_y, rot_z)
+	model:SetScale(scale_x, scale_y, scale_z)
+	return 'SetModelTranslation:' .. name 
+end
+
+local function DeleteObject(name)
+	local obj = HIVE_ObjectTable[name]
+	if obj == nil then return 'Not found object' end
+	HIVE_ObjectTable[name] = nil
+	updateInfo();
 end
 	
 local function LoadSPH(name, filename, shader)
@@ -63,7 +139,8 @@ local function LoadSPH(name, filename, shader)
 	    local volume = sph:VolumeData()
 	    volumemodel:Create(volume)
 	    volumemodel:SetShader(shader)
-		HIVE_ObjectTable[name] = {volumemodel}
+		HIVE_ObjectTable[name] = volumemodel
+		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
 end
@@ -76,7 +153,8 @@ local function LoadOBJ(name, filename, shader)
 		local meshdata = obj:MeshData()
 		model:Create(meshdata)
 		model:SetShader(shader)
-		HIVE_ObjectTable[name] = {model}
+		HIVE_ObjectTable[name] = model
+		updateInfo()
 	end
 	return 'LoadOBJ:' .. tostring(ret)
 end
@@ -90,7 +168,8 @@ local function LoadSTL(name, filename, shader)
 		local meshdata = stl:MeshData()
 		model:Create(meshdata)
 		model:SetShader(shader)
-		HIVE_ObjectTable[name] = {model}
+		HIVE_ObjectTable[name] = model
+		updateInfo()
 	end
 	return 'LoadSTL:' .. tostring(ret)
 end
@@ -108,7 +187,9 @@ local function LoadPDB(name, filename, shader)
 	    stickmodel:Create(stickdata)
 	    stickmodel:SetLineWidth(0.20);
 	    stickmodel:SetShader(shader)
-		HIVE_ObjectTable[name] = {ballmodel, stickmodel}
+		HIVE_ObjectTable[name .. '_ball']  = ballmodel
+		HIVE_ObjectTable[name .. '_stick'] = stickmodel
+		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
 end
@@ -117,20 +198,25 @@ local function RenderCamera(w, h, cameraname)
 	local starttm = os.clock()
 	local camera = HIVE_ObjectTable[cameraname]
 	if camera == nil then return "No Camera" end
-	camera = camera[1] -- one object
+	local oldscreensize = camera:GetScreenSize()
+	local oldfilename   = camera:GetOutputFile();
 	camera:SetScreenSize(w, h)
+	camera:SetFilename('')
 	local renderList = {camera}
 	for i,v in pairs(HIVE_ObjectTable) do
 		print ("OBJECT = ", i, v)
-		for i2,v2 in pairs(v) do
-			print ("RENDEROBJE=", i2, v2)
-		    if v2:GetType() ~= "CAMERA" then
-		        renderList[#renderList + 1] = v2
-		    end
-	   	end
+	    if v:GetType() ~= "CAMERA" then
+		        renderList[#renderList + 1] = v
+	    end
 	end
 	--print('RenderObject = ', #renderList)
+	local prefetchNextEvent = HIVE_fetchEvent(0)
+	if prefetchNextEvent == false then -- false is any queued
+		print('Skip rendering')
+		return 'Skip rendering'
+	end
 	local r = render(renderList, HIVE_fetchEvent)
+	
 	--print('Render Ret = ', r)
 	
 	-- save jpg
@@ -158,10 +244,13 @@ local function RenderCamera(w, h, cameraname)
 	local sendtm = os.clock()
 	print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 
-	collectgarbage('collect') -- NEED for GC
-	return {objectnum=tostring(r), width=camera:GetScreenWidth(), height=camera:GetScreenHeight()}
-end
+	-- restore
+	camera:SetScreenSize(oldscreensize[1], oldscreensize[2])
+	camera:SetFilename(oldfilename)
 
+	collectgarbage('collect') -- NEED for GC
+	return {objectnum=tostring(r), width=w, height=h}
+end
 
 return {
 	NewScene = NewScene,
@@ -169,10 +258,14 @@ return {
 	CreateCamera = CreateCamera,
 	CameraPos = CameraPos,
 	CameraScreenSize = CameraScreenSize,
-	GetObjectList = GetObjectList,
+	SetModelShader = SetModelShader,
+	SetModelTranslation = SetModelTranslation,
+	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,
 	LoadSTL = LoadSTL,
 	LoadPDB = LoadPDB,
+	UpdateSceneInformation = UpdateSceneInformation,
 	RenderCamera = RenderCamera,
+	CameraLookat = CameraLookat,
 }

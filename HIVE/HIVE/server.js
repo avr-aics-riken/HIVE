@@ -49,6 +49,67 @@ function sendErrorMessage(ws_node, msgstr, id) {
 	}));
 }
 
+
+function getFile(dir, list) {
+	'use strict';
+	var files, i, name;
+	try {
+		files = fs.readdirSync(dir);
+		if (!files) { return; }
+		if (dir.substr(dir.length - 1) !== "/") { dir += "/"; }
+		for (i in files) {
+			if (files.hasOwnProperty(i)) {
+				name = dir + files[i];
+				if (fs.statSync(name).isDirectory()) {
+					list.push({"name": files[i], "type": "dir", "path": name});
+				} else if (files[i].substring(0, 1) !== '.') {
+					list.push({"name": files[i], "type": "file", "path": name});
+				}
+			}
+		}
+	} catch (e) {
+		list = [];
+		console.error("not found dir:" + dir);
+	}
+}
+function requestFileList(dir, msg_id) {
+	'use strict';
+	var files = [];
+	console.log('[DEBUG] requestFileList:', dir);
+	getFile(dir, files);
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: JSON.stringify(files),
+		id: msg_id
+	}));
+}
+
+function requestShaderList(msg_id) {
+	'use strict';
+	var files = [],
+		shaderlist = [],
+		i,
+		infofile;
+	console.log('[DEBUG] requestShaderList');
+	getFile('./shader', files);
+	for (i = 0; i < files.length; i = i + 1) {
+		if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
+			infofile = files[i].path.replace('.frag', '.json');
+			try {
+				files[i].info = JSON.parse(fs.readFileSync(infofile));
+				shaderlist.push(files[i]);
+			} catch (e) {
+				console.error('[Error] Failed to read: ' + infofile);
+			}
+		}
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: JSON.stringify(shaderlist),
+		id: msg_id
+	}));
+}
+
 ws.on('request', function (request) {
 	"use strict";
 	var connection = request.accept(null, request.origin),
@@ -63,7 +124,8 @@ ws.on('request', function (request) {
 	/*
 		Master process methods
 	*/
-	function masterMethod(method, param) {
+	function masterMethod(method, param, msg_id) {
+		console.log('[DEBUG] masterMethod:', method, param, msg_id);
 		if (method === 'register') { // Register Renderer or Client
 			if (param.mode === 'renderer') {
 				console.log('[CONNECTION] Connected Renderer id = ' + connection.id);
@@ -74,6 +136,12 @@ ws.on('request', function (request) {
 				connection.type = 'client';
 				clientNode = connection;
 			}
+		} else if (method === 'requestFileList') {
+			requestFileList(param.path, msg_id);
+		} else if (method === 'requestShaderList') {
+			requestShaderList(msg_id);
+		} else {
+			console.error('Error: Unknow method');
 		}
 	}
 	
@@ -115,7 +183,7 @@ ws.on('request', function (request) {
 			}
 
 			if (ret.to === 'master') {
-				masterMethod(ret.method, param);
+				masterMethod(ret.method, param, ret.id);
 			} else if (ret.to === 'client') { // for client
 				if (clientNode) {
 					clientNode.send(JSON.stringify(ret));
@@ -159,7 +227,7 @@ ws.on('request', function (request) {
 		var ret;
 		//console.log('[DEBUG] message=', message);
 		if (message.type === 'utf8') {
-			//console.log('[DEBUG] RET=' + message.utf8Data);
+			console.log('[DEBUG] RET=' + message.utf8Data);
 			try {
 				ret = JSON.parse(message.utf8Data);
 				eventTextMessage(ret, message.utf8Data);
@@ -169,7 +237,7 @@ ws.on('request', function (request) {
 		} else if (message.type === 'binary') {
 			metabin.loadMetaBinary(message.binaryData, (function (binData) {
 				return function (meta, content) {
-					console.log('[DEBUG] MetaBin:', meta);
+					//console.log('[DEBUG] MetaBin:', meta);
 					eventBinaryMessage(meta, binData);
 				};
 			}(message.binaryData)));
