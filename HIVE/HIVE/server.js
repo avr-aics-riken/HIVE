@@ -84,6 +84,25 @@ function requestFileList(dir, msg_id) {
 	}));
 }
 
+function requestShaderList(msg_id) {
+	'use strict';
+	var files = [],
+		shaderlist = [],
+		i;
+	console.log('[DEBUG] requestShaderList');
+	getFile('./shader', files);
+	for (i = 0; i < files.length; i = i + 1) {
+		if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
+			shaderlist.push(files[i]);
+		}
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: JSON.stringify(shaderlist),
+		id: msg_id
+	}));
+}
+
 ws.on('request', function (request) {
 	"use strict";
 	var connection = request.accept(null, request.origin),
@@ -112,6 +131,10 @@ ws.on('request', function (request) {
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(param.path, msg_id);
+		} else if (method === 'requestShaderList') {
+			requestShaderList(msg_id);
+		} else {
+			console.error('Error: Unknow method');
 		}
 	}
 	
@@ -195,7 +218,7 @@ ws.on('request', function (request) {
 	
 	connection.on('message', function (message) {
 		var ret;
-		console.log('[DEBUG] message=', message);
+		//console.log('[DEBUG] message=', message);
 		if (message.type === 'utf8') {
 			console.log('[DEBUG] RET=' + message.utf8Data);
 			try {

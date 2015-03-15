@@ -23,6 +23,7 @@
 	function runScript(conn, src, callback) {
 		conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 	}
+	
 	function registerMethods(hiveCore, resultElement, infoCallback) {
 		if (!hiveCore.conn) { return; }
 		
@@ -40,12 +41,7 @@
 					console.erorr('Not find objectlist');
 					return;
 				}
-				for (i = 0; i < core.sceneInfo.objectlist.length; i = i + 1) {
-					if (core.sceneInfo.objectlist[i].name === 'view') {
-						view = core.sceneInfo.objectlist[i].info;
-						break;
-					}
-				}
+				view = core.findObject('view').info;
 				if (!view) {
 					console.erorr('Not find view camera');
 				} else {
@@ -99,10 +95,9 @@
 		//cmd += sceneCommands.cameraScreenSize('camera', this.screenSize[0], this.screenSize[1]);
 		//cmd += HiveCommand.cameraPos('view', [0, 0, 300]);
 		cmd += HiveCommand.cameraLookat('view', this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
-		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 8, 10), parseInt(this.screenSize[1] / 8, 10), 'view');
+		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), 'view');
 		runScript(this.conn, cmd);
 	};
-	
 	
 	//----------------------------------------------------------------------------------------------
 	// Loader
@@ -136,6 +131,20 @@
 		runScript(this.conn, cmd);
 	};
 	
+	HiveCore.prototype.findObject = function (objname) {
+		var obj = null,
+			i;
+		if (this.sceneInfo && this.sceneInfo.objectlist) {
+			for (i = 0; i < this.sceneInfo.objectlist.length; i = i + 1) {
+				if (this.sceneInfo.objectlist[i].name === objname) {
+					obj = this.sceneInfo.objectlist[i];
+					break;
+				}
+			}
+		}
+		return obj;
+	};
+	
 	HiveCore.prototype.getSceneData = function () {
 		return this.sceneInfo;
 	};
@@ -165,6 +174,153 @@
 		runScript(this.conn, HiveCommand.deleteObject(name));
 	};
 	
+	//----------------------------------------------------------------------------------------------
+	// Model operation
+	//
+	HiveCore.prototype.setModelShader = function (objname, shaderpath) {
+		var obj = this.findObject(objname);
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		runScript(this.conn, HiveCommand.setModelShader(objname, shaderpath));
+	};
+	HiveCore.prototype.setModelTranslate = function (objname, trans, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.translate[0] = trans[0]; // store
+		obj.info.translate[1] = trans[1]; // store
+		obj.info.translate[2] = trans[2]; // store
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
+	};
+	HiveCore.prototype.setModelRotate = function (objname, rot, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.rotate[0] = rot[0]; // store
+		obj.info.rotate[1] = rot[1]; // store
+		obj.info.rotate[2] = rot[2]; // store
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
+	};
+	HiveCore.prototype.setModelScale = function (objname, scale, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.scale[0] = scale[0]; // store
+		obj.info.scale[1] = scale[1]; // store
+		obj.info.scale[2] = scale[2]; // store
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
+	};
+
+	//----------------------------------------------------------------------------------------------
+	// Camera operation
+	//
+	HiveCore.prototype.setCameraPosition = function (objname, pos, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.position[0] = pos[0];
+		obj.info.position[1] = pos[1];
+		obj.info.position[2] = pos[2];
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
+	};
+	HiveCore.prototype.setCameraTarget = function (objname, tar, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.target[0] = tar[0];
+		obj.info.target[1] = tar[1];
+		obj.info.target[2] = tar[2];
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
+	};
+	HiveCore.prototype.setCameraUp = function (objname, up, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.up[0] = up[0];
+		obj.info.up[1] = up[1];
+		obj.info.up[2] = up[2];
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
+	};
+	HiveCore.prototype.setCameraFov = function (objname, fov, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.fov = fov;
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
+	};
+
 	//----------------------------------------------------------------------------------------------
 	// View operation
 	//
@@ -209,6 +365,9 @@
 	//
 	HiveCore.prototype.getFileList = function (dir, callback) {
 		this.conn.masterMethod('requestFileList', {path: dir}, callback);
+	};
+	HiveCore.prototype.getShaderList = function (callback) {
+		this.conn.masterMethod('requestShaderList', {}, callback);
 	};
 	
 	

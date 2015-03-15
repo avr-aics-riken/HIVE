@@ -49,6 +49,30 @@
 			src += camera_fov;
 			src += ')';
 			return src;
+		},
+		
+		setModelShader : function (objname, shaderpath) {
+			var src = 'hcmd.SetModelShader(';
+			src += '"' + objname + '",';
+			src += '"' + shaderpath + '"';
+			src += ')\n';
+			src += 'clearCache()\n';
+			return src;
+		},
+		setModelTranslation : function (objname, trans, rot, scale) {
+			var src = 'hcmd.SetModelTranslation(';
+			src += '"' + objname + '",';
+			src += trans[0] + ',';
+			src += trans[1] + ',';
+			src += trans[2] + ',';
+			src += rot[0] + ',';
+			src += rot[1] + ',';
+			src += rot[2] + ',';
+			src += scale[0] + ',';
+			src += scale[1] + ',';
+			src += scale[2];
+			src += ')';
+			return src;
 		}
 	};
 	window.HiveCommand = HiveCommand;
