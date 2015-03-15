@@ -55,11 +55,12 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG4 (bool, ClearColor, float, float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG0 (BufferImageData_Lua*,GetImageBuffer)
     LUA_SCRIPTCLASS_METHOD_ARG0 (BufferImageData_Lua*,GetDepthBuffer)
-    LUA_SCRIPTCLASS_METHOD_ARG0(const std::string&, GetOutputFile)
+    LUA_SCRIPTCLASS_METHOD_ARG0 (std::string, GetOutputFile)
     
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetPosition)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTarget)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetUp)
+    LUA_SCRIPTCLASS_METHOD_ARG0(float,    GetFov)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetClearColor)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetScreenSize)
 

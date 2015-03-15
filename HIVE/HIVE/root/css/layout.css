@@ -63,7 +63,7 @@ body {
 	position: absolute;
 	padding: 5px;
 	right:5px;
-	height:420px;
+	height:80px;
 	top: 30px;
 	width: 500px;
 	background-color: rgba(137, 137, 137, 0.8);
@@ -172,6 +172,13 @@ body {
 	left:3px;
 	right:3px;
 	bottom:3px;
+}
+
+#list-cameraaddbutton{
+	position: absolute;
+	top: 8px;
+	right:110px;
+	width: 120px;
 }
 
 #list-addbutton{
