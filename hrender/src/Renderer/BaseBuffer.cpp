@@ -49,6 +49,19 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
     const unsigned int prg = getProgram();
     const VX::Math::matrix& mat = obj->GetTransformMatrix();
     SetUniformMatrix_SGL(prg, "lsgl_World", &mat.f[0]);
+
+    // For a convenience, we add inverse and inverse transpose of world matrix to uniform shader variable.
+    {
+        VX::Math::matrix invmat = Inverse(mat);
+        SetUniformMatrix_SGL(prg, "lsgl_WorldInverse", &invmat.f[0]);
+    }
+
+    {
+        VX::Math::matrix ivtmat = Transpose(Inverse(mat));
+        SetUniformMatrix_SGL(prg, "lsgl_WorldInverseTranspose", &ivtmat.f[0]);
+    }
+
+    
     
     const RenderObject::Vec4Map& vec4array = obj->GetUniformVec4();
     RenderObject::Vec4Map::const_iterator it4, eit4 = vec4array.end();
