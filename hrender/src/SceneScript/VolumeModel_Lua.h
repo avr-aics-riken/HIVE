@@ -25,7 +25,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferVolumeData_Lua*)
-    
+    BufferImageData
     // RenderObject interface
     DECLARE_RENDEROBJECT_LUA_METHOD()
     LUA_SCRIPTCLASS_END();

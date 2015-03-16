@@ -23,6 +23,7 @@ public:
     
     BufferImageData();
     BufferImageData(BufferImageData* inst);
+    BufferImageData(const BufferImageData* inst);
     ~BufferImageData();
     void Create(FORMAT type, int w, int h);
     void Clear();
