@@ -319,6 +319,7 @@ ENDIF()
 add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES}
 	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} )
 
+target_link_libraries(hrender pthread)
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
 target_link_libraries(hrender ${CDMLIB_LIBS})
