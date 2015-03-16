@@ -10,6 +10,9 @@
 
 class Camera;
 class RenderObject;
+class BufferImageData;
+
+#include <map>
 
 class BaseBuffer : public RefCount
 {
@@ -35,7 +38,11 @@ protected:
     bool loadShaderSrc(const char* srcname);
     unsigned int getProgram() const;
     void bindUniforms(const RenderObject* obj) const;
+    const unsigned int getTextureId(const BufferImageData* buf) const;
+    bool cacheTexture(const BufferImageData* buf);
     
+private:
+    std::map<const BufferImageData*, unsigned int> m_texutecache;
 };
 
 #endif // __BASEBUFFER_H__

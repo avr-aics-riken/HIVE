@@ -7,6 +7,7 @@ class BufferImageData_Lua : public BufferImageData
 {
 public:
     BufferImageData_Lua(BufferImageData* data) : BufferImageData(data) { }
+    BufferImageData_Lua(const BufferImageData* data) : BufferImageData(data) { }
     BufferImageData_Lua() {}
     ~BufferImageData_Lua() {}
     LUA_SCRIPTCLASS_BEGIN(BufferImageData_Lua)

@@ -1,5 +1,6 @@
 #ifndef _RENDEROBJECT_LUA_H_
 #define _RENDEROBJECT_LUA_H_
+#include "BufferImageData_Lua.h"
 
 
 #define IMPLEMENTATION_RENDEROBJECT_LUA() \
@@ -66,6 +67,15 @@
         } \
         return t; \
     } \
+    LuaTable GetTextureTable() { \
+        const TextureMap& m = RenderObject::GetUniformTexture(); \
+        TextureMap::const_iterator it, eit = m.end(); \
+        LuaTable t; \
+        for (it = m.begin(); it != eit; ++it) { \
+            t.push("TODO: IMPLEMENTATION");/* TODO */ \
+        } \
+        return t; \
+    } \
     float GetFloat(const char* name) { \
         const FloatMap& m = RenderObject::GetUniformFloat(); \
         FloatMap::const_iterator it = m.find(std::string(name)); \
@@ -97,8 +107,20 @@
             return LuaTable(0.0, 0.0, 0.0, 0.0); \
         } \
         return LuaTable(it->second.x, it->second.y, it->second.z, it->second.w); \
+    } \
+    bool SetTexture(const char* name, BufferImageData_Lua* tex) { \
+        return RenderObject::SetTexture(name, tex); \
+    } \
+    BufferImageData_Lua* GetTexture(const char* name) { \
+        const TextureMap& m = RenderObject::GetUniformTexture(); \
+        TextureMap::const_iterator it = m.find(std::string(name)); \
+        if (it == m.end()) { \
+            return 0; \
+        } \
+        /* TODO: implemantation */ \
+        return 0;/*BufferImageData_Lua(it->second);*/ \
     }
-    
+
 #define DECLARE_RENDEROBJECT_LUA_METHOD() \
     LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetType) \
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float) \
@@ -108,6 +130,7 @@
     LUA_SCRIPTCLASS_METHOD_ARG4(bool, SetVec3,  const char*, float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG5(bool, SetVec4,  const char*, float, float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetFloat, const char*, float) \
+    LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetTexture, const char*, BufferImageData_Lua*) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTranslate) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetRotate) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetScale) \
@@ -115,10 +138,12 @@
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetVec3Table) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetVec2Table) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetFloatTable) \
+    LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTextureTable) \
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec4, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec3, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec2, const char*) \
-    LUA_SCRIPTCLASS_METHOD_ARG1(float, GetFloat, const char*)
+    LUA_SCRIPTCLASS_METHOD_ARG1(float, GetFloat, const char*) \
+    LUA_SCRIPTCLASS_METHOD_ARG1(BufferImageData_Lua, GetTexture, const char*)
 
 
 #endif //_RENDEROBJECT_LUA_H_

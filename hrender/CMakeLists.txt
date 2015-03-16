@@ -214,6 +214,7 @@ set(SOURCES
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp
 	src/RenderObject/Camera.cpp
+	src/RenderObject/RenderObject.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
 	src/RenderObject/LineModel.cpp
