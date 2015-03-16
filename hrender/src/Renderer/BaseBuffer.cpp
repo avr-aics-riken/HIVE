@@ -3,6 +3,8 @@
 #include "BaseBuffer.h"
 #include "../RenderObject/Camera.h"
 #include "../RenderObject/RenderObject.h"
+#include "../Buffer/Buffer.h"
+#include "../Buffer/BufferImageData.h"
 
 #include "Commands.h"
 
@@ -87,6 +89,22 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
         const float vf = itf->second;
         SetUniform1f_SGL(prg, itf->first.c_str(), vf);
     }
+    
+    int textureCount = 1; // start from 1. 0 is default texture. Ex: volume texture.
+    const RenderObject::TextureMap& texarray = obj->GetUniformTexture();
+    RenderObject::TextureMap::const_iterator itt, eitt = texarray.end();
+    for (itt = texarray.begin(); itt != eitt; ++itt) {
+        const BufferImageData* vt = itt->second;
+        const int texid = getTextureId(vt);
+        if (texid > 0) {
+            ActiveTexture_SGL(textureCount);
+            BindTexture2D_SGL(texid);
+            SetUniform1i_SGL(prg, itt->first.c_str(), textureCount);
+            ++textureCount;
+            ActiveTexture_SGL(0);
+        }
+    }
+
 }
 
 //-------------------------------------------------------------------
@@ -99,5 +117,37 @@ bool BaseBuffer::loadShaderSrc(const char* srcname)
 unsigned int BaseBuffer::getProgram() const
 {
     return m_prog;
+}
+
+const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
+{
+    std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
+    if (it == m_texutecache.end()) {
+        return 0;
+    }
+    return it->second;
+}
+
+bool BaseBuffer::cacheTexture(const BufferImageData *buf)
+{
+    std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
+    if (it != m_texutecache.end()) {
+        return true;
+    } else {
+        unsigned int tex;
+        GenTextures_SGL(1, &tex);
+        BindTexture2D_SGL(tex);
+        
+        const BufferImageData::FORMAT fmt = buf->Format();
+        
+        assert(fmt == BufferImageData::RGBA8); // TODO: SUPPORT others
+        int component = 4;  // TODO: get size from buf->Format();
+        
+        // TODO: more format
+        TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer());
+        
+        m_texutecache[buf] = tex; //cache
+        return true;
+    }
 }
 
