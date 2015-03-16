@@ -1,9 +1,10 @@
 //
 // PBR shader
 //
-// TODO: - importance sampling of GGX.
+// TODO: * IBL
 //
 #extension GL_LSGL_trace : enable
+#extension GL_LSGL_random : enable
 
 #ifdef GL_ES
 precision mediump float;
@@ -27,11 +28,17 @@ struct Material {
 
 //
 // --------- GGX microfacet ----------------
+// Based on SPI's OSL and Blender cycles.
+// See 
+//
+// - https://developer.blender.org/D572
+//
+// For details and copyrights.
 //
 
 float fresnel_dielectric(
         float eta, const vec3 N,
-        const vec3 I, out vec3 R, out vec3 T,
+        vec3 I, out vec3 R, out vec3 T,
         out int is_inside)
 {
 	float cosval = dot(N, I), neta;
@@ -289,10 +296,146 @@ vec3 microfacet_sample_stretched(vec3 omega_i,
     return normalize(vec3(-slope_x, -slope_y, 1.0));
 } 
 
-void ggx_sample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, float randv, float alpha_x, float alpha_y, float eta, int refractive, out vec3 eval, out vec3 omega_in, out float pdf)
+vec3 MicrofacetGGXEvalReflect(vec3 N, vec3 X, vec3 Y, vec3 I, float alpha_x, float alpha_y, vec3 omega_in, out float pdf)
+{
+	if(max(alpha_x, alpha_y) <= 1e-4f)
+		return vec3(0, 0, 0);
+
+	float cosNO = dot(N, I);
+	float cosNI = dot(N, omega_in);
+
+	if(cosNI > 0.0 && cosNO > 0.0) {
+		/* get half vector */
+		vec3 m = normalize(omega_in + I);
+		float alpha2 = alpha_x * alpha_y;
+		float D, G1o, G1i;
+
+		if(alpha_x == alpha_y) {
+			/* isotropic
+			 * eq. 20: (F*G*D)/(4*in*on)
+			 * eq. 33: first we calculate D(m) */
+			float cosThetaM = dot(N, m);
+			float cosThetaM2 = cosThetaM * cosThetaM;
+			float cosThetaM4 = cosThetaM2 * cosThetaM2;
+			float tanThetaM2 = (1.0 - cosThetaM2) / cosThetaM2;
+			D = alpha2 / (PIVAL * cosThetaM4 * (alpha2 + tanThetaM2) * (alpha2 + tanThetaM2));
+
+			/* eq. 34: now calculate G1(i,m) and G1(o,m) */
+			G1o = 2.0 / (1.0 + sqrt(max(0.0, 1.0 + alpha2 * (1.0 - cosNO * cosNO) / (cosNO * cosNO))));
+			G1i = 2.0 / (1.0 + sqrt(max(0.0, 1.0 + alpha2 * (1.0 - cosNI * cosNI) / (cosNI * cosNI)))); 
+		}
+		else {
+			/* anisotropic */
+			vec3 Z = N;
+
+			/* distribution */
+			vec3 local_m = vec3(dot(X, m), dot(Y, m), dot(Z, m));
+			float slope_x = -local_m.x/(local_m.z*alpha_x);
+			float slope_y = -local_m.y/(local_m.z*alpha_y);
+			float slope_len = 1.0 + slope_x*slope_x + slope_y*slope_y;
+
+			float cosThetaM = local_m.z;
+			float cosThetaM2 = cosThetaM * cosThetaM;
+			float cosThetaM4 = cosThetaM2 * cosThetaM2;
+
+			D = 1.0 / ((slope_len * slope_len) * PIVAL * alpha2 * cosThetaM4);
+
+			/* G1(i,m) and G1(o,m) */
+			float tanThetaO2 = (1.0 - cosNO * cosNO) / (cosNO * cosNO);
+			float cosPhiO = dot(I, X);
+			float sinPhiO = dot(I, Y);
+
+			float alphaO2 = (cosPhiO*cosPhiO)*(alpha_x*alpha_x) + (sinPhiO*sinPhiO)*(alpha_y*alpha_y);
+			alphaO2 /= cosPhiO*cosPhiO + sinPhiO*sinPhiO;
+
+			G1o = 2.0 / (1.0 + sqrt(max(0.0, 1.0 + alphaO2 * tanThetaO2)));
+
+			float tanThetaI2 = (1.0 - cosNI * cosNI) / (cosNI * cosNI);
+			float cosPhiI = dot(omega_in, X);
+			float sinPhiI = dot(omega_in, Y);
+
+			float alphaI2 = (cosPhiI*cosPhiI)*(alpha_x*alpha_x) + (sinPhiI*sinPhiI)*(alpha_y*alpha_y);
+			alphaI2 /= cosPhiI*cosPhiI + sinPhiI*sinPhiI;
+
+			G1i = 2.0 / (1.0 + sqrt(max(0.0, 1.0 + alphaI2 * tanThetaI2)));
+		}
+
+		float G = G1o * G1i;
+
+		/* eq. 20 */
+		float common = D * 0.25f / cosNO;
+		float outval = G * common;
+
+		/* eq. 2 in distribution of visible normals sampling
+		 * pm = Dw = G1o * dot(m, I) * D / dot(N, I); */
+
+		/* eq. 38 - but see also:
+		 * eq. 17 in http://www.graphics.cornell.edu/~bjw/wardnotes.pdf
+		 * pdf = pm * 0.25 / dot(m, I); */
+		pdf = G1o * common;
+
+		return vec3(outval, outval, outval);
+	}
+
+	return vec3(0, 0, 0);
+}
+
+vec3 MicrofacetGGXEvalTransmit(vec3 N, vec3 I, float alpha_x, float alpha_y, float eta, vec3 omega_in, out float pdf)
+{
+	if(max(alpha_x, alpha_y) <= 1e-4)
+		return vec3(0, 0, 0);
+
+	float cosNO = dot(N, I);
+	float cosNI = dot(N, omega_in);
+
+	if(cosNO <= 0.0 || cosNI >= 0.0)
+		return vec3(0, 0, 0); /* vectors on same side -- not possible */
+
+	/* compute half-vector of the refraction (eq. 16) */
+	vec3 ht = -(eta * omega_in + I);
+	vec3 Ht = normalize(ht);
+	float cosHO = dot(Ht, I);
+	float cosHI = dot(Ht, omega_in);
+
+	/* those situations makes chi+ terms in eq. 33, 34 be zero */
+	if(dot(Ht, N) <= 0.0f || cosHO * cosNO <= 0.0f || cosHI * cosNI <= 0.0f)
+		return vec3(0.0f, 0.0f, 0.0f);
+
+	float D, G1o, G1i;
+
+	/* eq. 33: first we calculate D(m) with m=Ht: */
+	float alpha2 = alpha_x * alpha_y;
+	float cosThetaM = dot(N, Ht);
+	float cosThetaM2 = cosThetaM * cosThetaM;
+	float tanThetaM2 = (1.0 - cosThetaM2) / cosThetaM2;
+	float cosThetaM4 = cosThetaM2 * cosThetaM2;
+	D = alpha2 / (PIVAL * cosThetaM4 * (alpha2 + tanThetaM2) * (alpha2 + tanThetaM2));
+
+	/* eq. 34: now calculate G1(i,m) and G1(o,m) */
+	G1o = 2.0 / (1.0 + sqrt(max(0.0, 1.0 + alpha2 * (1.0 - cosNO * cosNO) / (cosNO * cosNO))));
+	G1i = 2.0 / (1.0 + sqrt(max(0.0, 1.0 + alpha2 * (1.0 - cosNI * cosNI) / (cosNI * cosNI)))); 
+
+	float G = G1o * G1i;
+
+	/* probability */
+	float Ht2 = dot(ht, ht);
+
+	/* eq. 2 in distribution of visible normals sampling
+	 * pm = Dw = G1o * dot(m, I) * D / dot(N, I); */
+
+	/* out = fabsf(cosHI * cosHO) * (eta * eta) * G * D / (cosNO * Ht2)
+	 * pdf = pm * (eta * eta) * fabsf(cosHI) / Ht2 */
+	float common = D * (eta * eta) / (cosNO * Ht2);
+	float outval = G * abs(cosHI * cosHO) * common;
+	pdf = G1o * cosHO * abs(cosHI) * common;
+
+	return vec3(outval, outval, outval);
+}
+
+void MicrofacetGGXSample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, float randv, float alpha_x, float alpha_y, float eta, int refractive, out vec3 eval, out vec3 omega_in, out float pdf)
 {
 	float cosNO = dot(N, I);
-	if(cosNO > 0.0) {
+    if (cosNO > 0.0) {
 		vec3 Z = N;
 
 		/* importance sampling with distribution of visible normals. vectors are
@@ -307,7 +450,7 @@ void ggx_sample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, float rand
 		float cosThetaM = local_m.z;
 
 		/* reflection or refraction? */
-		if(refractive > 0) {
+		if(refractive == 0) { // reflection
 			float cosMO = dot(m, I);
 
 			if(cosMO > 0.0) {
@@ -427,6 +570,7 @@ void ggx_sample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, float rand
 }
 
 
+// Simplified GGX
 float GGX(float alpha, float cosThetaM)
 {
     float CosSquared = cosThetaM*cosThetaM;
@@ -434,16 +578,17 @@ float GGX(float alpha, float cosThetaM)
     return (1.0/PIVAL) * sqr(alpha/(CosSquared * (alpha*alpha + TanSquared)));
 }
 
-//
-// --------------------------
-//
-
 vec3 BRDFMicrofacet( vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y, float alpha )
 {
     vec3 H = normalize( L + V );
     float D = GGX(alpha, dot(N,H));
     return vec3(D);
 }
+
+//
+// --------------------------
+//
+
 
 
 void GetMaterial(int i, out Material mat)
@@ -549,6 +694,7 @@ void main()
 
     //isectinfo(p, n, dir);
 	vec3 N = normalize(n);//normalize(mnormal);
+    vec3 Ng = normalize(ng);
 	vec3 V = normalize(-dir); // dir: from eye(previous hit point) towards shading point.
 
     vec3 L = normalize(vec3(-1, 1, -0.5));
@@ -557,13 +703,13 @@ void main()
 
     // Approximate tangent vector.
     vec3 U;
-    if (abs(N[0]) > 0.01) {
+    if (abs(N[0]) > 0.001) {
         U = vec3(N[2], 0, -N[0]);
     } else {
         U = vec3(0, -N[2], N[1]);
     }
     U = normalize(U);
-    vec3 B = normalize(cross(N, U));
+    vec3 B = normalize(cross(U, N));
 
     vec3 Br = BRDFMicrofacet(L, V, N, U, B, 0.13);
     vec3 f = Br * ksRGB + kdRGB;
@@ -573,6 +719,16 @@ void main()
     float Rk, Tk;
     ComputeFresnel(Rvec, Tvec, Rk, Tk, -V, N, 1.0 / mat.ior);
 
-    gl_FragColor = vec4(f + Rk, 1.0);
+    float randu; random(randu);
+    float randv; random(randv);
+    float alpha_x = 0.25;
+    float alpha_y = alpha_x;
+    float eta = 1.33;
+    int refractive = 0;
+    vec3 throughput;
+    vec3 wi;
+    float pdf;
+    MicrofacetGGXSample(N, Ng, U, B, V, randu, randv, alpha_x, alpha_y, eta, refractive, throughput, wi, pdf);
 
+    gl_FragColor = vec4(pdf, pdf, pdf, 1.0);
 }
