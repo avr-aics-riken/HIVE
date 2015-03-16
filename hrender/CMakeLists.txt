@@ -392,6 +392,7 @@ add_test(NAME render_obj_point.scn       COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_obj_line.scn        COMMAND hrender  ../../hrender/test/render_obj_line.scn      )
 add_test(NAME render_obj_normal_vector.scn      COMMAND hrender  ../../hrender/test/render_obj_normal_vector.scn)
 add_test(NAME render_sph_vector.scn      COMMAND hrender  ../../hrender/test/render_sph_vector.scn    )
+add_test(NAME render_with_texture.scn      COMMAND hrender  ../../hrender/test/render_with_texture.scn    )
 
 #ERROR CASE
 add_test(NAME loader_obj_err.scn         COMMAND hrender ../../hrender/test/err/loader_obj_err.scn           )
