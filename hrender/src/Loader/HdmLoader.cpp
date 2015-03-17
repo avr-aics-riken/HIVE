@@ -1,3 +1,9 @@
+/**
+ * @file HdmLoader.cpp
+ * HDMデータローダー
+ */
+
+
 #ifndef HIVE_WITH_HDMLIB
 #error "HIVE_WITH_HDMLIB must be defined when you compile HDMLoader module"
 #endif
@@ -24,20 +30,30 @@
 
 // @todo { implement }
 
+/// コンストラクタ
 HDMLoader::HDMLoader()
 {
     Clear();
 }
+
+/// デストラクタ
 HDMLoader::~HDMLoader()
 {
     Clear();
 }
 
+/// ボリュームクリア
 void HDMLoader::Clear()
 {
     m_volume.Clear();
 }
 
+/**
+ * HDMデータのロード
+ * @param filename ファイルパス
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename)
 {
     Clear();
@@ -59,26 +75,50 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename)
     return false;
 }
 
+/**
+ * HDMWidth取得
+ * @retval Width
+ */
 int HDMLoader::Width()    {
     return m_volume.Width();
 }
 
+/**
+ * HDMHeight取得
+ * @retval Height
+ */
 int HDMLoader::Height()   {
     return m_volume.Height();
 }
 
+/**
+ * HDMDepth取得
+ * @retval Depth
+ */
 int HDMLoader::Depth()    {
     return m_volume.Depth();
 }
 
+/**
+ * HDMComponent取得
+ * @retval Component数
+ */
 int HDMLoader::Component() {
     return m_volume.Component();
 }
 
+/**
+ * HDMデータバッファ参照取得
+ * @retval FloatBufferアドレス
+ */
 FloatBuffer* HDMLoader::Buffer() {
     return m_volume.Buffer();
 }
 
+/**
+ * VolumeData参照取得
+ * @retval VolumeData参照
+ */
 BufferVolumeData *HDMLoader::VolumeData()
 {
     return &m_volume;
