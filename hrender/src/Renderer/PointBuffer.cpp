@@ -74,7 +74,7 @@ bool PointBuffer::Create(const PointModel* model)
                   point->Radius()->GetBuffer(),
                   point->Material()->GetBuffer(),
                   m_vtx_id, m_radius_id, m_material_id);
-    
+    cacheTextures(model);
     return r;
 }
 

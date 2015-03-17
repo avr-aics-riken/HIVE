@@ -52,6 +52,7 @@ void BindTetraVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_m
 void LineWidth_SGL(float w);
 
 void GenTextures_SGL(int n, unsigned int* tex);
+void DeleteTextures_SGL(int n, unsigned int* tex);
 void BindTexture3D_SGL(unsigned int tex);
 void BindTexture2D_SGL(unsigned int tex);
 void ActiveTexture_SGL(unsigned int n);

@@ -14,7 +14,12 @@ BaseBuffer::BaseBuffer(RENDER_MODE mode)
 }
 BaseBuffer::~BaseBuffer()
 {
-    // delete -> m_prog
+    std::map<const BufferImageData*, unsigned int>::const_iterator it, eit = m_texutecache.end();
+    for (it = m_texutecache.begin(); it != eit; ++it) {
+        unsigned int t = it->second;
+        DeleteTextures_SGL(1, &t);
+    }
+    DeleteProgram_SGL(m_prog);
 }
 
 
@@ -148,6 +153,15 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
         
         m_texutecache[buf] = tex; //cache
         return true;
+    }
+}
+
+void BaseBuffer::cacheTextures(const RenderObject* model)
+{
+    const RenderObject::TextureMap& tex = model->GetUniformTexture();
+    RenderObject::TextureMap::const_iterator it, eit = tex.end();
+    for (it = tex.begin(); it != eit; ++it) {
+        cacheTexture(it->second);
     }
 }
 

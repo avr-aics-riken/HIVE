@@ -511,6 +511,12 @@ void GenTextures_SGL(int n, unsigned int* tex)
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glGenTextures(n, tex);
 }
+void DeleteTextures_SGL(int n, unsigned int* tex)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glDeleteTextures(n, tex);
+}
+
 void BindTexture3D_SGL(unsigned int voltex)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();

@@ -40,7 +40,8 @@ protected:
     void bindUniforms(const RenderObject* obj) const;
     const unsigned int getTextureId(const BufferImageData* buf) const;
     bool cacheTexture(const BufferImageData* buf);
-    
+    void cacheTextures(const RenderObject* model);
+
 private:
     std::map<const BufferImageData*, unsigned int> m_texutecache;
 };
