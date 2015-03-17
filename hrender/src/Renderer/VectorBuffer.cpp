@@ -117,6 +117,8 @@ bool VectorBuffer::Create(const VectorModel* model)
     CreateVBIB_SGL(m_lines_vnum, lineBuf->GetBuffer(),  0, 0, 0, 0, 0, m_line_vtx_id,  normal_id, mat_id, tex_id, index_id);
     CreateVBIB_SGL(m_tetra_vnum, tetraBuf->GetBuffer(), 0, 0, 0, 0, 0, m_tetra_vtx_id, normal_id, mat_id, tex_id, index_id);
 
+    cacheTextures(model);
+    
     return r;
 }
 

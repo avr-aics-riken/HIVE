@@ -41,6 +41,8 @@ bool TetraBuffer::Create(const TetraModel* model)
 
     assert(0); // TODO: implement
     
+    cacheTextures(model);
+    
     return r;
 }
 

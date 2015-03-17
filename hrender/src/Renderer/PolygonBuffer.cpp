@@ -76,11 +76,7 @@ bool PolygonBuffer::Create(const PolygonModel* model)
                    inum, mesh->Index()->GetBuffer(),
                    m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     
-    const RenderObject::TextureMap& tex = model->GetUniformTexture();
-    RenderObject::TextureMap::const_iterator it, eit = tex.end();
-    for (it = tex.begin(); it != eit; ++it) {
-        cacheTexture(it->second);
-    }
+    cacheTextures(model);
     return r;
 }
 void PolygonBuffer::Render() const

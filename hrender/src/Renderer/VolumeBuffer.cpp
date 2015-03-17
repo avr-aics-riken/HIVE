@@ -130,6 +130,9 @@ bool VolumeBuffer::Create(const VolumeModel* model)
     } else {
         fprintf(stderr,"[Error] Not load buffer\n");
     }
+    
+    cacheTextures(model);
+    
     return r;
 }
 
