@@ -41,7 +41,7 @@ void BCMLoader::Clear()
 }
 
 /**
- * BCMデータの生成
+ * BCMデータのロード
  * @param filename ファイルパス
  * @retval true 成功
  * @retval false 失敗
