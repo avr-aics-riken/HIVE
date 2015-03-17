@@ -1,6 +1,6 @@
 /**
  * @file SphLoader.cpp
- * SPHƒf[ƒ^ƒ[ƒ_[
+ * SPHãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ€ãƒ¼
  */
 #include <stdio.h>
 #include <string.h>
@@ -8,29 +8,29 @@
 #include "SimpleSPH.h"
 #include "BufferVolumeData.h"
 
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 SPHLoader::SPHLoader()
 {
     Clear();
 }
 
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 SPHLoader::~SPHLoader()
 {
     Clear();
 }
 
-/// ƒƒ“ƒoƒNƒŠƒA
+/// ãƒ¡ãƒ³ãƒã‚¯ãƒªã‚¢
 void SPHLoader::Clear()
 {
     m_volume = 0;
 }
 
 /**
- * SPHƒf[ƒ^‚Ìƒ[ƒh
- * @param filename ƒtƒ@ƒCƒ‹ƒpƒX
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * SPHãƒ‡ãƒ¼ã‚¿ã®ãƒ­ãƒ¼ãƒ‰
+ * @param filename ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool SPHLoader::Load(const char* filename)
 {
@@ -57,7 +57,7 @@ bool SPHLoader::Load(const char* filename)
 }
 
 /**
- * SPHWidthæ“¾
+ * SPHWidthå–å¾—
  * @retval Width
  */
 int SPHLoader::Width()    {
@@ -65,7 +65,7 @@ int SPHLoader::Width()    {
 }
 
 /**
- * SPHHeightæ“¾
+ * SPHHeightå–å¾—
  * @retval Height
  */
 int SPHLoader::Height()   {
@@ -73,7 +73,7 @@ int SPHLoader::Height()   {
 }
 
 /**
- * SPHDepthæ“¾
+ * SPHDepthå–å¾—
  * @retval Depth
  */
 int SPHLoader::Depth()    {
@@ -81,24 +81,24 @@ int SPHLoader::Depth()    {
 }
 
 /**
- * SPHComponentæ“¾
- * @retval Component”
+ * SPHComponentå–å¾—
+ * @retval Componentæ•°
  */
 int SPHLoader::Component() {
     return m_volume->Component();
 }
 
 /**
- * SPHƒf[ƒ^ƒoƒbƒtƒ@QÆæ“¾
- * @retval FloatBufferƒAƒhƒŒƒX
+ * SPHãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡å‚ç…§å–å¾—
+ * @retval FloatBufferã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 FloatBuffer* SPHLoader::Buffer() {
     return m_volume->Buffer();
 }
 
 /**
- * VolumeDataQÆæ“¾
- * @retval VolumeDataQÆ
+ * VolumeDataå‚ç…§å–å¾—
+ * @retval VolumeDataå‚ç…§
  */
 BufferVolumeData *SPHLoader::VolumeData()
 {
