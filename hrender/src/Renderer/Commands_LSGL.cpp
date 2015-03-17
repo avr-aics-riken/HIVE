@@ -319,9 +319,11 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	}
 	fseek(fp, 0, SEEK_END);
 	size_t len = ftell(fp);
-    srcbuf.resize(len);
+    srcbuf.resize(len + 2);
 	rewind(fp);
 	len = fread(srcbuf.get(), 1, len, fp);
+    srcbuf.get()[len    ] = 0; // terminate
+    srcbuf.get()[len + 1] = 0;
 	fclose(fp);
 	
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
@@ -329,7 +331,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 		sgl.glDeleteProgram(prg);
 	prg = 0;
 	
-	static const GLchar *src = srcbuf.get();
+    const GLchar *src = srcbuf.get();
 	unsigned int fragShader;
 	fragShader = sgl.glCreateShader(GL_FRAGMENT_SHADER);
 	sgl.glShaderSource(fragShader, 1, &src, NULL);
