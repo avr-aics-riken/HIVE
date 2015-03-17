@@ -1,3 +1,7 @@
+/**
+ * @file BcmLoader.cpp
+ * BCMローダー
+ */
 #ifndef HIVE_WITH_BCMTOOLS
 #error "HIVE_WITH_BCMTOOLS must be defined when you compile BCMLoader module"
 #endif
@@ -18,21 +22,30 @@
 
 //#include "Config.h"
 
-
+/// コンストラクタ
 BCMLoader::BCMLoader()
 {
     Clear();
 }
+
+/// デストラクタ
 BCMLoader::~BCMLoader()
 {
     Clear();
 }
 
+/// クリア
 void BCMLoader::Clear()
 {
     m_volume.Clear();
 }
 
+/**
+ * BCMデータの生成
+ * @param filename ファイルパス
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool BCMLoader::Load(const char* filename)
 {
     Clear();
@@ -65,28 +78,54 @@ bool BCMLoader::Load(const char* filename)
     return false;
 }
 
+/**
+ * BCMWidth取得
+ * @retval Width
+ */
 int BCMLoader::Width()    {
     return m_volume.Width();
 }
 
+/**
+ * BCMHeight取得
+ * @retval Height
+ */
 int BCMLoader::Height()   {
     return m_volume.Height();
 }
 
+/**
+ * BCMDepth取得
+ * @retval Depth
+ */
 int BCMLoader::Depth()    {
     return m_volume.Depth();
 }
 
+/**
+ * BCMComponent取得
+ * @retval Component数
+ */
 int BCMLoader::Component() {
     return m_volume.Component();
 }
 
+/**
+ * BCMデータバッファ参照取得
+ * @retval FloatBufferアドレス
+ */
 FloatBuffer* BCMLoader::Buffer() {
     return m_volume.Buffer();
 }
 
+/**
+ * VolumeData参照取得
+ * @retval VolumeData参照
+ */
 BufferVolumeData *BCMLoader::VolumeData()
 {
     return &m_volume;
 }
+
+
 
