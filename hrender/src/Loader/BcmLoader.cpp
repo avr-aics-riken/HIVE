@@ -1,6 +1,6 @@
 /**
  * @file BcmLoader.cpp
- * BCMƒ[ƒ_[
+ * BCMãƒ­ãƒ¼ãƒ€ãƒ¼
  */
 #ifndef HIVE_WITH_BCMTOOLS
 #error "HIVE_WITH_BCMTOOLS must be defined when you compile BCMLoader module"
@@ -22,29 +22,29 @@
 
 //#include "Config.h"
 
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 BCMLoader::BCMLoader()
 {
     Clear();
 }
 
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 BCMLoader::~BCMLoader()
 {
     Clear();
 }
 
-/// ƒNƒŠƒA
+/// ã‚¯ãƒªã‚¢
 void BCMLoader::Clear()
 {
     m_volume.Clear();
 }
 
 /**
- * BCMƒf[ƒ^‚Ìƒ[ƒh
- * @param filename ƒtƒ@ƒCƒ‹ƒpƒX
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * BCMãƒ‡ãƒ¼ã‚¿ã®ãƒ­ãƒ¼ãƒ‰
+ * @param filename ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool BCMLoader::Load(const char* filename)
 {
@@ -79,7 +79,7 @@ bool BCMLoader::Load(const char* filename)
 }
 
 /**
- * BCMWidthæ“¾
+ * BCMWidthå–å¾—
  * @retval Width
  */
 int BCMLoader::Width()    {
@@ -87,7 +87,7 @@ int BCMLoader::Width()    {
 }
 
 /**
- * BCMHeightæ“¾
+ * BCMHeightå–å¾—
  * @retval Height
  */
 int BCMLoader::Height()   {
@@ -95,7 +95,7 @@ int BCMLoader::Height()   {
 }
 
 /**
- * BCMDepthæ“¾
+ * BCMDepthå–å¾—
  * @retval Depth
  */
 int BCMLoader::Depth()    {
@@ -103,24 +103,24 @@ int BCMLoader::Depth()    {
 }
 
 /**
- * BCMComponentæ“¾
- * @retval Component”
+ * BCMComponentå–å¾—
+ * @retval Componentæ•°
  */
 int BCMLoader::Component() {
     return m_volume.Component();
 }
 
 /**
- * BCMƒf[ƒ^ƒoƒbƒtƒ@QÆæ“¾
- * @retval FloatBufferƒAƒhƒŒƒX
+ * BCMãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡å‚ç…§å–å¾—
+ * @retval FloatBufferã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 FloatBuffer* BCMLoader::Buffer() {
     return m_volume.Buffer();
 }
 
 /**
- * VolumeDataQÆæ“¾
- * @retval VolumeDataQÆ
+ * VolumeDataå‚ç…§å–å¾—
+ * @retval VolumeDataå‚ç…§
  */
 BufferVolumeData *BCMLoader::VolumeData()
 {
