@@ -1,6 +1,6 @@
 /**
  * @file HdmLoader.cpp
- * HDMƒf[ƒ^ƒ[ƒ_[
+ * HDMãƒ‡ãƒ¼ã‚¿ãƒ­ãƒ¼ãƒ€ãƒ¼
  */
 
 
@@ -30,29 +30,29 @@
 
 // @todo { implement }
 
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 HDMLoader::HDMLoader()
 {
     Clear();
 }
 
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 HDMLoader::~HDMLoader()
 {
     Clear();
 }
 
-/// ƒ{ƒŠƒ…[ƒ€ƒNƒŠƒA
+/// ãƒœãƒªãƒ¥ãƒ¼ãƒ ã‚¯ãƒªã‚¢
 void HDMLoader::Clear()
 {
     m_volume.Clear();
 }
 
 /**
- * HDMƒf[ƒ^‚Ìƒ[ƒh
- * @param filename ƒtƒ@ƒCƒ‹ƒpƒX
- * @retval true ¬Œ÷
- * @retval false ¸”s
+ * HDMãƒ‡ãƒ¼ã‚¿ã®ãƒ­ãƒ¼ãƒ‰
+ * @param filename ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
+ * @retval true æˆåŠŸ
+ * @retval false å¤±æ•—
  */
 bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename)
 {
@@ -76,7 +76,7 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename)
 }
 
 /**
- * HDMWidthæ“¾
+ * HDMWidthå–å¾—
  * @retval Width
  */
 int HDMLoader::Width()    {
@@ -84,7 +84,7 @@ int HDMLoader::Width()    {
 }
 
 /**
- * HDMHeightæ“¾
+ * HDMHeightå–å¾—
  * @retval Height
  */
 int HDMLoader::Height()   {
@@ -92,7 +92,7 @@ int HDMLoader::Height()   {
 }
 
 /**
- * HDMDepthæ“¾
+ * HDMDepthå–å¾—
  * @retval Depth
  */
 int HDMLoader::Depth()    {
@@ -100,24 +100,24 @@ int HDMLoader::Depth()    {
 }
 
 /**
- * HDMComponentæ“¾
- * @retval Component”
+ * HDMComponentå–å¾—
+ * @retval Componentæ•°
  */
 int HDMLoader::Component() {
     return m_volume.Component();
 }
 
 /**
- * HDMƒf[ƒ^ƒoƒbƒtƒ@QÆæ“¾
- * @retval FloatBufferƒAƒhƒŒƒX
+ * HDMãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡å‚ç…§å–å¾—
+ * @retval FloatBufferã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 FloatBuffer* HDMLoader::Buffer() {
     return m_volume.Buffer();
 }
 
 /**
- * VolumeDataQÆæ“¾
- * @retval VolumeDataQÆ
+ * VolumeDataå‚ç…§å–å¾—
+ * @retval VolumeDataå‚ç…§
  */
 BufferVolumeData *HDMLoader::VolumeData()
 {
