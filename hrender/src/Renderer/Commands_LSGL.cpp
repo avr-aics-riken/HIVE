@@ -294,9 +294,24 @@ void SetShaderCompiler_SGL(const char* path, const char* opt)
     sgl.lsglSetShaderCompiler(path, opt);
 }
 
+class stringbuf
+{
+public:
+    stringbuf() : buf(0) {}
+    ~stringbuf() { delete [] buf;}
+    void resize(int n) {
+        delete [] buf;
+        buf = new char[n];
+    }
+    char* get() const { return buf; }
+private:
+    char* buf;
+};
+
 bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 {
-	static GLchar srcbuf[16384];
+	//static GLchar srcbuf[16384];
+    stringbuf srcbuf;
 	FILE *fp = fopen(srcname, "rb");
 	if (!fp){
 		fprintf(stderr, "Error: Not found Program [%s]\n", srcname);
@@ -304,9 +319,9 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	}
 	fseek(fp, 0, SEEK_END);
 	size_t len = ftell(fp);
+    srcbuf.resize(len);
 	rewind(fp);
-	len = fread(srcbuf, 1, len, fp);
-	srcbuf[len] = 0;
+	len = fread(srcbuf.get(), 1, len, fp);
 	fclose(fp);
 	
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
@@ -314,7 +329,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 		sgl.glDeleteProgram(prg);
 	prg = 0;
 	
-	static const GLchar *src = srcbuf;
+	static const GLchar *src = srcbuf.get();
 	unsigned int fragShader;
 	fragShader = sgl.glCreateShader(GL_FRAGMENT_SHADER);
 	sgl.glShaderSource(fragShader, 1, &src, NULL);
