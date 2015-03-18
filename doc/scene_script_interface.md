@@ -92,19 +92,35 @@ VOLファイルを読み込むローダークラス
 
 ## CDMLoader()
 
-	/* TODO */
+CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
+ボリュームプリミティブが取得可能.
+
+    local loader = CDMLoader()
+    loader:Load('input.dfi')
 
 ## PDMLoader()
 
-	/* TODO */
+PDMファイルを読み込むローダークラス. hrender が PDMlib とリンクされているときのみ利用可能.
+ポイントプリミティブが取得可能.
+
+    local loader = PDMLoader()
+    loader:Load('input') -- ベースファイル名を指定
 
 ## HDMLoader()
 
-	/* TODO */
+HDMファイルを読み込むローダークラス. hrender が HDMlib とリンクされているときのみ利用可能.
+ボリュームプリミティブが取得可能.
+
+    local loader = HDMLoader()
+    loader:Load('cellid.bcm', 'data.bcm')
 
 ## BCMLoader()
 
-	/* TODO */
+BDMファイルを読み込むローダークラス. hrender が BCMTools とリンクされているときのみ利用可能.
+ボリュームプリミティブが取得可能.
+
+    local loader = BCMLoader()
+    loader:Load('cellid.bcm', 'data.bcm')
 
 ## ImageLoader()
 
@@ -115,7 +131,15 @@ VOLファイルを読み込むローダークラス
 
 ## SPHSaver()
 
-## PDMLoader()
+## PDMSaver()
+
+PDM 形式で点群データを保存する. hrender が PDMlib とリンクされているときのみ利用可能.
+現時点では timestep の変化する点群は保存出来ない(timestep=0 として書き出し)
+
+    local saver = PDMSaver()
+    saver:SetPointData(ball)
+    saver:Save('output') -- ベースファイル名を指定
+
 
 ---------------------------------
 # Generator
@@ -149,4 +173,26 @@ VOLファイルを読み込むローダークラス
 
 ## VolumeToMeshData()
 
+marching cubes 法を用いて, ボリュームデータをメッシュ(triangle)に変換する. 
+等値面を生成する基準となる値(isovalue)をセットしてからメッシュを生成する.
+
+    local surfacer = VolumeToMeshData()
+    local isovalue = 0.0005
+    surfacer:Create(volumedata)
+    surfacer:SetIsoValue(isovalue)
+    surfacer:IsoSurface()
+    local isosurface = surfacer:MeshData()
+
+
 ## PointToVolume()	
+
+ポイントデータをボリュームデータに変換する.
+ToVolume メソッドにはボリュームの解像度を指定する.
+ボリュームの各セルの密度は, ポイントの個数に比例する.
+
+    local p2v = PointToVolume()
+    p2v:Create(pnt:PointData())
+    
+    p2v:ToVolume(128,128,128)
+
+
