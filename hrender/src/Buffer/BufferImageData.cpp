@@ -14,10 +14,13 @@ private:
     float m_exposure;
     
 public:
+    /// コンストラクタ
     Impl()
     {
         Clear();
     }
+    
+    /// コンストラクタ
     Impl(BufferImageData* data)
     {
         Clear();
@@ -30,6 +33,13 @@ public:
         m_exposure = data->Exposure();
     }
     
+    
+    /**
+     * ImageBuffer作成
+     * @param type 作成するBufferType
+     * @param w Width
+     * @param h Height
+     */
     void Create(FORMAT type, int w, int h)
     {
         m_width = w;
@@ -49,7 +59,8 @@ public:
             m_floatbuffer->Create(w * h * 4);
         }
     }
-    
+
+    /// メンバクリア
     void Clear()
     {
         m_width = 0;
@@ -61,21 +72,39 @@ public:
         m_exposure = 1.0f;
     }
     
+    
+    /**
+     * Width取得
+     * @return Width値
+     */
     int Width() const
     {
         return m_width;
     }
     
+    /**
+     * Height取得
+     * @return Height値
+     */
     int Height() const
     {
         return m_height;
     }
     
+    
+    /**
+     * FORMAT取得
+     * @return FORMATパラメータ
+     */
     FORMAT Format() const
     {
         return m_format;
     }
-    
+
+    /**
+     * 作成したバッファサイズ取得
+     * @return バッファバイト数
+     */
     int Bytes() const
     {
         int wxh = m_width * m_height;
@@ -91,41 +120,73 @@ public:
         return -1;
     }
 
+    /**
+     * 浮動小数点バッファ参照取得
+     * @return 浮動小数点バッファへの参照
+     */
     FloatBuffer* FloatImageBuffer()
     {
         return m_floatbuffer;
     }
-    
+
+    /**
+     * 浮動小数点バッファ参照取得
+     * @return 浮動小数点バッファへの参照
+     */
     FloatBuffer* FloatImageBuffer() const
     {
         return m_floatbuffer;
     }
-    
+
+    /**
+     * Byteバッファ参照取得
+     * @return Byteバッファ参照への参照
+     */
     ByteBuffer* ImageBuffer()
     {
         return m_bytebuffer;
     }
-    
+
+    /**
+     * Byteバッファ参照取得
+     * @return Byteバッファ参照への参照
+     */
     ByteBuffer* ImageBuffer() const
     {
         return m_bytebuffer;
     }
-    
+
+    /**
+     * Gamma値取得
+     * @return Gamma値
+     */
     float Gamma() const
     {
         return m_gamma;
     }
-    
+
+    /**
+     * Exposure値取得
+     * @return Exposure値
+     */
     float Exposure() const
     {
         return m_exposure;
     }
-    
+
+    /**
+     * Gamma値設定
+     * @param Gamma値
+     */
     void SetGamma(float gamma)
     {
         m_gamma = gamma;
     }
-    
+
+    /**
+     * Exposure値設定
+     * @param Exposure値
+     */
     void SetExposure(float exposure)
     {
         m_exposure = exposure;
