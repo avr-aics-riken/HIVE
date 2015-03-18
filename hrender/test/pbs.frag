@@ -13,6 +13,7 @@ precision mediump float;
 const float PIVAL = 3.14159265358979323846;
 
 uniform vec3 lightdir;
+uniform sampler2D mytex0;
 
 float sqr(float x) { return x*x; }
 
@@ -25,6 +26,66 @@ struct Material {
     float ior;
     float fresnel;      // 0: off, 1: on
 };
+
+float IntersectSphere(vec3 raydir, vec3 rayorg, vec3 spherepos, float sphereradius)
+{
+    vec3 oc = rayorg - spherepos;
+    float b = 2.0 * dot(raydir, oc);
+    float c = dot(oc, oc) - sphereradius*sphereradius;
+    float disc = b * b - 4.0 * c;
+ 
+    if (disc < 0.0)
+        return -1.0;
+ 
+    float q;
+    if (b < 0.0)
+        q = (-b - sqrt(disc))/2.0;
+    else
+        q = (-b + sqrt(disc))/2.0;
+ 
+    float t0 = q;
+    float t1 = c / q;
+ 
+    if (t0 > t1) {
+        float temp = t0;
+        t0 = t1;
+        t1 = temp;
+    }
+ 
+    if (t1 < 0.0)
+        return -1.0;
+ 
+    if (t0 < 0.0) {
+        return t1;
+    } else {
+        return t0; 
+    }
+}
+
+// Analytic sphere light
+// https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
+vec3 DirectIllumination(vec3 P, vec3 N, vec3 lightCentre, float lightRadius, vec3 lightColour, float cutoff)
+{
+    // calculate normalized light vector and distance to sphere light surface
+    float r = lightRadius;
+    vec3 L = lightCentre - P;
+    float distance = length(L);
+    float d = max(distance - r, 0);
+    L /= distance;
+     
+    // calculate basic attenuation
+    float denom = d/r + 1.0;
+    float attenuation = 1.0 / (denom*denom);
+     
+    // scale and bias attenuation such that:
+    //   attenuation == 0 at extent of max influence
+    //   attenuation == 1 when d == 0
+    attenuation = (attenuation - cutoff) / (1.0 - cutoff);
+    attenuation = max(attenuation, 0.0);
+     
+    float LdotN = max(dot(L, N), 0.0);
+    return lightColour * LdotN * attenuation;
+}
 
 //
 // --------- GGX microfacet ----------------
@@ -660,7 +721,12 @@ float FresnelApprox(vec3 V, vec3 L, float ior) {
 
 void main()
 {
-	vec3 p;
+    // Spherical light.
+    vec3 lightPos = vec3(-400, 400, -400);
+    float lightSize = 100.0;
+    vec3 lightColor = vec3(100, 100, 100);
+
+	vec3 P;
     vec3 n;
     vec3 ng;
     vec3 tn;
@@ -669,7 +735,7 @@ void main()
     vec2 bary_uv;
     int nisect;
     numIntersects(nisect);
-    queryIntersect(0, p, n, ng, tn, bn, dir, bary_uv);
+    queryIntersect(0, P, n, ng, tn, bn, dir, bary_uv);
 
     Material mat;
     GetMaterial(0, mat);
@@ -697,7 +763,7 @@ void main()
     vec3 Ng = normalize(ng);
 	vec3 V = normalize(-dir); // dir: from eye(previous hit point) towards shading point.
 
-    vec3 L = normalize(vec3(-1, 1, -0.5));
+    vec3 L = normalize(lightPos - P);
 
     vec3 H = normalize(L + V);
 
@@ -721,7 +787,7 @@ void main()
 
     float randu; random(randu);
     float randv; random(randv);
-    float alpha_x = 0.25;
+    float alpha_x = 0.05;
     float alpha_y = alpha_x;
     float eta = 1.33;
     int refractive = 0;
@@ -729,6 +795,13 @@ void main()
     vec3 wi;
     float pdf;
     MicrofacetGGXSample(N, Ng, U, B, V, randu, randv, alpha_x, alpha_y, eta, refractive, throughput, wi, pdf);
+    throughput = MicrofacetGGXEvalReflect(N, U, B, V, alpha_x, alpha_y, wi, pdf);
+    //throughput = MicrofacetGGXEvalTransmit(N, L, alpha_x, alpha_y, eta, wi, pdf);
+    float tt = IntersectSphere(normalize(wi), P, lightPos, lightSize);
+    float visibility = 0.0;
+    if (tt > 0.0) visibility = 1.0;
+    vec3 DI = DirectIllumination(P, N, lightPos, lightSize, lightColor, /* cutoff */0.0);
 
-    gl_FragColor = vec4(pdf, pdf, pdf, 1.0);
+    vec4 tcol = texture2D(mytex0, bary_uv);
+    gl_FragColor = vec4(dot(N, L) + DI * throughput * visibility, 1.0);
 }
