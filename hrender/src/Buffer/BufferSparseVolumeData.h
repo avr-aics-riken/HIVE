@@ -1,3 +1,7 @@
+/**
+ * @file BufferSparseVolumeData.cpp
+ * BufferSparseVolumeDataクラス
+ */
 #ifndef _BUFFERSPARSEVOLUMEDATA_H_
 #define _BUFFERSPARSEVOLUMEDATA_H_
 
@@ -6,6 +10,9 @@
 
 class BufferVolumeData;
 
+/**
+ * BufferSparseVolumeDataクラス
+ */
 class BufferSparseVolumeData : public RefCount
 {
 private:

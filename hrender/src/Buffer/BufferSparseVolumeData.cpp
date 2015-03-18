@@ -1,3 +1,7 @@
+/**
+ * @file BufferSparseVolumeData.cpp
+ * BufferSparseVolumeDataクラス
+ */
 #include "BufferSparseVolumeData.h"
 #include "Buffer.h"
 #include "BufferVolumeData.h"
@@ -18,22 +22,33 @@ private:
 
 public:
     
+    /// コンストラクタ
     Impl()
     {
     }
     
+    /// コンストラクタ
     Impl(BufferSparseVolumeData* inst)
     {
     }
     
+    /// デストラクタ
     ~Impl()
     {
     }
-    
+
+    /// BufferSparseVolumeDataの作成
     void Create(int w, int h, int d, int component)
     {
     }
     
+    /**
+     * BufferSparseVolumeDataへのBufferVolumeDataの追加
+     * @param offset_x SparseBlockオフセットX
+     * @param offset_y SparseBlockオフセットY
+     * @param offset_z SparseBlockオフセットZ
+     * @param vol      対象のBufferVolumeData
+     */
     void AddVolume(int offset_x, int offset_y, int offset_z,
                                            BufferVolumeData* vol)
     {
@@ -66,31 +81,37 @@ public:
 
     }
     
+    /// メンバクリア
     void Clear()
     {
         delete m_sparseVolumeAccel;
         delete m_sparseVolume;
     }
     
+    /// デバッグ用
     void print()
     {
     }
     
+    /// Width取得
     int Width()
     {
         return -1; // @todo
     }
     
+    /// Height取得
     int Height()
     {
         return -1; // @todo
     }
     
+    /// Depth取得
     int Depth()
     {
         return -1; // @todo
     }
     
+    /// Component数取得
     int Component()
     {
         return 1; // @todo
