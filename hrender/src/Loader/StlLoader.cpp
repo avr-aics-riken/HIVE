@@ -1,21 +1,34 @@
+/**
+ * @file StlLoader.cpp
+ * STLデータローダー
+ */
 #include <math.h>
 
 #include "StlLoader.h"
 #include "SimpleSTLB.h"
 #include "Buffer.h"
 
+/// コンストラクタ
 STLLoader::STLLoader()
 {
 	mesh.Clear();
 }
 
+/// デストラクタ
 STLLoader::~STLLoader(){};
 
+/// メンバクリア
 void STLLoader::Clear()
 {
 	mesh.Clear();
 }
 
+/**
+ * STLデータのロード
+ * @param filename ファイルパス
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool STLLoader::Load(const char* filename){
 	Clear();
 	SimpleSTLB obj;
@@ -44,6 +57,10 @@ bool STLLoader::Load(const char* filename){
 	return r;
 }
 
+/**
+ * メッシュデータ参照
+ * @retval メッシュデータへの参照
+ */
 BufferMeshData *STLLoader::MeshData()
 {
 	return &mesh;

@@ -1,24 +1,37 @@
+/**
+ * @file SphLoader.cpp
+ * SPHデータローダー
+ */
 #include <stdio.h>
 #include <string.h>
 #include "SphLoader.h"
 #include "SimpleSPH.h"
 #include "BufferVolumeData.h"
 
+/// コンストラクタ
 SPHLoader::SPHLoader()
 {
     Clear();
 }
 
+/// デストラクタ
 SPHLoader::~SPHLoader()
 {
     Clear();
 }
 
+/// メンバクリア
 void SPHLoader::Clear()
 {
     m_volume = 0;
 }
 
+/**
+ * SPHデータのロード
+ * @param filename ファイルパス
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool SPHLoader::Load(const char* filename)
 {
     Clear();
@@ -43,26 +56,50 @@ bool SPHLoader::Load(const char* filename)
     return true;
 }
 
+/**
+ * SPHWidth取得
+ * @retval Width
+ */
 int SPHLoader::Width()    {
     return m_volume->Width();
 }
 
+/**
+ * SPHHeight取得
+ * @retval Height
+ */
 int SPHLoader::Height()   {
     return m_volume->Height();
 }
 
+/**
+ * SPHDepth取得
+ * @retval Depth
+ */
 int SPHLoader::Depth()    {
     return m_volume->Depth();
 }
 
+/**
+ * SPHComponent取得
+ * @retval Component数
+ */
 int SPHLoader::Component() {
     return m_volume->Component();
 }
 
+/**
+ * SPHデータバッファ参照取得
+ * @retval FloatBufferアドレス
+ */
 FloatBuffer* SPHLoader::Buffer() {
     return m_volume->Buffer();
 }
 
+/**
+ * VolumeData参照取得
+ * @retval VolumeData参照
+ */
 BufferVolumeData *SPHLoader::VolumeData()
 {
     return m_volume;
