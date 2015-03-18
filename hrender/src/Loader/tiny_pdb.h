@@ -1,3 +1,7 @@
+/**
+ * @file tiny_pdb.h
+ * PDBデータローダー
+ */
 #ifndef TINY_PDB_H__
 #define TINY_PDB_H__
 
@@ -8,6 +12,9 @@
 
 namespace tinypdb {
 
+/**
+ * PDB形式Atomデータクラス
+ */
 class Atom {
  public:
   Atom() : visited_(false) { }

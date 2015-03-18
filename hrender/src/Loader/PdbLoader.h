@@ -1,3 +1,7 @@
+/**
+ * @file PdbLoader.h
+ * PDBデータローダー
+ */
 #ifndef _PDBLOADERNATIVE_H
 #define _PDBLOADERNATIVE_H
 
@@ -10,6 +14,9 @@
 #include <vector>
 #include <string>
 
+/**
+ * PDBデータローダー
+ */
 class PDBLoader : public RefCount
 {
 public:

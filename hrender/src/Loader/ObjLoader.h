@@ -1,3 +1,8 @@
+/**
+ * @file ObjLoader.h
+ * OBJデータローダー
+ */
+
 #ifndef _OBJLOADERNATIVE_H
 #define _OBJLOADERNATIVE_H
 
@@ -10,6 +15,9 @@ class BufferTetraData;
 class BufferVectorData;
 class SimpleObj;
 
+/**
+ * OBJデータローダー
+ */
 class OBJLoader : public RefCount
 {
 private:
