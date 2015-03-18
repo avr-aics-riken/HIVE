@@ -52,8 +52,9 @@ inline bool SimplePNGLoader(const char* filename, int& w, int& h, unsigned char*
         w = width;
         h = height;
         *rgba = new unsigned char[4 * w * h];
+        // invert vertically
         for (int y = 0; y < h; ++y) {
-            for (int x = 0; x < w; ++x) { // bgra -> rgba
+            for (int x = 0; x < w; ++x) {
                 int i = (y * w + x);
                 int yinv = ((h - y - 1) * w + x);
                 (*rgba)[4 * i + 0] = loaddata[4 * yinv + 0];
