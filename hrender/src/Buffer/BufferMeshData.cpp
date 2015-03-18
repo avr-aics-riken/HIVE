@@ -1,3 +1,7 @@
+/**
+ * @file BufferMeshData.cpp
+ * BufferLineDataクラス
+ */
 #include "BufferMeshData.h"
 #include "Buffer.h"
 #include <vector>
@@ -11,11 +15,13 @@ private:
     RefPtr<UintBuffer >  m_index;
     RefPtr<FloatBuffer>  m_mat;
 public:
+    /// コンストラクタ
     Impl()
     {
         Clear();
     }
     
+    /// コンストラクタ
     Impl(BufferMeshData* inst)
     {
         this->m_pos      = inst->Position();
@@ -25,6 +31,7 @@ public:
         this->m_mat      = inst->Material();
     }
     
+    /// デストラクタ
     ~Impl()
     {
         m_pos      = 0;
@@ -33,7 +40,12 @@ public:
         m_index    = 0;
         m_mat      = 0;
     }
-    
+
+    /**
+     * BufferMeshDataの作成
+     * @param vertexnum 作成頂点数
+     * @param indexnum  作成index数
+     */
     void Create(int vertexnum, int indexnum)
     {
         m_pos->Create(vertexnum);
@@ -43,6 +55,7 @@ public:
         m_index->Create(indexnum);
     }
     
+    /// メンバクリア
     void Clear()
     {
         m_pos      = new Vec3Buffer();
@@ -52,6 +65,7 @@ public:
         m_index    = new UintBuffer();
     }
     
+    /// デバッグ表示
     void print()
     {
         /*	printf("Position() %08p\n", m_pos.Get()      );
