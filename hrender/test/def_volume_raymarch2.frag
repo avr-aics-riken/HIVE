@@ -52,6 +52,21 @@ vec4 samplingVolume(vec3 texpos, vec4 sum) {
   return col;
 }
 
+float gettex3d(vec3 p) {
+  vec4 dens = texture3D(tex0, p);
+  return dens.x;
+}
+
+vec3 getNormal(vec3 p, float dens)
+{
+  vec3 n;
+  n.x = gettex3d(vec3(p.x+dens, p.y, p.z));
+  n.y = gettex3d(vec3(p.x, p.y+dens, p.z));
+  n.z = gettex3d(vec3(p.x, p.y, p.z+dens));
+  return normalize(n-gettex3d(p));
+}
+
+
 //-----------------------------------------------------------------------------------------
 
 int inside(vec3 p, vec3 pmin, vec3 pmax) {
@@ -129,6 +144,7 @@ void main(void) {
 
   // raymarch.
   float t = tmin;
+  float tt = tmin;
   float cnt = 0.0;
   float sigma_a = 10.0;
   float sigma_s = 10.0;
@@ -138,13 +154,17 @@ void main(void) {
     vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
     vec4 rgba = samplingVolume(texpos, sum);
     sum += step_dist * sigma_s * rgba;
+    if(tt <= tmin && dot(sum, sum) > 2000.0) {
+      tt = t;
+    }
     t += step_dist;
     cnt += 1.0;
   }
-
-  sum.a = min(1.0, sum.a * 0.5); // alpha clamp
-
-  float ntmin = 0.0;
-  vec4 ncol = vec4(0, 0, 0, 0);
+  vec3 ip = rayorg + (tt * 0.99) * raydir;
+  vec3 N  = normalize(getNormal(ip, 0.01));
+  //float d = dot(N, -normalize(vec3(1,2,3)));
+  sum.xyz += raydir;
+  sum.xyz *= 0.5;
+  sum.a = min(1.0, sum.a * 0.7); // alpha clamp
   gl_FragColor = sum;
 }
