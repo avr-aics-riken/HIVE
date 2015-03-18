@@ -1,5 +1,5 @@
 /**
- * @file SimpleSTLB.h
+ * @file SPHLoader.h
  * SPHデータローダー
  */
 #ifndef _SPHLOADER_H_

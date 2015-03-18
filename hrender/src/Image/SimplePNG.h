@@ -1,3 +1,7 @@
+/**
+ * @file SimplePNG.h
+ * Simple PNG
+ */
 #ifndef INCLUDE_SIMPLEPNG
 #define INCLUDE_SIMPLEPNG
 
