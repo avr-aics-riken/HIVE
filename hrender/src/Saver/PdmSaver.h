@@ -1,3 +1,7 @@
+/**
+ * @file PdmSaver.h
+ * PdmSaverクラス
+ */
 #ifndef _HIVE_PDMSAVER_H_
 #define _HIVE_PDMSAVER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferPointData.h"
 
+/**
+ * PdmSaverクラス
+ */
 class PDMSaver : public RefCount
 {
 public:

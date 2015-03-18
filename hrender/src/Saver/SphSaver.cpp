@@ -1,3 +1,7 @@
+/**
+ * @file SphSaver.cpp
+ * SphSaverクラス
+ */
 #include "SphSaver.h"
 #include "SimpleSPH.h"
 
@@ -411,9 +415,18 @@ bool IsBigEndian(void)
 
 } // namespace
 
+/// コンストラクタ
 SPHSaver::SPHSaver(){}
+
+/// デストラクタ
 SPHSaver::~SPHSaver(){};
 
+/**
+ * SPHSaverへのセーブ
+ * @param filename セーブファイル名
+ * @retval true  セーブ成功
+ * @retval false セーブ失敗
+ */
 bool SPHSaver::Save(const char* filename){
     // @todo { double precision. }
 
