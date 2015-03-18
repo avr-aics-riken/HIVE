@@ -42,6 +42,9 @@
 		$('up_y').onchange        = function () {};
 		$('up_z').onchange        = function () {};
 		$('camera_fov').onchange  = function () {};
+		$('camera_screen_width').onchange  = function () {};
+		$('camera_screen_height').onchange  = function () {};
+		$('camera_output_filename').onchange  = function () {};
 	}
 	function setCameraProperty(name, objprop, core) {
 		clearTextChangeEvent();
@@ -56,6 +59,13 @@
 		$('up_y').value = objprop.up[1];
 		$('up_z').value = objprop.up[2];
 		$('camera_fov').value = objprop.fov;
+		$('camera_screen_width').value = objprop.screensize[0];
+		$('camera_screen_height').value = objprop.screensize[1];
+		$('camera_output_filename').value = objprop.outputfile;
+		kUI('camera_clearcolor').setColor(objprop.clearcolor[0],
+										  objprop.clearcolor[1],
+										  objprop.clearcolor[2],
+										  objprop.clearcolor[3]);
 		
 		function valueChangePosition(name, pos, i, core) {
 			return function (ev) {
@@ -81,6 +91,19 @@
 				core.setCameraFov(name, fov, true);
 			};
 		}
+		function valueChangeScreenSize(name, v, i, core) {
+			return function (ev) {
+				var s = parseFloat(ev.target.value);
+				v[i] = s;
+				core.setCameraScreenSize(name, v[0], v[1]);
+			};
+		}
+		function valueChangeOutputFiel(name, core) {
+			return function (ev) {
+				var fname = ev.target.value;
+				core.setOutputFilename(name, fname);
+			};
+		}
 
 		$('position_x').onchange = valueChangePosition(name, objprop.position, 0, core);
 		$('position_y').onchange = valueChangePosition(name, objprop.position, 1, core);
@@ -92,6 +115,10 @@
 		$('up_y').onchange       = valueChangeUp(name, objprop.up, 1, core);
 		$('up_z').onchange       = valueChangeUp(name, objprop.up, 2, core);
 		$('camera_fov').onchange = valueChangeFov(name, core);
+		$('camera_screen_width').onchange = valueChangeScreenSize(name, objprop.screensize, 0, core);
+		$('camera_screen_height').onchange = valueChangeScreenSize(name, objprop.screensize, 1, core);
+		$('camera_output_filename').onchange = valueChangeOutputFiel(name, core);
+
 	}
 	
 	function splitfilename(fpath) {
@@ -290,6 +317,9 @@
 			setPropertyMode(objprop.type);
 			if (objprop.type === "CAMERA") {
 				setCameraProperty(objname, objprop.info, core);
+				core.setActiveCamera(objname);
+				kUI('viewmode').SetCaption('[' + objname + ']');
+				core.render();
 			} else {
 				setObjectProperty(objname, objprop.info, core);
 			}
@@ -396,7 +426,6 @@
 		kUI('timeline').setTimelineData();
 		kUI('timeline').drawGraph();
 		kUI('timeline').ChangeTimeCallback(function (tm) {
-			//kUI('viewmode').SetCaption('[Camera]');
 			core.updateTime(tm);
 		});
 		$('projsetting').addEventListener('click', function (ev) {
