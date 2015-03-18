@@ -1,3 +1,7 @@
+/**
+ * @file CdmLoader.h
+ * CDMデータローダー
+ */
 #ifndef _CDMLOADER_H_
 #define _CDMLOADER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * CDMデータローダー
+ */
 class CDMLoader : public RefCount
 {
 public:
