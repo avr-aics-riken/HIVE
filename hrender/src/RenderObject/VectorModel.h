@@ -1,3 +1,7 @@
+/**
+ * @file VectorModel.h
+ * ベクトルモデル
+ */
 #ifndef _VECTORMODEL_H_
 #define _VECTORMODEL_H_
 
@@ -6,6 +10,9 @@
 
 class BufferVectorData;
 
+/**
+ * ベクトルモデル
+ */
 class VectorModel : public RenderObject
 {
 private:

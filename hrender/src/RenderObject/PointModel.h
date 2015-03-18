@@ -1,9 +1,16 @@
+/**
+ * @file PointModel.h
+ * ポイントモデル
+ */
 #ifndef _POINTMODEL_H_
 #define _POINTMODEL_H_
 
 #include <string>
 #include "RenderObject.h"
 
+/**
+ * ポイントモデル
+ */
 class BufferPointData;
 
 class PointModel : public RenderObject
