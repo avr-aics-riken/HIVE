@@ -235,6 +235,7 @@ inline unsigned int step_fatof (const char *p, float* val)
 
 // =================  Vector, matrix, Quartanion  ====================
 
+/// 2次元ベクトルユーティリティ
 struct vec2
 {
 	float x,y;
@@ -256,6 +257,7 @@ struct vec2
 		x *= inv;   y *= inv;   return *this; }
 };
 
+/// 3次元ベクトルユーティリティ
 struct vec3
 {
 	float x,y,z;
@@ -287,6 +289,7 @@ struct vec3
 	vec2 zz() const                 { return vec2(z, z); }
 };
 	
+/// 4次元ベクトルユーティリティ
 struct vec4
 {
 	float x,y,z,w;
@@ -329,6 +332,7 @@ struct vec4
 struct matrix3x3;
 struct matrix2x2;
 	
+/// 4x4行列ユーティリティ
 struct matrix4x4
 {
 	union
@@ -376,6 +380,7 @@ struct matrix4x4
 	}*/
 };
 	
+/// 3x3行列ユーティリティ
 struct matrix3x3
 {
 	union
@@ -407,6 +412,7 @@ struct matrix3x3
 	}
 };
 
+/// 2x2行列ユーティリティ
 struct matrix2x2
 {
 	union
@@ -440,6 +446,7 @@ struct matrix2x2
 	}
 };
 
+/// 四元数ユーティリティ
 struct quaternion
 {
 	float x,y,z,w;
