@@ -8,6 +8,7 @@
 #include "Ref.h"
 
 class FloatBuffer;
+
 /**
  * BufferVolumeDataクラス
  */

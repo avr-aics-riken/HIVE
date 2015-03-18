@@ -10,6 +10,9 @@
 #include "render_prim_volume.h"
 #include "render_accel_volume.h"
 
+/**
+ * BufferSparseVolumeDataクラス
+ */
 class BufferSparseVolumeData::Impl
 {
 private:
