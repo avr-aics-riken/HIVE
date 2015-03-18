@@ -41,11 +41,14 @@
 					console.erorr('Not find objectlist');
 					return;
 				}
-				activecam = core.findObject(core.activeCamera).info;
+				activecam = core.findObject(core.activeCamera);
+				if (!activecam) { // fall back
+					activecam = core.findObject('view');
+				}
 				if (!activecam) {
 					console.erorr('Not find active camera');
 				} else {
-					core.viewCamera = activecam;
+					core.viewCamera = activecam.info;
 				}
 				infoCallback(param);
 			};
