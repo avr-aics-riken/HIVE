@@ -1,3 +1,7 @@
+/**
+ * @file MetaBinary.h
+ * メタバイナリ
+ */
 #ifndef _METABINARY_H_
 #define _METABINARY_H_
 

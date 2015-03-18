@@ -1,8 +1,15 @@
+/**
+ * @file ConnectionIF
+ * コネクション
+ */
 #ifndef _CONNECTION_H_
 #define _CONNECTION_H_
 
 #include "../Core/Ref.h"
 
+/**
+ * コネクションインタフェース
+ */
 class ConnectionIF
 {
 public:
@@ -25,6 +32,9 @@ protected:
     ConnectionIF() {}
 };
 
+/**
+ * コネクション
+ */
 class Connection : public RefCount, public ConnectionIF
 {
 private:
