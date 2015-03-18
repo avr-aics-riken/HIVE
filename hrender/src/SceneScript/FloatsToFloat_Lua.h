@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "FloatsToFloat.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * FloatsToFloat Luaラッパー
+ */
 class FloatsToFloat_Lua : public FloatsToFloat
 {
 public:

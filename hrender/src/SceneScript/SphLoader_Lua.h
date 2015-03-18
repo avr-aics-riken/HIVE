@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "SphLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * SPHLoader Luaラッパー
+ */
 class SPHLoader_Lua : public SPHLoader
 {
 public:

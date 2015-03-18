@@ -7,7 +7,9 @@
 
 #include "LuaUtil.h"
 #include "MetaBinary.h"
-
+/**
+ * MetaBinary Luaラッパー
+ */
 class MetaBinary_Lua : public MetaBinary
 {
 private:

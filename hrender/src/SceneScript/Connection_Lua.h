@@ -7,7 +7,9 @@
 
 #include "LuaUtil.h"
 #include "Connection.h"
-
+/**
+ * Connection Luaラッパー
+ */
 class Connection_Lua : public Connection
 {
 private:

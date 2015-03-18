@@ -11,7 +11,9 @@
 #include "PolygonModel.h"
 #include "BufferMeshData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * PolygonModel Luaラッパー
+ */
 class PolygonModel_Lua : public PolygonModel
 {
 public:
