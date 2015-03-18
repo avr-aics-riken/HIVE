@@ -127,6 +127,7 @@ void GetDepthBuffer_GL(int w, int h, float* depthbuf)
  * @param posbuffer 頂点バッファ
  * @param normalbuffer 法線バッファ
  * @param matbuffer マテリアルバッファ
+ * @param texbuffer テクスチャバッファ
  * @param indexnum インデックス数
  * @param indexbuffer インデックスバッファ
  * @param vtx_id 頂点ID
@@ -264,6 +265,12 @@ void SetUniform3fv_GL(unsigned int prg, const char* name, const float* val)
 		g.Uniform3fv(p, 1, val);
 }
 
+/**
+ * Uniform値の設定
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniform4fv_GL(unsigned int prg, const char* name, const float* val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -313,7 +320,6 @@ void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val)
  * @param nearVal ニア
  * @param farVal ファー
  */
-
 void SetCamera_GL(unsigned int prg, float* eye, float* lookat, float* up, float fov, int w, int h, float nearVal, float farVal)
 {
 	g_near = nearVal;
@@ -330,8 +336,8 @@ void SetCamera_GL(unsigned int prg, float* eye, float* lookat, float* up, float 
 		g.UniformMatrix4fv(pp, 1, false, &proj.f[0]);
 }
 
-/// インデックス指定で描画
-/// @param indexnum インデックス
+/// インデックスで描画
+/// @param indexnum インデックス数
 void DrawElements_GL(unsigned int indexnum)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -653,7 +659,7 @@ bool DeleteProgram_GL(unsigned int prg)
  * @param normalidx 法線インデックスバッファID
  * @param matidx マテリアルインデックスバッファID
  * @param texidx テクスチャインデックスバッファID
- * @param indexidx インデックスインデックスバッファID
+ * @param indexidx インデックスバッファID
  */
 void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx)
 {
