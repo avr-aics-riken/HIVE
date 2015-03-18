@@ -7,6 +7,9 @@
 
 #include "BufferMeshData.h"
 
+/**
+ * BufferMeshData Luaラッパー
+ */
 class BufferMeshData_Lua : public BufferMeshData
 {
 	public:

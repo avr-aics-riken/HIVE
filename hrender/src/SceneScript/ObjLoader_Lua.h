@@ -13,10 +13,9 @@
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
 #include "ObjLoader.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * OBJLoader Luaラッパー
+ */
 class OBJLoader_Lua : public OBJLoader
 {
 public:

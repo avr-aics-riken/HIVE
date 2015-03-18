@@ -9,7 +9,9 @@
 #include "VolumeToMeshData.h"
 #include "BufferVolumeData_Lua.h"
 #include "BufferMeshData_Lua.h"
-
+/**
+ * VolumeToMeshData Luaラッパー
+ */
 class VolumeToMeshData_Lua : public VolumeToMeshData
 {
 public:

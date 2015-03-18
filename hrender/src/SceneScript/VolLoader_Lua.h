@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "VolLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * VOLLoader_Lua Luaラッパー
+ */
 class VOLLoader_Lua : public VOLLoader
 {
 public:

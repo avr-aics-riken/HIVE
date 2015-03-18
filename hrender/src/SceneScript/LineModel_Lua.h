@@ -10,7 +10,9 @@
 #include "LineModel.h"
 #include "BufferLineData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * LineModel Luaラッパー
+ */
 class LineModel_Lua : public LineModel
 {
 public:

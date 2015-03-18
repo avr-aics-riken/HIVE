@@ -10,7 +10,9 @@
 #include "../RenderObject/VectorModel.h"
 #include "BufferVectorData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * VectorModel Luaラッパー
+ */
 class VectorModel_Lua : public VectorModel
 {
 public:

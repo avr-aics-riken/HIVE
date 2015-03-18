@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "PdmLoader.h"
 #include "BufferPointData_Lua.h"
-
+/**
+ * PDMLoader Luaラッパー
+ */
 class PDMLoader_Lua : public PDMLoader
 {
 public:
