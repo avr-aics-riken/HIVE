@@ -138,12 +138,16 @@ public:
 #elif _WIN32
         std::string binpath = "win64";
         std::string ccmd    = "g++";
+#elif defined(__sparc__) || defined(__sparc_v9__)
+        std::string binpath = "sparc64";
+#ifdef HIVE_ENABLE_MPI
+        std::string ccmd    = "mpiFCC";
+#else
+        std::string ccmd    = "FCC";
+#endif
 #elif __linux__
         std::string binpath = "linux_x64";
         std::string ccmd    = "g++";
-#elif SPARC
-        std::string binpath = "sparc64";
-        std::string ccmd    = "fccpx";
 #endif
         std::string opt      = "-O2";
         
