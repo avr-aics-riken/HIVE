@@ -1,3 +1,7 @@
+/**
+ * @file SimpleSTLB.h
+ * STL形式ファイル簡易ローダー[バイナリデータ版]
+ */
 #ifndef INCLUDE_SIMPLESTLB
 #define INCLUDE_SIMPLESTLB
 
@@ -36,6 +40,9 @@ inline float swap4(float* f)       { return *f; }
 
 #endif
 
+/**
+ * SimpleSTLB
+ */
 class SimpleSTLB
 {
 public:
