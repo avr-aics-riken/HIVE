@@ -1,3 +1,8 @@
+/**
+ * @file RenderCore.h
+ * hrenderコア機能部
+ */
+
 #pragma once
 
 /*
@@ -8,6 +13,9 @@
 
 class RenderObject;
 
+/**
+ * hrenderコア機能部クラス
+ */
 class RenderCore
 {
 public:

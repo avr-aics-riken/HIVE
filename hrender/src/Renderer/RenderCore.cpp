@@ -1,3 +1,8 @@
+/**
+ * @file RenderCore.cpp
+ * hrenderコア機能部
+ */
+
 #ifdef HIVE_WITH_COMPOSITOR
 #include <mpi.h>
 #endif
