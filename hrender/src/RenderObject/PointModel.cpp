@@ -6,6 +6,9 @@
 #include "PointModel.h"
 #include "BufferPointData.h"
 
+/**
+ * ポイントモデル
+ */
 class PointModel::Impl
 {
 public:

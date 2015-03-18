@@ -6,6 +6,9 @@
 #include "VectorModel.h"
 #include "BufferVectorData.h"
 
+/**
+ * ベクトルモデル
+ */
 class VectorModel::Impl
 {
 public:

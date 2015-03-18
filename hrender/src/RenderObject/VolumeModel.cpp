@@ -5,6 +5,9 @@
 #include <string>
 #include "VolumeModel.h"
 
+/**
+ * ボリュームモデル
+ */
 class VolumeModel::Impl
 {
 public:
