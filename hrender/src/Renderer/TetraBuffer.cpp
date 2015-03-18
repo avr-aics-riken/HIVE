@@ -1,3 +1,7 @@
+/**
+ * @file TetraBuffer.cpp
+ * Tetraバッファ
+ */
 #include <string>
 
 #include "TetraBuffer.h"
@@ -6,6 +10,7 @@
 #include "Buffer.h"
 #include "Commands.h"
 
+/// コンストラクタ
 TetraBuffer::TetraBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_model       = 0;
@@ -14,11 +19,13 @@ TetraBuffer::TetraBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_material_id = 0;
 }
 
+/// デストラクタ
 TetraBuffer::~TetraBuffer()
 {
     Clear();
 }
 
+/// クリア
 void TetraBuffer::Clear()
 {
     if (m_vtx_id)      ReleaseBufferVBIB_SGL(m_vtx_id);
@@ -29,6 +36,10 @@ void TetraBuffer::Clear()
     m_model       = 0;
 }
 
+/**
+ * Tetraバッファの作成.
+ * @param model Tetraモデル.
+ */
 bool TetraBuffer::Create(const TetraModel* model)
 {
     bool r = true;
@@ -46,6 +57,9 @@ bool TetraBuffer::Create(const TetraModel* model)
     return r;
 }
 
+/**
+ * レンダー.
+ */
 void TetraBuffer::Render() const
 {
     if (!m_model) {

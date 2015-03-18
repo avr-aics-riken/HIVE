@@ -1,3 +1,7 @@
+/**
+ * @file VectorBuffer.h
+ * ベクトルバッファ
+ */
 #ifndef _VECTORBUFFER_H_
 #define _VECTORBUFFER_H_
 
@@ -5,6 +9,9 @@
 
 class VectorModel;
 
+/**
+ * ベクトルバッファクラス
+ */
 class VectorBuffer : public BaseBuffer
 {
 private:

@@ -1,3 +1,7 @@
+/**
+ * @file VectorBuffer.cpp
+ * ベクトルバッファ
+ */
 #include <string>
 
 #include "Analyzer.h"
@@ -8,6 +12,7 @@
 #include "Commands.h"
 #include "../Core/vxmath.h"
 
+/// コンストラクタ
 VectorBuffer::VectorBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_line_vtx_id    = 0;
@@ -15,11 +20,13 @@ VectorBuffer::VectorBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     Clear();
 }
 
+/// デストラクタ
 VectorBuffer::~VectorBuffer()
 {
     Clear();
 }
 
+/// クリア
 void VectorBuffer::Clear()
 {
     if (m_line_vtx_id)  ReleaseBufferVBIB_SGL(m_line_vtx_id);
@@ -32,6 +39,10 @@ void VectorBuffer::Clear()
     m_tetra_vnum     = 0;
 }
 
+/**
+ * ベクトルバッファの作成.
+ * @param model ベクトルモデル.
+ */
 bool VectorBuffer::Create(const VectorModel* model)
 {
     bool r = true;
@@ -122,6 +133,9 @@ bool VectorBuffer::Create(const VectorModel* model)
     return r;
 }
 
+/**
+ * レンダー.
+ */
 void VectorBuffer::Render() const
 {
     if (!m_model) {
