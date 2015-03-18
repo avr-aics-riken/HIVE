@@ -6,7 +6,7 @@ camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_vol_image.jpg')
 
 camera:LookAt(
-	0,0,300,
+	50,50,50,
 	0,0,0,
 	0,1,0,
 	60
@@ -14,12 +14,11 @@ camera:LookAt(
 
 
 local sph = VOLLoader()
-sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol')
-
+sph:Load('output32.vol')
 local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
-volume:SetShader('def_volume_raymarch.frag')
+volume:SetShader('def_volume_raymarch2.frag')
 render {camera, volume}
 
 
