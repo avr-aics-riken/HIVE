@@ -6,6 +6,9 @@
 #include "PolygonModel.h"
 #include "BufferMeshData.h"
 
+/**
+ * ポリゴンモデル
+ */
 class PolygonModel::Impl
 {
 public:

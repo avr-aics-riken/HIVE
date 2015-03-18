@@ -6,6 +6,9 @@
 #include "LineModel.h"
 #include "BufferLineData.h"
 
+/**
+ * ラインモデル
+ */
 class LineModel::Impl
 {
 public:
