@@ -15,6 +15,15 @@ function CreatePointModel(property)
 	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])
 	pm:SetScale(property.scale[1], property.scale[2], property.scale[3])
 	pm:SetShader(property.shadername)
+
+	-- load from file
+	local loader = ImageLoader()
+	local isloaded = loader:Load("testimg.tga")
+	print('Texture Load = ' .. tostring(isloaded))
+	local img = loader:ImageData()
+
+	pm:SetTexture('mytex0', img) -- Bind
+
 	-- local uniforms = property.Uniform
 	-- for i,v in pairs(uniforms) do
 	-- 	if v.type == 'vec4' then
@@ -60,6 +69,14 @@ function CreatePolygonModel(property)
 	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])
 	pm:SetScale(property.scale[1], property.scale[2], property.scale[3])
 	pm:SetShader(property.shadername)
+
+	-- load from file
+	local loader = ImageLoader()
+	local isloaded = loader:Load("testimg.tga")
+	print('Texture Load = ' .. tostring(isloaded))
+	local img = loader:ImageData()
+
+	pm:SetTexture('mytex0', img) -- Bind
 
 	-- local uniforms = property.Uniform
 	-- for i,v in pairs(uniforms) do
