@@ -7,6 +7,9 @@
 
 #include "../Core/Ref.h"
 
+/**
+ * メタバイナリ
+ */
 class MetaBinary : public RefCount
 {
 private:
