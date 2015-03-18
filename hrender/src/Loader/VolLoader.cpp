@@ -1,22 +1,35 @@
+/**
+ * @file VolLoader.cpp
+ * VOLデータローダー
+ */
 #include <stdio.h>
 #include <string.h>
 #include "VolLoader.h"
 #include "SimpleVOL.h"
 
+/// コンストラクタ
 VOLLoader::VOLLoader()
 {
     Clear();
 }
+/// デストラクタ
 VOLLoader::~VOLLoader()
 {
     Clear();
 }
 
+/// メンバクリア
 void VOLLoader::Clear()
 {
     m_volume.Clear();
 }
 
+/**
+ * VOLデータのロード
+ * @param filename ファイルパス
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool VOLLoader::Load(const char* filename)
 {
     Clear();
@@ -39,26 +52,50 @@ bool VOLLoader::Load(const char* filename)
     return true;
 }
 
+/**
+ * VOLWidth取得
+ * @retval Width
+ */
 int VOLLoader::Width()    {
     return m_volume.Width();
 }
 
+/**
+ * VOLHeight取得
+ * @retval Height
+ */
 int VOLLoader::Height()   {
     return m_volume.Height();
 }
 
+/**
+ * VOLDepth取得
+ * @retval Depth
+ */
 int VOLLoader::Depth()    {
     return m_volume.Depth();
 }
 
+/**
+ * VOLComponent取得
+ * @retval Component数
+ */
 int VOLLoader::Component() {
     return m_volume.Component();
 }
 
+/**
+ * VOLデータバッファ参照取得
+ * @retval FloatBufferアドレス
+ */
 FloatBuffer* VOLLoader::Buffer() {
     return m_volume.Buffer();
 }
 
+/**
+ * VolumeData参照取得
+ * @retval VolumeData参照
+ */
 BufferVolumeData *VOLLoader::VolumeData()
 {
     return &m_volume;
