@@ -1,3 +1,8 @@
+/**
+ * @file VolumeToMeshData.h
+ * VolumeDataからメッシュ生成を行うモジュール
+ */
+
 #ifndef _VOLUMETOMESHDATA_H_
 #define _VOLUMETOMESHDATA_H_
 
@@ -7,6 +12,9 @@
 #include "BufferVolumeData.h"
 #include "BufferMeshData.h"
 
+/**
+ * VolumeToMeshData
+ */
 class VolumeToMeshData : public RefCount
 {
 private:
