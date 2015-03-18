@@ -1,3 +1,7 @@
+/**
+ * @file main.cpp
+ * hrender main エントリポイント
+ */
 //
 //  hrender
 //
@@ -27,6 +31,13 @@ void renderScene(const char* scenefile)
         fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
     }
 }
+
+/**
+ * hrender main エントリポイント
+ * @param argc コマンドライン引数数
+ * @param argv コマンドライン引数文字列
+ * @return 常に成功を返却する
+ */
 
 int main(int argc, char* argv[])
 {
