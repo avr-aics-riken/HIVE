@@ -1,3 +1,8 @@
+/**
+ * @file PolygonBuffer.h
+ * ポリゴンバッファ
+ */
+
 #pragma once
 /*
     PolygonBuffer.h
@@ -7,6 +12,9 @@
 
 class PolygonModel;
 
+/**
+ * ポリゴンバッファ
+ */
 class PolygonBuffer : public BaseBuffer
 {
 private:

@@ -1,3 +1,7 @@
+/**
+ * @file BaseBuffer.h
+ * ベースバッファ
+ */
 #ifndef __BASEBUFFER_H__
 #define __BASEBUFFER_H__
 
@@ -14,6 +18,9 @@ class BufferImageData;
 
 #include <map>
 
+/**
+ * ベースバッファ
+ */
 class BaseBuffer : public RefCount
 {
 protected:

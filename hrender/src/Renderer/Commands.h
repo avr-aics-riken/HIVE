@@ -1,3 +1,7 @@
+/**
+ * @file Commands.h
+ * SGLコマンドAPI
+ */
 //
 //  Commands.h
 //  AnimTool

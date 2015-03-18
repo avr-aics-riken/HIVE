@@ -1,3 +1,7 @@
+/**
+ * @file PointBuffer.h
+ * ポイントバッファ
+ */
 #ifndef _POINTBUFFER_H_
 #define _POINTBUFFER_H_
 
@@ -5,6 +9,9 @@
 
 class PointModel;
 
+/**
+ * ポイントバッファ
+ */
 class PointBuffer : public BaseBuffer
 {
 private:
