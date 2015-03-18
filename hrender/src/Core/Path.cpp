@@ -1,6 +1,6 @@
 /**
  * @file Path.cpp
- * ƒvƒ‰ƒbƒgƒtƒH[ƒ€•Êƒtƒ@ƒCƒ‹ƒpƒX‘€ìƒ†[ƒeƒBƒŠƒeƒB
+ * ãƒ—ãƒ©ãƒƒãƒˆãƒ•ã‚©ãƒ¼ãƒ åˆ¥ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹æ“ä½œãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£
  */
 
 #include <string>
@@ -17,8 +17,8 @@
 #endif
 
 /**
- * Às‚µ‚Ä‚¢‚é©g‚Ìƒtƒ@ƒCƒ‹ƒpƒXæ“¾
- * @retval Àsƒtƒ@ƒCƒ‹ƒtƒ‹ƒpƒX
+ * å®Ÿè¡Œã—ã¦ã„ã‚‹è‡ªèº«ã®ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹å–å¾—
+ * @retval å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ãƒ•ãƒ«ãƒ‘ã‚¹
  */
 std::string getBinaryDir()
 {
@@ -62,8 +62,8 @@ std::string getBinaryDir()
 #include <string>
 
 /**
- * ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠƒpƒXæ“¾
- * @retval ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠƒpƒX
+ * ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å–å¾—
+ * @retval ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹
  */
 std::string getCurrentDir()
 {
@@ -98,8 +98,8 @@ std::string getCurrentDir()
 }
 
 /**
- * ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠƒpƒX•ÏX
- * @param  filefullpath •ÏXæƒpƒX
+ * ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãƒ‘ã‚¹å¤‰æ›´
+ * @param  filefullpath å¤‰æ›´å…ˆãƒ‘ã‚¹
  */
 void changeFileDir(const std::string& filefullpath)
 {
@@ -116,9 +116,9 @@ void changeFileDir(const std::string& filefullpath)
 }
 
 /**
- * ‘Š‘ÎƒpƒX‚©‚çƒtƒ‹ƒpƒX•ÏŠ·
- * @param  path ‘Š‘ÎƒpƒX
- * @retval ƒtƒ‹ƒpƒX
+ * ç›¸å¯¾ãƒ‘ã‚¹ã‹ã‚‰ãƒ•ãƒ«ãƒ‘ã‚¹å¤‰æ›
+ * @param  path ç›¸å¯¾ãƒ‘ã‚¹
+ * @retval ãƒ•ãƒ«ãƒ‘ã‚¹
  */
 std::string convertFullpath(const std::string& path)
 {
