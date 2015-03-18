@@ -9,6 +9,9 @@
 
 class BufferImageData;
 
+/**
+ * 画像ローダ
+ */
 class ImageLoader : public RefCount
 {
 private:

@@ -6,6 +6,9 @@
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferTetraDataクラス
+ */
 class BufferTetraData::Impl
 {
 private:

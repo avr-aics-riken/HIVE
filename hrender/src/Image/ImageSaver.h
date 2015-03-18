@@ -10,6 +10,9 @@
 
 class BufferImageData;
 
+/**
+ * 画像セーバ
+ */
 class ImageSaver : public RefCount
 {
 private:
