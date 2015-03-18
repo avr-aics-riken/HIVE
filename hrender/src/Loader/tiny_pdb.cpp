@@ -158,7 +158,7 @@ void TinyPDB::FixedIdentifier(std::string& identifier, int length, bool skipWhit
 
   if (skipWhiteSpace) {
 
-    while (' ' == Char() && ] > 0) {
+    while (' ' == Char() && length > 0) {
       Consume();
       --length;
     }
