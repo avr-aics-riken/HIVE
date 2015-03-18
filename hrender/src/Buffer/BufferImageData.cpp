@@ -1,3 +1,7 @@
+/**
+ * @file BufferImageData.cpp
+ * BufferImageDataクラス
+ */
 #include "BufferImageData.h"
 #include "Buffer.h"
 #include <vector>
