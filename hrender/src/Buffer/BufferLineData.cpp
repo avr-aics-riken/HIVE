@@ -1,6 +1,6 @@
 /**
  * @file BufferLineData.cpp
- * BufferLineDataƒNƒ‰ƒX
+ * BufferLineDataã‚¯ãƒ©ã‚¹
  */
 #include "BufferLineData.h"
 #include "Buffer.h"
@@ -15,13 +15,13 @@ private:
     RefPtr<UintBuffer>  m_index;
 
 public:
-    /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Impl()
     {
         Clear();
     }
     
-    /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Impl(BufferLineData* inst)
     {
         this->m_pos    = inst->Position();
@@ -30,7 +30,7 @@ public:
         this->m_index  = inst->Index();
     }
 
-    /// ƒfƒXƒgƒ‰ƒNƒ^
+    /// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     ~Impl()
     {
         m_pos    = 0;
@@ -39,7 +39,7 @@ public:
         m_index  = 0;
     }
     
-    /// ƒƒ“ƒoƒNƒŠƒA
+    /// ãƒ¡ãƒ³ãƒã‚¯ãƒªã‚¢
     void Clear()
     {
         m_pos    = new Vec3Buffer();
@@ -50,10 +50,10 @@ public:
     
     
     /**
-     * BufferLineData‚Ìì¬
-     * @param vertexnum ì¬’¸“_”
-     * @param indexnum  ì¬index”
-     * @param useRadius ”¼Œaw’è
+     * BufferLineDataã®ä½œæˆ
+     * @param vertexnum ä½œæˆé ‚ç‚¹æ•°
+     * @param indexnum  ä½œæˆindexæ•°
+     * @param useRadius åŠå¾„æŒ‡å®š
      */
     void Create(int vertexnum, int indexnum, bool useRadius)
     {
@@ -66,64 +66,64 @@ public:
     }
 
     /**
-     * ’¸“_ƒoƒbƒtƒ@æ“¾
-     * @return Vec3Buffer’¸“_ƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return Vec3Bufferé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     Vec3Buffer* Position() {
         return m_pos;
     }
 
     /**
-     * ƒ}ƒeƒŠƒAƒ‹IDƒoƒbƒtƒ@æ“¾
-     * @return FloatBufferƒ}ƒeƒŠƒAƒ‹IDƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * ãƒãƒ†ãƒªã‚¢ãƒ«IDãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return FloatBufferãƒãƒ†ãƒªã‚¢ãƒ«IDãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     FloatBuffer* Material() {
         return m_mat;
     }
 
     /**
-     * ”¼Œaƒoƒbƒtƒ@æ“¾
-     * @return FloatBuffer”¼Œaƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * åŠå¾„ãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return FloatBufferåŠå¾„ãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     FloatBuffer* Radius() {
         return m_radius;
     }
 
     /**
-     * Indexƒoƒbƒtƒ@æ“¾
-     * @return Indexƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * Indexãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return Indexãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     UintBuffer* Index() {
         return m_index;
     }
     
     /**
-     * ’¸“_ƒoƒbƒtƒ@æ“¾
-     * @return Vec3Buffer’¸“_ƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return Vec3Bufferé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     Vec3Buffer* Position() const {
         return m_pos;
     }
     
     /**
-     * ƒ}ƒeƒŠƒAƒ‹IDƒoƒbƒtƒ@æ“¾
-     * @return FloatBufferƒ}ƒeƒŠƒAƒ‹IDƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * ãƒãƒ†ãƒªã‚¢ãƒ«IDãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return FloatBufferãƒãƒ†ãƒªã‚¢ãƒ«IDãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     FloatBuffer* Material() const {
         return m_mat;
     }
     
     /**
-     * ”¼Œaƒoƒbƒtƒ@æ“¾
-     * @return FloatBuffer”¼Œaƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * åŠå¾„ãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return FloatBufferåŠå¾„ãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     FloatBuffer* Radius() const {
         return m_radius;
     }
     
     /**
-     * Indexƒoƒbƒtƒ@æ“¾
-     * @return Indexƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * Indexãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return Indexãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     UintBuffer* Index() const {
         return m_index;

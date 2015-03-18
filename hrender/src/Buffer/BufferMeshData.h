@@ -1,6 +1,6 @@
 /**
  * @file BufferMeshData.h
- * BufferMeshDataクラス
+ * BufferMeshData繧ｯ繝ｩ繧ｹ
  */
 #ifndef _BUFFERMESHDATA_H_
 #define _BUFFERMESHDATA_H_
@@ -13,7 +13,7 @@ class FloatBuffer;
 class UintBuffer;
 
 /**
- * BufferMeshDataクラス
+ * BufferMeshData繧ｯ繝ｩ繧ｹ
  */
 class BufferMeshData : public RefCount
 {

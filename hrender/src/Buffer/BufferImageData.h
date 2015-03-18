@@ -1,6 +1,6 @@
 /**
  * @file BufferImageData.h
- * BufferImageDataクラス
+ * BufferImageData繧ｯ繝ｩ繧ｹ
  */
 #ifndef _BUFFERIMAGEDATA_H_
 #define _BUFFERIMAGEDATA_H_
@@ -11,7 +11,7 @@ class FloatBuffer;
 class ByteBuffer;
 
 /**
- * BufferImageDataクラス
+ * BufferImageData繧ｯ繝ｩ繧ｹ
  */
 class BufferImageData : public RefCount
 {

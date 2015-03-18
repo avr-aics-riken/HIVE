@@ -1,6 +1,6 @@
 /**
  * @file BufferMeshData.cpp
- * BufferLineDataƒNƒ‰ƒX
+ * BufferMeshDataã‚¯ãƒ©ã‚¹
  */
 #include "BufferMeshData.h"
 #include "Buffer.h"
@@ -15,13 +15,13 @@ private:
     RefPtr<UintBuffer >  m_index;
     RefPtr<FloatBuffer>  m_mat;
 public:
-    /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Impl()
     {
         Clear();
     }
     
-    /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Impl(BufferMeshData* inst)
     {
         this->m_pos      = inst->Position();
@@ -31,7 +31,7 @@ public:
         this->m_mat      = inst->Material();
     }
     
-    /// ƒfƒXƒgƒ‰ƒNƒ^
+    /// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     ~Impl()
     {
         m_pos      = 0;
@@ -42,9 +42,9 @@ public:
     }
 
     /**
-     * BufferMeshData‚Ìì¬
-     * @param vertexnum ì¬’¸“_”
-     * @param indexnum  ì¬index”
+     * BufferMeshDataã®ä½œæˆ
+     * @param vertexnum ä½œæˆé ‚ç‚¹æ•°
+     * @param indexnum  ä½œæˆindexæ•°
      */
     void Create(int vertexnum, int indexnum)
     {
@@ -55,7 +55,7 @@ public:
         m_index->Create(indexnum);
     }
     
-    /// ƒƒ“ƒoƒNƒŠƒA
+    /// ãƒ¡ãƒ³ãƒã‚¯ãƒªã‚¢
     void Clear()
     {
         m_pos      = new Vec3Buffer();
@@ -65,7 +65,7 @@ public:
         m_index    = new UintBuffer();
     }
     
-    /// ƒfƒoƒbƒO•\Ž¦
+    /// ãƒ‡ãƒãƒƒã‚°è¡¨ç¤º
     void print()
     {
         /*	printf("Position() %08p\n", m_pos.Get()      );
