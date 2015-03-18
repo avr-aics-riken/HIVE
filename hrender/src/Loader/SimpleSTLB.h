@@ -75,7 +75,10 @@ public:
     {
         return static_cast<unsigned int>(m_face.size() * 3);
     }
-	
+
+    /**
+     * SimpleSTLB Triangle Info
+     */
 	struct triData
 	{
 		float normal[3];

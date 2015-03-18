@@ -17,6 +17,9 @@
 
 namespace VX
 {
+    /**
+     * SleepWrapper
+     */
     class Sleep {
 	public:
 		/**
