@@ -1,6 +1,6 @@
 /**
  * @file BufferTetraData.cpp
- * BufferTetraDataƒNƒ‰ƒX
+ * BufferTetraDataã‚¯ãƒ©ã‚¹
  */
 #include "BufferTetraData.h"
 #include "Buffer.h"
@@ -12,20 +12,20 @@ private:
     RefPtr<Vec3Buffer >  m_pos;
     RefPtr<UintBuffer >  m_index;
 public:
-    /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Impl()
     {
         Clear();
     }
     
-    /// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+    /// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     Impl(BufferTetraData* inst)
     {
         this->m_pos      = inst->Position();
         this->m_index    = inst->Index();
     }
     
-    /// ƒfƒXƒgƒ‰ƒNƒ^
+    /// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
     ~Impl()
     {
         m_pos      = 0;
@@ -33,9 +33,9 @@ public:
     }
 
     /**
-     * BufferTetraData‚Ìì¬
-     * @param vertexnum ì¬’¸“_”
-     * @param indexnum  ì¬index”
+     * BufferTetraDataã®ä½œæˆ
+     * @param vertexnum ä½œæˆé ‚ç‚¹æ•°
+     * @param indexnum  ä½œæˆindexæ•°
      */
     void Create(int vertexnum, int indexnum)
     {
@@ -43,14 +43,14 @@ public:
         m_index->Create(indexnum);
     }
     
-    /// ƒƒ“ƒoƒNƒŠƒA
+    /// ãƒ¡ãƒ³ãƒã‚¯ãƒªã‚¢
     void Clear()
     {
         m_pos      = new Vec3Buffer();
         m_index    = new UintBuffer();
     }
     
-    /// ƒfƒoƒbƒO—p
+    /// ãƒ‡ãƒãƒƒã‚°ç”¨
     void print()
     {
         /*	printf("Position() %08p\n", m_pos.Get()      );
@@ -58,14 +58,14 @@ public:
     }
     
     /**
-     * ’¸“_ƒoƒbƒtƒ@æ“¾
-     * @return Vec3Buffer’¸“_ƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * é ‚ç‚¹ãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return Vec3Bufferé ‚ç‚¹ãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     Vec3Buffer  *Position() { return m_pos;      }
 
     /**
-     * Indexƒoƒbƒtƒ@æ“¾
-     * @return Indexƒoƒbƒtƒ@‚Ö‚ÌQÆ
+     * Indexãƒãƒƒãƒ•ã‚¡å–å¾—
+     * @return Indexãƒãƒƒãƒ•ã‚¡ã¸ã®å‚ç…§
      */
     UintBuffer  *Index()    { return m_index;    }
 };
