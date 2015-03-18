@@ -1,6 +1,8 @@
-/*
-   RenderObject.h
-   */
+/**
+ * @file RenderObject.h
+ * レンダーオブジェクト
+ */
+
 #ifndef _RENDEROBJECT_H_
 #define _RENDEROBJECT_H_
 
@@ -11,6 +13,9 @@
 
 class BufferImageData;
 
+/**
+ * レンダーオブジェクト
+ */
 class RenderObject : public RefCount
 {
 public:

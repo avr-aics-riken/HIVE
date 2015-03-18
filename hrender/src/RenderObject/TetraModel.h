@@ -1,9 +1,16 @@
+/**
+ * @file TetraModel.h
+ * 三角錐モデル
+ */
 #ifndef _TETRAMODEL_H_
 #define _TETRAMODEL_H_
 
 #include <string>
 #include "RenderObject.h"
 
+/**
+ * 三角錐モデル
+ */
 class BufferTetraData;
 
 class TetraModel : public RenderObject
