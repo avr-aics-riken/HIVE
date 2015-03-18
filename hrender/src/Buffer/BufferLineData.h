@@ -1,6 +1,6 @@
 /**
  * @file BufferLineData.h
- * BufferLineDataクラス
+ * BufferLineData繧ｯ繝ｩ繧ｹ
  */
 #ifndef _BUFFERLINEDATA_H_
 #define _BUFFERLINEDATA_H_
@@ -11,7 +11,7 @@ class Vec3Buffer;
 class FloatBuffer;
 class UintBuffer;
 /**
- * BufferLineDataクラス
+ * BufferLineData繧ｯ繝ｩ繧ｹ
  */
 class BufferLineData : public RefCount
 {

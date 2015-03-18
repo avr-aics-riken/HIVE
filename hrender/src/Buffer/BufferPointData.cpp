@@ -1,3 +1,7 @@
+/**
+ * @file BufferPointData.cpp
+ * BufferPointDataクラス
+ */
 #include "BufferPointData.h"
 #include "Buffer.h"
 #include <vector>
