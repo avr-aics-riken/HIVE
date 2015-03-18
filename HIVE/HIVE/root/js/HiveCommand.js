@@ -36,6 +36,12 @@
 		cameraScreenSize : function (name, width, height) {
 			return 'hcmd.CameraScreenSize("' + name + '",' + width + ',' + height + ')';
 		},
+		cameraClearColor : function (name, red, green, blue, alpah) {
+			return 'hcmd.CameraClearColor("' + name + '",' + red + ',' + green  + ',' + blue + ',' + alpha + ')';
+		},
+		cameraFilename : function (name, filename) {
+			return 'hcmd.CameraOutputFilename("' + name + '","' + filename + '")';
+		},
 		cameraPos : function (name, camerapos) {
 			console.log('Duplicated method.');
 			return 'hcmd.CameraPos("' + name + '",' + camerapos[0] + ',' + camerapos[1] + ',' + camerapos[2] + ')';
