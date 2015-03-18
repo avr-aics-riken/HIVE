@@ -102,6 +102,21 @@ public:
         return result;
     }
     
+    bool LoadJPG(const std::string& filepath)
+    {
+        int width = 0;
+        int height = 0;
+        unsigned char * dstbuffer = NULL;
+        bool result = SimpleJPGLoaderRGBA(filepath.c_str(), width, height, &dstbuffer);
+        if (result && dstbuffer)
+        {
+            m_image.Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image.ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+        }
+        delete [] dstbuffer;
+        return result;
+    }
+    
     bool Load(const char* filename)
     {
         bool result = false;
@@ -117,7 +132,7 @@ public:
             }
             else if (ext == "jpg" || ext == "jpeg")
             {
-                
+                result = LoadJPG(path);
             }
             else if (ext == "tga")
             {
