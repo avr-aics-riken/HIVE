@@ -1,3 +1,7 @@
+/**
+ * @file BufferTetraData.h
+ * BufferTetraDataクラス
+ */
 #ifndef _BUFFERTETRADATA_H_
 #define _BUFFERTETRADATA_H_
 
@@ -8,6 +12,9 @@ class Vec2Buffer;
 class FloatBuffer;
 class UintBuffer;
 
+/**
+ * BufferTetraDataクラス
+ */
 class BufferTetraData : public RefCount
 {
 private:
