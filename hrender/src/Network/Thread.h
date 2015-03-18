@@ -1,3 +1,7 @@
+/**
+ * @file Thread.h
+ * スレッド
+ */
 #ifndef Include_VX_Thread_h
 #define Include_VX_Thread_h
 

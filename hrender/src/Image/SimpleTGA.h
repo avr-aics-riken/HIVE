@@ -1,6 +1,6 @@
-/*
-	Simple TGA
-	Limited edition(BGRA32bit only)
+/**
+ * @file SimpleTGA.h
+ * SimpleTGA Limited edition(BGRA32bit only)
  */
 
 #ifndef SIMPLE_TGA_HEADER

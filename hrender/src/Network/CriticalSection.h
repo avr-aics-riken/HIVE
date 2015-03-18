@@ -1,3 +1,8 @@
+/**
+ * @file CriticalSection.h
+ * クリティカルセクション
+ */
+
 #ifndef Include_VX_CriticalSection_h
 #define Include_VX_CriticalSection_h
 
