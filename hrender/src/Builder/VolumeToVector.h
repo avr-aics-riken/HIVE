@@ -1,3 +1,7 @@
+/**
+ * @file VolumeToVector.h
+ * VolumeDataからVectorメッシュデータを作成するモジュール
+ */
 #ifndef _VOLUMETOVECTOR_H_
 #define _VOLUMETOVECTOR_H_
 
@@ -9,6 +13,9 @@
 #include "BufferLineData.h"
 #include "BufferVectorData.h"
 
+/**
+ * VolumeDataからVectorメッシュデータを作成するモジュール
+ */
 class VolumeToVector : public RefCount
 {
 private:
