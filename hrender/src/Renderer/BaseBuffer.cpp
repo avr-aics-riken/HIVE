@@ -1,4 +1,7 @@
-
+/**
+ * @file BaseBuffer.cpp
+ * ベースバッファ
+ */
 #include <string>
 #include "BaseBuffer.h"
 #include "../RenderObject/Camera.h"
@@ -8,10 +11,13 @@
 
 #include "Commands.h"
 
+/// コンストラクタ
 BaseBuffer::BaseBuffer(RENDER_MODE mode)
 : m_mode(mode), m_prog(0)
 {
 }
+
+/// デストラクタ
 BaseBuffer::~BaseBuffer()
 {
     std::map<const BufferImageData*, unsigned int>::const_iterator it, eit = m_texutecache.end();
@@ -22,19 +28,33 @@ BaseBuffer::~BaseBuffer()
     DeleteProgram_SGL(m_prog);
 }
 
-
+/// シェーダプログラムをバインドする.
 void BaseBuffer::BindProgram() const
 {
     BindProgram_SGL(m_prog);
 }
+/**
+ * Uniform変数の設定.
+ * @param name 変数名.
+ * @param val 値.
+ */
 void BaseBuffer::Uniform2fv(const char* name, const float* val) const
 {
     SetUniform2fv_SGL(m_prog, name, val);
 }
+/**
+ * Uniform変数の設定.
+ * @param name 変数名.
+ * @param val 値.
+ */
 void BaseBuffer::Uniform4fv(const char* name, const float* val) const
 {
     SetUniform4fv_SGL(m_prog, name, val);
 }
+/**
+ * カメラの設定.
+ * @param camera カメラ
+ */
 void BaseBuffer::SetCamera(const Camera* camera) const
 {
     const Camera::CameraInfo* info = camera->GetCameraInfo();
@@ -51,6 +71,10 @@ void BaseBuffer::UnbindProgram() const
     //BindProgram_SGL(0);
 }
 
+/**
+ * Uniform変数のバインド.
+ * @param obj レンダーオブジェクト
+ */
 void BaseBuffer::bindUniforms(const RenderObject* obj) const
 {
     const unsigned int prg = getProgram();
@@ -114,16 +138,26 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
 
 //-------------------------------------------------------------------
 
+/**
+ * シェーダソースの読み込み
+ * @param srcname ソースファイルパス.
+ */
 bool BaseBuffer::loadShaderSrc(const char* srcname)
 {
     return CreateProgramSrc_SGL(srcname, m_prog);
 }
 
+/// シェーダプログラムを返す.
 unsigned int BaseBuffer::getProgram() const
 {
     return m_prog;
 }
 
+/**
+ * テクスチャIDの取得.
+ * @param buf バッファイメージデータ
+ * @retval テクスチャID
+ */
 const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
 {
     std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
@@ -133,6 +167,10 @@ const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
     return it->second;
 }
 
+/**
+ * テクスチャをキャッシュする.
+ * @param buf バッファイメージデータ
+ */
 bool BaseBuffer::cacheTexture(const BufferImageData *buf)
 {
     std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
@@ -156,6 +194,10 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
     }
 }
 
+/**
+ * テクスチャをキャッシュする.
+ * @param model レンダーオブジェクト
+ */
 void BaseBuffer::cacheTextures(const RenderObject* model)
 {
     const RenderObject::TextureMap& tex = model->GetUniformTexture();
