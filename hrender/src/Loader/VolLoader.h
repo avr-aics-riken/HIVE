@@ -1,3 +1,7 @@
+/**
+ * @file VolLoader.h
+ * VOLデータローダー
+ */
 #ifndef _VOLLOADER_H_
 #define _VOLLOADER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * VOLデータローダー
+ */
 class VOLLoader : public RefCount
 {
 public:
