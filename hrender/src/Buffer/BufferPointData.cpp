@@ -14,11 +14,13 @@ private:
     RefPtr<FloatBuffer> m_mat;
     
 public:
+    /// コンストラクタ
     Impl()
     {
         Clear();
     }
     
+    /// コンストラクタ
     Impl(BufferPointData* inst)
     {
         this->m_pos    = inst->Position();
@@ -26,6 +28,7 @@ public:
         this->m_radius = inst->Radius();
     }
     
+    /// デストラクタ
     ~Impl()
     {
         m_pos    = 0;
@@ -33,13 +36,18 @@ public:
         m_radius = 0;
     }
     
+    /// メンバクリア
     void Clear()
     {
         m_pos    = new Vec3Buffer();
         m_mat    = new FloatBuffer();
         m_radius = new FloatBuffer();
     }
-    
+
+    /**
+     * BufferPointDataの作成
+     * @param vertexnum 作成頂点数
+     */
     void Create(int vertexnum)
     {
         m_pos->Create(vertexnum);
@@ -47,26 +55,50 @@ public:
         m_radius->Create(vertexnum);
     }
     
+    /**
+     * 頂点バッファ取得
+     * @return Vec3Buffer頂点バッファへの参照
+     */
     Vec3Buffer* Position() {
         return m_pos;
     }
     
+    /**
+     * マテリアルIDバッファ取得
+     * @return FloatBufferマテリアルIDバッファへの参照
+     */
     FloatBuffer* Material() {
         return m_mat;
     }
     
+    /**
+     * 半径バッファ取得
+     * @return FloatBuffer半径バッファへの参照
+     */
     FloatBuffer* Radius() {
         return m_radius;
     }
     
+    /**
+     * 頂点バッファ取得
+     * @return Vec3Buffer頂点バッファへの参照
+     */
     Vec3Buffer* Position() const {
         return m_pos;
     }
     
+    /**
+     * マテリアルIDバッファ取得
+     * @return FloatBufferマテリアルIDバッファへの参照
+     */
     FloatBuffer* Material() const {
         return m_mat;
     }
     
+    /**
+     * 半径バッファ取得
+     * @return FloatBuffer半径バッファへの参照
+     */
     FloatBuffer* Radius() const {
         return m_radius;
     }
