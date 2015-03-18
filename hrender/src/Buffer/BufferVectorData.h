@@ -1,3 +1,7 @@
+/**
+ * @file BufferVectorData.h
+ * BufferVectorDataクラス
+ */
 #ifndef _BUFFERVECTORDATA_H_
 #define _BUFFERVECTORDATA_H_
 
@@ -8,6 +12,9 @@ class Vec2Buffer;
 class FloatBuffer;
 class UintBuffer;
 
+/**
+ * BufferVectorDataクラス
+ */
 class BufferVectorData : public RefCount
 {
 private:

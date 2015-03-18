@@ -1,6 +1,6 @@
 /**
  * @file BufferTetraData.h
- * BufferTetraDataクラス
+ * BufferTetraData繧ｯ繝ｩ繧ｹ
  */
 #ifndef _BUFFERTETRADATA_H_
 #define _BUFFERTETRADATA_H_
@@ -13,7 +13,7 @@ class FloatBuffer;
 class UintBuffer;
 
 /**
- * BufferTetraDataクラス
+ * BufferTetraData繧ｯ繝ｩ繧ｹ
  */
 class BufferTetraData : public RefCount
 {

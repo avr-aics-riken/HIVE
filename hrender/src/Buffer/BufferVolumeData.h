@@ -1,10 +1,16 @@
+/**
+ * @file BufferVolumeData.cpp
+ * BufferVolumeDataクラス
+ */
 #ifndef _BUFFERVOLUMEDATA_H_
 #define _BUFFERVOLUMEDATA_H_
 
 #include "Ref.h"
 
 class FloatBuffer;
-
+/**
+ * BufferVolumeDataクラス
+ */
 class BufferVolumeData : public RefCount
 {
 private:
