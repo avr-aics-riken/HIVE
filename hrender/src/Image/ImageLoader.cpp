@@ -7,6 +7,7 @@
 #include "BufferImageData.h"
 #include "../Image/SimpleJPG.h"
 #include "../Image/SimpleTGA.h"
+#include "../Image/SimplePNG.h"
 #include "../Image/SimpleHDR.h"
 #include "Buffer.h"
 
@@ -75,7 +76,6 @@ public:
     {
         int width = 0;
         int height = 0;
-        const char* srcbuffer = LoadFile(filepath);
         float * dstbuffer = NULL;
         bool result = SimpleHDRLoader(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
@@ -83,7 +83,21 @@ public:
             m_image.Create(BufferImageData::RGBA32F, width, height);
             memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
         }
-        delete [] srcbuffer;
+        delete [] dstbuffer;
+        return result;
+    }
+    
+    bool LoadPNG(const std::string& filepath)
+    {
+        int width = 0;
+        int height = 0;
+        unsigned char * dstbuffer = NULL;
+        bool result = SimplePNGLoader(filepath.c_str(), width, height, &dstbuffer);
+        if (result && dstbuffer)
+        {
+            m_image.Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image.ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+        }
         delete [] dstbuffer;
         return result;
     }
@@ -99,6 +113,7 @@ public:
             const std::string ext = make_lowercase(path.substr(pos+1));
             if (ext == "png")
             {
+                result = LoadPNG(path);
             }
             else if (ext == "jpg" || ext == "jpeg")
             {
