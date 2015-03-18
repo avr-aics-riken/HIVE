@@ -52,6 +52,9 @@ extern "C" {
 }
 #endif
 
+/**
+ * hrenderコア機能部
+ */
 class RenderCore::Impl {
 
 private:
