@@ -8,6 +8,10 @@
 
 namespace tinypdb {
 
+/**
+ * コンストラクタ
+ * @param filename ファイルパス
+ */
 TinyPDB::TinyPDB(std::string filename)
     : parsed_(false)
     , filename_(filename)
@@ -17,9 +21,16 @@ TinyPDB::TinyPDB(std::string filename)
     , pos_(0) {
 }
 
+/// デストラクタ
 TinyPDB::~TinyPDB() {
 }
 
+/**
+ * PDBデータのParse
+ * @param isBondGenerationEnabled 接点作成フラグ
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool TinyPDB::Parse(bool isBondGenerationEnabled) {
   assert(!parsed_ && "do not reuse TinyPDB object");
 
@@ -62,6 +73,11 @@ bool TinyPDB::Parse(bool isBondGenerationEnabled) {
   return false;
 }
 
+/**
+ * PDBデータの線データParse
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool TinyPDB::ParseLine() {
   Trim();
   while (Char() == '\r' || Char() == '\n') {
@@ -78,6 +94,10 @@ bool TinyPDB::ParseLine() {
   return false;
 }
 
+/**
+ * PDBデータのAtomデータ取得
+ * @retval atom Atomデータ
+ */
 Atom TinyPDB::ParseAtom() {
   Atom atom;
 
@@ -114,6 +134,10 @@ Atom TinyPDB::ParseAtom() {
   return atom;
 }
 
+/**
+ * PDBデータの線データParse
+ * @param identifier 接点作成フラグ
+ */
 void TinyPDB::Identifier(std::string& identifier) {
   identifier.clear();
   while (('A' <= Char() && Char() <= 'Z') ||
@@ -123,12 +147,18 @@ void TinyPDB::Identifier(std::string& identifier) {
   }
 }
 
+/**
+ * PDBデータの固定長Identifier取得
+ * @param identifier 取得するIdentifierとなるstd::stringへの参照
+ * @param length     取得するIdentifierの長さ
+ * @param skipWhiteSpace Parse時空白Skip実施フラグ
+ */
 void TinyPDB::FixedIdentifier(std::string& identifier, int length, bool skipWhiteSpace) {
   identifier.clear();
 
   if (skipWhiteSpace) {
 
-    while (' ' == Char() && length > 0) {
+    while (' ' == Char() && ] > 0) {
       Consume();
       --length;
     }
@@ -159,6 +189,10 @@ void TinyPDB::FixedIdentifier(std::string& identifier, int length, bool skipWhit
   }
 }
 
+/**
+ * PDBデータParse時の整数取得
+ * @retval result 取得した整数値
+ */
 int TinyPDB::Integer() {
   int sign = 1;
 
@@ -179,6 +213,10 @@ int TinyPDB::Integer() {
   return result;
 }
 
+/**
+ * PDBデータParse時の倍精度浮動小数点値取得
+ * @retval result 取得した倍精度浮動小数点値
+ */
 double TinyPDB::Double() {
   double sign = 1.0;
   if (Char() == '-') {
@@ -214,12 +252,14 @@ double TinyPDB::Double() {
   return result;
 }
 
+/// PDBデータParse時、空白、タブスキップ
 void TinyPDB::Trim() {
   while (Char() == ' ' || Char() == '\t') {
     Consume();
   }
 }
 
+/// PDBデータParse時に行単位でスキップ
 void TinyPDB::SkipLine() {
   while (Char() != '\r' && Char() != '\n' && Char() != -1) {
     Consume();
@@ -229,6 +269,12 @@ void TinyPDB::SkipLine() {
   }
 }
 
+/**
+ * PDBデータParseの文字列一致チェック
+ * @param keyword 検索する文字列
+ * @retval true マッチした
+ * @retval false マッチしなかった
+ */
 bool TinyPDB::Match(const char* keyword) {
   int i = 0;
 
@@ -244,6 +290,11 @@ bool TinyPDB::Match(const char* keyword) {
   return true;
 }
 
+/**
+ * PDBデータParse時、Readしたバッファの位置の文字を直接取得
+ * @param index バッファ中のByteIndex
+ * @return indexで指定された1Byte文字が返却される。indexの値が不正の場合-1を返却する。
+ */
 char TinyPDB::Char(int index) {
   if (pos_ + index < length_) {
     return content_[pos_ + index];
@@ -260,6 +311,12 @@ void TinyPDB::Consume(int amount) {
 
 namespace {
 
+/**
+ * GetBondLengthLimit
+ * @param a チェック対象Atom
+ * @param b チェック対象Atom
+ * @return a, b両方のAtomデータの3文字目がSだった場合は「1.9」、それ以外は1.7
+ */
 float GetBondLengthLimit(const Atom& a, const Atom& b) {
   if ((a.GetName().length() > 2 && b.GetName().length() > 2) && (a.GetName()[2] == 'S' || b.GetName()[2] == 'S')) {
     return 1.9;
@@ -268,6 +325,7 @@ float GetBondLengthLimit(const Atom& a, const Atom& b) {
   }
 }
 
+/// HashGrid用クエリI/F
 class HashGridQuery {
  public:
   HashGridQuery(Atom& current)
@@ -300,6 +358,7 @@ class HashGridQuery {
 
 }  // namespace
 
+/// PDBデータの接点作成
 void TinyPDB::GenerateBonds() {
   HashGrid hashGrid;
 
