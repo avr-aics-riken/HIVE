@@ -1,3 +1,7 @@
+/**
+ * @file LineModel.h
+ * ラインモデル
+ */
 #ifndef _LINEMODEL_H_
 #define _LINEMODEL_H_
 
@@ -6,6 +10,9 @@
 
 class BufferLineData;
 
+/**
+ * ラインモデル
+ */
 class LineModel : public RenderObject
 {
 private:

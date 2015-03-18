@@ -1,3 +1,7 @@
+/**
+ * @file CdmLoader.cpp
+ * CDMデータローダー
+ */
 //
 // TODO: - timestep support
 //       - support various volume data type
@@ -21,20 +25,30 @@
 #include "cdm_DFI.h"
 #include "cdm_TextParser.h"
 
+/// コンストラクタ
 CDMLoader::CDMLoader()
 {
     Clear();
 }
+
+/// デストラクタ
 CDMLoader::~CDMLoader()
 {
     Clear();
 }
 
+/// ボリュームクリア
 void CDMLoader::Clear()
 {
     m_volume.Clear();
 }
 
+/**
+ * CDMデータのロード
+ * @param filename ファイルパス
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool CDMLoader::Load(const char* filename)
 {
     Clear();
@@ -257,26 +271,50 @@ bool CDMLoader::Load(const char* filename)
     return true;
 }
 
+/**
+ * CDMWidth取得
+ * @retval Width
+ */
 int CDMLoader::Width()    {
     return m_volume.Width();
 }
 
+/**
+ * CDMHeight取得
+ * @retval Height
+ */
 int CDMLoader::Height()   {
     return m_volume.Height();
 }
 
+/**
+ * CDMDepth取得
+ * @retval Depth
+ */
 int CDMLoader::Depth()    {
     return m_volume.Depth();
 }
 
+/**
+ * CDMComponent取得
+ * @retval Component数
+ */
 int CDMLoader::Component() {
     return m_volume.Component();
 }
 
+/**
+ * CDMデータバッファ参照取得
+ * @retval FloatBufferアドレス
+ */
 FloatBuffer* CDMLoader::Buffer() {
     return m_volume.Buffer();
 }
 
+/**
+ * VolumeData参照取得
+ * @retval VolumeData参照
+ */
 BufferVolumeData *CDMLoader::VolumeData()
 {
     return &m_volume;
