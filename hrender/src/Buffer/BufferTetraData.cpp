@@ -91,21 +91,36 @@ BufferTetraData::~BufferTetraData()
     delete m_imp;
 }
 
+/**
+ * BufferTetraDataの作成
+ * @param vertexnum 作成頂点数
+ * @param indexnum  作成index数
+ */
 void BufferTetraData::Create(int vertexnum, int indexnum)
 {
     m_imp->Create(vertexnum, indexnum);
 }
 
+/// メンバクリア
 void BufferTetraData::Clear()
 {
     m_imp->Clear();
 }
 
+/// デバッグ用
 void BufferTetraData::print()
 {
     m_imp->print();
 }
 
+/**
+ * 頂点バッファ取得
+ * @return Vec3Buffer頂点バッファへの参照
+ */
 Vec3Buffer  *BufferTetraData::Position() { return m_imp->Position(); }
+/**
+ * Indexバッファ取得
+ * @return Indexバッファへの参照
+ */
 UintBuffer  *BufferTetraData::Index()    { return m_imp->Index();    }
 
