@@ -151,19 +151,22 @@ public:
         return m_isNonUniform;
     }
     
+    /// xスペースバッファを返す
     FloatBuffer* SpacingX() {
         return m_spacingX;
     }
     
+    /// yスペースバッファを返す
     FloatBuffer* SpacingY() {
         return m_spacingY;
     }
     
+    /// zスペースバッファを返す
     FloatBuffer* SpacingZ() {
         return m_spacingZ;
     }
     /**
-     * NonUniformフラグ取得
+     * サンプリング
      * @param ret サンプルされたボリュームバッファ値
      * @param x X位置
      * @param y Y位置
@@ -225,57 +228,100 @@ BufferVolumeData::~BufferVolumeData()
     delete m_imp;
 }
 
+/**
+ * BufferVolumeDataの作成
+ * @param w Widthサイズ
+ * @param h Heightサイズ
+ * @param d Depthサイズ
+ * @param component component数
+ */
 void BufferVolumeData::Create(int w, int h, int d, int component)
 {
     m_imp->Create(w, h, d, component);
 }
 
+/// メンバクリア
 void BufferVolumeData::Clear()
 {
     m_imp->Clear();
 }
 
+/// デバッグ用
 void BufferVolumeData::print()
 {
     m_imp->print();
 }
 
+/**
+ * Width値取得
+ * @return Width値
+ */
 int BufferVolumeData::Width() const {
     return m_imp->Width();
 }
 
+/**
+ * Height値取得
+ * @return Height値
+ */
 int BufferVolumeData::Height() const {
     return m_imp->Height();
 }
 
+/**
+ * Depth値取得
+ * @return Depth値
+ */
 int BufferVolumeData::Depth() const {
     return m_imp->Depth();
 }
 
+/**
+ * Component数取得
+ * @return Component数
+ */
 int BufferVolumeData::Component() const {
     return m_imp->Component();
 }
 
+/**
+ * ボリュームバッファ取得
+ * @return FloatBufferボリュームバッファへの参照
+ */
 FloatBuffer *BufferVolumeData::Buffer() const {
     return m_imp->Buffer();
 }
 
+/**
+ * NonUniformフラグ取得
+ * @return NonUniformフラグ値
+ */
 bool BufferVolumeData::NonUniform() {
     return m_imp->NonUniform();
 }
 
+/// xスペースバッファを返す
 FloatBuffer* BufferVolumeData::SpacingX() {
     return m_imp->SpacingX();
 }
 
+/// yスペースバッファを返す
 FloatBuffer* BufferVolumeData::SpacingY() {
     return m_imp->SpacingY();
 }
 
+/// zスペースバッファを返す
 FloatBuffer* BufferVolumeData::SpacingZ() {
     return m_imp->SpacingZ();
 }
 
+/**
+ * サンプリング
+ * @param ret サンプルされたボリュームバッファ値
+ * @param x X位置
+ * @param y Y位置
+ * @param z Z位置
+ */
 void BufferVolumeData::Sample(float* ret, float x, float y, float z) {
     m_imp->Sample(ret, x, y, z);
 }
