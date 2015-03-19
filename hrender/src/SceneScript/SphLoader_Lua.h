@@ -1,3 +1,7 @@
+/**
+ * @file SPHLoader_Lua.h
+ * SPHLoader Luaラッパー
+ */
 #ifndef _SPHLOADER_LUA_H_
 #define _SPHLOADER_LUA_H_
 

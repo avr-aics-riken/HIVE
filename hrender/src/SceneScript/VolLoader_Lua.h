@@ -1,3 +1,7 @@
+/**
+ * @file VOLLoader_Lua.h
+ * VOLLoader_Lua Luaラッパー
+ */
 #ifndef _VOLLOADER_LUA_H_
 #define _VOLLOADER_LUA_H_
 

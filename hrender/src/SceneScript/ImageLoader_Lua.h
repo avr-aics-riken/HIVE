@@ -1,3 +1,7 @@
+/**
+ * @file ImageLoader_Lua.h
+ * ImageLoader Luaラッパー
+ */
 #ifndef _IMAGELOADER_LUA_H_
 #define _IMAGELOADER_LUA_H_
 

@@ -1,5 +1,5 @@
 /**
- * @file BufferVolumeData.cpp
+ * @file BufferVolumeData.h
  * BufferVolumeDataクラス
  */
 #ifndef _BUFFERVOLUMEDATA_H_

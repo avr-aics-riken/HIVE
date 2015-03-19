@@ -1,3 +1,7 @@
+/**
+ * @file ImageSaver_Lua.h
+ * ImageSaver Luaラッパー
+ */
 #ifndef _IMAGESAVER_LUA_H_
 #define _IMAGESAVER_LUA_H_
 

@@ -1,5 +1,5 @@
 /**
- * @file ConnectionIF
+ * @file Connection.h
  * コネクション
  */
 #ifndef _CONNECTION_H_

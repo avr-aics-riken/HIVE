@@ -1,3 +1,7 @@
+/**
+ * @file PointToVolume_Lua.h
+ * PointToVolume Luaラッパー
+ */
 #ifndef _POINTTOVOLUME_LUA_H_
 #define _POINTTOVOLUME_LUA_H_
 
