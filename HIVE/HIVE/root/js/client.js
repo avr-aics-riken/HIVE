@@ -317,8 +317,8 @@
 			setPropertyMode(objprop.type);
 			if (objprop.type === "CAMERA") {
 				setCameraProperty(objname, objprop.info, core);
-				core.setActiveCamera(objname);
-				kUI('viewmode').SetCaption('[' + objname + ']');
+				//core.setActiveCamera(objname);
+				//kUI('viewmode').SetCaption('[' + objname + ']');
 				core.render();
 			} else {
 				setObjectProperty(objname, objprop.info, core);
@@ -369,14 +369,19 @@
 				dust,
 				icon,
 				item,
-				itemid;
+				itemid,
+				camlist,
+				opt,
+				str;
 			lst.Clear();
+			camlist = document.getElementById('camera_selector');
+			camlist.innerHTML = ''; // clear
 			for (i = 0; i < objlist.length; i = i + 1) {
 				//objList[i].name, objList[i].type
 				itemid = 'listitem-' + objlist[i].name;
 				lst.AddItem(objlist[i].name, itemid);
 				item = $(itemid);
-				item.addEventListener('click', objectClick(core, objlist[i].name, objlist.type));
+				item.addEventListener('click', objectClick(core, objlist[i].name, objlist[i].type));
 				
 				// Dust icon
 				dust = $(itemid + '-dustbtn');
@@ -389,6 +394,21 @@
 				// Color icon
 				icon = item.getElementsByClassName('KList-Item-Icon')[0];
 				icon.style.backgroundColor = getIconColor(objlist[i].type);
+				
+				// camera list
+				if (objlist[i].type === 'CAMERA') {
+					opt = document.createElement("option");
+					str = document.createTextNode(objlist[i].name);
+					opt.appendChild(str);
+					camlist.appendChild(opt);
+
+					opt.value = objlist[i].name;
+					if (objlist[i].name === core.getActiveCamera()) {
+						console.log(objlist[i].name);
+						opt.selected = true;
+					}
+				}
+				
 			}
 			core.render();
 		}
@@ -423,6 +443,12 @@
 		//  UI Events
 		//
 		// Timeline events
+		kUI('camera_selector').ChangeCallback(function (val) {
+			//console.log(val);
+			core.setActiveCamera(val);
+			core.render();
+			//kUI('viewmode').SetCaption('[' + objname + ']');
+		});
 		kUI('timeline').setTimelineData();
 		kUI('timeline').drawGraph();
 		kUI('timeline').ChangeTimeCallback(function (tm) {
