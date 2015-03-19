@@ -465,15 +465,30 @@
 			core.newScene();
 		});
 		$('loadscenebtn').addEventListener('click', function (ev) {
-			//core.loadOBJ('bunny.obj', 'normal.frag');
-			core.render();
+			var fdlg = new FileDialog("loadsceneDialog", true, '.json');
+			fdlg.OpenFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)),
+				function (filepath) {
+					console.log("FileDialog Select:" + filepath);
+				});
+			//core.render();
 		});
+		$('savescenebtn').addEventListener('click', function (ev) {
+			console.log('SAVE SCENE');
+		});
+
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {
 			core.addCamera();
 		});
 
 		$('list-addbutton').addEventListener('click', function (ev) {
-			var fdlg = new FileDialog("dataDialog", true, false);
+			var fdlg = new FileDialog("dataDialog", true);
 			fdlg.OpenFile("", (function (core, fdlg) {
 				return function (path) {
 					core.getFileList(path, function (err, res) {
