@@ -10,7 +10,9 @@
 #include "VolumeModel.h"
 #include "BufferVolumeData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * VolumeModel Luaラッパー
+ */
 class VolumeModel_Lua : public VolumeModel
 {
 public:

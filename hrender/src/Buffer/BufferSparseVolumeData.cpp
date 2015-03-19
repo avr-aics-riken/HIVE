@@ -31,6 +31,7 @@ public:
     }
     
     /// コンストラクタ
+    /// @param inst 疎ボリュームデータ
     Impl(BufferSparseVolumeData* inst)
     {
     }
@@ -120,6 +121,7 @@ public:
         return 1; // @todo
     }
     
+    /// バッファの参照を返す
     const std::vector<BufferSparseVolumeData::VolumeBlock>& Buffers() const
     {
         // @todo
@@ -127,6 +129,7 @@ public:
         return tmp;
     }
     
+    /// バッファの参照を返す
     std::vector<BufferSparseVolumeData::VolumeBlock>& Buffers()
     {
         // @todo
@@ -134,6 +137,13 @@ public:
         return tmp;
     }
 
+    /**
+     * サンプルする
+     * @param ret サンプル結果
+     * @param x x
+     * @param y y
+     * @param z z
+     */
     void Sample(float* ret, float x, float y, float z) {
 
         // Up to 4 components at this time.
@@ -155,6 +165,7 @@ public:
 
     }
 
+    /// 疎ボリュームデータをビルド
     bool Build() {
         delete m_sparseVolumeAccel; // delete exiting accel structure.
 
@@ -164,16 +175,20 @@ public:
 
 };
 
+/// コンストラクタ
 BufferSparseVolumeData::BufferSparseVolumeData()
 {
     m_imp = new BufferSparseVolumeData::Impl();
 }
 
+/// コンストラクタ
+/// @param inst 疎ボリュームデータ
 BufferSparseVolumeData::BufferSparseVolumeData(BufferSparseVolumeData* inst)
 {
     m_imp = new BufferSparseVolumeData::Impl(inst);
 }
 
+/// デストラクタ
 BufferSparseVolumeData::~BufferSparseVolumeData()
 {
     delete m_imp;
@@ -184,57 +199,80 @@ void BufferSparseVolumeData::Create(int w, int h, int d, int component)
     m_imp->Create(w, h, d, component);
 }
 
+/**
+ * BufferSparseVolumeDataへのBufferVolumeDataの追加
+ * @param offset_x SparseBlockオフセットX
+ * @param offset_y SparseBlockオフセットY
+ * @param offset_z SparseBlockオフセットZ
+ * @param vol      対象のBufferVolumeData
+ */
 void BufferSparseVolumeData::AddVolume(int offset_x, int offset_y, int offset_z,
                BufferVolumeData* vol)
 {
     m_imp->AddVolume(offset_x, offset_y, offset_z, vol);
 }
 
+/// メンバクリア
 void BufferSparseVolumeData::Clear()
 {
     m_imp->Clear();
 }
 
+/// デバッグ用
 void BufferSparseVolumeData::print()
 {
     m_imp->print();
 }
 
+/// Width取得
 int BufferSparseVolumeData::Width()
 {
     return m_imp->Width();
 }
 
+/// Height取得
 int BufferSparseVolumeData::Height()
 {
     return m_imp->Height();
 }
 
+/// Depth取得
 int BufferSparseVolumeData::Depth()
 {
     return m_imp->Depth();
 }
 
+/// Component数取得
 int BufferSparseVolumeData::Component()
 {
     return m_imp->Component();
 }
 
+/// バッファの参照を返す
 const std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::Buffers() const
 {
     return m_imp->Buffers();
 }
 
+/// バッファの参照を返す
 std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::Buffers()
 {
     return m_imp->Buffers();
 }
 
+/**
+ * サンプルする
+ * @param ret サンプル結果
+ * @param x x
+ * @param y y
+ * @param z z
+ */
 void BufferSparseVolumeData::Sample(float* ret, float x, float y, float z)
 {
     return m_imp->Sample(ret, x, y, z);
 }
 
+/// 疎ボリュームデータをビルド
 bool BufferSparseVolumeData::Build()
 {
     return m_imp->Build();

@@ -7,6 +7,9 @@
 
 #include "BufferImageData.h"
 
+/**
+ * BufferImageData Luaラッパー
+ */
 class BufferImageData_Lua : public BufferImageData
 {
 public:

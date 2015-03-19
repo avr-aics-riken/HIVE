@@ -10,7 +10,9 @@
 #include "../RenderObject/TetraModel.h"
 #include "BufferVectorData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * TetraModel Luaラッパー
+ */
 class TetraModel_Lua : public TetraModel
 {
 public:

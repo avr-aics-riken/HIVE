@@ -8,11 +8,11 @@
 #include <string>
 #include "RenderObject.h"
 
+class BufferTetraData;
+
 /**
  * 三角錐モデル
  */
-class BufferTetraData;
-
 class TetraModel : public RenderObject
 {
 private:

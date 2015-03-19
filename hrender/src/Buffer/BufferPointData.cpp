@@ -60,7 +60,7 @@ public:
     
     /**
      * 頂点バッファ取得
-     * @return Vec3Buffer頂点バッファへの参照
+     * @return Vec3Buffer 頂点バッファへの参照
      */
     Vec3Buffer* Position() {
         return m_pos;
@@ -68,7 +68,7 @@ public:
     
     /**
      * マテリアルIDバッファ取得
-     * @return FloatBufferマテリアルIDバッファへの参照
+     * @return FloatBuffer マテリアルIDバッファへの参照
      */
     FloatBuffer* Material() {
         return m_mat;
@@ -76,7 +76,7 @@ public:
     
     /**
      * 半径バッファ取得
-     * @return FloatBuffer半径バッファへの参照
+     * @return FloatBuffer 半径バッファへの参照
      */
     FloatBuffer* Radius() {
         return m_radius;
@@ -84,7 +84,7 @@ public:
     
     /**
      * 頂点バッファ取得
-     * @return Vec3Buffer頂点バッファへの参照
+     * @return Vec3Buffer 頂点バッファへの参照
      */
     Vec3Buffer* Position() const {
         return m_pos;
@@ -92,7 +92,7 @@ public:
     
     /**
      * マテリアルIDバッファ取得
-     * @return FloatBufferマテリアルIDバッファへの参照
+     * @return FloatBuffer* マテリアルIDバッファへの参照
      */
     FloatBuffer* Material() const {
         return m_mat;
@@ -100,7 +100,7 @@ public:
     
     /**
      * 半径バッファ取得
-     * @return FloatBuffer半径バッファへの参照
+     * @return FloatBuffer* 半径バッファへの参照
      */
     FloatBuffer* Radius() const {
         return m_radius;
@@ -125,36 +125,65 @@ BufferPointData::~BufferPointData()
     delete m_imp;
 }
 
+/// メンバクリア
 void BufferPointData::Clear()
 {
     m_imp->Clear();
 }
 
+/**
+ * BufferPointDataの作成
+ * @param vertexnum 作成頂点数
+ */
 void BufferPointData::Create(int vertexnum)
 {
     m_imp->Create(vertexnum);
 }
 
+/**
+ * 頂点バッファ取得
+ * @return Vec3Buffer 頂点バッファへの参照
+ */
 Vec3Buffer* BufferPointData::Position() {
     return m_imp->Position();
 }
 
+/**
+ * マテリアルIDバッファ取得
+ * @return FloatBuffer マテリアルIDバッファへの参照
+ */
 FloatBuffer* BufferPointData::Material() {
     return m_imp->Material();
 }
 
+/**
+ * 半径バッファ取得
+ * @return FloatBuffer 半径バッファへの参照
+ */
 FloatBuffer* BufferPointData::Radius() {
     return m_imp->Radius();
 }
 
+/**
+ * 頂点バッファ取得
+ * @return Vec3Buffer 頂点バッファへの参照
+ */
 Vec3Buffer* BufferPointData::Position() const {
     return m_imp->Position();
 }
 
+/**
+ * マテリアルIDバッファ取得
+ * @return FloatBuffer* マテリアルIDバッファへの参照
+ */
 FloatBuffer* BufferPointData::Material() const {
     return m_imp->Material();
 }
 
+/**
+ * 半径バッファ取得
+ * @return FloatBuffer* 半径バッファへの参照
+ */
 FloatBuffer* BufferPointData::Radius() const {
     return m_imp->Radius();
 }
