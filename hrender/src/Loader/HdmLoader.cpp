@@ -77,7 +77,7 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename)
 
 /**
  * HDMWidth取得
- * @retval Width
+ * @retval int HDMWidth
  */
 int HDMLoader::Width()    {
     return m_volume.Width();
@@ -85,7 +85,7 @@ int HDMLoader::Width()    {
 
 /**
  * HDMHeight取得
- * @retval Height
+ * @retval int HDMHeight
  */
 int HDMLoader::Height()   {
     return m_volume.Height();
@@ -93,7 +93,7 @@ int HDMLoader::Height()   {
 
 /**
  * HDMDepth取得
- * @retval Depth
+ * @retval int HDMDepth
  */
 int HDMLoader::Depth()    {
     return m_volume.Depth();
@@ -101,23 +101,23 @@ int HDMLoader::Depth()    {
 
 /**
  * HDMComponent取得
- * @retval Component数
+ * @retval int Component数
  */
 int HDMLoader::Component() {
     return m_volume.Component();
 }
 
 /**
- * HDMデータバッファ参照取得
- * @retval FloatBufferアドレス
+ * HDMデータバッファ取得
+ * @retval FloatBuffer* HDMデータバッファアドレス
  */
 FloatBuffer* HDMLoader::Buffer() {
     return m_volume.Buffer();
 }
 
 /**
- * VolumeData参照取得
- * @retval VolumeData参照
+ * VolumeData取得
+ * @retval VolumeData* VolumeDataアドレス
  */
 BufferVolumeData *HDMLoader::VolumeData()
 {

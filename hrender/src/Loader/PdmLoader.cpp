@@ -38,7 +38,7 @@ bool PDMLoader::Load(const char* filename){
 
 /**
  * 点データ取得
- * @retval 点データバッファへの参照
+ * @retval BufferPointData* 点データバッファへの参照
  */
 BufferPointData *PDMLoader::PointData()
 {

@@ -130,7 +130,7 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
 
 /**
  * 点データ取得
- * @retval 点データバッファへの参照
+ * @retval BufferPointData* 点データバッファへの参照
  */
 BufferPointData *PDBLoader::BallData()
 {
@@ -139,7 +139,7 @@ BufferPointData *PDBLoader::BallData()
 
 /**
  * 線データ取得
- * @retval Lineデータバッファへの参照
+ * @retval BufferLineData* Lineデータバッファへの参照
  */
 BufferLineData *PDBLoader::StickData()
 {
