@@ -1,3 +1,7 @@
+/**
+ * @file BufferVolumeData_Lua.h
+ * BufferVolumeData Luaラッパー
+ */
 #ifndef _BUFFERVOLUMEDATA_LUA_H_
 #define _BUFFERVOLUMEDATA_LUA_H_
 
