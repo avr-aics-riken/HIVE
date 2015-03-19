@@ -149,7 +149,6 @@ BufferLineData *PDBLoader::StickData()
 
 /**
  * マテリアル設定
- * @retval 点データバッファへの参照
  * @param i 対象index
  * @param matID マテリアルID
  */
@@ -165,7 +164,7 @@ void PDBLoader::SetMaterial(int i, float matID) {
 /**
  * AtomElementSymbol取得
  * @param i 対象index
- * @retval GetElementSymbol[std::string]
+ * @retval GetElementSymbol 取得した要素[std::string]
  */
 std::string PDBLoader::AtomElementSymbol(int i)
 {
