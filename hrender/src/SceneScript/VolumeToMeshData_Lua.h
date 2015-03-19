@@ -1,3 +1,7 @@
+/**
+ * @file VolumeToMeshData_Lua.h
+ * VolumeToMeshData Luaラッパー
+ */
 #ifndef _VOLUMETOMESHDATA_LUA_H_
 #define _VOLUMETOMESHDATA_LUA_H_
 

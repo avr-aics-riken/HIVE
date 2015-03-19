@@ -1,3 +1,7 @@
+/**
+ * @file SPHSaver_Lua.h
+ * SPHSaver Luaラッパー
+ */
 #ifndef _SPHSAVER_LUA_H_
 #define _SPHSAVER_LUA_H_
 

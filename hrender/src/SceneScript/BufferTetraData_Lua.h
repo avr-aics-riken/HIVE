@@ -1,3 +1,7 @@
+/**
+ * @file BufferTetraData_Lua.h
+ * BufferTetraData Luaラッパー
+ */
 #ifndef _BUFFERTETRADATA_LUA_H_
 #define _BUFFERTETRADATA_LUA_H_
 

@@ -6,6 +6,9 @@
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferMeshDataクラス
+ */
 class BufferMeshData::Impl
 {
 private:

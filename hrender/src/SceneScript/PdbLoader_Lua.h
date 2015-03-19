@@ -1,3 +1,7 @@
+/**
+ * @file PDBLoader_Lua.h
+ * PDBLoader Luaラッパー
+ */
 #ifndef _PDBLOADER_LUA_H_
 #define _PDBLOADER_LUA_H_
 

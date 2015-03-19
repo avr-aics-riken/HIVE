@@ -1,3 +1,7 @@
+/**
+ * @file STLLoader_Lua.h
+ * STLLoader Luaラッパー
+ */
 #ifndef _STLLOADER_LUA_H_
 #define _STLLOADER_LUA_H_
 

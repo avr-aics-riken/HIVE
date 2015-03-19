@@ -1,3 +1,7 @@
+/**
+ * @file PointModel_Lua.h
+ * PointModel Luaラッパー
+ */
 #ifndef _POINTMODEL_LUA_H_
 #define _POINTMODEL_LUA_H_
 

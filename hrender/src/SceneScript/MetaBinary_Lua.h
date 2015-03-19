@@ -1,3 +1,7 @@
+/**
+ * @file MetaBinary_Lua.h
+ * MetaBinary Luaラッパー
+ */
 #ifndef _METABINARY_LUA_H_
 #define _METABINARY_LUA_H_
 

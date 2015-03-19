@@ -1,3 +1,7 @@
+/**
+ * @file Camera_Lua.h
+ * Camera Luaラッパー
+ */
 #ifndef _CAMERA_LUA_H_
 #define _CAMERA_LUA_H_
 

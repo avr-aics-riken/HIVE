@@ -1,3 +1,7 @@
+/**
+ * @file PolygonAnalyzer_Lua.h
+ * PolygonAnalyzer Luaラッパー
+ */
 #ifndef _POLYGONANALYZER_LUA_H_
 #define _POLYGONANALYZER_LUA_H_
 
