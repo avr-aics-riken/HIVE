@@ -145,49 +145,89 @@ BufferLineData::~BufferLineData()
     delete m_imp;
 }
 
+/// constructor
 BufferLineData::BufferLineData(BufferLineData* inst)
 {
     m_imp = new BufferLineData::Impl(inst);
 }
 
+/// メンバクリア
 void BufferLineData::Clear()
 {
     m_imp->Clear();
 }
 
+/**
+ * BufferLineDataの作成
+ * @param vertexnum 作成頂点数
+ * @param indexnum  作成index数
+ * @param useRadius 半径指定
+ */
 void BufferLineData::Create(int vertexnum, int indexnum, bool useRadius)
 {
     m_imp->Create(vertexnum, indexnum, useRadius);
 }
 
+/**
+ * 頂点バッファ取得
+ * @return Vec3Buffer頂点バッファへの参照
+ */
 Vec3Buffer* BufferLineData::Position() {
     return m_imp->Position();
 }
 
+/**
+ * マテリアルIDバッファ取得
+ * @return FloatBufferマテリアルIDバッファへの参照
+ */
 FloatBuffer* BufferLineData::Material() {
     return m_imp->Material();
 }
 
+/**
+ * 半径バッファ取得
+ * @return FloatBuffer半径バッファへの参照
+ */
 FloatBuffer* BufferLineData::Radius() {
     return m_imp->Radius();
 }
 
+/**
+ * Indexバッファ取得
+ * @return Indexバッファへの参照
+ */
 UintBuffer* BufferLineData::Index() {
     return m_imp->Index();
 }
 
+/**
+ * 頂点バッファ取得
+ * @return Vec3Buffer頂点バッファへの参照
+ */
 Vec3Buffer* BufferLineData::Position() const {
     return m_imp->Position();
 }
 
+/**
+ * マテリアルIDバッファ取得
+ * @return FloatBufferマテリアルIDバッファへの参照
+ */
 FloatBuffer* BufferLineData::Material() const {
     return m_imp->Material();
 }
 
+/**
+ * 半径バッファ取得
+ * @return FloatBuffer半径バッファへの参照
+ */
 FloatBuffer* BufferLineData::Radius() const {
     return m_imp->Radius();
 }
 
+/**
+ * Indexバッファ取得
+ * @return Indexバッファへの参照
+ */
 UintBuffer* BufferLineData::Index() const {
     return m_imp->Index();
 }
