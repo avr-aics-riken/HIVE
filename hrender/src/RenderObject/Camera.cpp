@@ -7,6 +7,9 @@
 #include "Camera.h"
 #include "BufferImageData.h"
 
+/**
+ * カメラクラス実装
+ */
 class Camera::Impl
 {
 public:
