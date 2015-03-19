@@ -9,6 +9,9 @@
 #include "BcmLoader.h"
 #include "BufferVolumeData_Lua.h"
 
+/**
+ * BcmローダLuaラッパー
+ */
 class BCMLoader_Lua : public BCMLoader
 {
 public:

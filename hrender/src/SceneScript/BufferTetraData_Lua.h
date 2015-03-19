@@ -6,7 +6,9 @@
 #define _BUFFERTETRADATA_LUA_H_
 
 #include "BufferTetraData.h"
-
+/**
+ * BufferTetraData Luaラッパー
+ */
 class BufferTetraData_Lua : public BufferTetraData
 {
 public:

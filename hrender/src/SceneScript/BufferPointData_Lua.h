@@ -7,6 +7,9 @@
 
 #include "BufferPointData.h"
 
+/**
+ * BufferPointData Luaラッパー
+ */
 class BufferPointData_Lua : public BufferPointData
 {
 public:

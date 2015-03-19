@@ -10,7 +10,9 @@
 #include "PointModel.h"
 #include "BufferPointData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * PointModel Luaラッパー
+ */
 class PointModel_Lua : public PointModel
 {
 public:

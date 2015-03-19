@@ -9,7 +9,9 @@
 #include "PointToVolume.h"
 #include "BufferVolumeData_Lua.h"
 #include "BufferPointData_Lua.h"
-
+/**
+ * PointToVolume Luaラッパー
+ */
 class PointToVolume_Lua : public PointToVolume
 {
 public:

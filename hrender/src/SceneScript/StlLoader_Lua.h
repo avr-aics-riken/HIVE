@@ -11,10 +11,9 @@
 #include "BufferMeshData.h"
 #include "StlLoader.h"
 #include "BufferMeshData_Lua.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * STLLoader Luaラッパー
+ */
 class STLLoader_Lua : public STLLoader
 {
 public:
