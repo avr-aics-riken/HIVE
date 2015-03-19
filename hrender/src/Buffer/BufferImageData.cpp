@@ -330,7 +330,7 @@ float BufferImageData::Exposure() const
 
 /**
  * Gamma値設定
- * @param float　Gamma値
+ * @param gamma Gamma値
  */
 void BufferImageData::SetGamma(float gamma)
 {

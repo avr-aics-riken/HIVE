@@ -49,7 +49,7 @@ public:
     
     /**
      * メッシュの取得.
-     * @retval メッシュデータ
+     * @return メッシュデータ
      */
     BufferMeshData* GetMesh() const {
         return m_mesh;
@@ -57,7 +57,7 @@ public:
     
     /**
      * シェーダパスを返す.
-     * @retval シェーダパス
+     * @return シェーダパス
      */
     const std::string& GetShader() const
     {
@@ -102,7 +102,7 @@ bool PolygonModel::Create(BufferMeshData* m)
 
 /**
  * メッシュの取得.
- * @retval メッシュデータ
+ * @return メッシュデータ
  */
 BufferMeshData* PolygonModel::GetMesh() const
 {
@@ -111,7 +111,7 @@ BufferMeshData* PolygonModel::GetMesh() const
 
 /**
  * シェーダパスを返す.
- * @retval シェーダパス
+ * @return シェーダパス
  */
 const std::string& PolygonModel::GetShader() const
 {
