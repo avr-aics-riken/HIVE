@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "SphSaver.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * SPHSaver Luaラッパー
+ */
 class SPHSaver_Lua : public SPHSaver
 {
 public:

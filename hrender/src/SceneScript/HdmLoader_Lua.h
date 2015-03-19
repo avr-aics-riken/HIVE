@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "HdmLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * HDMLoader Luaラッパー
+ */
 class HDMLoader_Lua : public HDMLoader
 {
 public:

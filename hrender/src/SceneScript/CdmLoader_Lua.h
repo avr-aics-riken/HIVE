@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "CdmLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * CDMLoader Luaラッパー
+ */
 class CDMLoader_Lua : public CDMLoader
 {
 public:

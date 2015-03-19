@@ -7,6 +7,9 @@
 
 #include "BufferLineData.h"
 
+/**
+ * BufferLineData Luaラッパー
+ */
 class BufferLineData_Lua : public BufferLineData
 {
 public:

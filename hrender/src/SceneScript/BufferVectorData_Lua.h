@@ -6,7 +6,9 @@
 #define _BUFFERVECTORDATA_LUA_H_
 
 #include "BufferVectorData.h"
-
+/**
+ * BufferVectorData Luaラッパー
+ */
 class BufferVectorData_Lua : public BufferVectorData
 {
 public:

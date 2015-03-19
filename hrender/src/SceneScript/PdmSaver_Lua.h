@@ -8,7 +8,9 @@
 #include "LuaUtil.h"
 #include "PdmSaver.h"
 #include "BufferPointData_Lua.h"
-
+/**
+ * PDMSaver Luaラッパー
+ */
 class PDMSaver_Lua : public PDMSaver
 {
 public:
