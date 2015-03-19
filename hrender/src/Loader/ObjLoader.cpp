@@ -40,7 +40,7 @@ void OBJLoader::Clear()
 /**
  * メッシュデータの生成
  * @param  obj SimpleObjの参照
- * @retval メッシュデータ
+ * @retval BufferMeshData* メッシュデータ
  */
 BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
 {
@@ -77,7 +77,7 @@ BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
 /**
  * 点データの生成
  * @param  obj SimpleObjの参照
- * @retval Pointデータバッファ
+ * @retval BufferPointData* Pointデータバッファ
  */
 BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
 {
@@ -105,7 +105,7 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
 /**
  * 線データの生成
  * @param  obj SimpleObjの参照
- * @retval Lineデータバッファ
+ * @retval BufferLineData* Lineデータバッファ
  */
 BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
 {
@@ -166,7 +166,7 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
 /**
  * Tetraデータの生成
  * @param  obj SimpleObjの参照
- * @retval Tetraデータバッファ
+ * @retval BufferTetraData* Tetraデータバッファ
  */
 BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
 {
@@ -183,7 +183,7 @@ BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
 /**
  * Vectorデータの生成
  * @param  obj SimpleObjの参照
- * @retval Vectorデータバッファ
+ * @retval BufferVectorData* Vectorデータバッファ
  */
 BufferVectorData* OBJLoader::createNormalVectorData(const SimpleObj* obj) const
 {
@@ -224,7 +224,7 @@ bool OBJLoader::Load(const char* filename){
 
 /**
  * メッシュデータバッファ取得
- * @retval メッシュデータバッファ
+ * @retval BufferMeshData* メッシュデータバッファ
  */
 BufferMeshData *OBJLoader::MeshData()
 {
@@ -235,7 +235,7 @@ BufferMeshData *OBJLoader::MeshData()
 
 /**
  * 点データバッファ取得
- * @retval 点データバッファ
+ * @retval BufferPointData* 点データバッファ
  */
 BufferPointData *OBJLoader::PointData()
 {
@@ -247,7 +247,7 @@ BufferPointData *OBJLoader::PointData()
 
 /**
  * 線データバッファ取得
- * @retval 線データバッファ
+ * @retval BufferLineData* 線データバッファ
  */
 BufferLineData *OBJLoader::LineData()
 {
@@ -259,7 +259,7 @@ BufferLineData *OBJLoader::LineData()
 
 /**
  * Tetraデータバッファ取得
- * @retval Tetraデータバッファ
+ * @retval BufferTetraData* Tetraデータバッファ
  */
 BufferTetraData *OBJLoader::TetraData()
 {
@@ -271,7 +271,7 @@ BufferTetraData *OBJLoader::TetraData()
 
 /**
  * Vectorデータバッファ取得
- * @retval Vectorデータバッファ
+ * @retval BufferVectorData* Vectorデータバッファ
  */
 BufferVectorData *OBJLoader::NormalData()
 {
