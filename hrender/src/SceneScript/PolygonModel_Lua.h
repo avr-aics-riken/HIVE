@@ -1,3 +1,7 @@
+/**
+ * @file PolygonModel_Lua.h
+ * PolygonModel Luaラッパー
+ */
 #ifndef _POLYGONMODEL_LUA_H_
 #define _POLYGONMODEL_LUA_H_
 

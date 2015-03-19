@@ -1,3 +1,7 @@
+/**
+ * @file VolumeToVector_Lua.h
+ * VolumeToVector Luaラッパー
+ */
 #ifndef _VOLUMETOVECTOR_LUA_H_
 #define _VOLUMETOVECTOR_LUA_H_
 

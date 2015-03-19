@@ -1,3 +1,7 @@
+/**
+ * @file BufferLineData_Lua.h
+ * BufferLineData Luaラッパー
+ */
 #ifndef _BUFFERLINEDATA_LUA_H_
 #define _BUFFERLINEDATA_LUA_H_
 

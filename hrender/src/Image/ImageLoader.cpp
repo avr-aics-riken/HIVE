@@ -1,3 +1,7 @@
+/**
+ * @file ImageLoader.cpp
+ * イメージローダー
+ */
 #include "ImageLoader.h"
 #include <stdio.h>
 #include <string>
@@ -22,24 +26,36 @@ namespace
     
 } // anonymouse namepsace
 
+/**
+ * イメージローダー
+ */
 class ImageLoader::Impl
 {
 private:
     BufferImageData m_image;
     
 public:
+    /// コンストラクタ
     Impl() {
         m_image.Clear();
     }
+
+    /// デストラクタ
     ~Impl() {
         m_image.Clear();
     }
     
+    /// イメージデータへの参照
     BufferImageData* ImageData()
     {
         return &m_image;
     }
-    
+
+    /**
+     * ファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval buffer Readしたファイルバッファ
+     */
     char* LoadFile(const std::string& filepath)
     {
         std::ifstream ifs(filepath.c_str(), std::ios::in | std::ios::binary);
@@ -54,7 +70,12 @@ public:
         ifs.read(buffer, fsize);
         return buffer;
     }
-    
+
+    /**
+     * TGAファイルロード
+     * @param filepath  ファイルフルパス 
+     * @return result TGAロード結果
+     */
     bool LoadTGA(const std::string& filepath)
     {
         int width = 0;
@@ -71,7 +92,13 @@ public:
         delete [] dstbuffer;
         return result;
     }
-    
+
+    /**
+     * HDRファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool LoadHDR(const std::string& filepath)
     {
         int width = 0;
@@ -86,7 +113,13 @@ public:
         delete [] dstbuffer;
         return result;
     }
-    
+
+    /**
+     * PNGファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool LoadPNG(const std::string& filepath)
     {
         int width = 0;
@@ -101,7 +134,13 @@ public:
         delete [] dstbuffer;
         return result;
     }
-    
+
+    /**
+     * JPGファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool LoadJPG(const std::string& filepath)
     {
         int width = 0;
@@ -116,7 +155,13 @@ public:
         delete [] dstbuffer;
         return result;
     }
-    
+
+    /**
+     * ファイルロード[拡張子自動判別]
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool Load(const char* filename)
     {
         bool result = false;
@@ -145,13 +190,21 @@ public:
         }
         return result;
     }
-    
+
+    /**
+     * ロードしたファイルイメージバッファ
+     * @retval Buffer ファイルイメージバッファ
+     */
     const ImageLoader::Buffer ImageBuffer() const
     {
         unsigned char* buf = m_image.ImageBuffer()->GetBuffer();
         return reinterpret_cast<ImageLoader::Buffer>(buf);
     }
-    
+
+    /**
+     * ロードしたファイルイメージバッファサイズ
+     * @retval GetNum イメージバッファサイズ
+     */
     int ImageBufferSize() const
     {
         return m_image.ImageBuffer()->GetNum();

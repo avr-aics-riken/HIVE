@@ -6,6 +6,9 @@
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferPointDataクラス
+ */
 class BufferPointData::Impl
 {
 private:

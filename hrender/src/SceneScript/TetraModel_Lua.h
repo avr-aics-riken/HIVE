@@ -1,3 +1,7 @@
+/**
+ * @file TetraModel_Lua.h
+ * TetraModel Luaラッパー
+ */
 #ifndef _TETRAMODEL_LUA_H_
 #define _TETRAMODEL_LUA_H_
 

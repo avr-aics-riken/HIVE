@@ -1,3 +1,7 @@
+/**
+ * @file VectorModel_Lua.h
+ * VectorModel Luaラッパー
+ */
 #ifndef _VECTORMODEL_LUA_H_
 #define _VECTORMODEL_LUA_H_
 

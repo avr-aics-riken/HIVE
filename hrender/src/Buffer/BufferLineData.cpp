@@ -6,6 +6,9 @@
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferLineDataクラス
+ */
 class BufferLineData::Impl
 {
 private:

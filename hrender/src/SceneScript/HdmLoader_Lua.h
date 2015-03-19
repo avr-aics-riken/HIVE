@@ -1,3 +1,7 @@
+/**
+ * @file HDMLoader_Lua.h
+ * HDMLoader Luaラッパー
+ */
 #ifndef _HDMLOADER_LUA_H_
 #define _HDMLOADER_LUA_H_
 

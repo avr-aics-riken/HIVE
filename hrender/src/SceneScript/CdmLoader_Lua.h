@@ -1,3 +1,7 @@
+/**
+ * @file CDMLoader_Lua.h
+ * CDMLoader Luaラッパー
+ */
 #ifndef _CDMLOADER_LUA_H_
 #define _CDMLOADER_LUA_H_
 

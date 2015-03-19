@@ -1,3 +1,7 @@
+/**
+ * @file BcmLoader_Lua.h
+ * BcmローダLuaラッパー
+ */
 #ifndef _BCMLOADER_LUA_H_
 #define _BCMLOADER_LUA_H_
 

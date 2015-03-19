@@ -1,9 +1,9 @@
-//
-//  SimpleHDR.h
-//  for Radience format
-//
-//  Created by kioku on 13/02/05.
-//
+/**
+ *  @file SimpleHDR.h
+ *  for Radience format
+ *
+ *  Created by kioku on 13/02/05.
+ */
 
 #ifndef INCLUDE_SimpleHDR_h
 #define INCLUDE_SimpleHDR_h

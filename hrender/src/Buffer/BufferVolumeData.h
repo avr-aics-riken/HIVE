@@ -1,5 +1,5 @@
 /**
- * @file BufferVolumeData.cpp
+ * @file BufferVolumeData.h
  * BufferVolumeDataクラス
  */
 #ifndef _BUFFERVOLUMEDATA_H_
@@ -8,6 +8,7 @@
 #include "Ref.h"
 
 class FloatBuffer;
+
 /**
  * BufferVolumeDataクラス
  */

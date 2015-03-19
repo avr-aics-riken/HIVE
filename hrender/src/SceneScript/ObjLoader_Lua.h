@@ -1,3 +1,7 @@
+/**
+ * @file OBJLoader_Lua.h
+ * OBJLoader Luaラッパー
+ */
 #ifndef _OBJLOADER_LUA_H_
 #define _OBJLOADER_LUA_H_
 
