@@ -1,8 +1,7 @@
 /**
- * @file Math.h
+ * @file vxmath.h
  * 数学関数
  */
-
 #ifndef INCLUDE_VX_MATH_H
 #define INCLUDE_VX_MATH_H
 
