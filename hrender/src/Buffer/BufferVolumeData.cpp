@@ -19,6 +19,9 @@ inline float remap(float x, const float *table, int n) {
 
 } // namespace
 
+/**
+ * BufferVolumeDataクラス
+ */
 class BufferVolumeData::Impl
 {
 private:
