@@ -1,3 +1,7 @@
+/**
+ * @file BufferImageData.h
+ * BufferImageDataクラス
+ */
 #ifndef _BUFFERIMAGEDATA_H_
 #define _BUFFERIMAGEDATA_H_
 
@@ -6,6 +10,9 @@
 class FloatBuffer;
 class ByteBuffer;
 
+/**
+ * BufferImageDataクラス
+ */
 class BufferImageData : public RefCount
 {
 private:
@@ -23,6 +30,7 @@ public:
     
     BufferImageData();
     BufferImageData(BufferImageData* inst);
+    BufferImageData(const BufferImageData* inst);
     ~BufferImageData();
     void Create(FORMAT type, int w, int h);
     void Clear();

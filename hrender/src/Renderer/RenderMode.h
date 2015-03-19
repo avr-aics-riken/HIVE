@@ -1,3 +1,7 @@
+/**
+ * @file RenderMode.h
+ * レンダラコア機能モードヘッダ
+ */
 #pragma once
 
 /*

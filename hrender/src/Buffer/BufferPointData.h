@@ -1,3 +1,7 @@
+/**
+ * @file BufferPointData.h
+ * BufferPointDataクラス
+ */
 #ifndef _BUFFERPOINTDATA_H_
 #define _BUFFERPOINTDATA_H_
 
@@ -6,6 +10,9 @@
 class Vec3Buffer;
 class FloatBuffer;
 
+/**
+ * BufferPointDataクラス
+ */
 class BufferPointData : public RefCount
 {
 private:

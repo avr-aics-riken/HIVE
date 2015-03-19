@@ -1,9 +1,16 @@
+/**
+ * @file StlLoader.h
+ * STLデータローダー
+ */
 #ifndef _STLLOADER_H_
 #define _STLLOADER_H_
 
 #include "Ref.h"
 #include "BufferMeshData.h"
 
+/**
+ * STLデータローダー
+ */
 class STLLoader : public RefCount
 {
 public:

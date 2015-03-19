@@ -1,3 +1,7 @@
+/**
+ * @file PrimitiveGenerator.cpp
+ * プリミティブジェネレーター
+ */
 #include "PrimitiveGenerator.h"
 #include "BufferMeshData.h"
 #include "BufferPointData.h"
@@ -7,14 +11,23 @@
 #include "Buffer.h"
 #include <string.h>
 
+/// コンストラクタ
 PrimitiveGenerator::PrimitiveGenerator()
 {
 }
 
+/// デストラクタ
 PrimitiveGenerator::~PrimitiveGenerator()
 {
 }
 
+
+/**
+ * 矩形メッシュデータ作成
+ * @param width  幅
+ * @param height 高さ
+ * @retval BufferMeshData メッシュデータ
+ */
 BufferMeshData* PrimitiveGenerator::Quad(float width, float height) const
 {
     BufferMeshData* mesh  = new BufferMeshData();
@@ -76,6 +89,12 @@ BufferMeshData* PrimitiveGenerator::Quad(float width, float height) const
     return mesh;
 }
 
+
+/**
+ * 球メッシュデータ作成
+ * @param radius 半径
+ * @retval BufferMeshData メッシュデータ
+ */
 BufferPointData* PrimitiveGenerator::Sphere(float radius) const
 {
     BufferPointData* point = new BufferPointData();

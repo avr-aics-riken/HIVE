@@ -1,3 +1,7 @@
+/**
+ * @file VolumeBuffer.cpp
+ * Volumeバッファ
+ */
 #include <string>
 
 #include "Analyzer.h"
@@ -8,6 +12,7 @@
 #include "Buffer.h"
 #include "Commands.h"
 
+/// コンストラクタ
 VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_vtx_id     = 0;
@@ -27,10 +32,19 @@ VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_model      = 0;
 }
 
+/// デストラクタ
 VolumeBuffer::~VolumeBuffer()
 {
 }
 
+/**
+ * ボリュームレンダリング用ボックスモデル作成
+ * @param width  width 
+ * @param height height
+ * @param depth  depth 
+ * @retval true 作成成功
+ * @retval false 作成失敗
+ */
 bool VolumeBuffer::MakeBox(float width, float height, float depth)
 {
     static float vtx[] = {
@@ -66,6 +80,16 @@ bool VolumeBuffer::MakeBox(float width, float height, float depth)
     return true;
 }
 
+/**
+ * 3Dテクスチャ作成
+ * @param width  width 
+ * @param height height
+ * @param depth  depth 
+ * @param component  component 
+ * @param volumedata  volumedata 
+ * @retval true 作成成功
+ * @retval false 作成失敗
+ */
 bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata)
 {
     printf("CreateTexture3D(%d,%d,%d,%d)\n", width, height, depth, component);
@@ -94,6 +118,12 @@ bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsi
     return true;
 }
 
+/**
+ * Volumeバッファ作成
+ * @param model  Volumeモデル 
+ * @retval true  作成成功
+ * @retval false 作成失敗
+ */
 bool VolumeBuffer::Create(const VolumeModel* model)
 {
     bool r = true;
@@ -130,9 +160,15 @@ bool VolumeBuffer::Create(const VolumeModel* model)
     } else {
         fprintf(stderr,"[Error] Not load buffer\n");
     }
+    
+    cacheTextures(model);
+    
     return r;
 }
 
+/**
+ * レンダー.
+ */
 void VolumeBuffer::Render() const
 {
     if (!m_model) {

@@ -1,3 +1,8 @@
+/**
+ * @file ObjLoader.cpp
+ * OBJデータローダー
+ */
+
 #include "ObjLoader.h"
 #include "SimpleObj.h"
 #include "BufferMeshData.h"
@@ -7,17 +12,20 @@
 #include "BufferVectorData.h"
 #include "Buffer.h"
 
+/// コンストラクタ
 OBJLoader::OBJLoader()
 {
     m_obj    = 0;
     Clear();
 }
 
+/// デストラクタ
 OBJLoader::~OBJLoader()
 {
     Clear();
 }
 
+/// メンバクリア
 void OBJLoader::Clear()
 {
     delete m_obj;
@@ -29,6 +37,11 @@ void OBJLoader::Clear()
     m_tetra  = 0;
 }
 
+/**
+ * メッシュデータの生成
+ * @param  obj SimpleObjの参照
+ * @retval BufferMeshData* メッシュデータ
+ */
 BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
 {
     BufferMeshData* mesh  = new BufferMeshData();
@@ -61,6 +74,11 @@ BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
     return mesh;
 }
 
+/**
+ * 点データの生成
+ * @param  obj SimpleObjの参照
+ * @retval BufferPointData* Pointデータバッファ
+ */
 BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
 {
     BufferPointData* point = new BufferPointData();
@@ -84,6 +102,11 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
     return point;
 }
 
+/**
+ * 線データの生成
+ * @param  obj SimpleObjの参照
+ * @retval BufferLineData* Lineデータバッファ
+ */
 BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
 {
     BufferLineData* line = new BufferLineData();
@@ -140,6 +163,11 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
     return line;
 }
 
+/**
+ * Tetraデータの生成
+ * @param  obj SimpleObjの参照
+ * @retval BufferTetraData* Tetraデータバッファ
+ */
 BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
 {
     BufferTetraData* tetra = new BufferTetraData();
@@ -152,6 +180,11 @@ BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
     return tetra;
 }
 
+/**
+ * Vectorデータの生成
+ * @param  obj SimpleObjの参照
+ * @retval BufferVectorData* Vectorデータバッファ
+ */
 BufferVectorData* OBJLoader::createNormalVectorData(const SimpleObj* obj) const
 {
     BufferVectorData* vec = new BufferVectorData();
@@ -169,7 +202,12 @@ BufferVectorData* OBJLoader::createNormalVectorData(const SimpleObj* obj) const
     return vec;
 }
 
-
+/**
+ * Objデータロード
+ * @param  filename ファイルパス
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool OBJLoader::Load(const char* filename){
 	Clear();
     
@@ -184,6 +222,10 @@ bool OBJLoader::Load(const char* filename){
 	return r;
 }
 
+/**
+ * メッシュデータバッファ取得
+ * @retval BufferMeshData* メッシュデータバッファ
+ */
 BufferMeshData *OBJLoader::MeshData()
 {
     if (!m_mesh)
@@ -191,6 +233,10 @@ BufferMeshData *OBJLoader::MeshData()
 	return m_mesh;
 }
 
+/**
+ * 点データバッファ取得
+ * @retval BufferPointData* 点データバッファ
+ */
 BufferPointData *OBJLoader::PointData()
 {
     if (!m_point)
@@ -199,6 +245,10 @@ BufferPointData *OBJLoader::PointData()
     return m_point;
 }
 
+/**
+ * 線データバッファ取得
+ * @retval BufferLineData* 線データバッファ
+ */
 BufferLineData *OBJLoader::LineData()
 {
     if (!m_line)
@@ -207,6 +257,10 @@ BufferLineData *OBJLoader::LineData()
     return m_line;
 }
 
+/**
+ * Tetraデータバッファ取得
+ * @retval BufferTetraData* Tetraデータバッファ
+ */
 BufferTetraData *OBJLoader::TetraData()
 {
     if (!m_tetra)
@@ -215,6 +269,10 @@ BufferTetraData *OBJLoader::TetraData()
     return m_tetra;
 }
 
+/**
+ * Vectorデータバッファ取得
+ * @retval BufferVectorData* Vectorデータバッファ
+ */
 BufferVectorData *OBJLoader::NormalData()
 {
     if (!m_normal)

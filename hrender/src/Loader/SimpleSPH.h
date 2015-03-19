@@ -1,3 +1,8 @@
+/**
+ * @file SimpleSPH.h
+ * SPH形式ファイル簡易ローダー
+ */
+
 //
 //  SimpleSPH
 //
@@ -7,6 +12,9 @@
 
 #include <stdio.h>
 
+/**
+ * SimpleSPH
+ */
 class SimpleSPH
 {
 	

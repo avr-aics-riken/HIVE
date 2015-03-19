@@ -1,3 +1,7 @@
+/**
+ * @file VolumeModel.h
+ * ボリュームモデル
+ */
 #ifndef _VOLUMEMODEL_H_
 #define _VOLUMEMODEL_H_
 
@@ -5,8 +9,12 @@
 #include "RenderObject.h"
 #include "BufferVolumeData.h"
 
+
 class BufferVolumeData;
 
+/**
+ * ボリュームモデル
+ */
 class VolumeModel : public RenderObject
 {
 private:

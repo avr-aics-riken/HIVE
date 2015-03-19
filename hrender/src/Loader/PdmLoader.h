@@ -1,3 +1,7 @@
+/**
+ * @file PdmLoader.h
+ * PDMデータローダー
+ */
 #ifndef _PDMLOADERNATIVE_H
 #define _PDMLOADERNATIVE_H
 
@@ -6,6 +10,9 @@
 
 // @todo { Add interface to load custom(meta) data from PDMlib }
 
+/**
+ * PDMデータローダー
+ */
 class PDMLoader : public RefCount
 {
 public:

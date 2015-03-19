@@ -1,3 +1,7 @@
+/**
+ * @file Ref.h
+ * 参照カウンタクラス
+ */
 
 #pragma once
 /*
@@ -6,6 +10,9 @@
 
 #include <assert.h>
 
+/**
+ * 参照カウンタクラス
+ */
 class RefCount
 {
 protected:

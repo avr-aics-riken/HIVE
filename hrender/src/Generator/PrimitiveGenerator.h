@@ -1,3 +1,8 @@
+/**
+ * @file PrimitiveGenerator.h
+ * プリミティブジェネレーター
+ */
+
 #ifndef _HIVE_PRIMITIVEGENERATOR_H
 #define _HIVE_PRIMITIVEGENERATOR_H
 
@@ -9,6 +14,9 @@ class BufferLineData;
 class BufferTetraData;
 class BufferVectorData;
 
+/**
+ * プリミティブジェネレーター
+ */
 class PrimitiveGenerator : public RefCount
 {
 public:

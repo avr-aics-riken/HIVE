@@ -1,9 +1,17 @@
+/**
+ * @file PolygonAnalyzer.h
+ * ポリゴンデータ解析モジュール
+ */
+
 #ifndef _POLYGONANALYZER_H_
 #define _POLYGONANALYZER_H_
 
 #include "Ref.h"
 #include "PolygonModel.h"
 
+/**
+ * ポリゴンデータ解析クラス
+ */
 class PolygonAnalyzer : public RefCount
 {
 private:

@@ -1,3 +1,7 @@
+/**
+ * @file SPHLoader.h
+ * SPHデータローダー
+ */
 #ifndef _SPHLOADER_H_
 #define _SPHLOADER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * SPHデータローダー
+ */
 class SPHLoader : public RefCount
 {
 public:

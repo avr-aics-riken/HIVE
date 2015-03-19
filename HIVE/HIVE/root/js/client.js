@@ -42,6 +42,9 @@
 		$('up_y').onchange        = function () {};
 		$('up_z').onchange        = function () {};
 		$('camera_fov').onchange  = function () {};
+		$('camera_screen_width').onchange  = function () {};
+		$('camera_screen_height').onchange  = function () {};
+		$('camera_output_filename').onchange  = function () {};
 	}
 	function setCameraProperty(name, objprop, core) {
 		clearTextChangeEvent();
@@ -56,6 +59,13 @@
 		$('up_y').value = objprop.up[1];
 		$('up_z').value = objprop.up[2];
 		$('camera_fov').value = objprop.fov;
+		$('camera_screen_width').value = objprop.screensize[0];
+		$('camera_screen_height').value = objprop.screensize[1];
+		$('camera_output_filename').value = objprop.outputfile;
+		kUI('camera_clearcolor').setColor(objprop.clearcolor[0],
+										  objprop.clearcolor[1],
+										  objprop.clearcolor[2],
+										  objprop.clearcolor[3]);
 		
 		function valueChangePosition(name, pos, i, core) {
 			return function (ev) {
@@ -81,6 +91,19 @@
 				core.setCameraFov(name, fov, true);
 			};
 		}
+		function valueChangeScreenSize(name, v, i, core) {
+			return function (ev) {
+				var s = parseFloat(ev.target.value);
+				v[i] = s;
+				core.setCameraScreenSize(name, v[0], v[1]);
+			};
+		}
+		function valueChangeOutputFiel(name, core) {
+			return function (ev) {
+				var fname = ev.target.value;
+				core.setOutputFilename(name, fname);
+			};
+		}
 
 		$('position_x').onchange = valueChangePosition(name, objprop.position, 0, core);
 		$('position_y').onchange = valueChangePosition(name, objprop.position, 1, core);
@@ -92,6 +115,10 @@
 		$('up_y').onchange       = valueChangeUp(name, objprop.up, 1, core);
 		$('up_z').onchange       = valueChangeUp(name, objprop.up, 2, core);
 		$('camera_fov').onchange = valueChangeFov(name, core);
+		$('camera_screen_width').onchange = valueChangeScreenSize(name, objprop.screensize, 0, core);
+		$('camera_screen_height').onchange = valueChangeScreenSize(name, objprop.screensize, 1, core);
+		$('camera_output_filename').onchange = valueChangeOutputFiel(name, core);
+
 	}
 	
 	function splitfilename(fpath) {
@@ -290,6 +317,9 @@
 			setPropertyMode(objprop.type);
 			if (objprop.type === "CAMERA") {
 				setCameraProperty(objname, objprop.info, core);
+				//core.setActiveCamera(objname);
+				//kUI('viewmode').SetCaption('[' + objname + ']');
+				core.render();
 			} else {
 				setObjectProperty(objname, objprop.info, core);
 			}
@@ -339,14 +369,19 @@
 				dust,
 				icon,
 				item,
-				itemid;
+				itemid,
+				camlist,
+				opt,
+				str;
 			lst.Clear();
+			camlist = document.getElementById('camera_selector');
+			camlist.innerHTML = ''; // clear
 			for (i = 0; i < objlist.length; i = i + 1) {
 				//objList[i].name, objList[i].type
 				itemid = 'listitem-' + objlist[i].name;
 				lst.AddItem(objlist[i].name, itemid);
 				item = $(itemid);
-				item.addEventListener('click', objectClick(core, objlist[i].name, objlist.type));
+				item.addEventListener('click', objectClick(core, objlist[i].name, objlist[i].type));
 				
 				// Dust icon
 				dust = $(itemid + '-dustbtn');
@@ -359,6 +394,21 @@
 				// Color icon
 				icon = item.getElementsByClassName('KList-Item-Icon')[0];
 				icon.style.backgroundColor = getIconColor(objlist[i].type);
+				
+				// camera list
+				if (objlist[i].type === 'CAMERA') {
+					opt = document.createElement("option");
+					str = document.createTextNode(objlist[i].name);
+					opt.appendChild(str);
+					camlist.appendChild(opt);
+
+					opt.value = objlist[i].name;
+					if (objlist[i].name === core.getActiveCamera()) {
+						console.log(objlist[i].name);
+						opt.selected = true;
+					}
+				}
+				
 			}
 			core.render();
 		}
@@ -393,10 +443,15 @@
 		//  UI Events
 		//
 		// Timeline events
+		kUI('camera_selector').ChangeCallback(function (val) {
+			//console.log(val);
+			core.setActiveCamera(val);
+			core.render();
+			//kUI('viewmode').SetCaption('[' + objname + ']');
+		});
 		kUI('timeline').setTimelineData();
 		kUI('timeline').drawGraph();
 		kUI('timeline').ChangeTimeCallback(function (tm) {
-			//kUI('viewmode').SetCaption('[Camera]');
 			core.updateTime(tm);
 		});
 		$('projsetting').addEventListener('click', function (ev) {
@@ -410,15 +465,30 @@
 			core.newScene();
 		});
 		$('loadscenebtn').addEventListener('click', function (ev) {
-			//core.loadOBJ('bunny.obj', 'normal.frag');
-			core.render();
+			var fdlg = new FileDialog("loadsceneDialog", true, '.json');
+			fdlg.OpenFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)),
+				function (filepath) {
+					console.log("FileDialog Select:" + filepath);
+				});
+			//core.render();
 		});
+		$('savescenebtn').addEventListener('click', function (ev) {
+			console.log('SAVE SCENE');
+		});
+
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {
 			core.addCamera();
 		});
 
 		$('list-addbutton').addEventListener('click', function (ev) {
-			var fdlg = new FileDialog("dataDialog", true, false);
+			var fdlg = new FileDialog("dataDialog", true);
 			fdlg.OpenFile("", (function (core, fdlg) {
 				return function (path) {
 					core.getFileList(path, function (err, res) {
@@ -430,13 +500,13 @@
 				function (filepath) {
 					console.log("FileDialog Select:" + filepath);
 					if (filepath.substr(filepath.length - 4) === ".obj") {
-						core.loadOBJ(filepath, 'normal.frag');
+						core.loadOBJ(filepath, './shader/polygon.frag');
 					} else if (filepath.substr(filepath.length - 4) === ".stl") {
-						core.loadSTL(filepath, 'normal.frag');
+						core.loadSTL(filepath, './shader/polygon.frag');
 					} else if (filepath.substr(filepath.length - 4) === ".pdb") {
-						core.loadPDB(filepath, 'normal.frag');
+						core.loadPDB(filepath, './shader/polygon.frag');
 					} else if (filepath.substr(filepath.length - 4) === ".sph") {
-						core.loadSPH(filepath, 'normal.frag');
+						core.loadSPH(filepath, './shader/polygon.frag');
 					} else {
 						console.error('Not supported file type:', filepath);
 					}

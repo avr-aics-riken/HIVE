@@ -1,3 +1,7 @@
+/**
+ * @file SceneScript.h
+ * SceneScript Luaラッパー
+ */
 #ifndef _SCENESCRIPT_H_
 #define _SCENESCRIPT_H_
 /*

@@ -1,3 +1,7 @@
+/**
+ * @file BufferVolumeData.h
+ * BufferVolumeDataクラス
+ */
 #ifndef _BUFFERVOLUMEDATA_H_
 #define _BUFFERVOLUMEDATA_H_
 
@@ -5,6 +9,9 @@
 
 class FloatBuffer;
 
+/**
+ * BufferVolumeDataクラス
+ */
 class BufferVolumeData : public RefCount
 {
 private:

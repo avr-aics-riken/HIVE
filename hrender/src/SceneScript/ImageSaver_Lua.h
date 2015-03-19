@@ -1,3 +1,7 @@
+/**
+ * @file ImageSaver_Lua.h
+ * ImageSaver Luaラッパー
+ */
 #ifndef _IMAGESAVER_LUA_H_
 #define _IMAGESAVER_LUA_H_
 
@@ -5,7 +9,9 @@
 #include "LuaUtil.h"
 #include "../Image/ImageSaver.h"
 #include "BufferImageData_Lua.h"
-
+/**
+ * ImageSaver Luaラッパー
+ */
 class ImageSaver_Lua : public ImageSaver
 {
 public:

@@ -1,3 +1,8 @@
+/**
+ * @file RenderCore.cpp
+ * hrenderコア機能部
+ */
+
 #ifdef HIVE_WITH_COMPOSITOR
 #include <mpi.h>
 #endif
@@ -47,6 +52,9 @@ extern "C" {
 }
 #endif
 
+/**
+ * hrenderコア機能部
+ */
 class RenderCore::Impl {
 
 private:
@@ -84,6 +92,7 @@ private:
     static bool progressCallbackFunc_(int progress, int y, int height, void* ptr) {
         return static_cast<Impl*>(ptr)->progressCallbackFunc(progress, y, height);
     }
+    
     bool progressCallbackFunc(int progress, int y, int height) {
         const double tm = GetTimeCount();
         const int minimumRenderingHeight = 16; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
@@ -103,6 +112,7 @@ private:
     
     
 public:
+    /// コンストラクタ
     Impl()
     {
         m_mode   = RENDER_LSGL;//RENDER_OPENGL;
@@ -124,11 +134,13 @@ public:
         SetCallback_SGL(Impl::progressCallbackFunc_, this);
     }
     
+    /// デストラクタ
     ~Impl() {
         ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
         //ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);
     }
     
+    /// LSGLコンパイラセッティング
     void LSGL_CompilerSetting()
     {
         std::string binaryPath = getBinaryDir();
@@ -138,12 +150,16 @@ public:
 #elif _WIN32
         std::string binpath = "win64";
         std::string ccmd    = "g++";
+#elif defined(__sparc__) || defined(__sparc_v9__)
+        std::string binpath = "sparc64";
+#ifdef HIVE_ENABLE_MPI
+        std::string ccmd    = "mpiFCC";
+#else
+        std::string ccmd    = "FCC";
+#endif
 #elif __linux__
         std::string binpath = "linux_x64";
         std::string ccmd    = "g++";
-#elif SPARC
-        std::string binpath = "sparc64";
-        std::string ccmd    = "fccpx";
 #endif
         std::string opt      = "-O2";
         
@@ -156,26 +172,33 @@ public:
         SetShaderCompiler_SGL(compilerCmd.c_str(), NULL);
     }
     
+    /// バッファのクリア
     void ClearBuffers()
     {
         m_buffers_SGL.clear();
         m_buffers_GL.clear();
     }
 
+    /// レンダーオブジェクトの追加
+    /// @param robj レンダーオブジェクト
     void AddRenderObject(RenderObject* robj)
     {
         m_renderObjects.push_back(robj);
     }
+    
+    /// レンダーオブジェクトのクリア
     void ClearRenderObject()
     {
         m_renderObjects.clear();
     }
     
+    /// プログレスコールバックの設定
     void SetProgressCallback(bool (*func)(double))
     {
         m_progressCallback = func;
     }
     
+    /// レンダリング
     void Render()
     {
         m_oldCallbackTime = 0.0;//GetTimeCount();
@@ -207,12 +230,16 @@ public:
    
 private:
     
+    /// カレントカメラのセット
+    /// @param camera カメラ
     void setCurrentCamera(const Camera* camera)
     {
         m_currentCamera = camera;
         m_clearcolor = VX::Math::vec4(camera->GetClearColor());
     }
     
+    /// SGLバッファの作成
+    /// @param robj レンダーオブジェクト
     BaseBuffer* createBufferSGL(const RenderObject* robj)
     {
         BaseBuffer* buffer = 0;
@@ -248,6 +275,8 @@ private:
         return buffer;
     }
     
+    /// SGLで描画
+    /// @param robj レンダーオブジェクト
     void draw_SGL(const RenderObject* robj)
     {
         if (robj->GetType() == RenderObject::TYPE_CAMERA) {
@@ -276,6 +305,7 @@ private:
         buffer->UnbindProgram();
         
     }
+    
     void draw_GL(const RenderObject* robj)
     {
         // TODO
@@ -292,6 +322,8 @@ private:
          (*it)->Render(RENDER_OPENGL);*/
     }
 
+    /// 画像の下記戻し
+    /// @param color カラーバッファ
     void readbackImage(BufferImageData* color)
     {
         unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
@@ -328,6 +360,10 @@ private:
         }
 
     }
+    
+    /// オブジェクトのレンダリング
+    /// @param color カラーバッファ
+    /// @param depth 深度バッファ
     void renderObjects(BufferImageData* color, BufferImageData* depth)
     {
         printf("RenderCore::RENDER!!!!\n");
@@ -368,6 +404,8 @@ private:
  
     }
     
+    /// リサイズ
+    /// @param camera カメラ
     void resize(Camera* camera)
     {
         BufferImageData* color = camera->GetImageBuffer();
@@ -422,6 +460,7 @@ private:
 
 // ----------------------------------------------------
 
+/// インスタンスの取得
 RenderCore* RenderCore::GetInstance()
 {
     static RenderCore* inst = 0;
@@ -431,27 +470,37 @@ RenderCore* RenderCore::GetInstance()
     return inst;
 }
 
+/// コンストラクタ
 RenderCore::RenderCore() : m_imp(new Impl()) {}
+/// デストラクタ
 RenderCore::~RenderCore()  { delete m_imp; }
 
+/// レンダーオブジェクトの追加
+/// @param robj レンダーオブジェクト
 void RenderCore::AddRenderObject(RenderObject* robj)
 {
     m_imp->AddRenderObject(robj);
 }
+
+/// レンダー
 void RenderCore::Render()
 {
     m_imp->Render();
 }
+
+/// レンダーオブジェクトのクリア
 void RenderCore::ClearRenderObject()
 {
     m_imp->ClearRenderObject();
 }
 
+/// レンダーバッファのクリア
 void RenderCore::ClearBuffers()
 {
     m_imp->ClearBuffers();
 }
 
+/// プログレスコールバックの設定
 void RenderCore::SetProgressCallback(bool (*func)(double))
 {
     m_imp->SetProgressCallback(func);

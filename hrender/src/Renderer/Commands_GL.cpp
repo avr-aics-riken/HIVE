@@ -4,7 +4,10 @@
 //
 //  Created by kioku on 13/02/08.
 //
-
+/**
+ * @file Commands_GL.cpp
+ * GLコマンド
+ */
 #include "Commands.h"
 
 #ifdef USE_OPENGL
@@ -18,11 +21,21 @@ namespace  {
 	float g_far  = 10000.0;
 }
 
+/// カレントコンテキストの取得.
 VX::Graphics& GetCurrentGraphics()
 {
 	static VX::Graphics g;
 	return g;
 }
+
+/**
+ * GLバッファの作成
+ * @param w 幅
+ * @param h 高さ
+ * @param framebuffer フレームバッファ
+ * @param colorRenderbuffer カラーレンダーバッファ
+ * @param despthRenderBuffer デプスレンダーバッファ
+ */
 void CreateBuffer_GL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -43,6 +56,12 @@ void CreateBuffer_GL(int w, int h, unsigned int& framebuffer, unsigned int& colo
 	
 	g.Viewport(0, 0, w, h);
 }
+/**
+ * GLバッファの解放
+ * @param framebuffer フレームバッファ
+ * @param colorRenderbuffer カラーレンダーバッファ
+ * @param depthRenderbuffer 深度レンダーバッファ
+ */
 void ReleaseBuffer_GL(unsigned int framebuffer, unsigned int colorRenderbuffer, unsigned int depthRenderbuffer)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -51,12 +70,25 @@ void ReleaseBuffer_GL(unsigned int framebuffer, unsigned int colorRenderbuffer, 
 	g.DeleteFramebuffers(1, &framebuffer);
 	
 }
+/**
+ * GLクリア
+ * @param red 赤
+ * @param green 緑
+ * @param blue 青
+ * @param alpha 透明度
+ */
 void Clear_GL(float red, float green, float blue, float alpha)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.ClearColor(red, green, blue, alpha);
 	g.Clear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
+/**
+ * GLピクセル値取得
+ * @param w 幅
+ * @param h 高さ
+ * @param imgbuf 結果を格納するバッファ
+ */
 void GetColorBuffer_GL(int w, int h, unsigned char* imgbuf)
 {
   //glPixelStorei(GL_UNPACK_ALIGNMENT,1);
@@ -65,6 +97,13 @@ void GetColorBuffer_GL(int w, int h, unsigned char* imgbuf)
 	g.ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
 	g.Finish();
 }
+
+/**
+ * GLデプスバッファ値取得.
+ * @param w 幅
+ * @param h 高さ
+ * @param imgbuf 結果を格納するバッファ
+ */
 void GetDepthBuffer_GL(int w, int h, float* depthbuf)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -82,6 +121,21 @@ void GetDepthBuffer_GL(int w, int h, float* depthbuf)
 
 }
 
+/**
+ * GLバッファの作成
+ * @param vertexnum 頂点数
+ * @param posbuffer 頂点バッファ
+ * @param normalbuffer 法線バッファ
+ * @param matbuffer マテリアルバッファ
+ * @param texbuffer テクスチャバッファ
+ * @param indexnum インデックス数
+ * @param indexbuffer インデックスバッファ
+ * @param vtx_id 頂点ID
+ * @param normal_id 法線ID
+ * @param mat_id マテリアルID
+ * @param tex_id テクスチャID
+ * @param index_id インデックスID
+ */
 void CreateVBIB_GL(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer, float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
 				   unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id, unsigned int& tex_id, unsigned int& index_id)
 {
@@ -106,6 +160,17 @@ void CreateVBIB_GL(unsigned int vertexnum, float* posbuffer, float* normalbuffer
 		g.BufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
 	}
 }
+
+/**
+ * GLバッファの作成
+ * @param vertexnum 頂点数
+ * @param posbuffer 頂点バッファ
+ * @param radiusbuffer 半径バッファ
+ * @param matbuffer マテリアルバッファ
+ * @param vtx_id 頂点ID
+ * @param radius_id 半径ID
+ * @param mat_id マテリアルID
+ */
 void CreateVBRM_GL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
 				   unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id)
 {
@@ -124,18 +189,32 @@ void CreateVBRM_GL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer
 	//g.BufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
 }
 
+/**
+ * GLバッファの解放
+ * @param buffer_id バッファID
+ */
 void ReleaseBufferVBIB_GL(unsigned int buffer_id)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.DeleteBuffers(1, &buffer_id);
 }
 
+/**
+ * シェーダプログラムのバインド
+ * @param prg シェーダプログラムID
+ */
 void BindProgram_GL(unsigned int prg)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.UseProgram(prg);
 }
 
+/**
+ * Uniform値の設定
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniform1i_GL(unsigned int prg, const char* name, int val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -144,6 +223,12 @@ void SetUniform1i_GL(unsigned int prg, const char* name, int val)
 		g.Uniform1i(p, val);
 }
 
+/**
+ * Uniform値の設定
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniform1f_GL(unsigned int prg, const char* name, float val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -152,6 +237,12 @@ void SetUniform1f_GL(unsigned int prg, const char* name, float val)
 		g.Uniform1f(p, val);
 }
 
+/**
+ * Uniform値の設定
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniform2fv_GL(unsigned int prg, const char* name, const float* val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -160,6 +251,12 @@ void SetUniform2fv_GL(unsigned int prg, const char* name, const float* val)
 		g.Uniform2fv(p, 1, val);
 }
 
+/**
+ * Uniform値の設定
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniform3fv_GL(unsigned int prg, const char* name, const float* val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -168,6 +265,12 @@ void SetUniform3fv_GL(unsigned int prg, const char* name, const float* val)
 		g.Uniform3fv(p, 1, val);
 }
 
+/**
+ * Uniform値の設定
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniform4fv_GL(unsigned int prg, const char* name, const float* val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -176,6 +279,13 @@ void SetUniform4fv_GL(unsigned int prg, const char* name, const float* val)
 		g.Uniform4fv(p, 1, val);
 }
 
+/**
+ * Uniform値の設定(配列)
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ * @param num 個数.
+ */
 void SetUniformFloatArray_GL(unsigned int prg, const char* name, const float* val, int num)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -184,6 +294,12 @@ void SetUniformFloatArray_GL(unsigned int prg, const char* name, const float* va
 		g.Uniform1fv(p, num, val);
 }
 
+/**
+ * Uniform値の設定(行列)
+ * @param prg シェーダプログラムID
+ * @param name 名前
+ * @param val 値
+ */
 void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -192,6 +308,18 @@ void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val)
 		g.UniformMatrix4fv(p, 1, 0, val);
 }
 
+/**
+ * GLカメラの設定
+ * @param prg シェーダプログラムID
+ * @param eye 視点
+ * @param lookat 注目点
+ * @param up アップベクトル
+ * @param fov 視野角
+ * @param w 幅
+ * @param h 高さ
+ * @param nearVal ニア
+ * @param farVal ファー
+ */
 void SetCamera_GL(unsigned int prg, float* eye, float* lookat, float* up, float fov, int w, int h, float nearVal, float farVal)
 {
 	g_near = nearVal;
@@ -207,18 +335,25 @@ void SetCamera_GL(unsigned int prg, float* eye, float* lookat, float* up, float 
 	if (pp != -1)
 		g.UniformMatrix4fv(pp, 1, false, &proj.f[0]);
 }
+
+/// インデックスで描画
+/// @param indexnum インデックス数
 void DrawElements_GL(unsigned int indexnum)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.DrawElements(GL_TRIANGLES, indexnum, GL_UNSIGNED_INT, (void*)0);
 }
 
+/// 三角形の描画.
+/// @param vertexnum 頂点数.
 void DrawArrays_GL(unsigned int vertexnum)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.DrawArrays(GL_TRIANGLES, 0, vertexnum);
 }
 
+/// 点の描画.
+/// @param vertexnum 頂点数.
 void DrawPointArrays_GL(unsigned int vertexnum)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -327,6 +462,11 @@ static const char* g_pointvertsrc = STRINGIFY2(
 										 }
 										 );
 
+/**
+ * シェーダ情報ログのプリント
+ * @param g グラフィックコンテキスト
+ * @param shader シェーダID
+ */
 void printShaderInfoLog(VX::Graphics* g, GLuint shader)
 {
 	int bufSize = 0;
@@ -351,6 +491,12 @@ void printShaderInfoLog(VX::Graphics* g, GLuint shader)
 		}
 	}
 }
+
+/**
+ * プログラム情報ログのプリント
+ * @param g グラフィックコンテキスト
+ * @param shader シェーダプログラムID
+ */
 void printProgramInfoLog(VX::Graphics* g, GLuint program)
 {
 	int bufSize;
@@ -375,6 +521,11 @@ void printProgramInfoLog(VX::Graphics* g, GLuint program)
 	}
 }
 
+/**
+ * 文字列の検索.
+ * @param str1 検索対象文字列.
+ * @param str2 検索文字列.
+ */
 bool findstr(const char* str1, const char* str2)
 {
 	char *cp = (char *) str1;
@@ -394,6 +545,14 @@ bool findstr(const char* str1, const char* str2)
 	return false;
 }
 
+/**
+ * シェーダプログラムの作成.
+ * @param srcname　シェーダパス
+ * @param [out] prg シェーダプログラムID.
+ * @param usePointShader 点シェーダを使うかどうか.
+ * @retval true 成功.
+ * @retval false 失敗.
+ */
 bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointShader)
 {
 	static GLchar srcbuf[16384];
@@ -473,6 +632,7 @@ bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointSh
 	
 	return true;
 }
+
 bool CreateProgramBinary_GL(const char* soname, unsigned int& prg)
 {
 	// TODO
@@ -480,6 +640,10 @@ bool CreateProgramBinary_GL(const char* soname, unsigned int& prg)
 	return false;
 }
 
+/**
+ * シェーダプログラムの削除.
+ * @param prg シェーダプログラムID
+ */
 bool DeleteProgram_GL(unsigned int prg)
 {
 	//assert(prg);
@@ -488,6 +652,15 @@ bool DeleteProgram_GL(unsigned int prg)
 	return true;
 }
 
+/**
+ * バッファのバインド.
+ * @param prg シェーダプログラムID
+ * @param vtxidx 頂点インデックスバッファID
+ * @param normalidx 法線インデックスバッファID
+ * @param matidx マテリアルインデックスバッファID
+ * @param texidx テクスチャインデックスバッファID
+ * @param indexidx インデックスバッファID
+ */
 void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -518,6 +691,13 @@ void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, 
 	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
+/**
+ * ポイントバッファのバインド
+ * @param prg シェーダプログラムID
+ * @param vtxidx 頂点インデックスバッファID
+ * @param vtx_radius 半径バッファID
+ * @param vtx_material マテリアルバッファID
+ */
 void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material)
 {
 	VX::Graphics& g = GetCurrentGraphics();
@@ -543,37 +723,65 @@ void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radi
 //	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
+/**
+ * フレームバッファのバインド
+ * @param frame フレームバッファID
+ */
 void BindFramebuffer_GL(unsigned int frame)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	if (frame)
 		g.BindFramebuffer(GL_FRAMEBUFFER, frame);
 }
-
+           
+/**
+ * テクスチャバッファの生成
+ * @param n 個数
+ * @param [out] tex テクスチャバッファインデックス
+ */
 void GenTextures_GL(int n, unsigned int* tex)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.GenTextures(n, tex);
 }
 
+/**
+ * 3Dテクスチャのバインド
+ * @param texid テクスチャID
+ */
 void BindTexture3D_GL(unsigned int texid)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.BindTexture(GL_TEXTURE_3D, texid);
 }
 
+/**
+ * 2Dテクスチャのバインド
+ * @param texid テクスチャID
+ */
 void BindTexture2D_GL(unsigned int texid)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.BindTexture(GL_TEXTURE_2D, texid);
 }
 
+/**
+ * テクスチャの有効化
+ * @param n テクスチャID
+ */
 void ActiveTexture_GL(unsigned int n)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.ActiveTexture(GL_TEXTURE0 + n);
 }
 
+/**
+ * テクスチャの生成
+ * @param width 幅
+ * @param height 高さ
+ * @param component 種類
+ * @param pixeldata ピクセルデータ
+ */
 void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata)
 {
 	VX::Graphics& g = GetCurrentGraphics();

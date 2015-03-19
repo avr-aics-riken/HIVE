@@ -1,3 +1,7 @@
+/**
+ * @file ImageSaver.h
+ * 画像セーバ
+ */
 #ifndef _IMAGESAVER_H_
 #define _IMAGESAVER_H_
 
@@ -6,6 +10,9 @@
 
 class BufferImageData;
 
+/**
+ * 画像セーバ
+ */
 class ImageSaver : public RefCount
 {
 private:

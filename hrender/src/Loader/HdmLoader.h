@@ -1,3 +1,7 @@
+/**
+ * @file HdmLoader.h
+ * HDMデータローダー
+ */
 #ifndef _HDMLOADER_H_
 #define _HDMLOADER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * HDMデータローダー
+ */
 class HDMLoader : public RefCount
 {
 public:
