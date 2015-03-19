@@ -1,3 +1,7 @@
+/**
+ * @file SimpleJPG
+ * Simple JPG
+ */
 #ifndef INCLUDE_SIMPLEJPG
 #define INCLUDE_SIMPLEJPG
 

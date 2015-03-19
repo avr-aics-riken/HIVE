@@ -1,3 +1,7 @@
+/**
+ * @file BufferMeshData_Lua.h
+ * BufferMeshData Luaラッパー
+ */
 #ifndef _BUFFERMESHDATA_LUA_H_
 #define _BUFFERMESHDATA_LUA_H_
 

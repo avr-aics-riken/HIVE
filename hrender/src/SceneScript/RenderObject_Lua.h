@@ -1,3 +1,7 @@
+/**
+ * @file RenderObject_Lua.h
+ * RenderObject Luaラッパー
+ */
 #ifndef _RENDEROBJECT_LUA_H_
 #define _RENDEROBJECT_LUA_H_
 #include "BufferImageData_Lua.h"

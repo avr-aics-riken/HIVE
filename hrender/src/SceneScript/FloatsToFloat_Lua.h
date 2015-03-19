@@ -1,3 +1,7 @@
+/**
+ * @file FloatsToFloat_Lua.h
+ * FloatsToFloat Luaラッパー
+ */
 #ifndef _FLOATSTOFLOAT_LUA_H_
 #define _FLOATSTOFLOAT_LUA_H_
 

@@ -1,3 +1,7 @@
+/**
+ * @file PDMSaver_Lua.h
+ * PDMSaver Luaラッパー
+ */
 #ifndef _PDMSAVER_LUA_H_
 #define _PDMSAVER_LUA_H_
 

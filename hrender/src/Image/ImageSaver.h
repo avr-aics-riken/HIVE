@@ -1,3 +1,7 @@
+/**
+ * @file ImageSaveer.h
+ * 画像セーバ
+ */
 #ifndef _IMAGESAVER_H_
 #define _IMAGESAVER_H_
 

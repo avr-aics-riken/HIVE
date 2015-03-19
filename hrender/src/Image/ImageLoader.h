@@ -1,3 +1,7 @@
+/**
+ * @file ImageLoader.h
+ * 画像ローダ
+ */
 #ifndef _IMAGELOADER_H_
 #define _IMAGELOADER_H_
 

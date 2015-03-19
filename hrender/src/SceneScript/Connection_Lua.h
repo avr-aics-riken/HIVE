@@ -1,3 +1,7 @@
+/**
+ * @file Connection_Lua.h
+ * Connection Luaラッパー
+ */
 #ifndef _CONNECTION_LUA_H_
 #define _CONNECTION_LUA_H_
 

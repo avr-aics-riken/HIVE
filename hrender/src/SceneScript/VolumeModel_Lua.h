@@ -1,3 +1,7 @@
+/**
+ * @file VolumeModel_Lua.h
+ * VolumeModel Luaラッパー
+ */
 #ifndef _VOLUMEMODEL_LUA_H_
 #define _VOLUMEMODEL_LUA_H_
 
