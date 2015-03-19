@@ -1743,6 +1743,7 @@ inline float smoothstep (float a, float b, float x)
 }
 
 // ===================  MultiComponent Index =======================
+/// 2元index
 struct idx2
 {
 	int x,y;
@@ -1760,6 +1761,7 @@ struct idx2
 	idx2& operator*=(int s)         { x *= s;   y *= s;   return *this; }
 };
 
+/// 3元index
 struct idx3
 {
 	int x,y,z;
