@@ -17,6 +17,9 @@
 
 namespace VX
 {
+   /**
+    * スレッド
+    */
 	class Thread
 	{
 	public:

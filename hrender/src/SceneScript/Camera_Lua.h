@@ -9,7 +9,9 @@
 #include "Camera.h"
 #include "BufferImageData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * Camera Luaラッパー
+ */
 class Camera_Lua : public Camera
 {
 private:

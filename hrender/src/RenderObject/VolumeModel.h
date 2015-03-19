@@ -9,11 +9,12 @@
 #include "RenderObject.h"
 #include "BufferVolumeData.h"
 
+
+class BufferVolumeData;
+
 /**
  * ボリュームモデル
  */
-class BufferVolumeData;
-
 class VolumeModel : public RenderObject
 {
 private:

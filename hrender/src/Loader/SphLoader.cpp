@@ -58,7 +58,7 @@ bool SPHLoader::Load(const char* filename)
 
 /**
  * SPHWidth取得
- * @retval Width
+ * @retval int Width
  */
 int SPHLoader::Width()    {
     return m_volume->Width();
@@ -66,7 +66,7 @@ int SPHLoader::Width()    {
 
 /**
  * SPHHeight取得
- * @retval Height
+ * @retval int Height
  */
 int SPHLoader::Height()   {
     return m_volume->Height();
@@ -74,7 +74,7 @@ int SPHLoader::Height()   {
 
 /**
  * SPHDepth取得
- * @retval Depth
+ * @retval int Depth
  */
 int SPHLoader::Depth()    {
     return m_volume->Depth();
@@ -82,7 +82,7 @@ int SPHLoader::Depth()    {
 
 /**
  * SPHComponent取得
- * @retval Component数
+ * @retval int Component数
  */
 int SPHLoader::Component() {
     return m_volume->Component();
@@ -90,7 +90,7 @@ int SPHLoader::Component() {
 
 /**
  * SPHデータバッファ参照取得
- * @retval FloatBufferアドレス
+ * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* SPHLoader::Buffer() {
     return m_volume->Buffer();
@@ -98,7 +98,7 @@ FloatBuffer* SPHLoader::Buffer() {
 
 /**
  * VolumeData参照取得
- * @retval VolumeData参照
+ * @retval BufferVolumeData* VolumeData参照
  */
 BufferVolumeData *SPHLoader::VolumeData()
 {

@@ -59,7 +59,7 @@ bool STLLoader::Load(const char* filename){
 
 /**
  * メッシュデータ参照
- * @retval メッシュデータへの参照
+ * @retval BufferMeshData* メッシュデータへの参照
  */
 BufferMeshData *STLLoader::MeshData()
 {

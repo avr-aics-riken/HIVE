@@ -9,10 +9,9 @@
 #include "Buffer.h"
 #include "BufferPointData_Lua.h"
 #include "PdbLoader.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * PDBLoader Luaラッパー
+ */
 class PDBLoader_Lua : public PDBLoader
 {
 public:

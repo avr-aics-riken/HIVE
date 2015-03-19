@@ -9,7 +9,9 @@
 #include "VolumeToVector.h"
 #include "BufferLineData_Lua.h"
 #include "BufferTetraData_Lua.h"
-
+/**
+ * VolumeToVector Luaラッパー
+ */
 class VolumeToVector_Lua : public VolumeToVector
 {
 public:

@@ -18,7 +18,7 @@
 
 /**
  * 実行している自身のファイルパス取得
- * @retval 実行ファイルフルパス
+ * @return 実行ファイルフルパス
  */
 std::string getBinaryDir()
 {
@@ -63,7 +63,7 @@ std::string getBinaryDir()
 
 /**
  * カレントディレクトリパス取得
- * @retval カレントディレクトリパス
+ * @return カレントディレクトリパス
  */
 std::string getCurrentDir()
 {
@@ -118,7 +118,7 @@ void changeFileDir(const std::string& filefullpath)
 /**
  * 相対パスからフルパス変換
  * @param  path 相対パス
- * @retval フルパス
+ * @return フルパス
  */
 std::string convertFullpath(const std::string& path)
 {
