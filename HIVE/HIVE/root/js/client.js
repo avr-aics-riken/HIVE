@@ -500,13 +500,13 @@
 				function (filepath) {
 					console.log("FileDialog Select:" + filepath);
 					if (filepath.substr(filepath.length - 4) === ".obj") {
-						core.loadOBJ(filepath, 'normal.frag');
+						core.loadOBJ(filepath, './shader/polygon.frag');
 					} else if (filepath.substr(filepath.length - 4) === ".stl") {
-						core.loadSTL(filepath, 'normal.frag');
+						core.loadSTL(filepath, './shader/polygon.frag');
 					} else if (filepath.substr(filepath.length - 4) === ".pdb") {
-						core.loadPDB(filepath, 'normal.frag');
+						core.loadPDB(filepath, './shader/polygon.frag');
 					} else if (filepath.substr(filepath.length - 4) === ".sph") {
-						core.loadSPH(filepath, 'normal.frag');
+						core.loadSPH(filepath, './shader/polygon.frag');
 					} else {
 						console.error('Not supported file type:', filepath);
 					}
