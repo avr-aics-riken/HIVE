@@ -1,3 +1,7 @@
+/**
+ * @file TetraModel.h
+ * 三角錐モデル
+ */
 #ifndef _TETRAMODEL_H_
 #define _TETRAMODEL_H_
 
@@ -6,6 +10,9 @@
 
 class BufferTetraData;
 
+/**
+ * 三角錐モデル
+ */
 class TetraModel : public RenderObject
 {
 private:

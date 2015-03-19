@@ -1,3 +1,8 @@
+/**
+ * @file VolumeToMeshData.cpp
+ * VolumeDataからメッシュ生成を行うモジュール
+ */
+
 #include "VolumeToMeshData.h"
 
 #include <cmath>
@@ -428,7 +433,9 @@ void compute_smooth_normals(std::vector<float> &normals,
   }
 }
 
-
+/**
+ * CreateMarchingCubes
+ */
 template<typename T>
 class CreateMarchingCubes {
 public:
@@ -670,6 +677,10 @@ public:
   std::vector<size_t> indices;
 };
 
+
+/**
+ * marching_cubes_generator
+ */
 template<typename T>
 class marching_cubes_generator {
 public:

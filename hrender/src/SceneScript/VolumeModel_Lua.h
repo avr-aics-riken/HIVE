@@ -1,3 +1,7 @@
+/**
+ * @file VolumeModel_Lua.h
+ * VolumeModel Luaラッパー
+ */
 #ifndef _VOLUMEMODEL_LUA_H_
 #define _VOLUMEMODEL_LUA_H_
 
@@ -6,7 +10,9 @@
 #include "VolumeModel.h"
 #include "BufferVolumeData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * VolumeModel Luaラッパー
+ */
 class VolumeModel_Lua : public VolumeModel
 {
 public:

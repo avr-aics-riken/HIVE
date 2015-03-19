@@ -1,0 +1,32 @@
+
+print('Render Obj')
+
+local camera = Camera()
+camera:SetScreenSize(512, 512)
+camera:SetFilename('render_vol_image.jpg')
+
+camera:LookAt(
+	100,100,200,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local obj= OBJLoader()
+obj:Load('bunny.obj')
+local poly = PolygonModel()
+poly:Create(obj:MeshData());
+poly:SetShader('polygon.frag')
+poly:SetTranslate(50,0,0)
+
+
+local sph = VOLLoader()
+sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol')
+
+local volume = VolumeModel()
+local volumedata = sph:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('def_volume.frag')
+render {camera, volume, poly}
+
+

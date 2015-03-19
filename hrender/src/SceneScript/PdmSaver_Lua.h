@@ -1,10 +1,16 @@
+/**
+ * @file PDMSaver_Lua.h
+ * PDMSaver Luaラッパー
+ */
 #ifndef _PDMSAVER_LUA_H_
 #define _PDMSAVER_LUA_H_
 
 #include "LuaUtil.h"
 #include "PdmSaver.h"
 #include "BufferPointData_Lua.h"
-
+/**
+ * PDMSaver Luaラッパー
+ */
 class PDMSaver_Lua : public PDMSaver
 {
 public:

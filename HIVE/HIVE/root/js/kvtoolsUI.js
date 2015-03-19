@@ -330,6 +330,10 @@ KDropdownListClass.Init = function(){
 	}
 }
 
+KDropdownListClass.prototype.ChangeCallback = function (func) {
+	this.onChangedFunc = func;
+}
+
 KDropdownListClass.userInit = function(dom){
 	var el = dom.getElementsByClassName('KDropdownList');
 	for (var k = 0; k < el.length; ++k) {

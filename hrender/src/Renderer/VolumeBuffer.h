@@ -1,3 +1,8 @@
+/**
+ * @file VolumeBuffer.h
+ * Volumeバッファ
+ */
+ 
 #pragma once
 /*
    VolumeBuffer.h
@@ -10,6 +15,9 @@
 class VolumeModel;
 class BufferVolumeData;
 
+/**
+ * Volumeバッファ
+ */
 class VolumeBuffer : public BaseBuffer
 {
 private:

@@ -1,3 +1,7 @@
+/**
+ * @file LineBuffer.h
+ * ラインバッファ
+ */
 #ifndef _LINEBUFFER_H_
 #define _LINEBUFFER_H_
 
@@ -5,6 +9,9 @@
 
 class LineModel;
 
+/**
+ * ラインバッファ
+ */
 class LineBuffer : public BaseBuffer
 {
 private:

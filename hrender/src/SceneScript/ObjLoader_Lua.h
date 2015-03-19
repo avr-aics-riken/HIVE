@@ -1,3 +1,7 @@
+/**
+ * @file OBJLoader_Lua.h
+ * OBJLoader Luaラッパー
+ */
 #ifndef _OBJLOADER_LUA_H_
 #define _OBJLOADER_LUA_H_
 
@@ -9,10 +13,9 @@
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
 #include "ObjLoader.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * OBJLoader Luaラッパー
+ */
 class OBJLoader_Lua : public OBJLoader
 {
 public:

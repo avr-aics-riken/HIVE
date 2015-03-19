@@ -199,6 +199,7 @@ set(SOURCES
 	src/Builder/VolumeToVector.cpp
 	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
+	src/Image/jpgd.cpp
 	src/Image/lodepng.cpp
 	src/Image/ImageLoader.cpp
 	src/Image/ImageSaver.cpp
@@ -214,6 +215,7 @@ set(SOURCES
 	src/Network/easywsclient.cpp
 	src/Network/happyhttp.cpp
 	src/RenderObject/Camera.cpp
+	src/RenderObject/RenderObject.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
 	src/RenderObject/LineModel.cpp
@@ -319,6 +321,7 @@ ENDIF()
 add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES}
 	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} )
 
+target_link_libraries(hrender pthread)
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
 target_link_libraries(hrender ${CDMLIB_LIBS})
@@ -390,6 +393,7 @@ add_test(NAME render_obj_point.scn       COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_obj_line.scn        COMMAND hrender  ../../hrender/test/render_obj_line.scn      )
 add_test(NAME render_obj_normal_vector.scn      COMMAND hrender  ../../hrender/test/render_obj_normal_vector.scn)
 add_test(NAME render_sph_vector.scn      COMMAND hrender  ../../hrender/test/render_sph_vector.scn    )
+add_test(NAME render_with_texture.scn      COMMAND hrender  ../../hrender/test/render_with_texture.scn    )
 
 #ERROR CASE
 add_test(NAME loader_obj_err.scn         COMMAND hrender ../../hrender/test/err/loader_obj_err.scn           )

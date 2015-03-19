@@ -1,3 +1,7 @@
+/**
+ * @file BaseBuffer.h
+ * ベースバッファ
+ */
 #ifndef __BASEBUFFER_H__
 #define __BASEBUFFER_H__
 
@@ -10,7 +14,13 @@
 
 class Camera;
 class RenderObject;
+class BufferImageData;
 
+#include <map>
+
+/**
+ * ベースバッファ
+ */
 class BaseBuffer : public RefCount
 {
 protected:
@@ -35,7 +45,12 @@ protected:
     bool loadShaderSrc(const char* srcname);
     unsigned int getProgram() const;
     void bindUniforms(const RenderObject* obj) const;
-    
+    const unsigned int getTextureId(const BufferImageData* buf) const;
+    bool cacheTexture(const BufferImageData* buf);
+    void cacheTextures(const RenderObject* model);
+
+private:
+    std::map<const BufferImageData*, unsigned int> m_texutecache;
 };
 
 #endif // __BASEBUFFER_H__

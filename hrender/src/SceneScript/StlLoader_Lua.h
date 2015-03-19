@@ -1,3 +1,7 @@
+/**
+ * @file STLLoader_Lua.h
+ * STLLoader Luaラッパー
+ */
 #ifndef _STLLOADER_LUA_H_
 #define _STLLOADER_LUA_H_
 
@@ -7,10 +11,9 @@
 #include "BufferMeshData.h"
 #include "StlLoader.h"
 #include "BufferMeshData_Lua.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * STLLoader Luaラッパー
+ */
 class STLLoader_Lua : public STLLoader
 {
 public:

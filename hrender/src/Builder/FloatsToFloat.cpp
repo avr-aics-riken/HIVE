@@ -1,9 +1,21 @@
+/**
+ * @file FloatsToFloat.cpp   
+ * 複数Floatデータ再構築モジュール
+ */
+
 #include "FloatsToFloat.h"
 
+/// コンストラクタ
 FloatsToFloat::FloatsToFloat(){
     m_volume = new BufferVolumeData();
 }
 
+/**
+ * BufferVolumeData再構築
+ * @param volume 再構築対象のBufferVolumeData
+ * @param offset 再構築対象のバッファオフセット
+ * @return 作成されたバッファ数
+ */
 int FloatsToFloat::Create(BufferVolumeData *volume, int offset){
     if (!volume)
         return 0;
@@ -19,10 +31,16 @@ int FloatsToFloat::Create(BufferVolumeData *volume, int offset){
     return volume->Buffer()->GetNum();
 }
 
+/// コンポーネント数取得(1固定)
 int FloatsToFloat::Component()
 {
     return 1;
 }
+
+/**
+ * 再構築されたバッファへの参照
+ * @retval m_volume VolumeDataへの参照
+ */
 
 BufferVolumeData* FloatsToFloat::VolumeData()
 {

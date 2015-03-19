@@ -1,3 +1,7 @@
+/**
+ * @file Analyzer.h
+ * ポリゴンデータ、もしくはボリュームデータ解析ユーティリティ
+ */
 #ifndef _ANALYZER_H_
 #define _ANALYZER_H_
 
@@ -34,7 +38,9 @@ inline std::string string_format(const std::string fmt, ...) {
 	return str;
 }
 
-
+/**
+ * Histogram
+ */
 class Histogram {
 public:
 	Histogram(int numBins, double minVal, double maxVal)
@@ -116,6 +122,9 @@ private:
 	bool   invalid_;
 };
 
+/**
+ * ボリュームデータ解析クラス
+ */
 class VolumeAnalyzerProc {
 public:
 	VolumeAnalyzerProc() {};
@@ -226,6 +235,9 @@ public:
 };
 
 
+/**
+ * ポリゴンデータ解析クラス
+ */
 class PolygonAnalyzerProc {
 public:
 	PolygonAnalyzerProc() {};

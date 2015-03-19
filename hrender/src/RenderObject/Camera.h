@@ -1,3 +1,7 @@
+/**
+ * @file Camera.h
+ * カメラクラス
+ */
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
@@ -5,9 +9,15 @@
 
 class BufferImageData;
 
+/**
+ * カメラクラス
+ */
 class Camera : public RenderObject {
     
 public:
+    /**
+     * カメラ情報.
+     */
     struct CameraInfo {
         float eye[3];
         float tar[3];

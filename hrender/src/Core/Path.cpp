@@ -1,3 +1,7 @@
+/**
+ * @file Path.cpp
+ * プラットフォーム別ファイルパス操作ユーティリティ
+ */
 
 #include <string>
 #include <stdio.h>
@@ -12,7 +16,10 @@
 #include <unistd.h>
 #endif
 
-
+/**
+ * 実行している自身のファイルパス取得
+ * @return 実行ファイルフルパス
+ */
 std::string getBinaryDir()
 {
     const int MAXPATHLEN = 4096;
@@ -54,7 +61,10 @@ std::string getBinaryDir()
 #endif
 #include <string>
 
-
+/**
+ * カレントディレクトリパス取得
+ * @return カレントディレクトリパス
+ */
 std::string getCurrentDir()
 {
     char buffer[1024] = {0};
@@ -87,6 +97,10 @@ std::string getCurrentDir()
     return ret;
 }
 
+/**
+ * カレントディレクトリパス変更
+ * @param  filefullpath 変更先パス
+ */
 void changeFileDir(const std::string& filefullpath)
 {
 #if _WIN32
@@ -101,6 +115,11 @@ void changeFileDir(const std::string& filefullpath)
 #endif
 }
 
+/**
+ * 相対パスからフルパス変換
+ * @param  path 相対パス
+ * @return フルパス
+ */
 std::string convertFullpath(const std::string& path)
 {
 #if _WIN32

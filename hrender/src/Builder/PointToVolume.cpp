@@ -1,9 +1,23 @@
+/**
+ * @file PointToVolume.cpp   
+ * 点データからVolumeDataへ変換するモジュール
+ */
 #include "PointToVolume.h"
 #include "../Core/vxmath.h"
 #include <string.h>
 
 namespace {
 
+/**
+ * BoundingBox[BB]中のpointデータのオフセットを求める
+ * @param x X座標
+ * @param y Y座標
+ * @param z Z座標
+ * @param bmin BB最小値
+ * @param bmax ファイルパス
+ * @param dim  ボリュームサイズ
+ * @retval ボリュームデータ配列中のオフセット
+ */
 inline size_t findLoc(float x, float y, float z, const float bmin[3], const float bmax[3], const size_t dim[3]) {
     float xx = (x - bmin[0]) / (bmax[0] - bmin[0]);
     float yy = (y - bmin[1]) / (bmax[1] - bmin[1]);
@@ -19,6 +33,13 @@ inline size_t findLoc(float x, float y, float z, const float bmin[3], const floa
 
 }
 
+/**
+ * 点データからVolumeDataへの変換
+ * @param w Width
+ * @param h Height
+ * @retval true 変換成功
+ * @retval false 変換失敗
+ */
 bool PointToVolume::ToVolume(int w, int h, int d) {
     delete m_volume;
 
@@ -72,6 +93,12 @@ bool PointToVolume::ToVolume(int w, int h, int d) {
     return true;
 }
 
+/**
+ * 点データ設定
+ * @param point 変換対象の点データ
+ * @retval 1 変換成功
+ * @retval 0 変換失敗
+ */
 int PointToVolume::Create(BufferPointData *point) {
     if (!point) {
         return 0;
@@ -86,14 +113,20 @@ int PointToVolume::Create(BufferPointData *point) {
     return 1;
 }
 
+/**
+ * VolumeDataへの参照取得1
+ * @retval m_volume VolumeDataへの参照
+ */
 BufferVolumeData* PointToVolume::VolumeData()
 {
     return m_volume;
 }
 
+/// コンストラクタ
 PointToVolume::PointToVolume() : m_volume(0), m_point(0) {
 }
 
+/// デストラクタ
 PointToVolume::~PointToVolume() {
 }
 

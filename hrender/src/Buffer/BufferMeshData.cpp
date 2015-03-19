@@ -1,7 +1,14 @@
+/**
+ * @file BufferMeshData.cpp
+ * BufferMeshDataクラス
+ */
 #include "BufferMeshData.h"
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferMeshDataクラス
+ */
 class BufferMeshData::Impl
 {
 private:
@@ -11,11 +18,14 @@ private:
     RefPtr<UintBuffer >  m_index;
     RefPtr<FloatBuffer>  m_mat;
 public:
+    /// コンストラクタ
     Impl()
     {
         Clear();
     }
     
+    /// コンストラクタ
+    /// @param inst メッシュデータ
     Impl(BufferMeshData* inst)
     {
         this->m_pos      = inst->Position();
@@ -25,6 +35,7 @@ public:
         this->m_mat      = inst->Material();
     }
     
+    /// デストラクタ
     ~Impl()
     {
         m_pos      = 0;
@@ -33,7 +44,12 @@ public:
         m_index    = 0;
         m_mat      = 0;
     }
-    
+
+    /**
+     * BufferMeshDataの作成
+     * @param vertexnum 作成頂点数
+     * @param indexnum  作成index数
+     */
     void Create(int vertexnum, int indexnum)
     {
         m_pos->Create(vertexnum);
@@ -43,6 +59,7 @@ public:
         m_index->Create(indexnum);
     }
     
+    /// メンバクリア
     void Clear()
     {
         m_pos      = new Vec3Buffer();
@@ -52,6 +69,7 @@ public:
         m_index    = new UintBuffer();
     }
     
+    /// デバッグ表示
     void print()
     {
         /*	printf("Position() %08p\n", m_pos.Get()      );
@@ -61,10 +79,15 @@ public:
          printf("Material() %08X\n", m_mat.Get()      );*/
     }
     
+    /// 頂点バッファを返す
     Vec3Buffer  *Position() { return m_pos;      }
+    /// 法線バッファを返す
     Vec3Buffer  *Normal()   { return m_normal;   }
+    /// UV座標バッファを返す
     Vec2Buffer  *Texcoord() { return m_texcoord; }
+    /// インデックスバッファを返す
     UintBuffer  *Index()    { return m_index;    }
+    /// マテリアルバッファを返す
     FloatBuffer *Material() { return m_mat;      }
 };
 
@@ -75,6 +98,7 @@ BufferMeshData::BufferMeshData()
 }
 
 /// constructor
+/// @param inst メッシュデータ
 BufferMeshData::BufferMeshData(BufferMeshData* inst)
 {
     m_imp = new BufferMeshData::Impl(inst);
@@ -86,24 +110,36 @@ BufferMeshData::~BufferMeshData()
     delete m_imp;
 }
 
+/**
+ * BufferMeshDataの作成
+ * @param vertexnum 作成頂点数
+ * @param indexnum  作成index数
+ */
 void BufferMeshData::Create(int vertexnum, int indexnum)
 {
     m_imp->Create(vertexnum, indexnum);
 }
 
+/// メンバクリア
 void BufferMeshData::Clear()
 {
     m_imp->Clear();
 }
 
+/// デバッグ表示
 void BufferMeshData::print()
 {
     m_imp->print();
 }
 
+/// 頂点バッファを返す
 Vec3Buffer  *BufferMeshData::Position() { return m_imp->Position(); }
+/// 法線バッファを返す
 Vec3Buffer  *BufferMeshData::Normal()   { return m_imp->Normal();   }
+/// UV座標バッファを返す
 Vec2Buffer  *BufferMeshData::Texcoord() { return m_imp->Texcoord(); }
+/// インデックスバッファを返す
 UintBuffer  *BufferMeshData::Index()    { return m_imp->Index();    }
+/// マテリアルバッファを返す
 FloatBuffer *BufferMeshData::Material() { return m_imp->Material(); }
 
