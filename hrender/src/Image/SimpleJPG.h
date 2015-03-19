@@ -1,5 +1,5 @@
 /**
- * @file SimpleJPG
+ * @file SimpleJPG.h
  * Simple JPG
  */
 #ifndef INCLUDE_SIMPLEJPG
