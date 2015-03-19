@@ -39,7 +39,7 @@ int FloatsToFloat::Component()
 
 /**
  * 再構築されたバッファへの参照
- * @retval VolumeDataへの参照
+ * @retval m_volume VolumeDataへの参照
  */
 
 BufferVolumeData* FloatsToFloat::VolumeData()
