@@ -5,6 +5,9 @@
 #include "RenderObject.h"
 #include "../Buffer/BufferImageData.h"
 
+/**
+ * レンダーオブジェクト
+ */
 class RenderObject::Impl
 {
 public:

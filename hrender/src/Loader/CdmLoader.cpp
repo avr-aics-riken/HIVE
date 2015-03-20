@@ -223,15 +223,15 @@ bool CDMLoader::Load(const char* filename)
     //printf("DBG: dataSize: %d\n", dataSize);
     float* d_v = new float[dataSize*numVariables];
 
-    ret =  DFI_IN->ReadData(d_v,                ///< pointer to buffer
-                            step,               ///< timestep
-                            virtualCellSize,    ///< virtual cell size
-                            GVoxel,             ///< global dim
-                            GDiv,               ///< num divs
-                            head,               ///< start time
-                            tail,               ///< end time
-                            r_time,             ///< dfi read time
-                            true,               ///< don't read averate?
+    ret =  DFI_IN->ReadData(d_v,                // pointer to buffer
+                            step,               // timestep
+                            virtualCellSize,    // virtual cell size
+                            GVoxel,             // global dim
+                            GDiv,               // num divs
+                            head,               // start time
+                            tail,               // end time
+                            r_time,             // dfi read time
+                            true,               // don't read averate?
                             i_dummy,
                             f_dummy );
         
@@ -273,7 +273,7 @@ bool CDMLoader::Load(const char* filename)
 
 /**
  * CDMWidth取得
- * @retval Width
+ * @retval int Width
  */
 int CDMLoader::Width()    {
     return m_volume.Width();
@@ -281,7 +281,7 @@ int CDMLoader::Width()    {
 
 /**
  * CDMHeight取得
- * @retval Height
+ * @retval int Height
  */
 int CDMLoader::Height()   {
     return m_volume.Height();
@@ -289,7 +289,7 @@ int CDMLoader::Height()   {
 
 /**
  * CDMDepth取得
- * @retval Depth
+ * @retval int Depth
  */
 int CDMLoader::Depth()    {
     return m_volume.Depth();
@@ -297,7 +297,7 @@ int CDMLoader::Depth()    {
 
 /**
  * CDMComponent取得
- * @retval Component数
+ * @retval int Component数
  */
 int CDMLoader::Component() {
     return m_volume.Component();
@@ -305,7 +305,7 @@ int CDMLoader::Component() {
 
 /**
  * CDMデータバッファ参照取得
- * @retval FloatBufferアドレス
+ * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* CDMLoader::Buffer() {
     return m_volume.Buffer();
@@ -313,7 +313,7 @@ FloatBuffer* CDMLoader::Buffer() {
 
 /**
  * VolumeData参照取得
- * @retval VolumeData参照
+ * @retval BufferVolumeData* VolumeData参照
  */
 BufferVolumeData *CDMLoader::VolumeData()
 {

@@ -45,6 +45,10 @@
 				<div class="KButton" id="showconsole">Console</div>
 				<div id="consoleArea" style="display:none"></div>
 
+				<select class="KDropdownList ppFull" id="camera_selector" >
+					<option value="view" selected>view</option>
+					<option value="Camera-1">Camera-1</option>
+				</select>
 				<div class="KButton" id="projsetting">Export...</div>
 				
 				<div class="KFrameWindow" id="window-projectproperty" style="display:none;">
@@ -185,7 +189,25 @@
 								<div class="ppCell"><input class="KInput ppFull" id="camera_fov"></div>
 							</div>
 						</div>
-						
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">RenderSize:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_screen_width" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_screen_height" type="number"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">OutputFile:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_output_filename" type="text"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">ClearColor:</div></div>
+								<div class="ppCell"><div class="KColorPicker" id="camera_clearcolor" ></div></div>
+							</div>
+						</div>
 					</div>
 
 					<div id="uniformproperty"></div>

@@ -1,10 +1,16 @@
+/**
+ * @file PDMLoader_Lua.h
+ * PDMLoader Luaラッパー
+ */
 #ifndef _PDMLOADER_LUA_H_
 #define _PDMLOADER_LUA_H_
 
 #include "LuaUtil.h"
 #include "PdmLoader.h"
 #include "BufferPointData_Lua.h"
-
+/**
+ * PDMLoader Luaラッパー
+ */
 class PDMLoader_Lua : public PDMLoader
 {
 public:

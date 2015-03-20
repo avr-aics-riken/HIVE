@@ -6,6 +6,9 @@
 #include "LineModel.h"
 #include "BufferLineData.h"
 
+/**
+ * ラインモデル
+ */
 class LineModel::Impl
 {
 public:
@@ -55,7 +58,7 @@ public:
     
     /**
      * ラインデータの取得
-     * @retval ラインデータ
+     * @return ラインデータ
      */
     BufferLineData* GetLine() const {
         return m_line;
@@ -63,7 +66,7 @@ public:
     
     /**
      * シェーダパスの取得
-     * @retval シェーダパス
+     * @return シェーダパス
      */
     const std::string& GetShader() const
     {
@@ -72,7 +75,7 @@ public:
 
     /**
      * ライン幅の取得
-     * @retval ライン幅
+     * @return ライン幅
      */
     float GetLineWidth() const
     {
@@ -127,7 +130,7 @@ bool LineModel::Create(BufferLineData* Linedata)
 
 /**
  * ラインデータの取得.
- * @retval ラインデータ
+ * @return ラインデータ
  */
 BufferLineData* LineModel::GetLine() const
 {
@@ -136,7 +139,7 @@ BufferLineData* LineModel::GetLine() const
 
 /**
  * シェーダパスの取得.
- * @retval シェーダパス
+ * @return シェーダパス
  */
 const std::string& LineModel::GetShader() const
 {
@@ -145,7 +148,7 @@ const std::string& LineModel::GetShader() const
 
 /**
  * ライン幅の取得.
- * @retval ライン幅
+ * @return ライン幅
  */
 float LineModel::GetLineWidth() const
 {

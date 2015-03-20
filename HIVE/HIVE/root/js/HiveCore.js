@@ -35,17 +35,20 @@
 			return function (param) {
 				core.sceneInfo = param;
 				// find viewCamera
-				var view = null,
+				var activecam = null,
 					i;
 				if (!core.sceneInfo.objectlist) {
 					console.erorr('Not find objectlist');
 					return;
 				}
-				view = core.findObject('view').info;
-				if (!view) {
-					console.erorr('Not find view camera');
+				activecam = core.findObject(core.activeCamera);
+				if (!activecam) { // fall back
+					activecam = core.findObject('view');
+				}
+				if (!activecam) {
+					console.erorr('Not find active camera');
 				} else {
-					core.viewCamera = view;
+					core.viewCamera = activecam.info;
 				}
 				infoCallback(param);
 			};
@@ -76,10 +79,10 @@
 		this.conn = new HiveConnect();
 		this.resize(width, height);
 		this.modelCount = 0;
-		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60};
 		this.sceneInfo = {};
 		this.updateSceneCallback = infoCallback;
 		this.activeCamera = 'view';
+		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -330,7 +333,53 @@
 		}
 		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
 	};
-	
+	HiveCore.prototype.setCameraScreenSize = function (cameraname, width, height) {
+		var obj = this.findObject(cameraname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', cameraname);
+			return;
+		}
+		obj.info.screensize[0] = width;
+		obj.info.screensize[1] = height;
+		runScript(this.conn, HiveCommand.cameraScreenSize(cameraname, width, height));
+	};
+	HiveCore.prototype.setOutputFilename = function (cameraname, filename) {
+		var obj = this.findObject(cameraname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', cameraname);
+			return;
+		}
+		obj.info.outputfile = filename;
+		runScript(this.conn, HiveCommand.cameraFilename(cameraname, obj.info.filename));
+	};
+	HiveCore.prototype.setClearColor = function (cameraname, red, green, blue, alpha) {
+		var obj = this.findObject(cameraname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', cameraname);
+			return;
+		}
+		obj.info.clearcolor[0] = red;
+		obj.info.clearcolor[1] = green;
+		obj.info.clearcolor[2] = blue;
+		obj.info.clearcolor[3] = alpha;
+		runScript(this.conn, HiveCommand.cameraFilename(cameraname, red, green, blue, alpha));
+	};
+
+	HiveCore.prototype.setActiveCamera = function (cameraname) {
+		var obj = this.findObject(cameraname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', cameraname);
+			return;
+		}
+		//console.log('ACTIVE CAMERA = ', cameraname);
+		this.activeCamera = cameraname;
+		this.viewCamera   = obj.info;
+	};
+
 	HiveCore.prototype.getActiveCamera = function () {
 		return this.activeCamera;
 	};

@@ -1,3 +1,7 @@
+/**
+ * @file BcmLoader_Lua.h
+ * BcmローダLuaラッパー
+ */
 #ifndef _BCMLOADER_LUA_H_
 #define _BCMLOADER_LUA_H_
 
@@ -5,6 +9,9 @@
 #include "BcmLoader.h"
 #include "BufferVolumeData_Lua.h"
 
+/**
+ * BcmローダLuaラッパー
+ */
 class BCMLoader_Lua : public BCMLoader
 {
 public:

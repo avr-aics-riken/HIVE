@@ -159,11 +159,22 @@ body {
 	z-index: 5;
 	width: 100px;
 }
+
+
+#camera_selector{
+	position: absolute;
+	top:5px;
+	right: 110px;
+	width:160px;
+	z-index: 5;
+}
+
 #viewmode{
 	position: absolute;
 	top:5px;
 	right: 110px;
 	z-index: 5;
+	display: none;
 }
 
 #list-itemlist{

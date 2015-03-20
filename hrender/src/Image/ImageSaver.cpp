@@ -1,3 +1,7 @@
+/**
+ * @file ImageSaver.cpp
+ * イメージファイルセーブユーティリティ
+ */
 #include "ImageSaver.h"
 #include <stdio.h>
 #include <string>
@@ -22,6 +26,9 @@ namespace
     }
 } // anonymouse namepsace
 
+/**
+ * 画像セーバ
+ */
 class ImageSaver::Impl
 {
 private:
@@ -29,18 +36,28 @@ private:
     std::string m_memory;
     
 public:
+    /// コンストラクタ
     Impl() {
         m_image.Clear();
     }
+
+    /// デストラクタ
     ~Impl() {
         m_image.Clear();
     }
-    
+
+    /// イメージデータへの参照
     BufferImageData* ImageData()
     {
         return &m_image;
     }
-    
+
+    /**
+     * ファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool SaveFile(const std::string& filepath, const unsigned char* data, int bytes)
     {
         std::ofstream ofs(filepath.c_str(), std::ios::out | std::ios::binary);
@@ -51,7 +68,14 @@ public:
         ofs.write(reinterpret_cast<const char*>(data), bytes);
         return true;
     }
-    
+
+    /**
+     * ファイルロード
+     * @param filepath  ファイルフルパス 
+     * @param data      ファイルデータ
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool Save(const char* filename, BufferImageData* data)
     {
         if (!filename) { return false; }
@@ -117,7 +141,13 @@ public:
         }
         return result;
     }
-    
+
+    /**
+     * メモリロード
+    * @param format  ファイルフォーマット(JPG, TGAのみ)
+     * @param data      ファイルデータ
+     * @return buffer ファイルイメージデータバッファ
+     */
     const Buffer SaveMemory(unsigned int format, BufferImageData* data)
     {
         if (!data) { return NULL; }

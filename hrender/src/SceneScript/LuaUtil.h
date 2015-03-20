@@ -1,6 +1,6 @@
-/*
- *  LuaUtil.h
- * 
+/**
+ * @file LuaUtil.h
+ * Luaユーティリティ
  */
 
 #ifndef INCLUDE_MOE_LUAUTIL_H

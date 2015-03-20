@@ -1,3 +1,7 @@
+/**
+ * @file VectorModel_Lua.h
+ * VectorModel Luaラッパー
+ */
 #ifndef _VECTORMODEL_LUA_H_
 #define _VECTORMODEL_LUA_H_
 
@@ -6,7 +10,9 @@
 #include "../RenderObject/VectorModel.h"
 #include "BufferVectorData_Lua.h"
 #include "RenderObject_Lua.h"
-
+/**
+ * VectorModel Luaラッパー
+ */
 class VectorModel_Lua : public VectorModel
 {
 public:

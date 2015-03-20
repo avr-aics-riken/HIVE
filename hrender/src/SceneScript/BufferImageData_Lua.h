@@ -1,8 +1,15 @@
+/**
+ * @file BufferImageData_Lua.h
+ * BufferImageData Luaラッパー
+ */
 #ifndef _BUFFERIMAGEDATA_LUA_H_
 #define _BUFFERIMAGEDATA_LUA_H_
 
 #include "BufferImageData.h"
 
+/**
+ * BufferImageData Luaラッパー
+ */
 class BufferImageData_Lua : public BufferImageData
 {
 public:

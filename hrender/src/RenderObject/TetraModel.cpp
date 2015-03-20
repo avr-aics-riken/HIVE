@@ -6,6 +6,9 @@
 #include "TetraModel.h"
 #include "BufferTetraData.h"
 
+/**
+ * 三角錐モデル
+ */
 class TetraModel::Impl
 {
 public:

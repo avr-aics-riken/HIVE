@@ -80,7 +80,7 @@ bool BCMLoader::Load(const char* filename)
 
 /**
  * BCMWidth取得
- * @retval Width
+ * @retval int Width
  */
 int BCMLoader::Width()    {
     return m_volume.Width();
@@ -88,7 +88,7 @@ int BCMLoader::Width()    {
 
 /**
  * BCMHeight取得
- * @retval Height
+ * @retval int Height
  */
 int BCMLoader::Height()   {
     return m_volume.Height();
@@ -96,7 +96,7 @@ int BCMLoader::Height()   {
 
 /**
  * BCMDepth取得
- * @retval Depth
+ * @retval int Depth
  */
 int BCMLoader::Depth()    {
     return m_volume.Depth();
@@ -104,7 +104,7 @@ int BCMLoader::Depth()    {
 
 /**
  * BCMComponent取得
- * @retval Component数
+ * @retval int Component数
  */
 int BCMLoader::Component() {
     return m_volume.Component();
@@ -112,7 +112,7 @@ int BCMLoader::Component() {
 
 /**
  * BCMデータバッファ参照取得
- * @retval FloatBufferアドレス
+ * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* BCMLoader::Buffer() {
     return m_volume.Buffer();
@@ -120,7 +120,7 @@ FloatBuffer* BCMLoader::Buffer() {
 
 /**
  * VolumeData参照取得
- * @retval VolumeData参照
+ * @retval BufferVolumeData* VolumeData参照
  */
 BufferVolumeData *BCMLoader::VolumeData()
 {

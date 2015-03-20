@@ -1,8 +1,14 @@
+/**
+ * @file BufferVolumeData_Lua.h
+ * BufferVolumeData Luaラッパー
+ */
 #ifndef _BUFFERVOLUMEDATA_LUA_H_
 #define _BUFFERVOLUMEDATA_LUA_H_
 
 #include "BufferVolumeData.h"
-
+/**
+ * BufferVolumeData Luaラッパー
+ */
 class BufferVolumeData_Lua : public BufferVolumeData
 {
 public:

@@ -1,8 +1,14 @@
+/**
+ * @file BufferVectorData_Lua.h
+ * BufferVectorData Luaラッパー
+ */
 #ifndef _BUFFERVECTORDATA_LUA_H_
 #define _BUFFERVECTORDATA_LUA_H_
 
 #include "BufferVectorData.h"
-
+/**
+ * BufferVectorData Luaラッパー
+ */
 class BufferVectorData_Lua : public BufferVectorData
 {
 public:

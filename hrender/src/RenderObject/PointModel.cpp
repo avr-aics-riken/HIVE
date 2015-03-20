@@ -6,6 +6,9 @@
 #include "PointModel.h"
 #include "BufferPointData.h"
 
+/**
+ * ポイントモデル
+ */
 class PointModel::Impl
 {
 public:
@@ -46,7 +49,7 @@ public:
     
     /**
      * ポイントデータの取得.
-     * @retval ポイントデータ
+     * @return ポイントデータ
      */
     BufferPointData* GetPoint() const {
         return m_point;
@@ -54,7 +57,7 @@ public:
     
     /**
      * シェーダパスを返す.
-     * @retval シェーダパス
+     * @return シェーダパス
      */
     const std::string& GetShader() const
     {
@@ -100,7 +103,7 @@ bool PointModel::Create(BufferPointData* pointdata)
 
 /**
  * ポイントデータの取得.
- * @retval ポイントデータ
+ * @return ポイントデータ
  */
 BufferPointData* PointModel::GetPoint() const
 {
@@ -109,7 +112,7 @@ BufferPointData* PointModel::GetPoint() const
 
 /**
  * シェーダパスを返す.
- * @retval シェーダパス
+ * @return シェーダパス
  */
 const std::string& PointModel::GetShader() const
 {
