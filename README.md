@@ -11,7 +11,7 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 ## git clone
 
     $ git clone https://github.com/avr-aics-riken/HIVE.git
-    $ git submodule udate --init
+    $ git submodule update --init
 	
 ## Setup
 
