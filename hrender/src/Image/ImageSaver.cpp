@@ -8,6 +8,7 @@
 #include "../Image/SimpleJPG.h"
 #include "../Image/SimplePNG.h"
 #include "../Image/SimpleTGA.h"
+#include "../Image/SimpleEXR.h"
 #include "../Image/SimpleHDR.h"
 #include "Buffer.h"
 
@@ -121,13 +122,13 @@ public:
     {
         if (!data) { return NULL; }
         if (data->Bytes() <= 0) { return NULL; }
-        const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
         const int width = data->Width();
         const int height = data->Height();
         char* dstbuffer = NULL;
         
         if (format == ImageSaver::JPG)
         {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             const int bytes = SimpleJPGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
@@ -137,11 +138,31 @@ public:
         }
         else if (format == ImageSaver::TGA)
         {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             const int bytes = SimpleTGASaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
                 delete [] dstbuffer;
                 return (const Buffer)m_memory.c_str();
+            }
+        }
+        else if (format == ImageSaver::EXR)
+        {
+            const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+            if (data->Format() == BufferImageData::R32F) {
+                const int bytes = SimpleEXRSaverZ((void**)&dstbuffer, width, height, srcbuffer);
+                if (bytes && dstbuffer) {
+                    m_memory = std::string(dstbuffer, bytes);
+                    delete [] dstbuffer;
+                    return (const Buffer)m_memory.c_str();
+                }
+            } else if (data->Format() == BufferImageData::RGBA32F) {
+                const int bytes = SimpleEXRSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
+                if (bytes && dstbuffer) {
+                    m_memory = std::string(dstbuffer, bytes);
+                    delete [] dstbuffer;
+                    return (const Buffer)m_memory.c_str();
+                }
             }
         }
         else if (format == ImageSaver::HDR)

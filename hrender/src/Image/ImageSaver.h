@@ -18,6 +18,7 @@ public:
     enum Format {
         JPG = 1,
         TGA,
+        EXR,
         HDR
     };
     
