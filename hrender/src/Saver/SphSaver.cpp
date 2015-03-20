@@ -135,7 +135,8 @@ struct SphHeaderDouble {
 
 class SphData {
 public:
-  // for Single Precision
+    // for Single Precision
+    /// コンストラクタ
   SphData(const SphHeaderTop &headerTop, const SphHeaderSingle &header,
           const void *data) {
     m_numComp = headerTop.svType == 1 ? 1 : 3;
@@ -163,6 +164,7 @@ public:
   }
 
   // for Double Precision
+    /// コンストラクタ
   SphData(const SphHeaderTop &headerTop, const SphHeaderDouble &header,
           const void *data) {
     m_numComp = headerTop.svType == 1 ? 1 : 3;
@@ -191,17 +193,26 @@ public:
 
   ~SphData() { DeleteBuffer(); }
 
+    /// 単精度かどうか返す
   bool isSinglePrecision() const {
     return m_precision == sizeof(float) ? true : false;
   }
-
+    
+    /// Sphヘッダトップの取得
+    /// @param htop SPHヘッダトップ
+    /// @retval true 成功
+    /// @retval false 失敗
   bool GetSphHeaderTop(SphHeaderTop &htop) const {
     htop.svType = m_numComp == 1 ? 1 : 2;
     htop.dType = isSinglePrecision() == true ? 1 : 2;
 
     return true;
   }
-
+    
+    /// Sphヘッダの取得
+    /// @param header SPHヘッダ
+    /// @retval true 成功
+    /// @retval false 失敗
   bool GetSphHeader(SphHeaderSingle &header) const {
     if (!isSinglePrecision()) {
       return false;
@@ -222,6 +233,10 @@ public:
     return true;
   }
 
+    /// Sphヘッダの取得
+    /// @param header SPHヘッダ
+    /// @retval true 成功
+    /// @retval false 失敗
   bool GetSphHeader(SphHeaderDouble &header) const {
     if (isSinglePrecision()) {
       return false;
@@ -242,8 +257,10 @@ public:
     return true;
   }
 
+    /// データポインタの取得
   const void *GetDataPtr() const { return m_data; }
 
+    /// デバッグ用出力
   void print() {
     const char *precision[2] = {"single", "double"};
     const char *svType[2] = {"scalar", "vector"};
@@ -263,6 +280,7 @@ public:
     printf("TIME      :  %15.5lf\n", m_time);
   }
 
+    /// バッファのプリント
   void printBuffer() {
     if (isSinglePrecision()) {
       _printBuffer<float>();
@@ -300,6 +318,10 @@ private:
   unsigned char *m_data;
 };
 
+/// SPHファイルの保存
+/// @param sph sphデータ
+/// @param filename ファイルパス
+/// @param byteSwap バイトスワップ
 bool SaveSphFile(const SphData *sph, const std::string &filename, bool byteSwap) {
 
     FILE *fp = NULL;
@@ -403,6 +425,7 @@ bool SaveSphFile(const SphData *sph, const std::string &filename, bool byteSwap)
     return true;
 }
 
+/// ビッグエンディアンかどうか返す
 bool IsBigEndian(void)
 {
     union {

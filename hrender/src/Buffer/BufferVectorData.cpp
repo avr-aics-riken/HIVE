@@ -6,6 +6,9 @@
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferVectorDataクラス
+ */
 class BufferVectorData::Impl
 {
 private:
@@ -81,16 +84,22 @@ BufferVectorData::~BufferVectorData()
     delete m_imp;
 }
 
+/**
+ * BufferVectorDataの作成
+ * @param vertexnum 作成頂点数
+ */
 void BufferVectorData::Create(int vertexnum)
 {
     m_imp->Create(vertexnum);
 }
 
+/// メンバクリア
 void BufferVectorData::Clear()
 {
     m_imp->Clear();
 }
 
+/// デバッグ用
 void BufferVectorData::print()
 {
     m_imp->print();
@@ -98,7 +107,14 @@ void BufferVectorData::print()
 
 Vec3Buffer* BufferVectorData::Position()  { return m_imp->Position();  }
 Vec3Buffer* BufferVectorData::Direction() { return m_imp->Direction(); }
-
+/**
+ * 頂点バッファ取得
+ * @return Vec3Buffer頂点バッファへの参照
+ */
 const Vec3Buffer* BufferVectorData::Position()  const { return m_imp->Position();  }
+/**
+ * 方向バッファ取得
+ * @return Vec3Buffer方向バッファへの参照
+ */
 const Vec3Buffer* BufferVectorData::Direction() const { return m_imp->Direction(); }
 

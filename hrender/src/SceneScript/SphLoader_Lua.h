@@ -1,10 +1,16 @@
+/**
+ * @file SPHLoader_Lua.h
+ * SPHLoader Luaラッパー
+ */
 #ifndef _SPHLOADER_LUA_H_
 #define _SPHLOADER_LUA_H_
 
 #include "LuaUtil.h"
 #include "SphLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * SPHLoader Luaラッパー
+ */
 class SPHLoader_Lua : public SPHLoader
 {
 public:

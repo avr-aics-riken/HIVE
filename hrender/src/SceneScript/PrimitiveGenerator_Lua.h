@@ -1,3 +1,7 @@
+/**
+ * @file PrimitiveGenerator_Lua.h
+ * PrimitiveGenerator Luaラッパー
+ */
 #ifndef _PRIMITIVEGENERATOR_LUA_H_
 #define _PRIMITIVEGENERATOR_LUA_H_
 
@@ -9,10 +13,9 @@
 //#include "BufferLineData_Lua.h"
 //#include "BufferTetraData_Lua.h"
 //#include "BufferVectorData_Lua.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * PrimitiveGenerator Luaラッパー
+ */
 class PrimitiveGenerator_Lua : public PrimitiveGenerator
 {
 public:

@@ -130,7 +130,7 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
 
 /**
  * 点データ取得
- * @retval 点データバッファへの参照
+ * @retval BufferPointData* 点データバッファへの参照
  */
 BufferPointData *PDBLoader::BallData()
 {
@@ -139,7 +139,7 @@ BufferPointData *PDBLoader::BallData()
 
 /**
  * 線データ取得
- * @retval Lineデータバッファへの参照
+ * @retval BufferLineData* Lineデータバッファへの参照
  */
 BufferLineData *PDBLoader::StickData()
 {
@@ -149,7 +149,6 @@ BufferLineData *PDBLoader::StickData()
 
 /**
  * マテリアル設定
- * @retval 点データバッファへの参照
  * @param i 対象index
  * @param matID マテリアルID
  */
@@ -165,7 +164,7 @@ void PDBLoader::SetMaterial(int i, float matID) {
 /**
  * AtomElementSymbol取得
  * @param i 対象index
- * @retval GetElementSymbol[std::string]
+ * @retval GetElementSymbol 取得した要素[std::string]
  */
 std::string PDBLoader::AtomElementSymbol(int i)
 {

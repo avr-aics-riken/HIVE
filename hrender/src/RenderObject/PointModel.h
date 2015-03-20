@@ -8,11 +8,12 @@
 #include <string>
 #include "RenderObject.h"
 
+
+class BufferPointData;
+
 /**
  * ポイントモデル
  */
-class BufferPointData;
-
 class PointModel : public RenderObject
 {
 private:

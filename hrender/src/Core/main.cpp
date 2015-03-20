@@ -18,6 +18,9 @@
 
 #include "../Core/Path.h"
 
+/**
+ * sceneレンダリングコア関数
+ */
 void renderScene(const char* scenefile)
 {
     printf("RENDER!! > %s\n", scenefile);

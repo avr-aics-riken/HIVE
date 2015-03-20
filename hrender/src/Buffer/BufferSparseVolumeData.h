@@ -1,5 +1,5 @@
 /**
- * @file BufferSparseVolumeData.cpp
+ * @file BufferSparseVolumeData.h
  * BufferSparseVolumeDataクラス
  */
 #ifndef _BUFFERSPARSEVOLUMEDATA_H_

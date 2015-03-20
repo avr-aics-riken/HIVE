@@ -1,10 +1,16 @@
+/**
+ * @file HDMLoader_Lua.h
+ * HDMLoader Luaラッパー
+ */
 #ifndef _HDMLOADER_LUA_H_
 #define _HDMLOADER_LUA_H_
 
 #include "LuaUtil.h"
 #include "HdmLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * HDMLoader Luaラッパー
+ */
 class HDMLoader_Lua : public HDMLoader
 {
 public:

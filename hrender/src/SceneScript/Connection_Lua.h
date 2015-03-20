@@ -1,9 +1,15 @@
+/**
+ * @file Connection_Lua.h
+ * Connection Luaラッパー
+ */
 #ifndef _CONNECTION_LUA_H_
 #define _CONNECTION_LUA_H_
 
 #include "LuaUtil.h"
 #include "Connection.h"
-
+/**
+ * Connection Luaラッパー
+ */
 class Connection_Lua : public Connection
 {
 private:

@@ -1,10 +1,16 @@
+/**
+ * @file FloatsToFloat_Lua.h
+ * FloatsToFloat Luaラッパー
+ */
 #ifndef _FLOATSTOFLOAT_LUA_H_
 #define _FLOATSTOFLOAT_LUA_H_
 
 #include "LuaUtil.h"
 #include "FloatsToFloat.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * FloatsToFloat Luaラッパー
+ */
 class FloatsToFloat_Lua : public FloatsToFloat
 {
 public:

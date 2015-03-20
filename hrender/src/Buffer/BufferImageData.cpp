@@ -6,6 +6,9 @@
 #include "Buffer.h"
 #include <vector>
 
+/**
+ * BufferImageDataクラス
+ */
 class BufferImageData::Impl
 {
 private:
@@ -25,6 +28,7 @@ public:
     }
     
     /// コンストラクタ
+    /// @param data イメージデータ
     Impl(BufferImageData* data)
     {
         Clear();
@@ -98,7 +102,7 @@ public:
     
     /**
      * FORMAT取得
-     * @return FORMATパラメータ
+     * @return FORMAT FORMATパラメータ
      */
     FORMAT Format() const
     {
@@ -180,7 +184,7 @@ public:
 
     /**
      * Gamma値設定
-     * @param Gamma値
+     * @param gamma Gamma値
      */
     void SetGamma(float gamma)
     {
@@ -189,7 +193,7 @@ public:
 
     /**
      * Exposure値設定
-     * @param Exposure値
+     * @param exposure Exposure値
      */
     void SetExposure(float exposure)
     {
@@ -215,71 +219,128 @@ BufferImageData::~BufferImageData()
     delete m_imp;
 }
 
+/**
+ * ImageBuffer作成
+ * @param type 作成するBufferType
+ * @param w Width
+ * @param h Height
+ */
 void BufferImageData::Create(FORMAT format, int w, int h)
 {
     m_imp->Create(format, w, h);
 }
 
+/// メンバクリア
 void BufferImageData::Clear()
 {
     m_imp->Clear();
 }
 
+/**
+ * Width取得
+ * @return Width値
+ */
 int BufferImageData::Width() const
 {
     return m_imp->Width();
 }
 
+/**
+ * Height取得
+ * @return Height値
+ */
 int BufferImageData::Height() const
 {
     return m_imp->Height();
 }
 
+/**
+ * FORMAT取得
+ * @return FORMAT FORMATパラメータ
+ */
 BufferImageData::FORMAT BufferImageData::Format() const
 {
     return m_imp->Format();
 }
 
+/**
+ * 作成したバッファサイズ取得
+ * @return バッファバイト数
+ */
 int BufferImageData::Bytes() const
 {
     return m_imp->Bytes();
 }
 
+/**
+ * 浮動小数点バッファ参照取得
+ * @return 浮動小数点バッファへの参照
+ */
 FloatBuffer* BufferImageData::FloatImageBuffer()
 {
     return m_imp->FloatImageBuffer();
 }
 
+/**
+ * 浮動小数点バッファ参照取得
+ * @return 浮動小数点バッファへの参照
+ */
 FloatBuffer* BufferImageData::FloatImageBuffer() const
 {
     return m_imp->FloatImageBuffer();
 }
 
+/**
+ * Byteバッファ参照取得
+ * @return Byteバッファ参照への参照
+ */
 ByteBuffer* BufferImageData::ImageBuffer()
 {
     return m_imp->ImageBuffer();
 }
 
+/**
+ * Byteバッファ参照取得
+ * @return Byteバッファ参照への参照
+ */
 ByteBuffer* BufferImageData::ImageBuffer() const
 {
     return m_imp->ImageBuffer();
 }
+
+/**
+ * Gamma値取得
+ * @return Gamma値
+ */
 
 float BufferImageData::Gamma() const
 {
     return m_imp->Gamma();
 }
 
+/**
+ * Exposure値取得
+ * @return Exposure値
+ */
+
 float BufferImageData::Exposure() const
 {
     return m_imp->Exposure();
 }
 
+/**
+ * Gamma値設定
+ * @param gamma Gamma値
+ */
 void BufferImageData::SetGamma(float gamma)
 {
     m_imp->SetGamma(gamma);
 }
 
+/**
+ * Exposure値設定
+ * @param exposure Exposure値
+ */
 void BufferImageData::SetExposure(float exposure)
 {
     m_imp->SetExposure(exposure);

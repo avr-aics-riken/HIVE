@@ -40,7 +40,6 @@ local function updateInfo()
 		id = 0
 	}
 	local json = JSON.encode(data)
-	print('XXXXXXXXXXXXX', json)
 	network:SendText(json)
 end
 
@@ -66,6 +65,7 @@ local function CreateCamera(name)
 		0,1,0,
 		60
 	)
+	camera:SetFilename('output.jpg')
 	HIVE_ObjectTable[name] = camera
 	updateInfo()
 	return 'CreateCamera:' .. name
@@ -107,6 +107,21 @@ local function CameraScreenSize(name, width, height)
 	camera:SetScreenSize(width, height)
 	return 'ScreenSize:' .. name
 end
+
+local function CameraClearColor(name, red, green, blue, alpha)
+	local camera = HIVE_ObjectTable[name]
+	if camera == nil then return 'Not found camera' end
+	camera:ClearColor(red, green, blue, alpha)
+	return 'ClearColor:' .. name
+end
+
+local function CameraOutputFilename(name, filename)
+	local camera = HIVE_ObjectTable[name]
+	if camera == nil then return 'Not found camera' end
+	camera:SetFilename(filename)
+	return 'SetFilename:' .. name
+end
+
 
 local function SetModelShader(name, shaderpath)
 	local model = HIVE_ObjectTable[name]
@@ -200,8 +215,6 @@ local function RenderCamera(w, h, cameraname)
 	if camera == nil then return "No Camera" end
 	local oldscreensize = camera:GetScreenSize()
 	local oldfilename   = camera:GetOutputFile();
-	camera:SetScreenSize(w, h)
-	camera:SetFilename('')
 	local renderList = {camera}
 	for i,v in pairs(HIVE_ObjectTable) do
 		print ("OBJECT = ", i, v)
@@ -215,7 +228,15 @@ local function RenderCamera(w, h, cameraname)
 		print('Skip rendering')
 		return 'Skip rendering'
 	end
+
+	-- set
+	camera:SetScreenSize(w, h)
+	camera:SetFilename('')
 	local r = render(renderList, HIVE_fetchEvent)
+	-- restore
+	camera:SetScreenSize(oldscreensize[1], oldscreensize[2])
+	camera:SetFilename(oldfilename)
+
 	
 	--print('Render Ret = ', r)
 	
@@ -230,8 +251,8 @@ local function RenderCamera(w, h, cameraname)
 		"method" : "renderedImage",
 		"param" : {
 		 	"type": "jpg",
-		    "width" : ]] .. camera:GetScreenWidth() .. [[,
-			"height" : ]] .. camera:GetScreenHeight() .. [[,
+		    "width" : ]] .. w .. [[,
+			"height" : ]] .. h .. [[,
 		 	"canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[
 		},
 		"to": "client",
@@ -244,10 +265,7 @@ local function RenderCamera(w, h, cameraname)
 	local sendtm = os.clock()
 	print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 
-	-- restore
-	camera:SetScreenSize(oldscreensize[1], oldscreensize[2])
-	camera:SetFilename(oldfilename)
-
+	
 	collectgarbage('collect') -- NEED for GC
 	return {objectnum=tostring(r), width=w, height=h}
 end

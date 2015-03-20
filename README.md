@@ -44,6 +44,7 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     # Enable OpenMP build(optional)
     $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
     $ make
+    
 
 ### MacOSX OpenMP build with GCC
 
@@ -54,3 +55,24 @@ Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
     $ ../scripts/cmake_macosx_omp.sh
     $ make
     
+### Setup HIVE
+
+    $ cd build/bin/HIVE
+    $ npm install
+    
+### Run HIVE
+
+    $ cd build/bin/HIVE
+    $ node server.js
+    
+
+### Setup SceneNodeEditor
+
+    $ cd build/bin/SceneNodeEditor
+    $ npm install
+    
+### Run SceneNodeEditor
+
+    $ cd build/bin/SceneNodeEditor
+    $ node server.js
+
