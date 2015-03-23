@@ -801,6 +801,28 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
 }
 
 /**
+ * Float テクスチャの生成
+ * @param width 幅
+ * @param height 高さ
+ * @param component 種類
+ * @param pixeldata ピクセルデータ
+ */
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint format = GL_LUMINANCE;
+	if      (component == 3) format = GL_RGB;
+	else if (component == 4) format = GL_RGBA;
+	else if (component == 1) format = GL_LUMINANCE;
+	else {
+		assert(0);
+	}
+	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	sgl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_FLOAT, pixeldata);
+}
+
+/**
  * 3Dテクスチャの生成
  * @param width 幅
  * @param height 高さ

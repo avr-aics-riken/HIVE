@@ -61,6 +61,7 @@ void BindTexture3D_SGL(unsigned int tex);
 void BindTexture2D_SGL(unsigned int tex);
 void ActiveTexture_SGL(unsigned int n);
 void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata);
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata);
 
 void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata);
 void EvalFragmentShader_SGL();
