@@ -132,6 +132,50 @@ public:
                     delete [] tgabuffer;
                 }
             }
+            else if (ext == "exr" || ext == "EXR")
+            {
+                if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
+                    const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA32F)
+                    {
+                        unsigned char* exrbuffer = NULL;
+                        const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, srcbuffer);
+                        if (bytes && exrbuffer)
+                        {
+                            result = SaveFile(path, exrbuffer, bytes);
+                        }
+                        delete [] exrbuffer;
+                    }
+                    else if (data->Format() == BufferImageData::R32F)
+                    {
+                        unsigned char* exrbuffer = NULL;
+                        const int bytes = SimpleEXRSaverZ((void**)&exrbuffer, width, height, srcbuffer);
+                        if (bytes && exrbuffer)
+                        {
+                            result = SaveFile(path, exrbuffer, bytes);
+                        }
+                        delete [] exrbuffer;
+                    }
+                } else {
+                    const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA8) {
+                        // BYTE -> float
+                        float *hdrbuffer = new float[width*height*4];
+                        for (size_t i = 0; i < width * height * 4; i++) {
+                            hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                        }
+
+                        unsigned char* exrbuffer = NULL;
+                        const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, hdrbuffer);
+                        if (bytes && exrbuffer)
+                        {
+                            result = SaveFile(path, exrbuffer, bytes);
+                        }
+                        delete [] exrbuffer;
+                        delete [] hdrbuffer;
+                    }
+                }
+            }
             else if (ext == "hdr")
             {
             }
