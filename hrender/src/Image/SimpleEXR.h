@@ -16,13 +16,27 @@ inline bool SimpleEXRLoaderRGBA(const char* exrfilename, int& w, int& h, float**
   }
 
   const char *err = NULL;
-  int ret = LoadEXR(rgba_float, &w, &h, exrfilename, &err);
-  if (ret != 0) {
+  float* buf = NULL;
+  int ret = LoadEXR(&buf, &w, &h, exrfilename, &err);
+  if (ret != 0 || (w == 0) || (h == 0)) {
     if (err) {
       fprintf(stderr, "[EXR] %s\n", err);
-      return false;
+    }
+    return false;
+  }
+
+  // Flip Y to match OpenGL coord(LowerLeft)
+  (*rgba_float) = new float[w*h*4];
+  for (size_t y = 0; y < h; y++) {
+    for (size_t x = 0; x < w; x++) {
+      (*rgba_float)[4*(y*w+x)+0] = buf[4*((h-1-y)*w+x)+0];
+      (*rgba_float)[4*(y*w+x)+1] = buf[4*((h-1-y)*w+x)+1];
+      (*rgba_float)[4*(y*w+x)+2] = buf[4*((h-1-y)*w+x)+2];
+      (*rgba_float)[4*(y*w+x)+3] = buf[4*((h-1-y)*w+x)+3];
     }
   }
+
+  free(buf);
 
   return true;
 }
