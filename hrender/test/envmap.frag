@@ -23,9 +23,9 @@ void main(void)
     // dir to theta,phi. Y up to Z up
     float theta = acos(dir.y);
     float phi = 0.0;
-    if (n.z == 0.0) {
+    if (dir.z == 0.0) {
     } else {
-        phi = atan(dir.y, -dir.z);
+        phi = atan(dir.x, -dir.z);
     }
 
     // 0.99999 = Prevent texture warp around.
