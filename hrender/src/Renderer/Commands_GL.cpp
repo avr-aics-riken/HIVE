@@ -797,4 +797,27 @@ void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int compone
 	g.TexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixeldata);
 }
 
+/**
+ * Float テクスチャの生成
+ * @param width 幅
+ * @param height 高さ
+ * @param component 種類
+ * @param pixeldata ピクセルデータ
+ */
+void TexImage2DFloat_GL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata)
+{
+	VX::Graphics& g = GetCurrentGraphics();
+	GLint format = GL_LUMINANCE;
+	if      (component == 3) format = GL_RGB;
+	else if (component == 4) format = GL_RGBA;
+	else if (component == 1) format = GL_LUMINANCE;
+	else {
+		assert(0);
+	}
+	g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	g.TexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_FLOAT, pixeldata);
+}
+
+
 #endif // USE_OPENGL

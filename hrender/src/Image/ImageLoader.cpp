@@ -13,6 +13,7 @@
 #include "../Image/SimpleTGA.h"
 #include "../Image/SimplePNG.h"
 #include "../Image/SimpleHDR.h"
+#include "../Image/SimpleEXR.h"
 #include "Buffer.h"
 
 namespace
@@ -157,6 +158,29 @@ public:
     }
 
     /**
+     * EXRファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
+    bool LoadEXR(const std::string& filepath)
+    {
+        int width = 0;
+        int height = 0;
+        float * dstbuffer = NULL;
+        printf("EXR: \n");
+        bool result = SimpleEXRLoaderRGBA(filepath.c_str(), width, height, &dstbuffer);
+        printf("ret: %d: %d x %d \n", result, width, height);
+        if (result && dstbuffer)
+        {
+            m_image.Create(BufferImageData::RGBA32F, width, height);
+            memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
+        }
+        delete [] dstbuffer;
+        return result;
+    }
+
+    /**
      * ファイルロード[拡張子自動判別]
      * @param filepath  ファイルフルパス 
      * @retval true 成功
@@ -186,6 +210,10 @@ public:
             else if (ext == "hdr")
             {
                 result = LoadHDR(path);
+            }
+            else if (ext == "exr" || ext == "EXR")
+            {
+                result = LoadEXR(path);
             }
         }
         return result;
