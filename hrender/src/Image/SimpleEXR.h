@@ -9,6 +9,8 @@
 
 #include "tinyexr.h"
 
+#include <unistd.h>
+
 inline bool SimpleEXRLoaderRGBA(const char* exrfilename, int& w, int& h, float** rgba_float)
 {
   if (!rgba_float) {
