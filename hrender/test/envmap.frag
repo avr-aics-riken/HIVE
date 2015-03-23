@@ -21,9 +21,15 @@ void main(void)
     dir = normalize(dir);
 
     // dir to theta,phi. Y up to Z up
-    float theta = acos(-dir.y);
-    float phi = atan(dir.y, dir.z);
-    vec2 coord = vec2(phi / (2.0 * PIVAL), theta / PIVAL);
+    float theta = acos(dir.y);
+    float phi = 0.0;
+    if (n.z == 0.0) {
+    } else {
+        phi = atan(dir.y, -dir.z);
+    }
+
+    // 0.99999 = Prevent texture warp around.
+    vec2 coord = vec2(phi / (2.0 * PIVAL), clamp(1.0 - theta / PIVAL, 0.0, 0.99999));
 
     vec4 c = texture2D(mytex0, coord);
 	gl_FragColor = vec4(c.xyz, 1.0);
