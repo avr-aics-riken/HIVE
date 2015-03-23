@@ -25,7 +25,7 @@ void main(void)
     float phi = 0.0;
     if (n.z == 0.0) {
     } else {
-        phi = atan(n.y, -n.z);
+        phi = atan(n.x, -n.z);
     }
 
     // 0.99999 = Prevent texture warp around.
