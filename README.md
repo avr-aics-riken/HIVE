@@ -43,6 +43,9 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     $ cmake ../
     # Enable OpenMP build(optional)
     $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
+    # You may run cmake twice to tell OPENMP flag to SURFACE module correctly.
+    # (This looks like a problem of cmake...)
+    $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
     $ make
     
 
@@ -53,6 +56,7 @@ Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
     $ cd HIVE
     $ mkdir build
     $ ../scripts/cmake_macosx_omp.sh
+    $ ../scripts/cmake_macosx_omp.sh # Run twice to ensure telling OpenMP flag to SURFACE module.
     $ make
     
 ### Setup HIVE
