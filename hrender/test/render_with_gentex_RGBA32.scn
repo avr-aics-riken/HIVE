@@ -16,10 +16,10 @@ local textable = {}
 --create tax texture
 for j = 0, 255 do 
 	for i = 0, 255 do 
-		table.insert(textable, bit32.bxor(i, j));
-		table.insert(textable, bit32.bxor(i, j));
-		table.insert(textable, bit32.bxor(i, j));
-		table.insert(textable, bit32.bxor(i, j));
+		table.insert(textable, bit32.bxor(i , j) / 256);
+		table.insert(textable, bit32.bxor(j , i) / 128);
+		table.insert(textable, bit32.bxor(i , j) /  64);
+		table.insert(textable, bit32.bxor(j , i) /  32);
 	end
 end
 
@@ -27,14 +27,14 @@ end
 print (#textable)
 
 
-gentex:Create2D(textable, 1, 256, 256);
+gentex:Create2D(textable, 3, 256, 256);
 local img = gentex:ImageData()
 
 pm:SetTexture('mytex0', img) -- Bind
 
 local cam = Camera()
 cam:SetScreenSize(512, 512)
-cam:SetFilename("render_with_gentex.jpg")
+cam:SetFilename("render_with_gentex_RGBA32.jpg")
 cam:LookAt(
 	0,0,300,
 	0,0,0,

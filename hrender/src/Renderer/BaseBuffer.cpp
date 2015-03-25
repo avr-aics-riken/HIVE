@@ -183,7 +183,7 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
         
         const BufferImageData::FORMAT fmt = buf->Format();
         
-        assert(fmt == BufferImageData::RGBA8 || fmt == BufferImageData::RGBA32F); // TODO: SUPPORT others
+        assert(fmt == BufferImageData::RGBA8 || fmt == BufferImageData::RGBA32F || fmt == BufferImageData::R32F ); // TODO: SUPPORT others
         int component = 4;  // TODO: get size from buf->Format();
         
         // TODO: more format
@@ -191,6 +191,8 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
             TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer());
         } else if (fmt == BufferImageData::RGBA32F) {
             TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer());
+        } else if (fmt == BufferImageData::R32F) {
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer());
         } else {
             assert(0);
         }
