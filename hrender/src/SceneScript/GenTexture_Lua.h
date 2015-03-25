@@ -39,7 +39,7 @@ public:
 		int count = 0;
 		while(ite != ite_end) {
 			double param = ite->GetNumber();
-			buf.push_back(param * 255);
+			buf.push_back(param);
 			ite++;
 			count++;
 		}
