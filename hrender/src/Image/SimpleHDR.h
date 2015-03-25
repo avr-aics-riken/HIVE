@@ -80,7 +80,7 @@ int RGBE_ReadPixels_RLE(FILE *fp, float *data, int scanline_width,
 #define RGBE_DATA_GREEN  1
 #define RGBE_DATA_BLUE   2
 /* number of floats per pixel */
-#define RGBE_DATA_SIZE   3
+#define RGBE_DATA_SIZE   4
 
 enum rgbe_error_codes {
 	rgbe_read_error,
@@ -446,6 +446,7 @@ inline int RGBE_ReadPixels_RLE(FILE *fp, float *data, int scanline_width,
 			rgbe[3] = scanline_buffer[i+3*scanline_width];
 			rgbe2float(&data[RGBE_DATA_RED],&data[RGBE_DATA_GREEN],
 					   &data[RGBE_DATA_BLUE],rgbe);
+			data[3] = 255;
 			data += RGBE_DATA_SIZE;
 		}
 		num_scanlines--;
