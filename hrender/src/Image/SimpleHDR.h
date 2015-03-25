@@ -467,7 +467,8 @@ inline bool SimpleHDRLoader(const char* hdrfilename, int& w, int& h, float** rgb
 		fclose(fp);
 		return false;
 	}
-	*rgba_float = new float[3 * w * h];
+	//*rgba_float = new float[3 * w * h];
+	*rgba_float = new float[4 * w * h];
 	r = SimpleHDR::RGBE_ReadPixels_RLE(fp ,*rgba_float, w, h);
 	if (r) {
 		fclose(fp);
