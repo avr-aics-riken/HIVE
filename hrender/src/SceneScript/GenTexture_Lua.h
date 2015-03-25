@@ -72,13 +72,36 @@ public:
 		}
 	}
 
+	bool Create3D(LuaTable tbl, int type, int width, int height, int depth) { 
+		std::vector<LuaTable>           lt       = tbl.GetTable();
+		std::vector<LuaTable>::iterator ite      = lt.begin();
+		std::vector<LuaTable>::iterator ite_end  = lt.end();
+		if(type == TYPE_F32) {
+			printf("Type Float 32\n");
+			std::vector<float> buf;
+			while(ite != ite_end) {
+				double param = ite->GetNumber();
+				buf.push_back(param);
+				ite++;
+			}
+			printf("Load Done\n");
+			GenTexture::Create3D_F32(&buf[0], width, height, depth);
+			return true;
+		}
+	}
 	BufferImageData_Lua* ImageData() {
 		return new BufferImageData_Lua(GenTexture::ImageData());
 	}
 
+	BufferVolumeData_Lua* VolumeData() {
+		return new BufferVolumeData_Lua(GenTexture::VolumeData());
+	}
+
 	LUA_SCRIPTCLASS_BEGIN(GenTexture_Lua)
 	LUA_SCRIPTCLASS_METHOD_ARG4(bool,Create2D,LuaTable,int,int,int)
+	LUA_SCRIPTCLASS_METHOD_ARG5(bool,Create3D,LuaTable,int,int,int,int)
 	LUA_SCRIPTCLASS_METHOD_ARG0(BufferImageData_Lua*,ImageData)
+	LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
 	LUA_SCRIPTCLASS_END()
 
 };
