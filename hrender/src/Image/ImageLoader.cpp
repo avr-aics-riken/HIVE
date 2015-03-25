@@ -109,7 +109,14 @@ public:
         if (result && dstbuffer)
         {
             m_image.Create(BufferImageData::RGBA32F, width, height);
-            memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
+            
+            //memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
+            // flip y copy
+            for (int y = 0; y < height; ++y) {
+                const int src_offsety = sizeof(float) * width * y;
+                const int dst_offsety = sizeof(float) * width * (height - 1 - y);
+                memcpy(m_image.FloatImageBuffer()->GetBuffer() + src_offsety, dstbuffer + dst_offsety, sizeof(float) * 4 * width);
+            }
         }
         delete [] dstbuffer;
         return result;
