@@ -203,6 +203,7 @@ set(SOURCES
 	src/Image/lodepng.cpp
 	src/Image/tinyexr.cpp
 	src/Image/ImageLoader.cpp
+	src/Image/GenTexture.cpp
 	src/Image/ImageSaver.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/SphLoader.cpp
