@@ -10,25 +10,34 @@
 #include <fstream>
 #include <sstream>
 #include "BufferImageData.h"
+#include "BufferVolumeData.h"
 #include "Buffer.h"
 
 class GenTexture::Impl
 {
 private:
 	BufferImageData m_image;
+	BufferVolumeData m_volimage;
 
 public:
 	Impl() {
 		m_image.Clear();
+		m_volimage.Clear();
 	}
 
 	~Impl() {
 		m_image.Clear();
+		m_volimage.Clear();
 	}
 
 	BufferImageData* ImageData()
 	{
 		return &m_image;
+	}
+
+	BufferVolumeData* VolumeData()
+	{
+		return &m_volimage;
 	}
 
 	bool Create2D_RGBA8(unsigned char *buf, int width, int height )
@@ -49,6 +58,13 @@ public:
 	{
 		m_image.Create(BufferImageData::RGBA32F, width, height);
 		memcpy(m_image.FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * 4 * width * height);
+		return true;
+	}
+
+	bool Create3D_F32(float *buf, int width, int height, int depth)
+	{
+		m_volimage.Create(width, height, depth, 1);
+		memcpy(m_volimage.Buffer()->GetBuffer(), buf, sizeof(float) * width * height * depth);
 		return true;
 	}
 
@@ -89,10 +105,21 @@ bool GenTexture::Create2D_RGBA32(float *buf, int width, int height )
 	return m_imp->Create2D_RGBA32(buf, width, height);
 }
 
+bool GenTexture::Create3D_F32(float *buf, int width, int height, int depth )
+{
+	return m_imp->Create3D_F32(buf, width, height, depth);
+}
+
 BufferImageData* GenTexture::ImageData()
 {
 	return m_imp->ImageData();
 }
+
+BufferVolumeData* GenTexture::VolumeData()
+{
+	return m_imp->VolumeData();
+}
+
 
 const GenTexture::Buffer GenTexture::ImageBuffer() const
 {

@@ -1,0 +1,39 @@
+
+print('Render Obj')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_vol_image_gentex.jpg')
+
+camera:LookAt(
+	35,35,50,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local gentex = GenTexture()
+
+local size = 64
+local textable = {}
+--create tax texture
+for k = 1, size do 
+	for j = 1, size do 
+		for i = 1, size do 
+			table.insert(textable, bit32.bxor(k, bit32.bxor(j, i)) / 14 );
+		end
+	end
+end
+
+
+print (#textable)
+
+gentex:Create3D(textable, 2, size, size, size);
+
+local volume = VolumeModel()
+local volumedata = gentex:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('def_volume_raymarch3.frag')
+render {camera, volume}
+
+
