@@ -413,6 +413,7 @@ class LuaTable
 {
 public:
     enum VALUE_TYPE {
+        TYPE_INVALID,
         TYPE_NUMBER,
         TYPE_STRING,
         TYPE_ARRAY,
@@ -451,7 +452,33 @@ public:
     
     // from Lua stack
     LuaTable(lua_State* L, int stacki) {
-        m_type = TYPE_ARRAY;
+        if (lua_isnumber(L, stacki)) {
+            m_type = TYPE_NUMBER;
+            m_number = lua_tonumber(L, stacki);
+        } else if (lua_isstring(L, stacki)) {
+            m_type = TYPE_STRING;
+            m_string = std::string(lua_tostring(L, stacki));
+        } else if (lua_istable(L, stacki)) {
+            lua_pushnil(L); // first nil
+            while (lua_next(L, stacki) != 0) {
+                if(lua_isnumber(L, -1)){
+                    LuaTable val(L, -1);
+                    if (val.GetType() != TYPE_INVALID) {
+                        if (lua_isnumber(L, -2)) {
+                            m_type = TYPE_ARRAY;
+                            this->push(val);
+                        } else if (lua_isstring(L, -2)) {
+                            m_type = TYPE_MAP;
+                            const char* s = lua_tostring(L, -2);
+                            this->map(s, val);
+                        }
+                    }
+                }
+                lua_pop(L, 1);
+            }
+        } else {
+            m_type = TYPE_INVALID;
+        }
     }
 
     //---------------------------------
