@@ -33,10 +33,22 @@ public:
 
 	bool Create2D_RGBA8(unsigned char *buf, int width, int height )
 	{
-		printf("Width = %d\n", width);
-		printf("Height = %d\n", height);
 		m_image.Create(BufferImageData::RGBA8, width, height);
 		memcpy(m_image.ImageBuffer()->GetBuffer(), buf, sizeof(unsigned char) * 4 * width * height);
+		return true;
+	}
+
+	bool Create2D_F32(float *buf, int width, int height )
+	{
+		m_image.Create(BufferImageData::R32F, width, height);
+		memcpy(m_image.FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * width * height);
+		return true;
+	}
+
+	bool Create2D_RGBA32(float *buf, int width, int height )
+	{
+		m_image.Create(BufferImageData::RGBA32F, width, height);
+		memcpy(m_image.FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * 4 * width * height);
 		return true;
 	}
 
@@ -65,6 +77,16 @@ GenTexture::~GenTexture()
 bool GenTexture::Create2D_RGBA8(unsigned char *buf, int width, int height )
 {
 	return m_imp->Create2D_RGBA8(buf, width, height );
+}
+
+bool GenTexture::Create2D_F32(float *buf, int width, int height )
+{
+	return m_imp->Create2D_F32(buf, width, height);
+}
+
+bool GenTexture::Create2D_RGBA32(float *buf, int width, int height )
+{
+	return m_imp->Create2D_RGBA32(buf, width, height);
 }
 
 BufferImageData* GenTexture::ImageData()

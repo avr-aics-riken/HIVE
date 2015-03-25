@@ -31,24 +31,45 @@ public:
 			return false;
 		}
 
-		//otameshi RGBA
-		std::vector<unsigned char> buf;
 		std::vector<LuaTable>           lt       = tbl.GetTable();
 		std::vector<LuaTable>::iterator ite      = lt.begin();
 		std::vector<LuaTable>::iterator ite_end  = lt.end();
-		int count = 0;
-		while(ite != ite_end) {
-			double param = ite->GetNumber();
-			buf.push_back(param);
-			ite++;
-			count++;
+		if(type == TYPE_RGBA8) {
+			printf("Type RGBA 8\n");
+			std::vector<unsigned char> buf;
+			while(ite != ite_end) {
+				double param = ite->GetNumber();
+				buf.push_back(param);
+				ite++;
+			}
+			printf("Load Done\n");
+			GenTexture::Create2D_RGBA8(&buf[0], width, height);
+			return true;
 		}
-		printf("size = %d\n", lt.size());
-		printf("count = %d\n", count);
-		printf("width = %d\n", width);
-		printf("height = %d\n", height);
-		printf("len = %d\n", buf.size());
-		return GenTexture::Create2D_RGBA8(&buf[0], width, height);
+		if(type == TYPE_F32) {
+			printf("Type Float 32\n");
+			std::vector<float> buf;
+			while(ite != ite_end) {
+				double param = ite->GetNumber();
+				buf.push_back(param);
+				ite++;
+			}
+			printf("Load Done\n");
+			GenTexture::Create2D_F32(&buf[0], width, height);
+			return true;
+		}
+		if(type == TYPE_RGBA32) {
+			printf("Type RGBA 32\n");
+			std::vector<float> buf;
+			while(ite != ite_end) {
+				double param = ite->GetNumber();
+				buf.push_back(param);
+				ite++;
+			}
+			printf("Load Done\n");
+			GenTexture::Create2D_RGBA32(&buf[0], width, height);
+			return true;
+		}
 	}
 
 	BufferImageData_Lua* ImageData() {
