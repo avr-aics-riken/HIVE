@@ -21,6 +21,8 @@ public:
 	GenTexture();
 	~GenTexture();
 	bool Create2D_RGBA8(unsigned char *buf, int width, int height );
+	bool Create2D_F32(float *buf, int width, int height );
+	bool Create2D_RGBA32(float *buf, int width, int height );
 	BufferImageData *ImageData();
 	const Buffer ImageBuffer() const;
 
