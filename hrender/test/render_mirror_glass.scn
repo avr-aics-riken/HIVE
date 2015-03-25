@@ -1,0 +1,37 @@
+local gen  = PrimitiveGenerator()
+local env = PointModel()
+env:Create(gen:Sphere(10000))
+env:SetShader('envsphere.frag');
+
+local sph1 = PointModel()
+sph1:Create(gen:Sphere(30))
+sph1:SetShader('mirror.frag');
+sph1:SetTranslate(30,0,0);
+
+
+local sph2 = PointModel()
+sph2:Create(gen:Sphere(30))
+sph2:SetShader('glass.frag');
+sph2:SetTranslate(-30,0,0);
+
+
+local loader = ImageLoader()
+local isloaded = loader:Load("aosky_016_8k.png")
+print('Texture Load = ' .. tostring(isloaded))
+local img = loader:ImageData()
+
+env:SetTexture('mytex0', img) -- Bind
+sph1:SetTexture('mytex0', img) -- Bind
+
+local cam = Camera()
+cam:SetScreenSize(1024, 512)
+cam:SetFilename('render_mirror_glass.jpg');
+cam:LookAt(
+	0, -10, 70,
+	0, 0, 0,
+	0, 1, 0,
+	60
+)
+
+render({cam, env, sph1, sph2})
+
