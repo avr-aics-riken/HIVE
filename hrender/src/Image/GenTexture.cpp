@@ -33,6 +33,8 @@ public:
 
 	bool Create2D_RGBA8(unsigned char *buf, int width, int height )
 	{
+		printf("Width = %d\n", width);
+		printf("Height = %d\n", height);
 		m_image.Create(BufferImageData::RGBA8, width, height);
 		memcpy(m_image.ImageBuffer()->GetBuffer(), buf, sizeof(unsigned char) * 4 * width * height);
 		return true;

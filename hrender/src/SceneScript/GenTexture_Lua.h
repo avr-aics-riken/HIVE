@@ -33,14 +33,21 @@ public:
 
 		//otameshi RGBA
 		std::vector<unsigned char> buf;
-		std::vector<LuaTable> lt = tbl.GetTable();
+		std::vector<LuaTable>           lt       = tbl.GetTable();
 		std::vector<LuaTable>::iterator ite      = lt.begin();
 		std::vector<LuaTable>::iterator ite_end  = lt.end();
-		while(ite !=  ite_end) {
+		int count = 0;
+		while(ite != ite_end) {
 			double param = ite->GetNumber();
 			buf.push_back(param * 255);
 			ite++;
+			count++;
 		}
+		printf("size = %d\n", lt.size());
+		printf("count = %d\n", count);
+		printf("width = %d\n", width);
+		printf("height = %d\n", height);
+		printf("len = %d\n", buf.size());
 		return GenTexture::Create2D_RGBA8(&buf[0], width, height);
 	}
 
@@ -49,9 +56,9 @@ public:
 	}
 
 	LUA_SCRIPTCLASS_BEGIN(GenTexture_Lua)
-		LUA_SCRIPTCLASS_METHOD_ARG4(bool,Create2D,LuaTable,int,int,int)
-		LUA_SCRIPTCLASS_METHOD_ARG0(BufferImageData_Lua*,ImageData)
-		LUA_SCRIPTCLASS_END()
+	LUA_SCRIPTCLASS_METHOD_ARG4(bool,Create2D,LuaTable,int,int,int)
+	LUA_SCRIPTCLASS_METHOD_ARG0(BufferImageData_Lua*,ImageData)
+	LUA_SCRIPTCLASS_END()
 
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(GenTexture_Lua);
