@@ -39,6 +39,9 @@ public:
      */
     bool Create(BufferVolumeData* volume)
     {
+        if (!volume || volume->GetType() != BufferData::TYPE_VOLUME) {
+			return false;
+		}
         m_volume = volume;
         return true;
     }

@@ -213,12 +213,14 @@ public:
 /// constructor
 BufferVolumeData::BufferVolumeData()
 {
+	m_type = BufferData::TYPE_VOLUME;
     m_imp = new BufferVolumeData::Impl();
 }
 
 /// constructor
 BufferVolumeData::BufferVolumeData(BufferVolumeData* inst)
 {
+	m_type = BufferData::TYPE_VOLUME;
     m_imp = new BufferVolumeData::Impl(inst);
 }
 

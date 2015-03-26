@@ -110,12 +110,14 @@ public:
 /// constructor
 BufferPointData::BufferPointData()
 {
+	m_type = BufferData::TYPE_POINT;
     m_imp = new BufferPointData::Impl();
 }
 
 /// constructor
 BufferPointData::BufferPointData(BufferPointData* inst)
 {
+	m_type = BufferData::TYPE_POINT;
     m_imp = new BufferPointData::Impl(inst);
 }
 

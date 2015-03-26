@@ -178,6 +178,7 @@ public:
 /// コンストラクタ
 BufferSparseVolumeData::BufferSparseVolumeData()
 {
+	m_type = BufferData::TYPE_SVOLUME;
     m_imp = new BufferSparseVolumeData::Impl();
 }
 
@@ -185,6 +186,7 @@ BufferSparseVolumeData::BufferSparseVolumeData()
 /// @param inst 疎ボリュームデータ
 BufferSparseVolumeData::BufferSparseVolumeData(BufferSparseVolumeData* inst)
 {
+	m_type = BufferData::TYPE_SVOLUME;
     m_imp = new BufferSparseVolumeData::Impl(inst);
 }
 
