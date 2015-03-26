@@ -81,8 +81,8 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
       channel_images[1][y*w+x] = rgba_float[4*((h-1-y)*w+x)+1]; // G
       channel_images[2][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2]; // B
       channel_images[3][y*w+x] = rgba_float[4*((h-1-y)*w+x)+0] * alpha; // RA
-      channel_images[4][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2] * alpha; // GA
-      channel_images[5][y*w+x] = rgba_float[4*((h-1-y)*w+x)+3] * alpha; // BA
+      channel_images[4][y*w+x] = rgba_float[4*((h-1-y)*w+x)+1] * alpha; // GA
+      channel_images[5][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2] * alpha; // BA
       channel_images[6][y*w+x] = alpha;
     }
   }
