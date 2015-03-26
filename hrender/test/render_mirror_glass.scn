@@ -16,7 +16,9 @@ sph2:SetTranslate(-30,0,0);
 
 
 local loader = ImageLoader()
-local isloaded = loader:Load("aosky_016_8k.png")
+--local isloaded = loader:Load("aosky_016_8k.png")
+local isloaded = loader:Load("test.hdr")
+
 print('Texture Load = ' .. tostring(isloaded))
 local img = loader:ImageData()
 
