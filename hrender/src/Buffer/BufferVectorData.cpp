@@ -73,11 +73,14 @@ public:
 /// constructor
 BufferVectorData::BufferVectorData()
 {
+	m_type = BufferData::TYPE_VECTOR;
     m_imp = new BufferVectorData::Impl();
 }
 
 /// constructor
-BufferVectorData::BufferVectorData(BufferVectorData* inst) : m_imp(new BufferVectorData::Impl(inst)) {}
+BufferVectorData::BufferVectorData(BufferVectorData* inst) : m_imp(new BufferVectorData::Impl(inst)) {
+	m_type = BufferData::TYPE_VECTOR;
+}
 /// destructor
 BufferVectorData::~BufferVectorData()
 {
