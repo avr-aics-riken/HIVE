@@ -6,6 +6,7 @@
 #define _BUFFERSPARSEVOLUMEDATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 #include <vector>
 
 class BufferVolumeData;
@@ -13,7 +14,7 @@ class BufferVolumeData;
 /**
  * BufferSparseVolumeDataクラス
  */
-class BufferSparseVolumeData : public RefCount
+class BufferSparseVolumeData : public BufferData
 {
 private:
     class Impl;
