@@ -90,6 +90,17 @@ VOLファイルを読み込むローダークラス
     local loader = VOLLoader()
     loader:Load('data.vol')
 
+## PDBLoader()
+
+PDB(Protein Data Bank)ファイルを読み込むローダークラス.
+第二引数で bond(line) を生成するかどうかを指定する.
+デフォルトは false.
+
+    local loader = PDBLoader()
+    loader:Load('input.pdb')
+    loader:Load('input.pdb', true) -- generate bond
+
+
 ## CDMLoader()
 
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
