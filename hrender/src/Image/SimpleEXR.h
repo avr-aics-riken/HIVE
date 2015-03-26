@@ -66,7 +66,8 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
   exr.height = h;
   exr.num_channels = 7; // RGBA + alpha premultipled RGB
 
-  const char *channel_names[] = {"R", "G", "B", "RA", "RB", "RG", "A"};
+  // Must be A,B,G,R order
+  const char *channel_names[] = {"A", "B", "BA", "G", "GA", "R", "RA"};
   exr.channel_names = channel_names;
   
   float **channel_images = new float*[exr.num_channels];
@@ -77,13 +78,13 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
   for (size_t y = 0; y < h; y++) {
     for (size_t x = 0; x < w; x++) {
       float alpha = rgba_float[4*((h-1-y)*w+x)+3]; 
-      channel_images[0][y*w+x] = rgba_float[4*((h-1-y)*w+x)+0]; // R
-      channel_images[1][y*w+x] = rgba_float[4*((h-1-y)*w+x)+1]; // G
-      channel_images[2][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2]; // B
-      channel_images[3][y*w+x] = rgba_float[4*((h-1-y)*w+x)+0] * alpha; // RA
+      channel_images[5][y*w+x] = rgba_float[4*((h-1-y)*w+x)+0]; // R
+      channel_images[3][y*w+x] = rgba_float[4*((h-1-y)*w+x)+1]; // G
+      channel_images[1][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2]; // B
+      channel_images[6][y*w+x] = rgba_float[4*((h-1-y)*w+x)+0] * alpha; // RA
       channel_images[4][y*w+x] = rgba_float[4*((h-1-y)*w+x)+1] * alpha; // GA
-      channel_images[5][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2] * alpha; // BA
-      channel_images[6][y*w+x] = alpha;
+      channel_images[2][y*w+x] = rgba_float[4*((h-1-y)*w+x)+2] * alpha; // BA
+      channel_images[0][y*w+x] = alpha; // A
     }
   }
   exr.images = channel_images;

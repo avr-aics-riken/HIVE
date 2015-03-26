@@ -434,17 +434,10 @@ private:
                     const float G = imgbuf[4*(x + y * m_width) + 1] * alp + clearcolor_g * (1.0 - alp);
                     const float B = imgbuf[4*(x + y * m_width) + 2] * alp + clearcolor_b * (1.0 - alp);
                     
-                    /*
-                    // I expect ... but
                     imgbuf[4*(x + y * m_width) + 0] = R;
                     imgbuf[4*(x + y * m_width) + 1] = G;
                     imgbuf[4*(x + y * m_width) + 2] = B;
-                    imgbuf[4*(x + y * m_width) + 3] = 1.0;
-                     */
-                    imgbuf[4*(x + y * m_width) + 0] = 1.0;
-                    imgbuf[4*(x + y * m_width) + 1] = B;
-                    imgbuf[4*(x + y * m_width) + 2] = G;
-                    imgbuf[4*(x + y * m_width) + 3] = R;
+                    imgbuf[4*(x + y * m_width) + 3] = alp;
                 }
             }
         }
