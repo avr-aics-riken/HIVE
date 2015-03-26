@@ -21,9 +21,11 @@
  * @param h 高さ
  * @param framebuffer フレームバッファ
  * @param colorRenderbuffer カラーレンダーバッファ
+ * @param colorbit 色ビット
  * @param despthRenderBuffer デプスレンダーバッファ
+ * @param depthbit 深度ビット
  */
-void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer)
+void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glGenFramebuffers(1, &framebuffer);
@@ -32,13 +34,27 @@ void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& col
 	// create color renderbuffer and attach
 	sgl.glGenRenderbuffers(1, &colorRenderbuffer);
 	sgl.glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-	sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, w, h);
+    if (colorbit == 8) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, w, h);
+    } else if (colorbit == 32) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA32F_EXT, w, h);
+    } else {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, w, h);
+        fprintf(stderr, "Error: Invalid color buffer format [colorbit = %d]\n use 8 or 32\n", colorbit);
+    }
 	sgl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
 	
 	// create depth renderbuffer and attach
 	sgl.glGenRenderbuffers(1, &depthRenderbuffer);
 	sgl.glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
+    if (depthbit == 16) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+    } else if (colorbit == 32) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
+    } else {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
+        fprintf(stderr, "Error: Invalid depth buffer format [depthbit = %d]\n use 16 or 32\n", depthbit);
+    }
 	sgl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 	
 	sgl.glViewport(0, 0, w, h);
@@ -78,19 +94,26 @@ void Clear_SGL(float red, float green, float blue, float alpha)
  * @param w 幅
  * @param h 高さ
  * @param imgbuf 結果を格納するバッファ
+ * @param colorbit 色ビット
  */
-void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf)
+void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf, int colorbit)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glFinish();
-	sgl.glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
+    if (colorbit == 8) {
+        sgl.glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
+    } else if (colorbit == 32) {
+        sgl.glReadPixels(0, 0, w, h, GL_RGBA, GL_FLOAT, imgbuf);
+    } else {
+        fprintf(stderr, "Error: Invalid color buffer format [colorbit = %d]\n use 8 or 32\n", colorbit);
+    }
 }
 
 /**
  * SGLデプスバッファ値取得.
  * @param w 幅
  * @param h 高さ
- * @param imgbuf 結果を格納するバッファ
+ * @param depthbuf 結果を格納するバッファ
  */
 
 void GetDepthBuffer_SGL(int w, int h, float* depthbuf)
