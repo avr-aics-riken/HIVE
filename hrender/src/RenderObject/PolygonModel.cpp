@@ -3,6 +3,7 @@
  * ポリゴンモデル
  */
 #include <string>
+#include <stdio.h>
 #include "PolygonModel.h"
 #include "BufferMeshData.h"
 
@@ -40,7 +41,7 @@ public:
      */
     bool Create(BufferMeshData* m)
     {
-        if (!m) {
+        if (!m || m->GetType() != BufferData::TYPE_MESH) {
             return false;
         }
         m_mesh = m;

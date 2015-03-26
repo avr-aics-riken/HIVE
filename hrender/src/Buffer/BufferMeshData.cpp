@@ -94,6 +94,7 @@ public:
 /// constructor
 BufferMeshData::BufferMeshData()
 {
+	m_type = BufferData::TYPE_MESH;
     m_imp = new BufferMeshData::Impl();
 }
 
@@ -101,6 +102,7 @@ BufferMeshData::BufferMeshData()
 /// @param inst メッシュデータ
 BufferMeshData::BufferMeshData(BufferMeshData* inst)
 {
+	m_type = BufferData::TYPE_MESH;
     m_imp = new BufferMeshData::Impl(inst);
 }
 

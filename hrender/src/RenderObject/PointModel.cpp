@@ -41,8 +41,9 @@ public:
      */
     bool Create(BufferPointData* pointdata)
     {
-        if (!pointdata)
-            return false;
+        if (!pointdata || pointdata->GetType() != BufferData::TYPE_POINT) {
+			return false;
+		}
         m_point = pointdata;
         return true;
     }

@@ -136,6 +136,7 @@ public:
 /// constructor
 BufferLineData::BufferLineData()
 {
+	m_type = BufferData::TYPE_LINE;
     m_imp = new BufferLineData::Impl();
 }
 
@@ -148,6 +149,7 @@ BufferLineData::~BufferLineData()
 /// constructor
 BufferLineData::BufferLineData(BufferLineData* inst)
 {
+	m_type = BufferData::TYPE_LINE;
     m_imp = new BufferLineData::Impl(inst);
 }
 
