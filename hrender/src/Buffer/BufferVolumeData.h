@@ -6,13 +6,14 @@
 #define _BUFFERVOLUMEDATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 
 class FloatBuffer;
 
 /**
  * BufferVolumeDataクラス
  */
-class BufferVolumeData : public RefCount
+class BufferVolumeData : public BufferData
 {
 private:
     class Impl;

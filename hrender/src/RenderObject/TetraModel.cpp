@@ -40,9 +40,9 @@ public:
      */
     bool Create(BufferTetraData* tetradata)
     {
-        if (!tetradata) {
-            return false;
-        }
+        if (!tetradata || tetradata->GetType() != BufferData::TYPE_TETRA) {
+			return false;
+		}
         
         m_tetra = tetradata;
         
