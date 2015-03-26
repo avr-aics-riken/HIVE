@@ -146,7 +146,7 @@ public:
     Impl()
     {
         m_mode   = RENDER_LSGL;//RENDER_OPENGL;
-        m_clearcolor = VX::Math::vec4(0,0,0,0);
+        m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
         m_sgl_depthbuffer = 0;
         m_sgl_colorbuffer = 0;
         m_sgl_framebuffer = 0;
@@ -249,7 +249,7 @@ public:
                 renderObjects();
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
-                readbackImage(color, clr[0], clr[1], clr[2]);
+                readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
                 const double readbacktm = GetTimeCount();
                 if (!outfile.empty()) {
@@ -271,7 +271,6 @@ private:
     void setCurrentCamera(const Camera* camera)
     {
         m_currentCamera = camera;
-        m_clearcolor = VX::Math::vec4(camera->GetClearColor());
     }
     
     /// SGLバッファの作成
@@ -370,11 +369,12 @@ private:
     }
     /// 画像の書き戻し
     /// @param color カラーバッファ
-    void readbackImage(BufferImageData* color, float clr_r, float clr_g, float clr_b)
+    void readbackImage(BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
     {
         const float clearcolor_r = clr_r;
         const float clearcolor_g = clr_g;
         const float clearcolor_b = clr_b;
+        const float clearcolor_a = clr_a;
 
         ByteBuffer* bbuf = color->ImageBuffer();
         if (bbuf) {
@@ -400,10 +400,10 @@ private:
             for (int y = 0; y < m_height; ++y) {
                 for (int x = 0; x < m_width; ++x) {
                     const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
-                    imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r * (1.0 - alp);
-                    imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g * (1.0 - alp);
-                    imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b * (1.0 - alp);
-                    imgbuf[4*(x + y * m_width) + 3] = 0xFF;
+                    imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r*clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g*clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b*clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 3] = std::max(0, std::min(255, static_cast<int>(255 * (alp + clearcolor_a))));
                 }
             }
         } else {
@@ -430,14 +430,13 @@ private:
             for (int y = 0; y < m_height; ++y) {
                 for (int x = 0; x < m_width; ++x) {
                     const double alp = imgbuf[4*(x + y * m_width) + 3];
-                    const float R = imgbuf[4*(x + y * m_width) + 0] * alp + clearcolor_r * (1.0 - alp);
-                    const float G = imgbuf[4*(x + y * m_width) + 1] * alp + clearcolor_g * (1.0 - alp);
-                    const float B = imgbuf[4*(x + y * m_width) + 2] * alp + clearcolor_b * (1.0 - alp);
-                    
+                    const float R = imgbuf[4*(x + y * m_width) + 0] * alp + clearcolor_r * clearcolor_a * (1.0 - alp);
+                    const float G = imgbuf[4*(x + y * m_width) + 1] * alp + clearcolor_g * clearcolor_a * (1.0 - alp);
+                    const float B = imgbuf[4*(x + y * m_width) + 2] * alp + clearcolor_b * clearcolor_a * (1.0 - alp);
                     imgbuf[4*(x + y * m_width) + 0] = R;
                     imgbuf[4*(x + y * m_width) + 1] = G;
                     imgbuf[4*(x + y * m_width) + 2] = B;
-                    imgbuf[4*(x + y * m_width) + 3] = alp;
+                    imgbuf[4*(x + y * m_width) + 3] = alp + clearcolor_a;
                 }
             }
         }

@@ -178,7 +178,32 @@ public:
             }
             else if (ext == "hdr")
             {
-                assert(0); // TODO: implementation
+                if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
+                    const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA32F)
+                    {
+                        result = SimpleHDRSaver(filename, width, height, srcbuffer);
+                    }
+                    else if (data->Format() == BufferImageData::R32F)
+                    {
+                        // TODO:
+                        assert(0);
+                        printf("TODO: implementation. R32F HDR saver\n");
+                    }
+                } else {
+                    const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA8) {
+                        // BYTE -> float
+                        float *hdrbuffer = new float[width*height*4];
+                        for (size_t i = 0; i < width * height * 4; i++) {
+                            hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                        }
+                        
+                        result = SimpleHDRSaver(filename, width, height, hdrbuffer);
+                        
+                        delete [] hdrbuffer;
+                    }
+                }
             }
         }
         if (result) {
