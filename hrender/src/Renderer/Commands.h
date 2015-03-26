@@ -12,10 +12,10 @@
 #ifndef __AnimTool__Commands__
 #define __AnimTool__Commands__
 
-void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer);
+void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit);
 void ReleaseBuffer_SGL(unsigned int framebuffer, unsigned int colorRenderbuffer, unsigned int depthRenderbuffer);
 void Clear_SGL(float red, float green, float blue, float alpha);
-void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf);
+void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf, int colorbit);
 void GetDepthBuffer_SGL(int w, int h, float* depthbuf);
 
 void CreateVBIB_SGL(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer, float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,

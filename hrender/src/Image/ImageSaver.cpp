@@ -178,6 +178,7 @@ public:
             }
             else if (ext == "hdr")
             {
+                assert(0); // TODO: implementation
             }
         }
         if (result) {
