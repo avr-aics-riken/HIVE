@@ -76,12 +76,14 @@ public:
 /// constructor
 BufferTetraData::BufferTetraData()
 {
+	m_type = BufferData::TYPE_TETRA;
     m_imp = new BufferTetraData::Impl();
 }
 
 /// constructor
 BufferTetraData::BufferTetraData(BufferTetraData* inst)
 {
+	m_type = BufferData::TYPE_TETRA;
     m_imp = new BufferTetraData::Impl(inst);
 }
 

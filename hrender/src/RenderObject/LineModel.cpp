@@ -52,6 +52,9 @@ public:
      */
     bool Create(BufferLineData* Linedata)
     {
+        if (!m_line || Linedata->GetType() != BufferData::TYPE_LINE) {
+			return false;
+		}
         m_line = Linedata;
         return true;
     }

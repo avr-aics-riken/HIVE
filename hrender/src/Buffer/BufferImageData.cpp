@@ -204,12 +204,14 @@ public:
 /// constructor
 BufferImageData::BufferImageData()
 {
+	m_type = BufferData::TYPE_IMAGE;
     m_imp = new Impl();
 }
 
 /// constructor
 BufferImageData::BufferImageData(BufferImageData* inst)
 {
+	m_type = BufferData::TYPE_IMAGE;
     m_imp = new Impl(inst);
 }
 
