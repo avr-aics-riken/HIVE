@@ -52,6 +52,36 @@ extern "C" {
 }
 #endif
 
+
+namespace {
+    inline std::string make_lowercase(const std::string& in)
+    {
+        std::string out;
+        std::transform(in.begin(), in.end(), std::back_inserter(out), ::tolower);
+        return out;
+    }
+    BufferImageData::FORMAT getFileFomat(const std::string& filename)
+    {
+        if (filename == "") {
+            return BufferImageData::RGBA8;
+        }
+        
+        std::string::size_type pos = filename.rfind('.');
+        if (pos == std::string::npos) {
+            return BufferImageData::INVALID;
+        }
+        
+        const std::string ext = make_lowercase(filename.substr(pos + 1));
+        if (ext == "jpg" || ext == "png") {
+            return BufferImageData::RGBA8;
+        } else if (ext == "hdr" || ext == "exr") {
+            return BufferImageData::RGBA32F;
+        } else {
+            return BufferImageData::RGBA8;
+        }
+    }
+}
+
 /**
  * hrenderコア機能部
  */
@@ -208,6 +238,7 @@ public:
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
+                const std::string& depth_outfile = camera->GetDepthOutputFile();
                 BufferImageData* color = camera->GetImageBuffer();
                 BufferImageData* depth = camera->GetDepthBuffer();
                 
@@ -215,12 +246,17 @@ public:
                 resize(camera);
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
-                renderObjects(color, depth);
+                renderObjects();
                 const double rendertm = GetTimeCount();
-                readbackImage(color);
+                const float* clr = camera->GetClearColor();
+                readbackImage(color, clr[0], clr[1], clr[2]);
+                readbackDepth(depth);
                 const double readbacktm = GetTimeCount();
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
+                }
+                if (!depth_outfile.empty()) {
+                    m_imagesaver.Save(depth_outfile.c_str(), depth);
                 }
                 const double savetm = GetTimeCount();
                 printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
@@ -322,49 +358,101 @@ private:
          (*it)->Render(RENDER_OPENGL);*/
     }
 
-    /// 画像の下記戻し
+    /// 画像の書き戻し
     /// @param color カラーバッファ
-    void readbackImage(BufferImageData* color)
+    void readbackDepth(BufferImageData* depth)
     {
-        unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
+        FloatBuffer* fbuf = depth->FloatImageBuffer();
+        if (fbuf) {
+            float* imgbuf = fbuf->GetBuffer();
+            GetDepthBuffer_SGL(m_width, m_height, imgbuf);
+        }
+    }
+    /// 画像の書き戻し
+    /// @param color カラーバッファ
+    void readbackImage(BufferImageData* color, float clr_r, float clr_g, float clr_b)
+    {
+        const float clearcolor_r = clr_r;
+        const float clearcolor_g = clr_g;
+        const float clearcolor_b = clr_b;
 
-        if (m_mode == RENDER_LSGL)
-            GetColorBuffer_SGL(m_width, m_height, imgbuf);
-        //else
-        //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
+        ByteBuffer* bbuf = color->ImageBuffer();
+        if (bbuf) {
+            unsigned char* imgbuf = bbuf->GetBuffer();
+            const int colorbit = 8;
+        
+            if (m_mode == RENDER_LSGL)
+                GetColorBuffer_SGL(m_width, m_height, imgbuf, colorbit);
+            //else
+            //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
         
 #ifdef HIVE_WITH_COMPOSITOR
-        int rank;
-        int nnodes;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+            int rank;
+            int nnodes;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
 
-        // @fixme { pixel format. }
-        Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+            // @fixme { pixel format. }
+            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
 #endif
 
-        float clearcolor_r = 0.0;
-        float clearcolor_g = 0.0;
-        float clearcolor_b = 0.0;
+            // merge to bgcolor
+            for (int y = 0; y < m_height; ++y) {
+                for (int x = 0; x < m_width; ++x) {
+                    const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
+                    imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 3] = 0xFF;
+                }
+            }
+        } else {
+            FloatBuffer* fbuf = color->FloatImageBuffer();
+            float* imgbuf = fbuf->GetBuffer();
+            const int colorbit = 32;
+            if (m_mode == RENDER_LSGL)
+                GetColorBuffer_SGL(m_width, m_height, reinterpret_cast<unsigned char*>(imgbuf), colorbit);
 
-        
-        // merge to bgcolor
-        for (int y = 0; y < m_height; ++y) {
-            for (int x = 0; x < m_width; ++x) {
-                const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
-                imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r * (1.0 - alp);
-                imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g * (1.0 - alp);
-                imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b * (1.0 - alp);
-                imgbuf[4*(x + y * m_width) + 3] = 0xFF;
+#ifdef HIVE_WITH_COMPOSITOR
+            int rank;
+            int nnodes;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+            
+            assert(0); // TODO: Implementation
+            /*
+            // @fixme { pixel format. }
+            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+            */
+#endif
+            
+            // merge to bgcolor
+            for (int y = 0; y < m_height; ++y) {
+                for (int x = 0; x < m_width; ++x) {
+                    const double alp = imgbuf[4*(x + y * m_width) + 3];
+                    const float R = imgbuf[4*(x + y * m_width) + 0] * alp + clearcolor_r * (1.0 - alp);
+                    const float G = imgbuf[4*(x + y * m_width) + 1] * alp + clearcolor_g * (1.0 - alp);
+                    const float B = imgbuf[4*(x + y * m_width) + 2] * alp + clearcolor_b * (1.0 - alp);
+                    
+                    /*
+                    // I expect ... but
+                    imgbuf[4*(x + y * m_width) + 0] = R;
+                    imgbuf[4*(x + y * m_width) + 1] = G;
+                    imgbuf[4*(x + y * m_width) + 2] = B;
+                    imgbuf[4*(x + y * m_width) + 3] = 1.0;
+                     */
+                    imgbuf[4*(x + y * m_width) + 0] = 1.0;
+                    imgbuf[4*(x + y * m_width) + 1] = B;
+                    imgbuf[4*(x + y * m_width) + 2] = G;
+                    imgbuf[4*(x + y * m_width) + 3] = R;
+                }
             }
         }
 
     }
     
     /// オブジェクトのレンダリング
-    /// @param color カラーバッファ
-    /// @param depth 深度バッファ
-    void renderObjects(BufferImageData* color, BufferImageData* depth)
+    void renderObjects()
     {
         printf("RenderCore::RENDER!!!!\n");
         
@@ -393,12 +481,6 @@ private:
             
             BindProgram_GL(0);
             
-            // Get buffer!
-            unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
-            float * depthbuf = depth->FloatImageBuffer()->GetBuffer();
-            GetColorBuffer_GL(m_width, m_height, imgbuf);
-            GetDepthBuffer_GL(m_width, m_height,  depthbuf);
-            
             //unbindGLBuffer();
         }
  
@@ -408,6 +490,9 @@ private:
     /// @param camera カメラ
     void resize(Camera* camera)
     {
+        const std::string& outfile = camera->GetOutputFile();
+        BufferImageData::FORMAT colorfmt = getFileFomat(outfile);
+        
         BufferImageData* color = camera->GetImageBuffer();
         BufferImageData* depth = camera->GetDepthBuffer();
         const int w = camera->GetScreenWidth();
@@ -418,7 +503,8 @@ private:
         //		if (m_gl_framebuffer || m_gl_colorbuffer || m_gl_depthbuffer)
         //			ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer); // todo nothing here
         
-        CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
+        const int colorbit = (colorfmt == BufferImageData::RGBA32F ? 32 : 8);
+        CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, colorbit, m_sgl_depthbuffer, 32);
         //		CreateBuffer_GL  (w, h, m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);  // todo nothing here
 
 #ifdef HIVE_WITH_COMPOSITOR
@@ -441,16 +527,12 @@ private:
         m_width  = w;
         m_height = h;
         
-        color->Clear();
-        depth->Clear();
-        if (w != 0 && h != 0) {
-            color->Create(BufferImageData::RGBA8, w, h);
-            depth->Create(BufferImageData::R32F, w, h);
-            float* depthbuf = depth->FloatImageBuffer()->GetBuffer();
-            for(int y = 0; y < h; ++y){
-                for(int x = 0; x < w; ++x){
-                    depthbuf[x + y * w] = x / (float)w;
-                }
+        if (color->Width() != w || color->Height() != h) {
+            color->Clear();
+            depth->Clear();
+            if (w != 0 && h != 0) {
+                color->Create(colorfmt, w, h);
+                depth->Create(BufferImageData::R32F,  w, h);
             }
         }
     }
