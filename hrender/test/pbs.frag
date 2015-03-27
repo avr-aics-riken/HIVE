@@ -11,6 +11,7 @@
 //   * Quad area light.
 //
 // TODO
+//   * [ ] Consider emission.
 //   * [ ] Sampling optimization.
 //     * [ ] Russian roulette
 //   * [ ] Multiple area light.
@@ -43,6 +44,7 @@ varying vec3 mnormal;
 float sqr(float x) { return x*x; }
 
 struct Material {
+    vec3  emission;
     vec3  diffuse;
     float fresnel;      // 0: off, 1: on
     vec3  reflection;
@@ -754,14 +756,16 @@ vec3 BRDFMicrofacet( vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y, float alpha )
 // Assume filtering mode of `pbs_mattex` is GL_NEAREST.
 void GetMaterial(int i, out Material mat)
 {
-    // texture width = 4;
-    const float tex_width = 4.0;
-    float y = (pbs_num_materials - float(i) + 0.5) / pbs_num_materials;
+    // texture width = 8;
+    const float tex_width = 8.0;
+    float y = 0.1; //(pbs_num_materials - 1.0 - float(i)) / pbs_num_materials;
+    //float y = 0.5;
 
     vec4 diffuse = texture2D(pbs_mattex, vec2(0.5 / tex_width, y));
     vec4 reflection_and_glossiness = texture2D(pbs_mattex, vec2(1.5 / tex_width, y));
     vec4 refraction_and_glossiness = texture2D(pbs_mattex, vec2(2.5 / tex_width, y));
     vec4 fresnel_and_ior = texture2D(pbs_mattex, vec2(3.5 / tex_width, y));
+    vec4 emission = texture2D(pbs_mattex, vec2(4.5 / tex_width, y));
 
     mat.diffuse = diffuse.rgb;
     mat.reflection = reflection_and_glossiness.rgb;
@@ -770,6 +774,7 @@ void GetMaterial(int i, out Material mat)
     mat.refractionGlossiness = refraction_and_glossiness.w;
     mat.ior = fresnel_and_ior.y;
     mat.fresnel = fresnel_and_ior.x;
+    mat.emission = emission.rgb;
 }
 
 float AverageRGB(vec3 rgb)
@@ -851,7 +856,7 @@ void main()
         return;
     }
 
-    // @todo { read light value from uniform variables. }
+    // @todo { read light value from uniform variables or texture. }
     const vec3 lightU = 0.5 * vec3(2.02171278124, 0.230225650737, -1.71031152346);
     const vec3 lightV = 0.5 * vec3(-3.44351406985, -1.7763568394e-15, -1.01762110468);
     const vec3 lightCenter = vec3(-10.52, 6.144, -0.562);
@@ -927,6 +932,11 @@ void main()
     }
 
     vec3 Lo = vec3(0.0);
+
+    //
+    // Add self-emission term.
+    //
+    Lo += mat.emission;
 
     // @todo { Russian roulette. }
 
