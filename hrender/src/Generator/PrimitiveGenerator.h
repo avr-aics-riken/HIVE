@@ -25,9 +25,10 @@ public:
   
 protected:
 	bool Load(const char* filename);
-  BufferMeshData*   Quad(float width, float height) const;
-  //BufferMeshData*   Cube() const; // @todo
-  BufferPointData*  Sphere(float radius) const;
+    BufferMeshData*  Quad(float width, float height) const;
+    BufferPointData* Sphere(float radius) const;
+    BufferMeshData*  Cube(float width, float height, float depth) const;
+    BufferMeshData*  Teapot(float scale) const;
   //BufferLineData*   Line() const; // @todo
   //BufferVectorData* VectorArrow() const; // @todo
 

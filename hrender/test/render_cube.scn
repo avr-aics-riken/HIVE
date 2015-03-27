@@ -1,0 +1,34 @@
+
+print('Render Cube')
+local camera = Camera()
+camera:SetScreenSize(512, 512)
+camera:SetFilename('render_cube.jpg')
+
+camera:LookAt(
+	10,10,10,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local gen = PrimitiveGenerator()
+
+local width  = 5
+local height = 5
+local depth  = 5
+
+local model = PolygonModel()
+local meshdata = gen:Cube(width, height, depth)
+model:Create(meshdata)
+model:SetShader('textured.frag')
+
+local loader = ImageLoader()
+local isloaded = loader:Load("testimg.jpg")
+print('TEXTUREAAA', isloaded)
+local img = loader:ImageData()
+model:SetTexture('mytex0', img)
+
+
+render {camera, model}
+
+
