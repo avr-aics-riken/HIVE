@@ -54,7 +54,7 @@ vec3 randRay(vec3 nn, vec2 p, float r)
 	float theta = sqrt(random(rnd));
 	float phi   = 2.0 * PI * random(rnd);
 	vec3 ref;
-	
+
 	ref.x = cos(phi) * theta;
 	ref.y = sin(phi) * theta;
 	ref.z = sqrt(1.0 - theta * theta);
@@ -70,40 +70,60 @@ vec3 randRay(vec3 nn, vec2 p, float r)
 }
 
 void main(void) {
-			
+
 	int depth;
 	raydepth(depth);
-	if (depth > 3){
-		gl_FragColor = vec4(0,0,0,0);
+
+	if (depth > 8) {
+		gl_FragColor = vec4(0,0,0,1);
 		return;
 	}
-	
+
 	vec3 p;
     vec3 n;
     vec3 dir;
     isectinfo(p, n, dir);
 	vec3 N = normalize(n);//normalize(mnormal);
-	
+
 	/*float rnd;
 	if (random(rnd) > 0.5){
 		gl_FragColor = vec4(0,0,0,0);
 		return;
 	}*/
-	
+
 	vec4 matcol = color;
-	vec4 col=vec4(0,0,0,0);
+	vec4 col= vec4(0,0,0,0);
 	vec4 rcol;
-	int maxsamp = 16;
+	int maxsamp = 64;
+
+	if (depth > 0) {
+		maxsamp = 1;
+	}
+
 	for (int i = 0; i < maxsamp; ++i)
 	{
-		vec3 rdir = randRay(n,p.xy,p.x+float(i)*0.01);
-		float hit = trace(p+n*0.001, rdir, rcol, 0.0);
-		if (hit < 0.0)
-			col += matcol*vec4(1.0,1.0,1.0,1.0);
-		else
-			col += matcol*rcol;
+		vec3 rdir = randRay(N, p.xy, p.x+float(i)*0.01);
+		float hit = trace(p-dir*0.001, rdir, rcol, 0.0);
+		if (hit < 0.0) {
+			gl_FragColor = vec4(1,1,1,1);
+			return;
+		} else {
+			// russian roulette
+			float rnd;
+			float m = max(rcol.x, max(rcol.y, rcol.z));
+			m *= pow(0.5, depth);
+			if (depth > 8) {
+				if (random(rnd) > m) {
+					col += vec4(0,0,0,1);
+					break;
+				}
+			} else {
+				m = 1.0;
+			}
+			col += matcol * rcol;// / m;
+		}
 	}
 	col /= float(maxsamp);
-	gl_FragColor = vec4(col.rgb,1.0);//vec4(1.0-hit,0,0,1);//col;
+	gl_FragColor = vec4(col.rgb,1.0);
 	return;
 }
