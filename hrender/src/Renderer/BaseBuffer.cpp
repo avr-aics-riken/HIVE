@@ -9,6 +9,8 @@
 #include "../Buffer/Buffer.h"
 #include "../Buffer/BufferImageData.h"
 
+#include "../Renderer/RenderCore.h"
+
 #include "Commands.h"
 
 /// コンストラクタ
@@ -20,12 +22,9 @@ BaseBuffer::BaseBuffer(RENDER_MODE mode)
 /// デストラクタ
 BaseBuffer::~BaseBuffer()
 {
-    std::map<const BufferImageData*, unsigned int>::const_iterator it, eit = m_texutecache.end();
-    for (it = m_texutecache.begin(); it != eit; ++it) {
-        unsigned int t = it->second;
-        DeleteTextures_SGL(1, &t);
+    if (m_prog) {
+        DeleteProgram_SGL(m_prog);
     }
-    DeleteProgram_SGL(m_prog);
 }
 
 /// シェーダプログラムをバインドする.
@@ -160,11 +159,13 @@ unsigned int BaseBuffer::getProgram() const
  */
 const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
 {
-    std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
-    if (it == m_texutecache.end()) {
-        return 0;
+    RenderCore* core = RenderCore::GetInstance();
+    unsigned int tex = 0;
+    bool haveTex = core->GetTexture(buf, tex);
+    if (!haveTex) {
+        fprintf(stderr, "Not Cached texture\n");
     }
-    return it->second;
+    return tex;
 }
 
 /**
@@ -173,20 +174,13 @@ const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
  */
 bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter)
 {
+    RenderCore* core = RenderCore::GetInstance();
     unsigned int tex;
-    std::map<const BufferImageData*, unsigned int>::iterator it = m_texutecache.find(buf);
-    if (buf->IsNeedUpdate()) {
-        if (it != m_texutecache.end()) {
-            m_texutecache.erase(it);
-            it = m_texutecache.end();
-            tex = it->second;
-        } else {
-            GenTextures_SGL(1, &tex);
-        }
+    bool haveTex = core->GetTexture(buf, tex);
+    if (!haveTex) {
+        core->CreateTexture(buf, tex);
     }
-    if (it != m_texutecache.end()) {
-        return true;
-    } else {
+    if (buf->IsNeedUpdate()) {
         buf->updated();
         BindTexture2D_SGL(tex);
         
@@ -204,11 +198,9 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter)
             TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter);
         } else {
             assert(0);
-        }
-        
-        m_texutecache[buf] = tex; //cache
-        return true;
+        }        
     }
+    return true;
 }
 
 /**
