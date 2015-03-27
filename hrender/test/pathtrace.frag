@@ -95,7 +95,7 @@ void main(void) {
 	}
 
 	float rnd;
-	if (depth > 2 && random(rnd) < 0.5) {
+	if (random(rnd) < float(depth) * 0.2) {
 		gl_FragColor = vec4(0.0, 0.0, 0.0 ,1.0);
 		return;
 	}
@@ -113,6 +113,6 @@ void main(void) {
 			col += matcol*rcol;
 	}
 	col /= float(maxsamp);
-	gl_FragColor = vec4(col.rgb,1.0);//vec4(1.0-hit,0,0,1);//col;
+	gl_FragColor = vec4(col.rgb,1.0);
 	return;
 }
