@@ -30,9 +30,19 @@ public:
         return new BufferPointData_Lua(PrimitiveGenerator::Sphere(radius));
     }
 
+    BufferMeshData_Lua* Cube(float width, float height, float depth) {
+        return new BufferMeshData_Lua(PrimitiveGenerator::Cube(width, height, depth));
+    }
+    BufferMeshData_Lua* Teapot(float scale) {
+        return new BufferMeshData_Lua(PrimitiveGenerator::Teapot(scale));
+    }
+
+    
     LUA_SCRIPTCLASS_BEGIN(PrimitiveGenerator_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG2(BufferMeshData_Lua*,   Quad,float,float)
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferPointData_Lua*,  Sphere,float)
+    LUA_SCRIPTCLASS_METHOD_ARG3(BufferMeshData_Lua*,   Cube,float,float,float)
+    LUA_SCRIPTCLASS_METHOD_ARG1(BufferMeshData_Lua*,   Teapot,float)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*,   LineData)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*,  TetraData)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferVectorData_Lua*, NormalData)
