@@ -21,7 +21,7 @@ public:
         m_clearcolor[0] = 0.0f;
         m_clearcolor[1] = 0.0f;
         m_clearcolor[2] = 0.0f;
-        m_clearcolor[3] = 0.0f;
+        m_clearcolor[3] = 1.0f;
     }
     ~Impl()
     {
