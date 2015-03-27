@@ -90,7 +90,7 @@ void main(void) {
     }
 
 	int maxsamp = 64;	
-	if (depth > 1) {
+	if (depth > 0) {
 		maxsamp = 1;
 	}
 
