@@ -110,9 +110,11 @@ private:
     PolygonBufferMap m_polygonBuffers;
     PointBufferMap   m_pointBuffers;
     VolumeBufferMap  m_volumeBuffers;*/
+    typedef std::map<const BufferImageData*, unsigned int> TextureCache;
     typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
     BufferMap m_buffers_SGL;
     BufferMap m_buffers_GL;
+    TextureCache m_textureCache;
     
     ImageSaver m_imagesaver;
     
@@ -207,6 +209,12 @@ public:
     {
         m_buffers_SGL.clear();
         m_buffers_GL.clear();
+        
+        std::map<const BufferImageData*, unsigned int>::const_iterator it, eit = m_textureCache.end();
+        for (it = m_textureCache.begin(); it != eit; ++it) {
+            unsigned int t = it->second;
+            DeleteTextures_SGL(1, &t);
+        }
     }
 
     /// レンダーオブジェクトの追加
@@ -227,6 +235,39 @@ public:
     {
         m_progressCallback = func;
     }
+ 
+    bool GetTexture(const BufferImageData* bufimg, unsigned int& id)
+    {
+        TextureCache::const_iterator it = m_textureCache.find(bufimg);
+        if (it != m_textureCache.end()) {
+            id = it->second;
+            return true;
+        }
+        return false;
+    }
+
+    bool CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+    {
+        TextureCache::const_iterator it = m_textureCache.find(bufimg);
+        if (it != m_textureCache.end()) {
+            DeleteTexture(bufimg);
+        }
+        GenTextures_SGL(1, &tex);
+        m_textureCache[bufimg] = tex;
+        return true;
+    }
+
+    bool DeleteTexture(const BufferImageData* bufimg)
+    {
+        TextureCache::iterator it = m_textureCache.find(bufimg);
+        if (it != m_textureCache.end()) {
+            DeleteTextures_SGL(1, &it->second);
+            m_textureCache.erase(it);
+            return true;
+        }
+        return false;
+    }
+    
     
     /// レンダリング
     void Render()
@@ -555,6 +596,22 @@ void RenderCore::AddRenderObject(RenderObject* robj)
 {
     m_imp->AddRenderObject(robj);
 }
+
+bool RenderCore::GetTexture(const BufferImageData* bufimg, unsigned int& id)
+{
+    return m_imp->GetTexture(bufimg, id);
+}
+
+bool RenderCore::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+{
+    return m_imp->CreateTexture(bufimg, tex);
+}
+
+bool RenderCore::DeleteTexture(const BufferImageData* bufimg)
+{
+    return m_imp->DeleteTexture(bufimg);
+}
+
 
 /// レンダー
 void RenderCore::Render()
