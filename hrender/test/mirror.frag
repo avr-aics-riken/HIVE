@@ -15,9 +15,14 @@ void main(void)
 {
 	vec3 p,n,dir;
 	isectinfo(p, n, dir);
-
+	vec3 N;
+    if (length(mnormal) < 0.01) {
+    	N = normalize(n);
+    } else {
+		N = normalize(mnormal);
+   	}
+	
 	vec4 rcol;
-	vec3 N = normalize(n);
 	vec3 rdir = reflect(normalize(dir), N);
 	float hit = trace(p + N * 0.001, rdir, rcol, 0.0);
 	if (hit < 0.0) { // no hit
