@@ -12,10 +12,11 @@
  */
 class BufferData : public RefCount
 {
-protected:
+private:
 	int m_type;
+    mutable bool m_needupdate;
 public:
-	enum {
+	enum BufferType{
 		TYPE_NONE = 0,
 		TYPE_MESH,
 		TYPE_POINT,
@@ -28,10 +29,14 @@ public:
 		TYPE_IMAGE,
 		TYPE_MAX,
 	};
-    BufferData() { m_type = TYPE_NONE; }
-    BufferData(int t) { m_type = t; }
+    BufferData(BufferType type) : m_type(type), m_needupdate(true) {}
 	~BufferData(){}
-	int GetType() { return m_type; }
+	int  GetType()      const { return m_type;       }
+    void NeedUpdate()         { m_needupdate = true; }
+    bool IsNeedUpdate() const { return m_needupdate; }
+    
+    // Only use BaseBuffer
+    void updated()      const { m_needupdate = false; }
 };
 
 #endif //_BUFFERDATA_H_

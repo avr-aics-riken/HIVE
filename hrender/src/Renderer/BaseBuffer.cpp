@@ -173,10 +173,17 @@ const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
  */
 bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter)
 {
-    std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
+    std::map<const BufferImageData*, unsigned int>::iterator it = m_texutecache.find(buf);
+    if (buf->IsNeedUpdate()) {
+        if (it != m_texutecache.end()) {
+            m_texutecache.erase(it);
+            it = m_texutecache.end();
+        }
+    }
     if (it != m_texutecache.end()) {
         return true;
     } else {
+        buf->updated();
         unsigned int tex;
         GenTextures_SGL(1, &tex);
         BindTexture2D_SGL(tex);

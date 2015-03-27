@@ -176,17 +176,15 @@ public:
 };
 
 /// コンストラクタ
-BufferSparseVolumeData::BufferSparseVolumeData()
+BufferSparseVolumeData::BufferSparseVolumeData() : BufferData(TYPE_SVOLUME)
 {
-	m_type = BufferData::TYPE_SVOLUME;
     m_imp = new BufferSparseVolumeData::Impl();
 }
 
 /// コンストラクタ
 /// @param inst 疎ボリュームデータ
-BufferSparseVolumeData::BufferSparseVolumeData(BufferSparseVolumeData* inst)
+BufferSparseVolumeData::BufferSparseVolumeData(BufferSparseVolumeData* inst) : BufferData(TYPE_SVOLUME)
 {
-	m_type = BufferData::TYPE_SVOLUME;
     m_imp = new BufferSparseVolumeData::Impl(inst);
 }
 

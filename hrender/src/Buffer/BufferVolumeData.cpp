@@ -211,16 +211,14 @@ public:
 };
 
 /// constructor
-BufferVolumeData::BufferVolumeData()
+BufferVolumeData::BufferVolumeData() : BufferData(TYPE_VOLUME)
 {
-	m_type = BufferData::TYPE_VOLUME;
     m_imp = new BufferVolumeData::Impl();
 }
 
 /// constructor
-BufferVolumeData::BufferVolumeData(BufferVolumeData* inst)
+BufferVolumeData::BufferVolumeData(BufferVolumeData* inst) : BufferData(TYPE_VOLUME)
 {
-	m_type = BufferData::TYPE_VOLUME;
     m_imp = new BufferVolumeData::Impl(inst);
 }
 
