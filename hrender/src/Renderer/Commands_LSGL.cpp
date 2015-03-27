@@ -49,7 +49,7 @@ void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& col
 	sgl.glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
     if (depthbit == 16) {
         sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-    } else if (colorbit == 32) {
+    } else if (depthbit == 32) {
         sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
     } else {
         sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
