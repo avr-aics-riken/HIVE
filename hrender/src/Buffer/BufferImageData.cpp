@@ -202,16 +202,14 @@ public:
 };
 
 /// constructor
-BufferImageData::BufferImageData()
+BufferImageData::BufferImageData() : BufferData(TYPE_IMAGE)
 {
-	m_type = BufferData::TYPE_IMAGE;
     m_imp = new Impl();
 }
 
 /// constructor
-BufferImageData::BufferImageData(BufferImageData* inst)
+BufferImageData::BufferImageData(BufferImageData* inst) : BufferData(TYPE_IMAGE)
 {
-	m_type = BufferData::TYPE_IMAGE;
     m_imp = new Impl(inst);
 }
 

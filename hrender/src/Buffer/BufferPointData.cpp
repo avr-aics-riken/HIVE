@@ -108,16 +108,14 @@ public:
 };
 
 /// constructor
-BufferPointData::BufferPointData()
+BufferPointData::BufferPointData() : BufferData(TYPE_POINT)
 {
-	m_type = BufferData::TYPE_POINT;
     m_imp = new BufferPointData::Impl();
 }
 
 /// constructor
-BufferPointData::BufferPointData(BufferPointData* inst)
+BufferPointData::BufferPointData(BufferPointData* inst) : BufferData(TYPE_POINT)
 {
-	m_type = BufferData::TYPE_POINT;
     m_imp = new BufferPointData::Impl(inst);
 }
 

@@ -92,17 +92,15 @@ public:
 };
 
 /// constructor
-BufferMeshData::BufferMeshData()
+BufferMeshData::BufferMeshData() : BufferData(TYPE_MESH)
 {
-	m_type = BufferData::TYPE_MESH;
     m_imp = new BufferMeshData::Impl();
 }
 
 /// constructor
 /// @param inst メッシュデータ
-BufferMeshData::BufferMeshData(BufferMeshData* inst)
+BufferMeshData::BufferMeshData(BufferMeshData* inst) : BufferData(TYPE_MESH)
 {
-	m_type = BufferData::TYPE_MESH;
     m_imp = new BufferMeshData::Impl(inst);
 }
 
