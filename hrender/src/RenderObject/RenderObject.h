@@ -48,11 +48,13 @@ public:
     typedef std::map<std::string, VX::Math::vec2>                 Vec2Map;
     typedef std::map<std::string, float>                          FloatMap;
     typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
+    typedef std::map<std::string, bool>                           FilteringParamMap;
     const Vec4Map&    GetUniformVec4 ()   const;
     const Vec3Map&    GetUniformVec3 ()   const;
     const Vec2Map&    GetUniformVec2 ()   const;
     const FloatMap&   GetUniformFloat()   const;
     const TextureMap& GetUniformTexture() const;
+    const FilteringParamMap& GetTextureFiltering() const;
 
 
 protected:
@@ -68,6 +70,8 @@ protected:
     bool SetVec2(const std::string& name, float x, float y);
     bool SetFloat(const std::string& name, float x);
     bool SetTexture(const std::string& name, const BufferImageData* img);
+    bool SetTextureFiltering(const std::string& name, bool filter);
+
     RenderObject(MODE_TYPE t);
     ~RenderObject();
     

@@ -115,6 +115,9 @@
     bool SetTexture(const char* name, BufferImageData_Lua* tex) { \
         return RenderObject::SetTexture(name, tex); \
     } \
+    bool SetTextureFiltering(const char* name, bool filter) { \
+        return RenderObject::SetTextureFiltering(name, filter); \
+    } \
     BufferImageData_Lua* GetTexture(const char* name) { \
         const TextureMap& m = RenderObject::GetUniformTexture(); \
         TextureMap::const_iterator it = m.find(std::string(name)); \
@@ -135,6 +138,7 @@
     LUA_SCRIPTCLASS_METHOD_ARG5(bool, SetVec4,  const char*, float, float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetFloat, const char*, float) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetTexture, const char*, BufferImageData_Lua*) \
+    LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetTextureFiltering, const char*, bool) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTranslate) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetRotate) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetScale) \
