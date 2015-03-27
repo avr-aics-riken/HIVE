@@ -1,0 +1,102 @@
+function makeCornellBox(size, shader)
+	local gen = PrimitiveGenerator()
+	local back   = PolygonModel()
+	local top    = PolygonModel()
+	local bottom = PolygonModel()
+	local right  = PolygonModel()
+	local left   = PolygonModel()
+
+	back:Create  (gen:Quad(size*1.01, size*1.01))
+	top:Create   (gen:Quad(size*1.01, size*1.01))
+	bottom:Create(gen:Quad(size*1.01, size*1.01))
+	right:Create (gen:Quad(size*1.01, size*1.01))
+	left:Create  (gen:Quad(size*1.01, size*1.01))
+
+	back:SetTranslate  (  0,    0,-size)
+	top:SetRotate      ( 90,    0,    0)
+	top:SetTranslate   (  0, size,    0)
+	bottom:SetRotate   (-90,    0,    0)
+	bottom:SetTranslate(  0,-size,    0)
+
+	right:SetRotate    (    0,-90, 0)
+	right:SetTranslate ( size,  0, 0)
+	left:SetRotate     (    0, 90, 0)
+	left:SetTranslate  (-size,  0, 0)
+
+	top:SetShader   (shader);
+	back:SetShader  (shader);
+	bottom:SetShader(shader);
+	right:SetShader (shader);
+	left:SetShader  (shader);
+
+	local white = {0.8, 0.8, 0.8, 1.0}
+	local red   = {1.0, 0.0, 0.0, 1.0}
+	local green = {0.0, 1.0, 0.0, 1.0}
+	top:SetVec4   ('color', white[1], white[2], white[3], white[4]);
+	back:SetVec4  ('color', white[1], white[2], white[3], white[4]);
+	bottom:SetVec4('color', white[1], white[2], white[3], white[4]);
+	left:SetVec4  ('color',   red[1],   red[2],   red[3],   red[4]);
+	right:SetVec4 ('color', green[1], green[2], green[3], green[4]);
+
+	return {back, top, bottom, left, right}
+end
+
+function makeEnvironment(envfile, size, rot)
+	local gen  = PrimitiveGenerator()
+	local env = PointModel()
+	env:Create(gen:Sphere(size))
+	env:SetShader('envsphere.frag');
+
+	if rot then
+		env:SetRotate(0, rot, 0)
+	end
+
+	local loader = ImageLoader()
+	local isloaded = loader:Load(envfile)
+	local img = nil
+	if isloaded then
+		img = loader:ImageData()
+		env:SetTexture('mytex0', img)
+	else
+		print('Failed to load Environment texture:', envfile)
+	end
+	return env, img
+end
+
+---------------------------------------------------------------------------
+
+local robj = makeCornellBox(10, 'cornellbox_gi.frag')
+
+local camera = Camera()
+camera:SetScreenSize(256, 256)
+camera:SetFilename('render_cornellbox.exr')
+camera:LookAt(
+	0,0,50,
+	0,0,0,
+	0,1,0,
+	45
+)
+robj[#robj + 1]  = camera 
+
+local env
+local img
+env, img = makeEnvironment('IMG_2043 Panorama_RAW.hdr', 1000, 90)
+
+robj[#robj + 1]  = env
+
+--[[
+local model = PolygonModel()
+local meshdata = gen:Cube(width, height, depth)
+model:Create(meshdata)
+model:SetShader('textured.frag')
+
+local loader = ImageLoader()
+local isloaded = loader:Load("testimg.jpg")
+print('TEXTUREAAA', isloaded)
+local img = loader:ImageData()
+model:SetTexture('mytex0', img)
+]]
+
+render(robj)
+
+
