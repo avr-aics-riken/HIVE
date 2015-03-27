@@ -54,6 +54,7 @@ public:
     typedef std::map<std::string, VX::Math::vec2> Vec2Map;
     typedef std::map<std::string, float>         FloatMap;
     typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
+    typedef std::map<std::string, bool>          FilteringParamMap;
     /// Uniformマップを返す
     const Vec4Map&    GetUniformVec4 ()   const { return m_vec4s;  }
     /// Uniformマップを返す
@@ -64,6 +65,8 @@ public:
     const FloatMap&   GetUniformFloat()   const { return m_floats; }
     /// Uniformテクスチャマップを返す
     const TextureMap& GetUniformTexture() const { return m_imgs;   }
+    /// Filtering parameterを返す
+    const FilteringParamMap& GetTextureFiltering() const { return m_filteringParams;   }
 
     //--------------------------------------------------
     //Set
@@ -163,6 +166,16 @@ public:
         return true;
     }
 
+    /**
+     * テクスチャ filtering の設定
+     * @param name Uniform名
+     * @param filter filtering flag
+     */
+    bool SetTextureFiltering(const std::string& name, bool filter) {
+        m_filteringParams[name] = filter;
+        return true;
+    }
+
     /// コンストラクタ
     Impl(MODE_TYPE t) : m_type(t)
     {
@@ -187,6 +200,7 @@ private:
     std::map<std::string, float>          m_floats;
     std::map<std::string, int>            m_ints;
     std::map<std::string, RefPtr<const BufferImageData> > m_imgs;
+    std::map<std::string, bool>           m_filteringParams;
 
     //mode type
     RenderObject::MODE_TYPE m_type;
@@ -223,6 +237,8 @@ const RenderObject::Vec2Map&  RenderObject::GetUniformVec2 ()     const { return
 const RenderObject::FloatMap& RenderObject::GetUniformFloat()     const { return m_imp->GetUniformFloat();    }
 /// Uniformテクスチャマップを返す
 const RenderObject::TextureMap& RenderObject::GetUniformTexture() const { return m_imp->GetUniformTexture();  }
+/// Filtering parameterマップを返す
+const RenderObject::FilteringParamMap& RenderObject::GetTextureFiltering() const { return m_imp->GetTextureFiltering();  }
 
 //--------------------------------------------------
 //Set
@@ -284,5 +300,11 @@ bool RenderObject::SetFloat(const std::string& name, float x)                   
  * @param img イメージデータ
  */
 bool RenderObject::SetTexture(const std::string& name, const BufferImageData* img)      { return m_imp->SetTexture(name, img);     }
+/**
+ * テクスチャ filtering の設定
+ * @param name Uniform名
+ * @param filter filter flag
+ */
+bool RenderObject::SetTextureFiltering(const std::string& name, bool filter)      { return m_imp->SetTextureFiltering(name, filter);     }
 
 

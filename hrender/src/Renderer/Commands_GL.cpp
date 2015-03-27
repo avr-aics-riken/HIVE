@@ -782,7 +782,7 @@ void ActiveTexture_GL(unsigned int n)
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata)
+void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	GLint format = GL_LUMINANCE;
@@ -792,8 +792,13 @@ void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int compone
 	else {
 		assert(0);
 	}
-	g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (filter) {
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 	g.TexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixeldata);
 }
 
@@ -804,7 +809,7 @@ void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int compone
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2DFloat_GL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata)
+void TexImage2DFloat_GL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	GLint format = GL_LUMINANCE;
@@ -814,8 +819,13 @@ void TexImage2DFloat_GL(unsigned int width, unsigned int height, unsigned int co
 	else {
 		assert(0);
 	}
-	g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (filter) {
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        g.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 	g.TexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_FLOAT, pixeldata);
 }
 

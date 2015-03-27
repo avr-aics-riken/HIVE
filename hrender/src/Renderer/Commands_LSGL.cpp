@@ -808,7 +808,7 @@ void ActiveTexture_SGL(unsigned int n)
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata)
+void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -819,8 +819,15 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
 		assert(0);
 	}
     sgl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixeldata);
-	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if (filter) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        printf("no filter\n");
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 }
 
 /**
@@ -830,7 +837,7 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata)
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -841,8 +848,13 @@ void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int c
 		assert(0);
 	}
     sgl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_FLOAT, pixeldata);
-	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    if (filter) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
 }
 
 /**

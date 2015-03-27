@@ -171,7 +171,7 @@ const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
  * テクスチャをキャッシュする.
  * @param buf バッファイメージデータ
  */
-bool BaseBuffer::cacheTexture(const BufferImageData *buf)
+bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter)
 {
     std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
     if (it != m_texutecache.end()) {
@@ -188,11 +188,11 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
         
         // TODO: more format
         if (fmt == BufferImageData::RGBA8) {
-            TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer());
+            TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer(), filter);
         } else if (fmt == BufferImageData::RGBA32F) {
-            TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer());
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer(), filter);
         } else if (fmt == BufferImageData::R32F) {
-            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer());
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter);
         } else {
             assert(0);
         }
@@ -209,9 +209,15 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
 void BaseBuffer::cacheTextures(const RenderObject* model)
 {
     const RenderObject::TextureMap& tex = model->GetUniformTexture();
+    const RenderObject::FilteringParamMap& filtering = model->GetTextureFiltering();
     RenderObject::TextureMap::const_iterator it, eit = tex.end();
     for (it = tex.begin(); it != eit; ++it) {
-        cacheTexture(it->second);
+        bool filter = true; // default: GL_LINEAR
+        if (filtering.find(it->first) != filtering.end()) {
+            RenderObject::FilteringParamMap::const_iterator itFilter = filtering.find(it->first);
+            filter = itFilter->second;
+        }
+        cacheTexture(it->second, filter);
     }
 }
 
