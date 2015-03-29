@@ -18,102 +18,29 @@ const float num_steps = 525.0;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
 const float volumedim_cust = 90.0;
-//const float volumedim_cust = 8.0;
 uniform vec3 offset;
 
-// Simple Isosurf
-uniform float isoval;
+#define LEVEL4     0.9999999
+#define LEVEL3     0.9958888
+#define LEVEL2     0.9777777
+#define LEVEL1     0.1111111
 
+#define LEVEL4LAP  0.999
+#define LEVEL3LAP  0.8
+#define LEVEL2LAP  0.5
+#define LEVEL1LAP  0.2
+#define GAMMA      1.2
 
-#define SASAKI_EPS
+#define EPS        0.005
+#define SAMPLES    1000
+const   float ts = 0.001;
 
-vec3 getN(vec3 p)
-{
-#ifdef SASAKI_EPS
-	vec3 eps = vec3(0.5)/volumedim_cust;
-#else 
-	vec3 eps = vec3(0.5)/volumedim;
-#endif
-	return -normalize(vec3(
-		texture3D(tex0,p+vec3(eps.x,0,0)).x-texture3D(tex0,p-vec3(eps.x,0,0)).x,
-		texture3D(tex0,p+vec3(0,eps.y,0)).x-texture3D(tex0,p-vec3(0,eps.y,0)).x,
-		texture3D(tex0,p+vec3(0,0,eps.z)).x-texture3D(tex0,p-vec3(0,0,eps.z)).x
-	));
-}
-
-vec3 lap(vec3 p)
-{
-#ifdef SASAKI_EPS
-	vec3 eps = vec3(0.5)/volumedim_cust;
-#else 
-	vec3 eps = vec3(0.5)/volumedim;
-#endif
-	return (vec3(
-		texture3D(tex0,p+vec3(eps.x,0,0)).x-texture3D(tex0,p-vec3(eps.x,0,0)).x,
-		texture3D(tex0,p+vec3(0,eps.y,0)).x-texture3D(tex0,p-vec3(0,eps.y,0)).x,
-		texture3D(tex0,p+vec3(0,0,eps.z)).x-texture3D(tex0,p-vec3(0,0,eps.z)).x
-	));
-}
-
-vec4 samplingVolume(vec3 texpos)
-{
+vec4 samplingVolume(vec3 texpos) {
 	vec4 col = texture3D(tex0, texpos);
-	float p  = texture3D(tex0, texpos).x;
-	float l = length(col.xyz);
-	vec4 sum = vec4(0.0);
-	vec3 vn = lap(texpos);//*0.5+0.5;
-	//if (vn.y > 0.05 && vn.x > 0.05 && abs(vn.z) > 0.1)
-	//if (vn.y > 0.5 && vn.x > 0.5 && abs(vn.z) > 0.1)
-	//if (vn.y > 0.5 && vn.x > 0.5 && abs(vn.z) > 0.5)
-	//if (vn.y > 0.15 && vn.x > 0.15 && abs(vn.z) > 0.1)
-	//if (vn.y > 0.1 && vn.x > 0.1 && abs(vn.z) > 0.1)
-	if (vn.y > 0.05 && vn.x > 0.05 && abs(vn.z) > 0.05)
-	//if (vn.y > 0.01 && vn.x > 0.01 && abs(vn.z) > 0.01)
-	//if (vn.y > 0.8 && vn.x > 0.8 && abs(vn.z) > 0.8)
-    {
-		float rr = l * 0.5;
-		//if(!(col.w >= 5.0))
-		if(p > 2.0) {
-			vec4 cx = mix( mix(vec4(1,0,0,1), vec4(0,1,0,1), min(1.0,rr/0.6)), vec4(0,0,1,1), min(1.0,max(0.0,rr-0.6)/0.6));
-			sum = cx;
-			//return sum;
-
-			//shading
-			float dt1 = max(0.0, dot(vn, normalize(vec3(0.3,0.5,1.0))));
-			float dt2 = max(0.0, dot(vn, normalize(vec3(1.0,0.3,-0.5))));
-			float dt3 = max(0.0, dot(vn, normalize(vec3(0.1,1.0,0.1))));
-			sum = vec4(vec3(0.8,0.8,0.8)*dt1*dt1
-				+ vec3(0.5,0.5,0.5)*dt2*dt2
-				+ vec3(0.4,0.4,0.4)*dt3*dt3, 1.0);
-		}
-	}
-	return sum;
+	return col;
 }
 
-//vec4 samplingVolume2(vec3 texpos) {
-//	vec4  col = texture3D(tex0, texpos);
-//	return vec4(col.x);
-//}
-
-vec4 samplingVolume2(vec3 texpos) {
-	float u    = texture3D(tex0, texpos).x;
-	float p    = texture3D(tex0, texpos).y;
-	float phi  = texture3D(tex0, texpos).z;
-	float psi  = texture3D(tex0, texpos).w;
-	return vec4(u, p, phi, psi);
-}
-
-int inside(vec3 p,vec3 pmin, vec3 pmax) {
-    if ((p.x >= pmin.x) && (p.x < pmax.x) &&
-        (p.y >= pmin.y) && (p.y < pmax.y) &&
-        (p.z >= pmin.z) && (p.z < pmax.z)) {
-        return 1;
-    }
-    return 0;
-}
-
-int
-IntersectP(vec3 rayorg, vec3 raydir, vec3 pMin, vec3 pMax, out float hit0, out float hit1) {
+int IntersectP(vec3 rayorg, vec3 raydir, vec3 pMin, vec3 pMax, out float hit0, out float hit1) {
     float t0 = -10000.0, t1 = 10000.0;
     hit0 = t0;
     hit1 = t1;
@@ -179,101 +106,43 @@ void  main(void) {
 	float press  = 0.0;
 	float kotai  = 0.0;
 	float ekitai = 0.0;
-    while (cnt < float(num_steps)) {
+	int count = 0;
+	float pu  = 0.0;
+	float pp  = 0.0;
+	float phi = 0.0;
+	float psi = 0.0;
+	
+	vec3 sumN = vec3(0.0);
+
+	for(int i = 0 ; i < SAMPLES; i++) {
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
-		vec4 temp = samplingVolume2(texpos);
-		float tu  = temp.x;
-		float tp  = temp.y;
-		float phi = temp.z;
-		float psi = temp.w;
-		press += tu;
-
-/*
-		//KOTAI
-		if(psi >= 0.0 && state > 1.5) {
-			sum_k += vec4(1.0);
-			cnt_k += 1.0;
-		} else {
-			//EKITAI
-			if(psi < 0.0 && phi >= 0.0) {
-				sum += vec4(1.0);
-				state = 2.0;
-				t += tstep * 0.2;
+		vec4 temp = samplingVolume(texpos);
+		pu  = temp.x;
+		pp  = temp.y;
+		phi = temp.z;
+		psi = temp.w;
+		//-----------------------------------------------------------
+		//INFO   : 8 4 512 512 1024
+		//MIN    : 0.000000 -5715.101563 -459.964142 -5.000000
+		//MAX    : 5.246408 5533.366699 436.549988 5.000000
+		//-----------------------------------------------------------
+		if(psi < EPS && phi >= EPS) {
+			if(pp > 15.0 && pp < 300.0)
+			{
+				//col += pp;
+				if(pp > 25    && pp < 100.0) col.z += pp;
+				if(pp > 100.0 && pp < 200.0) col.y += pp;
+				if(pp > 200.0 && pp < 300.0) col.x += pp;
 			}
 		}
-*/
-
-		//EKITAI
-		if(psi < 0.0 && phi >= 0.0) {
-			sum += samplingVolume(texpos);
-			ekitai += 0.003;
-			state = 2.0;
-		}
-
-		//KOTAI
-		if(psi >= 0.0 && state > 1.5) {
-			if(state < 4.5) {
-				state += 0.02;
-			} else {
-				state = 4.0;
-			}
-			if(state < 5.0) {
-				//if(sum.x < 250.0)
-				{
-					//sum += vec4(1.2);
-					sum += samplingVolume(texpos);
-					kotai += 0.1;
-				}
-			}
-		}
-
-		//KITAI (tabun nai.)
-		if(psi < 0.0 && phi < 0.0) {
-			//sum += vec4(7.0);
-			state = 6.0;
-		}
-
-		/////////////////////////////////////////////////////////////////////////
-		//if(sum.a > 1.0) break;
-
-        t += tstep;
-		cnt += 1.0;
-    }
-	//sum = sum / cnt;
-	press /= (cnt * 2.3);
-	
-	sum.a   = min(1.0, sum.a);
-	//gl_FragColor = vec4(sum.x + kotai, sum.y, sum.z, sum.a);
-	gl_FragColor = vec4(press * kotai, press, press + ekitai, press);
+		//if(psi > EPS) break;
+		count++;
+		t += ts;
+	}
+	vec3 N = calcNormal(pos + dir * t);
+	vec3 L = normalize(vec3(2, -5, -6));
+	col   /= count;    // * dot(-L, -D);
+	gl_FragColor = col;// * dot(L, -N);
 }
 
-#else
-
-#ifdef GL_ES
-precision mediump float;
-#endif
-
-uniform sampler2D tex0;
-uniform vec2 resolution;
-uniform mat4 view;
-varying float matID;
-varying vec3 normal;
-varying vec3 vnormal;
-varying vec3 eyedir;
-
-vec3 degamma(vec3 col)
-{
-	return pow(col,vec3(2.2,2.2,2.2));
-}
-vec3 gamma(vec3 col)
-{
-	return pow(col,vec3(1.0/2.2,1.0/2.2,1.0/2.2));
-}
-
-void main(void)
-{
-	gl_FragColor = vec4(0.8,0.8,1.0, 0.4);
-}
-
-#endif
