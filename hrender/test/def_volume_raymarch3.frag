@@ -47,7 +47,7 @@ vec4 density_to_color(float dens) {
 
 vec4 samplingVolume(vec3 texpos, vec4 sum) {
   vec4 dens = texture3D(tex0, texpos);
-  vec4 col = density_to_color(dens.x/texpos.x).yzxw;
+  vec4 col = density_to_color(dens.x/texpos.x);
   col.w *= kScale;
   return col;
 }
