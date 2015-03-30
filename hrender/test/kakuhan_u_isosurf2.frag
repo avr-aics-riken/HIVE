@@ -1,6 +1,7 @@
 #ifdef LSGL_ES
 #extension GL_LSGL_trace : enable
 #extension GL_OES_texture_3D : enable
+#endif
 
 #ifdef GL_ES
 precision mediump float;
@@ -12,12 +13,8 @@ uniform vec3      eye;
 uniform vec3      lookat;
 uniform vec3      up;
 uniform vec3      eyedir;
-const float fov = 45.0;
-const float num_steps = 525.0;
-//const float num_steps = 200.0;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
-const float volumedim_cust = 90.0;
 uniform vec3 offset;
 
 #define LEVEL4     0.9999999
@@ -32,8 +29,10 @@ uniform vec3 offset;
 #define GAMMA      1.2
 
 #define EPS        0.005
-#define SAMPLES    1000
-const   float ts = 0.001;
+#define SAMPLES    10000.0
+//#define SAMPLES    50.0
+#define num_steps  SAMPLES
+const   float ts = 0.0001;
 
 vec4 samplingVolume(vec3 texpos) {
 	vec4 col = texture3D(tex0, texpos);
@@ -106,15 +105,18 @@ void  main(void) {
 	float press  = 0.0;
 	float kotai  = 0.0;
 	float ekitai = 0.0;
-	int count = 0;
+	float count = 0.0;
 	float pu  = 0.0;
 	float pp  = 0.0;
 	float phi = 0.0;
 	float psi = 0.0;
 	
 	vec3 sumN = vec3(0.0);
+	vec4 col  = vec4(0.0);
 
-	for(int i = 0 ; i < SAMPLES; i++) {
+	//for(float i = 0.0 ; i < SAMPLES; i = i + 1.0) {
+	float i = 0.0;
+	while(i < SAMPLES) {
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);
@@ -127,22 +129,24 @@ void  main(void) {
 		//MIN    : 0.000000 -5715.101563 -459.964142 -5.000000
 		//MAX    : 5.246408 5533.366699 436.549988 5.000000
 		//-----------------------------------------------------------
-		if(psi < EPS && phi >= EPS) {
-			if(pp > 15.0 && pp < 300.0)
+		//if(psi < EPS && phi >= EPS)
+		{
+			//if(pp > 15.0 && pp < 300.0)
 			{
 				//col += pp;
-				if(pp > 25    && pp < 100.0) col.z += pp;
+				if(pp > 25.0  && pp < 100.0) col.z += pp;
 				if(pp > 100.0 && pp < 200.0) col.y += pp;
 				if(pp > 200.0 && pp < 300.0) col.x += pp;
 			}
 		}
-		//if(psi > EPS) break;
-		count++;
-		t += ts;
+		count = count + 1.0;
+		t += tstep;
+		i = i + 1.0;
 	}
-	vec3 N = calcNormal(pos + dir * t);
+	//vec3 N = calcNormal(rayorg + raydir * t);
 	vec3 L = normalize(vec3(2, -5, -6));
-	col   /= count;    // * dot(-L, -D);
+	col.xyz  /= count;    // * dot(-L, -D);
+	col.w = 1.0;
 	gl_FragColor = col;// * dot(L, -N);
 }
 
