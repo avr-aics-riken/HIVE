@@ -9,7 +9,12 @@
 
 #include "tinyexr.h"
 
-#include <unistd.h>
+#ifdef _WIN32
+	#include <io.h>
+	#define mkstemp _mkstemp
+#else
+	#include <unistd.h>
+#endif
 
 inline bool SimpleEXRLoaderRGBA(const char* exrfilename, int& w, int& h, float** rgba_float)
 {
@@ -46,6 +51,9 @@ inline bool SimpleEXRLoaderRGBA(const char* exrfilename, int& w, int& h, float**
 /// Saves a EXR image with RGBA channel to `out_mem` and return its data size.
 inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_float)
 {
+#ifdef _WIN32
+	return -1;
+#else
   // @todo { Write EXR directry to memory. }
 
   if (!rgba_float) {
@@ -139,11 +147,15 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
   memcpy((*out_mem), &buf.at(0), filesize);
 
 	return filesize;
+#endif
 }
 
 /// Saves a EXR image with Z channel to `out_mem` and return its data size.
 inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
 {
+#ifdef _WIN32
+	return -1;
+#else
   // @todo { Write EXR directry to memory. }
 
   if (!z_float) {
@@ -229,6 +241,7 @@ inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
   memcpy((*out_mem), &buf.at(0), filesize);
 
 	return filesize;
+#endif
 }
 
 #endif // INCLUDE_SimpleEXR_h
