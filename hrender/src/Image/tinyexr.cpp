@@ -7259,7 +7259,7 @@ int LoadMultiChannelEXR(EXRImage *exrImage, const char *filename,
       swap4(reinterpret_cast<unsigned int*>(&dataLen));
     }
 
-    int endLineNo = std::min(lineNo + numScanlineBlocks, dataHeight);
+    int endLineNo = (std::min)(lineNo + numScanlineBlocks, dataHeight);
 
     int numLines = endLineNo - lineNo;
 
@@ -7466,7 +7466,7 @@ int SaveEXR(const float *in_rgba, int width, int height, const char *filename,
 
   for (int i = 0; i < numBlocks; i++) {
     int startY = numScanlineBlocks * i;
-    int endY = std::min(numScanlineBlocks * (i + 1), height);
+    int endY = (std::min)(numScanlineBlocks * (i + 1), height);
     int h = endY - startY;
 
     std::vector<unsigned short> buf(4 * width * h);
@@ -7667,7 +7667,7 @@ int SaveMultiChannelEXR(const EXRImage *exrImage, const char *filename,
 
   for (int i = 0; i < numBlocks; i++) {
     int startY = numScanlineBlocks * i;
-    int endY = std::min(numScanlineBlocks * (i + 1), exrImage->height);
+    int endY = (std::min)(numScanlineBlocks * (i + 1), exrImage->height);
     int h = endY - startY;
 
     std::vector<unsigned short> buf(exrImage->num_channels * exrImage->width *
@@ -7966,7 +7966,7 @@ int LoadDeepEXR(DeepImage *deepImage, const char *filename, const char **err) {
       swap8(reinterpret_cast<unsigned long long*>(&unpackedSampleDataSize));
     }
 
-    int endLineNo = std::min(lineNo + numScanlineBlocks, dataHeight);
+    int endLineNo = (std::min)(lineNo + numScanlineBlocks, dataHeight);
 
     std::vector<int> pixelOffsetTable(dataWidth);
 
@@ -8200,7 +8200,7 @@ int SaveDeepEXR(const DeepImage *deepImage, const char *filename,
     // printf("line: %d, %lld/%lld/%lld\n", lineNo, packedOffsetTableSize,
     // packedSampleDataSize, unpackedSampleDataSize);
 
-    int endLineNo = std::min(lineNo + numScanlineBlocks, dataHeight);
+    int endLineNo = (std::min)(lineNo + numScanlineBlocks, dataHeight);
 
     int numLines = endLineNo - lineNo;
     // printf("numLines: %d\n", numLines);

@@ -5,6 +5,7 @@
 #include "PointToVolume.h"
 #include "../Core/vxmath.h"
 #include <string.h>
+#include <algorithm>
 
 namespace {
 
@@ -23,9 +24,9 @@ inline size_t findLoc(float x, float y, float z, const float bmin[3], const floa
     float yy = (y - bmin[1]) / (bmax[1] - bmin[1]);
     float zz = (z - bmin[2]) / (bmax[2] - bmin[2]);
 
-    size_t i = std::max((size_t)0, std::min((size_t)(dim[0]-1), (size_t)(xx*dim[0])));
-    size_t j = std::max((size_t)0, std::min((size_t)(dim[1]-1), (size_t)(yy*dim[1])));
-    size_t k = std::max((size_t)0, std::min((size_t)(dim[2]-1), (size_t)(zz*dim[2])));
+    size_t i = (std::max)((size_t)0, (std::min)((size_t)(dim[0]-1), (size_t)(xx*dim[0])));
+    size_t j = (std::max)((size_t)0, (std::min)((size_t)(dim[1]-1), (size_t)(yy*dim[1])));
+    size_t k = (std::max)((size_t)0, (std::min)((size_t)(dim[2]-1), (size_t)(zz*dim[2])));
 
     return k * dim[0] * dim[1] + j * dim[0] + i;
 }
@@ -63,13 +64,13 @@ bool PointToVolume::ToVolume(int w, int h, int d) {
     bmin[1] = bmax[1] = position[1];
     bmin[2] = bmax[2] = position[2];
     for (size_t i = 1; i < m_point->Position()->GetNum(); i++) {
-        bmin[0] = std::min(bmin[0], position[3*i+0]);
-        bmin[1] = std::min(bmin[1], position[3*i+1]);
-        bmin[2] = std::min(bmin[2], position[3*i+2]);
+        bmin[0] = (std::min)(bmin[0], position[3*i+0]);
+        bmin[1] = (std::min)(bmin[1], position[3*i+1]);
+        bmin[2] = (std::min)(bmin[2], position[3*i+2]);
 
-        bmax[0] = std::max(bmax[0], position[3*i+0]);
-        bmax[1] = std::max(bmax[1], position[3*i+1]);
-        bmax[2] = std::max(bmax[2], position[3*i+2]);
+        bmax[0] = (std::max)(bmax[0], position[3*i+0]);
+        bmax[1] = (std::max)(bmax[1], position[3*i+1]);
+        bmax[2] = (std::max)(bmax[2], position[3*i+2]);
     }
         
     printf("bmin: %f, %f, %f\n", bmin[0], bmin[1], bmin[2]);
