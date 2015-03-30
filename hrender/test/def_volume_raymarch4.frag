@@ -119,7 +119,7 @@ void  main(void) {
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);
 		pu  = temp.x;
-		pp  = temp.y;
+		pp  = pu * pu;//temp.y;
 		phi = temp.z;
 		psi = temp.w;
 		//-----------------------------------------------------------
@@ -127,9 +127,10 @@ void  main(void) {
 		//MIN    : 0.000000 -5715.101563 -459.964142 -5.000000
 		//MAX    : 5.246408 5533.366699 436.549988 5.000000
 		//-----------------------------------------------------------
-		if(psi < EPS && phi >= EPS)
+		pp *= 300.0;
+		//if(psi < EPS && phi >= EPS)
 		{
-			if(pp > 15.0 && pp < 300.0)
+			//if(pp > 15.0 && pp < 300.0)
 			{
 				if(pp > 25.0  && pp < 100.0)      col.z += pu + pp;////pp;
 				else if(pp > 100.0 && pp < 200.0) col.y += pu + pp;////pp;
@@ -143,8 +144,7 @@ void  main(void) {
 	//vec3 N = calcNormal(rayorg + raydir * t);
 	vec3 L = normalize(vec3(2, -5, -6));
 	col.xyz  /= count;    // * dot(-L, -D);
-	col.xyz  /= 4.0;    // * dot(-L, -D);
+	col.xyz  /= 16.0;    // * dot(-L, -D);
 	col.w = 1.0;
 	gl_FragColor = col;// * dot(L, -N);
 }
-
