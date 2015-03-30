@@ -20,7 +20,7 @@ local textable = {}
 for k = 1, size do 
 	for j = 1, size do 
 		for i = 1, size do 
-			table.insert(textable, bit32.bxor(k, bit32.bxor(j, i)) / 14 );
+			table.insert(textable, bit32.bxor(k, bit32.bxor(j, i)) / 8 );
 		end
 	end
 end
@@ -33,7 +33,7 @@ gentex:Create3D(textable, 2, size, size, size);
 local volume = VolumeModel()
 local volumedata = gentex:VolumeData()
 volume:Create(volumedata)
-volume:SetShader('def_volume_raymarch3.frag')
+volume:SetShader('def_volume_raymarch4.frag')
 render {camera, volume}
 
 
