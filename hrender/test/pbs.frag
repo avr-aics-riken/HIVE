@@ -11,7 +11,7 @@
 //   * Quad area light.
 //
 // TODO
-//   * [ ] Consider emission.
+//   * [x] Consider emission.
 //   * [ ] Sampling optimization.
 //     * [ ] Russian roulette
 //   * [ ] Multiple area light.
@@ -777,9 +777,10 @@ void GetMaterial(int i, out Material mat)
     mat.emission = emission.rgb;
 }
 
-float AverageRGB(vec3 rgb)
+// Assume RGB is in range [0, 1]
+float RGB2Y(vec3 rgb)
 {
-    return (rgb.x + rgb.y + rgb.z) * 0.3333333;
+    return 0.299 * rgb.x + 0.587 * rgb.y + 0.114 * rgb.z;
 }
 
 
@@ -847,10 +848,16 @@ RandomVectorHemisphereCosWeight(float r0, float r1, vec3 N, vec3 Tn, vec3 Bn)
     return normalize( rCosT * Tn + rSinT * Bn + w * N );
 }
 
+bool isNan(float val)
+{
+  return (val <= 0.0 || 0.0 <= val) ? false : true;
+}
+
 void main()
 {
     int depth;
     raydepth(depth);
+
     if (depth > 9) {
         gl_FragColor = vec4(0.01, 0.01, 0.01, 1.0);
         return;
@@ -878,7 +885,8 @@ void main()
     //BuildMaterial(mat);
 
 	vec3 N = normalize(mnormal);
-    if (length(N) < 0.01) {
+    float Nnorm = length(N);
+    if (isNan(Nnorm) || (Nnorm < 1e7)) { // mnormal attribute is not bound to this object.
         N = normalize(n);
     }
     vec3 Ng = normalize(ng);
@@ -912,9 +920,9 @@ void main()
     vec3 ktRGB  = clamp((1.0 - ksRGB0) * ktRGB0, 0.0, 1.0);
     vec3 kdRGB  = clamp((1.0 - ktRGB - ksRGB) * mat.diffuse, 0.0, 1.0);
 
-    float ks = AverageRGB(ksRGB);
-    float kt = AverageRGB(ktRGB);
-    float kd = AverageRGB(kdRGB);
+    float ks = RGB2Y(ksRGB);
+    float kt = RGB2Y(ktRGB);
+    float kd = RGB2Y(kdRGB);
 
     vec3 Rvec, Tvec;
     float fresnelKr, fresnelKt;
@@ -926,9 +934,9 @@ void main()
         ksRGB = ksRGB0 * fresnelKr;
         ktRGB = ktRGB0 * fresnelKt;
         kdRGB = clamp((1.0 - ktRGB - ksRGB) * mat.diffuse, 0.0, 1.0);
-        ks = AverageRGB(ksRGB);
-        kt = AverageRGB(ktRGB);
-        kd = AverageRGB(kdRGB);
+        ks = RGB2Y(ksRGB);
+        kt = RGB2Y(ktRGB);
+        kd = RGB2Y(kdRGB);
     }
 
     vec3 Lo = vec3(0.0);
@@ -989,8 +997,12 @@ void main()
         vec3 wi = vec3(0.0);
         float pdf = 0.0;
 
-        // NOTE: eta is inverted for transmission.
-        int valid = MicrofacetGGXSample(N, Ng, U, B, I, randu, randv, alpha_x, alpha_y, 1.0/eta, refractive, throughput, wi, pdf);
+        // NOTE: eta is inverted for transmission event.
+        eta = mat.ior;
+        if (inside) {
+            eta = 1.0/mat.ior;
+        }
+        int valid = MicrofacetGGXSample(N, Ng, U, B, I, randu, randv, alpha_x, alpha_y, eta, refractive, throughput, wi, pdf);
         //vec3 Ke = MicrofacetGGXEvalTransmit(N, V, alpha_x, alpha_y, eta, wi, pdf);
 
         if (inside) {
@@ -1048,5 +1060,9 @@ void main()
 #endif
     }
 
+    if (depth == 0) {
+        // apply gamma correction.
+        Lo = pow(Lo, vec3(1.0/2.2));    
+    }
     gl_FragColor = vec4(Lo, 1.0);
 }

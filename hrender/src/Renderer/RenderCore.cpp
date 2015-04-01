@@ -199,7 +199,11 @@ public:
         
         std::string mesaPath = binaryPath + "glsl/bin/" + binpath + "/glsl_compiler";
         std::string compilerCmd;
-        compilerCmd += binaryPath + std::string("glsl/glslc");
+#ifdef _WIN32
+		compilerCmd += binaryPath + std::string("glsl\\glslc.bat");
+#else
+		compilerCmd += binaryPath + std::string("glsl/glslc");
+#endif
         compilerCmd += std::string(" --cxx=\"")      + ccmd     + std::string("\"");
         compilerCmd += std::string(" --cxxflags=\"") + opt      + std::string("\"");
         compilerCmd += std::string(" --mesacc=\"")   + mesaPath + std::string("\"");
@@ -470,7 +474,7 @@ private:
                     imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r*clearcolor_a * (1.0 - alp);
                     imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g*clearcolor_a * (1.0 - alp);
                     imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b*clearcolor_a * (1.0 - alp);
-                    imgbuf[4*(x + y * m_width) + 3] = std::max(0, std::min(255, static_cast<int>(255 * (alp + clearcolor_a))));
+                    imgbuf[4*(x + y * m_width) + 3] = (std::max)(0, (std::min)(255, static_cast<int>(255 * (alp + clearcolor_a))));
                 }
             }
         } else {

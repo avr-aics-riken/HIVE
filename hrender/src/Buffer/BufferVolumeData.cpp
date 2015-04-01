@@ -12,7 +12,7 @@ namespace {
 
 inline float remap(float x, const float *table, int n) {
   int idx = x * n;
-  idx = std::max(std::min(n - 1, idx), 0);
+  idx = (std::max)((std::min)(n - 1, idx), 0);
 
   return table[idx];
 }
@@ -196,9 +196,9 @@ public:
 
         }
 
-        size_t ix = std::min(std::max((size_t)(xx * Width()), (size_t)(Width()-1)), (size_t)0);
-        size_t iy = std::min(std::max((size_t)(yy * Height()), (size_t)(Height()-1)), (size_t)0);
-        size_t iz = std::min(std::max((size_t)(zz * Depth()), (size_t)(Depth()-1)), (size_t)0);
+        size_t ix = (std::min)((std::max)((size_t)(xx * Width()), (size_t)(Width()-1)), (size_t)0);
+        size_t iy = (std::min)((std::max)((size_t)(yy * Height()), (size_t)(Height()-1)), (size_t)0);
+        size_t iz = (std::min)((std::max)((size_t)(zz * Depth()), (size_t)(Depth()-1)), (size_t)0);
 
         size_t idx = Component() * (iz * Width() * Height() + iy * Width() + ix);
 
