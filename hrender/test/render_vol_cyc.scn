@@ -1,25 +1,26 @@
 
-print('Render Obj')
-
-local sph = VOLLoader()
+print('Render VOL for cyc')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
-camera:SetFilename('img_render_vol_cyc.jpg')
-
-
-sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol');
-camera:LookAt(
-	0,-100,-40,
+camera:LookAt( 0,-150,-30,
 	0,0,-60,
 	0,0,1,
-	60
+	40
 )
 
-local volume = VolumeModel()
-local volumedata = sph:VolumeData()
-volume:Create(volumedata)
-volume:SetShader('kakuhan_u_isosurf2.frag')
-render {camera, volume}
+for j = 0, 200 do 
+	local vol = VOLLoader()
+	local output_filename = "img_cyc_" .. j .. ".jpg"
+	local load_filename   = "norm_u_lap_p_phi_psi_0000200" .. j .. ".vol";
 
+	--render
+	camera:SetFilename(output_filename);
+	vol:Load(load_filename);
+	local volume = VolumeModel()
+	local volumedata = vol:VolumeData()
+	volume:Create(volumedata)
+	volume:SetShader('fs_kakuhan.frag')
+	render {camera, volume}
+end
 
