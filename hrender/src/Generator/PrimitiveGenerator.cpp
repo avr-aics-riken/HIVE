@@ -994,7 +994,7 @@ BufferMeshData* PrimitiveGenerator::Teapot(float scale) const
 
 
 
-BufferMeshData*  SphereList(float *vertices, float num, float radius) const
+BufferPointData*  PrimitiveGenerator::SphereList(float *vertices, float num, float radius) const
 {
     int i = 0;
     BufferPointData* point = new BufferPointData();
