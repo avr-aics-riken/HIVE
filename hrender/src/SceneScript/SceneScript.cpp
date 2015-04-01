@@ -312,7 +312,7 @@ void registerFuncs(lua_State* L)
     RegisterSceneClass(L);
 }
 
-bool SceneScript::Execute(const char* scenefile)
+bool SceneScript::Execute(const char* scenefile, const std::vector<std::string>& sceneargs)
 {
     printf("Execute Scene file:%s\n", scenefile);
     
