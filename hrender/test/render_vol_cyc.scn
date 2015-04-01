@@ -1,45 +1,28 @@
 
-print('Render Obj')
-
-local sph = VOLLoader()
+print('Render VOL for cyc')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
---camera:SetScreenSize(32, 32)
---camera:SetScreenSize(128, 128)
---camera:SetScreenSize(256, 256)
-camera:SetFilename('img_render_vol_cyc.jpg')
-
---sph:Load('data00000180_4.vol')
-sph:Load('norm_u_lap_p_phi_psi_0000200100.vol');
-camera:LookAt(
-	0,-520,0,
-	0,0,-150,
+camera:LookAt( 0,-150,-30,
+	0,0,-60,
 	0,0,1,
-	60
+	40
 )
 
---sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol');
---camera:LookAt(
---	0,-50,70,
---	0,0,0,
---	0,1,0,
---	60
---)
+for j = 0, 200 do 
+	clearCache()
+	collectgarbage("collect")
+	local vol = VOLLoader()
+	local output_filename = "img_cyc_" .. j .. ".jpg"
+	local load_filename   = "norm_u_lap_p_phi_psi_0000200" .. j .. ".vol";
 
---sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol');
---camera:LookAt(
---	0,-50,0,
---	0,0,-70,
---	0,0,1,
---	60
---)
-
-local volume = VolumeModel()
-local volumedata = sph:VolumeData()
-volume:Create(volumedata)
---volume:SetShader('def_volume_raymarch3.frag')
-volume:SetShader('kakuhan_u_isosurf.frag')
-render {camera, volume}
-
+	--render
+	camera:SetFilename(output_filename);
+	vol:Load(load_filename);
+	local volume = VolumeModel()
+	local volumedata = vol:VolumeData()
+	volume:Create(volumedata)
+	volume:SetShader('fs_kakuhan.frag')
+	render {camera, volume}
+end
 
