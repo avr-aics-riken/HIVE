@@ -11,7 +11,6 @@
 
 #ifdef _WIN32
 	#include <io.h>
-	#define mkstemp _mkstemp
 #else
 	#include <unistd.h>
 #endif
@@ -60,15 +59,6 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
     return 0;
   }
 
-  char basename[] = "hive_exr_save_XXXXXX";
-  int fd = mkstemp(basename); // prefix will be overwritten with actual filename
-  if (fd == -1) {
-    fprintf(stderr, "Failed to create unique filename.\n");
-    return 0;
-  }
-  close(fd);
-
-
   EXRImage exr;
   exr.width = w;
   exr.height = h;
@@ -95,15 +85,15 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
       channel_images[0][y*w+x] = alpha; // A
     }
   }
-  exr.images = channel_images;
+  exr.images = reinterpret_cast<unsigned char**>(channel_images);
   
   const char* err = NULL;
-  int ret = SaveMultiChannelEXR(&exr, basename, &err);
-  if (ret != 0) {
+  unsigned char* mem = NULL;
+  size_t mem_size = SaveMultiChannelEXRToMemory(&exr, &mem, &err);
+  if (mem_size <= 0) {
     if (err) {
       fprintf(stderr, "[EXRSave] %s\n", err);
     }
-    unlink(basename);
     return 0;
   }
 
@@ -112,41 +102,13 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
   }
   delete [] channel_images;
 
+  // malloc() -> new
+  (*out_mem) = reinterpret_cast<void*>(new unsigned char[mem_size]);
+  memcpy((*out_mem), mem, mem_size);
 
-  FILE *fp = fopen(basename, "rb");
-  if (!fp) {
-    fprintf(stderr, "[EXRSave] Save ERR image to temp file failed.\n");
-    return 0;
-  }
+  free(mem);
 
-  size_t filesize = 0;
-  // Compute size
-  fseek(fp, 0, SEEK_END);
-  filesize = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
-
-  if (filesize == 0) {
-    fclose(fp);
-    return 0;
-  } 
-
-  std::vector<char> buf(filesize); // @todo { use mmap }
-  {
-    size_t ret;
-    ret = fread(&buf[0], 1, filesize, fp);
-    assert(ret == filesize);
-    fclose(fp);
-    ret = unlink(basename);
-    if (ret == -1) {
-      fprintf(stderr, "[LSGL] Failed to delete file: %s\n", basename);
-      // May OK
-    }
-  }
-
-  (*out_mem) = reinterpret_cast<void*>(new unsigned char[filesize]);
-  memcpy((*out_mem), &buf.at(0), filesize);
-
-	return filesize;
+	return mem_size;
 #endif
 }
 
@@ -161,15 +123,6 @@ inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
   if (!z_float) {
     return 0;
   }
-
-  char basename[] = "hive_exr_save_XXXXXX";
-  int fd = mkstemp(basename); // prefix will be overwritten with actual filename
-  if (fd == -1) {
-    fprintf(stderr, "Failed to create unique filename.\n");
-    return 0;
-  }
-  close(fd);
-
 
   EXRImage exr;
   exr.width = w;
@@ -189,58 +142,24 @@ inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
       channel_images[0][y*w+x] = z_float[(h-1-y)*w+x];
     }
   }
-  exr.images = channel_images;
+  exr.images = reinterpret_cast<unsigned char**>(channel_images);
   
   const char* err = NULL;
-  int ret = SaveMultiChannelEXR(&exr, basename, &err);
-  if (ret != 0) {
-    if (err) {
-      fprintf(stderr, "[EXRSave] %s\n", err);
-    }
-    unlink(basename);
-    return 0;
-  }
+  unsigned char* mem = NULL;
+  size_t mem_size = SaveMultiChannelEXRToMemory(&exr, &mem, &err);
 
   for (size_t i = 0; i < exr.num_channels; i++) {
     delete [] channel_images[i];
   }
   delete [] channel_images;
 
+  // malloc() -> new
+  (*out_mem) = reinterpret_cast<void*>(new unsigned char[mem_size]);
+  memcpy((*out_mem), mem, mem_size);
 
-  FILE *fp = fopen(basename, "rb");
-  if (!fp) {
-    fprintf(stderr, "[EXRSave] Save ERR image to temp file failed.\n");
-    return 0;
-  }
+  free(mem);
 
-  size_t filesize = 0;
-  // Compute size
-  fseek(fp, 0, SEEK_END);
-  filesize = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
-
-  if (filesize == 0) {
-    fclose(fp);
-    return 0;
-  } 
-
-  std::vector<char> buf(filesize); // @todo { use mmap }
-  {
-    size_t ret;
-    ret = fread(&buf[0], 1, filesize, fp);
-    assert(ret == filesize);
-    fclose(fp);
-    ret = unlink(basename);
-    if (ret == -1) {
-      fprintf(stderr, "[LSGL] Failed to delete file: %s\n", basename);
-      // May OK
-    }
-  }
-
-  (*out_mem) = reinterpret_cast<void*>(new unsigned char[filesize]);
-  memcpy((*out_mem), &buf.at(0), filesize);
-
-	return filesize;
+	return mem_size;
 #endif
 }
 
