@@ -37,7 +37,7 @@ public:
         return new BufferMeshData_Lua(PrimitiveGenerator::Teapot(scale));
     }
 
-    BufferMeshData_Lua* PointList(LuaTable tbl, float num, float radius) {
+    BufferPointData_Lua* PointList(LuaTable tbl, float num, float radius) {
         std::vector<LuaTable>           lt       = tbl.GetTable();
         std::vector<LuaTable>::iterator ite      = lt.begin();
         std::vector<LuaTable>::iterator ite_end  = lt.end();
@@ -55,7 +55,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferPointData_Lua*,  Sphere,float)
     LUA_SCRIPTCLASS_METHOD_ARG3(BufferMeshData_Lua*,   Cube,float,float,float)
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferMeshData_Lua*,   Teapot,float)
-    LUA_SCRIPTCLASS_METHOD_ARG3(BufferMeshData_Lua*,   PointList,LuaTable, float, float)
+    LUA_SCRIPTCLASS_METHOD_ARG3(BufferPointData_Lua*,  PointList,LuaTable, float, float)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*,   LineData)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*,  TetraData)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferVectorData_Lua*, NormalData)
