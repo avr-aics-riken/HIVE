@@ -156,9 +156,9 @@ public:
         position[0] = x * Width();
         position[1] = y * Height();
         position[2] = z * Depth();
-
+#ifndef _WIN32
         m_sparseVolumeAccel->Sample(value, position);
-
+#endif
         for (int c = 0; c < m_comp; c++) {
             ret[c] = value[c];
         }
@@ -169,8 +169,12 @@ public:
     bool Build() {
         delete m_sparseVolumeAccel; // delete exiting accel structure.
 
-        m_sparseVolumeAccel = new lsgl::render::SparseVolumeAccel();
+		m_sparseVolumeAccel = new lsgl::render::SparseVolumeAccel();
+#ifndef _WIN32
         return m_sparseVolumeAccel->Build(m_sparseVolume);
+#else
+		return false;
+#endif
     }
 
 };
