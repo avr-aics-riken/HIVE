@@ -394,8 +394,6 @@ add_test(NAME render_with_gentex.scn      COMMAND hrender ../../hrender/test/ren
 add_test(NAME render_with_gentex_F32.scn      COMMAND hrender ../../hrender/test/render_with_gentex_F32.scn    )
 add_test(NAME render_vol_gentex3d.scn      COMMAND hrender ../../hrender/test/render_vol_gentex3d.scn    )
 add_test(NAME render_mirror_glass.scn      COMMAND hrender ../../hrender/test/render_mirror_glass.scn    )
-add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/render_obj_transform.scn )
-add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_sph_transform.scn )
 add_test(NAME render_obj_point.scn       COMMAND hrender  ../../hrender/test/render_obj_point.scn     )
 add_test(NAME render_obj_line.scn        COMMAND hrender  ../../hrender/test/render_obj_line.scn      )
 add_test(NAME render_obj_normal_vector.scn      COMMAND hrender  ../../hrender/test/render_obj_normal_vector.scn)
@@ -403,6 +401,8 @@ add_test(NAME render_sph_vector.scn      COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_with_texture.scn    COMMAND hrender  ../../hrender/test/render_with_texture.scn    )
 add_test(NAME render_cube.scn            COMMAND hrender  ../../hrender/test/render_cube.scn    )
 add_test(NAME render_pointlist.scn       COMMAND hrender  ../../hrender/test/render_pointlist.scn    )
+add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/render_obj_transform.scn )
+add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_sph_transform.scn )
 #ERROR CASE
 add_test(NAME loader_obj_err.scn         COMMAND hrender ../../hrender/test/err/loader_obj_err.scn           )
 add_test(NAME loader_sph_err.scn         COMMAND hrender ../../hrender/test/err/loader_sph_err.scn           )
