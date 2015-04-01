@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
+#include <vector>
 
 #include "../SceneScript/SceneScript.h"
 
@@ -25,7 +26,7 @@
 /**
  * sceneレンダリングコア関数
  */
-void renderScene(const char* scenefile)
+void renderScene(const char* scenefile, const std::vector<std::string>& sceneargs)
 {
     printf("RENDER!! > %s\n", scenefile);
     
@@ -34,7 +35,7 @@ void renderScene(const char* scenefile)
     changeFileDir(scenefullfile);
     
     SceneScript script;
-    if (!script.Execute(scenefullfile.c_str())) {
+    if (!script.Execute(scenefullfile.c_str(), sceneargs)) {
         fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
     }
 }
@@ -56,15 +57,20 @@ int main(int argc, char* argv[])
 #endif
     
     char* scenefile = 0;
+    std::vector<std::string> sceneargs;
     
     // Parse args
     for (int i = 1; i < argc; ++i) {
         //const char* arg = &argv[i][0];
         size_t na = strlen(argv[i]);
-        if (na > 4
+        if (i == 1
+        && na > 4
         && (strncasecmp(&argv[i][na-4],".scn",4) == 0 || strncasecmp(&argv[i][na-4],".lua",4) == 0))
         {
             scenefile = argv[i];
+        }
+        if (i > 1 && na < 2048) {
+            sceneargs.push_back(argv[i]);
         }
     }
     
@@ -79,7 +85,7 @@ int main(int argc, char* argv[])
         return 0;
     }
     
-    renderScene(scenefile);
+    renderScene(scenefile, sceneargs);
     
     printf("Exit hrender.\n");
     
