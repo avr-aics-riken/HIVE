@@ -31,6 +31,7 @@ protected:
     BufferMeshData*  Teapot(float scale) const;
   //BufferLineData*   Line() const; // @todo
   //BufferVectorData* VectorArrow() const; // @todo
+    BufferPointData*  SphereList(float *p, float num, float radius) const;
 
 };
 
