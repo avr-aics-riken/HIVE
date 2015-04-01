@@ -10,6 +10,8 @@ camera:LookAt( 0,-150,-30,
 )
 
 for j = 0, 200 do 
+	clearCache()
+	collectgarbage("collect")
 	local vol = VOLLoader()
 	local output_filename = "img_cyc_" .. j .. ".jpg"
 	local load_filename   = "norm_u_lap_p_phi_psi_0000200" .. j .. ".vol";

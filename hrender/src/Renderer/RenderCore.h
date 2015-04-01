@@ -33,6 +33,8 @@ public:
     
     void ClearBuffers(); // Clear RenderBuffer resouces
     
+    bool CreateProgramSrc(const char* src, unsigned int& prog);
+    
     
     
     void SetProgressCallback(bool (*func)(double));
