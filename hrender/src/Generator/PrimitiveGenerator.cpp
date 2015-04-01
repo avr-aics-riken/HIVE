@@ -992,3 +992,27 @@ BufferMeshData* PrimitiveGenerator::Teapot(float scale) const
     return mesh;
 }
 
+
+
+BufferMeshData*  SphereList(float *vertices, float num, float radius) const
+{
+    int i = 0;
+    BufferPointData* point = new BufferPointData();
+
+    point->Create(num);
+    Vec3Buffer*  pos     = point->Position();
+    FloatBuffer* mat     = point->Material();
+    FloatBuffer* rad     = point->Radius();
+
+    float* pp = pos->GetBuffer();
+    memcpy(pp, vertices, sizeof(float) * num * 3);
+
+    float* rp = rad->GetBuffer();
+    for(int i = 0 ; i < num; i++) {
+        rp[i] = radius;
+    }
+
+    memset(mat->GetBuffer(), 0, sizeof(float) * num);
+
+    return point;
+}
