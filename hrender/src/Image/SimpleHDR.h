@@ -446,7 +446,6 @@ inline int RGBE_ReadPixels_RLE(FILE *fp, float *data, int scanline_width,
 			rgbe[3] = scanline_buffer[i+3*scanline_width];
 			rgbe2float(&data[RGBE_DATA_RED],&data[RGBE_DATA_GREEN],
 					   &data[RGBE_DATA_BLUE],rgbe);
-			data[3] = 255;
 			data += RGBE_DATA_SIZE;
 		}
 		num_scanlines--;
