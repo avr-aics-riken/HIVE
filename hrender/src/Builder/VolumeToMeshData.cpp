@@ -8,6 +8,7 @@
 #include <cmath>
 #include <map>
 #include <cstring>
+#include <algorithm>
 
 namespace {
 
@@ -469,9 +470,9 @@ public:
 
   void fetch3D(size_t i, size_t j, size_t k, T *ret) const {
     // clamp
-    i = std::max(std::min(i, (size_t)(nVoxels_[0] - 1)), (size_t)0);
-    j = std::max(std::min(j, (size_t)(nVoxels_[1] - 1)), (size_t)0);
-    k = std::max(std::min(k, (size_t)(nVoxels_[2] - 1)), (size_t)0);
+    i = (std::max)((std::min)(i, (size_t)(nVoxels_[0] - 1)), (size_t)0);
+    j = (std::max)((std::min)(j, (size_t)(nVoxels_[1] - 1)), (size_t)0);
+    k = (std::max)((std::min)(k, (size_t)(nVoxels_[2] - 1)), (size_t)0);
 
     for (size_t c = 0; c < components_; c++) {
       ret[c] = density_[(size_t)components_ * get_total_index(i, j, k) + c];
@@ -604,7 +605,7 @@ protected:
     float s0 = lookup_value(i0, j0, k0);
     float s1 = lookup_value(i1, j1, k1);
     float t = (threshold - s0) / (s1 - s0);
-    t = std::max(std::min(t, 1.0f), 0.0f);
+    t = (std::max)((std::min)(t, 1.0f), 0.0f);
 
     float3 p = p0 * (1.0f - t) + p1 * t;
 

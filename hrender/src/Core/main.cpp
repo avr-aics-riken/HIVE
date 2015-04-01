@@ -18,6 +18,10 @@
 
 #include "../Core/Path.h"
 
+#ifdef _WIN32
+	#define strncasecmp(x,y,z) _strnicmp(x,y,z)
+#endif
+
 /**
  * sceneレンダリングコア関数
  */

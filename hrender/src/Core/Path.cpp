@@ -9,6 +9,12 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <assert.h>
+#include <tchar.h>
+#include <codecvt>
+#include <iomanip>
+#include <locale>
+#include <wchar.h>
 #elif __APPLE__
 #undef __BLOCKS__ // avoid BCMLib::block.h miss include
 #include <CoreFoundation/CFBundle.h>
@@ -17,16 +23,29 @@
 #endif
 
 /**
- * 実行している自身のファイルパス取得
- * @return 実行ファイルフルパス
+ * 実行している自身のディレクトリパス取得
+ * @return 実行ディレクトリフルパス
  */
 std::string getBinaryDir()
 {
     const int MAXPATHLEN = 4096;
     char exepath[MAXPATHLEN] = {};
 #if _WIN32
-    assert(0);// TODO
-    return std::string(exepath);
+	wchar_t app_full_path[1024];
+	GetModuleFileNameW(NULL, app_full_path, sizeof(app_full_path) / sizeof(wchar_t));
+	std::wstring str(app_full_path);
+	const char16_t* p = reinterpret_cast<const char16_t*>(str.c_str());
+	std::u16string u16str(p);
+	// utf16 to utf8
+	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+	std::string stdstr = convert.to_bytes(u16str);
+
+	std::string::size_type pos = stdstr.find_last_of("\\");
+	if (pos != std::string::npos) {
+		std::string basepath = stdstr.substr(0, pos + 1);
+		return basepath;
+	}
+	return stdstr;
     
 #elif __APPLE__
     CFBundleRef bundle         = CFBundleGetMainBundle();
@@ -104,7 +123,11 @@ std::string getCurrentDir()
 void changeFileDir(const std::string& filefullpath)
 {
 #if _WIN32
-    assert(0); // TODO
+	std::string::size_type pos = filefullpath.find_last_of("\\");
+	if (pos != std::string::npos) {
+		std::string basepath = filefullpath.substr(0, pos);
+		SetCurrentDirectory(basepath.c_str());
+	}
 #else
     std::string scenepath = filefullpath;
     const size_t p = scenepath.rfind("/");
@@ -123,7 +146,8 @@ void changeFileDir(const std::string& filefullpath)
 std::string convertFullpath(const std::string& path)
 {
 #if _WIN32
-    assert(0); // TODO    
+    //assert(0); // TODO    
+	return path;
 #else // Mac & Linux
     if (path.find("/") == 0) {
         return path;
