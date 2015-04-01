@@ -312,6 +312,20 @@ void registerFuncs(lua_State* L)
     RegisterSceneClass(L);
 }
 
+void registerArg(lua_State* L)
+{
+    LuaTable arg;
+    
+    // TEST
+    arg.push("arg1");
+    arg.push("arg2");
+    arg.push("arg3");
+    
+    arg.pushLuaTableValue(L);
+    lua_setglobal(L, "arg");
+    dumpStack(L);
+}
+
 bool SceneScript::Execute(const char* scenefile)
 {
     printf("Execute Scene file:%s\n", scenefile);
@@ -330,6 +344,7 @@ bool SceneScript::Execute(const char* scenefile)
     
     lua_State* L = createLua();
     registerFuncs(L);
+    registerArg(L);
     doLua(L, luascript);
     closeLua(L);
     

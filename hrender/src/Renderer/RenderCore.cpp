@@ -110,11 +110,13 @@ private:
     PolygonBufferMap m_polygonBuffers;
     PointBufferMap   m_pointBuffers;
     VolumeBufferMap  m_volumeBuffers;*/
+    typedef std::map<const std::string, unsigned int> ShaderCache;
     typedef std::map<const BufferImageData*, unsigned int> TextureCache;
     typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
     BufferMap m_buffers_SGL;
     BufferMap m_buffers_GL;
     TextureCache m_textureCache;
+    ShaderCache  m_shaderCache;
     
     ImageSaver m_imagesaver;
     
@@ -210,11 +212,20 @@ public:
         m_buffers_SGL.clear();
         m_buffers_GL.clear();
         
-        std::map<const BufferImageData*, unsigned int>::const_iterator it, eit = m_textureCache.end();
+        TextureCache::const_iterator it, eit = m_textureCache.end();
         for (it = m_textureCache.begin(); it != eit; ++it) {
             unsigned int t = it->second;
             DeleteTextures_SGL(1, &t);
         }
+        m_textureCache.clear();
+
+        ShaderCache::const_iterator sit, seit = m_shaderCache.end();
+        for (sit = m_shaderCache.begin(); sit != seit; ++sit) {
+            const unsigned int p = sit->second;
+            DeleteProgram_SGL(p);
+        }
+        m_shaderCache.clear();
+        
     }
 
     /// レンダーオブジェクトの追加
@@ -267,6 +278,21 @@ public:
         }
         return false;
     }
+    
+    bool CreateProgramSrc(const char* srcname, unsigned int& prg)
+    {
+        ShaderCache::const_iterator it = m_shaderCache.find(srcname);
+        if (it != m_shaderCache.end()) {
+            prg = it->second;
+            return true;
+        }
+        bool r = CreateProgramSrc_SGL(srcname, prg);
+        if (!r)
+            return false;
+        m_shaderCache[std::string(srcname)] = prg;
+        return true;
+    }
+    
     
     
     /// レンダリング
@@ -635,5 +661,10 @@ void RenderCore::ClearBuffers()
 void RenderCore::SetProgressCallback(bool (*func)(double))
 {
     m_imp->SetProgressCallback(func);
+}
+
+bool RenderCore::CreateProgramSrc(const char* src, unsigned int& prg)
+{
+    return m_imp->CreateProgramSrc(src, prg);
 }
 
