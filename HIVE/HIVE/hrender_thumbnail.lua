@@ -2,22 +2,18 @@
 	hrender thumbnail capture for HIVE
 --]]
 
-local objpath = "bunny.obj"
 local fragpath = "polygon.frag"
 local jsonstr = ""
 local outputpath = "out.jpg"
 
 for i = 1, #arg do
 	if i == 1 then
-		objpath = arg[i]
-	end
-	if i == 2 then
 		fragpath = arg[i]
 	end
-	if i == 3 then
+	if i == 2 then
 		outputpath = arg[i]
 	end
-	if i == 4 then
+	if i == 3 then
 		jsonstr = arg[i]
 	end
 end
@@ -29,13 +25,12 @@ local saver = ImageSaver()
 
 local camera = Camera()
 camera:SetScreenSize(256,256)
-camera:LookAt(0,0,100, 0,0,0, 0,1,0, 60)
+camera:LookAt(0,50,90, 2,15,0, 0,1,0, 60)
 camera:SetFilename(outputpath)
 
-local obj = OBJLoader()
-obj:Load(objpath)
+local gen = PrimitiveGenerator()
 local model = PolygonModel()
-local meshdata = obj:MeshData()
+local meshdata = gen:Teapot(15.0)
 model:Create(meshdata)
 model:SetShader(fragpath)
 
@@ -81,4 +76,3 @@ if jsonstr then
 end
 
 render {camera, model}
-
