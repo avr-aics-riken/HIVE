@@ -22,23 +22,7 @@ for i = 1, #arg do
 	end
 end
 
---[[
 JSON = require('dkjson')
-local data, pos, msg = JSON.decode(jsonstr)
-
-if data.uniforms then
-	local uniforms = data.uniforms
-	for key, value in pairs(uniforms) do
-		local name, val
-		for k, v in pairs(value) do
-			print("k")
-			print(k)
-			print("v")
-			print(v)
-		end
-	end
-end
---]]
 
 -- Global Jpeg Saver
 local saver = ImageSaver()
@@ -54,7 +38,47 @@ local model = PolygonModel()
 local meshdata = obj:MeshData()
 model:Create(meshdata)
 model:SetShader(fragpath)
--- TODO
---model:SetVec4('color', 1.0, 1.0, 1.0, 1.0);
+
+-- set uniform values
+if jsonstr then
+	local data, pos, msg = JSON.decode(jsonstr)
+	if not data then
+		print("JSON parse error")
+		print(pos)
+		print(msg)
+	end
+	if data.uniforms then
+		local uniforms = data.uniforms
+		for key, value in pairs(uniforms) do
+			local name, uniform, val
+			for k, v in pairs(value) do
+				if k == "name" then
+					name = v
+				end
+				if k == "val" then
+					val = v
+				end
+				if k == "uniform" then
+					uniform = v
+				end
+			end
+			if name and val then
+				if uniform == "float" then
+					model:SetFloat(name, val)
+				end
+				if uniform == "vec2" then
+					model:SetVec2(name, val[1], val[2])
+				end
+				if uniform == "vec3" then
+					model:SetVec3(name, val[1], val[2], val[3])
+				end
+				if uniform == "vec4" then
+					model:SetVec4(name, val[1], val[2], val[3], val[4])
+				end
+			end
+		end
+	end
+end
+
 render {camera, model}
 

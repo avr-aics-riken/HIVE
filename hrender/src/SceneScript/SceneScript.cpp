@@ -322,7 +322,7 @@ void registerArg(lua_State* L, const std::vector<std::string>& sceneargs)
     
     arg.pushLuaTableValue(L);
     lua_setglobal(L, "arg");
-    dumpStack(L);
+    //dumpStack(L);
 }
 
 bool SceneScript::Execute(const char* scenefile, const std::vector<std::string>& sceneargs)
