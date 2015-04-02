@@ -1,0 +1,7 @@
+image: radial/busyboxplus
+script:
+  - curl -L http://172.17.42.1:4001/v2/keys/build_notify -XPUT -d value="notify"
+notify:
+ email:
+    recipients:
+      - syoyo@lighttransport.com
