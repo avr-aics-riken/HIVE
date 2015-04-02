@@ -22,8 +22,10 @@
 #ifdef _WIN32
 	#define strncasecmp(x,y,z) _strnicmp(x,y,z)
 
-	#define _CRTDBG_MAP_ALLOC
-	#include <crtdbg.h>
+	#ifdef _DEBUG
+		#define _CRTDBG_MAP_ALLOC
+		#include <crtdbg.h>
+	#endif
 #endif
 
 /**
@@ -53,8 +55,10 @@ void renderScene(const char* scenefile, const std::vector<std::string>& scenearg
 int main(int argc, char* argv[])
 {
 #ifdef _WIN32
-	_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
-	_CrtSetBreakAlloc(1037);
+	#ifdef _DEBUG
+		_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+		_CrtSetBreakAlloc(1037);
+	#endif
 #endif
 
     int rank = 0;
