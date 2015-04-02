@@ -22,19 +22,31 @@ public:
     PrimitiveGenerator_Lua(){}
     ~PrimitiveGenerator_Lua(){};
 
+    BufferMeshData_Lua* CreateLuaMeshData(BufferMeshData* data) {
+        BufferMeshData_Lua * newdata = new BufferMeshData_Lua(data);
+        delete data;
+        return newdata;
+    }
+
+    BufferPointData_Lua* CreateLuaPointData(BufferPointData* data) {
+        BufferPointData_Lua * newdata = new BufferPointData_Lua(data);
+        delete data;
+        return newdata;
+    }
+
     BufferMeshData_Lua* Quad(float width, float height) {
-        return new BufferMeshData_Lua(PrimitiveGenerator::Quad(width, height));
+        return CreateLuaMeshData(PrimitiveGenerator::Quad(width, height));
     }
 
     BufferPointData_Lua* Sphere(float radius) {
-        return new BufferPointData_Lua(PrimitiveGenerator::Sphere(radius));
+        return CreateLuaPointData(PrimitiveGenerator::Sphere(radius));
     }
 
     BufferMeshData_Lua* Cube(float width, float height, float depth) {
-        return new BufferMeshData_Lua(PrimitiveGenerator::Cube(width, height, depth));
+        return CreateLuaMeshData(PrimitiveGenerator::Cube(width, height, depth));
     }
     BufferMeshData_Lua* Teapot(float scale) {
-        return new BufferMeshData_Lua(PrimitiveGenerator::Teapot(scale));
+        return CreateLuaMeshData(PrimitiveGenerator::Teapot(scale));
     }
 
     BufferPointData_Lua* PointList(LuaTable tbl, float num, float radius) {
@@ -47,7 +59,7 @@ public:
             buf.push_back(param);
             ite++;
         }
-        return new BufferPointData_Lua(PrimitiveGenerator::SphereList(&buf[0], num, radius));
+        return CreateLuaPointData(PrimitiveGenerator::SphereList(&buf[0], num, radius));
     }
 
     LUA_SCRIPTCLASS_BEGIN(PrimitiveGenerator_Lua)
