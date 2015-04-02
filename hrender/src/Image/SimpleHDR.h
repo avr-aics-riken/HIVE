@@ -153,7 +153,7 @@ rgbe2float(float *red, float *green, float *blue, unsigned char rgbe[4])
 /* default minimal header. modify if you want more information in header */
 inline int RGBE_WriteHeader(FILE *fp, int width, int height, rgbe_header_info *info)
 {
-	const char *programtype = "RGBE";
+	const char *programtype = "RADIANCE";
 	
 	if (info && (info->valid & RGBE_VALID_PROGRAMTYPE))
 		programtype = info->programtype;
@@ -446,7 +446,6 @@ inline int RGBE_ReadPixels_RLE(FILE *fp, float *data, int scanline_width,
 			rgbe[3] = scanline_buffer[i+3*scanline_width];
 			rgbe2float(&data[RGBE_DATA_RED],&data[RGBE_DATA_GREEN],
 					   &data[RGBE_DATA_BLUE],rgbe);
-			data[3] = 255;
 			data += RGBE_DATA_SIZE;
 		}
 		num_scanlines--;
