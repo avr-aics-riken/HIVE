@@ -37,9 +37,9 @@ Then, run `etcd` as a docker service.
 
 Install node.js and `npm install -g shelljs`
 
-Establish SSL port forwarding for etcd port(4001) into drone server.
+Establish reverse SSL port forwarding for port 4001 into drone server.
 
-    $ ssh -N -f -L 4001:localhost:8000 <drone-server-addr>
+    $ ssh -N -f -R 4001:localhost:4001 <drone-server-addr>
 
 Register ssh key for K or other remote system befor running build script by using ssh-add.
 
