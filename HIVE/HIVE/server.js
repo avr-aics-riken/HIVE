@@ -259,8 +259,7 @@ ws.on('request', function (request) {
 
 function captureThumbnail() {
 	'use strict';
-	var objpath = path.resolve(__dirname, '../test/bunny.obj'),
-		shaderdir = path.resolve(__dirname, './shader'),
+	var shaderdir = path.resolve(__dirname, './shader'),
 		files,
 		iterateFrags = function (index, callback) {
 			var outdir = path.resolve(__dirname, './root/shader'),
@@ -285,9 +284,8 @@ function captureThumbnail() {
 			}
 		},
 		executeFunc = function (index, fragpath, outpath, json) {
-			var process = spawn(HRENDER, [HRENDER_THUMBNAIL_ARG, objpath, fragpath, outpath, json]);
+			var process = spawn(HRENDER, [HRENDER_THUMBNAIL_ARG, fragpath, outpath, json]);
 			
-			console.log("objpath:" + objpath);
 			console.log("fragpath:" + fragpath);
 			console.log("outpath:" + outpath);
 			
