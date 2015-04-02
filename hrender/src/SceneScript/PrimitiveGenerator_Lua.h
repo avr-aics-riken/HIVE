@@ -34,7 +34,10 @@ public:
         return new BufferMeshData_Lua(PrimitiveGenerator::Cube(width, height, depth));
     }
     BufferMeshData_Lua* Teapot(float scale) {
-        return new BufferMeshData_Lua(PrimitiveGenerator::Teapot(scale));
+		BufferMeshData* data = PrimitiveGenerator::Teapot(scale);
+		BufferMeshData_Lua * newdata = new BufferMeshData_Lua(data);
+		delete data;
+		return newdata;
     }
 
     
