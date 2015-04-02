@@ -97,7 +97,7 @@ def build_hive():
     # build loader libs.
     loader_build_script = ""
     if host_type == 'k_cross':
-        raise # todo
+        loader_build_script = './scripts/build_loader_libs_k_cross.sh'
     elif host_type == 'linux64':
         loader_build_script = './scripts/build_loader_libs_linux-x64.sh'
     elif host_type == 'darwin64':
