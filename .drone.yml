@@ -1,6 +1,8 @@
 image: syoyo/ubu-dev
+env:
+  - DOCKER_OPTS="--net=host"
 script:
-  - curl -L http://172.17.42.1:4001/v2/keys/build_notify -XPUT -d value="notify"
+  - curl -L http://127.0.0.1:4001/v2/keys/build_notify -XPUT -d value="notify"
 notify:
  email:
     recipients:
