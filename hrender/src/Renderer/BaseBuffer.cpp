@@ -22,9 +22,6 @@ BaseBuffer::BaseBuffer(RENDER_MODE mode)
 /// デストラクタ
 BaseBuffer::~BaseBuffer()
 {
-    if (m_prog) {
-        DeleteProgram_SGL(m_prog);
-    }
 }
 
 /// シェーダプログラムをバインドする.
@@ -143,7 +140,9 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
  */
 bool BaseBuffer::loadShaderSrc(const char* srcname)
 {
-    return CreateProgramSrc_SGL(srcname, m_prog);
+    RenderCore* core = RenderCore::GetInstance();
+    m_prog = 0;
+    return core->CreateProgramSrc(srcname, m_prog);
 }
 
 /// シェーダプログラムを返す.

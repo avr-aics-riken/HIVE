@@ -7,11 +7,13 @@
 /*
     SceneScript.h
 */
+#include <string>
+#include <vector>
 
 class SceneScript
 {
 public:
-    bool Execute(const char* scenefile);
+    bool Execute(const char* scenefile, const std::vector<std::string>& sceneargs);
     
 };
 

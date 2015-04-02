@@ -90,7 +90,7 @@ local function CameraPos(name, camerapos_x, camerapos_y, camerapos_z)
 	)
 end
 
-local function CameraLookat(name, pos_x, pos_y, pos_z, tar_x, tar_y, ctar_z, up_x, up_y, up_z, fov)
+local function CameraLookat(name, pos_x, pos_y, pos_z, tar_x, tar_y, tar_z, up_x, up_y, up_z, fov)
 	local camera = HIVE_ObjectTable[name]
 	if camera == nil then return 'Not found camera' end
 	camera:LookAt(

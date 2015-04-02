@@ -3,10 +3,12 @@
 
 var	HRENDER = '../hrender',
 	HRENDER_ARG = ['hrender_server.lua'],
+	HRENDER_THUMBNAIL_ARG = ['hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = './root/',
 	port = process.argv.length > 2 ? process.argv[2] : 8080,
 	http = require('http'),
 	metabin = require('./lib/metabinary'),
+	path = require('path'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
 	seserver = http.createServer(function (req, res) {
@@ -254,6 +256,65 @@ ws.on('request', function (request) {
 		}
 	});
 });
+
+function captureThumbnail() {
+	'use strict';
+	var objpath = path.resolve(__dirname, '../test/bunny.obj'),
+		shaderdir = path.resolve(__dirname, './shader'),
+		files,
+		iterateFrags = function (index, callback) {
+			var outdir = path.resolve(__dirname, './root/shader'),
+				fullpath,
+				filename,
+				outpath,
+				jsonpath,
+				json,
+				i;
+
+			if (files.hasOwnProperty(index)) {
+				fullpath = path.join(shaderdir, files[index]);
+				if (path.extname(fullpath) === ".frag") {
+					filename = path.basename(fullpath, path.extname(fullpath));
+					outpath = path.join(outdir, path.basename(fullpath, path.extname(fullpath)) + '.jpg');
+					jsonpath = path.join(path.dirname(fullpath), filename + '.json');
+					json = fs.readFileSync(jsonpath);
+					callback(index, fullpath, outpath, json);
+				} else {
+					iterateFrags(index + 1, callback);
+				}
+			}
+		},
+		executeFunc = function (index, fragpath, outpath, json) {
+			var process = spawn(HRENDER, [HRENDER_THUMBNAIL_ARG, objpath, fragpath, outpath, json]);
+			
+			console.log("objpath:" + objpath);
+			console.log("fragpath:" + fragpath);
+			console.log("outpath:" + outpath);
+			
+			process.stdout.on('data', function (data) {
+				console.log('stdout: ' + data);
+			});
+			process.stderr.on('data', function (data) {
+				console.error('stderr: ' + data);
+			});
+			process.on('exit', function (code) {
+				console.log('exit code: ' + code);
+				iterateFrags(index + 1, executeFunc);
+			});
+			process.on('error', function (err) {
+				console.log('process error', err);
+			});
+		};
+	
+	try {
+		files = fs.readdirSync(shaderdir);
+		console.log("captureThumbnail");
+		iterateFrags(0, executeFunc);
+	} catch (e) {
+		console.log('process error', e);
+	}
+}
+captureThumbnail();
 
 function startupHRenderServer() {
 	'use strict';
