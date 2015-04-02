@@ -59,7 +59,7 @@ public:
             buf.push_back(param);
             ite++;
         }
-        return new BufferPointData_Lua(PrimitiveGenerator::SphereList(&buf[0], num, radius));
+        return CreateLuaPointData(PrimitiveGenerator::SphereList(&buf[0], num, radius));
     }
 
     LUA_SCRIPTCLASS_BEGIN(PrimitiveGenerator_Lua)
