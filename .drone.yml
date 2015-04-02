@@ -1,7 +1,6 @@
-image: radial/busyboxplus
+image: syoyo/ubu-dev
 script:
-  sh:
-    - curl -L http://172.17.42.1:4001/v2/keys/build_notify -XPUT -d value="notify"
+  - curl -L http://172.17.42.1:4001/v2/keys/build_notify -XPUT -d value="notify"
 notify:
  email:
     recipients:
