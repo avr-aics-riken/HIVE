@@ -582,11 +582,8 @@ private:
 /// インスタンスの取得
 RenderCore* RenderCore::GetInstance()
 {
-    static RenderCore* inst = 0;
-    if (inst)
-        return inst;
-    inst = new RenderCore();
-    return inst;
+	static RenderCore inst;
+	return &inst;
 }
 
 /// コンストラクタ

@@ -32,8 +32,8 @@ std::string getBinaryDir()
     char exepath[MAXPATHLEN] = {};
 #if _WIN32
 	wchar_t app_full_path[1024];
-	GetModuleFileNameW(NULL, app_full_path, sizeof(app_full_path) / sizeof(wchar_t));
-	std::wstring str(app_full_path);
+	DWORD length = GetModuleFileNameW(NULL, app_full_path, sizeof(app_full_path) / sizeof(wchar_t));
+	std::wstring str(app_full_path, length);
 	const char16_t* p = reinterpret_cast<const char16_t*>(str.c_str());
 	std::u16string u16str(p);
 	// utf16 to utf8
