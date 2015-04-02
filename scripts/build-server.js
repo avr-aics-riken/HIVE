@@ -7,7 +7,7 @@ require('shelljs/global')
 var app = require('http').createServer(handler)
 
 // -- config -----
-var port = 8080;
+var port = 4001;
 // ---------------
 
 
