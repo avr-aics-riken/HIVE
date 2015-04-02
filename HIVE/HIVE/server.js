@@ -1,4 +1,4 @@
-/*jslint devel:true*/
+/*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
 var	HRENDER = '../hrender',
@@ -261,23 +261,31 @@ function captureThumbnail() {
 	'use strict';
 	var shaderdir = path.resolve(__dirname, './shader'),
 		files,
+		thumbnailCount = 0,
+		captureCount = 0,
+		i,
 		iterateFrags = function (index, callback) {
 			var outdir = path.resolve(__dirname, './root/shader'),
 				fullpath,
 				filename,
 				outpath,
 				jsonpath,
-				json,
-				i;
+				json;
 
 			if (files.hasOwnProperty(index)) {
 				fullpath = path.join(shaderdir, files[index]);
 				if (path.extname(fullpath) === ".frag") {
+					captureCount = captureCount + 1;
+					console.log("[CaptureThumbnail]  " + captureCount + "/" + thumbnailCount);
 					filename = path.basename(fullpath, path.extname(fullpath));
 					outpath = path.join(outdir, path.basename(fullpath, path.extname(fullpath)) + '.jpg');
 					jsonpath = path.join(path.dirname(fullpath), filename + '.json');
 					json = fs.readFileSync(jsonpath);
-					callback(index, fullpath, outpath, json);
+					if (!fs.existsSync(outpath)) {
+						callback(index, fullpath, outpath, json);
+					} else {
+						iterateFrags(index + 1, callback);
+					}
 				} else {
 					iterateFrags(index + 1, callback);
 				}
@@ -306,6 +314,14 @@ function captureThumbnail() {
 	
 	try {
 		files = fs.readdirSync(shaderdir);
+		// search valid frags for progress
+		for (i in files) {
+			if (files.hasOwnProperty(i)) {
+				if (path.extname(path.join(shaderdir, files[i])) === ".frag") {
+					thumbnailCount = thumbnailCount + 1;
+				}
+			}
+		}
 		console.log("captureThumbnail");
 		iterateFrags(0, executeFunc);
 	} catch (e) {
