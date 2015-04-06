@@ -13,11 +13,11 @@
 		if (type === 'CAMERA') {
 			$('object-transformshader').style.display = 'none';
 			$('camera-information').style.display = '';
-			$('object-viewsyncbutton').style.display = '';
+			$('uniformproperty').style.display = 'none';
 		} else {
 			$('object-transformshader').style.display = '';
 			$('camera-information').style.display = 'none';
-			$('object-viewsyncbutton').style.display = 'none';
+			$('uniformproperty').style.display = '';
 		}
 	}
 	function clearTextChangeEvent() {
@@ -196,6 +196,7 @@
 			kUI('shader_name').Select(splitfilename(shaderpath));
 			
 			updateShaderParameters(info.uniforms);
+			core.setModelUniforms(objectname, info.uniforms);
 			core.setModelShader(objectname, shaderpath);
 			core.render();
 		};

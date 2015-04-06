@@ -79,6 +79,45 @@
 			src += scale[2];
 			src += ')';
 			return src;
+		},
+		setModelUniformVec4 : function (objname, name, val) {
+			console.log(objname, name, val);
+			var src = 'hcmd.SetModelUniformVec4(';
+			src += '"' + objname + '",';
+			src += '"' + name + '",';
+			src += val[0] + ',';
+			src += val[1] + ',';
+			src += val[2] + ',';
+			src += val[3];
+			src += ')\n';
+			return src;
+		},
+		setModelUniformVec3 : function (objname, name, val) {
+			var src = 'hcmd.SetModelUniformVec3(';
+			src += '"' + objname + '",';
+			src += '"' + name + '",';
+			src += val[0] + ',';
+			src += val[1] + ',';
+			src += val[2];
+			src += ')\n';
+			return src;
+		},
+		setModelUniformVec2 : function (objname, name, val) {
+			var src = 'hcmd.SetModelUniformVec2(';
+			src += '"' + objname + '",';
+			src += '"' + name + '",';
+			src += val[0] + ',';
+			src += val[1];
+			src += ')\n';
+			return src;
+		},
+		setModelUniformFloat : function (objname, name, val) {
+			var src = 'hcmd.SetModelUniformFloat(';
+			src += '"' + objname + '",';
+			src += '"' + name + '",';
+			src += val;
+			src += ')\n';
+			return src;
 		}
 	};
 	window.HiveCommand = HiveCommand;
