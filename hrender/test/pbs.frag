@@ -11,6 +11,7 @@
 //   * Quad area light.
 //
 // TODO
+//   * [ ] MIS sampling for area light
 //   * [x] Consider emission.
 //   * [ ] Sampling optimization.
 //     * [ ] Russian roulette
@@ -71,6 +72,11 @@ struct Light {
     int   doubleSided;
 };
 
+float MIS(float invpdf, float otherpdf) {
+    // power heuristic is: a^2 / (a^2+b^2)
+    // simplifying: 1 / (1 + (b/a)^2)
+    return 1.0 / (1.0 + otherpdf * otherpdf * invpdf * invpdf);
+}
 
 vec2 XYZtoUV(vec3 n)
 {
@@ -90,8 +96,21 @@ vec2 XYZtoUV(vec3 n)
     return coord;
 }
 
-// Quad light defind by U x V 
-// @todo { pdf }
+vec3
+RandomVectorHemisphereCosWeight(float r0, float r1, vec3 N, vec3 Tn, vec3 Bn)
+{
+    float r = sqrt( r0 );
+    float t = 2.0*PIVAL*r1;
+    float rCosT = r * cos(t);
+    float rSinT = r * sin(t);
+
+    float w = sqrt(max(0.0, 1.0 - rCosT*rCosT - rSinT*rSinT ));
+
+    return normalize( rCosT * Tn + rSinT * Bn + w * N );
+}
+
+
+// Assume quad light with uniform intensity.
 vec3 SampleAreaLight(vec3 center, vec3 u_dir, vec3 v_dir)
 {
     float r0, r1;
@@ -99,6 +118,68 @@ vec3 SampleAreaLight(vec3 center, vec3 u_dir, vec3 v_dir)
     random(r1);
 
     return center + (r0 - 0.5) * u_dir + (r1 - 0.5) * v_dir;
+}
+
+
+vec3 EvalAreaLight(Light light, vec3 P, vec3 N, vec3 U, vec3 B, vec3 kdRGB)
+{
+    vec3 Lo = vec3(0.0);
+
+    SampleAreaLight(light.position, light.uDir, light.vDir);
+
+    vec3 Lpos = SampleAreaLight(light.position, light.uDir, light.vDir);
+    vec3 Ldir = normalize(light.dir);
+
+    vec3 LP = Lpos - (P + light.shadowBias * N);
+    float Ldist = max(length(LP), 0.0);
+    vec3 L = normalize(LP);
+
+    float lightCos = abs(dot(Ldir, L));
+    float lightArea = length(cross(light.uDir, light.vDir));
+
+    int frontfaced = 1;
+    if (light.doubleSided == 0) {
+        if (dot(L, light.dir) > 0.0) {
+            frontfaced = 0;
+        }
+    }
+
+    float G = 1.0;
+    if (light.nodecay < 1) {
+        // Apply attenuation;  
+        G = Ldist * Ldist;
+        if (G > 1e-6) {
+            G = 1.0 / G;
+        }
+    }
+
+    if (frontfaced > 0) {
+
+        // Light sampling.
+        float hitExplicit = trace(P+light.shadowBias*N, L);
+        float visibility = 1.0;
+        // hit distance returned by trace() is shorter by shadow bias, thus compensate the distance check 
+        // taking into account shadow bias.
+        if (hitExplicit < (Ldist - light.shadowBias)) {
+            visibility = 0.0;
+        }
+
+        if (visibility > 0.0) {
+            float weightLight = (1.0 / PIVAL) * lightArea * dot(N, L) * lightCos * G;
+
+            // BRDF sampling(fixme).
+            float randu, randv;
+            random(randu);
+            random(randv);
+            vec3 wi = RandomVectorHemisphereCosWeight(randu, randv, N, U, B);
+            float weightBRDF = (1.0 / PIVAL);
+
+            // @todo { MIS }
+            Lo = (1.0/PIVAL) * kdRGB * G * lightCos * dot(Ldir, N) * light.color * light.intensityMultiplier;
+        }
+    }
+
+    return Lo;
 }
 
 // Find an intersection with area light(quad)
@@ -874,19 +955,6 @@ float FresnelApprox(vec3 V, vec3 L, float ior) {
     return f;
 }
 
-vec3
-RandomVectorHemisphereCosWeight(float r0, float r1, vec3 N, vec3 Tn, vec3 Bn)
-{
-    float r = sqrt( r0 );
-    float t = 2.0*PIVAL*r1;
-    float rCosT = r * cos(t);
-    float rSinT = r * sin(t);
-
-    float w = sqrt(max(0.0, 1.0 - rCosT*rCosT - rSinT*rSinT ));
-
-    return normalize( rCosT * Tn + rSinT * Bn + w * N );
-}
-
 bool isNan(float val)
 {
   return (val <= 0.0 || 0.0 <= val) ? false : true;
@@ -1056,42 +1124,7 @@ void main()
 
     // Add direct lighting.
     if (kd > 0.0) {
-        vec3 Lp = SampleAreaLight(light.position, light.uDir, light.vDir);
-        vec3 Ldist = Lp - P;
-        vec3 L = normalize(Lp - P);
-
-        vec3 Ldir = normalize(light.dir);
-        float lightCos = abs(dot(Ldir, L));
-        float lightArea = length(cross(light.uDir, light.vDir)) / 3.14; // Div by 3.14 = HACK
-
-        int frontfaced = 1;
-        if (light.doubleSided == 0) {
-            if (dot(L, light.dir) > 0.0) {
-                frontfaced = 0;
-            }
-        }
-
-        float atten = 1.0;
-        if (light.nodecay < 1) {
-            // Apply light attenuation;  
-            float dist = max(length(Ldist), 0.0);
-            atten = dist * dist;
-            if (atten > 1e-6) {
-                atten = 1.0 / atten;
-            }
-        }
-
-        if (frontfaced > 0) {
-
-            // Hit test against light
-            float hit = trace(P + 0.01 * N, L);
-            float visibility = 1.0; // HACK
-            if (hit < 0.0 || hit > tFar) {
-                visibility = 1.0;
-            }
-            Lo += kdRGB * visibility * lightArea * dot(N, L) * lightCos * atten * light.color * light.intensityMultiplier;
-
-        }
+        Lo += EvalAreaLight(light, P, N, U, B, kdRGB);
 
 #if 0
         //

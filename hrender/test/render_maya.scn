@@ -64,6 +64,35 @@ function BuildLight(lightjson)
    print(u_dir[1], u_dir[2], u_dir[3])
    print(v_dir[1], v_dir[2], v_dir[3])
 
+   print("u_dir", u_dir[1], u_dir[2], u_dir[3])
+   print("v_dir", v_dir[1], v_dir[2], v_dir[3])
+   print("lightPos", m[13], m[14], m[15])
+
+   local shadowBias = lightjson["shadow_bias"]
+   local invisible = lightjson["invisible"]
+   local nodecay = lightjson["nodecay"]
+   local doubleSided = lightjson["double_sided"]
+   local scale = lightjson["scale"]
+   local rotate = lightjson["rotate"] -- degree
+   local translate = lightjson["translate"]
+   print("rot", rotate[1], rotate[2], rotate[3])
+
+   if shadowBias == nil then
+      shadowBias = 0.01 -- default parameter value
+   end
+
+   if invisible == nil then
+      invisible = 0.0
+   end
+
+   if nodecay == nil then
+      nodecay = 0.0
+   end
+
+   if doubleSided == nil then
+      doubleSided = 0.0
+   end
+
    -- Create an array of light as texture.
    -- 8 pixel(RGBA32F) width x # of lights as height
    local lighttex = GenTexture()
@@ -101,7 +130,7 @@ function BuildLight(lightjson)
       table.insert(lighttextable, v_dir[3]);
       table.insert(lighttextable, 0.0);
 
-      table.insert(lighttextable, 0.0); -- shadow bias
+      table.insert(lighttextable, shadowBias); -- shadow bias
       table.insert(lighttextable, 0.0); -- invisible
       table.insert(lighttextable, 0.0); -- no decay
       table.insert(lighttextable, 0.0); -- double sided
@@ -116,15 +145,31 @@ function BuildLight(lightjson)
    lighttex:Create2D(lighttextable, 3, lighttexWidth, numLights); -- 3 = RGBA32F
    local lightimg = lighttex:ImageData()
 
-   return lightimg, numLights
+   -- Build light shape
+
+   local gen = PrimitiveGenerator() 
+   local shape = gen:Quad(1, 1)
+   local lightPoly = PolygonModel()
+   lightPoly:Create(shape)
+   --lightPoly:SetScale(scale[1], scale[2], scale[3])
+   --lightPoly:SetRotate(rotate[1], rotate[2], rotate[3])
+   --lightPoly:SetTranslate(translate[1], translate[2], translate[3])
+   lightPoly:SetTransformMatrix(m)
+   lightPoly:SetShader('pbs.frag') 
+   print("mat0", m[1], m[2], m[3], m[4])
+   print("mat1", m[5], m[6], m[7], m[8])
+   print("mat2", m[9], m[10], m[11], m[12])
+   print("mat3", m[13], m[14], m[15], m[16])
+
+   return numLights, lightPoly, lightimg
 
 end
 
 local camjsonobj = LoadCameraJSON("maya_camera.json")
 SetCamera(camera, camjsonobj, 1, aspectRatio) -- frameno: 1
 
-local lightjsonobj = LoadCameraJSON("arealight.json")
-local lightimg, numLights = BuildLight(lightjsonobj)
+local lightjsonobj = LoadCameraJSON("maya_arealight.json")
+local numLights, lightPoly, lightimg = BuildLight(lightjsonobj)
 
 -- os.exit()
 
@@ -274,20 +319,29 @@ print(analy:MinZ())
 print(analy:MaxZ())
 
 -- light poly
-local obj2 = OBJLoader()
-obj2:Load('arealight.obj')
-local model2 = PolygonModel()
-local meshdata2 = obj2:MeshData()
-model2:Create(meshdata2)
-model2:SetShader('pbs.frag')
--- model2:SetScale(1.7, 1.7, 1.7)
-model2:SetFloat('matid', 1)
-model2:SetTexture("pbs_envtex", img);
-model2:SetTexture("pbs_mattex", matimg);
-model2:SetTexture("pbs_lighttex", lightimg);
-model2:SetFloat("pbs_num_materials", numMaterials);
-model2:SetFloat("pbs_num_lights", numLights);
-model2:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
-model2:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
+-- local obj2 = OBJLoader()
+-- obj2:Load('arealight.obj')
+-- local model2 = PolygonModel()
+-- local meshdata2 = obj2:MeshData()
+-- model2:Create(meshdata2)
+-- model2:SetShader('pbs.frag')
+-- -- model2:SetScale(1.7, 1.7, 1.7)
+-- model2:SetFloat('matid', 1)
+-- model2:SetTexture("pbs_envtex", img);
+-- model2:SetTexture("pbs_mattex", matimg);
+-- model2:SetTexture("pbs_lighttex", lightimg);
+-- model2:SetFloat("pbs_num_materials", numMaterials);
+-- model2:SetFloat("pbs_num_lights", numLights);
+-- model2:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+-- model2:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-render {camera, model0, model1, model2}
+lightPoly:SetFloat('matid', 1)
+lightPoly:SetTexture("pbs_envtex", img);
+lightPoly:SetTexture("pbs_mattex", matimg);
+lightPoly:SetTexture("pbs_lighttex", lightimg);
+lightPoly:SetFloat("pbs_num_materials", numMaterials);
+lightPoly:SetFloat("pbs_num_lights", numLights);
+lightPoly:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+lightPoly:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+render {camera, model0, model1, lightPoly}
