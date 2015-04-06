@@ -151,10 +151,15 @@ function BuildLight(lightjson)
    local shape = gen:Quad(1, 1)
    local lightPoly = PolygonModel()
    lightPoly:Create(shape)
-   lightPoly:SetScale(scale[1], scale[2], scale[3])
-   lightPoly:SetRotate(rotate[1], rotate[2], rotate[3])
-   lightPoly:SetTranslate(translate[1], translate[2], translate[3])
+   --lightPoly:SetScale(scale[1], scale[2], scale[3])
+   --lightPoly:SetRotate(rotate[1], rotate[2], rotate[3])
+   --lightPoly:SetTranslate(translate[1], translate[2], translate[3])
+   lightPoly:SetTransformMatrix(m)
    lightPoly:SetShader('pbs.frag') 
+   print("mat0", m[1], m[2], m[3], m[4])
+   print("mat1", m[5], m[6], m[7], m[8])
+   print("mat2", m[9], m[10], m[11], m[12])
+   print("mat3", m[13], m[14], m[15], m[16])
 
    return numLights, lightPoly, lightimg
 
