@@ -112,6 +112,7 @@
 			return src;
 		},
 		setModelUniformFloat : function (objname, name, val) {
+			console.log('setModelUniformFloat', objname, name, val);
 			var src = 'hcmd.SetModelUniformFloat(';
 			src += '"' + objname + '",';
 			src += '"' + name + '",';
