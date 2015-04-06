@@ -175,7 +175,7 @@ vec3 EvalAreaLight(Light light, vec3 P, vec3 N, vec3 U, vec3 B, vec3 kdRGB)
             float weightBRDF = (1.0 / PIVAL);
 
             // @todo { MIS }
-            Lo = (1.0/PIVAL) * kdRGB * G * light.color * light.intensityMultiplier;
+            Lo = (1.0/PIVAL) * kdRGB * G * lightCos * dot(Ldir, N) * light.color * light.intensityMultiplier;
         }
     }
 
