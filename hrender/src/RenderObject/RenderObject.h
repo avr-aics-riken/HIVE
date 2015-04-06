@@ -64,6 +64,7 @@ protected:
     bool SetTranslate(float x, float y, float z);
     bool SetRotate(float x, float y, float z);
     bool SetScale(float x, float y, float z);
+    bool SetTransformMatrix(const float* m);
 
     bool SetVec4(const std::string& name, float x, float y, float z, float w);
     bool SetVec3(const std::string& name, float x, float y, float z);
