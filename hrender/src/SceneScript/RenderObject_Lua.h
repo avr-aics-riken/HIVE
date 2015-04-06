@@ -8,6 +8,18 @@
 
 
 #define IMPLEMENTATION_RENDEROBJECT_LUA() \
+    bool SetTransformMatrix(LuaTable t) { \
+        if (t.GetType() != LuaTable::TYPE_ARRAY) \
+            return false; \
+        const std::vector<LuaTable>& tbl = t.GetTable(); \
+        if (tbl.size() != 16) \
+            return false; \
+        float m[16]; \
+        for (int i = 0; i < 16; ++i) { \
+            m[i] = tbl[i].GetNumber(); \
+        } \
+        return RenderObject::SetTransformMatrix(&m[0]); \
+    } \
     std::string GetType() { \
         return GetTypeString(); \
     } \
@@ -133,6 +145,7 @@
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetRotate,float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetScale,float, float, float) \
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetTransformMatrix, LuaTable) \
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetVec2,  const char*, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG4(bool, SetVec3,  const char*, float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG5(bool, SetVec4,  const char*, float, float, float, float) \

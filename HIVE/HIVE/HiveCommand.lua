@@ -136,8 +136,34 @@ local function SetModelTranslation(name, trans_x, trans_y, trans_z, rot_x, rot_y
 	model:SetTranslate(trans_x, trans_y, trans_z)
 	model:SetRotate(rot_x, rot_y, rot_z)
 	model:SetScale(scale_x, scale_y, scale_z)
-	return 'SetModelTranslation:' .. name 
+	return 'SetModelTranslation:' .. name
 end
+
+local function SetModelUniformVec4(name, vname, x, y, z, w)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetVec4(vname, x, y, z, w)
+	return 'SetModelUniformVec4:' .. name
+end
+local function SetModelUniformVec3(name, vname, x, y, z)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetVec3(vname, x, y, z)
+	return 'SetModelUniformVec3:' .. name
+end
+local function SetModelUniformVec2(name, vname, x, y)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetVec2(vname, x, y)
+	return 'SetModelUniformVec2:' .. name
+end
+local function SetModelUniformFloat(name, vname, val)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetFloat(vname, val)
+	return 'SetModelUniformFloat:' .. name
+end
+
 
 local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
@@ -278,6 +304,10 @@ return {
 	CameraScreenSize = CameraScreenSize,
 	SetModelShader = SetModelShader,
 	SetModelTranslation = SetModelTranslation,
+	SetModelUniformVec4 = SetModelUniformVec4,
+	SetModelUniformVec3 = SetModelUniformVec3,
+	SetModelUniformVec2 = SetModelUniformVec2,
+	SetModelUniformFloat = SetModelUniformFloat,
 	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,
