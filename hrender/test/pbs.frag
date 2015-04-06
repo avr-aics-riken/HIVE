@@ -14,7 +14,7 @@
 //   * [x] Consider emission.
 //   * [ ] Sampling optimization.
 //     * [ ] Russian roulette
-//   * [ ] Multiple area light.
+//   * [ ] Multiple area lights.
 //   * [ ] Legacy light(directional, spot, point)
 //
 
@@ -34,8 +34,10 @@ uniform float matid;
 
 // PBS parameter
 uniform sampler2D pbs_envtex;
-uniform sampler2D pbs_mattex;
+uniform sampler2D pbs_mattex;       // material info as a texture
+uniform sampler2D pbs_lighttex;     // light info as a texture
 uniform float pbs_num_materials;
+uniform float pbs_num_lights;
 
 //uniform float numIteration;     // # of sample iteration.
 
@@ -52,6 +54,21 @@ struct Material {
     vec3  refraction;
     float refractionGlossiness;
     float ior;
+};
+
+struct Light {
+    vec3  color;
+    float intensityMultiplier;
+    vec3  position;
+    vec3  uDir;    // quad light
+    vec3  vDir;    // quad light
+    vec3  dir;
+    float radius;   // sphere light
+    int   type;     // 0: quad, 1: sphere
+    float shadowBias;
+    int   invisible;
+    int   nodecay;
+    int   doubleSided;
 };
 
 
@@ -741,25 +758,13 @@ vec3 BRDFMicrofacet( vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y, float alpha )
 // --------------------------
 //
 
-//void BuildMaterial(out Material mat)
-//{
-//    mat.diffuse = pbs_diffuse;
-//    mat.reflection = pbs_reflection_and_glossiness.xyz;
-//    mat.reflectionGlossiness = pbs_reflection_and_glossiness.w;
-//    mat.refraction = pbs_refraction_and_glossiness.xyz;
-//    mat.refractionGlossiness = pbs_refraction_and_glossiness.w;
-//    mat.fresnel = pbs_fresnel_and_ior.x;
-//    mat.ior = pbs_fresnel_and_ior.y;
-//}
-
 // Get material information from a texture.
 // Assume filtering mode of `pbs_mattex` is GL_NEAREST.
 void GetMaterial(int i, out Material mat)
 {
-    // texture width = 8;
-    const float tex_width = 8.0;
-    float y = 0.1; //(pbs_num_materials - 1.0 - float(i)) / pbs_num_materials;
-    //float y = 0.5;
+    const float tex_width = 8.0; // texture width = 8;
+    //float y = (pbs_num_materials - 1.0 - float(i)) / pbs_num_materials;
+    float y = float(i) / pbs_num_materials;
 
     vec4 diffuse = texture2D(pbs_mattex, vec2(0.5 / tex_width, y));
     vec4 reflection_and_glossiness = texture2D(pbs_mattex, vec2(1.5 / tex_width, y));
@@ -775,6 +780,40 @@ void GetMaterial(int i, out Material mat)
     mat.ior = fresnel_and_ior.y;
     mat.fresnel = fresnel_and_ior.x;
     mat.emission = emission.rgb;
+}
+
+// Get light information from a texture.
+// Assume filtering mode of `pbs_lighttex` is GL_NEAREST.
+void GetLight(int i, out Light lt)
+{
+    const float tex_width = 8.0; // texture width = 8;
+    float y = float(i) / pbs_num_lights;
+
+    // [0:3]   3 floats: light color, 1 float: intensityMultiplier
+    // [4:7]   3 floats: light center, 1 float: light type(0: quad, 1: sphere))
+    // [8:11]  3 floats: light u dir(quad) or 1 float: light radius
+    // [12:15] 3 floats: light v dir(quad)
+    // [16:19] shadow bias(1 float), invisible(1 float), no decay(1 float), double sided(1 float)
+    // [20:31] reserved.
+
+    vec4 color_and_intensity = texture2D(pbs_lighttex, vec2(0.5 / tex_width, y));
+    vec4 center_and_type = texture2D(pbs_lighttex, vec2(1.5 / tex_width, y));
+    vec4 u_dir_or_radius = texture2D(pbs_lighttex, vec2(2.5 / tex_width, y));
+    vec4 v_dir = texture2D(pbs_lighttex, vec2(3.5 / tex_width, y));
+    vec4 lightattribs = texture2D(pbs_lighttex, vec2(4.5 / tex_width, y));
+
+    lt.color = color_and_intensity.rgb;
+    lt.intensityMultiplier = color_and_intensity.w;
+    lt.position = center_and_type.xyz;
+    lt.uDir = u_dir_or_radius.xyz;
+    lt.vDir = v_dir.xyz;
+    lt.dir = cross(lt.uDir, lt.vDir);
+    lt.type = int(center_and_type.w);
+    lt.radius = u_dir_or_radius.w;
+    lt.shadowBias = lightattribs.x;
+    lt.invisible = int(lightattribs.y);
+    lt.nodecay = int(lightattribs.z);
+    lt.doubleSided  = int(lightattribs.w);
 }
 
 // Assume RGB is in range [0, 1]
@@ -863,12 +902,6 @@ void main()
         return;
     }
 
-    // @todo { read light value from uniform variables or texture. }
-    const vec3 lightU = 0.5 * vec3(2.02171278124, 0.230225650737, -1.71031152346);
-    const vec3 lightV = 0.5 * vec3(-3.44351406985, -1.7763568394e-15, -1.01762110468);
-    const vec3 lightCenter = vec3(-10.52, 6.144, -0.562);
-    const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-
     vec3 P;
     vec3 n;
     vec3 ng;
@@ -882,7 +915,9 @@ void main()
 
     Material mat;
     GetMaterial(int(matid), mat);
-    //BuildMaterial(mat);
+
+    Light light;
+    GetLight(0, light);
 
 	vec3 N = normalize(mnormal);
     float Nnorm = length(N);
@@ -1021,16 +1056,42 @@ void main()
 
     // Add direct lighting.
     if (kd > 0.0) {
-        vec3 Lp = SampleAreaLight(lightCenter, lightU, lightV);
+        vec3 Lp = SampleAreaLight(light.position, light.uDir, light.vDir);
+        vec3 Ldist = Lp - P;
         vec3 L = normalize(Lp - P);
 
-        // Hit test against light
-        float hit = trace(P + 0.01 * N, L);
-        float visibility = 1.0; // HACK
-        if (hit < 0.0 || hit > tFar) {
-            visibility = 1.0;
+        vec3 Ldir = normalize(light.dir);
+        float lightCos = abs(dot(Ldir, L));
+        float lightArea = length(cross(light.uDir, light.vDir)) / 3.14; // Div by 3.14 = HACK
+
+        int frontfaced = 1;
+        if (light.doubleSided == 0) {
+            if (dot(L, light.dir) > 0.0) {
+                frontfaced = 0;
+            }
         }
-        Lo += kdRGB * visibility * dot(N, L) * lightColor;
+
+        float atten = 1.0;
+        if (light.nodecay < 1) {
+            // Apply light attenuation;  
+            float dist = max(length(Ldist), 0.0);
+            atten = dist * dist;
+            if (atten > 1e-6) {
+                atten = 1.0 / atten;
+            }
+        }
+
+        if (frontfaced > 0) {
+
+            // Hit test against light
+            float hit = trace(P + 0.01 * N, L);
+            float visibility = 1.0; // HACK
+            if (hit < 0.0 || hit > tFar) {
+                visibility = 1.0;
+            }
+            Lo += kdRGB * visibility * lightArea * dot(N, L) * lightCos * atten * light.color * light.intensityMultiplier;
+
+        }
 
 #if 0
         //
@@ -1064,5 +1125,6 @@ void main()
         // apply gamma correction.
         Lo = pow(Lo, vec3(1.0/2.2));    
     }
+
     gl_FragColor = vec4(Lo, 1.0);
 }
