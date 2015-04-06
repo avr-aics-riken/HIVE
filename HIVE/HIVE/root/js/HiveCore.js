@@ -255,6 +255,44 @@
 		}
 		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
 	};
+	
+	HiveCore.prototype.setModelUniforms = function (objname, uniforms, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			name,
+			src = '',
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+
+		for (i = 0; i < uniforms.length; i = i + 1) {
+			//console.log(uniforms[i].name, uniforms[i].uniform, uniforms[i].val);
+			name = uniforms[i].name;
+			if (uniforms[i].uniform === 'vec4') {
+				obj.info.vec4[name] = [uniforms[i].val[0], uniforms[i].val[1], uniforms[i].val[2], uniforms[i].val[3]];
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[i].val);
+			} else if (uniforms[i].uniform === 'vec3') {
+				obj.info.vec3[name] = [uniforms[i].val[0], uniforms[i].val[1], uniforms[i].val[2] ];
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[i].val);
+			} else if (uniforms[i].uniform === 'vec2') {
+				obj.info.vec2[name] = [uniforms[i].val[0], uniforms[i].val[1] ];
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[i].val);
+			} else if (uniforms[i].uniform === 'float') {
+				obj.info.float[name] = uniforms[i].val;
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i].val);
+			}
+		}
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
 
 	//----------------------------------------------------------------------------------------------
 	// Camera operation

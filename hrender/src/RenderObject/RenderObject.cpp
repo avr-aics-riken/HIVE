@@ -44,9 +44,14 @@ public:
     /// 変換行列を返す
     const VX::Math::matrix GetTransformMatrix() const
     {
+        return m_mat;
+    }
+    
+    /// 変換行列を計算する
+    const VX::Math::matrix calcMatrix() const {
         return VX::Math::Translation(m_trans[0], m_trans[1], m_trans[2])
-             * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
-             * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
+         * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
+         * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
     }
     
     typedef std::map<std::string, VX::Math::vec4> Vec4Map;
@@ -81,6 +86,7 @@ public:
         m_trans[0] = x;
         m_trans[1] = y;
         m_trans[2] = z;
+        m_mat = calcMatrix();
         return true;
     }
     
@@ -94,6 +100,7 @@ public:
         m_rotat[0] = x;
         m_rotat[1] = y;
         m_rotat[2] = z;
+        m_mat = calcMatrix();
         return true;
     }
     
@@ -107,9 +114,21 @@ public:
         m_scale[0] = x;
         m_scale[1] = y;
         m_scale[2] = z;
+        m_mat = calcMatrix();
         return true;
     }
-    
+
+    /**
+     * スケールの設定
+     * @param m matrix
+     */
+    bool SetTransformMatrix(const float* m) {
+        for (int i = 0; i < 16; ++i) {
+            m_mat.f[i] = m[i];
+        }
+        return true;
+    }
+
     /**
      * Unifrom値の設定
      * @param name Uniform名
@@ -182,6 +201,7 @@ public:
         m_trans =  VX::Math::vec3(0, 0, 0);
         m_rotat =  VX::Math::vec3(0, 0, 0);
         m_scale =  VX::Math::vec3(1, 1, 1);
+        m_mat   =  VX::Math::Identity();
     };
     
     /// デストラクタ
@@ -192,6 +212,7 @@ private:
     VX::Math::vec3 m_trans;
     VX::Math::vec3 m_rotat;
     VX::Math::vec3 m_scale;
+    VX::Math::matrix4x4 m_mat;
 
     //mapped data
     std::map<std::string, VX::Math::vec4> m_vec4s;
@@ -264,6 +285,13 @@ bool RenderObject::SetRotate(float x, float y, float z)                         
  * @param z z
  */
 bool RenderObject::SetScale(float x, float y, float z)                                  { return m_imp->SetScale(x, y, z);         }
+
+/**
+ * マトリックスの設定
+ * @param m matrix
+ */
+bool RenderObject::SetTransformMatrix(const float* m)                                   { return m_imp->SetTransformMatrix(m);     }
+
 /**
  * Unifrom値の設定
  * @param name Uniform名
