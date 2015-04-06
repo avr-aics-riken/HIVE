@@ -1175,8 +1175,8 @@ KSliderClass.prototype = {
 	getValue : function () {
 		return this.value;
 	},
-	ChangeColorCallback : function(func){
-		this.changeColorCallback = func;
+	ChangeCallback : function(func){
+		this.changeCallback = func;
 	}
 }
 KSliderClass.Init = function(){
