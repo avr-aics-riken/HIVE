@@ -294,6 +294,96 @@
 		runScript(this.conn, src, redrawfunc);
 	};
 
+	HiveCore.prototype.setModelVec4 = function (objname, vname, x, y, z, w, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.vec4[vname][0] = x;
+		obj.info.vec4[vname][1] = y;
+		obj.info.vec4[vname][2] = z;
+		obj.info.vec4[vname][3] = w;
+		src = HiveCommand.setModelUniformVec4(objname, vname, obj.info.vec4[vname]);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+	
+	HiveCore.prototype.setModelVec3 = function (objname, vname, x, y, z, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.vec3[vname][0] = x;
+		obj.info.vec3[vname][1] = y;
+		obj.info.vec3[vname][2] = z;
+		src = HiveCommand.setModelUniformVec3(objname, vname, obj.info.vec3[vname]);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+	
+	HiveCore.prototype.setModelVec2 = function (objname, vname, x, y, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.vec2[vname][0] = x;
+		obj.info.vec2[vname][1] = y;
+		src = HiveCommand.setModelUniformVec2(objname, vname, obj.info.vec2[vname]);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+	
+	HiveCore.prototype.setModelFloat = function (objname, vname, val, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.float[vname] = val;
+		src = HiveCommand.setModelUniformFloat(objname, vname, obj.info.float[vname]);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+	
 	//----------------------------------------------------------------------------------------------
 	// Camera operation
 	//
