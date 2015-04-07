@@ -127,7 +127,7 @@
 		if (len === 0) { return fpath; }
 		return fileTypes[len - 1];
 	}
-	function updateShaderParameters(uniforms) {
+	function updateShaderParameters(core, objname, uniforms) {
 		// Uniforms
 		var unif = uniforms,
 			paramname,
@@ -147,6 +147,13 @@
 								'<div class="ppCell"><div class="KColorPicker" id="' + paramname + '"></div></div>' +
 								'</div>';
 					pp.appendChild(d);
+					kvtoolsUI_update(d);
+					kUI(paramname).ChangeColorCallback(function (core, objname, paramname) {
+						return function (r, g, b, a) {
+							core.setModelVec4(objname, paramname, r, g, b, a, true);
+						};
+					}(core, objname, paramname));
+					
 				} else if (unif[i].ui === 'slider') {
 					paramname = unif[i].name;
 					d = document.createElement('div');
@@ -156,6 +163,13 @@
 						'<div class="ppCell"><div class="KSlider" id="' + paramname + '"></div>' +
 						'</div></div>';
 					pp.appendChild(d);
+					kvtoolsUI_update(d);
+					kUI(paramname).ChangeCallback(function (core, objname, paramname) {
+						return function (v) {
+							core.setModelFloat(objname, paramname, v, true);
+						};
+					}(core, objname, paramname));
+
 				} else if (unif[i].ui === 'vec3') {
 					paramname = unif[i].name;
 					d = document.createElement('div');
@@ -167,7 +181,8 @@
 						'<div class="ppCell"><input class="KInput ppFull" id="' + paramname + '_z" type="number"></div>' +
 						'</div>';
 					pp.appendChild(d);
-
+					kvtoolsUI_update(d);
+					
 				} else if (unif[i].ui === 'transferfunction') {
 					paramname = unif[i].name;
 					d = document.createElement('div');
@@ -183,19 +198,21 @@
 						'<div class="KTransferFunction" id="' + paramname + '"></div>' +
 						'</div></div>';
 					pp.appendChild(d);
+					kvtoolsUI_update(d);
+					
 				} else {
 					console.log('Error: Unkown UI type -> ' + unif[i].ui + ' - ' + unif[i].name);
 				}
 			}
 		}
-		kvtoolsUI_update(pp);
+		//kvtoolsUI_update(pp);
 	}
 	function changeShader(shaderpath, info, objectname, core) {
 		return function (ev) {
 			console.log('[DEBUG] CHANGE SHADER', objectname, shaderpath);
 			kUI('shader_name').Select(splitfilename(shaderpath));
 			
-			updateShaderParameters(info.uniforms);
+			updateShaderParameters(core, objectname, info.uniforms);
 			core.setModelUniforms(objectname, info.uniforms);
 			core.setModelShader(objectname, shaderpath);
 			core.render();
@@ -269,7 +286,7 @@
 				}
 				
 				if (targetShader) {
-					updateShaderParameters(targetShader.info.uniforms);
+					updateShaderParameters(core, name, targetShader.info.uniforms);
 				}
 				selshader = splitfilename(obj.info.shader);
 				kUI('shader_name').Select(selshader);
