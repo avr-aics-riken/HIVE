@@ -482,18 +482,30 @@
 		obj.info.outputfile = filename;
 		runScript(this.conn, HiveCommand.cameraFilename(cameraname, obj.info.filename));
 	};
-	HiveCore.prototype.setClearColor = function (cameraname, red, green, blue, alpha) {
+	HiveCore.prototype.setClearColor = function (cameraname, red, green, blue, alpha, redraw) {
 		var obj = this.findObject(cameraname),
 			redrawfunc = null;
 		if (!obj) {
 			console.error('[Error] Not found object:', cameraname);
 			return;
 		}
+		red = Math.min(1.0, red);
+		green = Math.min(1.0, green);
+		blue  = Math.min(1.0, blue);
+		alpha = Math.min(1.0, green);
 		obj.info.clearcolor[0] = red;
 		obj.info.clearcolor[1] = green;
 		obj.info.clearcolor[2] = blue;
 		obj.info.clearcolor[3] = alpha;
-		runScript(this.conn, HiveCommand.cameraFilename(cameraname, red, green, blue, alpha));
+		
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.cameraClearColor(cameraname, red, green, blue, alpha), redrawfunc);
 	};
 
 	HiveCore.prototype.setActiveCamera = function (cameraname) {
