@@ -36,7 +36,7 @@
 		cameraScreenSize : function (name, width, height) {
 			return 'hcmd.CameraScreenSize("' + name + '",' + width + ',' + height + ')';
 		},
-		cameraClearColor : function (name, red, green, blue, alpah) {
+		cameraClearColor : function (name, red, green, blue, alpha) {
 			return 'hcmd.CameraClearColor("' + name + '",' + red + ',' + green  + ',' + blue + ',' + alpha + ')';
 		},
 		cameraFilename : function (name, filename) {
