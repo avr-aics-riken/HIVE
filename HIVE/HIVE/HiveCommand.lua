@@ -302,6 +302,8 @@ return {
 	CreateCamera = CreateCamera,
 	CameraPos = CameraPos,
 	CameraScreenSize = CameraScreenSize,
+	CameraClearColor = CameraClearColor,
+	CameraOutputFilename = CameraOutputFilename,
 	SetModelShader = SetModelShader,
 	SetModelTranslation = SetModelTranslation,
 	SetModelUniformVec4 = SetModelUniformVec4,

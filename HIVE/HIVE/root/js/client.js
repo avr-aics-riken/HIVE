@@ -118,7 +118,12 @@
 		$('camera_screen_width').onchange = valueChangeScreenSize(name, objprop.screensize, 0, core);
 		$('camera_screen_height').onchange = valueChangeScreenSize(name, objprop.screensize, 1, core);
 		$('camera_output_filename').onchange = valueChangeOutputFiel(name, core);
-
+		kUI('camera_clearcolor').ChangeColorCallback(function (core, name) {
+			return function (r, g, b, a) {
+				//core.setModelVec4(objname, paramname, r, g, b, a, true);
+				core.setClearColor(name, r, g, b, a, true);
+			};
+		}(core, name));
 	}
 	
 	function splitfilename(fpath) {
@@ -133,7 +138,10 @@
 			paramname,
 			d,
 			i,
-			pp = document.getElementById('uniformproperty');
+			pp = document.getElementById('uniformproperty'),
+			objinfo = core.findObject(objname).info,
+			colpick;
+		
 		pp.innerHTML = ''; // clear
 		// Add UIs
 		for (i in unif) {
@@ -148,11 +156,18 @@
 								'</div>';
 					pp.appendChild(d);
 					kvtoolsUI_update(d);
-					kUI(paramname).ChangeColorCallback(function (core, objname, paramname) {
-						return function (r, g, b, a) {
-							core.setModelVec4(objname, paramname, r, g, b, a, true);
-						};
-					}(core, objname, paramname));
+					colpick = kUI(paramname);
+					if (objinfo.vec4.hasOwnProperty(paramname)) {
+						colpick.setColor(objinfo.vec4[paramname][0],
+										objinfo.vec4[paramname][1],
+										objinfo.vec4[paramname][2],
+										objinfo.vec4[paramname][3]);
+						colpick.ChangeColorCallback(function (core, objname, paramname) {
+							return function (r, g, b, a) {
+								core.setModelVec4(objname, paramname, r, g, b, a, true);
+							};
+						}(core, objname, paramname));
+					}
 					
 				} else if (unif[i].ui === 'slider') {
 					paramname = unif[i].name;
