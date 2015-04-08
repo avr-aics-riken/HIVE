@@ -20,18 +20,6 @@ For CentOS 6.x system,
 Edit `/etc/drone/drone.toml` and fill github auth variables.
 We assume drone use port `8084`
 
-#### Run etcd 
-
-We use `etcd` to notify build event from drone server to local host(via ssh port forwarding).
-
-For CentOS 6.x system, Add the following line to iptables to accept access from docker container to etcd
-
-    -A INPUT -i docker0 -j ACCEPT
-
-Then, run `etcd` as a docker service. 
-
-    $ docker run -d --name etcd -p 4001:4001 -p 7001:7001 coreos/etcd
-
 
 ### local host
 

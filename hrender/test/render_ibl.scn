@@ -147,16 +147,16 @@ for j = 1, numMaterials do
 	table.insert(mattextable, 0.0);
 
 	-- 4:7   reflection and glossiness(vec4)
-   table.insert(mattextable, 0.0);
-   table.insert(mattextable, 0.0);
-   table.insert(mattextable, 0.0);
-   table.insert(mattextable, 0.0);
-
-	-- 8:11  refraction and glossiness(vec4)
    table.insert(mattextable, 1.0);
    table.insert(mattextable, 1.0);
    table.insert(mattextable, 1.0);
    table.insert(mattextable, glossiness[j]);
+
+	-- 8:11  refraction and glossiness(vec4)
+   table.insert(mattextable, 0.0);
+   table.insert(mattextable, 0.0);
+   table.insert(mattextable, 0.0);
+   table.insert(mattextable, 0.0);
 
 	-- 12:15 fresnel and ior(vec2, last 2 floats not used)
    table.insert(mattextable, 0.0);
@@ -198,7 +198,7 @@ pm0:SetTexture('mytex0', img) -- Bind
 
 local instSphereGen1 = SphereGenerator({size = 30})
 
-local instPointModel7 = CreatePointModel({point=instSphereGen1:PointData(), translate={-120,0,0}, rotate={0,0,0}, scale={1,1,1}, shadername='pbs.frag', texturename="pbs_envtex", textureimg=img, Uniform={nil}})
+local instPointModel7 = CreatePointModel({point=instSphereGen1:PointData(), translate={0,0,0}, rotate={0,0,0}, scale={3,3,3}, shadername='pbs.frag', texturename="pbs_envtex", textureimg=img, Uniform={nil}})
 instPointModel7:model():SetFloat("matid", 0)
 instPointModel7:model():SetTexture("pbs_envtex", img)
 instPointModel7:model():SetTexture("pbs_mattex", matimg)
@@ -206,34 +206,9 @@ instPointModel7:model():SetFloat("pbs_num_materials", numMaterials)
 instPointModel7:model():SetFloat("pbs_num_lights", 0)
 instPointModel7:model():SetTextureFiltering("pbs_mattex", false)
 
-local instPointModel6 = CreatePointModel({point=instSphereGen1:PointData(), translate={-40,0,0}, rotate={0,0,0}, scale={1,1,1}, shadername='pbs.frag', texturename="pbs_envtex", textureimg=img, Uniform={nil}})
-instPointModel6:model():SetFloat("matid", 1)
-instPointModel6:model():SetTexture("pbs_envtex", img)
-instPointModel6:model():SetTexture("pbs_mattex", matimg)
-instPointModel6:model():SetFloat("pbs_num_materials", numMaterials)
-instPointModel6:model():SetFloat("pbs_num_lights", 0)
-instPointModel6:model():SetTextureFiltering("pbs_mattex", false)
-
-local instPointModel2 = CreatePointModel({point=instSphereGen1:PointData(), translate={40,0,0}, rotate={0,0,0}, scale={1,1,1}, shadername='pbs.frag', texturename="pbs_envtex", textureimg=img, Uniform={nil}})
-instPointModel2:model():SetFloat("matid", 2)
-instPointModel2:model():SetTexture("pbs_envtex", img)
-instPointModel2:model():SetTexture("pbs_mattex", matimg)
-instPointModel2:model():SetFloat("pbs_num_materials", numMaterials)
-instPointModel2:model():SetFloat("pbs_num_lights", 0)
-instPointModel2:model():SetTextureFiltering("pbs_mattex", false)
-
-local instPointModel8 = CreatePointModel({point=instSphereGen1:PointData(), translate={120,0,0}, rotate={0,0,0}, scale={1,1,1}, shadername='pbs.frag', texturename="pbs_envtex", textureimg=img, Uniform={nil}})
-instPointModel8:model():SetFloat("matid", 3)
-instPointModel8:model():SetTexture("pbs_envtex", img)
-instPointModel8:model():SetTexture("pbs_mattex", matimg)
-instPointModel8:model():SetFloat("pbs_num_materials", numMaterials)
-instPointModel8:model():SetFloat("pbs_num_lights", 0)
-instPointModel8:model():SetTextureFiltering("pbs_mattex", false)
-
-
-local instCreateCamera4 = CreateCamera({position={0,0,-300}, target={0,0,0}, up={0,1,0}, fov = 60, screensize={4096, 4096}, filename='render_pbs_refraction.jpg'})
+local instCreateCamera4 = CreateCamera({position={100,100,-300}, target={0,0,0}, up={0,1,0}, fov = 60, screensize={1024, 1024}, filename='render_ibl.jpg'})
 
 -- local root3 = Render({RenderObject={RenderObject0=instCreateCamera4:camera(), RenderObject3=instPointModel6:model(), pm0}})
-local root3 = Render({RenderObject={RenderObject0=instCreateCamera4:camera(), RenderObject1=instPointModel2:model(), RenderObject3=instPointModel6:model(), RenderObject4=instPointModel7:model(), RenderObject5=instPointModel8:model(), pm0}})
+local root3 = Render({RenderObject={RenderObject0=instCreateCamera4:camera(), RenderObject4=instPointModel7:model(), pm0}})
 
 -- Generated Footer by NodeEditor
