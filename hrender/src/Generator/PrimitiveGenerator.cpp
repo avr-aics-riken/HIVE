@@ -2265,3 +2265,30 @@ BufferPointData*  PrimitiveGenerator::SphereList(float *vertices, float num, flo
 
     return point;
 }
+
+BufferLineData*  PrimitiveGenerator::LineList(float *vertices, float num, float radius) const
+{
+    int i = 0;
+    BufferLineData* line = new BufferLineData();
+
+    //line->Create(num, num); //create line list
+    line->Create(num, 0, true); //create line list
+    Vec3Buffer*  pos     = line->Position();
+    FloatBuffer* mat     = line->Material();
+    FloatBuffer* rad     = line->Radius();
+
+    float* pp = pos->GetBuffer();
+    memcpy(pp, vertices, sizeof(float) * num * 3);
+
+    float* rp = rad->GetBuffer();
+    if(rp) {
+        for(int i = 0 ; i < num; i++) {
+            rp[i] = radius;
+        }
+        printf("radius = %lf\n", radius);
+    }
+
+    memset(mat->GetBuffer(), 0, sizeof(float) * num);
+
+    return line;
+}
