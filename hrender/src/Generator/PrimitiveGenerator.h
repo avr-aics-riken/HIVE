@@ -29,10 +29,9 @@ protected:
     BufferPointData* Sphere(float radius) const;
     BufferMeshData*  Cube(float width, float height, float depth) const;
     BufferMeshData*  Teapot(float scale) const;
-  //BufferLineData*   Line() const; // @todo
   //BufferVectorData* VectorArrow() const; // @todo
     BufferPointData*  SphereList(float *p, float num, float radius) const;
-
+    BufferLineData*  LineList(float *vertices, float num, float radius) const;
 };
 
 #endif //_HIVE_PRIMITIVEGENERATOR_H
