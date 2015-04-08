@@ -147,9 +147,9 @@ for j = 1, numMaterials do
 	table.insert(mattextable, 0.0);
 
 	-- 4:7   reflection and glossiness(vec4)
-   table.insert(mattextable, 1.0);
-   table.insert(mattextable, 1.0);
-   table.insert(mattextable, 1.0);
+   table.insert(mattextable, 0.0);
+   table.insert(mattextable, 0.0);
+   table.insert(mattextable, 0.0);
    table.insert(mattextable, 0.0);
 
 	-- 8:11  refraction and glossiness(vec4)
@@ -159,7 +159,7 @@ for j = 1, numMaterials do
    table.insert(mattextable, glossiness[j]);
 
 	-- 12:15 fresnel and ior(vec2, last 2 floats not used)
-   table.insert(mattextable, 1.0);
+   table.insert(mattextable, 0.0);
    table.insert(mattextable, 1.6);
    table.insert(mattextable, 0.0);
    table.insert(mattextable, 0.0);
@@ -231,7 +231,7 @@ instPointModel8:model():SetFloat("pbs_num_lights", 0)
 instPointModel8:model():SetTextureFiltering("pbs_mattex", false)
 
 
-local instCreateCamera4 = CreateCamera({position={0,0,-300}, target={0,0,0}, up={0,1,0}, fov = 60, screensize={2048, 2048}, filename='render_pbs_refraction.jpg'})
+local instCreateCamera4 = CreateCamera({position={0,0,-300}, target={0,0,0}, up={0,1,0}, fov = 60, screensize={4096, 4096}, filename='render_pbs_refraction.jpg'})
 
 -- local root3 = Render({RenderObject={RenderObject0=instCreateCamera4:camera(), RenderObject3=instPointModel6:model(), pm0}})
 local root3 = Render({RenderObject={RenderObject0=instCreateCamera4:camera(), RenderObject1=instPointModel2:model(), RenderObject3=instPointModel6:model(), RenderObject4=instPointModel7:model(), RenderObject5=instPointModel8:model(), pm0}})
