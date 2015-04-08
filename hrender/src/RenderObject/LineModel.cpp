@@ -3,6 +3,7 @@
  * ラインモデル
  */
 #include <string>
+#include <stdio.h>
 #include "LineModel.h"
 #include "BufferLineData.h"
 
@@ -52,7 +53,8 @@ public:
      */
     bool Create(BufferLineData* Linedata)
     {
-        if (!m_line || Linedata->GetType() != BufferData::TYPE_LINE) {
+        if (!Linedata || Linedata->GetType() != BufferData::TYPE_LINE) {
+			printf("Failed Create LineModel\n");
 			return false;
 		}
         m_line = Linedata;
