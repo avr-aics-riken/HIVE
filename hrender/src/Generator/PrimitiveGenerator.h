@@ -32,6 +32,7 @@ protected:
   //BufferVectorData* VectorArrow() const; // @todo
     BufferPointData*  SphereList(float *p, float num, float radius) const;
     BufferLineData*  LineList(float *vertices, float num, float radius) const;
+    BufferMeshData*  TriangleList(float *vertices, float num) const;
 };
 
 #endif //_HIVE_PRIMITIVEGENERATOR_H
