@@ -2292,3 +2292,27 @@ BufferLineData*  PrimitiveGenerator::LineList(float *vertices, float num, float 
 
     return line;
 }
+
+BufferMeshData*  PrimitiveGenerator::TriangleList(float *vertices, float num) const
+{
+    BufferMeshData* mesh  = new BufferMeshData();
+    int          vertex_max = num / 2;
+    mesh->Create(num, 0);
+    Vec3Buffer*  pos      = mesh->Position();
+    Vec3Buffer*  normal   = mesh->Normal();
+    FloatBuffer* mat     = mesh->Material();
+    UintBuffer*  index    = mesh->Index();
+    Vec2Buffer*  texcoord = mesh->Texcoord();
+
+    //position
+    float* pp = pos->GetBuffer();
+    memcpy(pp, vertices, (sizeof(float) * vertex_max * 3));
+
+    //normal
+    float* nn = normal->GetBuffer();
+    memcpy(nn, vertices + vertex_max, (sizeof(float) * vertex_max * 3));
+
+    memset(mat->GetBuffer(), 0, sizeof(float) * num);
+
+    return mesh;
+}
