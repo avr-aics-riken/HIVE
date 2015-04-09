@@ -83,6 +83,7 @@
 		this.updateSceneCallback = infoCallback;
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
+		this.objectTimeine = {};
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -198,6 +199,38 @@
 		obj.info.shader = shaderpath;
 		runScript(this.conn, HiveCommand.setModelShader(objname, shaderpath));
 	};
+	
+	HiveCore.prototype.setModelTranRotScale = function (objname, trans, rot, scale, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		if (obj.type === "CAMERA") {
+			return;
+		}
+		obj.info.translate[0] = trans[0]; // store
+		obj.info.translate[1] = trans[1]; // store
+		obj.info.translate[2] = trans[2]; // store
+		obj.info.rotate[0] = rot[0]; // store
+		obj.info.rotate[1] = rot[1]; // store
+		obj.info.rotate[2] = rot[2]; // store
+		obj.info.scale[0] = scale[0]; // store
+		obj.info.scale[1] = scale[1]; // store
+		obj.info.scale[2] = scale[2]; // store
+		console.log('setModelTranRotScale', trans, rot, scale);
+
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
+	};
+	
 	HiveCore.prototype.setModelTranslate = function (objname, trans, redraw) {
 		var obj = this.findObject(objname),
 			redrawfunc = null;
@@ -294,6 +327,64 @@
 		runScript(this.conn, src, redrawfunc);
 	};
 
+	HiveCore.prototype.setModelUniformsFromInfo = function (objname, objinfo, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			name,
+			src = '',
+			redrawfunc = null,
+			uniforms;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+
+		uniforms = objinfo.vec4;
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				obj.info.vec4[name] = [uniforms[i][0], uniforms[i][1], uniforms[i][2], uniforms[i][3]];
+				console.log(objname, name, uniforms[i]);
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[i]);
+			}
+		}
+		uniforms = objinfo.vec3;
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				obj.info.vec3[name] = [uniforms[i][0], uniforms[i][1], uniforms[i][2]];
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[i]);
+			}
+		}
+		uniforms = objinfo.vec2;
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				obj.info.vec2[name] = [uniforms[i][0], uniforms[i][1]];
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[i]);
+			}
+		}
+		uniforms = objinfo.float;
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				obj.info.float[name] = uniforms[i];
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i]);
+			}
+		}
+
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+	
+	
+	
 	HiveCore.prototype.setModelVec4 = function (objname, vname, x, y, z, w, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -387,6 +478,37 @@
 	//----------------------------------------------------------------------------------------------
 	// Camera operation
 	//
+	HiveCore.prototype.setCameraParameters = function (objname, pos, tar, up, fov, redraw) {
+		var obj = this.findObject(objname),
+			redrawfunc = null,
+			src = '';
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		if (obj.type !== 'CAMERA') {
+			return;
+		}
+		console.log('setCameraParameters', pos, tar, up, fov);
+		obj.info.position[0] = pos[0];
+		obj.info.position[1] = pos[1];
+		obj.info.position[2] = pos[2];
+		obj.info.target[0] = tar[0];
+		obj.info.target[1] = tar[1];
+		obj.info.target[2] = tar[2];
+		obj.info.up[0] = up[0];
+		obj.info.up[1] = up[1];
+		obj.info.up[2] = up[2];
+		obj.info.fov = fov;
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, HiveCommand.cameraLookat(objname, obj.info.position, obj.info.target, obj.info.up, obj.info.fov), redrawfunc);
+	};
 	HiveCore.prototype.setCameraPosition = function (objname, pos, redraw) {
 		var obj = this.findObject(objname),
 			redrawfunc = null;
@@ -579,9 +701,59 @@
 	//
 	
 	//----------------------------------------------------------------------------------------------
+	// Timeline animation
+	//
+	
+	HiveCore.prototype.addKey = function (objname, tm) {
+		var obj = this.findObject(objname),
+			cinfo,
+			tinfo;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		console.log(obj);
+		
+		// copy propteies
+		cinfo = JSON.parse(JSON.stringify(obj.info));
+		tinfo = this.objectTimeine[objname];
+		if (tinfo === undefined) {
+			tinfo = [];
+			this.objectTimeine[objname] = tinfo;
+		}
+		tinfo.push({info: cinfo, time: tm});
+		tinfo.sort(function (a, b) { return a.time > b.time; });
+		//console.log(tinfo);
+	};
 	
 	HiveCore.prototype.updateTime = function (tm) {
-		//console.log('Time = ', tm);
+		if (!this.sceneInfo) { return; }
+		if (!this.sceneInfo.objectlist) { return; }
+		var n = this.sceneInfo.objectlist.length,
+			i,
+			j,
+			m,
+			objname,
+			tinfo,
+			infoptr = null;
+		for (i = 0; i < n; i = i + 1) {
+			objname = this.sceneInfo.objectlist[i].name;
+			tinfo = this.objectTimeine[objname];
+			if (tinfo !== undefined) {
+				m = tinfo.length;
+				for (j = 0; j < m; j = j + 1) {
+					if (tinfo[j].time < tm) {
+						infoptr = tinfo[j].info;
+					}
+				}
+				if (infoptr) {
+					this.setModelUniformsFromInfo(objname, infoptr);
+					this.setModelTranRotScale(objname, infoptr.translate, infoptr.rotate, infoptr.scale);
+					this.setCameraParameters(objname, infoptr.position, infoptr.target, infoptr.up, infoptr.fov);
+				}
+			}
+		}
+		this.render();
 	};
 	window.HiveCore = HiveCore;
 }(window));

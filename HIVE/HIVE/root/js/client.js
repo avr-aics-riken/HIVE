@@ -118,12 +118,12 @@
 		$('camera_screen_width').onchange = valueChangeScreenSize(name, objprop.screensize, 0, core);
 		$('camera_screen_height').onchange = valueChangeScreenSize(name, objprop.screensize, 1, core);
 		$('camera_output_filename').onchange = valueChangeOutputFiel(name, core);
-		kUI('camera_clearcolor').ChangeColorCallback(function (core, name) {
+		kUI('camera_clearcolor').ChangeColorCallback((function (core, name) {
 			return function (r, g, b, a) {
 				//core.setModelVec4(objname, paramname, r, g, b, a, true);
 				core.setClearColor(name, r, g, b, a, true);
 			};
-		}(core, name));
+		}(core, name)));
 	}
 	
 	function splitfilename(fpath) {
@@ -142,6 +142,17 @@
 			objinfo = core.findObject(objname).info,
 			colpick;
 		
+		function changeObjVec4(core, objname, paramname) {
+			return function (r, g, b, a) {
+				core.setModelVec4(objname, paramname, r, g, b, a, true);
+			};
+		}
+		function changeModelFloat(core, objname, paramname) {
+			return function (v) {
+				core.setModelFloat(objname, paramname, v, true);
+			};
+		}
+
 		pp.innerHTML = ''; // clear
 		// Add UIs
 		for (i in unif) {
@@ -162,11 +173,7 @@
 										objinfo.vec4[paramname][1],
 										objinfo.vec4[paramname][2],
 										objinfo.vec4[paramname][3]);
-						colpick.ChangeColorCallback(function (core, objname, paramname) {
-							return function (r, g, b, a) {
-								core.setModelVec4(objname, paramname, r, g, b, a, true);
-							};
-						}(core, objname, paramname));
+						colpick.ChangeColorCallback(changeObjVec4(core, objname, paramname));
 					}
 					
 				} else if (unif[i].ui === 'slider') {
@@ -179,11 +186,7 @@
 						'</div></div>';
 					pp.appendChild(d);
 					kvtoolsUI_update(d);
-					kUI(paramname).ChangeCallback(function (core, objname, paramname) {
-						return function (v) {
-							core.setModelFloat(objname, paramname, v, true);
-						};
-					}(core, objname, paramname));
+					kUI(paramname).ChangeCallback(changeModelFloat(core, objname, paramname));
 
 				} else if (unif[i].ui === 'vec3') {
 					paramname = unif[i].name;
@@ -331,6 +334,10 @@
 		$('shader_name').Select(dt[name].shader); // add shader parameters after SELECT.
 		*/
 	}
+	
+	var activeObjectName = '',
+		activeTime = 0;
+	
 	function updateProperty(core, objname) {
 		var scenedata = core.getSceneData(),
 			objprop = null,
@@ -347,6 +354,7 @@
 		if (!objprop) {
 			console.error('Not found object:', objname, scenedata.objectlist);
 		} else {
+			activeObjectName = objname;
 			setPropertyMode(objprop.type);
 			if (objprop.type === "CAMERA") {
 				setCameraProperty(objname, objprop.info, core);
@@ -485,6 +493,7 @@
 		kUI('timeline').setTimelineData();
 		kUI('timeline').drawGraph();
 		kUI('timeline').ChangeTimeCallback(function (tm) {
+			activeTime = tm;
 			core.updateTime(tm);
 		});
 		$('projsetting').addEventListener('click', function (ev) {
@@ -550,26 +559,14 @@
 			//);
 		//});
 
+		$('addkeybutton').addEventListener('click', function (ev) {
+			console.log('ADD KEY', activeObjectName, activeTime);
+			if (activeObjectName !== '') {
+				core.addKey(activeObjectName, activeTime);
+			}
+		});
 		// ----------------------------
 		// Mouse Event
-		function mouseDown(e) {
-			e.preventDefault();
-			if (e.button === 0) { mouseState.Left   = true; }
-			if (e.button === 2) { mouseState.Right  = true; }
-			if (e.button === 1) { mouseState.Center = true; }
-			mouseState.x = e.clientX;
-			mouseState.y = e.clientY;
-		}
-
-		function mouseUp(e) {
-			e.preventDefault();
-			if (e.button === 0) { mouseState.Left   = false; }
-			if (e.button === 2) { mouseState.Right  = false; }
-			if (e.button === 1) { mouseState.Center = false; }
-			mouseState.x = e.clientX;
-			mouseState.y = e.clientY;
-		}
-
 		function mouseMove(e) {
 			e.preventDefault();
 			var dx = e.clientX - mouseState.x,
@@ -590,9 +587,28 @@
 			mouseState.x = e.clientX;
 			mouseState.y = e.clientY;
 		}
+		function mouseUp(e) {
+			e.preventDefault();
+			if (e.button === 0) { mouseState.Left   = false; }
+			if (e.button === 2) { mouseState.Right  = false; }
+			if (e.button === 1) { mouseState.Center = false; }
+			mouseState.x = e.clientX;
+			mouseState.y = e.clientY;
+			window.removeEventListener('mouseup',   mouseUp);
+			window.removeEventListener('mousemove', mouseMove);
+		}
+		function mouseDown(e) {
+			e.preventDefault();
+			if (e.button === 0) { mouseState.Left   = true; }
+			if (e.button === 2) { mouseState.Right  = true; }
+			if (e.button === 1) { mouseState.Center = true; }
+			mouseState.x = e.clientX;
+			mouseState.y = e.clientY;
+			
+			window.addEventListener('mouseup',   mouseUp);
+			window.addEventListener('mousemove', mouseMove);
+		}
 		$('resultdiv').addEventListener('mousedown', mouseDown);
-		$('resultdiv').addEventListener('mouseup',   mouseUp);
-		$('resultdiv').addEventListener('mousemove', mouseMove);
 		//----------------------------
 	}
 	window.addEventListener('load', init);
