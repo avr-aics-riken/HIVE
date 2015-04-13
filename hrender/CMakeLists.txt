@@ -347,9 +347,16 @@ endif()
 
 
 
-# Copy GLSL Compiler
-SET(GLSL_PATH ${PROJECT_SOURCE_DIR}/../third_party/SURFACE/glsl)
-file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+# Copy GLSL Compiler in post build phase
+# @todo { Don't copy whole directory files }
+# @todo { Copying GLSL files should not depends on hrender target }
+SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
+ADD_CUSTOM_TARGET(glslc-copy-files ALL COMMAND cmake -E copy_directory
+	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/glsl
+	${EXECUTABLE_OUTPUT_PATH}/glsl)
+
+# NOTE: COPY command only works at CMake configure phase
+#file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 # ------------------
 # [For develop]
