@@ -197,6 +197,7 @@ set(SOURCES
 	src/Builder/PointToVolume.cpp
 	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToVector.cpp
+	src/Builder/VolumeFilter.cpp
 	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
 	src/Image/jpgd.cpp
@@ -212,6 +213,7 @@ set(SOURCES
 	src/Loader/PdbLoader.cpp
 	src/Loader/tiny_pdb.cpp
 	src/Saver/SphSaver.cpp
+	src/Saver/RawVolumeSaver.cpp
 	src/Network/Connection.cpp
 	src/Network/MetaBinary.cpp
 	src/Network/easywsclient.cpp
