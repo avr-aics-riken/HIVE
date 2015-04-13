@@ -62,7 +62,7 @@ int VolumeFilter::Laplacian(BufferVolumeData *volume) {
         return 0;
     }
 
-	if (!volume->Component() != 1) {
+	if (volume->Component() != 1) {
 		fprintf(stderr, "[VolumeFilter] Scalar volume expected for Laplacian filter.\n");
 		return 0;
 	}
