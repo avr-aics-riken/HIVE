@@ -69,8 +69,10 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
   exr.channel_names = channel_names;
   
   float **channel_images = new float*[exr.num_channels];
+  int *pixel_types = new int[exr.num_channels];
   for (size_t i = 0; i < exr.num_channels; i++) {
     channel_images[i] = new float[w*h];
+	pixel_types[i] = TINYEXR_PIXELTYPE_HALF; // @fixme
   }
 
   for (size_t y = 0; y < h; y++) {
@@ -86,6 +88,7 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
     }
   }
   exr.images = reinterpret_cast<unsigned char**>(channel_images);
+  exr.pixel_types = pixel_types;
   
   const char* err = NULL;
   unsigned char* mem = NULL;
@@ -101,6 +104,7 @@ inline int SimpleEXRSaverRGBA(void** out_mem, int w, int h, const float* rgba_fl
     delete [] channel_images[i];
   }
   delete [] channel_images;
+  delete [] pixel_types;
 
   // malloc() -> new
   (*out_mem) = reinterpret_cast<void*>(new unsigned char[mem_size]);
@@ -133,8 +137,10 @@ inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
   exr.channel_names = channel_names;
   
   float **channel_images = new float*[exr.num_channels];
+  int *pixel_types = new int[exr.num_channels];
   for (size_t i = 0; i < exr.num_channels; i++) {
     channel_images[i] = new float[w*h];
+	pixel_types[i] = TINYEXR_PIXELTYPE_FLOAT; // @fixme
   }
 
   for (size_t y = 0; y < h; y++) {
@@ -143,6 +149,7 @@ inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
     }
   }
   exr.images = reinterpret_cast<unsigned char**>(channel_images);
+  exr.pixel_types = pixel_types;
   
   const char* err = NULL;
   unsigned char* mem = NULL;
@@ -152,6 +159,7 @@ inline int SimpleEXRSaverZ(void** out_mem, int w, int h, const float* z_float)
     delete [] channel_images[i];
   }
   delete [] channel_images;
+  delete [] pixel_types;
 
   // malloc() -> new
   (*out_mem) = reinterpret_cast<void*>(new unsigned char[mem_size]);
