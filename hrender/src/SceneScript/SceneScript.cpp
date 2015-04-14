@@ -79,7 +79,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
-    //LUA_SCRIPTCLASS_REGISTER(L, RawVolumeSaver_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, RawVolumeSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
@@ -125,7 +125,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
-    //SetFunction(L, "RawVolumeSaver",      LUA_SCRIPTCLASS_NEW_FUNCTION(RawVolumeSaver_Lua));
+    SetFunction(L, "RawVolumeSaver",      LUA_SCRIPTCLASS_NEW_FUNCTION(RawVolumeSaver_Lua));
     SetFunction(L, "SPHLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
     SetFunction(L, "SPHSaver",            LUA_SCRIPTCLASS_NEW_FUNCTION(SPHSaver_Lua));
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
