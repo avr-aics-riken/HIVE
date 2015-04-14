@@ -211,6 +211,7 @@ set(SOURCES
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
 	src/Loader/PdbLoader.cpp
+	src/Loader/RawVolumeLoader.cpp
 	src/Loader/tiny_pdb.cpp
 	src/Saver/SphSaver.cpp
 	src/Saver/RawVolumeSaver.cpp

@@ -29,6 +29,7 @@
 #include "ObjLoader_Lua.h"
 #include "StlLoader_Lua.h"
 #include "VolLoader_Lua.h"
+#include "RawVolumeLoader_Lua.h"
 #include "RawVolumeSaver_Lua.h"
 #include "SphLoader_Lua.h"
 #include "SphSaver_Lua.h"
@@ -79,6 +80,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, RawVolumeLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, RawVolumeSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, SPHSaver_Lua);
@@ -125,6 +127,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
     SetFunction(L, "VOLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
+    SetFunction(L, "RawVolumeLoader",     LUA_SCRIPTCLASS_NEW_FUNCTION(RawVolumeLoader_Lua));
     SetFunction(L, "RawVolumeSaver",      LUA_SCRIPTCLASS_NEW_FUNCTION(RawVolumeSaver_Lua));
     SetFunction(L, "SPHLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
     SetFunction(L, "SPHSaver",            LUA_SCRIPTCLASS_NEW_FUNCTION(SPHSaver_Lua));
