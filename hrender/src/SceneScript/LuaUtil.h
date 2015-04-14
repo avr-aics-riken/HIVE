@@ -325,6 +325,7 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 #define LUA_SCRIPTCLASS_END() \
 		lua_setfield(L,-2,"__index"); \
 		LUA_CLASS_REGISTER_DESTRUCTOR(L); \
+        lua_pop(L, 1); \
 		return 1; \
 	}\
 
