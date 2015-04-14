@@ -99,7 +99,14 @@ bool VolumeAnalyzer::Execute(VolumeModel *model)
             fprintf(stderr,"Volume data empty\n");
             return false;
         }
-        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
+        
+        if (volume->Component() == 1) {
+            proc.AnalyzeScalar(m_volHist[0], m_minVal[0], m_maxVal[0], buffer, temp_num);
+        } else if (volume->Component() == 3) {
+            proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
+        } else {
+            fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
+        }
     } else {
         fprintf(stderr,"Volume data not found.");
     }
