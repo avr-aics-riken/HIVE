@@ -1,0 +1,25 @@
+
+print('Render Obj')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_rawvol_image.exr')
+
+camera:LookAt(
+	350,350,350,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local loader = RawVolumeLoader()
+-- .raw volume file can be found at http://ospray.github.io/demos.html for example.
+loader:Load('input.raw', 256, 256, 256, 1, 'float')
+local volume = VolumeModel()
+local volumedata = loader:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('def_volume_raymarch4.frag')
+render {camera, volume}
+
+
