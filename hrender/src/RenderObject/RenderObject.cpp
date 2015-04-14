@@ -181,6 +181,9 @@ public:
      * @param img イメージデータ
      */
     bool SetTexture(const std::string& name, const BufferImageData* img) {
+        if (img->Bytes() <= 0) {
+            return false;
+        }
         m_imgs[name] = img;
         return true;
     }
