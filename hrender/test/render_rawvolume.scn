@@ -1,7 +1,7 @@
 print('Render raw vol')
 
 local camera = Camera()
-camera:SetScreenSize(1024, 1024)
+camera:SetScreenSize(512, 512)
 camera:SetFilename('render_rawvol_image.jpg')
 
 camera:LookAt(
@@ -101,11 +101,22 @@ local loader = RawVolumeLoader()
 loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
 local volume = VolumeModel()
 local volumedata = loader:VolumeData()
+
 volume:Create(volumedata)
+
+local analy = VolumeAnalyzer()
+analy:Execute(volume)
+print('volume min/max X:', analy:MinX(), analy:MaxX())
+print('volume min/max Y:', analy:MinY(), analy:MaxY())
+print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
+
 volume:SetShader('def_volume_raymarch_tf.frag')
 volume:SetTexture('tf_tex', tftex:ImageData())
 volume:SetFloat('tf_min', 0.0)
 volume:SetFloat('tf_max', 1.0)
+volume:SetFloat('tf_opacity', 0.01)
+
+
 render {camera, volume}
 
 

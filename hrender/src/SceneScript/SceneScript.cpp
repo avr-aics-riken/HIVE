@@ -54,6 +54,7 @@
 #endif
 #include "PdbLoader_Lua.h"
 #include "PolygonAnalyzer_Lua.h"
+#include "VolumeAnalyzer_Lua.h"
 #include "FloatsToFloat_Lua.h"
 #include "PointToVolume_Lua.h"
 #include "VolumeToVector_Lua.h"
@@ -102,6 +103,7 @@ void RegisterSceneClass(lua_State* L)
 #endif
     LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, VolumeAnalyzer_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PointToVolume_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VolumeToVector_Lua);
@@ -149,6 +151,7 @@ void RegisterSceneClass(lua_State* L)
 #endif
     SetFunction(L, "PDBLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
     SetFunction(L, "PolygonAnalyzer",     LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonAnalyzer_Lua));
+    SetFunction(L, "VolumeAnalyzer",      LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeAnalyzer_Lua));
     SetFunction(L, "FloatsToFloat",       LUA_SCRIPTCLASS_NEW_FUNCTION(FloatsToFloat_Lua));
     SetFunction(L, "PointToVolume",       LUA_SCRIPTCLASS_NEW_FUNCTION(PointToVolume_Lua));
     SetFunction(L, "VolumeToVector",      LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));

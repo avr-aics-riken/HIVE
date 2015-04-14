@@ -21,6 +21,7 @@ uniform vec3 offset;
 uniform sampler2D tf_tex;
 uniform float     tf_min;
 uniform float     tf_max;
+uniform float     tf_opacity;
 
 #define EPS        0.005
 #define SAMPLES    500.0
@@ -104,11 +105,10 @@ void  main(void) {
 	float psi = 0.0;
 	
 	vec3 sumN = vec3(0.0);
-	vec4 col  = vec4(0.0);
+	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
-	//for(float i = 0.0 ; i < SAMPLES; i = i + 1.0) {
 	float i = 0.0;
-	while(i < SAMPLES) {
+	while((i < SAMPLES) && (min(min(col.x, col.y), col.z) < 1.0) && (col.w < 0.999)) {
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);
@@ -116,13 +116,16 @@ void  main(void) {
         float f = clamp(temp.x, tf_min, tf_max);
         float x = (f - tf_min) / (tf_max - tf_min); // normalize
 
-        vec4 tf = texture2D(tf_tex, vec2(x, 0));
-        col.rgb += tf.rgb * tf.w; // mult with alpha value
+        vec4 tfCol = texture2D(tf_tex, vec2(x, 0));
+        tfCol = tf_opacity * vec4(tfCol.rgb, 1.0);
+        col += (1.0 - col.w) * tfCol;
+        col += tfCol;
 		count = count + 1.0;
 		t += tstep;
 		i = i + 1.0;
 	}
-	col.xyz  /= count;
+	//col.xyz  /= count;
 	col.w = 1.0;
+
 	gl_FragColor = col;
 }
