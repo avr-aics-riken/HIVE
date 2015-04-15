@@ -60,10 +60,10 @@ void DeleteTextures_SGL(int n, unsigned int* tex);
 void BindTexture3D_SGL(unsigned int tex);
 void BindTexture2D_SGL(unsigned int tex);
 void ActiveTexture_SGL(unsigned int n);
-void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter);
-void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter);
+void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT);
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT);
 
-void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata);
+void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
 void EvalFragmentShader_SGL();
 void SetCallback_SGL(bool (*callback)(int progress, int y, int height, void* userptr), void* userptr);
 void Finish_SGL();

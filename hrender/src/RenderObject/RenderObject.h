@@ -9,6 +9,7 @@
 #include "../Core/Ref.h"
 #include "../Core/vxmath.h"
 #include <string>
+#include <vector>
 #include <map>
 
 class BufferImageData;
@@ -49,12 +50,14 @@ public:
     typedef std::map<std::string, float>                          FloatMap;
     typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
     typedef std::map<std::string, bool>                           FilteringParamMap;
+    typedef std::map<std::string, std::vector<bool> >             WrappingParamMap; // <S, T, R>
     const Vec4Map&    GetUniformVec4 ()   const;
     const Vec3Map&    GetUniformVec3 ()   const;
     const Vec2Map&    GetUniformVec2 ()   const;
     const FloatMap&   GetUniformFloat()   const;
     const TextureMap& GetUniformTexture() const;
     const FilteringParamMap& GetTextureFiltering() const;
+    const WrappingParamMap& GetTextureWrapping() const;
 
 
 protected:
@@ -72,6 +75,8 @@ protected:
     bool SetFloat(const std::string& name, float x);
     bool SetTexture(const std::string& name, const BufferImageData* img);
     bool SetTextureFiltering(const std::string& name, bool filter);
+    /// Set texture wrapping mode. CLAMP_TO_EDGE(true) or REPEAT(false)
+    bool SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
 
     RenderObject(MODE_TYPE t);
     ~RenderObject();

@@ -72,6 +72,8 @@ public:
     const TextureMap& GetUniformTexture() const { return m_imgs;   }
     /// Filtering parameterを返す
     const FilteringParamMap& GetTextureFiltering() const { return m_filteringParams;   }
+    /// Wrappign parameterを返す
+    const WrappingParamMap& GetTextureWrapping() const { return m_wrappingParams;   }
 
     //--------------------------------------------------
     //Set
@@ -198,6 +200,20 @@ public:
         return true;
     }
 
+    /**
+     * テクスチャ wrapping の設定
+     * @param name Uniform名
+     * @param texture wrapping flag
+     */
+    bool SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) {
+        std::vector<bool> wrappings;
+        wrappings.push_back(clampToEdgeS);
+        wrappings.push_back(clampToEdgeT);
+        wrappings.push_back(clampToEdgeR);
+        m_wrappingParams[name] = wrappings;
+        return true;
+    }
+
     /// コンストラクタ
     Impl(MODE_TYPE t) : m_type(t)
     {
@@ -225,6 +241,7 @@ private:
     std::map<std::string, int>            m_ints;
     std::map<std::string, RefPtr<const BufferImageData> > m_imgs;
     std::map<std::string, bool>           m_filteringParams;
+    std::map<std::string, std::vector<bool> >  m_wrappingParams;
 
     //mode type
     RenderObject::MODE_TYPE m_type;
@@ -263,6 +280,8 @@ const RenderObject::FloatMap& RenderObject::GetUniformFloat()     const { return
 const RenderObject::TextureMap& RenderObject::GetUniformTexture() const { return m_imp->GetUniformTexture();  }
 /// Filtering parameterマップを返す
 const RenderObject::FilteringParamMap& RenderObject::GetTextureFiltering() const { return m_imp->GetTextureFiltering();  }
+/// Wrapping parameterマップを返す
+const RenderObject::WrappingParamMap& RenderObject::GetTextureWrapping() const { return m_imp->GetTextureWrapping();  }
 
 //--------------------------------------------------
 //Set
@@ -337,5 +356,12 @@ bool RenderObject::SetTexture(const std::string& name, const BufferImageData* im
  * @param filter filter flag
  */
 bool RenderObject::SetTextureFiltering(const std::string& name, bool filter)      { return m_imp->SetTextureFiltering(name, filter);     }
-
+/**
+ * テクスチャ wrapping の設定
+ * @param name Uniform名
+ * @param clampToEdgeS `true` to set wrapping mode for S to CLAMP_TO_EDGE
+ * @param clampToEdgeT `true` to set wrapping mode for T to CLAMP_TO_EDGE
+ * @param clampToEdgeR `true` to set wrapping mode for R to CLAMP_TO_EDGE
+ */
+bool RenderObject::SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)      { return m_imp->SetTextureWrapping(name, clampToEdgeS, clampToEdgeT, clampToEdgeR);     }
 

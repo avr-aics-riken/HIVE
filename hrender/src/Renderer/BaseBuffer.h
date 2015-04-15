@@ -46,7 +46,7 @@ protected:
     unsigned int getProgram() const;
     void bindUniforms(const RenderObject* obj) const;
     const unsigned int getTextureId(const BufferImageData* buf) const;
-    bool cacheTexture(const BufferImageData* buf, bool filter);
+    bool cacheTexture(const BufferImageData* buf, bool filter, bool clampToEdgeS, bool clampToEdgeT);
     void cacheTextures(const RenderObject* model);
 };
 

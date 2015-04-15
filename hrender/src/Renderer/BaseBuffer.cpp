@@ -171,7 +171,7 @@ const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
  * テクスチャをキャッシュする.
  * @param buf バッファイメージデータ
  */
-bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter)
+bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
     RenderCore* core = RenderCore::GetInstance();
     unsigned int tex;
@@ -190,11 +190,11 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter)
         
         // TODO: more format
         if (fmt == BufferImageData::RGBA8) {
-            TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer(), filter);
+            TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
         } else if (fmt == BufferImageData::RGBA32F) {
-            TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer(), filter);
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
         } else if (fmt == BufferImageData::R32F) {
-            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter);
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
         } else {
             assert(0);
         }        
@@ -210,6 +210,7 @@ void BaseBuffer::cacheTextures(const RenderObject* model)
 {
     const RenderObject::TextureMap& tex = model->GetUniformTexture();
     const RenderObject::FilteringParamMap& filtering = model->GetTextureFiltering();
+    const RenderObject::WrappingParamMap& wrapping = model->GetTextureWrapping();
     RenderObject::TextureMap::const_iterator it, eit = tex.end();
     for (it = tex.begin(); it != eit; ++it) {
         bool filter = true; // default: GL_LINEAR
@@ -217,7 +218,21 @@ void BaseBuffer::cacheTextures(const RenderObject* model)
             RenderObject::FilteringParamMap::const_iterator itFilter = filtering.find(it->first);
             filter = itFilter->second;
         }
-        cacheTexture(it->second, filter);
+        bool clampToEdgeS = false;
+        bool clampToEdgeT = false;
+        bool clampToEdgeR = false;
+        if (wrapping.find(it->first) != wrapping.end()) {
+            RenderObject::WrappingParamMap::const_iterator itWrapping = wrapping.find(it->first);
+            std::vector<bool> wrappings = itWrapping->second;
+            if (wrappings.size() >= 2) {
+                clampToEdgeS = wrappings[0];
+                clampToEdgeT = wrappings[1];
+            }
+            if (wrappings.size() >= 3) {
+                clampToEdgeR = wrappings[2];
+            }
+        }
+        cacheTexture(it->second, filter, clampToEdgeS, clampToEdgeT);
     }
 }
 
