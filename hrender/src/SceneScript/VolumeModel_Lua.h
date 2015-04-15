@@ -24,11 +24,17 @@ public:
         return true;
     }
 
+    bool SetClampToEdge(bool s, bool t, bool r) {
+        VolumeModel::SetClampToEdge(s, t, r);
+        return true;
+    }
+
     // RenderObject interface implementation
     IMPLEMENTATION_RENDEROBJECT_LUA()
 
     LUA_SCRIPTCLASS_BEGIN(VolumeModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetClampToEdge,bool,bool,bool)
     LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferVolumeData_Lua*)
     

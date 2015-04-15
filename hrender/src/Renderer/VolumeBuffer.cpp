@@ -155,11 +155,7 @@ bool VolumeBuffer::Create(const VolumeModel* model)
         float sw = volume->Width();
         float sh = volume->Height();
         float sd = volume->Depth();
-        // @todo { wrapping parameter. }
-        bool clampToEdgeS = false;
-        bool clampToEdgeT = false;
-        bool clampToEdgeR = false;
-        r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+        r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer(), model->GetClampToEdgeS(), model->GetClampToEdgeT(), model->GetClampToEdgeR());
         MakeBox(sw,sh,sd);
     } else {
         fprintf(stderr,"[Error] Not load buffer\n");
