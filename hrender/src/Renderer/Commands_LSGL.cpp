@@ -508,6 +508,8 @@ private:
  */
 bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 {
+    printf("CreateProgramSrc\n");
+
 	//static GLchar srcbuf[16384];
     stringbuf srcbuf;
 	FILE *fp = fopen(srcname, "rb");
@@ -808,7 +810,7 @@ void ActiveTexture_SGL(unsigned int n)
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter)
+void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -824,10 +826,18 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
         sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     } else {
-        printf("no filter\n");
         sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
+
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
 }
 
 /**
@@ -837,7 +847,7 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter)
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -855,6 +865,14 @@ void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int c
         sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
+
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
 }
 
 /**
@@ -865,7 +883,7 @@ void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int c
  * @param component 種類
  * @param volumedata ボリュームデータ
  */
-void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata)
+void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -879,6 +897,18 @@ void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int
 		assert(0);
 	}
 	sgl.lsglTexImage3DPointer(GL_TEXTURE_3D, 0, format, width, height, depth, 0, format, GL_FLOAT, volumedata);
+
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeR) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
 }
 
 /**

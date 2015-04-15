@@ -90,12 +90,12 @@ bool VolumeBuffer::MakeBox(float width, float height, float depth)
  * @retval true 作成成功
  * @retval false 作成失敗
  */
-bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata)
+bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
     printf("CreateTexture3D(%d,%d,%d,%d)\n", width, height, depth, component);
     GenTextures_SGL(1, &m_sgl_voltex);
     BindTexture3D_SGL(m_sgl_voltex);
-    TexImage3DPointer_SGL(width, height, depth, component, volumedata);
+    TexImage3DPointer_SGL(width, height, depth, component, volumedata, clampToEdgeS, clampToEdgeT, clampToEdgeR);
     m_voldim[0] = width;
     m_voldim[1] = height;
     m_voldim[2] = depth;
@@ -155,7 +155,11 @@ bool VolumeBuffer::Create(const VolumeModel* model)
         float sw = volume->Width();
         float sh = volume->Height();
         float sd = volume->Depth();
-        r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer());
+        // @todo { wrapping parameter. }
+        bool clampToEdgeS = false;
+        bool clampToEdgeT = false;
+        bool clampToEdgeR = false;
+        r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
         MakeBox(sw,sh,sd);
     } else {
         fprintf(stderr,"[Error] Not load buffer\n");

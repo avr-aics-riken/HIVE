@@ -112,6 +112,7 @@ print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
 
 volume:SetShader('def_volume_raymarch_tf.frag')
 volume:SetTexture('tf_tex', tftex:ImageData())
+volume:SetTextureWrapping('tf_tex', true, true, true) -- CLAMP_TO_EDGE wrap mode for transfer function texture.
 volume:SetFloat('tf_min', 0.0)
 volume:SetFloat('tf_max', 1.0)
 volume:SetFloat('tf_opacity', 0.01)
