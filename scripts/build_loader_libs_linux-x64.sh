@@ -152,6 +152,29 @@ function build_pdmlib {
 	cd ${topdir}
 }
 
+function build_udmlib {
+	cd third_party/
+	rm -rf cgnslib_3.2.1/
+	rm -rf cgnslib_build/
+	tar -zxvf cgnslib_3.2.1.tar.gz
+	mkdir cgnslib_build
+	cd cgnslib_build
+	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} ../cgnslib_3.2.1 && make && make install
+
+	#
+	# UDMlib
+	#
+	cd third_party/UDMlib
+	if [ -f "Makefile" ]; then
+		make distclean
+	fi
+	autoreconf -ivf
+	# Work around: Use cxx compiler even for CC to compile example programs.
+	CXX=${cxx_compiler} CC=${cxx_compiler} ./configure --prefix=${installdir}/UDMlib --with-ompi --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
+}
+
 function build_compositor {
 
 	cd third_party/ 
@@ -174,4 +197,5 @@ build_polylib
 build_bcmtools
 build_hdmlib
 build_pdmlib
+build_udmlib
 build_compositor
