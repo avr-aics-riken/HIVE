@@ -130,6 +130,10 @@ IF(HIVE_BUILD_WITH_HDMLIB)
   add_definitions(-DHIVE_WITH_HDMLIB)
 ENDIF()
 
+IF(HIVE_BUILD_WITH_UDMLIB)
+  add_definitions(-DHIVE_WITH_UDMLIB)
+ENDIF()
+
 IF(HIVE_BUILD_WITH_COMPOSITOR)
   IF(NOT HIVE_BUILD_WITH_MPI)
     message(FATAL_ERROR "HIVE_BUILD_WITH_MPI must be defined when HIVE_BUILD_WITH_COMPOSIOR is enabled")
@@ -308,6 +312,22 @@ IF(HIVE_BUILD_WITH_PDMLIB)
   
 ENDIF()
 
+IF(HIVE_BUILD_WITH_UDMLIB)
+
+  SET(UDMLIB_SOURCES
+    src/Loader/UdmLoader.cpp
+  )
+
+  SET(UDMLIB_LIBS
+    udm TPmpi zoltan cgns
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
+  
+ENDIF()
+
 IF(HIVE_BUILD_WITH_COMPOSITOR)
 
   SET(COMPOSITOR_LIBS
@@ -324,13 +344,14 @@ IF(NOT EXECUTABLE_OUTPUT_PATH)
 ENDIF()
 
 add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES}
-	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} )
+	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES})
 
 target_link_libraries(hrender pthread)
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
 target_link_libraries(hrender ${CDMLIB_LIBS})
 target_link_libraries(hrender ${HDMLIB_LIBS})
+target_link_libraries(hrender ${UDMLIB_LIBS})
 target_link_libraries(hrender ${PDMLIB_LIBS})
 target_link_libraries(hrender ${BCMTOOLS_LIBS})
 target_link_libraries(hrender ${COMPOSITOR_LIBS})
