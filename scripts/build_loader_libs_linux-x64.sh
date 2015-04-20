@@ -160,6 +160,7 @@ function build_udmlib {
 	mkdir cgnslib_build
 	cd cgnslib_build
 	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} ../cgnslib_3.2.1 && make && make install
+	cd ${topdir}
 
 	#
 	# UDMlib
