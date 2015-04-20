@@ -49,6 +49,9 @@
 #ifdef HIVE_WITH_HDMLIB
 #include "HdmLoader_Lua.h"
 #endif
+#ifdef HIVE_WITH_UDMLIB
+#include "UdmLoader_Lua.h"
+#endif
 #ifdef HIVE_WITH_BCMTOOLS
 #include "BcmLoader_Lua.h"
 #endif
@@ -98,6 +101,9 @@ void RegisterSceneClass(lua_State* L)
 #ifdef HIVE_WITH_HDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, HDMLoader_Lua);
 #endif
+#ifdef HIVE_WITH_UDMLIB
+    LUA_SCRIPTCLASS_REGISTER(L, UDMLoader_Lua);
+#endif
 #ifdef HIVE_WITH_BCMTOOLS
     LUA_SCRIPTCLASS_REGISTER(L, BCMLoader_Lua);
 #endif
@@ -145,6 +151,9 @@ void RegisterSceneClass(lua_State* L)
 #endif
 #ifdef HIVE_WITH_HDMLIB
     SetFunction(L, "HDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(HDMLoader_Lua));
+#endif
+#ifdef HIVE_WITH_UDMLIB
+    SetFunction(L, "UDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(UDMLoader_Lua));
 #endif
 #ifdef HIVE_WITH_BCMTOOLS
     SetFunction(L, "BCMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(BCMLoader_Lua));
