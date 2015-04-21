@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tiny_vtkxml.h"
 
-#define DEBUG
+//#define DEBUG
 
 namespace lte {
 namespace tinyvtkxml{
