@@ -215,8 +215,10 @@ set(SOURCES
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
 	src/Loader/PdbLoader.cpp
+	src/Loader/VtkLoader.cpp
 	src/Loader/RawVolumeLoader.cpp
 	src/Loader/tiny_pdb.cpp
+	src/Loader/tiny_vtkxml.cpp
 	src/Saver/SphSaver.cpp
 	src/Saver/RawVolumeSaver.cpp
 	src/Network/Connection.cpp

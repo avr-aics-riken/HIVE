@@ -35,6 +35,7 @@
 #include "SphSaver_Lua.h"
 #include "ImageLoader_Lua.h"
 #include "ImageSaver_Lua.h"
+#include "VtkLoader_Lua.h"
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
 #include "PrimitiveGenerator_Lua.h"
@@ -90,6 +91,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, SPHSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, VTKLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PrimitiveGenerator_Lua);
 #ifdef HIVE_WITH_CDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, CDMLoader_Lua);
@@ -141,6 +143,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "SPHSaver",            LUA_SCRIPTCLASS_NEW_FUNCTION(SPHSaver_Lua));
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
+    SetFunction(L, "VTKLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VTKLoader_Lua));
     SetFunction(L, "PrimitiveGenerator",  LUA_SCRIPTCLASS_NEW_FUNCTION(PrimitiveGenerator_Lua));
 #ifdef HIVE_WITH_CDMLIB
     SetFunction(L, "CDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(CDMLoader_Lua));
