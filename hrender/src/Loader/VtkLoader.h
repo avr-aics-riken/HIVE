@@ -32,7 +32,8 @@ public:
     VTKLoader();
     ~VTKLoader();
     void Clear();
-    bool Load(const char* filename);
+    /// Loads volume data for given field name
+    bool Load(const char* filename, const char* fieldname);
     int Width();
     int Height();
     int Depth();

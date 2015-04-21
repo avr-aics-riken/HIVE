@@ -1,6 +1,7 @@
 /**
  * @file SphLoader.cpp
  * VTKデータローダー
+ * @todo { Field inspector. Support varyious data type other than float32. Load data as sparse voxel representation. }
  */
 #include <stdio.h>
 #include <string.h>
@@ -16,6 +17,23 @@
 
 namespace {
 
+inline size_t IDX(size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
+    size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
+    size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
+    size_t dz = (std::max)((size_t)0, (std::min)(sz-1, z));
+    size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
+    return idx;
+}
+
+template<typename T>
+inline float D(const T* data, size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
+    size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
+    size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
+    size_t dz = (std::max)((size_t)0, (std::min)(sz-1, z));
+    size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
+    return data[idx];
+}
+
 typedef struct {
     std::string type; 
     std::string name;
@@ -25,15 +43,20 @@ typedef struct {
     size_t offset;
 } DataInfo;
 
-bool LoadImageDataFile(const char* filename)
+bool LoadPImageDataFile(
+    float* volume,  // [inout]
+    const std::string& filename,
+    const VTKLoader::PieceInfo& pieceInfo,
+    const std::string& fieldName,
+    const size_t dim[3]) // global dim
 {
     std::vector<DataInfo> dataList;
 
     // Parse VTK XML and find RAW data position/offset.
     {
-        lte::tinyvtkxml::TinyVTKXML toplevelXML(filename);
+        lte::tinyvtkxml::TinyVTKXML toplevelXML(filename.c_str());
         if (toplevelXML.Parse()) {
-            fprintf(stderr, "[VTKLoader] Parsing failed. %s\n", filename);
+            fprintf(stderr, "[VTKLoader] Parsing failed. %s\n", filename.c_str());
             return false;
         }
 
@@ -53,7 +76,7 @@ bool LoadImageDataFile(const char* filename)
             isBigEndian = (root->GetAttribute("byte_order") == "BigEndian") ? true : false;
         }
 
-        // @todo { Read Extent and check its value with parent XML node}
+        // @todo { Read Extent and check its value with piece information from parent XML node}
         std::vector<lte::tinyvtkxml::Node*> dataArrays = root
             ->FindChild("ImageData")
             ->FindChild("Piece")
@@ -69,6 +92,7 @@ bool LoadImageDataFile(const char* filename)
             std::string name = "";
             std::string format;
             size_t offset = 0;
+            int numberOfComponents = 1;
 
             if (dataArrays[i]->HasAttribute("type")) {
                 type = dataArrays[i]->GetAttribute("type");
@@ -94,6 +118,10 @@ bool LoadImageDataFile(const char* filename)
                 offset = dataArrays[i]->GetAttributeInt("offset");
             }
 
+            if (dataArrays[i]->HasAttribute("NumberOfComponents")) {
+                numberOfComponents = dataArrays[i]->GetAttributeInt("NumberOfComponents");
+            }
+
             // Assume binary(RAW) data.
             // raw = '_' + datalen(4 byte) + data
             //
@@ -105,7 +133,7 @@ bool LoadImageDataFile(const char* filename)
             info.length = length;
             info.name = name;
             info.type = type;
-            info.numberOfComponents = 0; // @fixme
+            info.numberOfComponents = numberOfComponents;
             dataList.push_back(info);
         }
     }
@@ -115,7 +143,7 @@ bool LoadImageDataFile(const char* filename)
     }
 
     // Read actual data.
-    FILE* fp = fopen(filename, "rb");
+    FILE* fp = fopen(filename.c_str(), "rb");
 
     for (size_t i = 0; i < dataList.size(); i++) {
         fseek(fp, dataList[i].offset, SEEK_SET);
@@ -125,6 +153,43 @@ bool LoadImageDataFile(const char* filename)
     }
 
     fclose(fp);
+
+    size_t size[3];
+    size_t offset[3];
+    size[0] = pieceInfo.extent[1] - pieceInfo.extent[0];
+    size[1] = pieceInfo.extent[3] - pieceInfo.extent[2];
+    size[2] = pieceInfo.extent[5] - pieceInfo.extent[4];
+    offset[0] = pieceInfo.extent[0];
+    offset[1] = pieceInfo.extent[2];
+    offset[2] = pieceInfo.extent[4];
+
+    // Find field
+    int fieldIdx = -1;
+    {
+        for (size_t i = 0; i < dataList.size(); i++) {
+            if (dataList[i].name == fieldName) {
+                fieldIdx = i;
+                break;
+            }
+        }
+    }
+
+    assert(pieceInfo.numberOfComponents == dataList[fieldIdx].numberOfComponents);
+
+    // Fill voxel
+    {
+        int components = dataList[fieldIdx].numberOfComponents;
+        for (size_t z = 0; z < size[2]; z++) {
+            for (size_t y = 0; y < size[1]; y++) {
+                for (size_t x = 0; x < size[0]; x++) {
+                    for (size_t c = 0; c < components; c++) {
+                        const float* src = reinterpret_cast<const float*>(&(dataList[fieldIdx].data.at(0)));
+                        volume[IDX(components, x + offset[0], y + offset[1], z + offset[2], c, dim[0], dim[1], dim[2])] = src[IDX(components, x, y, z, c, size[0], size[1], size[2])];
+                    }
+                }
+            }
+        }
+    }
 
     return true;
 }
@@ -152,10 +217,11 @@ void VTKLoader::Clear()
 /**
  * VTKデータのロード
  * @param filename ファイルパス
+ * @param fieldname field name
  * @retval true 成功
  * @retval false 失敗
  */
-bool VTKLoader::Load(const char* filename)
+bool VTKLoader::Load(const char* filename, const char* fieldname)
 {
     Clear();
     m_volume = new BufferVolumeData();
@@ -198,9 +264,11 @@ bool VTKLoader::Load(const char* filename)
             &wholeExtent[0], &wholeExtent[1], &wholeExtent[2],
             &wholeExtent[3], &wholeExtent[4], &wholeExtent[5]);
          
-        int width = wholeExtent[1];
-        int height = wholeExtent[3];
-        int depth = wholeExtent[5];
+        size_t globalDim[3];
+
+        globalDim[0] = wholeExtent[1];
+        globalDim[1] = wholeExtent[3];
+        globalDim[2] = wholeExtent[5];
 
         // Parse attribute list.
         m_dataArrayInfoList.clear();
@@ -214,7 +282,9 @@ bool VTKLoader::Load(const char* filename)
                     if (pdataArrays[i]->HasAttribute("NumberOfComponents")) {
                         numberOfComponents = pdataArrays[i]->GetAttributeInt("NumberOfComponents");
                     }
+
                     //printf("ty: %s, nm: %s, c: %d\n", type.c_str(), name.c_str(), numberOfComponents);
+
                     DataArrayInfo info;
                     info.type = type;
                     info.name = name;
@@ -222,6 +292,22 @@ bool VTKLoader::Load(const char* filename)
                     m_dataArrayInfoList.push_back(info);
                 }
             }
+        }
+
+        // Find fieldname
+        int fieldIdx = -1;
+        {
+            for (size_t i = 0; i < m_dataArrayInfoList.size(); i++) {
+                if (m_dataArrayInfoList[i].name == std::string(fieldname)) {
+                    fieldIdx = i; // got it
+                    break;
+                }
+            }
+        }
+
+        if (fieldIdx < 0) {
+            fprintf(stderr, "[VTKLoader] field name \"%s\" not found.\n", fieldname);
+            return false;
         }
 
         // Parse Piece tag like this:
@@ -249,20 +335,38 @@ bool VTKLoader::Load(const char* filename)
                 }
             }
         }
+
+        // Prepare volume data.
+        {
+            m_volume->Create(globalDim[0], globalDim[1], globalDim[2], m_dataArrayInfoList[fieldIdx].numberOfComponents);
+            m_origin[0] = origin[0];
+            m_origin[1] = origin[1];
+            m_origin[2] = origin[2];
+            m_pitch[0] = spacing[0];
+            m_pitch[1] = spacing[1];
+            m_pitch[2] = spacing[2];
+        }
             
+        bool ok = true;
         // Load piece ImageData files
         #ifdef OPENMP
-        #pragma omp parallel for
+        #pragma omp parallel for shared(ok)
         #endif
         for (size_t i = 0; i < m_pieceInfoList.size(); i++) {
-            printf("reading piece[%d]\n", i);
-            bool ret = LoadImageDataFile(m_pieceInfoList[i].source.c_str());
+            //printf("reading piece[%d]\n", i);
+            bool ret = LoadPImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, globalDim);
+            if (!ret) {
+                ok = false; // Not using atomic op is probably OK for atomically updating bool value.
+            }
         }
 
+        return ok;
         
     } else if (type == "ImageData") { // ImageData VTK file
         printf("ImageDataNode found\n");
-        bool ret = LoadImageDataFile(filename);
+        // @todo
+        assert(0);
+        //bool ret = LoadImageDataFile(std::string(filename));
     } else {
         fprintf(stderr, "[VTKLoader] Unsupported VTK type. \"PImageData\" or \"ImageData\" expected.\n");
         return false;
