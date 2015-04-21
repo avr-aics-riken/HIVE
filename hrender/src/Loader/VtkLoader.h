@@ -9,12 +9,26 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+#include <vector>
+#include <string>
+
 /**
  * VTKデータローダー
  */
 class VTKLoader : public RefCount
 {
 public:
+    typedef struct {
+      std::string type;
+      std::string name;
+      int numberOfComponents;
+    } DataArrayInfo;
+
+    typedef struct {
+      int extent[6];
+      std::string source;
+    } PieceInfo;
+
     VTKLoader();
     ~VTKLoader();
     void Clear();
@@ -47,6 +61,8 @@ public:
     FloatBuffer* Buffer();
     BufferVolumeData *VolumeData();
 private:
+    std::vector<DataArrayInfo> m_dataArrayInfoList;
+    std::vector<PieceInfo> m_pieceInfoList;
     RefPtr<BufferVolumeData> m_volume;
     float m_origin[3];
     float m_pitch[3];
