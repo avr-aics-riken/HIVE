@@ -1,0 +1,29 @@
+print('Render pvti')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_pvti.jpg')
+
+camera:LookAt(
+	500,500,500,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local vtk = VTKLoader()
+vtk:Load('data-flow-0000180100.pvti', 'p') -- Need to specify field name
+local volume = VolumeModel()
+local volumedata = vtk:VolumeData()
+volume:Create(volumedata)
+
+local analy = VolumeAnalyzer()
+analy:Execute(volume)
+print('volume min/max X:', analy:MinX(), analy:MaxX())
+print('volume min/max Y:', analy:MinY(), analy:MaxY())
+print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
+
+volume:SetShader('def_volume_raymarch4.frag')
+render {camera, volume}
+
