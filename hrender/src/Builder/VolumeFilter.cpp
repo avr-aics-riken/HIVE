@@ -5,6 +5,7 @@
 #include "VolumeFilter.h"
 #include "CompileUtil.h"    // For user-defined volume filter.
 
+#include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include <sstream>
@@ -24,26 +25,26 @@ typedef struct {
     float* dst;
 } ArgInfo;
 
-inline size_t IDX(size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
-    size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
-    size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
-    size_t dz = (std::max)((size_t)0, (std::min)(sz-1, z));
-    size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
+inline ssize_t IDX(ssize_t comps, ssize_t x, ssize_t y, ssize_t z, ssize_t c, ssize_t sx, ssize_t sy, ssize_t sz) {
+    ssize_t dx = (std::max)((ssize_t)0, (std::min)(sx-1, x));
+    ssize_t dy = (std::max)((ssize_t)0, (std::min)(sy-1, y));
+    ssize_t dz = (std::max)((ssize_t)0, (std::min)(sz-1, z));
+    ssize_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
     return idx;
 }
 
 template<typename T>
-inline float D(const T* data, size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
-    size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
-    size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
-    size_t dz = (std::max)((size_t)0, (std::min)(sz-1, z));
-    size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
+inline float D(const T* data, ssize_t comps, ssize_t x, ssize_t y, ssize_t z, ssize_t c, ssize_t sx, ssize_t sy, ssize_t sz) {
+    ssize_t dx = (std::max)((ssize_t)0, (std::min)(sx-1, x));
+    ssize_t dy = (std::max)((ssize_t)0, (std::min)(sy-1, y));
+    ssize_t dz = (std::max)((ssize_t)0, (std::min)(sz-1, z));
+    ssize_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
     return data[idx];
 }
 
 
 template<typename T>
-inline T laplacian7(const T* data, size_t x, size_t y, size_t z, size_t sx, size_t sy, size_t sz)
+inline T laplacian7(const T* data, ssize_t x, ssize_t y, ssize_t z, ssize_t sx, ssize_t sy, ssize_t sz)
 {
     T xyz = D(data, 1, x, y, z, 1, sx, sy, sz);
 
@@ -63,6 +64,8 @@ inline T laplacian7(const T* data, size_t x, size_t y, size_t z, size_t sx, size
 
 VolumeFilter::VolumeFilter() {
 	Clear();
+	m_compiler = "gcc";
+	m_compilerOpts = "-O2";
 }
 
 VolumeFilter::~VolumeFilter() {
@@ -71,6 +74,7 @@ VolumeFilter::~VolumeFilter() {
 
 void VolumeFilter::Clear() {
 	m_filteredVolume = 0;
+
 }
 
 int VolumeFilter::Laplacian(BufferVolumeData *volume) {
@@ -85,10 +89,10 @@ int VolumeFilter::Laplacian(BufferVolumeData *volume) {
 
 	Clear();
 
-    const size_t width  = volume->Width();
-    const size_t height = volume->Height();
-    const size_t depth  = volume->Depth();
-	const size_t components  = volume->Component();
+    const ssize_t width  = volume->Width();
+    const ssize_t height = volume->Height();
+    const ssize_t depth  = volume->Depth();
+	const ssize_t components  = volume->Component();
 
 	// Assume float data
 	const float* src = volume->Buffer()->GetBuffer();
@@ -100,9 +104,9 @@ int VolumeFilter::Laplacian(BufferVolumeData *volume) {
 	#ifdef _OPENMP
 	#pragma omp parallel for
 	#endif
-	for (size_t z = 0; z < depth; z++) {
-		for (size_t y = 0; y < height; y++) {
-			for (size_t x = 0; x < width; x++) {
+	for (ssize_t z = 0; z < depth; z++) {
+		for (ssize_t y = 0; y < height; y++) {
+			for (ssize_t x = 0; x < width; x++) {
 				double lap = laplacian7(src, x, y, z, width, height, depth);
 				dst[IDX(1, x, y, z, 0, width, height, depth)] = lap;
 			}
@@ -139,10 +143,10 @@ int VolumeFilter::Norm(BufferVolumeData *volume) {
 
 	Clear();
 
-    const size_t width  = volume->Width();
-    const size_t height = volume->Height();
-    const size_t depth  = volume->Depth();
-	const size_t components  = volume->Component();
+    const ssize_t width  = volume->Width();
+    const ssize_t height = volume->Height();
+    const ssize_t depth  = volume->Depth();
+	const ssize_t components  = volume->Component();
 
 	// Assume float data
 	const float* src = volume->Buffer()->GetBuffer();
@@ -154,11 +158,11 @@ int VolumeFilter::Norm(BufferVolumeData *volume) {
 	#ifdef _OPENMP
 	#pragma omp parallel for
 	#endif
-	for (size_t z = 0; z < depth; z++) {
-		for (size_t y = 0; y < height; y++) {
-			for (size_t x = 0; x < width; x++) {
+	for (ssize_t z = 0; z < depth; z++) {
+		for (ssize_t y = 0; y < height; y++) {
+			for (ssize_t x = 0; x < width; x++) {
 				double sum = 0.0;
-				for (size_t c = 0; c < components; c++) {
+				for (ssize_t c = 0; c < components; c++) {
 					double val = D(src, components, x, y, z, c, width, height, depth);
 					sum += val * val;
 				}
@@ -172,16 +176,26 @@ int VolumeFilter::Norm(BufferVolumeData *volume) {
     return 1; // OK
 }
 
-int VolumeFilter::Eval(BufferVolumeData *volume0, BufferVolumeData *volume1, BufferVolumeData *volume2, BufferVolumeData *volume3, int targetNumberOfComponents, const char* filterCode) {
+int VolumeFilter::SetCompileOption(const char* compiler, const char* compilerOpts) {
+	if (!compiler) {
+		return 0;
+	}
+
+	m_compiler = std::string(compiler);
+	m_compilerOpts = std::string(compilerOpts);
+
+	return 1; // OK
+}
+
+
+int VolumeFilter::Expr(BufferVolumeData *volume0, BufferVolumeData *volume1, BufferVolumeData *volume2, BufferVolumeData *volume3, int targetNumberOfComponents, const char* filterCode) {
     if (!volume0) {
         return 0;
     }
 
 	Clear();
 
-    hiveutil::CompileUtil cutil;
-
-    cutil.SetCompiler("gcc", "-O2"); // @fixme
+	m_cutil.SetCompiler(m_compiler, m_compilerOpts);
 
     std::stringstream ss;
 
@@ -200,11 +214,11 @@ int VolumeFilter::Eval(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
     ss << "    float* dst;" << std::endl;
     ss << "} ArgInfo;" << std::endl;
 
-    ss << "inline size_t IDX(size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {" << std::endl;
-    ss << "  size_t dx = x; dx = (dx > (sx-1)) ? (sx-1) : dx;" << std::endl;
-    ss << "  size_t dy = y; dy = (dy > (sy-1)) ? (sy-1) : dy;" << std::endl;
-    ss << "  size_t dz = z; dz = (dz > (sz-1)) ? (sz-1) : dz;" << std::endl;
-    ss << "  size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;" << std::endl;
+    ss << "inline long long IDX(long long comps, long long x, long long y, long long z, long long c, long long sx, long long sy, long long sz) {" << std::endl;
+    ss << "  long long dx = (x < 0) ? 0 : x; dx = (dx > (sx-1)) ? (sx-1) : dx;" << std::endl;
+    ss << "  long long dy = (y < 0) ? 0 : y; dy = (dy > (sy-1)) ? (sy-1) : dy;" << std::endl;
+    ss << "  long long dz = (z < 0) ? 0 : z; dz = (dz > (sz-1)) ? (sz-1) : dz;" << std::endl;
+    ss << "  long long idx = comps * (dz * sx * sy + dy * sx + dx) + c;" << std::endl;
     ss << "  return idx;" << std::endl;
     ss << "}" << std::endl;
 
@@ -222,9 +236,10 @@ int VolumeFilter::Eval(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
     ss << "  const float* src3 = info->src3;" << std::endl;
     ss << "  float* dst = info->dst;" << std::endl;
 
-	ss << "  for (size_t z = 0; z < depth; z++) {" << std::endl;
-	ss << "  	for (size_t y = 0; y < height; y++) {" << std::endl;
-	ss << "  		for (size_t x = 0; x < width; x++) {" << std::endl;
+	ss << "  long long x, y, z;" << std::endl;
+	ss << "  for (z = 0; z < depth; z++) {" << std::endl;
+	ss << "  	for (y = 0; y < height; y++) {" << std::endl;
+	ss << "  		for (x = 0; x < width; x++) {" << std::endl;
 
     ss << std::string(filterCode, strlen(filterCode)) << std::endl; // strip '\0'
 
@@ -234,8 +249,8 @@ int VolumeFilter::Eval(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
 
     printf(ss.str().c_str());
 
-    cutil.SetSource(ss.str());
-    bool ret = cutil.Compile("filter");
+    m_cutil.SetSource(ss.str());
+    bool ret = m_cutil.Compile("filter");
     if (!ret) {
         return 0;
     }
@@ -263,7 +278,7 @@ int VolumeFilter::Eval(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
 	float* dst = m_filteredVolume->Buffer()->GetBuffer();
     info.dst = dst;
 
-    cutil.Eval(&info);
+    m_cutil.Eval(&info);
 
     return 1; // OK
 }

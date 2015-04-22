@@ -1,0 +1,70 @@
+print('load SPH and extract isosurface and render it as polygon object')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_sph_isosurf.jpg')
+
+camera:LookAt(
+	-50,80,80,
+	40,0,0,
+	0,1,0,
+	60
+)
+
+local sph = SPHLoader()
+sph:Load('prs_0000002000.sph')
+
+local filter = VolumeFilter();
+
+-- Simple copy filter
+local filterCode = [[
+
+// IDX(number of components, x, y, z, current component index, w, h, d)
+dst[IDX(1,x,y,z,0,width,height,depth)] = src0[IDX(1,x,y,z,0,width,height,depth)];
+
+]]
+
+filter:CompileOption('gcc', '-O2');
+filter:Expr(sph:VolumeData(), nil, nil, nil, 1, filterCode);
+
+local volumedata = filter:VolumeData()
+
+local surfacer = VolumeToMeshData()
+print(surfacer)
+
+local isovalue = 0.0005
+surfacer:Create(volumedata)
+surfacer:SetIsoValue(isovalue)
+surfacer:IsoSurface()
+
+local model = PolygonModel()
+
+local isosurface = surfacer:MeshData()
+
+model:Create(isosurface)
+model:SetShader('normal.frag')
+
+render {camera, model}
+
+-- Animation version.
+-- for i = 1, 100 do
+-- 
+-- 	camera:SetFilename(string.format('image_sph_isosurf_%06d.jpg', i))
+-- 
+-- 	local isovalue = 0.0001 + i * 0.0001
+-- 	print("surf gen")
+-- 	surfacer:Create(volumedata, isovalue)
+-- 	print("surf end")
+-- 
+-- 	local model = PolygonModel()
+-- 
+-- 	local isosurface = surfacer:MeshData()
+-- 	print("isosurf", isosurface)
+-- 
+-- 	model:Create(isosurface)
+-- 	model:SetShader('normal.frag')
+-- 	 
+-- 	render {camera, model}
+-- 	
+-- end
+
