@@ -1,8 +1,8 @@
-print('load SPH and extract isosurface and render it as polygon object')
+print('Apply laplacian filter for volume data.')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
-camera:SetFilename('image_sph_isosurf.jpg')
+camera:SetFilename('volume_filter_laplacian.jpg')
 
 camera:LookAt(
 	-50,80,80,

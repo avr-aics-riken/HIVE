@@ -19,6 +19,27 @@
 
 namespace {
 
+bool IsBigEndian(void) {
+	union {
+		unsigned int i;
+		char c[4];
+	} bint = {0x01020304};
+
+	return bint.c[0] == 1;
+}
+
+
+inline void swap4(unsigned int *val) {
+	unsigned int tmp = *val;
+	unsigned char *dst = (unsigned char *)val;
+	unsigned char *src = (unsigned char *)&tmp;
+
+	dst[0] = src[3];
+	dst[1] = src[2];
+	dst[2] = src[1];
+	dst[3] = src[0];
+}
+
 inline size_t IDX(size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
     size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
     size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
@@ -154,6 +175,7 @@ bool LoadImageDataFile(
     const std::string& filename,
     const VTKLoader::PieceInfo& pieceInfo,
     const std::string& fieldName,
+	bool doByteSwap,
 	int numberOfComponents,
     const size_t dim[3]) // global dim
 {
@@ -178,10 +200,12 @@ bool LoadImageDataFile(
             return false;
         }
 
-        bool isBigEndian = false;
+        bool isDataBigEndian = false;
         if (root->HasAttribute("byte_order")) {
-            isBigEndian = (root->GetAttribute("byte_order") == "BigEndian") ? true : false;
+            isDataBigEndian = (root->GetAttribute("byte_order") == "BigEndian") ? true : false;
         }
+
+        bool isArchBigEndian = IsBigEndian();
 
         // @todo { Read Extent and check its value with piece information from parent XML node}
         std::vector<lte::tinyvtkxml::Node*> dataArrays = root
@@ -256,6 +280,13 @@ bool LoadImageDataFile(
         fseek(fp, dataList[i].offset, SEEK_SET);
         dataList[i].data.resize(dataList[i].length);
         size_t n = fread(&(dataList[i].data.at(0)), 1, dataList[i].length, fp);
+
+		if (doByteSwap) {
+			// Assume float data.
+			for (size_t c = 0; c < dataList[i].length / sizeof(float); c++) {
+				swap4(reinterpret_cast<unsigned int*>(&dataList[i].data[sizeof(float)*c]));
+			}
+		}
         assert(n == dataList[i].length);
     }
 
@@ -326,10 +357,11 @@ void VTKLoader::Clear()
  * @param filename ファイルパス
  * @param searchpath search パス(optional)
  * @param fieldname field name
+ * @param doByteSwap apply byteswap for input data?
  * @retval true 成功
  * @retval false 失敗
  */
-bool VTKLoader::Load(const char* filename, const char* searchpath, const char* fieldname)
+bool VTKLoader::Load(const char* filename, const char* searchpath, const char* fieldname, bool doByteSwap)
 {
     Clear();
     m_volume = new BufferVolumeData();
@@ -475,7 +507,7 @@ bool VTKLoader::Load(const char* filename, const char* searchpath, const char* f
         #pragma omp parallel for shared(ok)
         #endif
         for (size_t i = 0; i < m_pieceInfoList.size(); i++) {
-            bool ret = LoadImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, m_dataArrayInfoList[fieldIdx].numberOfComponents, globalDim);
+            bool ret = LoadImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, doByteSwap, m_dataArrayInfoList[fieldIdx].numberOfComponents, globalDim);
             if (!ret) {
                 ok = false; // Not using atomic op is probably OK for atomically updating bool value.
             }
