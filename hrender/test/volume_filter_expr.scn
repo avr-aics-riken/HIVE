@@ -1,8 +1,8 @@
-print('load SPH and extract isosurface and render it as polygon object')
+print('custom expression for VolumeFilter')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
-camera:SetFilename('image_sph_isosurf.jpg')
+camera:SetFilename('volume_filter_expr.jpg')
 
 camera:LookAt(
 	-50,80,80,
@@ -45,26 +45,3 @@ model:Create(isosurface)
 model:SetShader('normal.frag')
 
 render {camera, model}
-
--- Animation version.
--- for i = 1, 100 do
--- 
--- 	camera:SetFilename(string.format('image_sph_isosurf_%06d.jpg', i))
--- 
--- 	local isovalue = 0.0001 + i * 0.0001
--- 	print("surf gen")
--- 	surfacer:Create(volumedata, isovalue)
--- 	print("surf end")
--- 
--- 	local model = PolygonModel()
--- 
--- 	local isosurface = surfacer:MeshData()
--- 	print("isosurf", isosurface)
--- 
--- 	model:Create(isosurface)
--- 	model:SetShader('normal.frag')
--- 	 
--- 	render {camera, model}
--- 	
--- end
-
