@@ -32,6 +32,10 @@ public:
         return VolumeFilter::Gradient(volume);
     }
 
+    int Eval(BufferVolumeData_Lua* volume0, BufferVolumeData_Lua* volume1, BufferVolumeData_Lua* volume2, BufferVolumeData_Lua* volume3, int targetNumberOfComponents, const char* source) {
+        return VolumeFilter::Eval(volume0, volume1, volume2, volume3, targetNumberOfComponents, source);
+    }
+
     BufferVolumeData_Lua* VolumeData() {
         return new BufferVolumeData_Lua(VolumeFilter::VolumeData());
     }
@@ -41,6 +45,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Laplacian,BufferVolumeData_Lua*);
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Curl,BufferVolumeData_Lua*);
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Gradient,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_ARG6(int,Eval,BufferVolumeData_Lua*,BufferVolumeData_Lua*,BufferVolumeData_Lua*,BufferVolumeData_Lua*,int,const char*);
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*, VolumeData)
     LUA_SCRIPTCLASS_END()
 
