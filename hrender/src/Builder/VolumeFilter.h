@@ -40,6 +40,11 @@ public:
 	// @return 1 success, 0 failed
     int Norm(BufferVolumeData *volume);
 
+	// Apply user defined filter code for volume cell.
+  // You can specify up to 4 source volumes. volume0 must be not null.
+	// @return 1 success, 0 failed
+    int Eval(BufferVolumeData *volume0, BufferVolumeData *volume1, BufferVolumeData *volume2, BufferVolumeData *volume3, int targetNumberOfComponents, const char* source);
+
 	// Retrieve filtered volume data.
 	// Must be called after the one of volume filtering operation(e.g. Laplacian())
 	BufferVolumeData* VolumeData();
