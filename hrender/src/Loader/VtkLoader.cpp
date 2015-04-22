@@ -154,6 +154,7 @@ bool LoadImageDataFile(
     const std::string& filename,
     const VTKLoader::PieceInfo& pieceInfo,
     const std::string& fieldName,
+	int numberOfComponents,
     const size_t dim[3]) // global dim
 {
     std::vector<DataInfo> dataList;
@@ -280,7 +281,7 @@ bool LoadImageDataFile(
         }
     }
 
-    assert(pieceInfo.numberOfComponents == dataList[fieldIdx].numberOfComponents);
+    assert(numberOfComponents == dataList[fieldIdx].numberOfComponents);
 
     // Fill voxel
     {
@@ -474,7 +475,7 @@ bool VTKLoader::Load(const char* filename, const char* searchpath, const char* f
         #pragma omp parallel for shared(ok)
         #endif
         for (size_t i = 0; i < m_pieceInfoList.size(); i++) {
-            bool ret = LoadImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, globalDim);
+            bool ret = LoadImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, m_dataArrayInfoList[fieldIdx].numberOfComponents, globalDim);
             if (!ret) {
                 ok = false; // Not using atomic op is probably OK for atomically updating bool value.
             }
