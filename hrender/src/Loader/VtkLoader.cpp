@@ -10,6 +10,8 @@
 #include "BufferVolumeData.h"
 
 #include <cassert>
+#include <wordexp.h>
+#include <fstream>
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -34,6 +36,110 @@ inline float D(const T* data, size_t comps, size_t x, size_t y, size_t z, size_t
     return data[idx];
 }
 
+std::vector<std::string> SplitPath(const std::string& s, char c) {
+  if (s.empty()) {
+    return std::vector<std::string>();
+  }
+ 
+  std::vector<std::string> res;
+  int begin = 0, end = 0;
+  for (int i = 0; i < s.size(); ++i) {
+    if (s[i] == c) {
+      res.push_back(s.substr(begin, end - begin));
+      begin = i + 1;
+      end = i + 1;
+    } else {
+      ++end;
+    }
+  }
+ 
+  res.push_back(s.substr(begin));
+ 
+  return res;
+}
+  
+std::string ExpandFilePath(const std::string& filepath)
+{
+#ifdef _WIN32
+  // @todo {}
+  DWORD len = ExpandEnvironmentStringsA(filepath.c_str(), NULL, 0 );
+  char* str = new char [len];
+  ExpandEnvironmentStringsA(filepath.c_str(), str, len );
+
+  std::string s(str);
+
+  delete [] str;
+
+  return s;
+#else
+  
+  std::string s;
+  wordexp_t p;
+
+  if (filepath.empty()) {
+    return "";
+  }
+
+  //char** w;
+  int ret = wordexp( filepath.c_str(), &p, 0 );
+  if (ret) {
+    fprintf(stderr, "Filepath expansion err: %d\n", ret);
+    // err
+    s = filepath;
+    return s;
+  }
+
+  // Use first element only.
+  if (p.we_wordv) {
+    s = std::string(p.we_wordv[0]);
+    wordfree( &p );
+  } else {
+    s = filepath;
+  }
+
+  return s;
+#endif
+}
+
+
+std::string JoinPath(const std::string& path0, const std::string& path1)
+{
+  if (path0.empty()) {
+    return path1;
+  } else {
+    // check '/'
+    char lastChar = *path0.rbegin();
+    if (lastChar != '/') {
+      return path0 + std::string("/") + path1;
+    } else {
+      return path0 + path1;
+    }
+  }
+}
+
+bool FileExists(const std::string& abs_filename)
+{
+    bool ret;
+    std::ifstream ifs(abs_filename.c_str());
+    if (ifs.fail()) {
+        return false;
+    }
+
+    return true;
+}
+
+std::string FindFile(const std::vector<std::string>& paths, const std::string& filepath)
+{
+  for (size_t i = 0; i < paths.size(); i++) {
+    std::string absPath = ExpandFilePath(JoinPath(paths[i], filepath));
+    if (FileExists(absPath)) {
+      return absPath;
+    }
+  }
+
+  return std::string();
+}
+
 typedef struct {
     std::string type; 
     std::string name;
@@ -43,7 +149,7 @@ typedef struct {
     size_t offset;
 } DataInfo;
 
-bool LoadPImageDataFile(
+bool LoadImageDataFile(
     float* volume,  // [inout]
     const std::string& filename,
     const VTKLoader::PieceInfo& pieceInfo,
@@ -217,18 +323,33 @@ void VTKLoader::Clear()
 /**
  * VTKデータのロード
  * @param filename ファイルパス
+ * @param searchpath search パス(optional)
  * @param fieldname field name
  * @retval true 成功
  * @retval false 失敗
  */
-bool VTKLoader::Load(const char* filename, const char* fieldname)
+bool VTKLoader::Load(const char* filename, const char* searchpath, const char* fieldname)
 {
     Clear();
     m_volume = new BufferVolumeData();
 
-    lte::tinyvtkxml::TinyVTKXML toplevelXML(filename);
+    std::vector<std::string> searchPaths;
+
+    if (searchpath) {
+        searchPaths.push_back(std::string(searchpath));
+    } else {
+        searchPaths.push_back("./");
+    }
+
+    std::string filepath = FindFile(searchPaths, std::string(filename));
+    if (filepath.empty()) {
+        fprintf(stderr, "[VTKLoader] File not found: %s\n", filename);
+        return false;
+    }
+
+    lte::tinyvtkxml::TinyVTKXML toplevelXML(filepath.c_str());
     if (toplevelXML.Parse()) {
-        fprintf(stderr, "[VTKLoader] Parsing failed. %s\n", filename);
+        fprintf(stderr, "[VTKLoader] Parsing failed. %s\n", filepath.c_str());
         return false;
     }
 
@@ -317,7 +438,7 @@ bool VTKLoader::Load(const char* filename, const char* fieldname)
             for (size_t i = 0; i < pieceArrays.size(); i++) {
                 if (pieceArrays[i]->HasAttribute("Extent") && pieceArrays[i]->HasAttribute("Source")) {
                     std::string extent = pieceArrays[i]->GetAttribute("Extent");
-                    std::string source = pieceArrays[i]->GetAttribute("Source");
+                    std::string source = FindFile(searchPaths, pieceArrays[i]->GetAttribute("Source"));
                     int vals[6];
                     int n = sscanf(extent.c_str(), "%d %d %d %d %d %d", &vals[0], &vals[1], &vals[2], &vals[3], &vals[4], &vals[5]);
                     if (n != 6) {
@@ -353,8 +474,7 @@ bool VTKLoader::Load(const char* filename, const char* fieldname)
         #pragma omp parallel for shared(ok)
         #endif
         for (size_t i = 0; i < m_pieceInfoList.size(); i++) {
-            //printf("reading piece[%d]\n", i);
-            bool ret = LoadPImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, globalDim);
+            bool ret = LoadImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, globalDim);
             if (!ret) {
                 ok = false; // Not using atomic op is probably OK for atomically updating bool value.
             }
@@ -366,7 +486,6 @@ bool VTKLoader::Load(const char* filename, const char* fieldname)
         printf("ImageDataNode found\n");
         // @todo
         assert(0);
-        //bool ret = LoadImageDataFile(std::string(filename));
     } else {
         fprintf(stderr, "[VTKLoader] Unsupported VTK type. \"PImageData\" or \"ImageData\" expected.\n");
         return false;
