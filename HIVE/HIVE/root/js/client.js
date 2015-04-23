@@ -410,6 +410,32 @@
 		var mouseState = {"Left": false, "Center": false, "Right": false, "x": 0, "y": 0 },
 			core;
 		
+		core = new HiveCore($('result'),
+							document.getElementById('window-view').clientWidth,
+							document.getElementById('window-view').clientHeight,
+							updateObjList);
+	
+		// Initial Resize
+		// Resize Event
+		function canvasResizing() {
+			var w = document.getElementById('window-view').clientWidth,
+				h = document.getElementById('window-view').clientHeight,
+				rc = document.getElementById('result');
+			rc.width        = w;
+			rc.height       = h;
+			rc.style.width  = w + 'px';
+			rc.style.height = h + 'px';
+			console.log('resize:', w, h);
+			core.resize(w, h);
+			core.render();
+		}
+		window.addEventListener('resize', canvasResizing);
+
+		// disable context menu
+		window.addEventListener('contextmenu', function (e) {
+			e.preventDefault();
+		});
+
 		function updateObjList(sceneInfo) {
 			console.log(sceneInfo);
 			var i,
@@ -457,38 +483,83 @@
 						opt.selected = true;
 					}
 				}
-				
+
 			}
 			kUI('timeline').setTimelineData(core.getTimeline());
 			kUI('timeline').drawGraph();
 			core.render();
 		}
-		
-		core = new HiveCore($('result'),
-							document.getElementById('window-view').clientWidth,
-							document.getElementById('window-view').clientHeight,
-							updateObjList);
-	
-		// Initial Resize
-		// Resize Event
-		function canvasResizing() {
-			var w = document.getElementById('window-view').clientWidth,
-				h = document.getElementById('window-view').clientHeight,
-				rc = document.getElementById('result');
-			rc.width        = w;
-			rc.height       = h;
-			rc.style.width  = w + 'px';
-			rc.style.height = h + 'px';
-			console.log('resize:', w, h);
-			core.resize(w, h);
-			core.render();
-		}
-		window.addEventListener('resize', canvasResizing);
 
-		// disable context menu
-		window.addEventListener('contextmenu', function (e) {
-			e.preventDefault();
-		});
+		function loadModel(filepath) {
+			console.log("FileDialog Select:" + filepath);
+			if (filepath.substr(filepath.length - 4) === ".obj") {
+				core.loadOBJ(filepath, './shader/polygon.frag');
+			} else if (filepath.substr(filepath.length - 4) === ".stl") {
+				core.loadSTL(filepath, './shader/polygon.frag');
+			} else if (filepath.substr(filepath.length - 4) === ".pdb") {
+				core.loadPDB(filepath, './shader/polygon.frag');
+			} else if (filepath.substr(filepath.length - 4) === ".sph") {
+				core.loadSPH(filepath, './shader/polygon.frag');
+			} else {
+				console.error('Not supported file type:', filepath);
+			}
+		}
+
+		function reloadScene(sceneInfo) {
+			var i,
+				k,
+				obj,
+				pos = [];
+			console.log("reloadScne", sceneInfo);
+			var info = null;
+			if (!sceneInfo) {
+				return;
+			}
+			if (!sceneInfo.objectlist) {
+				return;
+			}
+			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+				obj = sceneInfo.objectlist[i];
+				if (obj.hasOwnProperty('type') && obj.hasOwnProperty('info') && obj.hasOwnProperty('name')) {
+					console.log(obj);
+					if (obj.type === 'POLYGON') {
+						if (obj.info.hasOwnProperty('filename')) {
+							loadModel(obj.info.filename);
+							/*, function () {
+								if (obj.hasOwnProperty('name')) {
+									updateProperty(core, obj.name);
+								}
+							});
+							*/
+						}
+					} else if (obj.type === 'CAMERA') {
+						core.addCamera(obj.name);
+						/*, function () {
+							if (obj.info.hasOwnProperty('position')) {
+								console.log(obj.info.position);
+								pos = [];
+								for (k = 0; k < 3; k = k + 1) {
+									pos.push(parseFloat(obj.info.position[k]));
+								}
+								core.setCameraPosition(obj.name, pos, false);
+								if (activeObjectName) {
+									updateProperty(core, activeObjectName);
+								}
+							}
+							if (obj.info.hasOwnProperty('fov')) {
+								core.setCameraFov(obj.name, parseFloat(obj.info.fov), false);
+								if (activeObjectName) {
+									updateProperty(core, activeObjectName);
+								}
+							}
+						});
+						*/
+					}
+					activeObjectName = obj.name;
+				}
+			}
+			updateObjList(sceneInfo);
+		}
 
 		//---------------------------
 		//  UI Events
@@ -530,6 +601,7 @@
 				};
 			}(core, fdlg)),
 				function (filepath) {
+					core.loadScene(filepath, reloadScene);
 					console.log("FileDialog Select:" + filepath);
 				});
 			//core.render();
@@ -564,21 +636,7 @@
 						fdlg.updateDirlist({list: res, path: path});
 					});
 				};
-			}(core, fdlg)),
-				function (filepath) {
-					console.log("FileDialog Select:" + filepath);
-					if (filepath.substr(filepath.length - 4) === ".obj") {
-						core.loadOBJ(filepath, './shader/polygon.frag');
-					} else if (filepath.substr(filepath.length - 4) === ".stl") {
-						core.loadSTL(filepath, './shader/polygon.frag');
-					} else if (filepath.substr(filepath.length - 4) === ".pdb") {
-						core.loadPDB(filepath, './shader/polygon.frag');
-					} else if (filepath.substr(filepath.length - 4) === ".sph") {
-						core.loadSPH(filepath, './shader/polygon.frag');
-					} else {
-						console.error('Not supported file type:', filepath);
-					}
-				});
+			}(core, fdlg)), loadModel)
 		});
 		//$('savescenebtn').addEventListener('click', function (ev) {
 			//core.getSceneInformation(function (objList) {
