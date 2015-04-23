@@ -42,14 +42,14 @@
 					console.erorr('Not find objectlist');
 					return;
 				}
-				if (!core.sceneInfo.objecttimelime) {
+				if (!core.sceneInfo.objecttimeline) {
 					console.erorr('Not find objecttimeline');
 					return;
 				}
-				console.log('updateInfo:objecttimelime', core.sceneInfo.objecttimelime);
+				console.log('updateInfo:objecttimeline', core.sceneInfo.objecttimeline);
 
 				// refer
-				core.objectTimeline = core.sceneInfo.objecttimelime;
+				core.objectTimeline = core.sceneInfo.objecttimeline;
 
 				activecam = core.findObject(core.activeCamera);
 				if (!activecam) { // fall back
@@ -774,7 +774,7 @@
 		}
 		tinfo.push({info: cinfo, time: tm});
 		tinfo.sort(function (a, b) { return a.time > b.time; });
-		//console.log(tinfo);
+		console.log(tinfo);
 		
 		// server store
 		this.storeObjectTimeline();
