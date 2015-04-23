@@ -595,6 +595,26 @@ function mix( u, v, s )
 }
 
 //----------------------------------------------------------------------------
+
+function lerp( u, v, s )
+{
+    var result = [];
+    if ( typeof s !== "number" ) {
+        throw "lerp: the last paramter " + s + " must be a number";
+    }
+    if ( typeof u === "number" && typeof v === "number" ) {
+        return u + s * (v - u);
+    }
+    if ( u.length != v.length ) {
+        throw "lerp(): vectors are not the same dimension";
+    }
+    for ( var i = 0; i < u.length; ++i ) {
+        result.push(u[i] + s * (v[i] - u[i]));
+    }
+    return result;
+}
+
+//----------------------------------------------------------------------------
 //
 // Vector and Matrix functions
 //
