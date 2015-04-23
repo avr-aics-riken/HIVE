@@ -248,7 +248,8 @@ local function LoadPDB(name, filename, shader)
 	    stickmodel:SetShader(shader)
 		HIVE_ObjectTable[name .. '_ball']  = ballmodel
 		HIVE_ObjectTable[name .. '_stick'] = stickmodel
-		HIVE_DataTable[name] = filename
+		HIVE_DataTable[name .. '_ball'] = filename -- TODO
+		HIVE_DataTable[name .. '_stick'] = filename -- TODO
 		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
