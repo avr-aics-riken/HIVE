@@ -28,13 +28,24 @@ local function getObjectList()
 	return lst
 end
 
+local function getObjectTimeline()
+	return HIVE_ObjectTimeline
+end
+
+local function StoreObjectTimeline(timeline_json)
+	local timeline = JSON.decode(timeline_json)
+	HIVE_ObjectTimeline = timeline
+end
+
 local function updateInfo()
 	local objlst = getObjectList()
+	local objtimelime = getObjectTimeline()
 	local data = {
 		JSONRPC = "2.0",
 		method  = "updateInfo",
 		param   = {
 			objectlist = objlst,
+			objecttimelime = objtimelime
 		},
 		to = "client",
 		id = 0
@@ -50,6 +61,7 @@ end
 
 local function ClearObjects()
 	HIVE_ObjectTable = {}
+	HIVE_ObjectTimeline = {}
 	clearCache()
 	collectgarbage('collect')
 	print('MEMORY=', collectgarbage('count') .. '[KB]')
@@ -318,4 +330,5 @@ return {
 	UpdateSceneInformation = UpdateSceneInformation,
 	RenderCamera = RenderCamera,
 	CameraLookat = CameraLookat,
+	StoreObjectTimeline = StoreObjectTimeline
 }
