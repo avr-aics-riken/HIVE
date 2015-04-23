@@ -46,6 +46,9 @@
 					console.erorr('Not find objecttimeline');
 					return;
 				}
+				if (Array.isArray(core.sceneInfo.objecttimeline)) { // if empty array, it is empty object.
+					core.sceneInfo.objecttimeline = {};
+				}
 				console.log('updateInfo:objecttimeline', core.sceneInfo.objecttimeline);
 
 				// refer
