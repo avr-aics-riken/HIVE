@@ -51,9 +51,6 @@
 				}
 				console.log('updateInfo:objecttimeline', core.sceneInfo.objecttimeline);
 
-				// refer
-				core.objectTimeline = core.sceneInfo.objecttimeline;
-
 				activecam = core.findObject(core.activeCamera);
 				if (!activecam) { // fall back
 					activecam = core.findObject('view');
@@ -133,7 +130,7 @@
 		this.updateSceneCallback = infoCallback;
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
-		this.objectTimeline = {};
+		this.sceneInfo.objectTimeline = {};
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -238,7 +235,7 @@
 	};
 	
 	HiveCore.prototype.storeObjectTimeline = function () {
-		runScript(this.conn, HiveCommand.storeObjectTimeline(this.objectTimeline));
+		runScript(this.conn, HiveCommand.storeObjectTimeline(this.sceneInfo.objecttimeline));
 	};
 	
 	//----------------------------------------------------------------------------------------------
@@ -770,10 +767,10 @@
 		
 		// copy propteies
 		cinfo = JSON.parse(JSON.stringify(obj.info));
-		tinfo = this.objectTimeline[objname];
+		tinfo = this.sceneInfo.objecttimeline[objname];
 		if (tinfo === undefined) {
 			tinfo = [];
-			this.objectTimeline[objname] = tinfo;
+			this.sceneInfo.objecttimeline[objname] = tinfo;
 		}
 		tinfo.push({info: cinfo, time: tm});
 		tinfo.sort(function (a, b) { return a.time > b.time; });
@@ -799,7 +796,7 @@
 		for (i = 0; i < n; i = i + 1) {
 			objname = this.sceneInfo.objectlist[i].name;
 			objtype = this.sceneInfo.objectlist[i].type;
-			tinfo = this.objectTimeline[objname];
+			tinfo = this.sceneInfo.objecttimeline[objname];
 			infoptr = null;
 			preInfo = null;
 			postInfo = null;
@@ -830,7 +827,7 @@
 	};
 	
 	HiveCore.prototype.getTimeline = function () {
-		return this.objectTimeline;
+		return this.sceneInfo.objecttimeline;
 	};
 	
 	window.HiveCore = HiveCore;
