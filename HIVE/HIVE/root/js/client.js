@@ -490,12 +490,14 @@
 			core.render();
 			//kUI('viewmode').SetCaption('[' + objname + ']');
 		});
-		kUI('timeline').setTimelineData();
+		kUI('timeline').setTimelineData(core.getTimeline());
 		kUI('timeline').drawGraph();
 		kUI('timeline').ChangeTimeCallback(function (tm) {
 			activeTime = tm;
 			core.updateTime(tm);
-			updateProperty(core, activeObjectName);
+			if (activeObjectName) {
+				updateProperty(core, activeObjectName);
+			}
 		});
 		$('projsetting').addEventListener('click', function (ev) {
 			$toggle($('window-projectproperty'), 500);
