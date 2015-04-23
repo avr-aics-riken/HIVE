@@ -39,13 +39,13 @@ end
 
 local function updateInfo()
 	local objlst = getObjectList()
-	local objtimelime = getObjectTimeline()
+	local objtimeline = getObjectTimeline()
 	local data = {
 		JSONRPC = "2.0",
 		method  = "updateInfo",
 		param   = {
 			objectlist = objlst,
-			objecttimelime = objtimelime
+			objecttimeline = objtimeline
 		},
 		to = "client",
 		id = 0
