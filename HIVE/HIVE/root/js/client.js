@@ -527,6 +527,19 @@
 			//core.render();
 		});
 		$('savescenebtn').addEventListener('click', function (ev) {
+			var fdlg = new FileDialog("savesceneDialog", true, '.json');
+			fdlg.SaveFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)), function (filepath) {
+				core.saveScene(filepath);
+				console.log("FileDialog save:" + filepath);
+			});
+
 			console.log('SAVE SCENE');
 		});
 
