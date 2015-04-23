@@ -5,6 +5,7 @@ local function getObjectList()
 		print(i, v)
 		local robj = v
 		local info = {}
+		info.filename  = HIVE_DataTable[i]
 		info.translate = robj:GetTranslate()
 		info.rotate    = robj:GetRotate()
 		info.scale     = robj:GetScale()
@@ -182,6 +183,7 @@ local function DeleteObject(name)
 	if obj == nil then return 'Not found object' end
 	HIVE_ObjectTable[name] = nil
 	HIVE_ObjectTimeline[name] = nil
+	HIVE_DataTable[name] = nil
 	updateInfo();
 end
 	
@@ -194,6 +196,7 @@ local function LoadSPH(name, filename, shader)
 	    volumemodel:Create(volume)
 	    volumemodel:SetShader(shader)
 		HIVE_ObjectTable[name] = volumemodel
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
@@ -208,6 +211,7 @@ local function LoadOBJ(name, filename, shader)
 		model:Create(meshdata)
 		model:SetShader(shader)
 		HIVE_ObjectTable[name] = model
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadOBJ:' .. tostring(ret)
@@ -223,6 +227,7 @@ local function LoadSTL(name, filename, shader)
 		model:Create(meshdata)
 		model:SetShader(shader)
 		HIVE_ObjectTable[name] = model
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadSTL:' .. tostring(ret)
@@ -243,6 +248,7 @@ local function LoadPDB(name, filename, shader)
 	    stickmodel:SetShader(shader)
 		HIVE_ObjectTable[name .. '_ball']  = ballmodel
 		HIVE_ObjectTable[name .. '_stick'] = stickmodel
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
