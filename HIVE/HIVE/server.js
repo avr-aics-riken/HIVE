@@ -112,6 +112,18 @@ function requestShaderList(msg_id) {
 	}));
 }
 
+function saveScene(filepath, data) {
+	'use strict';
+	var jsonstr;
+	try {
+		jsonstr = JSON.stringify(data, function (key, val) { return val; }, "    ");
+		fs.writeFileSync(filepath, jsonstr);
+		console.log("saved:" + filepath);
+	} catch (e) {
+		console.error('[Error] Failed to save: ' + filepath);
+	}
+}
+
 ws.on('request', function (request) {
 	"use strict";
 	var connection = request.accept(null, request.origin),
@@ -142,6 +154,8 @@ ws.on('request', function (request) {
 			requestFileList(param.path, msg_id);
 		} else if (method === 'requestShaderList') {
 			requestShaderList(msg_id);
+		} else if (method === 'saveScene') {
+			saveScene(param.path, param.data);
 		} else {
 			console.error('Error: Unknow method');
 		}
