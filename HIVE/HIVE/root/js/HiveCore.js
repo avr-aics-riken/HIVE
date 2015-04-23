@@ -825,5 +825,10 @@
 		}
 		this.render();
 	};
+	
+	HiveCore.prototype.getTimeline = function () {
+		return this.objectTimeline;
+	};
+	
 	window.HiveCore = HiveCore;
 }(window));
