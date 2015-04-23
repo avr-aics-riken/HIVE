@@ -181,6 +181,7 @@ local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
 	if obj == nil then return 'Not found object' end
 	HIVE_ObjectTable[name] = nil
+	HIVE_ObjectTimeline[name] = nil
 	updateInfo();
 end
 	

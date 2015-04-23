@@ -14,6 +14,10 @@
 			$('object-transformshader').style.display = 'none';
 			$('camera-information').style.display = '';
 			$('uniformproperty').style.display = 'none';
+		} else if (type === 'NONE') {
+			$('object-transformshader').style.display = 'none';
+			$('camera-information').style.display = 'none';
+			$('uniformproperty').style.display = 'none';
 		} else {
 			$('object-transformshader').style.display = '';
 			$('camera-information').style.display = 'none';
@@ -373,8 +377,12 @@
 		};
 	}
 	function dustClick(core, objname) {
-		return function () {
+		return function (e) {
+			e.stopPropagation();
 			core.deleteObject(objname);
+			
+			activeObjectName = '';
+			setPropertyMode('NONE');
 		};
 	}
 	function getIconColor(type) {

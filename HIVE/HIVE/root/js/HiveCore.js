@@ -54,6 +54,7 @@
 				activecam = core.findObject(core.activeCamera);
 				if (!activecam) { // fall back
 					activecam = core.findObject('view');
+					core.activeCamera = 'view';
 				}
 				if (!activecam) {
 					console.erorr('Not find active camera');
