@@ -568,6 +568,7 @@
 			console.log('ADD KEY', activeObjectName, activeTime);
 			if (activeObjectName !== '') {
 				core.addKey(activeObjectName, activeTime);
+				kUI('timeline').drawGraph();
 			}
 		});
 		// ----------------------------
