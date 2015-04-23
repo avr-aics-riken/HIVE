@@ -220,6 +220,18 @@
 		this.render();
 	};
 	
+	HiveCore.prototype.saveScene = function (filepath) {
+		var cmd = '',
+			jsonstr;
+		if (this.sceneInfo) {
+			this.conn.masterMethod('saveScene', {path : filepath, data : this.sceneInfo}, function (err, res, id) {
+				if (err) {
+					console.log(err);
+				}
+			});
+		}
+	};
+	
 	HiveCore.prototype.addCamera = function (name) {
 		var cmd = '';
 		if (name) {
