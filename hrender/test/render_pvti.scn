@@ -13,16 +13,36 @@ camera:LookAt(
 
 
 local vtk = VTKLoader()
-vtk:Load('data-flow-0000180100.pvti', 'p') -- Need to specify field name
+vtk:Load('data-flow-0000180100.pvti', '/mnt/data/data/SC14/VTI/', 'p', true) -- Need to specify field name. The last param is whether apply byteswap or not. 
 local volume = VolumeModel()
 local volumedata = vtk:VolumeData()
-volume:Create(volumedata)
+
+-- Compute laplacian
+local filter = VolumeFilter();
+filter:Laplacian(volumedata);
+
+volume:Create(filter:VolumeData())
 
 local analy = VolumeAnalyzer()
 analy:Execute(volume)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())
 print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
+
+-- -- Create isosurface mesh
+-- local surfacer = VolumeToMeshData()
+-- local isovalue = 0.0005
+-- surfacer:Create(filter:VolumeData())
+-- surfacer:SetIsoValue(isovalue)
+-- surfacer:IsoSurface()
+-- 
+-- local model = PolygonModel()
+-- local isosurface = surfacer:MeshData()
+-- 
+-- model:Create(isosurface)
+-- model:SetShader('normal.frag')
+-- 
+-- render {camera, model}
 
 volume:SetShader('def_volume_raymarch4.frag')
 render {camera, volume}

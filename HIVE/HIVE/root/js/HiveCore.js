@@ -2,7 +2,7 @@
 /*global Blob, URL*/
 /*global HiveConnect*/  // HiveConnect.js
 /*global HiveCommand*/  // HiveCommand.js
-/*global vec3, vec4, mat4, subtract, add, scale, rotate, cross, translate, dot, normalize, transpose, mat3 */ // MV.js
+/*global vec3, vec4, mat4, subtract, add, scale, rotate, cross, translate, dot, normalize, transpose, mat3, lerp */ // MV.js
 
 (function (window) {
 	'use strict';
@@ -80,6 +80,43 @@
 				}
 			}
 		});
+	}
+		
+	function lerpInfo(preInfo, postInfo, time) {
+		var result = null,
+			i,
+			s,
+			prop,
+			val,
+			lerpProps = [
+				"position",
+				"target",
+				"up",
+				"fov",
+				"clearcolor",
+				"scale",
+				"rotate",
+				"translate"
+			];
+		if (!preInfo && !postInfo) {
+			return result;
+		}
+		if (!preInfo) {
+			result = postInfo.info;
+		} else if (!postInfo) {
+			result = preInfo.info;
+		} else {
+			s = (time - preInfo.time) / (postInfo.time - preInfo.time);
+			result = JSON.parse(JSON.stringify(preInfo.info));
+			for (i = 0; i < lerpProps.length; i = i + 1) {
+				prop = lerpProps[i];
+				if (preInfo.info.hasOwnProperty(prop)) {
+					val = lerp(preInfo.info[prop], postInfo.info[prop], s);
+					result[prop] = val;
+				}
+			}
+		}
+		return result;
 	}
 	
 	//----------------------------------------------------------------------------------------------
@@ -751,21 +788,37 @@
 			j,
 			m,
 			objname,
+			objtype,
 			tinfo,
-			infoptr = null;
+			infoptr,
+			preInfo,
+			postInfo;
 		for (i = 0; i < n; i = i + 1) {
 			objname = this.sceneInfo.objectlist[i].name;
+			objtype = this.sceneInfo.objectlist[i].type;
 			tinfo = this.objectTimeline[objname];
+			infoptr = null;
+			preInfo = null;
+			postInfo = null;
 			if (tinfo !== undefined) {
 				m = tinfo.length;
 				for (j = 0; j < m; j = j + 1) {
 					if (tinfo[j].time < tm) {
-						infoptr = tinfo[j].info;
+						preInfo = tinfo[j];
+					} else {
+						postInfo = tinfo[j];
+						break;
 					}
 				}
+				//console.log("pre", this.sceneInfo.objectlist[i]);
+				//console.log("post", postInfo);
+				infoptr = lerpInfo(preInfo, postInfo, tm);
 				if (infoptr) {
 					this.setModelUniformsFromInfo(objname, infoptr);
 					this.setModelTranRotScale(objname, infoptr.translate, infoptr.rotate, infoptr.scale);
+					if (objtype === "CAMERA") {
+						this.setClearColor(objname, infoptr.clearcolor[0], infoptr.clearcolor[1], infoptr.clearcolor[2]);
+					}
 					this.setCameraParameters(objname, infoptr.position, infoptr.target, infoptr.up, infoptr.fov);
 				}
 			}
