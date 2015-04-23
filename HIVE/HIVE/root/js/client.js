@@ -451,6 +451,8 @@
 				}
 				
 			}
+			kUI('timeline').setTimelineData(core.getTimeline());
+			kUI('timeline').drawGraph();
 			core.render();
 		}
 		
