@@ -33,7 +33,7 @@ public:
     ~VTKLoader();
     void Clear();
     /// Loads volume data for given field name
-    bool Load(const char* filename, const char* fieldname);
+    bool Load(const char* filename, const char* searchpath, const char* fieldname, bool doByteSwap = false);
     int Width();
     int Height();
     int Depth();

@@ -202,6 +202,7 @@ set(SOURCES
 	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToVector.cpp
 	src/Builder/VolumeFilter.cpp
+	src/Builder/CompileUtil.cpp
 	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
 	src/Image/jpgd.cpp
