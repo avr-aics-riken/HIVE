@@ -495,6 +495,7 @@
 		kUI('timeline').ChangeTimeCallback(function (tm) {
 			activeTime = tm;
 			core.updateTime(tm);
+			updateProperty(core, activeObjectName);
 		});
 		$('projsetting').addEventListener('click', function (ev) {
 			$toggle($('window-projectproperty'), 500);
