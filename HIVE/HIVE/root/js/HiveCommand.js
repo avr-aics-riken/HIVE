@@ -27,6 +27,9 @@
 		newScene : function () {
 			return 'hcmd.NewScene()';
 		},
+		saveScene : function (sceneInfo) {
+			return 'hcmd.SaveScene("' + JSON.stringify(sceneInfo) + '")\n';
+		},
 		deleteObject : function (name) {
 			return 'hcmd.DeleteObject("' + name + '")';
 		},
