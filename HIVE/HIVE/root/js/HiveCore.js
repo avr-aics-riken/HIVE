@@ -34,6 +34,7 @@
 		hiveCore.conn.method('updateInfo', (function (core, infoCallback) {
 			return function (param) {
 				core.sceneInfo = param;
+				
 				// find viewCamera
 				var activecam = null,
 					i;
@@ -41,6 +42,15 @@
 					console.erorr('Not find objectlist');
 					return;
 				}
+				if (!core.sceneInfo.objecttimelime) {
+					console.erorr('Not find objecttimeline');
+					return;
+				}
+				console.log('updateInfo:objecttimelime', core.sceneInfo.objecttimelime);
+
+				// refer
+				core.objectTimeline = core.sceneInfo.objecttimelime;
+
 				activecam = core.findObject(core.activeCamera);
 				if (!activecam) { // fall back
 					activecam = core.findObject('view');
@@ -83,7 +93,7 @@
 		this.updateSceneCallback = infoCallback;
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
-		this.objectTimeine = {};
+		this.objectTimeline = {};
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -185,6 +195,10 @@
 	
 	HiveCore.prototype.deleteObject = function (name) {
 		runScript(this.conn, HiveCommand.deleteObject(name));
+	};
+	
+	HiveCore.prototype.storeObjectTimeline = function () {
+		runScript(this.conn, HiveCommand.storeObjectTimeline(this.objectTimeline));
 	};
 	
 	//----------------------------------------------------------------------------------------------
@@ -716,14 +730,17 @@
 		
 		// copy propteies
 		cinfo = JSON.parse(JSON.stringify(obj.info));
-		tinfo = this.objectTimeine[objname];
+		tinfo = this.objectTimeline[objname];
 		if (tinfo === undefined) {
 			tinfo = [];
-			this.objectTimeine[objname] = tinfo;
+			this.objectTimeline[objname] = tinfo;
 		}
 		tinfo.push({info: cinfo, time: tm});
 		tinfo.sort(function (a, b) { return a.time > b.time; });
 		//console.log(tinfo);
+		
+		// server store
+		this.storeObjectTimeline();
 	};
 	
 	HiveCore.prototype.updateTime = function (tm) {
@@ -738,7 +755,7 @@
 			infoptr = null;
 		for (i = 0; i < n; i = i + 1) {
 			objname = this.sceneInfo.objectlist[i].name;
-			tinfo = this.objectTimeine[objname];
+			tinfo = this.objectTimeline[objname];
 			if (tinfo !== undefined) {
 				m = tinfo.length;
 				for (j = 0; j < m; j = j + 1) {

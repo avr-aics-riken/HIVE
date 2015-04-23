@@ -119,6 +119,13 @@
 			src += val;
 			src += ')\n';
 			return src;
+		},
+		storeObjectTimeline : function (objecttimeline) {
+			var tljson = JSON.stringify(objecttimeline),
+				src;
+			console.log('storeObjectTimeline:' + tljson);
+			src = "hcmd.StoreObjectTimeline('" + tljson + "')\n";
+			return src;
 		}
 	};
 	window.HiveCommand = HiveCommand;
