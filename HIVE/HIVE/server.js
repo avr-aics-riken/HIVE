@@ -124,6 +124,22 @@ function saveScene(filepath, data) {
 	}
 }
 
+function loadScene(filepath, msg_id) {
+	'use strict';
+	var json;
+	try {
+		json = JSON.parse(fs.readFileSync(filepath));
+		console.log("loaded:" + filepath);
+		clientNode.send(JSON.stringify({
+			JSONRPC: "2.0",
+			result: JSON.stringify(json),
+			id: msg_id
+		}));
+	} catch (e) {
+		console.error('[Error] Failed to load: ' + filepath);
+	}
+}
+
 ws.on('request', function (request) {
 	"use strict";
 	var connection = request.accept(null, request.origin),
@@ -156,6 +172,8 @@ ws.on('request', function (request) {
 			requestShaderList(msg_id);
 		} else if (method === 'saveScene') {
 			saveScene(param.path, param.data);
+		} else if (method === 'loadScene') {
+			loadScene(param.path, msg_id);
 		} else {
 			console.error('Error: Unknow method');
 		}

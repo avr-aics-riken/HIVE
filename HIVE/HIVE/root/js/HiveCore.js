@@ -232,6 +232,17 @@
 		}
 	};
 	
+	HiveCore.prototype.loadScene = function (filepath, callback) {
+		this.conn.masterMethod('loadScene', {path: filepath}, function (err, res, id) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			this.sceneInfo = res;
+			callback(res);
+		});
+	};
+	
 	HiveCore.prototype.addCamera = function (name) {
 		var cmd = '';
 		if (name) {
