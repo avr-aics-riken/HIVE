@@ -120,6 +120,28 @@
 		return result;
 	}
 	
+	function craeteLoadModelCommand(filepath, modelName, shader) {
+		var name = modelName,
+			cmd,
+			shaderpath = './shader/polygon.frag';
+		if (shader) {
+			shaderpath = shader;
+		}
+		console.log("create load model coomand:" + filepath);
+		if (filepath.substr(filepath.length - 4) === ".obj") {
+			cmd = HiveCommand.loadOBJ(name, filepath, shaderpath, false);
+		} else if (filepath.substr(filepath.length - 4) === ".stl") {
+			cmd = HiveCommand.loadSTL(name, filepath, shaderpath, false);
+		} else if (filepath.substr(filepath.length - 4) === ".pdb") {
+			cmd = HiveCommand.loadPDB(name, filepath, shaderpath, false);
+		} else if (filepath.substr(filepath.length - 4) === ".sph") {
+			cmd = HiveCommand.loadSPH(name, filepath, shaderpath, false);
+		} else {
+			console.error('Not supported file type:', filepath);
+		}
+		return cmd;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	// Contructor
 	//
@@ -131,7 +153,7 @@
 		this.updateSceneCallback = infoCallback;
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
-		this.sceneInfo.objectTimeline = {};
+		this.sceneInfo.objecttimeline = {};
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -232,15 +254,90 @@
 		}
 	};
 	
-	HiveCore.prototype.loadScene = function (filepath, callback) {
-		this.conn.masterMethod('loadScene', {path: filepath}, function (err, res, id) {
-			if (err) {
-				console.log(err);
-				return;
+	HiveCore.prototype.reloadScene = function (callback) {
+		var sceneInfo = this.sceneInfo,
+			cmd = HiveCommand.newScene(),
+			i,
+			r,
+			g,
+			b,
+			a,
+			obj,
+			hasProp = function (target, prop) {
+				return target.hasOwnProperty(prop);
+			};
+		
+		if (!sceneInfo) {
+			return;
+		}
+		if (!sceneInfo.objectlist) {
+			return;
+		}
+		this.modelCount = 0;
+		
+		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+			obj = sceneInfo.objectlist[i];
+			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+				if (obj.type === 'CAMERA') {
+					cmd = cmd + HiveCommand.createCamera(obj.name) + "\n";
+					this.modelCount = this.modelCount + 1;
+					if (hasProp(obj.info, 'position') && hasProp(obj.info, 'target') && hasProp(obj.info, 'up') && hasProp(obj.info, 'fov')) {
+						cmd = cmd + HiveCommand.cameraLookat(obj.name, obj.info.position, obj.info.target, obj.info.up, obj.info.fov) + "\n";
+					}
+					if (hasProp(obj.info, 'clearcolor')) {
+						r = Math.min(Math.max(obj.info.clearcolor[0], 0.0), 1.0);
+						g = Math.min(Math.max(obj.info.clearcolor[1], 0.0), 1.0);
+						b = Math.min(Math.max(obj.info.clearcolor[2], 0.0), 1.0);
+						a = Math.min(Math.max(obj.info.clearcolor[3], 0.0), 1.0);
+						cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+					}
+				}
 			}
-			this.sceneInfo = res;
-			callback(res);
-		});
+		}
+		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+			obj = sceneInfo.objectlist[i];
+			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+				if (obj.type === 'POLYGON') {
+					if (hasProp(obj.info, 'filename')) {
+						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, obj.info.shader) + "\n";
+						this.modelCount = this.modelCount + 1;
+						if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
+							cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
+						}
+						if (hasProp(obj.info, 'shader')) {
+							cmd = cmd + HiveCommand.setModelShader(obj.name, obj.info.shader) + "\n";
+						}
+						cmd = cmd + this.createModelUniformCommand(obj.name, obj.info);
+					}
+				}
+			}
+		}
+		if (hasProp(sceneInfo, 'objecttimeline')) {
+			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+		}
+		if (cmd) {
+			runScript(this.conn, cmd, function () {
+				callback();
+			});
+		}
+	};
+	
+	HiveCore.prototype.loadScene = function (filepath, callback) {
+		this.conn.masterMethod('loadScene', {path: filepath}, (function (core) {
+			return function (err, res, id) {
+				if (err) {
+					console.log(err);
+					return;
+				}
+				core.sceneInfo = res;
+				core.reloadScene(function () {
+					core.updateSceneInformation();
+					if (callback) {
+						callback();
+					}
+				});
+			};
+		}(this)));
 	};
 	
 	HiveCore.prototype.addCamera = function (name) {
@@ -363,7 +460,7 @@
 		}
 		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelUniforms = function (objname, uniforms, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -400,6 +497,39 @@
 			}(this));
 		}
 		runScript(this.conn, src, redrawfunc);
+	};
+	
+	HiveCore.prototype.createModelUniformCommand = function (objname, objinfo) {
+		var name,
+			uniforms,
+			src = '';
+		
+		uniforms = objinfo.vec4;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.vec3;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.vec2;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.float;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
+			}
+		}
+		return src;
 	};
 
 	HiveCore.prototype.setModelUniformsFromInfo = function (objname, objinfo, redraw) {
