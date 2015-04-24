@@ -76,7 +76,7 @@
 					//console.log('REFINE RENDER!', param.width * 2, param.height * 2);
 					var w = Math.min(param.width * 2, hiveCore.screenSize[0] * 2),
 						h = Math.min(param.height * 2, hiveCore.screenSize[1] * 2),
-						cmd = HiveCommand.renderCamera(w, h, hiveCore.activeCamera);
+						cmd = HiveCommand.renderCamera(w, h, hiveCore.activeCamera, true);
 					runScript(hiveCore.conn, cmd);
 				}
 			}
@@ -146,7 +146,7 @@
 		// TODO: Temp camera
 		var cmd = '';
 		cmd += HiveCommand.cameraLookat(this.activeCamera, this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
-		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera);
+		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera, true);
 		runScript(this.conn, cmd);
 	};
 	
@@ -161,25 +161,25 @@
 	}
 	HiveCore.prototype.loadOBJ = function (filepath, shaderpath) {
 		var name = genModelname(filepath) + this.modelCount,
-			cmd = HiveCommand.loadOBJ(name, filepath, shaderpath);
+			cmd = HiveCommand.loadOBJ(name, filepath, shaderpath, true);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadSTL = function (filepath, shaderpath) {
 		var name = genModelname(filepath) + this.modelCount,
-			cmd = HiveCommand.loadSTL(name, filepath, shaderpath);
+			cmd = HiveCommand.loadSTL(name, filepath, shaderpath, true);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadPDB = function (filepath, shaderpath) {
 		var name = genModelname(filepath) + this.modelCount,
-			cmd = HiveCommand.loadPDB(name, filepath, shaderpath);
+			cmd = HiveCommand.loadPDB(name, filepath, shaderpath, true);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
 	HiveCore.prototype.loadSPH = function (filepath, shaderpath) {
 		var name = genModelname(filepath) + this.modelCount,
-			cmd = HiveCommand.loadSPH(name, filepath, shaderpath);
+			cmd = HiveCommand.loadSPH(name, filepath, shaderpath, true);
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};

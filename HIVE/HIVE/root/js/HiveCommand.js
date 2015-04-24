@@ -9,20 +9,30 @@
 		clearObjects : function () {
 			return 'hcmd.ClearObjects()';
 		},
-		loadOBJ : function (name, filename, shader) {
-			return 'return hcmd.LoadOBJ("' + name + '","' + filename + '","' + shader + '")';
+		loadOBJ : function (name, filename, shader, useReturn) {
+			var src = useReturn ? 'return ' : '';
+			src += 'hcmd.LoadOBJ("' + name + '","' + filename + '","' + shader + '")';
+			return src;
 		},
-		loadSTL : function (name, filename, shader) {
-			return 'return hcmd.LoadSTL("' + name + '","' + filename + '","' + shader + '")';
+		loadSTL : function (name, filename, shader, useReturn) {
+			var src = useReturn ? 'return ' : '';
+			src += 'hcmd.LoadSTL("' + name + '","' + filename + '","' + shader + '")';
+			return src;
 		},
-		loadPDB : function (name, filename, shader) {
-			return 'return hcmd.LoadPDB("' + name + '","' + filename + '","' + shader + '")';
+		loadPDB : function (name, filename, shader, useReturn) {
+			var src = useReturn ? 'return ' : '';
+			src += 'hcmd.LoadPDB("' + name + '","' + filename + '","' + shader + '")';
+			return src;
 		},
-		loadSPH : function (name, filename, shader) {
-			return 'return hcmd.LoadSPH("' + name + '","' + filename + '","' + shader + '")';
+		loadSPH : function (name, filename, shader, useReturn) {
+			var src = useReturn ? 'return ' : '';
+			src += 'hcmd.LoadSPH("' + name + '","' + filename + '","' + shader + '")';
+			return src;
 		},
-		renderCamera : function (w, h, cameraname) {
-			return 'return hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '")';
+		renderCamera : function (w, h, cameraname, useReturn) {
+			var src = useReturn ? 'return ' : '';
+			src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '")';
+			return src;
 		},
 		newScene : function () {
 			return 'hcmd.NewScene()';
