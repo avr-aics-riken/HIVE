@@ -9,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+class BufferMeshData;
+class BufferTetraData;
+
 /**
  * UDMデータローダー
  */
@@ -32,8 +35,21 @@ public:
       return 0;
     }
 
+	/// Retrieve triangle mesh geometry.
+	/// Valid after `Load()`
+	/// NULL if the file does not contain non-tetra primitive. 
+	BufferMeshData* MeshData();
+
+	/// Retrieve tetra geometry.
+	/// Valid after `Load()`
+	/// NULL if the file does not contain tetra primitive. 
+	BufferTetraData* TetraData();
+
 private:
     std::vector<unsigned int> m_timeSteps;
+
+	RefPtr<BufferMeshData> m_mesh;
+	RefPtr<BufferTetraData> m_tetra;
 
 };
 

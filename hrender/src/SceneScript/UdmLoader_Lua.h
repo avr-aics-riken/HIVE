@@ -7,7 +7,8 @@
 
 #include "LuaUtil.h"
 #include "UdmLoader.h"
-#include "BufferVolumeData_Lua.h"
+#include "BufferMeshData_Lua.h"
+#include "BufferTetraData_Lua.h"
 /**
  * UDMLoader Luaラッパー
  */
@@ -29,12 +30,20 @@ public:
         return UDMLoader::Load(filename, stepno);
     }
 
+    BufferMeshData_Lua* MeshData() {
+        return new BufferMeshData_Lua(UDMLoader::MeshData());
+    }
+
+    BufferTetraData_Lua* TetraData() {
+        return new BufferTetraData_Lua(UDMLoader::TetraData());
+    }
+
     LUA_SCRIPTCLASS_BEGIN(UDMLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,NumTimeSteps)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,TimeStepAt,int)
     LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
-	// @todo
-    //LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*, TetraData)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(UDMLoader_Lua);

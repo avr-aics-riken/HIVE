@@ -8,7 +8,7 @@
 
 #include "LuaUtil.h"
 #include "../RenderObject/TetraModel.h"
-#include "BufferVectorData_Lua.h"
+#include "BufferTetraData_Lua.h"
 #include "RenderObject_Lua.h"
 /**
  * TetraModel Luaラッパー
@@ -19,9 +19,8 @@ public:
     TetraModel_Lua(){}
     ~TetraModel_Lua(){}
 
-    bool Create(TetraModel *tetra) {
-        TetraModel_Lua::Create(tetra);
-        return true;
+    bool Create(BufferTetraData_Lua *tetra) {
+        return TetraModel::Create(tetra);
     }
 
     // RenderObject interface implementation
@@ -30,7 +29,7 @@ public:
     LUA_SCRIPTCLASS_BEGIN(TetraModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, TetraModel*)
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferTetraData_Lua*)
     
     // RenderObject interface
     DECLARE_RENDEROBJECT_LUA_METHOD()
