@@ -49,7 +49,6 @@
 				if (Array.isArray(core.sceneInfo.objecttimeline)) { // if empty array, it is empty object.
 					core.sceneInfo.objecttimeline = {};
 				}
-				console.log('updateInfo:objecttimeline', core.sceneInfo.objecttimeline);
 
 				activecam = core.findObject(core.activeCamera);
 				if (!activecam) { // fall back
@@ -262,6 +261,8 @@
 			g,
 			b,
 			a,
+			width,
+			height,
 			obj,
 			hasProp = function (target, prop) {
 				return target.hasOwnProperty(prop);
@@ -290,6 +291,14 @@
 						b = Math.min(Math.max(obj.info.clearcolor[2], 0.0), 1.0);
 						a = Math.min(Math.max(obj.info.clearcolor[3], 0.0), 1.0);
 						cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+					}
+					if (hasProp(obj.info, 'screensize')) {
+						width = obj.info.screensize[0];
+						height = obj.info.screensize[1];
+						cmd = cmd + HiveCommand.cameraScreenSize(obj.name, width, height) + "\n";
+					}
+					if (hasProp(obj.info, 'outputfile')) {
+						cmd = cmd + HiveCommand.cameraFilename(obj.name, obj.info.outputfile) + "\n";
 					}
 				}
 			}
