@@ -253,7 +253,7 @@
 		}
 	};
 	
-	HiveCore.prototype.reloadScene = function (callback) {
+	HiveCore.prototype.createSceneCommand = function (sceneInfo) {
 		var sceneInfo = this.sceneInfo,
 			cmd = HiveCommand.newScene(),
 			i,
@@ -266,7 +266,8 @@
 			obj,
 			hasProp = function (target, prop) {
 				return target.hasOwnProperty(prop);
-			};
+			},
+			modelCount = 0;
 		
 		if (!sceneInfo) {
 			return;
@@ -274,14 +275,13 @@
 		if (!sceneInfo.objectlist) {
 			return;
 		}
-		this.modelCount = 0;
 		
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
 			obj = sceneInfo.objectlist[i];
 			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
 				if (obj.type === 'CAMERA') {
 					cmd = cmd + HiveCommand.createCamera(obj.name) + "\n";
-					this.modelCount = this.modelCount + 1;
+					modelCount = modelCount + 1;
 					if (hasProp(obj.info, 'position') && hasProp(obj.info, 'target') && hasProp(obj.info, 'up') && hasProp(obj.info, 'fov')) {
 						cmd = cmd + HiveCommand.cameraLookat(obj.name, obj.info.position, obj.info.target, obj.info.up, obj.info.fov) + "\n";
 					}
@@ -309,7 +309,7 @@
 				if (obj.type === 'POLYGON') {
 					if (hasProp(obj.info, 'filename')) {
 						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, obj.info.shader) + "\n";
-						this.modelCount = this.modelCount + 1;
+						modelCount = modelCount + 1;
 						if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
 							cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
 						}
@@ -324,8 +324,31 @@
 		if (hasProp(sceneInfo, 'objecttimeline')) {
 			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
 		}
-		if (cmd) {
-			runScript(this.conn, cmd, function () {
+		return { command : cmd, modelcount : modelCount };
+	};
+	
+	HiveCore.prototype.exportScene = function (filepath) {
+		var cmd = '',
+			jsonstr;
+		if (this.sceneInfo) {
+			cmd = this.createSceneCommand(this.sceneInfo);
+			if (cmd && cmd.command) {
+				console.log("prototype.exportScene");
+				this.conn.masterMethod('exportScene', {path : filepath, data : cmd.command}, function (err, res, id) {
+					if (err) {
+						console.log(err);
+					}
+				});
+			}
+		}
+	};
+	
+	HiveCore.prototype.reloadScene = function (callback) {
+		var cmd = this.createSceneCommand(this.sceneInfo);
+		if (cmd && cmd.command) {
+			this.modelCount = cmd.modelcount;
+			
+			runScript(this.conn, cmd.command, function () {
 				callback();
 			});
 		}
