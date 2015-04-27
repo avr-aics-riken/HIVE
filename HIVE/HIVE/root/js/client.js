@@ -437,7 +437,6 @@
 		});
 
 		function updateObjList(sceneInfo) {
-			console.log(sceneInfo);
 			var i,
 				objlist = sceneInfo.objectlist,
 				lst = kUI('list-itemlist'),
@@ -567,6 +566,22 @@
 			});
 
 			console.log('SAVE SCENE');
+		});
+		$('exportbtn').addEventListener('click', function (ev) {
+			var fdlg = new FileDialog("savesceneDialog", true, '.json');
+			fdlg.ExportSceneFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)), function (filepath) {
+				core.exportScene(filepath);
+				console.log("FileDialog export:" + filepath);
+			});
+
+			console.log('EXPORT SCENE');
 		});
 
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {
