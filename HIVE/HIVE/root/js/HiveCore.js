@@ -232,30 +232,43 @@
 	};
 	
 	//----------------------------------------------------------------------------------------------
-	// Scene operation
+	// Command creation functions
 	//
-	HiveCore.prototype.newScene = function () {
-		var cmd = HiveCommand.newScene();
-		console.log('newscene');
-		runScript(this.conn, cmd);
-		this.render();
-	};
-	
-	HiveCore.prototype.saveScene = function (filepath) {
-		var cmd = '',
-			jsonstr;
-		if (this.sceneInfo) {
-			this.conn.masterMethod('saveScene', {path : filepath, data : this.sceneInfo}, function (err, res, id) {
-				if (err) {
-					console.log(err);
-				}
-			});
+	function createModelUniformCommand(objname, objinfo) {
+		var name,
+			uniforms,
+			src = '';
+		
+		uniforms = objinfo.vec4;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[name]);
+			}
 		}
+		uniforms = objinfo.vec3;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.vec2;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.float;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
+			}
+		}
+		return src;
 	};
 	
-	HiveCore.prototype.createSceneCommand = function (sceneInfo) {
-		var sceneInfo = this.sceneInfo,
-			cmd = HiveCommand.newScene(),
+	function createSceneCommand(sceneInfo) {
+		var cmd = HiveCommand.newScene(),
 			i,
 			r,
 			g,
@@ -316,7 +329,7 @@
 						if (hasProp(obj.info, 'shader')) {
 							cmd = cmd + HiveCommand.setModelShader(obj.name, obj.info.shader) + "\n";
 						}
-						cmd = cmd + this.createModelUniformCommand(obj.name, obj.info);
+						cmd = cmd + createModelUniformCommand(obj.name, obj.info);
 					}
 				}
 			}
@@ -327,11 +340,33 @@
 		return { command : cmd, modelcount : modelCount };
 	};
 	
+	//----------------------------------------------------------------------------------------------
+	// Scene operation
+	//
+	HiveCore.prototype.newScene = function () {
+		var cmd = HiveCommand.newScene();
+		console.log('newscene');
+		runScript(this.conn, cmd);
+		this.render();
+	};
+	
+	HiveCore.prototype.saveScene = function (filepath) {
+		var cmd = '',
+			jsonstr;
+		if (this.sceneInfo) {
+			this.conn.masterMethod('saveScene', {path : filepath, data : this.sceneInfo}, function (err, res, id) {
+				if (err) {
+					console.log(err);
+				}
+			});
+		}
+	};
+	
 	HiveCore.prototype.exportScene = function (filepath) {
 		var cmd = '',
 			jsonstr;
 		if (this.sceneInfo) {
-			cmd = this.createSceneCommand(this.sceneInfo);
+			cmd = createSceneCommand(this.sceneInfo);
 			if (cmd && cmd.command) {
 				console.log("prototype.exportScene");
 				this.conn.masterMethod('exportScene', {path : filepath, data : cmd.command}, function (err, res, id) {
@@ -344,7 +379,7 @@
 	};
 	
 	HiveCore.prototype.reloadScene = function (callback) {
-		var cmd = this.createSceneCommand(this.sceneInfo);
+		var cmd = createSceneCommand(this.sceneInfo);
 		if (cmd && cmd.command) {
 			this.modelCount = cmd.modelcount;
 			
@@ -529,39 +564,6 @@
 			}(this));
 		}
 		runScript(this.conn, src, redrawfunc);
-	};
-	
-	HiveCore.prototype.createModelUniformCommand = function (objname, objinfo) {
-		var name,
-			uniforms,
-			src = '';
-		
-		uniforms = objinfo.vec4;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[name]);
-			}
-		}
-		uniforms = objinfo.vec3;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[name]);
-			}
-		}
-		uniforms = objinfo.vec2;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[name]);
-			}
-		}
-		uniforms = objinfo.float;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(i)) {
-				name = i;
-				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
-			}
-		}
-		return src;
 	};
 
 	HiveCore.prototype.setModelUniformsFromInfo = function (objname, objinfo, redraw) {
