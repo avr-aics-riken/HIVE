@@ -274,7 +274,6 @@ BufferMeshData* UDMLoader::MeshData() {
 }
 
 BufferTetraData* UDMLoader::TetraData() {
-	printf("tetra %p\n", m_tetra);
 	return m_tetra;
 }
 
