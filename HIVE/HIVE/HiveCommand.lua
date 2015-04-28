@@ -13,6 +13,7 @@ local function getObjectList()
 		info.vec3      = robj:GetVec3Table()
 		info.vec2      = robj:GetVec2Table()
 		info.float     = robj:GetFloatTable()
+		info.rgbatex   = {}; --robj:GetTexTable();
 		if robj:GetType() == 'CAMERA' then
 			info.position = robj:GetPosition()
 			info.target = robj:GetTarget()
@@ -180,6 +181,13 @@ local function SetModelUniformFloat(name, vname, val)
 	return 'SetModelUniformFloat:' .. name
 end
 
+local function SetModelUniformTex(name, vname, width, height, rgba)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	--model:SetTexTable(vname, val)
+	return 'SetModelUniformTex:' .. name
+end
+
 
 local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
@@ -335,6 +343,7 @@ return {
 	SetModelUniformVec3 = SetModelUniformVec3,
 	SetModelUniformVec2 = SetModelUniformVec2,
 	SetModelUniformFloat = SetModelUniformFloat,
+	SetModelUniformTex = SetModelUniformTex,
 	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,

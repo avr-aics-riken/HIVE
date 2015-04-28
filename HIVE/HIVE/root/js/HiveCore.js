@@ -259,13 +259,18 @@
 		}
 		uniforms = objinfo.float;
 		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(i)) {
-				name = i;
+			if (uniforms.hasOwnProperty(name)) {
 				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
 			}
 		}
+		uniforms = objinfo.rgbatex;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformTex(objname, name, uniforms[name].width, uniforms[name].height, uniforms[name].rgba);
+			}
+		}
 		return src;
-	};
+	}
 	
 	function createSceneRenderCommandHeader() {
 		var header = "package.path = './?.lua;' .. package.path \n"
@@ -302,9 +307,9 @@
 			return;
 		}
 		if (isExport) {
-			cmd = createSceneRenderCommandHeader() + HiveCommand.newScene() + "\n"
+			cmd = createSceneRenderCommandHeader() + HiveCommand.newScene() + "\n";
 		} else {
-			cmd = HiveCommand.newScene() + "\n"
+			cmd = HiveCommand.newScene() + "\n";
 		}
 		
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -372,7 +377,7 @@
 			}
 		}
 		return { command : cmd, modelcount : modelCount };
-	};
+	}
 	
 	//----------------------------------------------------------------------------------------------
 	// Scene operation
@@ -564,6 +569,7 @@
 
 	HiveCore.prototype.setModelUniforms = function (objname, uniforms, redraw) {
 		var i,
+			j,
 			obj = this.findObject(objname),
 			name,
 			src = '',
@@ -588,7 +594,18 @@
 			} else if (uniforms[i].uniform === 'float') {
 				obj.info.float[name] = uniforms[i].val;
 				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i].val);
+			} else if (uniforms[i].uniform === 'rgbatex') {
+				obj.info.rgbatex[name] = {width: uniforms[i].width, height: uniforms[i].height, rgba: uniforms[i].rgba};
+				if (uniforms[i].rgba.length === 0) {
+					// Generate RGBA (TEST)
+					uniforms[i].rgba = [256];
+					for (j = 0; j < 256; j = j + 1) {
+						uniforms[i].rgba[j] = j;
+					}
+				}
+				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 			}
+			
 		}
 		if (redraw) {
 			redrawfunc = (function (core) {
@@ -643,6 +660,15 @@
 				name = i;
 				obj.info.float[name] = uniforms[i];
 				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i]);
+			}
+		}
+
+		uniforms = objinfo.rgbatex;
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				obj.info.float[name] = uniforms[i];
+				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 			}
 		}
 
@@ -738,6 +764,30 @@
 		}
 		obj.info.float[vname] = val;
 		src = HiveCommand.setModelUniformFloat(objname, vname, obj.info.float[vname]);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+	
+	HiveCore.prototype.setModelTex = function (objname, vname, width, height, rgbaVal, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+		if (!obj) {
+			console.error('[Error] Not found object:', objname);
+			return;
+		}
+		obj.info.rgbatex[vname] = {width: width, height: height, rgba: rgbaVal};
+		src = HiveCommand.setModelUniformTex(objname, vname,
+											 obj.info.rgbatex[vname].width,
+											 obj.info.rgbatex[vname].height,
+											 obj.info.rgbatex[vname].rgba);
 		if (redraw) {
 			redrawfunc = (function (core) {
 				return function (err, data) {

@@ -157,6 +157,28 @@
 			};
 		}
 
+		function changeTransferFunc(core, objname, paramname) {
+			return function (transfuncui) {
+				var maxv = transfuncui.getMaxValue(),
+					minv = transfuncui.getMinValue(),
+					redv = transfuncui.getGraphValueRed(),
+					grnv = transfuncui.getGraphValueGreen(),
+					bluv = transfuncui.getGraphValueBlue(),
+					alpv = transfuncui.getGraphValueAlpha(),
+					vnum = transfuncui.getNumValues(),
+					rgbaVal = [vnum],
+					i;
+				//console.log(maxv, minv, redv, grnv, bluv, alpv, vnum);
+				for (i = 0; i < vnum; i = i + 1) {
+					rgbaVal[4 * i]     = redv[i];
+					rgbaVal[4 * i + 1] = grnv[i];
+					rgbaVal[4 * i + 2] = bluv[i];
+					rgbaVal[4 * i + 3] = alpv[i];
+				}
+				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
+			};
+		}
+			
 		pp.innerHTML = ''; // clear
 		// Add UIs
 		for (i in unif) {
@@ -221,6 +243,7 @@
 						'</div></div>';
 					pp.appendChild(d);
 					kvtoolsUI_update(d);
+					kUI(paramname).changeCallback = changeTransferFunc(core, objname, paramname);
 					
 				} else {
 					console.log('Error: Unkown UI type -> ' + unif[i].ui + ' - ' + unif[i].name);
@@ -410,32 +433,6 @@
 		var mouseState = {"Left": false, "Center": false, "Right": false, "x": 0, "y": 0 },
 			core;
 		
-		core = new HiveCore($('result'),
-							document.getElementById('window-view').clientWidth,
-							document.getElementById('window-view').clientHeight,
-							updateObjList);
-	
-		// Initial Resize
-		// Resize Event
-		function canvasResizing() {
-			var w = document.getElementById('window-view').clientWidth,
-				h = document.getElementById('window-view').clientHeight,
-				rc = document.getElementById('result');
-			rc.width        = w;
-			rc.height       = h;
-			rc.style.width  = w + 'px';
-			rc.style.height = h + 'px';
-			console.log('resize:', w, h);
-			core.resize(w, h);
-			core.render();
-		}
-		window.addEventListener('resize', canvasResizing);
-
-		// disable context menu
-		window.addEventListener('contextmenu', function (e) {
-			e.preventDefault();
-		});
-
 		function updateObjList(sceneInfo) {
 			var i,
 				objlist = sceneInfo.objectlist,
@@ -488,6 +485,32 @@
 			kUI('timeline').drawGraph();
 			core.render();
 		}
+		
+		core = new HiveCore($('result'),
+							document.getElementById('window-view').clientWidth,
+							document.getElementById('window-view').clientHeight,
+							updateObjList);
+	
+		// Initial Resize
+		// Resize Event
+		function canvasResizing() {
+			var w = document.getElementById('window-view').clientWidth,
+				h = document.getElementById('window-view').clientHeight,
+				rc = document.getElementById('result');
+			rc.width        = w;
+			rc.height       = h;
+			rc.style.width  = w + 'px';
+			rc.style.height = h + 'px';
+			console.log('resize:', w, h);
+			core.resize(w, h);
+			core.render();
+		}
+		window.addEventListener('resize', canvasResizing);
+
+		// disable context menu
+		window.addEventListener('contextmenu', function (e) {
+			e.preventDefault();
+		});
 
 		function loadModel(filepath) {
 			console.log("FileDialog Select:" + filepath);
@@ -597,7 +620,7 @@
 						fdlg.updateDirlist({list: res, path: path});
 					});
 				};
-			}(core, fdlg)), loadModel)
+			}(core, fdlg)), loadModel);
 		});
 		//$('savescenebtn').addEventListener('click', function (ev) {
 			//core.getSceneInformation(function (objList) {
