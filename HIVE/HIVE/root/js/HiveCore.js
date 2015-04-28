@@ -267,8 +267,21 @@
 		return src;
 	};
 	
-	function createSceneCommand(sceneInfo) {
-		var cmd = HiveCommand.newScene(),
+	function createSceneRenderCommandHeader() {
+		var header = "package.path = './?.lua;' .. package.path \n"
+				+ "HIVE_ObjectTable = {} -- Global: All Object List \n"
+				+ "HIVE_ObjectTimeline = {} \n"
+				+ "HIVE_DataTable   = {} -- Global: Data List \n"
+				+ "HIVE_ImageSaver = ImageSaver() \n"
+				+ "function HIVE_fetchEvent(progress) \n"
+				+ "    return true \n"
+				+ "end \n"
+				+ "hcmd = require('HiveCommand') \n";
+		return header;
+	}
+	
+	function createSceneCommand(sceneInfo, isExport) {
+		var cmd,
 			i,
 			r,
 			g,
@@ -287,6 +300,11 @@
 		}
 		if (!sceneInfo.objectlist) {
 			return;
+		}
+		if (isExport) {
+			cmd = createSceneRenderCommandHeader() + HiveCommand.newScene() + "\n"
+		} else {
+			cmd = HiveCommand.newScene() + "\n"
 		}
 		
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -334,8 +352,24 @@
 				}
 			}
 		}
-		if (hasProp(sceneInfo, 'objecttimeline')) {
+		if (!isExport && hasProp(sceneInfo, 'objecttimeline')) {
 			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+		}
+		if (isExport) {
+			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+				obj = sceneInfo.objectlist[i];
+				if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+					if (obj.type === 'CAMERA') {
+						if (hasProp(obj.info, 'outputfile') && hasProp(obj.info, 'screensize')) {
+							cmd = cmd
+								+ HiveCommand.renderCamera(parseInt(obj.info.screensize[0], 10), parseInt(obj.info.screensize[1], 10), obj.name, false) + "\n"
+								+ "local camera = HIVE_ObjectTable['" + obj.name + "'] \n"
+								+ "local imageBuffer = camera:GetImageBuffer() \n"
+								+ "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
+						}
+					}
+				}
+			}
 		}
 		return { command : cmd, modelcount : modelCount };
 	};
@@ -366,7 +400,7 @@
 		var cmd = '',
 			jsonstr;
 		if (this.sceneInfo) {
-			cmd = createSceneCommand(this.sceneInfo);
+			cmd = createSceneCommand(this.sceneInfo, true);
 			if (cmd && cmd.command) {
 				console.log("prototype.exportScene");
 				this.conn.masterMethod('exportScene', {path : filepath, data : cmd.command}, function (err, res, id) {
@@ -379,7 +413,7 @@
 	};
 	
 	HiveCore.prototype.reloadScene = function (callback) {
-		var cmd = createSceneCommand(this.sceneInfo);
+		var cmd = createSceneCommand(this.sceneInfo, false);
 		if (cmd && cmd.command) {
 			this.modelCount = cmd.modelcount;
 			
