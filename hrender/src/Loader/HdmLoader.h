@@ -18,7 +18,7 @@ public:
     HDMLoader();
     ~HDMLoader();
     void Clear();
-    bool Load(const char* cellidFilename, const char* dataFilename);
+    bool Load(const char* cellidFilename, const char* dataFilename, const char* fieldName, const char* fieldType, int components, int virtualCells = 2);
     int Width();
     int Height();
     int Depth();
