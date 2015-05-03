@@ -20,6 +20,50 @@ end
 
 JSON = require('dkjson')
 
+------------------------------------
+
+function makePolygon()
+	local gen = PrimitiveGenerator()
+	local meshdata = gen:Teapot(15.0)
+	model = PolygonModel()
+	model:Create(meshdata)
+	model:SetShader(fragpath)
+	return model
+end
+
+function makeVolume()
+	local gentex = GenTexture()
+	local size = 64
+	local textable = {}
+	for k = 1, size do 
+		for j = 1, size do 
+			for i = 1, size do 
+				table.insert(textable, bit32.bxor(k, bit32.bxor(j, i)) / 8 );
+			end
+		end
+	end
+	gentex:Create3D(textable, 2, size, size, size);
+	local volume = VolumeModel()
+	local volumedata = gentex:VolumeData()
+	volume:Create(volumedata)
+	volume:SetShader(fragpath)
+	return volume
+end
+
+function makePoint()
+	return nil
+end
+
+function makeLine()
+	return nil
+end
+
+function makeTetra()
+	return nil
+end
+
+------------------------------------
+
 -- Global Jpeg Saver
 local saver = ImageSaver()
 
@@ -28,19 +72,34 @@ camera:SetScreenSize(256,256)
 camera:LookAt(0,50,90, 2,15,0, 0,1,0, 60)
 camera:SetFilename(outputpath)
 
-local gen = PrimitiveGenerator()
-local model = PolygonModel()
-local meshdata = gen:Teapot(15.0)
-model:Create(meshdata)
-model:SetShader(fragpath)
+
+local model
 
 -- set uniform values
 if jsonstr then
-	local data, pos, msg = JSON.decode(jsonstr)
+	local data
+	local pos
+	local msg
+	data, pos, msg = JSON.decode(jsonstr)
 	if not data then
 		print("JSON parse error")
 		print(pos)
 		print(msg)
+	end
+	if data.type then
+		local modeltype = data.type
+		if modeltype == 'POLYGON' then
+			model = makePolygon()
+		elseif modeltype == 'VOLUME' then
+			model = makeVolume()
+			camera:LookAt(60,50,70, 0,-5,0, 0,1,0, 60)
+		elseif modeltype == 'POINT' then
+			model = makePoint()
+		elseif modeltype == 'LINE' then
+			model = makeLine()
+		elseif modeltype == 'TETRA' then
+			model = makeTetra()
+		end
 	end
 	if data.uniforms then
 		local uniforms = data.uniforms
@@ -57,7 +116,7 @@ if jsonstr then
 					uniform = v
 				end
 			end
-			if name and val then
+			if name and val and model then
 				if uniform == "float" then
 					model:SetFloat(name, val)
 				end

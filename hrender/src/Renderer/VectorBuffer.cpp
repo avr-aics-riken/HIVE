@@ -143,7 +143,7 @@ void VectorBuffer::Render() const
     }
     
     if (m_lines_vnum == 0 || m_tetra_vnum == 0) {
-        fprintf(stderr,"[Error] Invalide vector data\n");
+        fprintf(stderr,"[Error] Invalid vector data\n");
         return;
     }
 

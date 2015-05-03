@@ -49,7 +49,6 @@
 				if (Array.isArray(core.sceneInfo.objecttimeline)) { // if empty array, it is empty object.
 					core.sceneInfo.objecttimeline = {};
 				}
-				console.log('updateInfo:objecttimeline', core.sceneInfo.objecttimeline);
 
 				activecam = core.findObject(core.activeCamera);
 				if (!activecam) { // fall back
@@ -120,6 +119,28 @@
 		return result;
 	}
 	
+	function craeteLoadModelCommand(filepath, modelName, shader) {
+		var name = modelName,
+			cmd,
+			shaderpath = './shader/polygon.frag';
+		if (shader) {
+			shaderpath = shader;
+		}
+		console.log("create load model coomand:" + filepath);
+		if (filepath.substr(filepath.length - 4) === ".obj") {
+			cmd = HiveCommand.loadOBJ(name, filepath, shaderpath, false);
+		} else if (filepath.substr(filepath.length - 4) === ".stl") {
+			cmd = HiveCommand.loadSTL(name, filepath, shaderpath, false);
+		} else if (filepath.substr(filepath.length - 4) === ".pdb") {
+			cmd = HiveCommand.loadPDB(name, filepath, shaderpath, false);
+		} else if (filepath.substr(filepath.length - 4) === ".sph") {
+			cmd = HiveCommand.loadSPH(name, filepath, shaderpath, false);
+		} else {
+			console.error('Not supported file type:', filepath);
+		}
+		return cmd;
+	}
+
 	//----------------------------------------------------------------------------------------------
 	// Contructor
 	//
@@ -131,7 +152,7 @@
 		this.updateSceneCallback = infoCallback;
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
-		this.sceneInfo.objectTimeline = {};
+		this.sceneInfo.objecttimeline = {};
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -211,6 +232,149 @@
 	};
 	
 	//----------------------------------------------------------------------------------------------
+	// Command creation functions
+	//
+	function createModelUniformCommand(objname, objinfo) {
+		var name,
+			uniforms,
+			src = '';
+		
+		uniforms = objinfo.vec4;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.vec3;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.vec2;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(name)) {
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[name]);
+			}
+		}
+		uniforms = objinfo.float;
+		for (name in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
+			}
+		}
+		return src;
+	};
+	
+	function createSceneRenderCommandHeader() {
+		var header = "package.path = './?.lua;' .. package.path \n"
+				+ "HIVE_ObjectTable = {} -- Global: All Object List \n"
+				+ "HIVE_ObjectTimeline = {} \n"
+				+ "HIVE_DataTable   = {} -- Global: Data List \n"
+				+ "HIVE_ImageSaver = ImageSaver() \n"
+				+ "function HIVE_fetchEvent(progress) \n"
+				+ "    return true \n"
+				+ "end \n"
+				+ "hcmd = require('HiveCommand') \n";
+		return header;
+	}
+	
+	function createSceneCommand(sceneInfo, isExport) {
+		var cmd,
+			i,
+			r,
+			g,
+			b,
+			a,
+			width,
+			height,
+			obj,
+			hasProp = function (target, prop) {
+				return target.hasOwnProperty(prop);
+			},
+			modelCount = 0;
+		
+		if (!sceneInfo) {
+			return;
+		}
+		if (!sceneInfo.objectlist) {
+			return;
+		}
+		if (isExport) {
+			cmd = createSceneRenderCommandHeader() + HiveCommand.newScene() + "\n"
+		} else {
+			cmd = HiveCommand.newScene() + "\n"
+		}
+		
+		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+			obj = sceneInfo.objectlist[i];
+			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+				if (obj.type === 'CAMERA') {
+					cmd = cmd + HiveCommand.createCamera(obj.name) + "\n";
+					modelCount = modelCount + 1;
+					if (hasProp(obj.info, 'position') && hasProp(obj.info, 'target') && hasProp(obj.info, 'up') && hasProp(obj.info, 'fov')) {
+						cmd = cmd + HiveCommand.cameraLookat(obj.name, obj.info.position, obj.info.target, obj.info.up, obj.info.fov) + "\n";
+					}
+					if (hasProp(obj.info, 'clearcolor')) {
+						r = Math.min(Math.max(obj.info.clearcolor[0], 0.0), 1.0);
+						g = Math.min(Math.max(obj.info.clearcolor[1], 0.0), 1.0);
+						b = Math.min(Math.max(obj.info.clearcolor[2], 0.0), 1.0);
+						a = Math.min(Math.max(obj.info.clearcolor[3], 0.0), 1.0);
+						cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+					}
+					if (hasProp(obj.info, 'screensize')) {
+						width = obj.info.screensize[0];
+						height = obj.info.screensize[1];
+						cmd = cmd + HiveCommand.cameraScreenSize(obj.name, width, height) + "\n";
+					}
+					if (hasProp(obj.info, 'outputfile')) {
+						cmd = cmd + HiveCommand.cameraFilename(obj.name, obj.info.outputfile) + "\n";
+					}
+				}
+			}
+		}
+		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+			obj = sceneInfo.objectlist[i];
+			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+				if (obj.type === 'POLYGON') {
+					if (hasProp(obj.info, 'filename')) {
+						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, obj.info.shader) + "\n";
+						modelCount = modelCount + 1;
+						if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
+							cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
+						}
+						if (hasProp(obj.info, 'shader')) {
+							cmd = cmd + HiveCommand.setModelShader(obj.name, obj.info.shader) + "\n";
+						}
+						cmd = cmd + createModelUniformCommand(obj.name, obj.info);
+					}
+				}
+			}
+		}
+		if (!isExport && hasProp(sceneInfo, 'objecttimeline')) {
+			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+		}
+		if (isExport) {
+			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+				obj = sceneInfo.objectlist[i];
+				if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+					if (obj.type === 'CAMERA') {
+						if (hasProp(obj.info, 'outputfile') && hasProp(obj.info, 'screensize')) {
+							cmd = cmd
+								+ HiveCommand.renderCamera(parseInt(obj.info.screensize[0], 10), parseInt(obj.info.screensize[1], 10), obj.name, false) + "\n"
+								+ "local camera = HIVE_ObjectTable['" + obj.name + "'] \n"
+								+ "local imageBuffer = camera:GetImageBuffer() \n"
+								+ "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
+						}
+					}
+				}
+			}
+		}
+		return { command : cmd, modelcount : modelCount };
+	};
+	
+	//----------------------------------------------------------------------------------------------
 	// Scene operation
 	//
 	HiveCore.prototype.newScene = function () {
@@ -232,15 +396,49 @@
 		}
 	};
 	
-	HiveCore.prototype.loadScene = function (filepath, callback) {
-		this.conn.masterMethod('loadScene', {path: filepath}, function (err, res, id) {
-			if (err) {
-				console.log(err);
-				return;
+	HiveCore.prototype.exportScene = function (filepath) {
+		var cmd = '',
+			jsonstr;
+		if (this.sceneInfo) {
+			cmd = createSceneCommand(this.sceneInfo, true);
+			if (cmd && cmd.command) {
+				console.log("prototype.exportScene");
+				this.conn.masterMethod('exportScene', {path : filepath, data : cmd.command}, function (err, res, id) {
+					if (err) {
+						console.log(err);
+					}
+				});
 			}
-			this.sceneInfo = res;
-			callback(res);
-		});
+		}
+	};
+	
+	HiveCore.prototype.reloadScene = function (callback) {
+		var cmd = createSceneCommand(this.sceneInfo, false);
+		if (cmd && cmd.command) {
+			this.modelCount = cmd.modelcount;
+			
+			runScript(this.conn, cmd.command, function () {
+				callback();
+			});
+		}
+	};
+	
+	HiveCore.prototype.loadScene = function (filepath, callback) {
+		this.conn.masterMethod('loadScene', {path: filepath}, (function (core) {
+			return function (err, res, id) {
+				if (err) {
+					console.log(err);
+					return;
+				}
+				core.sceneInfo = res;
+				core.reloadScene(function () {
+					core.updateSceneInformation();
+					if (callback) {
+						callback();
+					}
+				});
+			};
+		}(this)));
 	};
 	
 	HiveCore.prototype.addCamera = function (name) {
@@ -363,7 +561,7 @@
 		}
 		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelUniforms = function (objname, uniforms, redraw) {
 		var i,
 			obj = this.findObject(objname),
