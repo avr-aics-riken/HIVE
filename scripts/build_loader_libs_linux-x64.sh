@@ -154,12 +154,22 @@ function build_pdmlib {
 
 function build_udmlib {
 	cd third_party/
+	rm -rf Zoltan_v3.81/
+	rm -rf Zoltan_build/
+	tar -zxvf zoltan_distrib_v3.81.tar.gz
+	mkdir Zoltan_build
+	cd Zoltan_build
+	CXX=${cxx_compiler} CC=${c_compiler} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
+
+	cd third_party/
 	rm -rf cgnslib_3.2.1/
 	rm -rf cgnslib_build/
 	tar -zxvf cgnslib_3.2.1.tar.gz
 	mkdir cgnslib_build
 	cd cgnslib_build
-	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} ../cgnslib_3.2.1 && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_BUILD_SHARED=Off ../cgnslib_3.2.1 && make && make install
 	cd ${topdir}
 
 	#

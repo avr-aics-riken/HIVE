@@ -39,6 +39,9 @@ local function StoreObjectTimeline(timeline_json)
 end
 
 local function updateInfo()
+	if not network then
+		return
+	end
 	local objlst = getObjectList()
 	local objtimeline = getObjectTimeline()
 	local data = {
@@ -304,10 +307,12 @@ local function RenderCamera(w, h, cameraname)
 		"to": "client",
 		"id": 0
 	}]]
-	HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
 	local createtm = os.clock()
-	-- send through websocket
-	network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+	if HIVE_metabin then
+		HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+	-- 	send through websocket
+		network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+	end
 	local sendtm = os.clock()
 	print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 

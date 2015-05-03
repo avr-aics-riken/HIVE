@@ -437,7 +437,6 @@
 		});
 
 		function updateObjList(sceneInfo) {
-			console.log(sceneInfo);
 			var i,
 				objlist = sceneInfo.objectlist,
 				lst = kUI('list-itemlist'),
@@ -505,62 +504,6 @@
 			}
 		}
 
-		function reloadScene(sceneInfo) {
-			var i,
-				k,
-				obj,
-				pos = [];
-			console.log("reloadScne", sceneInfo);
-			var info = null;
-			if (!sceneInfo) {
-				return;
-			}
-			if (!sceneInfo.objectlist) {
-				return;
-			}
-			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
-				obj = sceneInfo.objectlist[i];
-				if (obj.hasOwnProperty('type') && obj.hasOwnProperty('info') && obj.hasOwnProperty('name')) {
-					console.log(obj);
-					if (obj.type === 'POLYGON') {
-						if (obj.info.hasOwnProperty('filename')) {
-							loadModel(obj.info.filename);
-							/*, function () {
-								if (obj.hasOwnProperty('name')) {
-									updateProperty(core, obj.name);
-								}
-							});
-							*/
-						}
-					} else if (obj.type === 'CAMERA') {
-						core.addCamera(obj.name);
-						/*, function () {
-							if (obj.info.hasOwnProperty('position')) {
-								console.log(obj.info.position);
-								pos = [];
-								for (k = 0; k < 3; k = k + 1) {
-									pos.push(parseFloat(obj.info.position[k]));
-								}
-								core.setCameraPosition(obj.name, pos, false);
-								if (activeObjectName) {
-									updateProperty(core, activeObjectName);
-								}
-							}
-							if (obj.info.hasOwnProperty('fov')) {
-								core.setCameraFov(obj.name, parseFloat(obj.info.fov), false);
-								if (activeObjectName) {
-									updateProperty(core, activeObjectName);
-								}
-							}
-						});
-						*/
-					}
-					activeObjectName = obj.name;
-				}
-			}
-			updateObjList(sceneInfo);
-		}
-
 		//---------------------------
 		//  UI Events
 		//
@@ -601,7 +544,9 @@
 				};
 			}(core, fdlg)),
 				function (filepath) {
-					core.loadScene(filepath, reloadScene);
+					core.loadScene(filepath, function () {
+						updateProperty(core, "view");
+					});
 					console.log("FileDialog Select:" + filepath);
 				});
 			//core.render();
@@ -621,6 +566,22 @@
 			});
 
 			console.log('SAVE SCENE');
+		});
+		$('exportbtn').addEventListener('click', function (ev) {
+			var fdlg = new FileDialog("savesceneDialog", true, '.json');
+			fdlg.ExportSceneFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)), function (filepath) {
+				core.exportScene(filepath);
+				console.log("FileDialog export:" + filepath);
+			});
+
+			console.log('EXPORT SCENE');
 		});
 
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {

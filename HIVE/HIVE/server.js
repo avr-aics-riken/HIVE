@@ -124,6 +124,16 @@ function saveScene(filepath, data) {
 	}
 }
 
+function exportScene(filepath, data) {
+	'use strict';
+	try {
+		fs.writeFileSync(filepath, data);
+		console.log("saved:" + filepath);
+	} catch (e) {
+		console.error('[Error] Failed to export: ' + filepath);
+	}
+}
+
 function loadScene(filepath, msg_id) {
 	'use strict';
 	var json;
@@ -172,6 +182,8 @@ ws.on('request', function (request) {
 			requestShaderList(msg_id);
 		} else if (method === 'saveScene') {
 			saveScene(param.path, param.data);
+		} else if (method === 'exportScene') {
+			exportScene(param.path, param.data);
 		} else if (method === 'loadScene') {
 			loadScene(param.path, msg_id);
 		} else {
