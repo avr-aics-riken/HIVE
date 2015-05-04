@@ -17,6 +17,7 @@
 
 #include "HdmLoader.h"
 #include "SimpleVOL.h"
+#include "BufferVolumeData.h"
 
 #include "BlockFactory.h"
 #include "Block.h"
@@ -28,10 +29,9 @@
 #include "BCMOctree.h"
 #include "BoundaryInfo.h"
 
-
-//#include "LeafBlockLoader.h"
 #include "BCMFileLoader.h"
 #include "BCMFileSaver.h"
+
 
 /// コンストラクタ
 HDMLoader::HDMLoader()
@@ -202,7 +202,7 @@ void LoadBlockCellScalar(VoxelBlock<T>& block, Scalar3D<T>* mesh, Vec3i sz, size
 }
 
 template <typename T>
-void ConvertLeafBlockScalar(const int dcid, size_t maxLevel, size_t rootDim[3], const Vec3d& globalOrigin, const Vec3d& globalRegion){
+void ConvertLeafBlockScalar(BufferSparseVolumeData& sparseVolume, const int dcid, size_t maxLevel, size_t rootDim[3], const Vec3d& globalOrigin, const Vec3d& globalRegion){
     BlockManager& blockManager = BlockManager::getInstance();
     const MPI::Intracomm& comm = blockManager.getCommunicator();
     Vec3i sz = blockManager.getSize();
@@ -221,6 +221,12 @@ void ConvertLeafBlockScalar(const int dcid, size_t maxLevel, size_t rootDim[3], 
 		VoxelBlock<T> vb;
 		LoadBlockCellScalar(vb, mesh, sz, level, maxLevel, rootDim, org, globalOrigin, pitch, globalRegion);
 		vb.id = id;
+
+		BufferVolumeData* vol = new BufferVolumeData();
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */1);
+		//std::copy(vb.data.begin(), vb.data.end(), vol->Buffer()->GetBuffer());
+
+		sparseVolume.AddVolume(vb.offset[0], vb.offset[1], vb.offset[2], vol);
     }
 }
 
@@ -314,13 +320,18 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 
 	loader.LoadLeafBlock(&id_cid, "CellID", vc);
 
-	for (std::list<unsigned int>::const_iterator it = stepList->begin(); it != stepList->end(); it++) {
+	// Prepare SparseVolume
+	m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
+
+	// @fixme { stepList }
+	std::list<unsigned int>::const_iterator it = stepList->begin();
+	{
 
 		if (type == TYPE_FLOAT32) {
 
 			if (components == 1) {
 				loader.LoadLeafBlock(&id_s32, fieldName, vc, *it);
-				ConvertLeafBlockScalar<float>(id_s32, maxLevel, rootDim, globalOrigin, globalRegion);
+				ConvertLeafBlockScalar<float>(m_sparseVolume, id_s32, maxLevel, rootDim, globalOrigin, globalRegion);
 			} else {
 				loader.LoadLeafBlock(id_v32, fieldName, vc, *it);
 			}
@@ -334,7 +345,6 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 			}
 		}
 
-		// @todo { Construct volume data. }
 
 	}
 
