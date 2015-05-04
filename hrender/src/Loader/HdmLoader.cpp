@@ -53,6 +53,27 @@ void HDMLoader::Clear()
 
 namespace {
 
+template<typename T>
+class VoxelBlock
+{
+  public:
+	VoxelBlock() {};
+
+	~VoxelBlock() {};
+
+	void Resize(int sx, int sy, int sz) {
+		data.resize(sx * sy * sz);			
+		size[0] = sx;
+		size[1] = sy;
+		size[2] = sz;
+	}
+
+	
+	int size[3];
+	int offset[3];
+	std::vector<T> data;
+};
+
 typedef enum {
 	TYPE_UNKNOWN,
 	TYPE_FLOAT32,
@@ -127,6 +148,47 @@ void print(const char* prefix, const int dcid, const int vc = 0){
 	printf("dbg: output %s\n", name);
 }
 
+template <typename T>
+void LoadBlockCellScalar(VoxelBlock<T>& block, Scalar3D<T>* mesh, Vec3i sz) {
+	T* data = mesh->getData();
+	Index3DS idx = mesh->getIndex();
+
+	block.Resize(sz.x, sz.y, sz.z);
+
+	// NOTE: Skip virtual Cell
+	for(int z = 0; z < sz.z; z++){
+		for(int y = 0; y < sz.y; y++){
+			for(int x = 0; x < sz.x; x++){
+				T val = data[idx(x, y, z)];
+				block.data[z * sz.y * sz.x + y * sz.x + x] = val;
+			}
+		}
+	}
+
+}
+
+template <typename T>
+void ConvertLeafBlockScalar(const int dcid){
+    BlockManager& blockManager = BlockManager::getInstance();
+    const MPI::Intracomm& comm = blockManager.getCommunicator();
+    Vec3i sz = blockManager.getSize();
+
+    for(int id = 0; id < blockManager.getNumBlock(); ++id){
+        BlockBase* block = blockManager.getBlock(id);
+
+		int level = block->getLevel();
+        const Vec3d& org = block->getOrigin();
+        const Vec3d& pitch = block->getCellSize();
+		//printf("lv    = %d\n", level);
+		//printf("org   = %f, %f, %f\n", org.x, org.y, org.z);
+		//printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
+        Scalar3D<T> *mesh = dynamic_cast< Scalar3D<T>* >(block->getDataClass(dcid));
+
+		VoxelBlock<T> vb;
+		LoadBlockCellScalar(vb, mesh, sz);
+    }
+}
+
 }
 
 /**
@@ -165,17 +227,39 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 	BlockManager& blockManager = BlockManager::getInstance();
     blockManager.printBlockLayoutInfo();
 
+	// Find max level
+	int maxLevel = -1;
+    for(int id = 0; id < blockManager.getNumBlock(); ++id){
+		int level = blockManager.getBlock(id)->getLevel();
+		maxLevel = (level > maxLevel) ? level : maxLevel; 
+	}
+	//printf("maxLevel = %d\n", maxLevel);
+
+
 	// data.bcm
 	if( !loader.LoadAdditionalIndex(dataFilename) ){
 		fprintf(stderr, "[HDMLoader] Load File Error %s\n", dataFilename);
 	    return false;
 	}
 
+	// 
+	const BCMOctree *octree = loader.GetOctree();
+	const RootGrid *rootGrid = octree->getRootGrid();
+
+	// Voxel resolution = rootGridSize * (2^maxLevel) * leafBlockSize
+	Vec3i lbSize = blockManager.getSize();
+	size_t dim[3];
+	dim[0] = (1 << maxLevel) * lbSize.x * rootGrid->getSizeX();
+	dim[1] = (1 << maxLevel) * lbSize.y * rootGrid->getSizeY();
+	dim[2] = (1 << maxLevel) * lbSize.z * rootGrid->getSizeZ();
+	//printf("dbg: sz: %d, %d, %d\n", dim[0], dim[1], dim[2]);
+
+
 	// Get timestep for given field
 	const BCMFileIO::IdxStep* step = loader.GetStep(fieldName);
 
 	const std::list<unsigned int>* stepList = step->GetStepList();
-	printf("dbg: # of steps = %d\n", stepList->size());
+	//printf("dbg: # of steps = %d\n", stepList->size());
 
 	int vc = virtualCells;
 
@@ -189,14 +273,12 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 
 	for (std::list<unsigned int>::const_iterator it = stepList->begin(); it != stepList->end(); it++) {
 
-		char prefix[1024];
-		sprintf(prefix, "%s_%03d", fieldName, *it);
-
 		if (type == TYPE_FLOAT32) {
 
 			if (components == 1) {
 				loader.LoadLeafBlock(&id_s32, fieldName, vc, *it);
-				print<float>(prefix, id_s32, vc);
+				ConvertLeafBlockScalar<float>(id_s32);
+				//print<float>(prefix, id_s32, vc);
 			} else {
 				loader.LoadLeafBlock(id_v32, fieldName, vc, *it);
 			}
@@ -204,7 +286,7 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 		} else if (type == TYPE_FLOAT64) {
 			if (components == 1) {
 				loader.LoadLeafBlock(&id_s64, fieldName, vc, *it);
-				print<float>(prefix, id_s64, vc);
+				//print<float>(prefix, id_s64, vc);
 			} else {
 				loader.LoadLeafBlock(id_v64, fieldName, vc, *it);
 			}
