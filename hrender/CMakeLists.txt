@@ -15,6 +15,11 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   SET(HIVE_BUILD_WITH_BCMTOOLS On)
 ENDIF()
 
+# HDMlib depends on BCMTOOLS
+IF(HIVE_BUILD_WITH_HDMLIB)
+  SET(HIVE_BUILD_WITH_BCMTOOLS On)
+ENDIF()
+
 # --------------------------------------
 # 
 #  SAME Build Option with SURFACE
@@ -295,6 +300,7 @@ IF(HIVE_BUILD_WITH_HDMLIB)
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/include)
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
   link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/lib)
   
 ENDIF()
