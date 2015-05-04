@@ -48,7 +48,7 @@ HDMLoader::~HDMLoader()
 /// ボリュームクリア
 void HDMLoader::Clear()
 {
-    m_volume.Clear();
+    m_sparseVolume.Clear();
 }
 
 namespace {
@@ -346,7 +346,7 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
  * @retval int HDMWidth
  */
 int HDMLoader::Width()    {
-    return m_volume.Width();
+    return m_sparseVolume.Width();
 }
 
 /**
@@ -354,7 +354,7 @@ int HDMLoader::Width()    {
  * @retval int HDMHeight
  */
 int HDMLoader::Height()   {
-    return m_volume.Height();
+    return m_sparseVolume.Height();
 }
 
 /**
@@ -362,7 +362,7 @@ int HDMLoader::Height()   {
  * @retval int HDMDepth
  */
 int HDMLoader::Depth()    {
-    return m_volume.Depth();
+    return m_sparseVolume.Depth();
 }
 
 /**
@@ -370,23 +370,23 @@ int HDMLoader::Depth()    {
  * @retval int Component数
  */
 int HDMLoader::Component() {
-    return m_volume.Component();
+    return m_sparseVolume.Component();
 }
 
 /**
  * HDMデータバッファ取得
  * @retval FloatBuffer* HDMデータバッファアドレス
  */
-FloatBuffer* HDMLoader::Buffer() {
-    return m_volume.Buffer();
-}
+//FloatBuffer* HDMLoader::Buffer() {
+//    return m_sparseVolume.Buffer();
+//}
 
 /**
- * VolumeData取得
- * @retval VolumeData* VolumeDataアドレス
+ * SparseVolumeData取得
+ * @retval SparseVolumeData* SparseVolumeDataアドレス
  */
-BufferVolumeData *HDMLoader::VolumeData()
+BufferSparseVolumeData *HDMLoader::SparseVolumeData()
 {
-    return &m_volume;
+    return &m_sparseVolume;
 }
 

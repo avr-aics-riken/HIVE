@@ -7,7 +7,7 @@
 
 #include "Ref.h"
 #include "Buffer.h"
-#include "BufferVolumeData.h"
+#include "BufferSparseVolumeData.h"
 
 /**
  * HDMデータローダー
@@ -25,9 +25,9 @@ public:
     int Component();
     FloatBuffer* Buffer();
 
-    BufferVolumeData *VolumeData();
+    BufferSparseVolumeData *SparseVolumeData();
 private:
-    BufferVolumeData m_volume;
+    BufferSparseVolumeData m_sparseVolume;
 };
 
 #endif //_HDMLOADER_H_
