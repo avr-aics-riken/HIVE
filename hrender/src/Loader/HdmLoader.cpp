@@ -57,7 +57,7 @@ template<typename T>
 class VoxelBlock
 {
   public:
-	VoxelBlock() {};
+	VoxelBlock() : id(-1) {};
 
 	~VoxelBlock() {};
 
@@ -72,6 +72,7 @@ class VoxelBlock
 	int size[3];
 	int offset[3];
 	std::vector<T> data;
+	int id;
 };
 
 typedef enum {
@@ -149,18 +150,51 @@ void print(const char* prefix, const int dcid, const int vc = 0){
 }
 
 template <typename T>
-void LoadBlockCellScalar(VoxelBlock<T>& block, Scalar3D<T>* mesh, Vec3i sz) {
+void LoadBlockCellScalar(VoxelBlock<T>& block, Scalar3D<T>* mesh, Vec3i sz, size_t level, size_t maxLevel, size_t rootDim[3], const Vec3d& org, const Vec3d& globalOrigin, const Vec3d& pitch, const Vec3d& globalRegion) {
 	T* data = mesh->getData();
 	Index3DS idx = mesh->getIndex();
 
-	block.Resize(sz.x, sz.y, sz.z);
+	// Compute voxel size in global voxel resolutuon
+	size_t dx = sz.x * (1 << (maxLevel - level));
+	size_t dy = sz.y * (1 << (maxLevel - level));
+	size_t dz = sz.z * (1 << (maxLevel - level));
+
+	size_t bx = (1 << (maxLevel - level));
+	size_t by = (1 << (maxLevel - level));
+	size_t bz = (1 << (maxLevel - level));
+
+	size_t ox = sz.x * rootDim[0] * ((1 << (maxLevel - level)) * ((double)(org.x - globalOrigin.x) / (double)globalRegion.x));
+	size_t oy = sz.y * rootDim[1] * ((1 << (maxLevel - level)) * ((double)(org.y - globalOrigin.y) / (double)globalRegion.y));
+	size_t oz = sz.z * rootDim[2] * ((1 << (maxLevel - level)) * ((double)(org.z - globalOrigin.z) / (double)globalRegion.z));
+	ox = (std::min)(rootDim[0] * dx, ox);
+	oy = (std::min)(rootDim[1] * dy, oy);
+	oz = (std::min)(rootDim[2] * dz, oz);
+	//printf("lv = %d\n", level);
+	//printf("org = %f, %f, %f\n", org.x, org.y, org.z);
+	//printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
+	//printf("o = %d, %d, %d, d = %d, %d, %d\n", ox, oy, oz, dx, dy, dz);
+	//printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) * (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
+
+	block.Resize(dx, dy, dz);
+	block.offset[0] = ox;
+	block.offset[1] = oy;
+	block.offset[2] = oz;
 
 	// NOTE: Skip virtual Cell
-	for(int z = 0; z < sz.z; z++){
-		for(int y = 0; y < sz.y; y++){
-			for(int x = 0; x < sz.x; x++){
+	for(size_t z = 0; z < sz.z; z++){
+		for(size_t y = 0; y < sz.y; y++){
+			for(size_t x = 0; x < sz.x; x++){
 				T val = data[idx(x, y, z)];
-				block.data[z * sz.y * sz.x + y * sz.x + x] = val;
+
+				// Splat voxel value
+				for (size_t w = 0; w < bz; w++) {
+					for (size_t v = 0; v < by; v++) {
+						for (size_t u = 0; u < bx; u++) {
+							block.data[(z * bz + w) * dy * dx + (y * by + v) * dx + (x * bx + u)] = val;
+						}
+					}
+				}
+
 			}
 		}
 	}
@@ -168,7 +202,7 @@ void LoadBlockCellScalar(VoxelBlock<T>& block, Scalar3D<T>* mesh, Vec3i sz) {
 }
 
 template <typename T>
-void ConvertLeafBlockScalar(const int dcid){
+void ConvertLeafBlockScalar(const int dcid, size_t maxLevel, size_t rootDim[3], const Vec3d& globalOrigin, const Vec3d& globalRegion){
     BlockManager& blockManager = BlockManager::getInstance();
     const MPI::Intracomm& comm = blockManager.getCommunicator();
     Vec3i sz = blockManager.getSize();
@@ -176,7 +210,7 @@ void ConvertLeafBlockScalar(const int dcid){
     for(int id = 0; id < blockManager.getNumBlock(); ++id){
         BlockBase* block = blockManager.getBlock(id);
 
-		int level = block->getLevel();
+		size_t level = block->getLevel();
         const Vec3d& org = block->getOrigin();
         const Vec3d& pitch = block->getCellSize();
 		//printf("lv    = %d\n", level);
@@ -185,7 +219,8 @@ void ConvertLeafBlockScalar(const int dcid){
         Scalar3D<T> *mesh = dynamic_cast< Scalar3D<T>* >(block->getDataClass(dcid));
 
 		VoxelBlock<T> vb;
-		LoadBlockCellScalar(vb, mesh, sz);
+		LoadBlockCellScalar(vb, mesh, sz, level, maxLevel, rootDim, org, globalOrigin, pitch, globalRegion);
+		vb.id = id;
     }
 }
 
@@ -224,8 +259,12 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 	BCMFileIO::BCMFileLoader loader(cellidFilename, bcsetter);
 	delete bcsetter;
 
+
+    const Vec3d& globalOrigin = loader.GetGlobalOrigin();
+    const Vec3d& globalRegion = loader.GetGlobalRegion();
+
 	BlockManager& blockManager = BlockManager::getInstance();
-    blockManager.printBlockLayoutInfo();
+	blockManager.printBlockLayoutInfo();
 
 	// Find max level
 	int maxLevel = -1;
@@ -246,13 +285,17 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 	const BCMOctree *octree = loader.GetOctree();
 	const RootGrid *rootGrid = octree->getRootGrid();
 
-	// Voxel resolution = rootGridSize * (2^maxLevel) * leafBlockSize
 	Vec3i lbSize = blockManager.getSize();
+	size_t rootDim[3];
+	rootDim[0] = rootGrid->getSizeX();
+	rootDim[1] = rootGrid->getSizeY();
+	rootDim[2] = rootGrid->getSizeZ();
+
+	// Voxel resolution at the maximum level = rootGridSize * (2^maxLevel) * leafBlockSize
 	size_t dim[3];
-	dim[0] = (1 << maxLevel) * lbSize.x * rootGrid->getSizeX();
-	dim[1] = (1 << maxLevel) * lbSize.y * rootGrid->getSizeY();
-	dim[2] = (1 << maxLevel) * lbSize.z * rootGrid->getSizeZ();
-	//printf("dbg: sz: %d, %d, %d\n", dim[0], dim[1], dim[2]);
+	dim[0] = (1 << maxLevel) * lbSize.x * rootDim[0];
+	dim[1] = (1 << maxLevel) * lbSize.y * rootDim[0];
+	dim[2] = (1 << maxLevel) * lbSize.z * rootDim[0];
 
 
 	// Get timestep for given field
@@ -277,8 +320,7 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 
 			if (components == 1) {
 				loader.LoadLeafBlock(&id_s32, fieldName, vc, *it);
-				ConvertLeafBlockScalar<float>(id_s32);
-				//print<float>(prefix, id_s32, vc);
+				ConvertLeafBlockScalar<float>(id_s32, maxLevel, rootDim, globalOrigin, globalRegion);
 			} else {
 				loader.LoadLeafBlock(id_v32, fieldName, vc, *it);
 			}
