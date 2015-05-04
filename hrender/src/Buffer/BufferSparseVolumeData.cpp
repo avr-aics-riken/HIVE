@@ -17,11 +17,11 @@ class BufferSparseVolumeData::Impl
 {
 private:
     int m_dim[3];
-    int m_comp;
-    std::vector<VolumeBlock> m_volumes;
+    int m_components;
+    std::vector<VolumeBlock> m_volumeBlocks;
 
-    lsgl::render::SparseVolumeAccel *m_sparseVolumeAccel;
-    lsgl::render::SparseVolume *m_sparseVolume;
+    lsgl::render::SparseVolumeAccel m_sparseVolumeAccel;
+    lsgl::render::SparseVolume m_sparseVolume;
 
 public:
     
@@ -34,6 +34,13 @@ public:
     /// @param inst 疎ボリュームデータ
     Impl(BufferSparseVolumeData* inst)
     {
+		m_dim[0] = inst->Width();
+		m_dim[1] = inst->Height();
+		m_dim[2] = inst->Depth();
+		m_components = inst->Component();
+
+		// @todo {}
+		assert(0);
     }
     
     /// デストラクタ
@@ -44,6 +51,12 @@ public:
     /// BufferSparseVolumeDataの作成
     void Create(int w, int h, int d, int component)
     {
+		m_dim[0] = w;
+		m_dim[1] = h;
+		m_dim[2] = d;
+		m_components = component;
+
+		//m_sparseVolume = new lsgl::render::SparseVolume();
     }
     
     /**
@@ -56,11 +69,6 @@ public:
     void AddVolume(int offset_x, int offset_y, int offset_z,
                                            BufferVolumeData* vol)
     {
-        // @todo { Finish implementing this function. }
-        {
-            // add to vol to VolumeBlock.
-        }
-
         // Also add to SparseVolume
         {
             lsgl::render::VolumeBlock block;
@@ -73,13 +81,13 @@ public:
             block.extent[2] = vol->Depth();
 
             assert(block.offset[0] + block.extent[0] <= Width());
-            assert(block.offset[1] + block.extent[1] <= Width());
-            assert(block.offset[2] + block.extent[2] <= Width());
+            assert(block.offset[1] + block.extent[1] <= Height());
+            assert(block.offset[2] + block.extent[2] <= Depth());
 
-            block.id = m_volumes.size();
+            block.id = m_volumeBlocks.size();
             block.data = reinterpret_cast<unsigned char*>(vol->Buffer()->GetBuffer()); // @fixme { Take a pointer reference. Is this OK? }
 
-            m_sparseVolume->blocks.push_back(block);
+            m_sparseVolume.blocks.push_back(block);
         }
 
 
@@ -88,8 +96,13 @@ public:
     /// メンバクリア
     void Clear()
     {
-        delete m_sparseVolumeAccel;
-        delete m_sparseVolume;
+        m_sparseVolume.blocks.clear();
+
+		m_volumeBlocks.clear();
+		m_dim[0] = -1;
+		m_dim[1] = -1;
+		m_dim[2] = -1;
+		m_components = -1;
     }
     
     /// デバッグ用
@@ -100,25 +113,25 @@ public:
     /// Width取得
     int Width()
     {
-        return -1; // @todo
+        m_dim[0];
     }
     
     /// Height取得
     int Height()
     {
-        return -1; // @todo
+        m_dim[1];
     }
     
     /// Depth取得
     int Depth()
     {
-        return -1; // @todo
+        m_dim[2];
     }
     
     /// Component数取得
     int Component()
     {
-        return 1; // @todo
+		m_components;
     }
     
     /// バッファの参照を返す
@@ -147,8 +160,7 @@ public:
     void Sample(float* ret, float x, float y, float z) {
 
         // Up to 4 components at this time.
-        assert(m_comp <= 4);
-        assert(m_sparseVolumeAccel);
+        assert(m_components <= 4);
 
         double value[4];
         double position[3];
@@ -157,9 +169,9 @@ public:
         position[1] = y * Height();
         position[2] = z * Depth();
 #ifndef _WIN32
-        m_sparseVolumeAccel->Sample(value, position);
+        m_sparseVolumeAccel.Sample(value, position);
 #endif
-        for (int c = 0; c < m_comp; c++) {
+        for (int c = 0; c < m_components; c++) {
             ret[c] = value[c];
         }
 
@@ -167,11 +179,11 @@ public:
 
     /// 疎ボリュームデータをビルド
     bool Build() {
-        delete m_sparseVolumeAccel; // delete exiting accel structure.
+        //delete m_sparseVolumeAccel; // delete exiting accel structure.
 
-		m_sparseVolumeAccel = new lsgl::render::SparseVolumeAccel();
+		//m_sparseVolumeAccel = new lsgl::render::SparseVolumeAccel();
 #ifndef _WIN32
-        return m_sparseVolumeAccel->Build(m_sparseVolume);
+        return m_sparseVolumeAccel.Build(&m_sparseVolume);
 #else
 		return false;
 #endif
