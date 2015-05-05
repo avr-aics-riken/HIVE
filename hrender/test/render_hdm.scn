@@ -16,4 +16,8 @@ local hdm = HDMLoader()
 -- cellid file, data file, field name, field type, components(1=scalar, 3=vector)
 hdm:Load('hdm_out/cellid.bcm', 'hdm_out/data.bcm', "Tmp32", "Float32", 1)
 
--- krender {camera, model}
+local volume = SparseVolumeModel()
+local volumedata = hdm:SparseVolumeData()
+volume:Create(volumedata)
+volume:SetShader('def_volume_raymarch4.frag')
+render {camera, volume}
