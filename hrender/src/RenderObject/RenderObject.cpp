@@ -23,6 +23,7 @@ public:
             "SETTING",
             "CAMERA",
             "VOLUME",
+            "SPARSEVOLUME",
             "POLYGON",
             "LINE",
             "POINT",

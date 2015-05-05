@@ -20,6 +20,7 @@ private:
     int m_components;
     std::vector<VolumeBlock> m_volumeBlocks;
 
+	// For `Sample()` method.
     lsgl::render::SparseVolumeAccel m_sparseVolumeAccel;
     lsgl::render::SparseVolume m_sparseVolume;
 
@@ -28,6 +29,9 @@ public:
     /// コンストラクタ
     Impl()
     {
+		m_dim[0] = -1;
+		m_dim[1] = -1;
+		m_dim[2] = -1;
     }
     
     /// コンストラクタ
@@ -39,8 +43,9 @@ public:
 		m_dim[2] = inst->Depth();
 		m_components = inst->Component();
 
-		// @todo {}
-		assert(0);
+		m_volumeBlocks = inst->VolumeBlocks();
+
+		// @todo { m_sparseVolumeAccel, _sparseVolume }
     }
     
     /// デストラクタ
@@ -69,6 +74,16 @@ public:
     void AddVolume(int offset_x, int offset_y, int offset_z,
                                            BufferVolumeData* vol)
     {
+		{
+            VolumeBlock block;
+            block.offset[0] = offset_x;
+            block.offset[1] = offset_y;
+            block.offset[2] = offset_z;
+			block.volume = vol; // pointer reference
+
+			m_volumeBlocks.push_back(block);
+		}
+
         // Also add to SparseVolume
         {
             lsgl::render::VolumeBlock block;
@@ -113,43 +128,35 @@ public:
     /// Width取得
     int Width()
     {
-        m_dim[0];
+        return m_dim[0];
     }
     
     /// Height取得
     int Height()
     {
-        m_dim[1];
+        return m_dim[1];
     }
     
     /// Depth取得
     int Depth()
     {
-        m_dim[2];
+        return m_dim[2];
     }
     
     /// Component数取得
     int Component()
     {
-		m_components;
-    }
-    
-    /// バッファの参照を返す
-    const std::vector<BufferSparseVolumeData::VolumeBlock>& Buffers() const
-    {
-        // @todo
-        static std::vector<BufferSparseVolumeData::VolumeBlock> tmp;
-        return tmp;
-    }
-    
-    /// バッファの参照を返す
-    std::vector<BufferSparseVolumeData::VolumeBlock>& Buffers()
-    {
-        // @todo
-        static std::vector<BufferSparseVolumeData::VolumeBlock> tmp;
-        return tmp;
+		return m_components;
     }
 
+	const std::vector<VolumeBlock>& VolumeBlocks() const {
+		return m_volumeBlocks;
+	}
+
+	std::vector<VolumeBlock>& VolumeBlocks() {
+		return m_volumeBlocks;
+	}
+    
     /**
      * サンプルする
      * @param ret サンプル結果
@@ -182,6 +189,9 @@ public:
         //delete m_sparseVolumeAccel; // delete exiting accel structure.
 
 		//m_sparseVolumeAccel = new lsgl::render::SparseVolumeAccel();
+		if (m_sparseVolume.blocks.empty()) {
+			return false;
+		}
 #ifndef _WIN32
         return m_sparseVolumeAccel.Build(&m_sparseVolume);
 #else
@@ -192,14 +202,14 @@ public:
 };
 
 /// コンストラクタ
-BufferSparseVolumeData::BufferSparseVolumeData() : BufferData(TYPE_SVOLUME)
+BufferSparseVolumeData::BufferSparseVolumeData() : BufferData(TYPE_SPARSEVOLUME)
 {
     m_imp = new BufferSparseVolumeData::Impl();
 }
 
 /// コンストラクタ
 /// @param inst 疎ボリュームデータ
-BufferSparseVolumeData::BufferSparseVolumeData(BufferSparseVolumeData* inst) : BufferData(TYPE_SVOLUME)
+BufferSparseVolumeData::BufferSparseVolumeData(BufferSparseVolumeData* inst) : BufferData(TYPE_SPARSEVOLUME)
 {
     m_imp = new BufferSparseVolumeData::Impl(inst);
 }
@@ -241,39 +251,39 @@ void BufferSparseVolumeData::print()
 }
 
 /// Width取得
-int BufferSparseVolumeData::Width()
+const int BufferSparseVolumeData::Width() const
 {
     return m_imp->Width();
 }
 
 /// Height取得
-int BufferSparseVolumeData::Height()
+const int BufferSparseVolumeData::Height() const
 {
     return m_imp->Height();
 }
 
 /// Depth取得
-int BufferSparseVolumeData::Depth()
+const int BufferSparseVolumeData::Depth() const
 {
     return m_imp->Depth();
 }
 
 /// Component数取得
-int BufferSparseVolumeData::Component()
+const int BufferSparseVolumeData::Component() const
 {
     return m_imp->Component();
 }
 
 /// バッファの参照を返す
-const std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::Buffers() const
+const std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::VolumeBlocks() const
 {
-    return m_imp->Buffers();
+    return m_imp->VolumeBlocks();
 }
 
 /// バッファの参照を返す
-std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::Buffers()
+std::vector<BufferSparseVolumeData::VolumeBlock>& BufferSparseVolumeData::VolumeBlocks()
 {
-    return m_imp->Buffers();
+    return m_imp->VolumeBlocks();
 }
 
 /**

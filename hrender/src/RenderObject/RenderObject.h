@@ -25,6 +25,7 @@ public:
         TYPE_SETTING,
         TYPE_CAMERA,
         TYPE_VOLUME,
+        TYPE_SPARSEVOLUME,
         TYPE_POLYGON,
         TYPE_LINE,
         TYPE_POINT,

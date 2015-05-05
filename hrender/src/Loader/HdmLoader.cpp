@@ -224,7 +224,11 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData& sparseVolume, const int dcid
 
 		BufferVolumeData* vol = new BufferVolumeData();
 		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */1);
-		//std::copy(vb.data.begin(), vb.data.end(), vol->Buffer()->GetBuffer());
+
+		// Implicitly convert voxel data to float precision if T is double.
+		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2]; i++) {
+			vol->Buffer()->GetBuffer()[i] = vb.data[i];
+		}
 
 		sparseVolume.AddVolume(vb.offset[0], vb.offset[1], vb.offset[2], vol);
     }
@@ -300,8 +304,8 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 	// Voxel resolution at the maximum level = rootGridSize * (2^maxLevel) * leafBlockSize
 	size_t dim[3];
 	dim[0] = (1 << maxLevel) * lbSize.x * rootDim[0];
-	dim[1] = (1 << maxLevel) * lbSize.y * rootDim[0];
-	dim[2] = (1 << maxLevel) * lbSize.z * rootDim[0];
+	dim[1] = (1 << maxLevel) * lbSize.y * rootDim[1];
+	dim[2] = (1 << maxLevel) * lbSize.z * rootDim[2];
 
 
 	// Get timestep for given field
@@ -345,10 +349,11 @@ bool HDMLoader::Load(const char* cellidFilename, const char* dataFilename, const
 			}
 		}
 
-
 	}
 
-	return false;
+	m_sparseVolume.Build();
+
+	return true;
 }
 
 /**
