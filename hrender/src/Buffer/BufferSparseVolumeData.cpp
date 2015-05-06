@@ -7,8 +7,7 @@
 #include "BufferVolumeData.h"
 
 // Use SparseVolume feature from SURFACE to provide Sample() function
-#include "render_prim_volume.h"
-#include "render_accel_volume.h"
+#include "render_bvh_tree.h"
 
 /**
  * BufferSparseVolumeDataクラス
@@ -21,8 +20,53 @@ private:
     std::vector<VolumeBlock> m_volumeBlocks;
 
 	// For `Sample()` method.
-    lsgl::render::SparseVolumeAccel m_sparseVolumeAccel;
-    lsgl::render::SparseVolume m_sparseVolume;
+	lsgl::render::BVHTree m_tree;
+
+	// Grabbed from SURFACE/render/render_accel_volume.cc
+	bool SampleSparseVolume(
+		double value[4],
+		const double position[3]) {
+
+	  StackVector<lsgl::render::BVHNodeLocator, 32> locaters;
+	  bool hit = m_tree.Locate(locaters, position);
+
+	  value[0] = 0.0f;
+	  value[1] = 0.0f;
+	  value[2] = 0.0f;
+	  value[3] = 1.0f; 
+
+	  if (hit) {
+		// @note { We don't allow overlapping of volume block. }
+		lsgl::render::BVHNodeLocator locator = locaters[0];
+
+		// fetch texel color
+		int blockID = locator.nodeID;
+		int components = m_components;
+
+	   	const VolumeBlock &block = m_volumeBlocks[blockID];
+
+		// find local offset.
+		double x = position[0] - block.offset[0];
+		double y = position[1] - block.offset[1];
+		double z = position[2] - block.offset[2];
+		int ix = (std::max)(
+			(std::min)(block.offset[0] + block.volume->Width() - 1, (int)x), 0);
+		int iy = (std::max)(
+			(std::min)(block.offset[1] + block.volume->Height() - 1, (int)y), 1);
+		int iz = (std::max)(
+			(std::min)(block.offset[2] + block.volume->Depth() - 1, (int)z), 2);
+
+		 size_t idx =
+			  iz * block.volume->Width()  * block.volume->Height() + iy * block.volume->Depth() + ix;
+		for (int c = 0; c < components; c++) {
+			value[c] = (block.volume->Buffer()->GetBuffer())[components * idx + c];
+		}
+
+	  }
+
+	  return hit;
+	}
+		
 
 public:
     
@@ -84,26 +128,26 @@ public:
 			m_volumeBlocks.push_back(block);
 		}
 
-        // Also add to SparseVolume
-        {
-            lsgl::render::VolumeBlock block;
-            block.offset[0] = offset_x;
-            block.offset[1] = offset_y;
-            block.offset[2] = offset_z;
+        //// Also add to SparseVolume
+        //{
+        //    lsgl::render::VolumeBlock block;
+        //    block.offset[0] = offset_x;
+        //    block.offset[1] = offset_y;
+        //    block.offset[2] = offset_z;
 
-            block.extent[0] = vol->Width();
-            block.extent[1] = vol->Height();
-            block.extent[2] = vol->Depth();
+        //    block.extent[0] = vol->Width();
+        //    block.extent[1] = vol->Height();
+        //    block.extent[2] = vol->Depth();
 
-            assert(block.offset[0] + block.extent[0] <= Width());
-            assert(block.offset[1] + block.extent[1] <= Height());
-            assert(block.offset[2] + block.extent[2] <= Depth());
+        //    assert(block.offset[0] + block.extent[0] <= Width());
+        //    assert(block.offset[1] + block.extent[1] <= Height());
+        //    assert(block.offset[2] + block.extent[2] <= Depth());
 
-            block.id = m_volumeBlocks.size();
-            block.data = reinterpret_cast<unsigned char*>(vol->Buffer()->GetBuffer()); // @fixme { Take a pointer reference. Is this OK? }
+        //    block.id = m_volumeBlocks.size();
+        //    block.data = reinterpret_cast<unsigned char*>(vol->Buffer()->GetBuffer()); // @fixme { Take a pointer reference. Is this OK? }
 
-            m_sparseVolume.blocks.push_back(block);
-        }
+        //    m_sparseVolume.blocks.push_back(block);
+        //}
 
 
     }
@@ -111,8 +155,6 @@ public:
     /// メンバクリア
     void Clear()
     {
-        m_sparseVolume.blocks.clear();
-
 		m_volumeBlocks.clear();
 		m_dim[0] = -1;
 		m_dim[1] = -1;
@@ -176,7 +218,7 @@ public:
         position[1] = y * Height();
         position[2] = z * Depth();
 #ifndef _WIN32
-        m_sparseVolumeAccel.Sample(value, position);
+		SampleSparseVolume(value, position);
 #endif
         for (int c = 0; c < m_components; c++) {
             ret[c] = value[c];
@@ -186,17 +228,36 @@ public:
 
     /// 疎ボリュームデータをビルド
     bool Build() {
-        //delete m_sparseVolumeAccel; // delete exiting accel structure.
 
-		//m_sparseVolumeAccel = new lsgl::render::SparseVolumeAccel();
-		if (m_sparseVolume.blocks.empty()) {
+		if (m_volumeBlocks.empty()) {
 			return false;
 		}
+
 #ifndef _WIN32
-        return m_sparseVolumeAccel.Build(&m_sparseVolume);
+
+		for (size_t i = 0; i < m_volumeBlocks.size(); i++) {
+
+			lsgl::render::BVHData data;
+
+			data.bmin[0] = m_volumeBlocks[i].offset[0];
+			data.bmin[1] = m_volumeBlocks[i].offset[1];
+			data.bmin[2] = m_volumeBlocks[i].offset[2];
+
+			data.bmax[0] = data.bmin[0] + m_volumeBlocks[i].volume->Width();
+			data.bmax[1] = data.bmin[1] + m_volumeBlocks[i].volume->Height();
+			data.bmax[2] = data.bmin[2] + m_volumeBlocks[i].volume->Depth();
+
+			data.nodeID = i;
+
+			m_tree.AddNode(data);
+		}
+
+		m_tree.BuildTree();
+		return true;
 #else
 		return false;
 #endif
+
     }
 
 };
