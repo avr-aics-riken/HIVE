@@ -128,27 +128,6 @@ public:
 			m_volumeBlocks.push_back(block);
 		}
 
-        //// Also add to SparseVolume
-        //{
-        //    lsgl::render::VolumeBlock block;
-        //    block.offset[0] = offset_x;
-        //    block.offset[1] = offset_y;
-        //    block.offset[2] = offset_z;
-
-        //    block.extent[0] = vol->Width();
-        //    block.extent[1] = vol->Height();
-        //    block.extent[2] = vol->Depth();
-
-        //    assert(block.offset[0] + block.extent[0] <= Width());
-        //    assert(block.offset[1] + block.extent[1] <= Height());
-        //    assert(block.offset[2] + block.extent[2] <= Depth());
-
-        //    block.id = m_volumeBlocks.size();
-        //    block.data = reinterpret_cast<unsigned char*>(vol->Buffer()->GetBuffer()); // @fixme { Take a pointer reference. Is this OK? }
-
-        //    m_sparseVolume.blocks.push_back(block);
-        //}
-
 
     }
     
