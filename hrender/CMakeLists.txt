@@ -235,6 +235,7 @@ set(SOURCES
 	src/RenderObject/RenderObject.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
+	src/RenderObject/SparseVolumeModel.cpp
 	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
 	src/RenderObject/TetraModel.cpp
@@ -244,6 +245,7 @@ set(SOURCES
 	src/Renderer/Commands_LSGL.cpp
 	src/Renderer/PolygonBuffer.cpp
 	src/Renderer/VolumeBuffer.cpp
+	src/Renderer/SparseVolumeBuffer.cpp
 	src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
 	src/Renderer/TetraBuffer.cpp
