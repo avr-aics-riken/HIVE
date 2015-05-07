@@ -1,0 +1,37 @@
+Domain {
+
+  GlobalOrigin        = (0.000000e+00, 0.000000e+00, 0.000000e+00)
+  GlobalRegion        = (1.000000e+02, 2.500000e+01, 4.900000e+01)
+  GlobalVoxel         = (10, 5, 7)
+  GlobalDivision      = (1, 1, 1)
+  ActiveSubdomainFile = ""
+  CoordinateFile      = "coord.crd"
+  CoordinateFileType  = "binary"
+  CoordinateFilePrecision = "Float64"
+  CoordinateFileEndian = "little"
+
+}
+
+MPI {
+
+  NumberOfRank   = 1
+  NumberOfGroup  = 1
+
+}
+
+Process {
+
+  Rank[@] {
+
+    ID        = 0
+    HostName  = ""
+    VoxelSize = (10, 5, 7)
+    HeadIndex = (1, 1, 1)
+    TailIndex = (10, 5, 7)
+
+    CellID    = 3
+    BCflagID  = -1
+
+  }
+
+}

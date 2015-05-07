@@ -23,11 +23,11 @@ public:
     BufferVolumeData();
     BufferVolumeData(BufferVolumeData* inst);
     ~BufferVolumeData();
-    void Create(int w, int h, int d, int component);
+    void Create(int w, int h, int d, int component, bool nonUniform = false);
     FloatBuffer* SpacingX();
     FloatBuffer* SpacingY();
     FloatBuffer* SpacingZ();
-    bool NonUniform();
+    const bool NonUniform() const;
     void Clear();
     void print();
     int Width() const;

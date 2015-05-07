@@ -67,8 +67,9 @@ public:
      * @param h Heightサイズ
      * @param d Depthサイズ
      * @param component component数
+     * @param nonUniform flag for non-uniform volume
      */
-    void Create(int w, int h, int d, int component)
+    void Create(int w, int h, int d, int component, bool nonUniform)
     {
         this->m_dim[0] = w;
         this->m_dim[1] = h;
@@ -80,13 +81,13 @@ public:
         FloatBuffer* spacingZ = new FloatBuffer();
         buf->Create(w * h * d * component);
         this->m_buffer = buf;
-        spacingX->Create(w);
-        spacingY->Create(h);
-        spacingZ->Create(d);
+        spacingX->Create(w+1);
+        spacingY->Create(h+1);
+        spacingZ->Create(d+1);
         this->m_spacingX = spacingX;
         this->m_spacingY = spacingY;
         this->m_spacingZ = spacingZ;
-        this->m_isNonUniform = false;
+        this->m_isNonUniform = nonUniform;
     }
     
     /// メンバクリア
@@ -147,7 +148,7 @@ public:
      * NonUniformフラグ取得
      * @return NonUniformフラグ値
      */
-    bool NonUniform() {
+    const bool NonUniform() const {
         return m_isNonUniform;
     }
     
@@ -234,10 +235,11 @@ BufferVolumeData::~BufferVolumeData()
  * @param h Heightサイズ
  * @param d Depthサイズ
  * @param component component数
+ * @param nonUniform non-uniform flag
  */
-void BufferVolumeData::Create(int w, int h, int d, int component)
+void BufferVolumeData::Create(int w, int h, int d, int component, bool nonUniform)
 {
-    m_imp->Create(w, h, d, component);
+    m_imp->Create(w, h, d, component, nonUniform);
 }
 
 /// メンバクリア
@@ -296,7 +298,7 @@ FloatBuffer *BufferVolumeData::Buffer() const {
  * NonUniformフラグ取得
  * @return NonUniformフラグ値
  */
-bool BufferVolumeData::NonUniform() {
+const bool BufferVolumeData::NonUniform() const {
     return m_imp->NonUniform();
 }
 
