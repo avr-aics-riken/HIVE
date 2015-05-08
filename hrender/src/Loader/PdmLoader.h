@@ -5,6 +5,8 @@
 #ifndef _PDMLOADERNATIVE_H
 #define _PDMLOADERNATIVE_H
 
+#include <cstdlib>
+
 #include "Ref.h"
 #include "BufferPointData.h"
 
@@ -21,7 +23,7 @@ public:
 	void Clear();
 	BufferPointData points;
 protected:
-	bool Load(const char* filename);
+	bool Load(const char* filename, int timeStep = -1);
 	BufferPointData* PointData();
 };
 

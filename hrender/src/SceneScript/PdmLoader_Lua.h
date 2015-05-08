@@ -17,8 +17,8 @@ public:
     PDMLoader_Lua() {}
     ~PDMLoader_Lua() {}
 
-    bool Load(const char* filename) {
-        return PDMLoader::Load(filename);
+    bool Load(const char* filename, int timeStep) {
+        return PDMLoader::Load(filename, timeStep);
     }
 
     BufferPointData_Lua* PointData() {
@@ -26,7 +26,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(PDMLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferPointData_Lua*,PointData)
     LUA_SCRIPTCLASS_END()
 };

@@ -149,8 +149,8 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 
 		int numNodes = zone->getNumNodes();
 		int numCells = zone->getNumCells();
-		printf("zone[%d] numNodes: %d\n", zoneID, numNodes);
-		printf("zone[%d] numCells: %d\n", zoneID, numCells);
+		//printf("zone[%d] numNodes: %d\n", zoneID, numNodes);
+		//printf("zone[%d] numCells: %d\n", zoneID, numCells);
 
 		//for (int nodeID = 1; nodeID <= numNodes; nodeID++) {
 		//	const udm::UdmNode* node = zone->getNode(nodeID);
@@ -182,9 +182,27 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 			// See UDMlib doc for the ordering of vertex index.
 			if (type == udm::Udm_TRI_3) {
 
-				assert(0); // @todo
+				size_t indexOffset = trianglePoints.size() / 3;
+				for (int i = 0; i < 3; i++) {
+					triangleIndices.push_back(indexOffset + i);
+				}
+				trianglePoints.insert(trianglePoints.end(), points.begin(), points.end());
 			} else if (type == udm::Udm_QUAD_4) {
-				assert(0); // @todo
+
+				// Convert to 2 triangles.
+
+				size_t indexOffset = trianglePoints.size() / 3;
+
+				triangleIndices.push_back(indexOffset + 0);
+				triangleIndices.push_back(indexOffset + 1);
+				triangleIndices.push_back(indexOffset + 2);
+
+				triangleIndices.push_back(indexOffset + 0);
+				triangleIndices.push_back(indexOffset + 2);
+				triangleIndices.push_back(indexOffset + 3);
+
+				trianglePoints.insert(trianglePoints.end(), points.begin(), points.end());
+
 			} else if (type == udm::Udm_TETRA_4) {
 				size_t indexOffset = tetraPoints.size() / 3;
 				tetraIndices.push_back(indexOffset + 0);
@@ -220,10 +238,10 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 
 	}
 
-	printf("trianglePoints : %d\n", trianglePoints.size());
-	printf("triangleIndices: %d\n", triangleIndices.size());
-	printf("tetraPoints : %d\n", tetraPoints.size());
-	printf("tetraIndices: %d\n", tetraIndices.size());
+	//printf("trianglePoints : %d\n", trianglePoints.size());
+	//printf("triangleIndices: %d\n", triangleIndices.size());
+	//printf("tetraPoints : %d\n", tetraPoints.size());
+	//printf("tetraIndices: %d\n", tetraIndices.size());
 
 	if ((trianglePoints.size() > 0) && (triangleIndices.size() > 0)) {
 		int numVertices = trianglePoints.size() / 3;
