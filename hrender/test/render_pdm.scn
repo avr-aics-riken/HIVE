@@ -1,0 +1,17 @@
+print('Render PDM')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_pdm.jpg')
+
+camera:LookAt(
+	0,0,80,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local pdm = PDMLoader()
+pdm:Load('4CL8.pdm.dfi', -1)
+
+-- render {camera, l}
