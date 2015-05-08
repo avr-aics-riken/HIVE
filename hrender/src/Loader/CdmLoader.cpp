@@ -169,20 +169,48 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
 		coords[1].resize(nuDomain->GlobalVoxel[1] + 1);
 		coords[2].resize(nuDomain->GlobalVoxel[2] + 1);
 
-		// Read coordinate data.
-   		for (size_t x = 0; x < nuDomain->GlobalVoxel[0] + 1; x++) {
-			//printf("x[%d] = %f\n", x, nuDomain->NodeX(x));
-			coords[0][x] = nuDomain->NodeX(x);
+		// Read coordinate data and normalize coordinate values to [0, 1]
+		{
+			for (size_t x = 0; x < nuDomain->GlobalVoxel[0] + 1; x++) {
+				//printf("x[%d] = %f\n", x, nuDomain->NodeX(x));
+				coords[0][x] = nuDomain->NodeX(x);
+			}
+
+			double minval = coords[0][0];
+			double maxval = coords[0][nuDomain->GlobalVoxel[0]];
+
+   			for (size_t x = 0; x < nuDomain->GlobalVoxel[0] + 1; x++) {
+				coords[0][x] = (coords[0][x] - minval) / (maxval - minval);
+			}
 		}
 
-   		for (size_t y = 0; y < nuDomain->GlobalVoxel[1] + 1; y++) {
-			//printf("y[%d] = %f\n", y, nuDomain->NodeY(y));
-			coords[2][y] = nuDomain->NodeY(y);
+		{
+			for (size_t y = 0; y < nuDomain->GlobalVoxel[1] + 1; y++) {
+				//printf("y[%d] = %f\n", y, nuDomain->NodeY(y));
+				coords[2][y] = nuDomain->NodeY(y);
+			}
+
+			double minval = coords[1][0];
+			double maxval = coords[1][nuDomain->GlobalVoxel[1]];
+
+   			for (size_t x = 0; x < nuDomain->GlobalVoxel[1] + 1; x++) {
+				coords[1][x] = (coords[1][x] - minval) / (maxval - minval);
+			}
 		}
 
-   		for (size_t z = 0; z < nuDomain->GlobalVoxel[2] + 1; z++) {
-			//printf("z[%d] = %f\n", z, nuDomain->NodeZ(z));
-			coords[2][z] = nuDomain->NodeZ(z);
+		{
+			for (size_t z = 0; z < nuDomain->GlobalVoxel[2] + 1; z++) {
+				//printf("z[%d] = %f\n", z, nuDomain->NodeZ(z));
+				coords[2][z] = nuDomain->NodeZ(z);
+			}
+
+			double minval = coords[2][0];
+			double maxval = coords[2][nuDomain->GlobalVoxel[2]];
+
+   			for (size_t x = 0; x < nuDomain->GlobalVoxel[2] + 1; x++) {
+				coords[2][x] = (coords[2][x] - minval) / (maxval - minval);
+			}
+
 		}
 
 
@@ -228,7 +256,7 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
     CDM::E_CDM_ERRORCODE ret = CDM::E_CDM_SUCCESS;
     cdm_DFI* DFI_IN = cdm_DFI::ReadInit(MPI_COMM_WORLD, dfi_filename, GVoxel, GDiv, ret);
     if (ret != CDM::E_CDM_SUCCESS || DFI_IN == NULL) {
-        printf("Failed to load DFI file: %s\n", filename);
+        printf("[CdmLoader] Failed to load DFI file: %s\n", filename);
         return false;
     }
 

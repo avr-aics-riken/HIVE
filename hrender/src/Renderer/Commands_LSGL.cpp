@@ -949,6 +949,18 @@ void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, uns
     }
 }
 
+void TexCoordRemap3D_SGL(int axis, int n, const float* values)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	if (axis == 0) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_X, n, values);
+	} else if (axis == 1) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_Y, n, values);
+	} else if (axis == 2) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_Z, n, values);
+	}
+}
+
 /**
  * SGLコマンドバッファの完了.
  */
