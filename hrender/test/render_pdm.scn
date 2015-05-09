@@ -14,4 +14,9 @@ camera:LookAt(
 local pdm = PDMLoader()
 pdm:Load('4CL8.pdm.dfi', -1)
 
--- render {camera, l}
+local pointmodel = PointModel()
+local pointdata = pdm:PointData('Coordinate', 0.2) -- container name, radius
+pointmodel:Create(pointdata)
+pointmodel:SetShader('white.frag')
+
+render {camera, pointmodel}
