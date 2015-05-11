@@ -64,6 +64,8 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
 void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT);
 
 void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
+void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
+void TexCoordRemap3D_SGL(int axis, int n, const float* values);
 void EvalFragmentShader_SGL();
 void SetCallback_SGL(bool (*callback)(int progress, int y, int height, void* userptr), void* userptr);
 void Finish_SGL();
