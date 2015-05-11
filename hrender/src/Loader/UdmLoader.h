@@ -17,10 +17,30 @@ class BufferTetraData;
  */
 class UDMLoader : public RefCount
 {
+private:
+	typedef struct {
+		std::string name;
+		int type;
+	} SolutionInfo;
+
+	typedef std::map<std::string, std::vector<float> > scalarArrayMap;
+	typedef std::map<std::string, std::vector<float> > vec3ArrayMap;
+
 public:
     UDMLoader();
     ~UDMLoader();
     void Clear();
+
+	/// Add solution(physical quantity) data to be loaded as a varying data
+	/// Must be called before `Load()`
+	void AddSolution(const char* name);
+
+	/// Clear solution information added by `AddSolution`.
+	void ClearSolution() {
+		m_solutions.clear();
+	}
+
+	/// Loads UDMlib data.
     bool Load(const char* filename, int stepno);
 
     int NumTimeSteps() {
@@ -45,11 +65,22 @@ public:
 	/// NULL if the file does not contain tetra primitive. 
 	BufferTetraData* TetraData();
 
+	/// Get vec3 solution data.
+	Vec3Buffer* Vec3Data(const char* name);
+
+	/// Get scalar solution data.
+	FloatBuffer* ScalarData(const char* name);
+
 private:
     std::vector<unsigned int> m_timeSteps;
 
 	RefPtr<BufferMeshData> m_mesh;
 	RefPtr<BufferTetraData> m_tetra;
+
+	std::vector<SolutionInfo> m_solutions;
+
+	scalarArrayMap m_scalarArrayList;
+	vec3ArrayMap m_vec3ArrayList;
 
 };
 

@@ -46,6 +46,28 @@ void UDMLoader::Clear()
 {
 	m_mesh = 0;
 	m_tetra = 0;
+
+	for (scalarArrayMap::iterator it = m_scalarArrayList.begin(); it != m_scalarArrayList.end(); it++) {
+		it->second.clear();
+	}
+
+	for (vec3ArrayMap::iterator it = m_vec3ArrayList.begin(); it != m_vec3ArrayList.end(); it++) {
+		it->second.clear();
+	}
+
+}
+
+/**
+ * Add solution to be loaded
+ * @param name Name of soltion(e.g. Temperature, Pressure)
+ */
+void UDMLoader::AddSolution(const char* filename)
+{
+	SolutionInfo info;
+	info.name = std::string(filename);
+	// .type is not used here.
+
+	m_solutions.push_back(info);
 }
 
 /**
@@ -80,6 +102,8 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 
 	udm::UdmDfiConfig *config = model->getDfiConfig();
 	udm::UdmUnitListConfig *unitsConfig = config->getUnitListConfig();
+	udm::UdmFlowSolutionListConfig *solutions = config->getFlowSolutionListConfig();
+
 	if (unitsConfig->existsUnitConfig("Length")) {
 		std::string unit;
 		float reference = 0.0;
@@ -138,6 +162,54 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 	std::vector<float> tetraPoints;
 	std::vector<int> tetraIndices;
 
+	std::vector<std::string> solutionNameList;
+	solutions->getSolutionNameList(solutionNameList);
+	printf("[UDMloader] # of solutions = %d\n", static_cast<int>(solutionNameList.size()));
+	for (size_t i = 0; i < solutionNameList.size(); i++) {
+		printf("  [%d] solution name = %s\n", i, solutionNameList[i].c_str()); 
+	}
+
+	// Supported datat type: Float or Double, 1 or 3 components
+	std::vector<SolutionInfo> validScalarSolutions;
+	std::vector<SolutionInfo> validVec3Solutions;
+
+	for (size_t i = 0; i < m_solutions.size(); i++) {
+		if (solutions->existsSolutionConfig(m_solutions[i].name)) {
+			if ((solutions->getDataType(m_solutions[i].name) == udm::Udm_RealSingle) ||
+			    (solutions->getDataType(m_solutions[i].name) == udm::Udm_RealDouble)) {
+
+				if (solutions->getVectorType(m_solutions[i].name) == udm::Udm_Scalar) {
+
+					// Got it.
+					SolutionInfo info;
+					info = m_solutions[i];
+					info.type = solutions->getDataType(m_solutions[i].name);
+					validScalarSolutions.push_back(info);
+
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < m_solutions.size(); i++) {
+		if (solutions->existsSolutionConfig(m_solutions[i].name)) {
+			if ((solutions->getDataType(m_solutions[i].name) == udm::Udm_RealSingle) ||
+			    (solutions->getDataType(m_solutions[i].name) == udm::Udm_RealDouble)) {
+
+				if 	(solutions->getVectorType(m_solutions[i].name) == udm::Udm_Vector) {
+
+					// Got it.
+					SolutionInfo info;
+					info = m_solutions[i];
+					info.type = solutions->getDataType(m_solutions[i].name);
+					validVec3Solutions.push_back(info);
+
+				}
+			}
+		}
+	}
+
+
 	// NOTE: ID starts with 1.
 	for (int zoneID = 1; zoneID <= numZones; zoneID++) {
 		const udm::UdmZone* zone = model->getZone(zoneID);
@@ -177,6 +249,48 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 				points.push_back(static_cast<float>(x));
 				points.push_back(static_cast<float>(y));
 				points.push_back(static_cast<float>(z));
+
+				// scalar solutions
+				for (size_t i = 0; i < validScalarSolutions.size(); i++) {
+					const std::string& name = validScalarSolutions[i].name;
+					if (validScalarSolutions[i].type == udm::Udm_RealSingle) {
+						float value;
+						node->getSolutionScalar(name, value);
+
+						m_scalarArrayList[name].push_back(value);
+
+					} else if (validScalarSolutions[i].type == udm::Udm_RealDouble) {
+						double value;
+						node->getSolutionScalar(name, value);
+
+						// clamp to float
+						m_scalarArrayList[name].push_back(value);
+
+					}
+				}
+
+				// vector solutions
+				for (size_t i = 0; i < validVec3Solutions.size(); i++) {
+					const std::string& name = validVec3Solutions[i].name;
+					if (validVec3Solutions[i].type == udm::Udm_RealSingle) {
+						float value[3];
+						node->getSolutionVector(name, value);
+
+						m_vec3ArrayList[name].push_back(value[0]);
+						m_vec3ArrayList[name].push_back(value[1]);
+						m_vec3ArrayList[name].push_back(value[2]);
+
+					} else if (validVec3Solutions[i].type == udm::Udm_RealDouble) {
+						double value[3];
+						node->getSolutionVector(name, value);
+
+						// clamp to float
+						m_vec3ArrayList[name].push_back(value[0]);
+						m_vec3ArrayList[name].push_back(value[1]);
+						m_vec3ArrayList[name].push_back(value[2]);
+
+					}
+				}
 			}
 
 			// See UDMlib doc for the ordering of vertex index.
@@ -242,6 +356,9 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 	//printf("triangleIndices: %d\n", triangleIndices.size());
 	//printf("tetraPoints : %d\n", tetraPoints.size());
 	//printf("tetraIndices: %d\n", tetraIndices.size());
+	
+	// Get Solution data
+	
 
 	if ((trianglePoints.size() > 0) && (triangleIndices.size() > 0)) {
 		int numVertices = trianglePoints.size() / 3;
@@ -294,4 +411,26 @@ BufferMeshData* UDMLoader::MeshData() {
 BufferTetraData* UDMLoader::TetraData() {
 	return m_tetra;
 }
+
+FloatBuffer* UDMLoader::ScalarData(const char* name) {
+	if (m_scalarArrayList.find(name) != m_scalarArrayList.end()) {
+		FloatBuffer* buf = new FloatBuffer();
+		buf->Create(m_scalarArrayList[name].size());
+		std::copy(m_scalarArrayList[name].begin(), m_scalarArrayList[name].end(), buf->GetBuffer());
+		return buf; // @fixme { When to delete buf? }
+	}
+	return NULL;
+}
+
+Vec3Buffer* UDMLoader::Vec3Data(const char* name) {
+	if (m_vec3ArrayList.find(name) != m_vec3ArrayList.end()) {
+		Vec3Buffer* buf = new Vec3Buffer();
+		buf->Create(m_vec3ArrayList[name].size() / 3);
+		std::copy(m_vec3ArrayList[name].begin(), m_vec3ArrayList[name].end(), buf->GetBuffer());
+		return buf; // @fixme { When to delete buf? }
+	}
+	return NULL;
+}
+
+
 
