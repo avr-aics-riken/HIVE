@@ -912,6 +912,56 @@ void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int
 }
 
 /**
+ * Sparse 3Dテクスチャの生成
+ * @param width 幅
+ * @param height 高さ
+ * @param depth 深度
+ * @param component 種類
+ * @param volumedata ボリュームデータ
+ */
+void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint format = GL_LUMINANCE;
+	if (component == 4) {
+		format = GL_RGBA; 
+	} else if (component == 3) {
+		format = GL_RGB; // as vector
+	} else if (component == 1){
+		format = GL_LUMINANCE;
+	} else {
+		assert(0);
+	}
+	sgl.lsglTexPageCommitment(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, width, height, depth, GL_TRUE);
+	sgl.lsglTexSubImage3DPointer(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, width, height, depth, format, GL_FLOAT, volumedata);
+
+	// @fixme { Setting TexParameter is only required to set once, not everytime. }
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeR) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+}
+
+void TexCoordRemap3D_SGL(int axis, int n, const float* values)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	if (axis == 0) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_X, n, values);
+	} else if (axis == 1) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_Y, n, values);
+	} else if (axis == 2) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_Z, n, values);
+	}
+}
+
+/**
  * SGLコマンドバッファの完了.
  */
 void Finish_SGL()

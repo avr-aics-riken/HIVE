@@ -156,6 +156,14 @@ bool VolumeBuffer::Create(const VolumeModel* model)
         float sh = volume->Height();
         float sd = volume->Depth();
         r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer(), model->GetClampToEdgeS(), model->GetClampToEdgeT(), model->GetClampToEdgeR());
+		if (volume->NonUniform()) {
+			// Register remap table for non-uniform volume
+    		BindTexture3D_SGL(m_sgl_voltex);
+			TexCoordRemap3D_SGL(0 /* = x */, volume->SpacingX()->GetNum(), volume->SpacingX()->GetBuffer());
+			TexCoordRemap3D_SGL(1 /* = y */, volume->SpacingY()->GetNum(), volume->SpacingY()->GetBuffer());
+			TexCoordRemap3D_SGL(2 /* = z */, volume->SpacingZ()->GetNum(), volume->SpacingZ()->GetBuffer());
+		}
+
         MakeBox(sw,sh,sd);
     } else {
         fprintf(stderr,"[Error] Not load buffer\n");

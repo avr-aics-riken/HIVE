@@ -19,8 +19,8 @@ public:
     VolumeModel_Lua() {}
     ~VolumeModel_Lua() {}
 
-    bool Create(BufferVolumeData_Lua *mesh) {
-        VolumeModel::Create(mesh);
+    bool Create(BufferVolumeData_Lua *vol) {
+        VolumeModel::Create(vol);
         return true;
     }
 

@@ -27,6 +27,7 @@
 #include "../RenderObject/VectorModel.h"
 #include "../RenderObject/TetraModel.h"
 #include "../RenderObject/VolumeModel.h"
+#include "../RenderObject/SparseVolumeModel.h"
 #include "../RenderObject/Camera.h"
 #include "../RenderObject/PolygonModel.h"
 #include "../Core/Ref.h"
@@ -37,6 +38,7 @@
 #include "PointBuffer.h"
 #include "LineBuffer.h"
 #include "VolumeBuffer.h"
+#include "SparseVolumeBuffer.h"
 #include "VectorBuffer.h"
 #include "TetraBuffer.h"
 
@@ -364,6 +366,10 @@ private:
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
              VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
+             buffer = vbuf;
+        } else if (robj->GetType() == RenderObject::TYPE_SPARSEVOLUME) {
+             SparseVolumeBuffer* vbuf = new SparseVolumeBuffer(RENDER_LSGL);
+             vbuf->Create(static_cast<const SparseVolumeModel*>(robj));
              buffer = vbuf;
         } else if (robj->GetType() == RenderObject::TYPE_TETRA) {
             TetraBuffer* tbuf = new TetraBuffer(RENDER_LSGL);

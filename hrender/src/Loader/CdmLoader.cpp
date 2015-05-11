@@ -46,10 +46,12 @@ void CDMLoader::Clear()
 /**
  * CDMデータのロード
  * @param filename ファイルパス
+ * @param virtualCell # of virtual cells
+ * @param timeSliceIndex timeslice index
  * @retval true 成功
  * @retval false 失敗
  */
-bool CDMLoader::Load(const char* filename)
+bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
 {
     Clear();
 
@@ -136,10 +138,21 @@ bool CDMLoader::Load(const char* filename)
         }
     }
 
+	bool isNonUniform = false;
+
     // Read Domain from proc.dfi
-    cdm_Domain domain;
+    cdm_Domain* domain;
+	if (fileInfo.DFIType == CDM::E_CDM_DFITYPE_CARTESIAN) {
+		domain = new cdm_Domain();
+	} else if (fileInfo.DFIType == CDM::E_CDM_DFITYPE_NON_UNIFORM_CARTESIAN) {
+		domain = new cdm_NonUniformDomain<double>();
+		isNonUniform = true;
+	} else {
+		assert(0);
+	}
+
     {
-        if (domain.Read(tp, dirName) != CDM::E_CDM_SUCCESS) {
+        if (domain->Read(tp, dirName) != CDM::E_CDM_SUCCESS) {
             fprintf(stderr, "[CDMLoader] Failed to read Doamin info from .dfi file: %s\n", procfile.c_str());
             return false;
         }
@@ -147,41 +160,103 @@ bool CDMLoader::Load(const char* filename)
 
     tp.remove();
 
-    m_globalVoxel[0] = domain.GlobalVoxel[0];
-    m_globalVoxel[1] = domain.GlobalVoxel[1];
-    m_globalVoxel[2] = domain.GlobalVoxel[2];
+	std::vector<float> coords[3];
 
-    m_globalDiv[0] = domain.GlobalDivision[0];
-    m_globalDiv[1] = domain.GlobalDivision[1];
-    m_globalDiv[2] = domain.GlobalDivision[2];
+	if (isNonUniform) {
+		cdm_NonUniformDomain<double>* nuDomain = dynamic_cast<cdm_NonUniformDomain<double>*>(domain);
 
-    m_globalOffset[0] = domain.GlobalOrigin[0];
-    m_globalOffset[1] = domain.GlobalOrigin[1];
-    m_globalOffset[2] = domain.GlobalOrigin[2];
+		coords[0].resize(nuDomain->GlobalVoxel[0] + 1);
+		coords[1].resize(nuDomain->GlobalVoxel[1] + 1);
+		coords[2].resize(nuDomain->GlobalVoxel[2] + 1);
 
-    m_globalRegion[0] = domain.GlobalRegion[0];
-    m_globalRegion[1] = domain.GlobalRegion[1];
-    m_globalRegion[2] = domain.GlobalRegion[2];
+		// Read coordinate data and normalize coordinate values to [0, 1]
+		{
+			for (size_t x = 0; x < nuDomain->GlobalVoxel[0] + 1; x++) {
+				//printf("x[%d] = %f\n", x, nuDomain->NodeX(x));
+				coords[0][x] = nuDomain->NodeX(x);
+			}
+
+			double minval = coords[0][0];
+			double maxval = coords[0][nuDomain->GlobalVoxel[0]];
+
+   			for (size_t x = 0; x < nuDomain->GlobalVoxel[0] + 1; x++) {
+				coords[0][x] = (coords[0][x] - minval) / (maxval - minval);
+			}
+		}
+
+		{
+			for (size_t y = 0; y < nuDomain->GlobalVoxel[1] + 1; y++) {
+				//printf("y[%d] = %f\n", y, nuDomain->NodeY(y));
+				coords[2][y] = nuDomain->NodeY(y);
+			}
+
+			double minval = coords[1][0];
+			double maxval = coords[1][nuDomain->GlobalVoxel[1]];
+
+   			for (size_t x = 0; x < nuDomain->GlobalVoxel[1] + 1; x++) {
+				coords[1][x] = (coords[1][x] - minval) / (maxval - minval);
+			}
+		}
+
+		{
+			for (size_t z = 0; z < nuDomain->GlobalVoxel[2] + 1; z++) {
+				//printf("z[%d] = %f\n", z, nuDomain->NodeZ(z));
+				coords[2][z] = nuDomain->NodeZ(z);
+			}
+
+			double minval = coords[2][0];
+			double maxval = coords[2][nuDomain->GlobalVoxel[2]];
+
+   			for (size_t x = 0; x < nuDomain->GlobalVoxel[2] + 1; x++) {
+				coords[2][x] = (coords[2][x] - minval) / (maxval - minval);
+			}
+
+		}
+
+
+	}
+		
+
+    m_globalVoxel[0] = domain->GlobalVoxel[0];
+    m_globalVoxel[1] = domain->GlobalVoxel[1];
+    m_globalVoxel[2] = domain->GlobalVoxel[2];
+
+    m_globalDiv[0] = domain->GlobalDivision[0];
+    m_globalDiv[1] = domain->GlobalDivision[1];
+    m_globalDiv[2] = domain->GlobalDivision[2];
+
+    m_globalOffset[0] = domain->GlobalOrigin[0];
+    m_globalOffset[1] = domain->GlobalOrigin[1];
+    m_globalOffset[2] = domain->GlobalOrigin[2];
+
+    m_globalRegion[0] = domain->GlobalRegion[0];
+    m_globalRegion[1] = domain->GlobalRegion[1];
+    m_globalRegion[2] = domain->GlobalRegion[2];
+
+	//printf("region = %f, %f, %f\n", m_globalRegion[0], m_globalRegion[1], m_globalRegion[2]);
 
     int GVoxel[3] = { m_globalVoxel[0], m_globalVoxel[1], m_globalVoxel[2] }; 
     int GDiv[3]   = { m_globalDiv[0], m_globalDiv[1], m_globalDiv[2] }; 
     int head[3] = { 1, 1, 1 }; // @fixme.
     int tail[3] = { m_globalVoxel[0], m_globalVoxel[1], m_globalVoxel[2] }; // @fixme.
-    int virtualCellSize = 1; // @fixme.
+
+	delete domain;
 
     unsigned int step = 0; 
 
-    // @fixme { Specify timestep from scene script }
-    if (m_timeSteps.size() > 0) {
-        step = m_timeSteps[0];
-    }
+    if (timeSliceIndex < m_timeSteps.size()) {
+       step = m_timeSteps[timeSliceIndex];
+    } else {
+		printf("[CDMloader] timeSliceId(%d) is out of range(max: %d)\n", timeSliceIndex, m_timeSteps.size());
+		return false;
+	}
 
     std::string dfi_filename = std::string(filename);
     
     CDM::E_CDM_ERRORCODE ret = CDM::E_CDM_SUCCESS;
     cdm_DFI* DFI_IN = cdm_DFI::ReadInit(MPI_COMM_WORLD, dfi_filename, GVoxel, GDiv, ret);
     if (ret != CDM::E_CDM_SUCCESS || DFI_IN == NULL) {
-        printf("Failed to load DFI file: %s\n", filename);
+        printf("[CdmLoader] Failed to load DFI file: %s\n", filename);
         return false;
     }
 
@@ -219,13 +294,13 @@ bool CDMLoader::Load(const char* filename)
     float f_dummy;      ///<平均時間
 
     // data size
-    size_t dataSize = (GVoxel[0]+2*virtualCellSize)*(GVoxel[1]+2*virtualCellSize)*(GVoxel[2]+2*virtualCellSize);
+    size_t dataSize = (GVoxel[0]+virtualCells)*(GVoxel[1]+virtualCells)*(GVoxel[2]+virtualCells);
     //printf("DBG: dataSize: %d\n", dataSize);
     float* d_v = new float[dataSize*numVariables];
 
     ret =  DFI_IN->ReadData(d_v,                // pointer to buffer
                             step,               // timestep
-                            virtualCellSize,    // virtual cell size
+                            virtualCells/2,     // virtual cell size
                             GVoxel,             // global dim
                             GDiv,               // num divs
                             head,               // start time
@@ -245,16 +320,16 @@ bool CDMLoader::Load(const char* filename)
     //
     // Create volume data by stripping virtual cells.
     //
-    m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables); // @fixme
+    m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables, isNonUniform); // @fixme
     float* dst = m_volume.Buffer()->GetBuffer();
 
-    size_t sx = GVoxel[0] + 2 * virtualCellSize;
-    size_t sy = GVoxel[1] + 2 * virtualCellSize;
+    size_t sx = GVoxel[0] + virtualCells;
+    size_t sy = GVoxel[1] + virtualCells;
     for (size_t z = 0; z < GVoxel[2]; z++) {
         for (size_t y = 0; y < GVoxel[1]; y++) {
             for (size_t x = 0; x < GVoxel[0]; x++) {
                 for (size_t c = 0; c < numVariables; c++) {
-                    size_t srcIdx = (z + virtualCellSize) * sy * sx + (y + virtualCellSize) + sx + (x + virtualCellSize);
+                    size_t srcIdx = (z + virtualCells/2) * sy * sx + (y + virtualCells/2) + sx + (x + virtualCells/2);
                     size_t dstIdx = z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
                     float val = d_v[numVariables * srcIdx + c];
                     dst[numVariables * dstIdx + c] = val;
@@ -262,6 +337,12 @@ bool CDMLoader::Load(const char* filename)
             }
         }
     }
+
+	if (isNonUniform) {
+		std::copy(coords[0].begin(), coords[0].end(), m_volume.SpacingX()->GetBuffer());
+		std::copy(coords[1].begin(), coords[1].end(), m_volume.SpacingY()->GetBuffer());
+		std::copy(coords[2].begin(), coords[2].end(), m_volume.SpacingZ()->GetBuffer());
+	}
 
     delete [] d_v;
     delete DFI_IN;

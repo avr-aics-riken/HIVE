@@ -15,6 +15,11 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   SET(HIVE_BUILD_WITH_BCMTOOLS On)
 ENDIF()
 
+# HDMlib depends on BCMTOOLS
+IF(HIVE_BUILD_WITH_HDMLIB)
+  SET(HIVE_BUILD_WITH_BCMTOOLS On)
+ENDIF()
+
 # --------------------------------------
 # 
 #  SAME Build Option with SURFACE
@@ -230,6 +235,7 @@ set(SOURCES
 	src/RenderObject/RenderObject.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
+	src/RenderObject/SparseVolumeModel.cpp
 	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
 	src/RenderObject/TetraModel.cpp
@@ -239,6 +245,7 @@ set(SOURCES
 	src/Renderer/Commands_LSGL.cpp
 	src/Renderer/PolygonBuffer.cpp
 	src/Renderer/VolumeBuffer.cpp
+	src/Renderer/SparseVolumeBuffer.cpp
 	src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
 	src/Renderer/TetraBuffer.cpp
@@ -295,6 +302,7 @@ IF(HIVE_BUILD_WITH_HDMLIB)
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/include)
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
   link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/lib)
   
 ENDIF()

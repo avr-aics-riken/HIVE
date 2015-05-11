@@ -16,6 +16,7 @@
 // --- Script Classes ----
 #include "PolygonModel_Lua.h"
 #include "VolumeModel_Lua.h"
+#include "SparseVolumeModel_Lua.h"
 #include "PointModel_Lua.h"
 #include "LineModel_Lua.h"
 #include "VectorModel_Lua.h"
@@ -70,6 +71,7 @@ void RegisterSceneClass(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, PolygonModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VolumeModel_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PointModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, LineModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VectorModel_Lua);
@@ -80,6 +82,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferLineData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, BufferSparseVolumeData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferPointData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferImageData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
@@ -120,6 +123,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
+    SetFunction(L, "SparseVolumeModel",   LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeModel_Lua));
     SetFunction(L, "PointModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointModel_Lua));
     SetFunction(L, "LineModel",           LUA_SCRIPTCLASS_NEW_FUNCTION(LineModel_Lua));
     SetFunction(L, "VectorModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VectorModel_Lua));
@@ -130,6 +134,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
     SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
+    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
     SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
     SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
     SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
