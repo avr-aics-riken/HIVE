@@ -1,8 +1,15 @@
+/**
+ * @file BufferMeshData_Lua.h
+ * BufferMeshData Luaラッパー
+ */
 #ifndef _BUFFERMESHDATA_LUA_H_
 #define _BUFFERMESHDATA_LUA_H_
 
 #include "BufferMeshData.h"
 
+/**
+ * BufferMeshData Luaラッパー
+ */
 class BufferMeshData_Lua : public BufferMeshData
 {
 	public:

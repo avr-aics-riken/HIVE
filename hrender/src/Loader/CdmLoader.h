@@ -1,3 +1,7 @@
+/**
+ * @file CdmLoader.h
+ * CDMデータローダー
+ */
 #ifndef _CDMLOADER_H_
 #define _CDMLOADER_H_
 
@@ -5,13 +9,16 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * CDMデータローダー
+ */
 class CDMLoader : public RefCount
 {
 public:
     CDMLoader();
     ~CDMLoader();
     void Clear();
-    bool Load(const char* filename);
+    bool Load(const char* filename, int virtualCells = 2, int timeSliceIndex = 0);
     int Width();
     int Height();
     int Depth();

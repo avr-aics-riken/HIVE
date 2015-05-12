@@ -1,3 +1,7 @@
+/**
+ * @file PolygonModel.h
+ * ポリゴンモデル
+ */
 #ifndef _POLYGONMODEL_H_
 #define _POLYGONMODEL_H_
 
@@ -6,6 +10,9 @@
 
 class BufferMeshData;
 
+/**
+ * ポリゴンモデル
+ */
 class PolygonModel : public RenderObject
 {
 private:

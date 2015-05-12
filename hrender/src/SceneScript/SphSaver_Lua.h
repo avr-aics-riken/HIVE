@@ -1,10 +1,16 @@
+/**
+ * @file SPHSaver_Lua.h
+ * SPHSaver Luaラッパー
+ */
 #ifndef _SPHSAVER_LUA_H_
 #define _SPHSAVER_LUA_H_
 
 #include "LuaUtil.h"
 #include "SphSaver.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * SPHSaver Luaラッパー
+ */
 class SPHSaver_Lua : public SPHSaver
 {
 public:
@@ -27,5 +33,5 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(SPHSaver_Lua);
 
-#endif //_SPHLOADER_LUA_H_
+#endif //_SPHSAVER_LUA_H_
 

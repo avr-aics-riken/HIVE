@@ -1,3 +1,7 @@
+/**
+ * @file Buffer.cpp
+ * 各種n次元ベクトルバッファクラス
+ */
 #include "Buffer.h"
 
 int Vec3Buffer::Create(int num)

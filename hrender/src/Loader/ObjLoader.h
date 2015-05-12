@@ -1,3 +1,8 @@
+/**
+ * @file ObjLoader.h
+ * OBJデータローダー
+ */
+
 #ifndef _OBJLOADERNATIVE_H
 #define _OBJLOADERNATIVE_H
 
@@ -8,8 +13,12 @@ class BufferPointData;
 class BufferLineData;
 class BufferTetraData;
 class BufferVectorData;
+class BufferExtraData;
 class SimpleObj;
 
+/**
+ * OBJデータローダー
+ */
 class OBJLoader : public RefCount
 {
 private:
@@ -18,6 +27,7 @@ private:
     RefPtr<BufferLineData>   m_line;
     RefPtr<BufferTetraData>  m_tetra;
     RefPtr<BufferVectorData> m_normal;
+    RefPtr<BufferExtraData>  m_extra;
     
     SimpleObj*  m_obj;
     
@@ -26,7 +36,8 @@ private:
     BufferLineData*   createLineData (const SimpleObj* obj) const;
     BufferTetraData*  createTetraData(const SimpleObj* obj) const;
     BufferVectorData* createNormalVectorData(const SimpleObj* obj) const;
-
+    BufferExtraData*  createExtraData(const SimpleObj* obj) const;
+    
 public:
 	OBJLoader();
 	~OBJLoader();
@@ -39,6 +50,10 @@ protected:
     BufferLineData*   LineData();
     BufferTetraData*  TetraData();
     BufferVectorData* NormalData();
+
+    // TEST
+    BufferExtraData* ExtraData();
+
 };
 
 #endif //_OBJLOADERNATIVE_H

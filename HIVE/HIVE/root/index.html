@@ -1,0 +1,247 @@
+<html>
+	<head>
+		<meta name="viewport" content="width=320, height=480">
+		<link rel="stylesheet" href="css/filedlg.css" type="text/css">
+		<link rel="stylesheet" href="css/kvtoolsUI.css" type="text/css">
+		<!--<link rel="stylesheet" href="css/filedialog.css" type="text/css">-->
+		<link rel="stylesheet" href="css/layout.css" type="text/css">
+
+		<script src="js/filedlg.js"></script>
+		<script src="js/MV.js"></script>
+		<script src="js/qatrix-1.1.js"></script>
+		<script src="js/HiveCommand.js"></script>
+		<script src="js/metabinary.js"></script>
+		<script src="js/kvtoolsUI.js"></script>
+		<script src="js/HiveConnect.js"></script>
+		<script src="js/HiveCore.js"></script>
+		<!--<script src="filedlg.js"></script>-->
+		<script src="js/svg.min.js"></script>
+		<script src="js/svg.draggable.js"></script>
+		<script src="js/svg.nodeui.js"></script>
+		<script src="js/client.js"></script>
+	</head>
+	
+	<body>
+		<mtemplate id="KList-Item">
+			<div class="KList-Item"><div class="KList-Item-Icon"></div><p class="KList-Item-Caption">AAA</p><div class="KDustButton"></div></div>
+		</mtemplate>
+
+		<div class="KFrameHeader" id="part-header">
+			<div class="KTitle">HIVE 1.0</div>
+			<div class="KButton" id="newscenebtn">New</div>
+			<div class="KButton" id="loadscenebtn">Load</div>
+			<div class="KButton" id="savescenebtn">Save</div>
+		</div>
+		<div class="KFrame" id="part-main">
+			<div class="KFrameWindow" id="window-view">
+
+				<!--<canvas id="tmp" ></canvas>
+				<canvas id="result" ></canvas>-->
+				<div id="resultdiv"><img id="result"></div>
+
+
+				<div class="KCaption" id="viewmode">[View]</div>
+				
+				<div class="KButton" id="showconsole">Console</div>
+				<div id="consoleArea" style="display:none"></div>
+
+				<select class="KDropdownList ppFull" id="camera_selector" >
+					<option value="view" selected>view</option>
+					<option value="Camera-1">Camera-1</option>
+				</select>
+				<div class="KButton" id="projsetting">Export...</div>
+				
+				<div class="KFrameWindow" id="window-projectproperty" style="display:none;">
+				<div class="ppTable"><div class="ppRow">
+					<div class="ppCell ppQuad"><div class="KCaption">Time:</div></div>
+					<div class="ppCell ppQuad"><input class="KInput" id="tlStartTime" value="0.000"></div>
+					<div class="ppCell ppQuad" style="width:35px"><div class="KCaption">~</div></div>
+					<div class="ppCell ppQuad"><input class="KInput" id="tlEndTime" value="0.000"></div>
+					<div class="ppCell ppQuad"><div class="KCaption">[sec]</div></div>
+					<div class="ppCell"></div>
+				</div></div>
+				<div class="ppTable"><div class="ppRow">
+					<div class="ppCell ppQuad"><div class="KCaption">FPS:</div></div>
+					<div class="ppCell ppQuad"><input class="KInput" id="tlFps" value="30"></div>
+					<div class="ppCell"></div>
+					<div class="ppCell"></div>
+				</div></div>
+				<!--
+				<div class="ppTable"><div class="ppRow">
+					<div class="ppCell ppQuad"><div class="KCaption">Out Image:</div></div>
+					<div class="ppCell ppQuad"><input class="KInput ppFull" id="outImageFile" placeholder="output" value="output"></div>
+					<div class="ppCell ppQuad"><select class="KDropdownList ppFull" id="outImageExt" >
+							<option value=".jpg" selected>.jpg</option>
+							<option value=".tga">.tga</option>
+						</select></div>
+					<div class="ppCell"></div>
+				</div></div>
+
+				<div class="ppTable"><div class="ppRow">
+					<div class="ppCell ppQuad"><div class="KCaption">Resolution:</div></div>
+					<div class="ppCell ppQuad"><input class="KInput ppFull" id="screen_width" placeholder="512" type="number" value="512"></div>
+					<div class="ppCell ppQuad" style="width:16px"><div class="KCaption">x</div></div>
+					<div class="ppCell ppQuad"><input class="KInput ppFull" id="sceeen_height" placeholder="512" type="number" value="512"></div>
+					<div class="ppCell "></div>
+				</div></div>
+				<div class="ppTable"><div class="ppRow">
+					<div class="ppCell ppQuad"><div class="KCaption">Antialias:</div></div>
+					<div class="ppCell ppQuad"><input class="KInput ppFull" id="screen_antialias" placeholder="1" type="number" value="1"></div>
+					<div class="ppCell"></div>
+				</div></div>
+				
+				<div class="ppTable"><div class="ppRow">
+					<div class="ppCell ppQuad"><div class="KCaption">Background:</div></div>
+					<div class="ppCell"><div class="KColorPicker" id="backcolorpick" ></div></div>
+				</div></div>-->
+					
+				<div class="KButton" id="exportbtn">Export Scene</div>
+			</div>
+		
+				
+			</div>
+			<div class="KFrameWindow" id="window-itemlist">
+				<div class="KFrameWindow-Title">Item</div>
+				<div class="KButton" id="list-cameraaddbutton">Add Camera</div>
+				<div class="KButton" id="list-addbutton">Add..</div>
+				<div class="KList" id="list-itemlist"></div>
+			</div>
+			<div class="KFrameWindow" id="window-property">
+				<div class="KButton" id="addkeybutton">Add Key</div>
+				<div class="KFrameWindow-Title" >Property</div>
+				<div id="object-property" >
+					<!--<div class="KButton" id="object-viewsyncbutton" style="display:none">Sync View</div>-->
+					<div id="object-transformshader" style="display:none">
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Name:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="objname"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Translate:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="translate_x" type="number" step="0.01"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="translate_y" type="number" step="0.01"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="translate_z" type="number" step="0.01"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Rotate:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="rotate_x" type="number" step="10"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="rotate_y" type="number" step="10"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="rotate_z" type="number" step="10"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Scale:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="scale_x" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="scale_y" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="scale_z" type="number"></div>
+							</div>
+						</div>
+
+						<!-- shader list -->
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Shader:</div></div>
+								<div class="ppCell"><div class="KShaderList" id="shader_name"></div></div>
+									<!--<select class="KDropdownList" id="shader_name" ></select>-->
+							</div>
+						</div>
+					</div>
+					<div id="camera-information" style="display:none">
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Name:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_name"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Position:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="position_x" type="number" step="0.01"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="position_y" type="number" step="0.01"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="position_z" type="number" step="0.01"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Target:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="target_x" type="number" step="10"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="target_y" type="number" step="10"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="target_z" type="number" step="10"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Up:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="up_x" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="up_y" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="up_z" type="number"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">Fov:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_fov"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">RenderSize:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_screen_width" type="number"></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_screen_height" type="number"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">OutputFile:</div></div>
+								<div class="ppCell"><input class="KInput ppFull" id="camera_output_filename" type="text"></div>
+							</div>
+						</div>
+						<div class="ppTable">
+							<div class="ppRow">
+								<div class="ppCell ppTri"><div class="KCaption">ClearColor:</div></div>
+								<div class="ppCell"><div class="KColorPicker" id="camera_clearcolor" ></div></div>
+							</div>
+						</div>
+					</div>
+
+					<div id="uniformproperty"></div>
+				</div>
+			</div>
+			<div class="KFrameWindow" id="window-timeline">
+				<div class="KFrameWindow-Title" >Timeline</div>
+				<div id="timelineframe">
+					<div class="KTimeline" id="timeline"></div>
+				</div>
+			</div>
+		</div>
+			
+		<div class="popup_center">
+			<div class="pane_grp"><input class="filepath_dialog" id="projdir_path" value="localhost:/path"/></div>
+			<div class="filebrowser filedialog" id="fbList"></div>
+			<div class="buttons_dialog">
+				<button type="button" class="button_open" onclick="open_selectedFile()">
+					<span class="text_button_action">Open</span>
+				</button>
+				<button type="button" class="button_cancel" onclick="closefileDialog()">
+					<span class="text_button_action">Cancel</span>
+				</button>
+			</div>
+		</div>
+		
+		<div id="nodeDialog" style="position:absolute; left:0px; top:0px; right:0px; bottom:0px; overflow:hidden; background-color:rgba(0,0,0,0.8); z-index:10; display:none">
+			<svg id="nodecanvas" style="position:absolute;left:0px;top:0px;right:0px; bottom:0px;"></svg>
+			<button type="button" class="button_open">
+					<span class="text_button_action">Open</span>
+				</button>
+				<button type="button" class="button_cancel">
+					<span class="text_button_action">Cancel</span>
+				</button>
+		</div>
+	</body>
+</html>

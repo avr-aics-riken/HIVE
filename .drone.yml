@@ -1,0 +1,14 @@
+image: syoyo/ubu-dev
+docker:
+  privileged: true
+  net: host
+script:
+  - rm -rf build
+  - cmake -H. -Bbuild -DHIVE_BUILD_WITH_OPENMP=On -DBUILD_SHARED_LIBS=Off
+  - cmake -H. -Bbuild -DHIVE_BUILD_WITH_OPENMP=On -DBUILD_SHARED_LIBS=Off
+  - cd build
+  - make
+notify:
+ email:
+    recipients:
+      - syoyo@lighttransport.com

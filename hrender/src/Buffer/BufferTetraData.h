@@ -1,14 +1,22 @@
+/**
+ * @file BufferTetraData.h
+ * BufferTetraDataクラス
+ */
 #ifndef _BUFFERTETRADATA_H_
 #define _BUFFERTETRADATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 
 class Vec3Buffer;
 class Vec2Buffer;
 class FloatBuffer;
 class UintBuffer;
 
-class BufferTetraData : public RefCount
+/**
+ * BufferTetraDataクラス
+ */
+class BufferTetraData : public BufferData
 {
 private:
     class Impl;

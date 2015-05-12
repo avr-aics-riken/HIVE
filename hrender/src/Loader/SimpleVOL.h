@@ -1,3 +1,7 @@
+/**
+ * @file SimpleVOL.h
+ * VOL形式ファイル簡易ローダー
+ */
 //
 //  SimpleVOL
 //
@@ -7,7 +11,9 @@
 
 #include <stdio.h>
 
-
+/**
+ * SimpleVOL
+ */
 class SimpleVOL
 {
 

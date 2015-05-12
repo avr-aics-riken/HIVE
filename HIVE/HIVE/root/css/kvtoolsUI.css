@@ -1,0 +1,282 @@
+/*---------------------------
+    My Button class design
+-----------------------------*/
+body{
+	font-family: "ヒラギノ角ゴ Pro W3",
+		"Hiragino Kaku Gothic Pro",
+		"メイリオ",
+		Meiryo,
+		Osaka,
+		"ＭＳ Ｐゴシック",
+		"MS PGothic",
+		sans-serif;
+}
+
+.KTitle{
+	color:rgb(214, 80, 40);
+	font-size: 20px;
+	padding: 10px;
+}
+.KFrameHeader{
+	background-color:rgba(43, 43, 43,1.0);
+
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+	
+	overflow: hidden;
+}
+
+.KFrame{
+	background-color:rgba(69, 69, 69,1.0);
+
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+	
+	overflow: auto;
+}
+
+
+.KFrameWindow{
+	background-color:rgb(126, 126, 126);
+
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+	
+	overflow: hidden;
+}
+
+.KFrameWindow-Title{
+	padding: 8px;
+	color: #DDDDDD;
+	
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+}
+
+.KButton{
+	background-color:#434343;
+	color:#FFF;
+
+	text-align: center;
+	
+	padding-top:2px;
+	
+	font-size: 16px;
+	width:100px;
+	height:24px;
+	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-ktml-border-radius: 5px;
+	
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+}
+.KButton:active{
+	background-color:rgb(206,79,30);
+}
+
+.KList{
+	background-color:#262626;
+	overflow: scroll;
+}
+
+.KShaderList{
+	color:#FFF;
+	background-color:#262626;
+	width:100px;
+	border-style: solid;
+	border-color: #FFF;
+	border-width: 1px;
+}
+
+.KDropdownList{
+	background-color:#9d9d9d;
+	width:100px;
+}
+
+
+.KCaption{
+	color:#FFF;
+	
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+	
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+
+.KList-Item{
+	display: flex;
+	display:-webkit-flex;
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+/*.KList-Item:active{
+	background-color : #eb8228;
+}*/
+
+.KList-Item-Icon{
+	background-color:rgb(46, 211, 38);
+	width:10px;
+	height:10px;
+	
+	margin: 10px;
+	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-ktml-border-radius: 5px;
+}
+.KList-Item-Caption{
+	color:#FFF;
+	font-size: 18px;
+	margin: 0px;
+}
+
+.KFlexDiv{
+	display: flex;
+	display:-webkit-flex;
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+	margin: 2px;
+}
+
+.KInput{
+	width:100px;
+	background-color: #AAA;
+}
+
+.KDustButton{
+	background-image: url("../image/icon_dustbox.png");
+	height:32px;
+	width:32px;
+	position: absolute;
+	right: 0px;
+}
+.KDustButton:active{
+	background-image: url("../image/icon_dustbox_ok.png");
+	height:32px;
+	width:32px;
+}
+
+.KColorPicker{
+	width:200px;
+	height:267px;
+	background-color:#262626;
+}
+.KColorPickerInput{
+	background-color:#262626;
+}
+
+
+.KTransferFunction{
+	width:300px;
+	height:400px;
+/*	background-color:#FCC;*/
+}
+
+.KSlider{
+	width:200px;
+	height:50px;
+}
+
+/*---------------------------------------------*/
+
+.KWindow{
+	background-color:rgba(85, 85, 85, 0.7);
+	color:#FFF;
+
+	text-align: center;
+
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-ktml-border-radius: 5px;
+	background-clip: content-box;
+	
+	border-color : #bebebe;
+	border-width : 2px;
+	border-style : solid;
+
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+	
+	overflow: hidden;
+}
+
+.KWindow-TitleBar{
+	background-color:rgb(195, 195, 195);
+	color:#fff;
+	
+	text-align: left;
+	
+	padding-left: 10px;
+	
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+}
+
+
+.KList-Item-Dir{
+	background-color:#43b4be;
+	display: flex;
+	display:-webkit-flex;
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+
+.KList-Item-Dir-Icon{
+	background-color:#eb8228;
+	width:10px;
+	height:10px;
+	
+	margin: 5px;
+	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-ktml-border-radius: 5px;
+}
+
+.KColorPicker{
+	background-color: rgba(0, 0, 0, 0);
+	/*background-image:  url("../image/colorpicker.png");*/
+}
+
+.KTimeline {
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+}

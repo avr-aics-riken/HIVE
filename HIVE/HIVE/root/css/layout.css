@@ -1,0 +1,284 @@
+/*---------------------------
+	Page design
+-----------------------------*/
+body {
+	width:100%;
+	height:100%;
+	background-color:rgb(50,50,50);
+	font-family: "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+	overflow:hidden;
+}
+
+/* PART */
+#part-header{
+	position: absolute;
+	left:0px;
+	top:0px;
+	right:0px;
+	height:50px;
+	min-width:1024px;
+}
+
+#part-main{
+	position: absolute;
+	left:0px;
+	top:50px;
+	right:0px;
+	bottom:0px;
+	min-width:1024px;
+	min-height:768px;
+}
+
+/* Fixed Window */
+
+#window-view{
+	position: absolute;
+	left:5px;
+	top:5px;
+	right:330px;
+	bottom:300px;
+	min-height: 360px;
+	min-width: 640px;
+}
+
+#window-itemlist{
+	position: absolute;
+	right:5px;
+	bottom:5px;
+	height: 290px;
+	width: 320px;
+}
+
+#window-property{
+	position: absolute;
+	right:5px;
+	bottom:300px;
+	top: 5px;
+	width: 320px;
+
+	/*overflow: auto;*/ /* override */
+}
+
+#window-projectproperty{
+	position: absolute;
+	padding: 5px;
+	right:5px;
+	height:80px;
+	top: 30px;
+	width: 500px;
+	background-color: rgba(137, 137, 137, 0.8);
+	z-index: 10;
+	overflow:auto;
+}
+
+#window-timeline{
+	position: absolute;
+	left:5px;
+	right:330px;
+	bottom:5px;
+	height:290px;
+}
+
+/* canvas */
+#tmp{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+}
+
+#result{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:100%;
+	height:100%;
+}
+
+/* UI Items */
+#rendermodebtn{
+	position: absolute;
+	top:5px;
+	left: 110px;
+	width:150px;
+	height: 24px;
+	z-index: 5;
+}
+
+#imageCompMode{
+	position: absolute;
+	top:5px;
+	left: 5px;
+	width:100px;
+	z-index: 5;
+	background-color: #a2a2a2;
+}
+
+#pixelstep{
+	position: absolute;
+	top:5px;
+	left: 265px;
+	width:50px;
+	z-index: 5;
+	background-color: #a2a2a2;
+}
+
+#showconsole{
+	position: absolute;
+	bottom:5px;
+	left: 5px;
+	width:100px;
+	z-index: 5;
+}
+
+#consoleArea{
+	position: absolute;
+	bottom:35px;
+	left: 0px;
+	width:100%;
+	height:400px;
+	z-index: 6;
+	white-space: pre;
+	background-color: rgba(155, 155, 155, 0.8);
+	overflow: auto;
+}
+
+#exportbtn{
+	position: absolute;
+	bottom:5px;
+	right: 5px;
+	width:160px;
+	z-index: 5;
+}
+
+#projsetting{
+	position: absolute;
+	top:5px;
+	right:5px;
+	z-index: 5;
+	width: 100px;
+}
+
+
+#camera_selector{
+	position: absolute;
+	top:5px;
+	right: 110px;
+	width:160px;
+	z-index: 5;
+}
+
+#viewmode{
+	position: absolute;
+	top:5px;
+	right: 110px;
+	z-index: 5;
+	display: none;
+}
+
+#list-itemlist{
+	position: absolute;
+	top: 40px;
+	left:3px;
+	right:3px;
+	bottom:3px;
+}
+
+#list-cameraaddbutton{
+	position: absolute;
+	top: 8px;
+	right:110px;
+	width: 120px;
+}
+
+#list-addbutton{
+	position: absolute;
+	top: 8px;
+	right:3px;
+}
+
+
+#shader_name{
+	width:99%;
+	height:192px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+#newscenebtn{
+	position: absolute;
+	top:15px;
+	right:225px;
+	z-index: 5;
+	width: 100px;
+}
+
+#loadscenebtn{
+	position: absolute;
+	top:15px;
+	right:115px;
+	z-index: 5;
+	width: 100px;
+}
+
+#savescenebtn{
+	position: absolute;
+	top:15px;
+	right:5px;
+	z-index: 5;
+	width: 100px;
+}
+
+#addkeybutton{
+	position: absolute;
+	right: 2px;
+	top: 8px;
+}
+
+#object-property{
+	position: absolute;
+	top: 40px;
+	right: 3px;
+	left: 3px;
+	bottom: 3px;
+	background-color: #262626;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+#timelineframe {
+	position: absolute;
+	top:40px;
+	left: 3px;
+	right: 3px;
+	bottom: 3px;
+	overflow-y: auto;
+}
+
+#timeline {
+	position: absolute;
+	top:0px;
+	left: 0px;
+	right: 0px;
+	height: 500px;
+}
+
+#object-viewsyncbutton{
+	margin: 5px;
+}
+
+
+.ppTable { display:table; table-layout:fixed; width:100%; margin: 0px 0px 3px 0px;}
+.ppRow   { display:table-row;}
+.ppCell  { display:table-cell; vertical-align: middle;}
+.ppFull  { width:100%; }
+.ppHalf  { width:50%; }
+.ppTri   { width:33%; }
+.ppQuad  { width:25%; }
+.ppSix   { width:13%; }
+.red   {background-color: #F00; }
+.green {background-color: #0F0; }
+.blue  {background-color: #00F; }
+
+

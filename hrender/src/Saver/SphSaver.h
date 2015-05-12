@@ -1,3 +1,7 @@
+/**
+ * @file SphSaver.h
+ * SphSaverクラス
+ */
 #ifndef _HIVE_SPHSAVER_H_
 #define _HIVE_SPHSAVER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * SphSaverクラス
+ */
 class SPHSaver : public RefCount
 {
 public:

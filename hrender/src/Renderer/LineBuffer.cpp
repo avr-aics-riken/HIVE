@@ -1,3 +1,7 @@
+/**
+ * @file LineBuffer.cpp
+ * ラインバッファ
+ */
 #include <string>
 
 #include "Analyzer.h"
@@ -7,6 +11,7 @@
 #include "Buffer.h"
 #include "Commands.h"
 
+/// コンストラクタ
 LineBuffer::LineBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_vtxnum      = 0;
@@ -18,11 +23,13 @@ LineBuffer::LineBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_idx_id      = 0;
 }
 
+/// デストラクタ
 LineBuffer::~LineBuffer()
 {
     Clear();
 }
 
+/// クリア
 void LineBuffer::Clear()
 {
     if (m_vtx_id)      ReleaseBufferVBIB_SGL(m_vtx_id);
@@ -37,6 +44,10 @@ void LineBuffer::Clear()
     m_indexnum    = 0;
 }
 
+/**
+ * ラインバッファの作成.
+ * @param model ラインモデル.
+ */
 bool LineBuffer::Create(const LineModel* model)
 {
     bool r = true;
@@ -90,9 +101,16 @@ bool LineBuffer::Create(const LineModel* model)
                          m_vtx_id, m_radius_id, m_material_id, m_idx_id);
     }
     
+    createExtraBuffers(m_model);
+    
+    cacheTextures(m_model);
+
     return r;
 }
 
+/**
+ * レンダー.
+ */
 void LineBuffer::Render() const
 {
     if (!m_model) {
@@ -105,6 +123,8 @@ void LineBuffer::Render() const
     }
 
     bindUniforms(m_model);
+    
+    bindExtraBuffers(m_model);
     
     float w = m_model->GetLineWidth();
     LineWidth_SGL(w);

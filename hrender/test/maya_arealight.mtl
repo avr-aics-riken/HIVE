@@ -1,0 +1,5 @@
+newmtl VRayLightRect1
+Ka 30.0 30.0 30.0
+Kd 30.0 30.0 30.0
+Ks 0.0 0.0 0.0
+Ns 0.0

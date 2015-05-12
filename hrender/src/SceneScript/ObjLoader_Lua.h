@@ -1,3 +1,7 @@
+/**
+ * @file OBJLoader_Lua.h
+ * OBJLoader Luaラッパー
+ */
 #ifndef _OBJLOADER_LUA_H_
 #define _OBJLOADER_LUA_H_
 
@@ -8,11 +12,11 @@
 #include "BufferLineData_Lua.h"
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
+ #include "BufferExtraData_Lua.h"
 #include "ObjLoader.h"
-
-//------//------//------//------//------//------//------//------//------
-//
-//------//------//------//------//------//------//------//------//------
+/**
+ * OBJLoader Luaラッパー
+ */
 class OBJLoader_Lua : public OBJLoader
 {
 public:
@@ -42,6 +46,11 @@ public:
     BufferVectorData_Lua* NormalData() {
         return new BufferVectorData_Lua(OBJLoader::NormalData());
     }
+
+    // TEST
+    BufferExtraData_Lua* ExtraData() {
+        return new BufferExtraData_Lua(OBJLoader::ExtraData());
+    }
     
     LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
@@ -50,6 +59,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*,   LineData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*,  TetraData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVectorData_Lua*, NormalData)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferExtraData_Lua*,  ExtraData)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(OBJLoader_Lua);

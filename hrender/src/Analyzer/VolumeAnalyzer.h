@@ -1,9 +1,16 @@
+/**
+ * @file VolumeAnalyzer.h
+ * ボリュームデータ解析モジュール
+ */
 #ifndef _VOLUMEANALYZER_H_
 #define _VOLUMEANALYZER_H_
 
 #include "Ref.h"
 #include "VolumeModel.h"
 
+/**
+ * ボリュームデータ解析クラス
+ */
 class VolumeAnalyzer : public RefCount
 {
 private:

@@ -1,3 +1,7 @@
+/**
+ * @file PdmSaver.cpp
+ * PdmSaverクラス
+ */
 #ifndef HIVE_WITH_PDMLIB
 #error "HIVE_WITH_PDMLIB must be defined when you compile CDMSaver module"
 #endif
@@ -10,9 +14,18 @@
 
 #include "PDMlib.h"
 
+/// コンストラクタ
 PDMSaver::PDMSaver(){}
-PDMSaver::~PDMSaver(){};
 
+/// デストラクタ
+PDMSaver::~PDMSaver(){};
+    
+/**
+ * PDMSaverへのセーブ
+ * @param filename セーブファイル名
+ * @retval true  セーブ成功
+ * @retval false セーブ失敗
+ */
 bool PDMSaver::Save(const char* filename){
 	// @todo { error check. }
 

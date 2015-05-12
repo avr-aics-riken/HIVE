@@ -1,3 +1,7 @@
+/**
+ * @file PointBuffer.cpp
+ * ポイントバッファ
+ */
 #include <string>
 
 #include "Analyzer.h"
@@ -7,6 +11,7 @@
 #include "Buffer.h"
 #include "Commands.h"
 
+/// コンストラクタ
 PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_vtxnum      = 0;
@@ -16,10 +21,12 @@ PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_material_id = 0;
 }
 
+/// デストラクタ
 PointBuffer::~PointBuffer()
 {
 }
 
+/// クリア
 void PointBuffer::Clear()
 {
     if (m_vtx_id)      ReleaseBufferVBIB_SGL(m_vtx_id);
@@ -31,6 +38,10 @@ void PointBuffer::Clear()
     m_vtxnum      = 0;
 }
 
+/**
+ * ポイントバッファの作成.
+ * @param model ポイントモデル.
+ */
 bool PointBuffer::Create(const PointModel* model)
 {
     bool r = true;
@@ -75,9 +86,16 @@ bool PointBuffer::Create(const PointModel* model)
                   point->Material()->GetBuffer(),
                   m_vtx_id, m_radius_id, m_material_id);
     
+    createExtraBuffers(m_model);
+
+    cacheTextures(m_model);
+    
     return r;
 }
 
+/**
+ * レンダー.
+ */
 void PointBuffer::Render() const
 {
     if (!m_model) {
@@ -90,6 +108,8 @@ void PointBuffer::Render() const
     }
     
     bindUniforms(m_model);
+    
+    bindExtraBuffers(m_model);
     
     BindPointVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
     DrawPointArrays_SGL(m_vtxnum);

@@ -1,3 +1,8 @@
+/**
+ * @file VolumeBuffer.h
+ * Volumeバッファ
+ */
+ 
 #pragma once
 /*
    VolumeBuffer.h
@@ -10,6 +15,9 @@
 class VolumeModel;
 class BufferVolumeData;
 
+/**
+ * Volumeバッファ
+ */
 class VolumeBuffer : public BaseBuffer
 {
 private:
@@ -30,7 +38,7 @@ private:
     RefPtr<const VolumeModel> m_model;
 
     bool MakeBox(float width, float height, float depth);
-    bool CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata);
+    bool CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
 public:
     VolumeBuffer(RENDER_MODE mode);
     ~VolumeBuffer();

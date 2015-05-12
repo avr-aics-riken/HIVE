@@ -1,8 +1,15 @@
+/**
+ * @file MetaBinary.h
+ * メタバイナリ
+ */
 #ifndef _METABINARY_H_
 #define _METABINARY_H_
 
 #include "../Core/Ref.h"
 
+/**
+ * メタバイナリ
+ */
 class MetaBinary : public RefCount
 {
 private:

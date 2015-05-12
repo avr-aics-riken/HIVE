@@ -1,3 +1,7 @@
+/**
+ * @file VolumeModel_Lua.h
+ * VolumeModel Luaラッパー
+ */
 #ifndef _VOLUMEMODEL_LUA_H_
 #define _VOLUMEMODEL_LUA_H_
 
@@ -5,37 +9,37 @@
 #include "LuaUtil.h"
 #include "VolumeModel.h"
 #include "BufferVolumeData_Lua.h"
-
+#include "RenderObject_Lua.h"
+/**
+ * VolumeModel Luaラッパー
+ */
 class VolumeModel_Lua : public VolumeModel
 {
 public:
     VolumeModel_Lua() {}
     ~VolumeModel_Lua() {}
-    bool SetShader(const std::string& shaderfile) {
-        return VolumeModel::SetShader(shaderfile);
-    }
 
-    bool Create(BufferVolumeData_Lua *mesh) {
-        VolumeModel::Create(mesh);
+    bool Create(BufferVolumeData_Lua *vol) {
+        VolumeModel::Create(vol);
         return true;
     }
-    std::string GetType() {
-        return GetTypeString();
+
+    bool SetClampToEdge(bool s, bool t, bool r) {
+        VolumeModel::SetClampToEdge(s, t, r);
+        return true;
     }
+
+    // RenderObject interface implementation
+    IMPLEMENTATION_RENDEROBJECT_LUA()
 
     LUA_SCRIPTCLASS_BEGIN(VolumeModel_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetClampToEdge,bool,bool,bool)
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferVolumeData_Lua*)
     
     // RenderObject interface
-    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetType)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetTranslate,float, float, float)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetRotate,float, float, float)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetScale,float, float, float)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetVec2,  const char*, float, float)
-    LUA_SCRIPTCLASS_METHOD_ARG4(bool, SetVec3,  const char*, float, float, float)
-    LUA_SCRIPTCLASS_METHOD_ARG5(bool, SetVec4,  const char*, float, float, float, float)
-    LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetFloat, const char*, float)
+    DECLARE_RENDEROBJECT_LUA_METHOD()
     LUA_SCRIPTCLASS_END();
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(VolumeModel_Lua);

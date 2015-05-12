@@ -1,3 +1,7 @@
+/**
+ * @file SimpleObj.h
+ * OBJ形式ファイル簡易ローダー
+ */
 #ifndef INCLUDE_SIMPLEOBJ
 #define INCLUDE_SIMPLEOBJ
 
@@ -622,6 +626,9 @@ namespace tinyobj {
     
 }
 
+/**
+ * SimpleObj
+ */
 class SimpleObj
 {
 private:

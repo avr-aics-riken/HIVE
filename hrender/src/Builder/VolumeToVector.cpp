@@ -1,8 +1,20 @@
+/**
+ * @file VolumeToVector.cpp  
+ * VolumeDataからVectorメッシュデータを作成するモジュール
+ */
 #include "VolumeToVector.h"
 #include "../Core/vxmath.h"
 #include <string.h>
 
 
+/**
+ * Tetraメッシュの作成
+ * @param out_vertices 出力頂点
+ * @param in_vertices  出力頂点
+ * @param bmin         BoundingBoxMin
+ * @param bmax         BoundingBoxMax
+ * @param scale        Tetraのサイズ
+ */
 inline void GenerateTetra(
   float* out_vertices,
   float* in_vertices, double bmin[3], double bmax[3], double scale)
@@ -40,6 +52,7 @@ inline void GenerateTetra(
 }
 
 
+/// コンストラクタ
 VolumeToVector::VolumeToVector(){
     m_vector      = new BufferVectorData();
     m_pitchX      = 1.0;
@@ -52,6 +65,12 @@ VolumeToVector::VolumeToVector(){
 }
 
 
+/**
+ * VolumeData X軸分割サイズ
+ * @param  a     分割サイズ
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool VolumeToVector::DividePitchX(double a) {
     if(a <= 0) {
         printf("ERROR : Invalid PitchX\n");
@@ -61,6 +80,12 @@ bool VolumeToVector::DividePitchX(double a) {
     return true;
 }
 
+/**
+ * VolumeData Y軸分割サイズ
+ * @param  a     分割サイズ
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool VolumeToVector::DividePitchY(double a) {
     if(a <= 0) {
         printf("ERROR : Invalid PitchY\n");
@@ -70,6 +95,12 @@ bool VolumeToVector::DividePitchY(double a) {
     return true;
 }
 
+/**
+ * VolumeData Z軸分割サイズ
+ * @param  a     分割サイズ
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool VolumeToVector::DividePitchZ(double a) {
     if(a <= 0) {
         printf("ERROR : Invalid PitchZ\n");
@@ -79,6 +110,12 @@ bool VolumeToVector::DividePitchZ(double a) {
     return true;
 }
 
+/**
+ * VolumeData X軸分割数指定
+ * @param  a     分割数
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool VolumeToVector::DivideNumberX(int a) {
     if(a <= 0) {
         printf("ERROR : Invalid NumberX\n");
@@ -88,6 +125,12 @@ bool VolumeToVector::DivideNumberX(int a) {
     return true;
 }
 
+/**
+ * VolumeData Y軸分割数指定
+ * @param  a     分割数
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool VolumeToVector::DivideNumberY(int a) {
     if(a <= 0) {
         printf("ERROR : Invalid NumberY\n");
@@ -97,6 +140,12 @@ bool VolumeToVector::DivideNumberY(int a) {
     return true;
 }
 
+/**
+ * VolumeData Z軸分割数指定
+ * @param  a     分割数
+ * @retval true  成功
+ * @retval false 失敗
+ */
 bool VolumeToVector::DivideNumberZ(int a) {
     if(a <= 0) {
         printf("ERROR : Invalid NumberZ\n");
@@ -106,6 +155,13 @@ bool VolumeToVector::DivideNumberZ(int a) {
     return true;
 }
 
+/**
+ * VolumeData XYZ分割サイズ指定
+ * @param  x  X軸分割サイズ
+ * @param  y  Y軸分割サイズ
+ * @param  z  Z軸分割サイズ
+ * @retval true  成功
+ */
 bool VolumeToVector::DividePitch(double x, double y, double z) {
     DividePitchX(x);
     DividePitchY(y);
@@ -114,6 +170,13 @@ bool VolumeToVector::DividePitch(double x, double y, double z) {
     return true;
 }
 
+/**
+ * VolumeData XYZ分割数指定
+ * @param  x  X軸分割数
+ * @param  y  Y軸分割数
+ * @param  z  Z軸分割数
+ * @retval true  成功
+ */
 bool VolumeToVector::DivideNumber(int x, int y, int z) {
     DivideNumberX(x);
     DivideNumberY(y);
@@ -122,6 +185,12 @@ bool VolumeToVector::DivideNumber(int x, int y, int z) {
     return true;
 }
 
+/**
+ * VolumeData XYZベクトルデータ生成
+ * @param  volume  X軸分割数
+ * @retval 0 Volumeが指定されていない
+ * @retval >0 生成されたベクトルデータの頂点数
+ */
 int VolumeToVector::Create(BufferVolumeData *volume) {
     if (!volume) {
         return 0;
@@ -201,6 +270,10 @@ int VolumeToVector::Create(BufferVolumeData *volume) {
     return vposbuf.size();
 }
 
+/**
+ * 変換されたベクトルデータへの参照を取得する
+ * @return 変換されたベクトルデータへの参照が返却される。
+ */
 BufferVectorData* VolumeToVector::VectorData()
 {
     return m_vector;
