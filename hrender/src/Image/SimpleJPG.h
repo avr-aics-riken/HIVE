@@ -201,7 +201,7 @@ inline int SimpleJPGSaverRGBA(void** jpgbuffer, int w, int h, const unsigned cha
 	}
 	
 	jpge::params params;
-	params.m_quality = 85;
+	params.m_quality = 100;
 	params.m_two_pass_flag = true;
 	bool r = compress_image_to_jpeg_file_in_memory(*jpgbuffer, buf_size, w, h, 3, pImage, params);
 	delete [] pImage;
