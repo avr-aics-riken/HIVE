@@ -51,9 +51,22 @@ void UDMLoader::Clear()
 		it->second.clear();
 	}
 
+	for (vec2ArrayMap::iterator it = m_vec2ArrayList.begin(); it != m_vec2ArrayList.end(); it++) {
+		it->second.clear();
+	}
+
 	for (vec3ArrayMap::iterator it = m_vec3ArrayList.begin(); it != m_vec3ArrayList.end(); it++) {
 		it->second.clear();
 	}
+
+	for (vec4ArrayMap::iterator it = m_vec4ArrayList.begin(); it != m_vec4ArrayList.end(); it++) {
+		it->second.clear();
+	}
+
+	for (uintArrayMap::iterator it = m_uintArrayList.begin(); it != m_uintArrayList.end(); it++) {
+		it->second.clear();
+	}
+
 
 }
 
@@ -412,25 +425,43 @@ BufferTetraData* UDMLoader::TetraData() {
 	return m_tetra;
 }
 
-FloatBuffer* UDMLoader::ScalarData(const char* name) {
+BufferExtraData* UDMLoader::ExtraData(const char* name) {
+	if (m_data.find(name) != m_data.end()) {
+		return m_data[name];
+	}
+
+	// Create buffer
 	if (m_scalarArrayList.find(name) != m_scalarArrayList.end()) {
-		FloatBuffer* buf = new FloatBuffer();
-		buf->Create(m_scalarArrayList[name].size());
-		std::copy(m_scalarArrayList[name].begin(), m_scalarArrayList[name].end(), buf->GetBuffer());
-		return buf; // @fixme { When to delete buf? }
+		BufferExtraData* buf = new BufferExtraData();
+		buf->Create("float", m_scalarArrayList[name].size());
+		std::copy(m_scalarArrayList[name].begin(), m_scalarArrayList[name].end(), buf->Float()->GetBuffer());
+		m_data[name] = buf;
+		return m_data[name];
+	} else if (m_vec2ArrayList.find(name) != m_vec2ArrayList.end()) {
+		BufferExtraData* buf = new BufferExtraData();
+		buf->Create("vec2", m_vec2ArrayList[name].size()/2);
+		std::copy(m_vec2ArrayList[name].begin(), m_vec2ArrayList[name].end(), buf->Vec2()->GetBuffer());
+		m_data[name] = buf;
+		return m_data[name];
+	} else if (m_vec3ArrayList.find(name) != m_vec3ArrayList.end()) {
+		BufferExtraData* buf = new BufferExtraData();
+		buf->Create("vec3", m_vec3ArrayList[name].size()/3);
+		std::copy(m_vec3ArrayList[name].begin(), m_vec3ArrayList[name].end(), buf->Vec3()->GetBuffer());
+		m_data[name] = buf;
+		return m_data[name];
+	} else if (m_vec4ArrayList.find(name) != m_vec4ArrayList.end()) {
+		BufferExtraData* buf = new BufferExtraData();
+		buf->Create("vec4", m_vec4ArrayList[name].size()/4);
+		std::copy(m_vec4ArrayList[name].begin(), m_vec4ArrayList[name].end(), buf->Vec4()->GetBuffer());
+		m_data[name] = buf;
+		return m_data[name];
+	} else if (m_uintArrayList.find(name) != m_uintArrayList.end()) {
+		BufferExtraData* buf = new BufferExtraData();
+		buf->Create("uint", m_uintArrayList[name].size());
+		std::copy(m_uintArrayList[name].begin(), m_uintArrayList[name].end(), buf->Vec4()->GetBuffer());
+		m_data[name] = buf;
+		return m_data[name];
 	}
 	return NULL;
 }
-
-Vec3Buffer* UDMLoader::Vec3Data(const char* name) {
-	if (m_vec3ArrayList.find(name) != m_vec3ArrayList.end()) {
-		Vec3Buffer* buf = new Vec3Buffer();
-		buf->Create(m_vec3ArrayList[name].size() / 3);
-		std::copy(m_vec3ArrayList[name].begin(), m_vec3ArrayList[name].end(), buf->GetBuffer());
-		return buf; // @fixme { When to delete buf? }
-	}
-	return NULL;
-}
-
-
 
