@@ -1,10 +1,16 @@
+/**
+ * @file CDMLoader_Lua.h
+ * CDMLoader Luaラッパー
+ */
 #ifndef _CDMLOADER_LUA_H_
 #define _CDMLOADER_LUA_H_
 
 #include "LuaUtil.h"
 #include "CdmLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * CDMLoader Luaラッパー
+ */
 class CDMLoader_Lua : public CDMLoader
 {
 public:

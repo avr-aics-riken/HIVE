@@ -1,3 +1,7 @@
+/**
+ * @file Buffer.h
+ * 各種n次元ベクトルバッファクラス
+ */
 #ifndef _BUFFER_H_
 #define _BUFFER_H_
 
@@ -15,6 +19,9 @@ enum BufferType{
     BUFFER_BYTE
 };
 
+/**
+ * バッファクラス基底
+ */
 class BaseArrayBuffer : public RefCount
 {
 public:
@@ -23,6 +30,9 @@ public:
 	virtual ~BaseArrayBuffer(){}
 };
 
+/**
+ * 2次元浮動小数点バッファクラス
+ */
 class Vec2Buffer : public BaseArrayBuffer
 {
 public:
@@ -40,11 +50,14 @@ private:
     std::vector<vec2> m_buffer;
 };
 
+/**
+ * 3次元浮動小数点バッファクラス
+ */
 class Vec3Buffer : public BaseArrayBuffer
 {
 public:
 	Vec3Buffer() : BaseArrayBuffer() {}
-    ~Vec3Buffer(){}
+	~Vec3Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC3; }
 	
 	int Create(int num);
@@ -57,11 +70,14 @@ private:
 	std::vector<vec3> m_buffer;
 };
 
+/**
+ * 4次元浮動小数点バッファクラス
+ */
 class Vec4Buffer : public BaseArrayBuffer
 {
 public:
 	Vec4Buffer() : BaseArrayBuffer() {}
-    ~Vec4Buffer(){}
+	~Vec4Buffer(){}
 	BufferType GetType() const { return BUFFER_VEC4; }
 	
 	int Create(int num);
@@ -75,11 +91,14 @@ private:
 	std::vector<vec4> m_buffer;
 };
 
+/**
+ * 1次元浮動小数点バッファクラス
+ */
 class FloatBuffer : public BaseArrayBuffer
 {
 public:
 	FloatBuffer() : BaseArrayBuffer() {}
-    ~FloatBuffer(){}
+	~FloatBuffer(){}
 	BufferType GetType() const { return BUFFER_FLOAT; }
 	
 	int Create(int num);
@@ -91,11 +110,14 @@ protected:
 	std::vector<float> m_buffer;
 };
 
+/**
+ * Uintバッファクラス
+ */
 class UintBuffer : public BaseArrayBuffer
 {
 public:
 	UintBuffer() : BaseArrayBuffer() {}
-    ~UintBuffer(){}
+	~UintBuffer(){}
 	BufferType GetType() const { return BUFFER_INDEX; }
 	
 	int Create(int num);
@@ -107,6 +129,10 @@ private:
 	std::vector<unsigned int> m_buffer;
 };
 
+
+/**
+ * Byteバッファクラス
+ */
 class ByteBuffer : public BaseArrayBuffer
 {
 public:

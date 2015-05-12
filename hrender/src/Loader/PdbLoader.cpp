@@ -1,11 +1,19 @@
+/**
+ * @file PdbLoader.cpp
+ * PDBデータローダー
+ */
 #include "PdbLoader.h"
 #include "tiny_pdb.h"
 #include "Buffer.h"
 #include <cstring>
 
-PDBLoader::PDBLoader() {}
+/// コンストラクタ
+PDBLoader::PDBLoader(){}
+
+/// デストラクタ
 PDBLoader::~PDBLoader(){};
 
+/// メンバクリア
 void PDBLoader::Clear()
 {
 	ball.Clear();
@@ -13,6 +21,13 @@ void PDBLoader::Clear()
 	m_atoms.clear();
 }
 
+/**
+ * BCMデータのロード
+ * @param filename ファイルパス
+ * @param generateBond 線primitiveとの接点作成
+ * @retval true 成功
+ * @retval false 失敗
+ */
 bool PDBLoader::Load(const char* filename, bool generateBond){
 	Clear();
 
@@ -55,7 +70,6 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
     if (generateBond) {
 
         // We reprent Bond as line primitives.
-        // @todo { remove duplicated bonds. }
         std::vector<float> bondLines;
         for (unsigned int i = 0; i < numAtoms; i++) {
 
@@ -63,6 +77,10 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
 
           for (unsigned int j = 0; j < atom.GetBonds().size(); j++) {
             const tinypdb::Atom* dst = atom.GetBonds()[j];
+
+            if (dst->Visited()) {
+              continue;
+            }
 
             bondLines.push_back(atom.GetX());
             bondLines.push_back(atom.GetY());
@@ -73,6 +91,8 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
             bondLines.push_back(dst->GetZ());
 
           }
+
+          atom.SetVisited(true); 
 
         }
 
@@ -108,16 +128,30 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
 	return true;
 }
 
+/**
+ * 点データ取得
+ * @retval BufferPointData* 点データバッファへの参照
+ */
 BufferPointData *PDBLoader::BallData()
 {
 	return &ball;
 }
 
+/**
+ * 線データ取得
+ * @retval BufferLineData* Lineデータバッファへの参照
+ */
 BufferLineData *PDBLoader::StickData()
 {
 	return &stick;
 }
 
+
+/**
+ * マテリアル設定
+ * @param i 対象index
+ * @param matID マテリアルID
+ */
 void PDBLoader::SetMaterial(int i, float matID) {
     FloatBuffer* mat     = ball.Material();
 	if (i < 0 || i >= mat->GetNum()) {
@@ -127,6 +161,11 @@ void PDBLoader::SetMaterial(int i, float matID) {
 	mat->GetBuffer()[i] = matID;
 }
 
+/**
+ * AtomElementSymbol取得
+ * @param i 対象index
+ * @retval GetElementSymbol 取得した要素[std::string]
+ */
 std::string PDBLoader::AtomElementSymbol(int i)
 {
 	if (i < 0 || i >= m_atoms.size()) {

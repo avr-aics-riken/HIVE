@@ -1,14 +1,23 @@
-/*
-   RenderObject.h
-   */
+/**
+ * @file RenderObject.h
+ * レンダーオブジェクト
+ */
+
 #ifndef _RENDEROBJECT_H_
 #define _RENDEROBJECT_H_
 
 #include "../Core/Ref.h"
 #include "../Core/vxmath.h"
 #include <string>
+#include <vector>
 #include <map>
 
+class BufferImageData;
+class BufferExtraData;
+
+/**
+ * レンダーオブジェクト
+ */
 class RenderObject : public RefCount
 {
 public:
@@ -17,6 +26,7 @@ public:
         TYPE_SETTING,
         TYPE_CAMERA,
         TYPE_VOLUME,
+        TYPE_SPARSEVOLUME,
         TYPE_POLYGON,
         TYPE_LINE,
         TYPE_POINT,
@@ -25,116 +35,62 @@ public:
         TYPE_MAX,
     };
 
-    MODE_TYPE GetType() const {
-        return m_type;
-    }
-
-    std::string GetTypeString() const {
-        static const char* modeString[] = {
-            "NONE",
-            "SETTING",
-            "CAMERA",
-            "VOLUME",
-            "POLYGON",
-            "LINE",
-            "POINT",
-            "TETRA",
-            "VECTOR"
-        };
-        return std::string(modeString[m_type]);
-    }
+    MODE_TYPE GetType() const;
+    std::string GetTypeString() const;
 
     //--------------------------------------------------
     //Get
     //--------------------------------------------------
-    const VX::Math::vec3&  GetTranslate() const { return m_trans; }
-    const VX::Math::vec3&  GetRotate()    const { return m_rotat; }
-    const VX::Math::vec3&  GetScale()     const { return m_scale; }
-    const VX::Math::matrix GetTransformMatrix() const
-    {
-        return VX::Math::Translation(m_trans[0], m_trans[1], m_trans[2])
-             * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
-             * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
-    }
+    const VX::Math::vec3&  GetTranslate() const;
+    const VX::Math::vec3&  GetRotate()    const;
+    const VX::Math::vec3&  GetScale()     const;
+    const VX::Math::matrix GetTransformMatrix() const;
     
-    typedef std::map<std::string, VX::Math::vec4> Vec4Map;
-    typedef std::map<std::string, VX::Math::vec3> Vec3Map;
-    typedef std::map<std::string, VX::Math::vec2> Vec2Map;
-    typedef std::map<std::string, float>         FloatMap;
-    const Vec4Map&  GetUniformVec4 () const { return m_vec4s;  }
-    const Vec3Map&  GetUniformVec3 () const { return m_vec3s;  }
-    const Vec2Map&  GetUniformVec2 () const { return m_vec2s;  }
-    const FloatMap& GetUniformFloat() const { return m_floats; }
+    typedef std::map<std::string, VX::Math::vec4>                 Vec4Map;
+    typedef std::map<std::string, VX::Math::vec3>                 Vec3Map;
+    typedef std::map<std::string, VX::Math::vec2>                 Vec2Map;
+    typedef std::map<std::string, float>                          FloatMap;
+    typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
+    typedef std::map<std::string, bool>                           FilteringParamMap;
+    typedef std::map<std::string, std::vector<bool> >             WrappingParamMap; // <S, T, R>
+    const Vec4Map&    GetUniformVec4 ()   const;
+    const Vec3Map&    GetUniformVec3 ()   const;
+    const Vec2Map&    GetUniformVec2 ()   const;
+    const FloatMap&   GetUniformFloat()   const;
+    const TextureMap& GetUniformTexture() const;
+    const FilteringParamMap& GetTextureFiltering() const;
+    const WrappingParamMap& GetTextureWrapping() const;
+    
+    typedef std::map<std::string, RefPtr<BufferExtraData> >  ExtraBufferMap;
+
+    bool AddExtraBuffer(const std::string& varyingName, BufferExtraData* data);
+    bool RemoveExtraBuffer(const std::string& varyingName);
+    const ExtraBufferMap& GetExtraBuffers() const;
 
 protected:
     //--------------------------------------------------
     //Set
     //--------------------------------------------------
-    bool SetTranslate(float x, float y, float z) {
-        m_trans[0] = x;
-        m_trans[1] = y;
-        m_trans[2] = z;
-        return true;
-    }
- 
+    bool SetTranslate(float x, float y, float z);
+    bool SetRotate(float x, float y, float z);
+    bool SetScale(float x, float y, float z);
+    bool SetTransformMatrix(const float* m);
 
-    bool SetRotate(float x, float y, float z) {
-        m_rotat[0] = x;
-        m_rotat[1] = y;
-        m_rotat[2] = z;
-        return true;
-    }
+    bool SetVec4(const std::string& name, float x, float y, float z, float w);
+    bool SetVec3(const std::string& name, float x, float y, float z);
+    bool SetVec2(const std::string& name, float x, float y);
+    bool SetFloat(const std::string& name, float x);
+    bool SetTexture(const std::string& name, const BufferImageData* img);
+    bool SetTextureFiltering(const std::string& name, bool filter);
+    /// Set texture wrapping mode. CLAMP_TO_EDGE(true) or REPEAT(false)
+    bool SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
 
-    bool SetScale(float x, float y, float z) {
-        m_scale[0] = x;
-        m_scale[1] = y;
-        m_scale[2] = z;
-        return true;
-    }
-
-    bool SetVec4(const std::string& name, float x, float y, float z, float w) {
-        m_vec4s[name] = VX::Math::vec4(x,y,z,w);
-        return true;
-    }
-
-    bool SetVec3(const std::string& name, float x, float y, float z) {
-        m_vec3s[name] = VX::Math::vec3(x,y,z);
-        return true;
-    }
-
-    bool SetVec2(const std::string& name, float x, float y) {
-        m_vec2s[name] = VX::Math::vec2(x,y);
-        return true;
-    }
-
-    bool SetFloat(const std::string& name, float x) {
-        m_floats[name] = x;
-        return true;
-    }
-
-    RenderObject(MODE_TYPE t) : m_type(t) 
-    {
-        m_trans =  VX::Math::vec3(0, 0, 0);
-        m_rotat =  VX::Math::vec3(0, 0, 0);
-        m_scale =  VX::Math::vec3(1, 1, 1);
-    };
-    ~RenderObject() {};
+    RenderObject(MODE_TYPE t);
+    ~RenderObject();
     
 private:
-    // Transform↲
-    VX::Math::vec3 m_trans;
-    VX::Math::vec3 m_rotat;
-    VX::Math::vec3 m_scale;
-
-    //mapped data
-    std::map<std::string, VX::Math::vec4> m_vec4s;
-    std::map<std::string, VX::Math::vec3> m_vec3s;
-    std::map<std::string, VX::Math::vec2> m_vec2s;
-    std::map<std::string, float>          m_floats;
-    std::map<std::string, int>            m_ints;
-
-    //mode type
-    MODE_TYPE       m_type;
+    class Impl;
+    Impl* m_imp;
 };
 
 #endif //_RENDEROBJECT_H_

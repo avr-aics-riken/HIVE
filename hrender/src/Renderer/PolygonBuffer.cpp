@@ -1,3 +1,7 @@
+/**
+ * @file PolygonBuffer.cpp
+ * ポリゴンバッファ
+ */
 #include <string>
 
 #include "PolygonBuffer.h"
@@ -6,6 +10,7 @@
 #include "Buffer.h"
 #include "Commands.h"
 
+/// コンストラクタ.
 PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_vtx_id     = 0;
@@ -17,11 +22,14 @@ PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_index_num  = 0;
     m_model      = 0;
 }
+
+/// デストラクタ.
 PolygonBuffer::~PolygonBuffer()
 {
     Clear();
 }
 
+/// クリア
 void PolygonBuffer::Clear()
 {
     if (m_vtx_id)    ReleaseBufferVBIB_SGL(m_vtx_id);
@@ -38,6 +46,10 @@ void PolygonBuffer::Clear()
     m_index_num  = 0;
 }
 
+/**
+ * ポリゴンバッファの作成
+ * @param model ポリゴンモデル.
+ */
 bool PolygonBuffer::Create(const PolygonModel* model)
 {
     if (!model) {
@@ -76,12 +88,19 @@ bool PolygonBuffer::Create(const PolygonModel* model)
                    inum, mesh->Index()->GetBuffer(),
                    m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     
+    createExtraBuffers(m_model);
+    
+    cacheTextures(model);
     return r;
 }
+
+/**
+ * レンダー.
+ */
 void PolygonBuffer::Render() const
 {
     if (!m_model) {
-        fprintf(stderr,"[Error] Not setpolygonmodel\n");
+        fprintf(stderr,"[Error] Not set polygonmodel\n");
     }
     
     if (m_vertex_num == 0) {
@@ -90,6 +109,8 @@ void PolygonBuffer::Render() const
     }
     
     bindUniforms(m_model);
+    
+    bindExtraBuffers(m_model);
     
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     if (m_index_id)

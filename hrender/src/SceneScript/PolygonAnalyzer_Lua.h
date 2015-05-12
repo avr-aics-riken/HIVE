@@ -1,3 +1,7 @@
+/**
+ * @file PolygonAnalyzer_Lua.h
+ * PolygonAnalyzer Luaラッパー
+ */
 #ifndef _POLYGONANALYZER_LUA_H_
 #define _POLYGONANALYZER_LUA_H_
 
@@ -6,7 +10,9 @@
 #include "Analyzer.h"
 #include "PolygonAnalyzer.h"
 #include "PolygonModel_Lua.h"
-
+/**
+ * PolygonAnalyzer Luaラッパー
+ */
 class PolygonAnalyzer_Lua : public PolygonAnalyzer
 {
 public:

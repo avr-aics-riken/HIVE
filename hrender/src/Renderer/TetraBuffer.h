@@ -1,3 +1,7 @@
+/**
+ * @file TetraBuffer.h
+ * Tetraバッファ
+ */
 #ifndef _TETRABUFFER_H_
 #define _TETRABUFFER_H_
 
@@ -5,6 +9,9 @@
 
 class TetraModel;
 
+/**
+ * Tetraバッファ
+ */
 class TetraBuffer : public BaseBuffer
 {
 private:

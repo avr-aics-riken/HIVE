@@ -1,3 +1,7 @@
+/**
+ * @file VectorBuffer.cpp
+ * ベクトルバッファ
+ */
 #include <string>
 
 #include "Analyzer.h"
@@ -8,6 +12,7 @@
 #include "Commands.h"
 #include "../Core/vxmath.h"
 
+/// コンストラクタ
 VectorBuffer::VectorBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 {
     m_line_vtx_id    = 0;
@@ -15,11 +20,13 @@ VectorBuffer::VectorBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     Clear();
 }
 
+/// デストラクタ
 VectorBuffer::~VectorBuffer()
 {
     Clear();
 }
 
+/// クリア
 void VectorBuffer::Clear()
 {
     if (m_line_vtx_id)  ReleaseBufferVBIB_SGL(m_line_vtx_id);
@@ -32,6 +39,10 @@ void VectorBuffer::Clear()
     m_tetra_vnum     = 0;
 }
 
+/**
+ * ベクトルバッファの作成.
+ * @param model ベクトルモデル.
+ */
 bool VectorBuffer::Create(const VectorModel* model)
 {
     bool r = true;
@@ -117,9 +128,16 @@ bool VectorBuffer::Create(const VectorModel* model)
     CreateVBIB_SGL(m_lines_vnum, lineBuf->GetBuffer(),  0, 0, 0, 0, 0, m_line_vtx_id,  normal_id, mat_id, tex_id, index_id);
     CreateVBIB_SGL(m_tetra_vnum, tetraBuf->GetBuffer(), 0, 0, 0, 0, 0, m_tetra_vtx_id, normal_id, mat_id, tex_id, index_id);
 
+    createExtraBuffers(m_model);
+
+    cacheTextures(model);
+    
     return r;
 }
 
+/**
+ * レンダー.
+ */
 void VectorBuffer::Render() const
 {
     if (!m_model) {
@@ -127,11 +145,13 @@ void VectorBuffer::Render() const
     }
     
     if (m_lines_vnum == 0 || m_tetra_vnum == 0) {
-        fprintf(stderr,"[Error] Invalide vector data\n");
+        fprintf(stderr,"[Error] Invalid vector data\n");
         return;
     }
 
     bindUniforms(m_model);
+    
+    bindExtraBuffers(m_model);
     
     const float w = m_model->GetLineWidth();
     LineWidth_SGL(w);

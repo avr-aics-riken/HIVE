@@ -1,0 +1,30 @@
+
+print('Render Obj')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_stl_point.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local gen  = PrimitiveGenerator()
+local ppp = gen:Sphere(100)
+--local pm = PointModel();
+local pm = PolygonModel();
+pm:Create(ppp);
+pm:SetShader("white.frag");
+
+local stl = STLLoader()
+stl:Load('bunny.stl')
+local model = PolygonModel()
+model:Create(stl:MeshData())
+model:SetShader('white.frag')
+
+render {camera, model,pm}
+
+

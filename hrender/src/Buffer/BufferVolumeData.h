@@ -1,11 +1,19 @@
+/**
+ * @file BufferVolumeData.h
+ * BufferVolumeDataクラス
+ */
 #ifndef _BUFFERVOLUMEDATA_H_
 #define _BUFFERVOLUMEDATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 
 class FloatBuffer;
 
-class BufferVolumeData : public RefCount
+/**
+ * BufferVolumeDataクラス
+ */
+class BufferVolumeData : public BufferData
 {
 private:
     class Impl;
@@ -15,11 +23,11 @@ public:
     BufferVolumeData();
     BufferVolumeData(BufferVolumeData* inst);
     ~BufferVolumeData();
-    void Create(int w, int h, int d, int component);
+    void Create(int w, int h, int d, int component, bool nonUniform = false);
     FloatBuffer* SpacingX();
     FloatBuffer* SpacingY();
     FloatBuffer* SpacingZ();
-    bool NonUniform();
+    const bool NonUniform() const;
     void Clear();
     void print();
     int Width() const;

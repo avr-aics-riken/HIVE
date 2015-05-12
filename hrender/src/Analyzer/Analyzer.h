@@ -1,3 +1,7 @@
+/**
+ * @file Analyzer.h
+ * ポリゴンデータ、もしくはボリュームデータ解析ユーティリティ
+ */
 #ifndef _ANALYZER_H_
 #define _ANALYZER_H_
 
@@ -34,16 +38,26 @@ inline std::string string_format(const std::string fmt, ...) {
 	return str;
 }
 
-
+/**
+ * Histogram
+ */
 class Histogram {
 public:
 	Histogram(int numBins, double minVal, double maxVal)
-	: minVal_(minVal), maxVal_(maxVal), totalCount_(0) {
+	: minVal_(minVal), maxVal_(maxVal), totalCount_(0), invalid_(false) {
 		double range = maxVal - minVal;
 		histogram_.resize(numBins);
+
+		for (size_t i = 0; i < histogram_.size(); i++) {
+			histogram_[i] = 0;
+		}
 		
 		assert(numBins >= 1);
-		assert(maxVal_ >= minVal_);
+		//assert(maxVal_ >= minVal_); // Allow invalid range input
+		if (maxVal_ < minVal_) {
+			fprintf(stderr, "Invalid histgram range: %f, %f\n", minVal_, maxVal_);
+			invalid_ = true; 
+		}
 		
 		if(range == 0.0) {
 			range = 1.0;
@@ -55,12 +69,23 @@ public:
 	void SetRange(double minVal, double maxVal) {
 		minVal_ = minVal;
 		maxVal_ = maxVal;
+
+		if (maxVal_ < minVal_) {
+			fprintf(stderr, "Invalid histgram range: %f, %f\n", minVal_, maxVal_);
+			invalid_ = true; 
+		}
 	}
 	
 	void Contribute(double val) {
+
+		if (invalid_) return;
+
 		double clampled = std::max(minVal_, std::min(maxVal_, val));
 		
 		int bin = (histogram_.size() - 1) * ((clampled - minVal_) * invRange_);
+		if (bin < 0) bin = 0;
+		if (bin >= histogram_.size()) bin = histogram_.size()-1;
+
 		assert(bin >= 0);
 		assert(bin < histogram_.size());
 		
@@ -94,8 +119,12 @@ private:
 	double maxVal_;
 	double invRange_;
 	size_t totalCount_;
+	bool   invalid_;
 };
 
+/**
+ * ボリュームデータ解析クラス
+ */
 class VolumeAnalyzerProc {
 public:
 	VolumeAnalyzerProc() {};
@@ -115,7 +144,6 @@ public:
 			minVal = std::min((double)vol[i], minVal);
 			maxVal = std::max((double)vol[i], maxVal);
 		}
-		//printf("val = %f, %f\n", minVal, maxVal);
 		
 		// 2. compute histogram;
 		Histogram hist(numBins, minVal, maxVal);
@@ -125,7 +153,7 @@ public:
 		
 		hist.GetNormalizedHistogram(outHistogram);
 	}
-	
+
 	template <typename T>
 	void AnalyzeVector(std::vector<float> outHistograms[3],
 							 double minVal[3], double maxVal[3], const T *vol,
@@ -207,6 +235,9 @@ public:
 };
 
 
+/**
+ * ポリゴンデータ解析クラス
+ */
 class PolygonAnalyzerProc {
 public:
 	PolygonAnalyzerProc() {};

@@ -1,3 +1,7 @@
+/**
+ * @file ImageSaver.cpp
+ * イメージファイルセーブユーティリティ
+ */
 #include "ImageSaver.h"
 #include <stdio.h>
 #include <string>
@@ -8,6 +12,7 @@
 #include "../Image/SimpleJPG.h"
 #include "../Image/SimplePNG.h"
 #include "../Image/SimpleTGA.h"
+#include "../Image/SimpleEXR.h"
 #include "../Image/SimpleHDR.h"
 #include "Buffer.h"
 
@@ -21,6 +26,9 @@ namespace
     }
 } // anonymouse namepsace
 
+/**
+ * 画像セーバ
+ */
 class ImageSaver::Impl
 {
 private:
@@ -28,18 +36,28 @@ private:
     std::string m_memory;
     
 public:
+    /// コンストラクタ
     Impl() {
         m_image.Clear();
     }
+
+    /// デストラクタ
     ~Impl() {
         m_image.Clear();
     }
-    
+
+    /// イメージデータへの参照
     BufferImageData* ImageData()
     {
         return &m_image;
     }
-    
+
+    /**
+     * ファイルロード
+     * @param filepath  ファイルフルパス 
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool SaveFile(const std::string& filepath, const unsigned char* data, int bytes)
     {
         std::ofstream ofs(filepath.c_str(), std::ios::out | std::ios::binary);
@@ -50,7 +68,14 @@ public:
         ofs.write(reinterpret_cast<const char*>(data), bytes);
         return true;
     }
-    
+
+    /**
+     * ファイルロード
+     * @param filepath  ファイルフルパス 
+     * @param data      ファイルデータ
+     * @retval true 成功
+     * @retval false 失敗
+     */
     bool Save(const char* filename, BufferImageData* data)
     {
         if (!filename) { return false; }
@@ -107,8 +132,78 @@ public:
                     delete [] tgabuffer;
                 }
             }
+            else if (ext == "exr" || ext == "EXR")
+            {
+                if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
+                    const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA32F)
+                    {
+                        unsigned char* exrbuffer = NULL;
+                        const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, srcbuffer);
+                        if (bytes && exrbuffer)
+                        {
+                            result = SaveFile(path, exrbuffer, bytes);
+                        }
+                        delete [] exrbuffer;
+                    }
+                    else if (data->Format() == BufferImageData::R32F)
+                    {
+                        unsigned char* exrbuffer = NULL;
+                        const int bytes = SimpleEXRSaverZ((void**)&exrbuffer, width, height, srcbuffer);
+                        if (bytes && exrbuffer)
+                        {
+                            result = SaveFile(path, exrbuffer, bytes);
+                        }
+                        delete [] exrbuffer;
+                    }
+                } else {
+                    const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA8) {
+                        // BYTE -> float
+                        float *hdrbuffer = new float[width*height*4];
+                        for (size_t i = 0; i < width * height * 4; i++) {
+                            hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                        }
+
+                        unsigned char* exrbuffer = NULL;
+                        const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, hdrbuffer);
+                        if (bytes && exrbuffer)
+                        {
+                            result = SaveFile(path, exrbuffer, bytes);
+                        }
+                        delete [] exrbuffer;
+                        delete [] hdrbuffer;
+                    }
+                }
+            }
             else if (ext == "hdr")
             {
+                if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
+                    const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA32F)
+                    {
+                        result = SimpleHDRSaver(filename, width, height, srcbuffer);
+                    }
+                    else if (data->Format() == BufferImageData::R32F)
+                    {
+                        // TODO:
+                        assert(0);
+                        printf("TODO: implementation. R32F HDR saver\n");
+                    }
+                } else {
+                    const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                    if (data->Format() == BufferImageData::RGBA8) {
+                        // BYTE -> float
+                        float *hdrbuffer = new float[width*height*4];
+                        for (size_t i = 0; i < width * height * 4; i++) {
+                            hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                        }
+                        
+                        result = SimpleHDRSaver(filename, width, height, hdrbuffer);
+                        
+                        delete [] hdrbuffer;
+                    }
+                }
             }
         }
         if (result) {
@@ -116,18 +211,24 @@ public:
         }
         return result;
     }
-    
+
+    /**
+     * メモリロード
+    * @param format  ファイルフォーマット(JPG, TGAのみ)
+     * @param data      ファイルデータ
+     * @return buffer ファイルイメージデータバッファ
+     */
     const Buffer SaveMemory(unsigned int format, BufferImageData* data)
     {
         if (!data) { return NULL; }
         if (data->Bytes() <= 0) { return NULL; }
-        const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
         const int width = data->Width();
         const int height = data->Height();
         char* dstbuffer = NULL;
         
         if (format == ImageSaver::JPG)
         {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             const int bytes = SimpleJPGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
@@ -137,11 +238,31 @@ public:
         }
         else if (format == ImageSaver::TGA)
         {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             const int bytes = SimpleTGASaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
                 delete [] dstbuffer;
                 return (const Buffer)m_memory.c_str();
+            }
+        }
+        else if (format == ImageSaver::EXR)
+        {
+            const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+            if (data->Format() == BufferImageData::R32F) {
+                const int bytes = SimpleEXRSaverZ((void**)&dstbuffer, width, height, srcbuffer);
+                if (bytes && dstbuffer) {
+                    m_memory = std::string(dstbuffer, bytes);
+                    delete [] dstbuffer;
+                    return (const Buffer)m_memory.c_str();
+                }
+            } else if (data->Format() == BufferImageData::RGBA32F) {
+                const int bytes = SimpleEXRSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
+                if (bytes && dstbuffer) {
+                    m_memory = std::string(dstbuffer, bytes);
+                    delete [] dstbuffer;
+                    return (const Buffer)m_memory.c_str();
+                }
             }
         }
         else if (format == ImageSaver::HDR)

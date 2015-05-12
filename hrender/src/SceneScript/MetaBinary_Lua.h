@@ -1,9 +1,15 @@
+/**
+ * @file MetaBinary_Lua.h
+ * MetaBinary Luaラッパー
+ */
 #ifndef _METABINARY_LUA_H_
 #define _METABINARY_LUA_H_
 
 #include "LuaUtil.h"
 #include "MetaBinary.h"
-
+/**
+ * MetaBinary Luaラッパー
+ */
 class MetaBinary_Lua : public MetaBinary
 {
 private:

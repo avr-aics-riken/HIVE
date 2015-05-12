@@ -1,3 +1,7 @@
+/**
+ * @file PointToVolume_Lua.h
+ * PointToVolume Luaラッパー
+ */
 #ifndef _POINTTOVOLUME_LUA_H_
 #define _POINTTOVOLUME_LUA_H_
 
@@ -5,7 +9,9 @@
 #include "PointToVolume.h"
 #include "BufferVolumeData_Lua.h"
 #include "BufferPointData_Lua.h"
-
+/**
+ * PointToVolume Luaラッパー
+ */
 class PointToVolume_Lua : public PointToVolume
 {
 public:

@@ -1,10 +1,16 @@
+/**
+ * @file VOLLoader_Lua.h
+ * VOLLoader_Lua Luaラッパー
+ */
 #ifndef _VOLLOADER_LUA_H_
 #define _VOLLOADER_LUA_H_
 
 #include "LuaUtil.h"
 #include "VolLoader.h"
 #include "BufferVolumeData_Lua.h"
-
+/**
+ * VOLLoader_Lua Luaラッパー
+ */
 class VOLLoader_Lua : public VOLLoader
 {
 public:

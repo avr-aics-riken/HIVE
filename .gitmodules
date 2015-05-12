@@ -2,9 +2,6 @@
 	path = third_party/lua
 	url = git@github.com:LuaDist/lua.git
 	ignore = dirty
-[submodule "third_party/TextParser"]
-	path = third_party/TextParser
-	url = git@github.com:avr-aics-riken/TextParser.git
 [submodule "third_party/CDMlib"]
 	path = third_party/CDMlib
 	url = git@github.com:avr-aics-riken/CDMlib.git
@@ -20,9 +17,15 @@
 [submodule "third_party/Polylib"]
 	path = third_party/Polylib
 	url = git@github.com:avr-aics-riken/Polylib.git
-[submodule "third_party/SURFACE"]
-	path = third_party/SURFACE
-	url = git@github.com:digirea/SURFACE.git
 [submodule "third_party/234Compositor"]
 	path = third_party/234Compositor
 	url = https://github.com/avr-aics-riken/234Compositor
+[submodule "third_party/SURFACE"]
+	path = third_party/SURFACE
+	url = git@github.com:avr-aics-riken/SURFACE.git
+[submodule "third_party/TextParser"]
+	path = third_party/TextParser
+	url = git@github.com:avr-aics-riken/TextParser.git
+[submodule "third_party/UDMlib"]
+	path = third_party/UDMlib
+	url = git@github.com:avr-aics-riken/UDMlib.git

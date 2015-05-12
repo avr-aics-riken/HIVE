@@ -1,3 +1,8 @@
+/**
+ * @file RenderCore.cpp
+ * hrenderコア機能部
+ */
+
 #ifdef HIVE_WITH_COMPOSITOR
 #include <mpi.h>
 #endif
@@ -9,6 +14,7 @@
 #include "RenderCore.h"
 
 #include "Commands.h"
+#include "Time.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -21,6 +27,7 @@
 #include "../RenderObject/VectorModel.h"
 #include "../RenderObject/TetraModel.h"
 #include "../RenderObject/VolumeModel.h"
+#include "../RenderObject/SparseVolumeModel.h"
 #include "../RenderObject/Camera.h"
 #include "../RenderObject/PolygonModel.h"
 #include "../Core/Ref.h"
@@ -31,6 +38,7 @@
 #include "PointBuffer.h"
 #include "LineBuffer.h"
 #include "VolumeBuffer.h"
+#include "SparseVolumeBuffer.h"
 #include "VectorBuffer.h"
 #include "TetraBuffer.h"
 
@@ -47,6 +55,38 @@ extern "C" {
 #endif
 
 
+namespace {
+    inline std::string make_lowercase(const std::string& in)
+    {
+        std::string out;
+        std::transform(in.begin(), in.end(), std::back_inserter(out), ::tolower);
+        return out;
+    }
+    BufferImageData::FORMAT getFileFomat(const std::string& filename)
+    {
+        if (filename == "") {
+            return BufferImageData::RGBA8;
+        }
+        
+        std::string::size_type pos = filename.rfind('.');
+        if (pos == std::string::npos) {
+            return BufferImageData::INVALID;
+        }
+        
+        const std::string ext = make_lowercase(filename.substr(pos + 1));
+        if (ext == "jpg" || ext == "png") {
+            return BufferImageData::RGBA8;
+        } else if (ext == "hdr" || ext == "exr") {
+            return BufferImageData::RGBA32F;
+        } else {
+            return BufferImageData::RGBA8;
+        }
+    }
+}
+
+/**
+ * hrenderコア機能部
+ */
 class RenderCore::Impl {
 
 private:
@@ -72,17 +112,47 @@ private:
     PolygonBufferMap m_polygonBuffers;
     PointBufferMap   m_pointBuffers;
     VolumeBufferMap  m_volumeBuffers;*/
+    typedef std::map<const std::string, unsigned int> ShaderCache;
+    typedef std::map<const BufferImageData*, unsigned int> TextureCache;
     typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
     BufferMap m_buffers_SGL;
     BufferMap m_buffers_GL;
+    TextureCache m_textureCache;
+    ShaderCache  m_shaderCache;
     
     ImageSaver m_imagesaver;
     
+    double m_renderTimeout;
+    double m_oldCallbackTime;
+    bool (*m_progressCallback)(double);
+    static bool progressCallbackFunc_(int progress, int y, int height, void* ptr) {
+        return static_cast<Impl*>(ptr)->progressCallbackFunc(progress, y, height);
+    }
+    
+    bool progressCallbackFunc(int progress, int y, int height) {
+        const double tm = GetTimeCount();
+        const int minimumRenderingHeight = 16; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
+        if (height > minimumRenderingHeight
+        && (tm - m_oldCallbackTime > m_renderTimeout)) {
+            m_oldCallbackTime = tm;
+            if (!m_progressCallback)
+                return true;
+            return m_progressCallback(static_cast<double>(progress));
+        }
+        return true;
+    }
+    static bool defaultProgressCallbackFunc(double progress) {
+        printf("[Rendering] %3d%%\n", static_cast<int>(progress));
+        return true;
+    }
+    
+    
 public:
+    /// コンストラクタ
     Impl()
     {
         m_mode   = RENDER_LSGL;//RENDER_OPENGL;
-        m_clearcolor = VX::Math::vec4(0,0,0,0);
+        m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
         m_sgl_depthbuffer = 0;
         m_sgl_colorbuffer = 0;
         m_sgl_framebuffer = 0;
@@ -90,16 +160,23 @@ public:
         m_gl_colorbuffer  = 0;
         m_gl_framebuffer  = 0;
 
+        m_renderTimeout    = 0.2; // sec
+        m_oldCallbackTime  = 0.0;
+        m_progressCallback = defaultProgressCallbackFunc;
+        
 #ifndef USE_GLSL_CONFIG
         LSGL_CompilerSetting();
 #endif
+        SetCallback_SGL(Impl::progressCallbackFunc_, this);
     }
     
+    /// デストラクタ
     ~Impl() {
         ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
         //ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);
     }
     
+    /// LSGLコンパイラセッティング
     void LSGL_CompilerSetting()
     {
         std::string binaryPath = getBinaryDir();
@@ -109,69 +186,168 @@ public:
 #elif _WIN32
         std::string binpath = "win64";
         std::string ccmd    = "g++";
+#elif defined(__sparc__) || defined(__sparc_v9__)
+        std::string binpath = "sparc64";
+#ifdef HIVE_ENABLE_MPI
+        std::string ccmd    = "mpiFCC";
+#else
+        std::string ccmd    = "FCC";
+#endif
 #elif __linux__
         std::string binpath = "linux_x64";
         std::string ccmd    = "g++";
-#elif SPARC
-        std::string binpath = "sparc64";
-        std::string ccmd    = "fccpx";
 #endif
         std::string opt      = "-O2";
         
         std::string mesaPath = binaryPath + "glsl/bin/" + binpath + "/glsl_compiler";
         std::string compilerCmd;
-        compilerCmd += binaryPath + std::string("glsl/glslc");
+#ifdef _WIN32
+		compilerCmd += binaryPath + std::string("glsl\\glslc.bat");
+#else
+		compilerCmd += binaryPath + std::string("glsl/glslc");
+#endif
         compilerCmd += std::string(" --cxx=\"")      + ccmd     + std::string("\"");
         compilerCmd += std::string(" --cxxflags=\"") + opt      + std::string("\"");
         compilerCmd += std::string(" --mesacc=\"")   + mesaPath + std::string("\"");
         SetShaderCompiler_SGL(compilerCmd.c_str(), NULL);
     }
     
+    /// バッファのクリア
     void ClearBuffers()
     {
         m_buffers_SGL.clear();
         m_buffers_GL.clear();
+        
+        TextureCache::const_iterator it, eit = m_textureCache.end();
+        for (it = m_textureCache.begin(); it != eit; ++it) {
+            unsigned int t = it->second;
+            DeleteTextures_SGL(1, &t);
+        }
+        m_textureCache.clear();
+
+        ShaderCache::const_iterator sit, seit = m_shaderCache.end();
+        for (sit = m_shaderCache.begin(); sit != seit; ++sit) {
+            const unsigned int p = sit->second;
+            DeleteProgram_SGL(p);
+        }
+        m_shaderCache.clear();
+        
     }
 
+    /// レンダーオブジェクトの追加
+    /// @param robj レンダーオブジェクト
     void AddRenderObject(RenderObject* robj)
     {
         m_renderObjects.push_back(robj);
     }
+    
+    /// レンダーオブジェクトのクリア
     void ClearRenderObject()
     {
         m_renderObjects.clear();
     }
     
+    /// プログレスコールバックの設定
+    void SetProgressCallback(bool (*func)(double))
+    {
+        m_progressCallback = func;
+    }
+ 
+    bool GetTexture(const BufferImageData* bufimg, unsigned int& id)
+    {
+        TextureCache::const_iterator it = m_textureCache.find(bufimg);
+        if (it != m_textureCache.end()) {
+            id = it->second;
+            return true;
+        }
+        return false;
+    }
+
+    bool CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+    {
+        TextureCache::const_iterator it = m_textureCache.find(bufimg);
+        if (it != m_textureCache.end()) {
+            DeleteTexture(bufimg);
+        }
+        GenTextures_SGL(1, &tex);
+        m_textureCache[bufimg] = tex;
+        return true;
+    }
+
+    bool DeleteTexture(const BufferImageData* bufimg)
+    {
+        TextureCache::iterator it = m_textureCache.find(bufimg);
+        if (it != m_textureCache.end()) {
+            DeleteTextures_SGL(1, &it->second);
+            m_textureCache.erase(it);
+            return true;
+        }
+        return false;
+    }
+    
+    bool CreateProgramSrc(const char* srcname, unsigned int& prg)
+    {
+        ShaderCache::const_iterator it = m_shaderCache.find(srcname);
+        if (it != m_shaderCache.end()) {
+            prg = it->second;
+            return true;
+        }
+        bool r = CreateProgramSrc_SGL(srcname, prg);
+        if (!r)
+            return false;
+        m_shaderCache[std::string(srcname)] = prg;
+        return true;
+    }
+    
+    
+    
+    /// レンダリング
     void Render()
     {
+        m_oldCallbackTime = 0.0;//GetTimeCount();
         RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
+                const std::string& depth_outfile = camera->GetDepthOutputFile();
                 BufferImageData* color = camera->GetImageBuffer();
                 BufferImageData* depth = camera->GetDepthBuffer();
                 
+                const double starttm = GetTimeCount();
                 resize(camera);
+                const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
-                renderObjects(color, depth);
-                readbackImage(color);
+                renderObjects();
+                const double rendertm = GetTimeCount();
+                const float* clr = camera->GetClearColor();
+                readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
+                readbackDepth(depth);
+                const double readbacktm = GetTimeCount();
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
                 }
+                if (!depth_outfile.empty()) {
+                    m_imagesaver.Save(depth_outfile.c_str(), depth);
+                }
+                const double savetm = GetTimeCount();
+                printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
         }
     }
    
 private:
     
+    /// カレントカメラのセット
+    /// @param camera カメラ
     void setCurrentCamera(const Camera* camera)
     {
         m_currentCamera = camera;
-        m_clearcolor = VX::Math::vec4(camera->GetClearColor());
     }
     
+    /// SGLバッファの作成
+    /// @param robj レンダーオブジェクト
     BaseBuffer* createBufferSGL(const RenderObject* robj)
     {
         BaseBuffer* buffer = 0;
@@ -191,6 +367,10 @@ private:
              VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
              buffer = vbuf;
+        } else if (robj->GetType() == RenderObject::TYPE_SPARSEVOLUME) {
+             SparseVolumeBuffer* vbuf = new SparseVolumeBuffer(RENDER_LSGL);
+             vbuf->Create(static_cast<const SparseVolumeModel*>(robj));
+             buffer = vbuf;
         } else if (robj->GetType() == RenderObject::TYPE_TETRA) {
             TetraBuffer* tbuf = new TetraBuffer(RENDER_LSGL);
             tbuf->Create(static_cast<const TetraModel*>(robj));
@@ -207,6 +387,8 @@ private:
         return buffer;
     }
     
+    /// SGLで描画
+    /// @param robj レンダーオブジェクト
     void draw_SGL(const RenderObject* robj)
     {
         if (robj->GetType() == RenderObject::TYPE_CAMERA) {
@@ -235,6 +417,7 @@ private:
         buffer->UnbindProgram();
         
     }
+    
     void draw_GL(const RenderObject* robj)
     {
         // TODO
@@ -251,43 +434,94 @@ private:
          (*it)->Render(RENDER_OPENGL);*/
     }
 
-    void readbackImage(BufferImageData* color)
+    /// 画像の書き戻し
+    /// @param color カラーバッファ
+    void readbackDepth(BufferImageData* depth)
     {
-        unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
+        FloatBuffer* fbuf = depth->FloatImageBuffer();
+        if (fbuf) {
+            float* imgbuf = fbuf->GetBuffer();
+            GetDepthBuffer_SGL(m_width, m_height, imgbuf);
+        }
+    }
+    /// 画像の書き戻し
+    /// @param color カラーバッファ
+    void readbackImage(BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
+    {
+        const float clearcolor_r = clr_r;
+        const float clearcolor_g = clr_g;
+        const float clearcolor_b = clr_b;
+        const float clearcolor_a = clr_a;
 
-        if (m_mode == RENDER_LSGL)
-            GetColorBuffer_SGL(m_width, m_height, imgbuf);
-        //else
-        //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
+        ByteBuffer* bbuf = color->ImageBuffer();
+        if (bbuf) {
+            unsigned char* imgbuf = bbuf->GetBuffer();
+            const int colorbit = 8;
+        
+            if (m_mode == RENDER_LSGL)
+                GetColorBuffer_SGL(m_width, m_height, imgbuf, colorbit);
+            //else
+            //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
         
 #ifdef HIVE_WITH_COMPOSITOR
-        int rank;
-        int nnodes;
-        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+            int rank;
+            int nnodes;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
 
-        // @fixme { pixel format. }
-        Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+            // @fixme { pixel format. }
+            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
 #endif
 
-        float clearcolor_r = 0.0;
-        float clearcolor_g = 0.0;
-        float clearcolor_b = 0.0;
+            // merge to bgcolor
+            for (int y = 0; y < m_height; ++y) {
+                for (int x = 0; x < m_width; ++x) {
+                    const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
+                    imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r*clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g*clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b*clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 3] = (std::max)(0, (std::min)(255, static_cast<int>(255 * (alp + clearcolor_a))));
+                }
+            }
+        } else {
+            FloatBuffer* fbuf = color->FloatImageBuffer();
+            float* imgbuf = fbuf->GetBuffer();
+            const int colorbit = 32;
+            if (m_mode == RENDER_LSGL)
+                GetColorBuffer_SGL(m_width, m_height, reinterpret_cast<unsigned char*>(imgbuf), colorbit);
 
-        
-        // merge to bgcolor
-        for (int y = 0; y < m_height; ++y) {
-            for (int x = 0; x < m_width; ++x) {
-                const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
-                imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r * (1.0 - alp);
-                imgbuf[4*(x + y * m_width) + 1] = imgbuf[4*(x + y * m_width) + 1] * alp + 255.0*clearcolor_g * (1.0 - alp);
-                imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b * (1.0 - alp);
-                imgbuf[4*(x + y * m_width) + 3] = 0xFF;
+#ifdef HIVE_WITH_COMPOSITOR
+            int rank;
+            int nnodes;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+            
+            assert(0); // TODO: Implementation
+            /*
+            // @fixme { pixel format. }
+            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+            */
+#endif
+            
+            // merge to bgcolor
+            for (int y = 0; y < m_height; ++y) {
+                for (int x = 0; x < m_width; ++x) {
+                    const double alp = imgbuf[4*(x + y * m_width) + 3];
+                    const float R = imgbuf[4*(x + y * m_width) + 0] * alp + clearcolor_r * clearcolor_a * (1.0 - alp);
+                    const float G = imgbuf[4*(x + y * m_width) + 1] * alp + clearcolor_g * clearcolor_a * (1.0 - alp);
+                    const float B = imgbuf[4*(x + y * m_width) + 2] * alp + clearcolor_b * clearcolor_a * (1.0 - alp);
+                    imgbuf[4*(x + y * m_width) + 0] = R;
+                    imgbuf[4*(x + y * m_width) + 1] = G;
+                    imgbuf[4*(x + y * m_width) + 2] = B;
+                    imgbuf[4*(x + y * m_width) + 3] = alp + clearcolor_a;
+                }
             }
         }
 
     }
-    void renderObjects(BufferImageData* color, BufferImageData* depth)
+    
+    /// オブジェクトのレンダリング
+    void renderObjects()
     {
         printf("RenderCore::RENDER!!!!\n");
         
@@ -316,19 +550,18 @@ private:
             
             BindProgram_GL(0);
             
-            // Get buffer!
-            unsigned char * imgbuf = color->ImageBuffer()->GetBuffer();
-            float * depthbuf = depth->FloatImageBuffer()->GetBuffer();
-            GetColorBuffer_GL(m_width, m_height, imgbuf);
-            GetDepthBuffer_GL(m_width, m_height,  depthbuf);
-            
             //unbindGLBuffer();
         }
  
     }
     
+    /// リサイズ
+    /// @param camera カメラ
     void resize(Camera* camera)
     {
+        const std::string& outfile = camera->GetOutputFile();
+        BufferImageData::FORMAT colorfmt = getFileFomat(outfile);
+        
         BufferImageData* color = camera->GetImageBuffer();
         BufferImageData* depth = camera->GetDepthBuffer();
         const int w = camera->GetScreenWidth();
@@ -339,7 +572,8 @@ private:
         //		if (m_gl_framebuffer || m_gl_colorbuffer || m_gl_depthbuffer)
         //			ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer); // todo nothing here
         
-        CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
+        const int colorbit = (colorfmt == BufferImageData::RGBA32F ? 32 : 8);
+        CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, colorbit, m_sgl_depthbuffer, 32);
         //		CreateBuffer_GL  (w, h, m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);  // todo nothing here
 
 #ifdef HIVE_WITH_COMPOSITOR
@@ -362,16 +596,12 @@ private:
         m_width  = w;
         m_height = h;
         
-        color->Clear();
-        depth->Clear();
-        if (w != 0 && h != 0) {
-            color->Create(BufferImageData::RGBA8, w, h);
-            depth->Create(BufferImageData::R32F, w, h);
-            float* depthbuf = depth->FloatImageBuffer()->GetBuffer();
-            for(int y = 0; y < h; ++y){
-                for(int x = 0; x < w; ++x){
-                    depthbuf[x + y * w] = x / (float)w;
-                }
+        if (color->Width() != w || color->Height() != h) {
+            color->Clear();
+            depth->Clear();
+            if (w != 0 && h != 0) {
+                color->Create(colorfmt, w, h);
+                depth->Create(BufferImageData::R32F,  w, h);
             }
         }
     }
@@ -379,36 +609,69 @@ private:
     
 };
 
-
 // ----------------------------------------------------
 
+/// インスタンスの取得
 RenderCore* RenderCore::GetInstance()
 {
-    static RenderCore* inst = 0;
-    if (inst)
-        return inst;
-    inst = new RenderCore();
-    return inst;
+	static RenderCore inst;
+	return &inst;
 }
 
+/// コンストラクタ
 RenderCore::RenderCore() : m_imp(new Impl()) {}
+/// デストラクタ
 RenderCore::~RenderCore()  { delete m_imp; }
 
+/// レンダーオブジェクトの追加
+/// @param robj レンダーオブジェクト
 void RenderCore::AddRenderObject(RenderObject* robj)
 {
     m_imp->AddRenderObject(robj);
 }
+
+bool RenderCore::GetTexture(const BufferImageData* bufimg, unsigned int& id)
+{
+    return m_imp->GetTexture(bufimg, id);
+}
+
+bool RenderCore::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+{
+    return m_imp->CreateTexture(bufimg, tex);
+}
+
+bool RenderCore::DeleteTexture(const BufferImageData* bufimg)
+{
+    return m_imp->DeleteTexture(bufimg);
+}
+
+
+/// レンダー
 void RenderCore::Render()
 {
     m_imp->Render();
 }
+
+/// レンダーオブジェクトのクリア
 void RenderCore::ClearRenderObject()
 {
     m_imp->ClearRenderObject();
 }
 
+/// レンダーバッファのクリア
 void RenderCore::ClearBuffers()
 {
     m_imp->ClearBuffers();
+}
+
+/// プログレスコールバックの設定
+void RenderCore::SetProgressCallback(bool (*func)(double))
+{
+    m_imp->SetProgressCallback(func);
+}
+
+bool RenderCore::CreateProgramSrc(const char* src, unsigned int& prg)
+{
+    return m_imp->CreateProgramSrc(src, prg);
 }
 

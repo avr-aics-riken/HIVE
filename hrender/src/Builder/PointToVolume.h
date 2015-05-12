@@ -1,3 +1,8 @@
+/**
+ * @file PointToVolume.h     
+ * 点データからVolumeDataへ変換するモジュール
+ */
+
 #ifndef _POINTTOVOLUME_H_
 #define _POINTTOVOLUME_H_
 
@@ -6,6 +11,9 @@
 #include "BufferPointData.h"
 #include "BufferVolumeData.h"
 
+/**
+ * 点データからVolumeDataへ変換するクラス
+ */
 class PointToVolume : public RefCount
 {
 private:

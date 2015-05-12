@@ -1,0 +1,145 @@
+print('Render Obj')
+local camera = Camera()
+local screendiv = 2
+camera:SetScreenSize(1024/screendiv, 768/screendiv)
+camera:SetFilename('md.png')
+
+camera:LookAt(
+	0.0,0.0,4.0,
+	0.0,0,0,
+	0,1,0,
+	54.43
+)
+
+-- Create an array of material as texture.
+-- 8 pixel(RGBA32F) width x # of materials as height
+local mattex = GenTexture()
+
+local mattextable = {}
+local numMaterials = 2
+local mattexWidth = 8
+for j = 1, numMaterials do 
+
+	-- 0:3   diffuse(vec3, alpha not used)
+	if j == 1 then
+		table.insert(mattextable, 0);
+		table.insert(mattextable, 0);
+		table.insert(mattextable, 0);
+	else
+		table.insert(mattextable, 1);
+		table.insert(mattextable, 1);
+		table.insert(mattextable, 1);
+	end
+	table.insert(mattextable, 0.0);
+
+	-- 4:7   reflection and glossiness(vec4)
+	if j == 1 then
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 0.0);
+	else
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	end
+
+	-- 8:11  refraction and glossiness(vec4)
+	table.insert(mattextable, 1.0);
+	table.insert(mattextable, 1.0);
+	table.insert(mattextable, 1.0);
+	table.insert(mattextable, 0.0);
+
+	-- 12:15 fresnel and ior(vec2, last 2 floats not used)
+	if j == 1 then
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 1.6);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	else
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 1.6);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	end
+
+	-- 16:19 emission(vec3, alpha not used)
+	table.insert(mattextable, 0.0);
+	table.insert(mattextable, 0.0);
+	table.insert(mattextable, 0.0);
+	table.insert(mattextable, 0.0);
+
+	-- fill unsed area(20:31)
+	for i = 20, 31 do
+		table.insert(mattextable, 0.0);
+	end
+
+end
+
+mattex:Create2D(mattextable, 3, mattexWidth, numMaterials); -- 3 = RGBA32F
+local matimg = mattex:ImageData()
+
+-- load from file
+local loader = ImageLoader()
+local isloaded = loader:Load("ibl.jpg")
+print('Texture Load = ' .. tostring(isloaded))
+local img = loader:ImageData()
+
+
+-- Generate too big sphere as an environment
+local gen  = PrimitiveGenerator()
+local envmap = gen:Sphere(100000000)
+local pm0 = PointModel();
+pm0:Create(envmap);
+pm0:SetShader("envmap.frag");
+pm0:SetTexture("mytex0", img);
+
+local gen1  = PrimitiveGenerator()
+local smallsphere = gen1:Sphere(1.0)
+local model0 = PointModel();
+model0:Create(smallsphere)
+model0:SetShader('pbs.frag')
+model0:SetFloat('matid', 0)
+model0:SetTexture("pbs_envtex", img);
+model0:SetTexture("pbs_mattex", matimg);
+model0:SetFloat("pbs_num_materials", numMaterials);
+model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+
+-- blob surface
+-- local obj0 = OBJLoader()
+-- obj0:Load('blob.obj')
+-- local model0 = PolygonModel()
+-- local meshdata0 = obj0:MeshData()
+-- model0:Create(meshdata0)
+-- model0:SetShader('pbs.frag')
+-- model0:SetFloat('matid', 0)
+-- model0:SetTexture("pbs_envtex", img);
+-- model0:SetTexture("pbs_mattex", matimg);
+-- model0:SetFloat("pbs_num_materials", numMaterials);
+-- model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+local analy = PolygonAnalyzer()
+analy:Execute(model0)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+-- floor surface
+local obj1 = OBJLoader()
+obj1:Load('md_plane.obj')
+local model1 = PolygonModel()
+local meshdata1 = obj1:MeshData()
+model1:Create(meshdata1)
+model1:SetShader('pbs.frag')
+model1:SetFloat('matid', 1)
+model1:SetTexture("pbs_envtex", img);
+model1:SetTexture("pbs_mattex", matimg);
+model1:SetFloat("pbs_num_materials", numMaterials);
+model1:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+render {camera, pm0, model0}

@@ -1,14 +1,22 @@
+/**
+ * @file BufferVectorData.h
+ * BufferVectorDataクラス
+ */
 #ifndef _BUFFERVECTORDATA_H_
 #define _BUFFERVECTORDATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 
 class Vec3Buffer;
 class Vec2Buffer;
 class FloatBuffer;
 class UintBuffer;
 
-class BufferVectorData : public RefCount
+/**
+ * BufferVectorDataクラス
+ */
+class BufferVectorData : public BufferData
 {
 private:
     class Impl;

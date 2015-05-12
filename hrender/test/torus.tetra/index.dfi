@@ -1,0 +1,25 @@
+/*
+ * UDMlib - Unstructured Data Management Library
+ * Copyright (C) 2012-2015 Institute of Industrial Science, The University of Tokyo.
+ * All rights reserved.
+ */
+FileInfo {
+    DFIType = "Uns"
+    FieldFilenameFormat = "step_rank"
+    Prefix = "torus.tetra"
+    FileFormat = "cgns"
+    FileCompositionType = ("IncludeGrid", "EachStep")
+}
+FilePath {
+    Process = "proc.dfi"
+}
+UnitList {
+}
+TimeSlice {
+    Slice[@] {
+        Step = 0
+        Time = 0.000000e+00
+    }
+}
+FlowSolutionList {
+}

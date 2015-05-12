@@ -3,7 +3,6 @@ print('Send Render Image')
 
 local camera = Camera()
 camera:SetScreenSize(512, 512)
-camera:SetNetworkAddress('http://localhost:8082/')
 
 camera:LookAt(
 	0,0,300,

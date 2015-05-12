@@ -1,3 +1,7 @@
+/**
+ * @file tiny_pdb.h
+ * PDBデータローダー
+ */
 #ifndef TINY_PDB_H__
 #define TINY_PDB_H__
 
@@ -8,8 +12,14 @@
 
 namespace tinypdb {
 
+/**
+ * PDB形式Atomデータクラス
+ */
 class Atom {
  public:
+  Atom() : visited_(false) { }
+  ~Atom() { }
+
   int GetSerialNumber() const {
     return serial_number_;
   }
@@ -65,7 +75,7 @@ class Atom {
         pow(GetZ() - target.GetZ(), 2.0));
   }
 
-  const std::vector<Atom*> GetBonds() {
+  const std::vector<Atom*>& GetBonds() {
     return bonds_;
   }
 
@@ -116,6 +126,14 @@ class Atom {
     bonds_.push_back(bonded);
   }
 
+  bool Visited() const {
+    return visited_;
+  }
+
+  void SetVisited(bool flag) {
+    visited_ = flag;
+  }
+
  private:
   int serial_number_;
   std::string name_;
@@ -131,6 +149,8 @@ class Atom {
   double t_factor_;
   std::string extra_;
   std::string element_symbol_;
+
+  bool visited_; // flag used for bond traversal.
 
   std::vector<Atom*> bonds_;
 };
@@ -152,7 +172,7 @@ class TinyPDB {
   Atom ParseAtom();
 
   void Identifier(std::string& identifier);
-  void FixedIdentifier(std::string& identifier, int length);
+  void FixedIdentifier(std::string& identifier, int length, bool skipWhiteSpace = true);
   int Integer();
   double Double();
   void Trim();

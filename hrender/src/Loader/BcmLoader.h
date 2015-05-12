@@ -1,3 +1,7 @@
+/**
+ * @file BcmLoader.h
+ * BCMデータローダー
+ */
 #ifndef _BCMLOADER_H_
 #define _BCMLOADER_H_
 
@@ -5,6 +9,9 @@
 #include "Buffer.h"
 #include "BufferVolumeData.h"
 
+/**
+ * BCMデータローダー
+ */
 class BCMLoader : public RefCount
 {
 public:
