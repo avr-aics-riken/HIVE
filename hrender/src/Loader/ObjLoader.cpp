@@ -10,6 +10,7 @@
 #include "BufferLineData.h"
 #include "BufferTetraData.h"
 #include "BufferVectorData.h"
+#include "BufferExtraData.h"
 #include "Buffer.h"
 
 /// コンストラクタ
@@ -279,6 +280,39 @@ BufferVectorData *OBJLoader::NormalData()
         m_normal = createNormalVectorData(m_obj);
     
     return m_normal;
+}
+
+/**
+ * Extraデータバッファ取得(テスト用)
+ * @retval BufferExtraData* Extraデータバッファ
+ */
+BufferExtraData *OBJLoader::ExtraData()
+{
+    if (!m_extra)
+        m_extra = createExtraData(m_obj);
+    
+    return m_extra;
+}
+
+// FOR TEST
+BufferExtraData* OBJLoader::createExtraData(const SimpleObj* obj) const
+{
+    BufferExtraData* vec = new BufferExtraData();
+    if (!obj) {
+        return vec;
+    }
+    
+    const int vnum = obj->GetVertexNum();
+    vec->Create("vec3", vnum);
+    Vec3Buffer* extra = vec->Vec3Buffer();
+    memcpy(extra->GetBuffer(), obj->GetNormalBuffer(), sizeof(float) * 3 * vnum);
+    for (int i = 0; i < vnum; ++i) {
+        extra->GetBuffer()[3*i    ] = 1.0 - extra->GetBuffer()[3*i    ];
+        extra->GetBuffer()[3*i + 1] = 1.0 - extra->GetBuffer()[3*i + 1];
+        extra->GetBuffer()[3*i + 2] = 1.0 - extra->GetBuffer()[3*i + 2];
+    }
+    
+    return vec;
 }
 
 
