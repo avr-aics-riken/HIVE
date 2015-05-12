@@ -130,6 +130,22 @@
 			src += ')\n';
 			return src;
 		},
+		setModelUniformTex : function (objname, name, width, height, rgbaVal) {
+			console.log('setModelUniformTex', objname, name, width, height, rgbaVal);
+			var src = 'hcmd.SetModelUniformTex(',
+				i;
+			src += '"' + objname + '",';
+			src += '"' + name + '",';
+			src += width + ',';
+			src += height + ',';
+			src += '{';
+			for (i = 0; i < height * width * 4; i = i + 1) {
+				src += i + ',';
+			}
+			src += '}';
+			src += ')\n';
+			return src;
+		},
 		storeObjectTimeline : function (objecttimeline) {
 			var tljson = JSON.stringify(objecttimeline),
 				src;

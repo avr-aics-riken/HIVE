@@ -13,6 +13,7 @@
 #include <map>
 
 class BufferImageData;
+class BufferExtraData;
 
 /**
  * レンダーオブジェクト
@@ -59,7 +60,12 @@ public:
     const TextureMap& GetUniformTexture() const;
     const FilteringParamMap& GetTextureFiltering() const;
     const WrappingParamMap& GetTextureWrapping() const;
+    
+    typedef std::map<std::string, RefPtr<BufferExtraData> >  ExtraBufferMap;
 
+    bool AddExtraBuffer(const std::string& varyingName, BufferExtraData* data);
+    bool RemoveExtraBuffer(const std::string& varyingName);
+    const ExtraBufferMap& GetExtraBuffers() const;
 
 protected:
     //--------------------------------------------------

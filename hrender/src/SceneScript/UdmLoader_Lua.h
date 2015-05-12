@@ -38,12 +38,17 @@ public:
         return new BufferTetraData_Lua(UDMLoader::TetraData());
     }
 
+    BufferExtraData_Lua* ExtraData(const char *name) {
+        return new BufferExtraData_Lua(UDMLoader::ExtraData(name));
+    }
+
     LUA_SCRIPTCLASS_BEGIN(UDMLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,NumTimeSteps)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,TimeStepAt,int)
     LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*, TetraData)
+    LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua*, ExtraData, const char*)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(UDMLoader_Lua);

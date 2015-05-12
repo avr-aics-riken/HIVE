@@ -169,6 +169,8 @@ bool VolumeBuffer::Create(const VolumeModel* model)
         fprintf(stderr,"[Error] Not load buffer\n");
     }
     
+    createExtraBuffers(m_model);
+
     cacheTextures(model);
     
     return r;
@@ -200,6 +202,8 @@ void VolumeBuffer::Render() const
     SetUniform3fv_SGL(prg, "offset", (float *)&translate);
     
     bindUniforms(m_model);
+    
+    bindExtraBuffers(m_model);
     
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     BindTexture3D_SGL(m_sgl_voltex);

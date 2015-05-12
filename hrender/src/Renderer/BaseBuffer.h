@@ -17,6 +17,7 @@ class RenderObject;
 class BufferImageData;
 
 #include <map>
+#include <string>
 
 /**
  * ベースバッファ
@@ -29,6 +30,8 @@ protected:
     
     RENDER_MODE m_mode;
     unsigned int m_prog;
+    
+    std::map<std::string, unsigned int> m_extraIdx;
     
 public:
     virtual void Render() const = 0;
@@ -45,6 +48,8 @@ protected:
     bool loadShaderSrc(const char* srcname);
     unsigned int getProgram() const;
     void bindUniforms(const RenderObject* obj) const;
+    void createExtraBuffers(const RenderObject* obj);
+    void bindExtraBuffers(const RenderObject* obj) const;
     const unsigned int getTextureId(const BufferImageData* buf) const;
     bool cacheTexture(const BufferImageData* buf, bool filter, bool clampToEdgeS, bool clampToEdgeT);
     void cacheTextures(const RenderObject* model);
