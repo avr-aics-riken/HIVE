@@ -80,6 +80,7 @@ bool TetraBuffer::Create(const TetraModel* model)
 				   /* indices */ 0,
                    m_vtx_id, normal_id, mat_id, tex_id, index_id);
     
+    createExtraBuffers(m_model);
     
     cacheTextures(model);
     
@@ -101,6 +102,8 @@ void TetraBuffer::Render() const
     }
 
     bindUniforms(m_model);
+
+    bindExtraBuffers(m_model);
 
     BindTetraVBIB_SGL(getProgram(), m_vtx_id, 0, 0);
 	// Use draw array method.
