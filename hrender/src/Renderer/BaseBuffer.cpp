@@ -146,15 +146,15 @@ void BaseBuffer::createExtraBuffers(const RenderObject* obj)
         std::string dtype(p->GetDataType());
         unsigned int bufidx = 0;
         if (dtype == "float") {
-            CreateFloatBuffer_SGL(p->GetNum(), p->FloatBuffer()->GetBuffer(), bufidx);
+            CreateFloatBuffer_SGL(p->GetNum(), p->Float()->GetBuffer(), bufidx);
         } else if (dtype == "vec4") {
-            CreateVec4Buffer_SGL(p->GetNum(), p->Vec4Buffer()->GetBuffer(), bufidx);
+            CreateVec4Buffer_SGL(p->GetNum(), p->Vec4()->GetBuffer(), bufidx);
         } else if (dtype == "vec3") {
-            CreateVec3Buffer_SGL(p->GetNum(), p->Vec3Buffer()->GetBuffer(), bufidx);
+            CreateVec3Buffer_SGL(p->GetNum(), p->Vec3()->GetBuffer(), bufidx);
         } else if (dtype == "vec2") {
-            CreateVec2Buffer_SGL(p->GetNum(), p->Vec2Buffer()->GetBuffer(), bufidx);
+            CreateVec2Buffer_SGL(p->GetNum(), p->Vec2()->GetBuffer(), bufidx);
         } else if (dtype == "uint") {
-            CreateUintBuffer_SGL(p->GetNum(), p->UintBuffer()->GetBuffer(), bufidx);
+            CreateUintBuffer_SGL(p->GetNum(), p->Uint()->GetBuffer(), bufidx);
         }
         m_extraIdx[it->first] = bufidx;
     }

@@ -88,15 +88,16 @@ public:
         return 0;
     }
     
-    class UintBuffer* UintBuffer()               { return m_uintbuffer; }
-    class FloatBuffer* FloatBuffer()             { return m_floatbuffer; }
-    //const FloatBuffer* FloatBuffer() const { return m_floatbuffer; }
-    class Vec4Buffer* Vec4Buffer()               { return m_vec4buffer;  }
-    //const Vec4Buffer* Vec4Buffer()   const { return m_vec4buffer;  }
-    class Vec3Buffer* Vec3Buffer()               { return m_vec3buffer;  }
-    //const Vec3Buffer* Vec3Buffer()   const { return m_vec3buffer;  }
-    class Vec2Buffer* Vec2Buffer()               { return m_vec2buffer;  }
-    //const Vec2Buffer* Vec2Buffer()   const { return m_vec2buffer;  }
+    UintBuffer*        Uint()        { return m_uintbuffer;  }
+    const UintBuffer*  Uint()  const { return m_uintbuffer;  }
+    FloatBuffer*       Float()       { return m_floatbuffer; }
+    const FloatBuffer* Float() const { return m_floatbuffer; }
+    Vec4Buffer*        Vec4()        { return m_vec4buffer;  }
+    const Vec4Buffer*  Vec4()  const { return m_vec4buffer;  }
+    Vec3Buffer*        Vec3()        { return m_vec3buffer;  }
+    const Vec3Buffer*  Vec3()  const { return m_vec3buffer;  }
+    Vec2Buffer*        Vec2()        { return m_vec2buffer;  }
+    const Vec2Buffer*  Vec2()  const { return m_vec2buffer;  }
 
 };
 
@@ -132,46 +133,46 @@ const char* BufferExtraData::GetDataType() const
     return m_imp->GetDataType();
 }
 
-FloatBuffer* BufferExtraData::FloatBuffer()
+FloatBuffer* BufferExtraData::Float()
 {
-    return m_imp->FloatBuffer();
+    return m_imp->Float();
 }
-UintBuffer* BufferExtraData::UintBuffer()
+UintBuffer* BufferExtraData::Uint()
 {
-    return m_imp->UintBuffer();
+    return m_imp->Uint();
 }
-Vec4Buffer* BufferExtraData::Vec4Buffer()
+Vec4Buffer* BufferExtraData::Vec4()
 {
-    return m_imp->Vec4Buffer();
+    return m_imp->Vec4();
 }
-Vec3Buffer* BufferExtraData::Vec3Buffer()
+Vec3Buffer* BufferExtraData::Vec3()
 {
-    return m_imp->Vec3Buffer();
+    return m_imp->Vec3();
 }
-Vec2Buffer* BufferExtraData::Vec2Buffer()
+Vec2Buffer* BufferExtraData::Vec2()
 {
-    return m_imp->Vec2Buffer();
+    return m_imp->Vec2();
 }
 
 
-const FloatBuffer* BufferExtraData::FloatBuffer() const
+const FloatBuffer* BufferExtraData::Float() const
 {
-    return m_imp->FloatBuffer();
+    return m_imp->Float();
 }
-const UintBuffer* BufferExtraData::UintBuffer() const
+const UintBuffer* BufferExtraData::Uint() const
 {
-    return m_imp->UintBuffer();
+    return m_imp->Uint();
 }
-const Vec4Buffer* BufferExtraData::Vec4Buffer() const
+const Vec4Buffer* BufferExtraData::Vec4() const
 {
-    return m_imp->Vec4Buffer();
+    return m_imp->Vec4();
 }
-const Vec3Buffer* BufferExtraData::Vec3Buffer() const
+const Vec3Buffer* BufferExtraData::Vec3() const
 {
-    return m_imp->Vec3Buffer();
+    return m_imp->Vec3();
 }
-const Vec2Buffer* BufferExtraData::Vec2Buffer() const
+const Vec2Buffer* BufferExtraData::Vec2() const
 {
-    return m_imp->Vec2Buffer();
+    return m_imp->Vec2();
 }
 

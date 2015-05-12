@@ -31,17 +31,18 @@ public:
     const char* GetDataType() const;
     void Clear();
     int GetNum() const;
-    FloatBuffer* FloatBuffer();
-    UintBuffer* UintBuffer();
-    Vec4Buffer* Vec4Buffer();
-    Vec3Buffer* Vec3Buffer();
-    Vec2Buffer* Vec2Buffer();
     
-    const class FloatBuffer* FloatBuffer() const;
-    const class UintBuffer* UintBuffer() const;
-    const class Vec4Buffer* Vec4Buffer() const;
-    const class Vec3Buffer* Vec3Buffer() const;
-    const class Vec2Buffer* Vec2Buffer() const;
+    FloatBuffer* Float();
+    UintBuffer* Uint();
+    Vec4Buffer* Vec4();
+    Vec3Buffer* Vec3();
+    Vec2Buffer* Vec2();
+    
+    const FloatBuffer* Float() const;
+    const UintBuffer*  Uint()  const;
+    const Vec4Buffer*  Vec4()  const;
+    const Vec3Buffer*  Vec3()  const;
+    const Vec2Buffer*  Vec2()  const;
 
 };
 
