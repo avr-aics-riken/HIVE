@@ -7,7 +7,7 @@
 
 #include "Ref.h"
 #include "Buffer.h"
-#include "BufferVolumeData.h"
+#include "BufferExtraData.h"
 
 class BufferMeshData;
 class BufferTetraData;
@@ -24,7 +24,10 @@ private:
 	} SolutionInfo;
 
 	typedef std::map<std::string, std::vector<float> > scalarArrayMap;
+	typedef std::map<std::string, std::vector<float> > vec2ArrayMap;
 	typedef std::map<std::string, std::vector<float> > vec3ArrayMap;
+	typedef std::map<std::string, std::vector<float> > vec4ArrayMap;
+	typedef std::map<std::string, std::vector<unsigned int> > uintArrayMap;
 
 public:
     UDMLoader();
@@ -65,11 +68,8 @@ public:
 	/// NULL if the file does not contain tetra primitive. 
 	BufferTetraData* TetraData();
 
-	/// Get vec3 solution data.
-	Vec3Buffer* Vec3Data(const char* name);
-
-	/// Get scalar solution data.
-	FloatBuffer* ScalarData(const char* name);
+	/// Get solution(custom attribute) data.
+	BufferExtraData* ExtraData(const char *name);
 
 private:
     std::vector<unsigned int> m_timeSteps;
@@ -80,7 +80,12 @@ private:
 	std::vector<SolutionInfo> m_solutions;
 
 	scalarArrayMap m_scalarArrayList;
+	vec2ArrayMap m_vec2ArrayList;
 	vec3ArrayMap m_vec3ArrayList;
+	vec4ArrayMap m_vec4ArrayList;
+	uintArrayMap m_uintArrayList;
+
+	std::map<std::string, RefPtr<BufferExtraData> > m_data;
 
 };
 
