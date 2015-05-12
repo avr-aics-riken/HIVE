@@ -128,6 +128,8 @@ bool VectorBuffer::Create(const VectorModel* model)
     CreateVBIB_SGL(m_lines_vnum, lineBuf->GetBuffer(),  0, 0, 0, 0, 0, m_line_vtx_id,  normal_id, mat_id, tex_id, index_id);
     CreateVBIB_SGL(m_tetra_vnum, tetraBuf->GetBuffer(), 0, 0, 0, 0, 0, m_tetra_vtx_id, normal_id, mat_id, tex_id, index_id);
 
+    createExtraBuffers(m_model);
+
     cacheTextures(model);
     
     return r;
@@ -148,6 +150,8 @@ void VectorBuffer::Render() const
     }
 
     bindUniforms(m_model);
+    
+    bindExtraBuffers(m_model);
     
     const float w = m_model->GetLineWidth();
     LineWidth_SGL(w);

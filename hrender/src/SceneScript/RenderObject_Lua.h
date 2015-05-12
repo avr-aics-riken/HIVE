@@ -5,6 +5,7 @@
 #ifndef _RENDEROBJECT_LUA_H_
 #define _RENDEROBJECT_LUA_H_
 #include "BufferImageData_Lua.h"
+#include "BufferExtraData_Lua.h"
 
 
 #define IMPLEMENTATION_RENDEROBJECT_LUA() \
@@ -133,6 +134,12 @@
     bool SetTextureWrapping(const char* name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) { \
         return RenderObject::SetTextureWrapping(name, clampToEdgeS, clampToEdgeT, clampToEdgeR); \
     } \
+    bool AddExtraBuffer(const std::string& varyingName, BufferExtraData_Lua* data) { \
+        return RenderObject::AddExtraBuffer(varyingName, data); \
+    } \
+    bool RemoveExtraBuffer(const std::string& varyingName) { \
+        return RenderObject::RemoveExtraBuffer(varyingName); \
+    } \
     BufferImageData_Lua* GetTexture(const char* name) { \
         const TextureMap& m = RenderObject::GetUniformTexture(); \
         TextureMap::const_iterator it = m.find(std::string(name)); \
@@ -168,6 +175,8 @@
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec3, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec2, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(float, GetFloat, const char*) \
+    LUA_SCRIPTCLASS_METHOD_ARG2(float, AddExtraBuffer, const char*, BufferExtraData_Lua*) \
+    LUA_SCRIPTCLASS_METHOD_ARG1(float, RemoveExtraBuffer, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferImageData_Lua, GetTexture, const char*)
 
 

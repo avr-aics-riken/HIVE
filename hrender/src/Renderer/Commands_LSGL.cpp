@@ -122,6 +122,39 @@ void GetDepthBuffer_SGL(int w, int h, float* depthbuf)
 	sgl.glReadPixels(0, 0, w, h, GL_DEPTH_COMPONENT, GL_FLOAT, depthbuf);
 }
 
+
+void CreateFloatBuffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num, buffer, GL_STATIC_DRAW);
+}
+void CreateUintBuffer_SGL(unsigned int num, unsigned int* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec4Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec3Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec2Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * num, buffer, GL_STATIC_DRAW);
+}
+
+
 /**
  * SGLバッファの作成
  * @param vertexnum 頂点数
@@ -501,6 +534,47 @@ private:
     char* buf;
 };
 
+namespace {
+
+    void printShaderInfoLog(GLuint shader)
+    {
+        int bufSize = 0;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH , &bufSize);
+        if (bufSize > 1) {
+            char* infoLog;
+            infoLog = new char[bufSize];
+            if (infoLog != NULL) {
+                int length;
+                glGetShaderInfoLog(shader, bufSize, &length, infoLog);
+                fprintf(stderr, "InfoLog:\n%s\n", infoLog);
+                delete [] infoLog;
+            } else {
+                fprintf(stderr, "Could not allocate InfoLog buffer.");
+            }
+        }
+    }
+
+    void printProgramInfoLog(GLuint program)
+    {
+        int bufSize;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH , &bufSize);
+        if (bufSize > 1) {
+            char *infoLog;
+            infoLog = new char[bufSize];
+            if (infoLog != NULL) {
+                int length;
+                glGetProgramInfoLog(program, bufSize, &length, infoLog);
+                fprintf(stderr, "InfoLog:\n%s\n", infoLog);
+                delete [] infoLog;
+            } else {
+                fprintf(stderr, "Could not allocate InfoLog buffer.");
+            }
+        }
+    }
+
+}
+
+
 /**
  * シェーダプログラムの作成.
  * @param srcname ソースファイルパス.
@@ -541,6 +615,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	//assert(val == GL_TRUE && "failed to compile shader");
 	if (val!=GL_TRUE) {
 		fprintf(stderr, "Error: failed to compile shader [%s]\n", srcname);
+        printShaderInfoLog(fragShader);
 		return false;
 	}
 	
@@ -607,6 +682,63 @@ bool DeleteProgram_SGL(unsigned int prg)
 	sgl.glDeleteProgram(prg);
 	return true;
 }
+
+void BindBufferFloat_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferUint_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec4_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec3_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec2_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+
 
 /**
  * バッファのバインド.
