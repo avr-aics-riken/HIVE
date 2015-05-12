@@ -304,7 +304,7 @@ BufferExtraData* OBJLoader::createExtraData(const SimpleObj* obj) const
     
     const int vnum = obj->GetVertexNum();
     vec->Create("vec3", vnum);
-    Vec3Buffer* extra = vec->Vec3Buffer();
+    Vec3Buffer* extra = vec->Vec3();
     memcpy(extra->GetBuffer(), obj->GetNormalBuffer(), sizeof(float) * 3 * vnum);
     for (int i = 0; i < vnum; ++i) {
         extra->GetBuffer()[3*i    ] = 1.0 - extra->GetBuffer()[3*i    ];
