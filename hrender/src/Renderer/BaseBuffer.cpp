@@ -8,6 +8,7 @@
 #include "../RenderObject/RenderObject.h"
 #include "../Buffer/Buffer.h"
 #include "../Buffer/BufferImageData.h"
+#include "../Buffer/BufferExtraData.h"
 
 #include "../Renderer/RenderCore.h"
 
@@ -130,6 +131,68 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
         }
     }
 
+}
+
+/**
+ * 拡張バッファの作成.
+ * @param obj レンダーオブジェクト
+ */
+void BaseBuffer::createExtraBuffers(const RenderObject* obj)
+{
+    const RenderObject::ExtraBufferMap& emap = obj->GetExtraBuffers();
+    RenderObject::ExtraBufferMap::const_iterator it, eit = emap.end();
+    for (it = emap.begin(); it != eit; ++it) {
+        const RefPtr<BufferExtraData>& p = it->second;
+        std::string dtype(p->GetDataType());
+        unsigned int bufidx = 0;
+        if (dtype == "float") {
+            CreateFloatBuffer_SGL(p->GetNum(), p->FloatBuffer()->GetBuffer(), bufidx);
+        } else if (dtype == "vec4") {
+            CreateVec4Buffer_SGL(p->GetNum(), p->Vec4Buffer()->GetBuffer(), bufidx);
+        } else if (dtype == "vec3") {
+            CreateVec3Buffer_SGL(p->GetNum(), p->Vec3Buffer()->GetBuffer(), bufidx);
+        } else if (dtype == "vec2") {
+            CreateVec2Buffer_SGL(p->GetNum(), p->Vec2Buffer()->GetBuffer(), bufidx);
+        } else if (dtype == "uint") {
+            CreateUintBuffer_SGL(p->GetNum(), p->UintBuffer()->GetBuffer(), bufidx);
+        }
+        m_extraIdx[it->first] = bufidx;
+    }
+}
+
+/**
+ * 拡張バッファのバインド.
+ * @param obj レンダーオブジェクト
+ */
+void BaseBuffer::bindExtraBuffers(const RenderObject* obj) const
+{
+    const unsigned int prg = getProgram();
+    if (prg == 0) {
+        return;
+    }
+    
+    const RenderObject::ExtraBufferMap& emap = obj->GetExtraBuffers();
+    RenderObject::ExtraBufferMap::const_iterator it, eit = emap.end();
+    for (it = emap.begin(); it != eit; ++it) {
+        const std::string& name = it->first;
+        const RefPtr<BufferExtraData>& p = it->second;
+        std::map<std::string, unsigned int>::const_iterator it = m_extraIdx.find(name);
+        if (it == m_extraIdx.end())
+            continue;
+        const unsigned int bufidx = it->second;
+        std::string dtype(p->GetDataType());
+        if (dtype == "float") {
+            BindBufferFloat_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "vec4") {
+            BindBufferVec4_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "vec3") {
+            BindBufferVec3_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "vec2") {
+            BindBufferVec2_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "uint") {
+            BindBufferUint_SGL(prg, name.c_str(), bufidx);
+        }
+    }
 }
 
 //-------------------------------------------------------------------

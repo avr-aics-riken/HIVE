@@ -7,6 +7,11 @@
 #include "PolygonModel.h"
 #include "BufferMeshData.h"
 
+
+// TEST for ExtraBuffer
+//#include "Buffer.h"
+//#include "BufferExtraData.h"
+
 /**
  * ポリゴンモデル
  */
@@ -45,6 +50,7 @@ public:
             return false;
         }
         m_mesh = m;
+        
         return true;
     }
     
@@ -98,6 +104,19 @@ bool PolygonModel::SetShader(const std::string& shaderfile)
  */
 bool PolygonModel::Create(BufferMeshData* m)
 {
+    /*
+    // TEST for ExtraBuffer
+    const int vnum = m->Position()->GetNum();
+    BufferExtraData* ebuf = new BufferExtraData();
+    ebuf->Create("vec3", vnum);
+    for (int i = 0; i < vnum; ++i) {
+        ebuf->Vec3Buffer()->GetBuffer()[3*i  ] = 1.0 - i/static_cast<float>(vnum);
+        ebuf->Vec3Buffer()->GetBuffer()[3*i+1] = 0.0;
+        ebuf->Vec3Buffer()->GetBuffer()[3*i+2] = 0.0;
+    }
+    AddExtraBuffer(std::string("testvec3"), ebuf);
+    */
+    
     return m_imp->Create(m);
 }
 

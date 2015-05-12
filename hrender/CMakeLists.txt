@@ -201,7 +201,8 @@ set(SOURCES
 	src/Buffer/BufferPointData.cpp
 	src/Buffer/BufferVectorData.cpp
 	src/Buffer/BufferTetraData.cpp
-	src/Buffer/BufferImageData.cpp
+  src/Buffer/BufferImageData.cpp
+  src/Buffer/BufferExtraData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Builder/PointToVolume.cpp
 	src/Builder/VolumeToMeshData.cpp

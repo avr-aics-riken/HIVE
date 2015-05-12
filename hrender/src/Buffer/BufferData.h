@@ -27,6 +27,7 @@ public:
 		TYPE_VOLUME,
 		TYPE_SPARSEVOLUME,
 		TYPE_IMAGE,
+        TYPE_EXTRA,
 		TYPE_MAX,
 	};
     BufferData(BufferType type) : m_type(type), m_needupdate(true) {}

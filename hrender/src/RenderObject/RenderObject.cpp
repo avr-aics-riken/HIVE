@@ -5,6 +5,10 @@
 #include "RenderObject.h"
 #include "../Buffer/BufferImageData.h"
 
+#include "BufferExtraData.h"
+#include "Buffer.h"
+
+
 /**
  * レンダーオブジェクト
  */
@@ -215,6 +219,42 @@ public:
         return true;
     }
 
+    typedef std::map<std::string, RefPtr<BufferExtraData> >  ExtraBufferMap;
+
+    /**
+     * 拡張バッファの追加
+     * @param varyingName varying名
+     * @param data 拡張バッファ
+     */
+    bool AddExtraBuffer(const std::string& varyingName, BufferExtraData* data)
+    {
+        m_extrabuffers[varyingName] = data;
+        return true;
+    }
+
+    /**
+     * 拡張バッファの削除
+     * @param varyingName varying名
+     */
+    bool RemoveExtraBuffer(const std::string& varyingName)
+    {
+        ExtraBufferMap::iterator it = m_extrabuffers.find(varyingName);
+        if (it != m_extrabuffers.end()) {
+            m_extrabuffers.erase(it);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 拡張バッファの取得
+     */
+    const ExtraBufferMap& GetExtraBuffers() const
+    {
+        return m_extrabuffers;
+    }
+    
+    
     /// コンストラクタ
     Impl(MODE_TYPE t) : m_type(t)
     {
@@ -243,9 +283,14 @@ private:
     std::map<std::string, RefPtr<const BufferImageData> > m_imgs;
     std::map<std::string, bool>           m_filteringParams;
     std::map<std::string, std::vector<bool> >  m_wrappingParams;
-
+    
     //mode type
     RenderObject::MODE_TYPE m_type;
+    
+
+    // Extra buffer
+    ExtraBufferMap m_extrabuffers;
+    
 };
 
 /// コンストラクタ
@@ -365,4 +410,25 @@ bool RenderObject::SetTextureFiltering(const std::string& name, bool filter)    
  * @param clampToEdgeR `true` to set wrapping mode for R to CLAMP_TO_EDGE
  */
 bool RenderObject::SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)      { return m_imp->SetTextureWrapping(name, clampToEdgeS, clampToEdgeT, clampToEdgeR);     }
+
+
+
+/// 拡張バッファを追加する
+bool RenderObject::AddExtraBuffer(const std::string& varyingName, BufferExtraData* data)
+{
+    return m_imp->AddExtraBuffer(varyingName, data);
+}
+
+/// 拡張バッファを削除する
+bool RenderObject::RemoveExtraBuffer(const std::string& varyingName)
+{
+    return m_imp->RemoveExtraBuffer(varyingName);
+}
+
+/// 拡張バッファを取得する
+const RenderObject::ExtraBufferMap& RenderObject::GetExtraBuffers() const
+{
+    return m_imp->GetExtraBuffers();
+}
+
 
