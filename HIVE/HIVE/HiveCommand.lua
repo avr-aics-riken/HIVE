@@ -184,7 +184,10 @@ end
 local function SetModelUniformTex(name, vname, width, height, rgba)
 	local model = HIVE_ObjectTable[name]
 	if model == nil then return 'Not found Model:' .. name end
-	--model:SetTexTable(vname, val)
+
+	local gentex = GenTexture()
+	gentex:Create2D(rgba, 1, width, height);
+	model:SetTexture(vname, gentex:ImageData())
 	return 'SetModelUniformTex:' .. name
 end
 

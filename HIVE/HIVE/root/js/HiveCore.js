@@ -342,7 +342,7 @@
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
 			obj = sceneInfo.objectlist[i];
 			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
-				if (obj.type === 'POLYGON') {
+				if (obj.type !== 'CAMERA') {
 					if (hasProp(obj.info, 'filename')) {
 						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, obj.info.shader) + "\n";
 						modelCount = modelCount + 1;
