@@ -80,3 +80,31 @@ Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
     $ cd build/bin/SceneNodeEditor
     $ node server.js
 
+## Data loaders and formats
+
+* HDMlib
+  * [x] float precision voxel type(scalar and vector)
+  * [x] double precision voxel type(scalar and vector)
+    * Convert to float precision for internal representation
+
+* UDMlib
+  * [x] triangle element
+  * [ ] quad element
+  * [x] tetra element
+  * [ ] pyramid element
+  * [ ] pentahedron element
+  * [x] hexahedron element(converted to triangle)
+  * [x] custom attributes
+    * float and vec3 type
+
+* CDMlib
+  * [x] float precision voxel type(scalar and vector)
+  * [x] double precision voxel type(scalar and vector)
+    * Convert to float precision for internal representation
+  * [x] non-uniform spacing 
+
+* PDMlib
+  * [x] particle data
+  * [x] custom attributes
+    * float, vec2, vec3, vec4 and uint type
+
