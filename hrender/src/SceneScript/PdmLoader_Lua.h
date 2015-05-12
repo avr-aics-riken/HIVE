@@ -25,9 +25,14 @@ public:
         return new BufferPointData_Lua(PDMLoader::PointData(containerName, (float)radius));
     }
 
+    BufferExtraData_Lua* ExtraData(const char* containerName) {
+        return new BufferExtraData_Lua(PDMLoader::ExtraData(containerName));
+    }
+
     LUA_SCRIPTCLASS_BEGIN(PDMLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG2(BufferPointData_Lua*,PointData,const char*,double)
+    LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua*,ExtraData,const char*)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(PDMLoader_Lua);
