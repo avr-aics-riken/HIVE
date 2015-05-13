@@ -40,21 +40,17 @@ inline void swap4(unsigned int *val) {
 	dst[3] = src[0];
 }
 
-inline size_t IDX(size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
-    size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
-    size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
-    size_t dz = (std::max)((size_t)0, (std::min)(sz-1, z));
-    size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
+inline size_t IDX(ssize_t comps, ssize_t x, ssize_t y, ssize_t z, ssize_t c, ssize_t sx, ssize_t sy, ssize_t sz) {
+    ssize_t dx = (std::max)((ssize_t)0, (std::min)(sx-1, x));
+    ssize_t dy = (std::max)((ssize_t)0, (std::min)(sy-1, y));
+    ssize_t dz = (std::max)((ssize_t)0, (std::min)(sz-1, z));
+    ssize_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
     return idx;
 }
 
 template<typename T>
-inline float D(const T* data, size_t comps, size_t x, size_t y, size_t z, size_t c, size_t sx, size_t sy, size_t sz) {
-    size_t dx = (std::max)((size_t)0, (std::min)(sx-1, x));
-    size_t dy = (std::max)((size_t)0, (std::min)(sy-1, y));
-    size_t dz = (std::max)((size_t)0, (std::min)(sz-1, z));
-    size_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
-    return data[idx];
+inline float D(const T* data, ssize_t comps, ssize_t x, ssize_t y, ssize_t z, ssize_t c, ssize_t sx, ssize_t sy, ssize_t sz) {
+    return data[IDX(comps, x, y, z, c, sx, sy, sz)];
 }
 
 std::vector<std::string> SplitPath(const std::string& s, char c) {
@@ -260,7 +256,7 @@ bool LoadImageDataFile(
             size_t position = dataArrays[i]->GetPosition(); // position from the beginning of file
             size_t length = dataArrays[i]->GetLength();
             DataInfo info;
-            info.offset = position + 1 + sizeof(int); // skip '_' and datalen header
+            info.offset = position + sizeof(int); // skip datalen(4 bytes)
             info.length = length;
             info.name = name;
             info.type = type;
@@ -277,6 +273,14 @@ bool LoadImageDataFile(
     FILE* fp = fopen(filename.c_str(), "rb");
 
     for (size_t i = 0; i < dataList.size(); i++) {
+        //fseek(fp, dataList[i].offset, SEEK_SET);
+		//int dataLen;
+		//fread(&dataLen, 1, 4, fp);
+		//swap4(reinterpret_cast<unsigned int*>(&dataLen));
+		//printf("offt = %d\n", dataList[i].offset);
+		//printf("n = %d, datalen = %d\n", dataLen, dataList[i].length);
+		//assert(dataLen == dataList[i].length);
+
         fseek(fp, dataList[i].offset, SEEK_SET);
         dataList[i].data.resize(dataList[i].length);
         size_t n = fread(&(dataList[i].data.at(0)), 1, dataList[i].length, fp);
@@ -288,6 +292,11 @@ bool LoadImageDataFile(
 			}
 		}
         assert(n == dataList[i].length);
+
+		for (size_t c = 0; c < dataList[i].length / sizeof(float); c++) {
+			//printf("
+			//	swap4(reinterpret_cast<unsigned int*>(&dataList[i].data[sizeof(float)*c]));
+		}
     }
 
     fclose(fp);
@@ -300,6 +309,8 @@ bool LoadImageDataFile(
     offset[0] = pieceInfo.extent[0];
     offset[1] = pieceInfo.extent[2];
     offset[2] = pieceInfo.extent[4];
+
+	//printf("off: %d, %d, %d, sz: %d, %d, %d\n", offset[0], offset[1], offset[2], size[0], size[1], size[2]);
 
     // Find field
     int fieldIdx = -1;
@@ -323,6 +334,9 @@ bool LoadImageDataFile(
                     for (size_t c = 0; c < components; c++) {
                         const float* src = reinterpret_cast<const float*>(&(dataList[fieldIdx].data.at(0)));
                         volume[IDX(components, x + offset[0], y + offset[1], z + offset[2], c, dim[0], dim[1], dim[2])] = src[IDX(components, x, y, z, c, size[0], size[1], size[2])];
+						//if (src[IDX(components, x, y, z, c, size[0], size[1], size[2])] > 0) {
+						//	printf("val = %f\n", src[IDX(components, x, y, z, c, size[0], size[1], size[2])]);
+						//} 
                     }
                 }
             }
@@ -503,9 +517,9 @@ bool VTKLoader::Load(const char* filename, const char* searchpath, const char* f
             
         bool ok = true;
         // Load piece ImageData files
-        #ifdef OPENMP
-        #pragma omp parallel for shared(ok)
-        #endif
+        //#ifdef OPENMP
+        //#pragma omp parallel for shared(ok)
+        //#endif
         for (size_t i = 0; i < m_pieceInfoList.size(); i++) {
             bool ret = LoadImageDataFile(m_volume->Buffer()->GetBuffer(), m_pieceInfoList[i].source, m_pieceInfoList[i], fieldname, doByteSwap, m_dataArrayInfoList[fieldIdx].numberOfComponents, globalDim);
             if (!ret) {
