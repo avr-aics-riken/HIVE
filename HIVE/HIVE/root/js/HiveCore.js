@@ -439,6 +439,7 @@
 							if (frameIndex >= 0) {
 								fileName = obj.info.outputfile.substr(0, obj.info.outputfile.length - 4);
 								ext = obj.info.outputfile.substr(obj.info.outputfile.length - 4);
+								frameIndex = ("0000000" + frameIndex).substr(-6);
 								cmd = cmd + "HIVE_ImageSaver:Save('" + fileName + "_" + frameIndex + ext + "', imageBuffer) \n";
 							} else {
 								cmd = cmd + "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
