@@ -234,43 +234,51 @@
 	//----------------------------------------------------------------------------------------------
 	// Command creation functions
 	//
-	function createModelUniformCommand(objname, objinfo) {
-		var name,
-			uniforms,
-			src = '';
-		
+	function createModelUniformsFromInfoCommand(objname, objinfo) {
+		var i,
+			name,
+			src = '',
+			uniforms;
+
 		uniforms = objinfo.vec4;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[i]);
 			}
 		}
 		uniforms = objinfo.vec3;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[i]);
 			}
 		}
 		uniforms = objinfo.vec2;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[i]);
 			}
 		}
 		uniforms = objinfo.float;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i]);
 			}
 		}
+
 		uniforms = objinfo.rgbatex;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformTex(objname, name, uniforms[name].width, uniforms[name].height, uniforms[name].rgba);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 			}
 		}
 		return src;
 	}
+
 	
 	function createSceneRenderCommandHeader() {
 		var header = "package.path = './?.lua;' .. package.path \n"
@@ -281,11 +289,55 @@
 				+ "function HIVE_fetchEvent(progress) \n"
 				+ "    return true \n"
 				+ "end \n"
-				+ "hcmd = require('HiveCommand') \n";
+				+ "hcmd = require('HiveCommand'); \n";
 		return header;
 	}
 	
-	function createSceneCommand(sceneInfo, isExport) {
+	function createUpdateTimeCommand(time, obj, timeline) {
+		var objname = obj.name,
+			objtype = obj.type,
+			tinfo = timeline,
+			infoptr = null,
+			preInfo = null,
+			postInfo = null,
+			j,
+			m,
+			cmd = '',
+			r,
+			g,
+			b,
+			a;
+		
+		if (tinfo !== undefined) {
+			m = tinfo.length;
+			for (j = 0; j < m; j = j + 1) {
+				if (tinfo[j].time < time) {
+					preInfo = tinfo[j];
+				} else {
+					postInfo = tinfo[j];
+					break;
+				}
+			}
+			//console.log("pre", this.sceneInfo.objectlist[i]);
+			//console.log("post", postInfo);
+			infoptr = lerpInfo(preInfo, postInfo, time);
+			if (infoptr) {
+				cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
+				cmd = cmd + HiveCommand.setModelTranslation(obj.name, infoptr.translate, infoptr.rotate, infoptr.scale) + "\n";
+				if (objtype === "CAMERA") {
+					r = Math.min(1.0, infoptr.clearcolor[0]);
+					g = Math.min(1.0, infoptr.clearcolor[1]);
+					b = Math.min(1.0, infoptr.clearcolor[2]);
+					a = Math.min(1.0, infoptr.clearcolor[1]);
+					cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+					cmd = cmd + HiveCommand.cameraLookat(obj.name, infoptr.position, infoptr.target, infoptr.up, infoptr.fov) + "\n";
+				}
+			}
+		}
+		return cmd;
+	}
+	
+	function createSceneCommand(sceneInfo, isExport, includeHeader, time, frameIndex) {
 		var cmd,
 			i,
 			r,
@@ -298,7 +350,9 @@
 			hasProp = function (target, prop) {
 				return target.hasOwnProperty(prop);
 			},
-			modelCount = 0;
+			modelCount = 0,
+			ext,
+			fileName;
 		
 		if (!sceneInfo) {
 			return;
@@ -306,10 +360,13 @@
 		if (!sceneInfo.objectlist) {
 			return;
 		}
-		if (isExport) {
-			cmd = createSceneRenderCommandHeader() + HiveCommand.newScene() + "\n";
+		if (includeHeader) {
+			cmd = createSceneRenderCommandHeader();
+			cmd = cmd + '(function ()' + "\n";
+			cmd = cmd + HiveCommand.newScene() + "\n";
 		} else {
-			cmd = HiveCommand.newScene() + "\n";
+			cmd = '(function ()' + "\n";
+			cmd = cmd + HiveCommand.newScene() + "\n";
 		}
 		
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -352,13 +409,22 @@
 						if (hasProp(obj.info, 'shader')) {
 							cmd = cmd + HiveCommand.setModelShader(obj.name, obj.info.shader) + "\n";
 						}
-						cmd = cmd + createModelUniformCommand(obj.name, obj.info);
+						cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
 					}
 				}
 			}
 		}
-		if (!isExport && hasProp(sceneInfo, 'objecttimeline')) {
-			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+		if (hasProp(sceneInfo, 'objecttimeline')) {
+			if (isExport) {
+				for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+					obj = sceneInfo.objectlist[i];
+					if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+						cmd = cmd + createUpdateTimeCommand(time, obj, sceneInfo.objecttimeline[obj.name]);
+					}
+				}
+			} else {
+				cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+			}
 		}
 		if (isExport) {
 			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -369,13 +435,21 @@
 							cmd = cmd
 								+ HiveCommand.renderCamera(parseInt(obj.info.screensize[0], 10), parseInt(obj.info.screensize[1], 10), obj.name, false) + "\n"
 								+ "local camera = HIVE_ObjectTable['" + obj.name + "'] \n"
-								+ "local imageBuffer = camera:GetImageBuffer() \n"
-								+ "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
+								+ "local imageBuffer = camera:GetImageBuffer() \n";
+							if (frameIndex >= 0) {
+								fileName = obj.info.outputfile.substr(0, obj.info.outputfile.length - 4);
+								ext = obj.info.outputfile.substr(obj.info.outputfile.length - 4);
+								cmd = cmd + "HIVE_ImageSaver:Save('" + fileName + "_" + frameIndex + ext + "', imageBuffer) \n";
+							} else {
+								cmd = cmd + "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
+							}
 						}
 					}
 				}
 			}
 		}
+		
+		cmd = cmd + 'end)();\n\n';
 		return { command : cmd, modelcount : modelCount };
 	}
 	
@@ -401,14 +475,39 @@
 		}
 	};
 	
-	HiveCore.prototype.exportScene = function (filepath) {
+	HiveCore.prototype.exportScene = function (filepath, time) {
 		var cmd = '',
-			jsonstr;
+			jsonstr,
+			i,
+			t,
+			dt,
+			start,
+			end,
+			fps;
 		if (this.sceneInfo) {
-			cmd = createSceneCommand(this.sceneInfo, true);
-			if (cmd && cmd.command) {
+			console.log(time);
+			start = parseFloat(time.start);
+			end = parseFloat(time.end);
+			fps = parseFloat(time.fps);
+			dt = 1.0 / fps;
+			if (start === end) {
+				// export one frame
+				cmd = cmd + createSceneCommand(this.sceneInfo, true, true, start, -1).command;
+			} else {
+				i = 0;
+				for (t = start; t < end; t = t + dt) {
+					if (!cmd) {
+						cmd = cmd + createSceneCommand(this.sceneInfo, true, true, t, i).command;
+					} else {
+						cmd = cmd + createSceneCommand(this.sceneInfo, true, false, t, i).command;
+					}
+					i = i + 1;
+				}
+			}
+			console.log("exportScene:", cmd);
+			if (cmd) {
 				console.log("prototype.exportScene");
-				this.conn.masterMethod('exportScene', {path : filepath, data : cmd.command}, function (err, res, id) {
+				this.conn.masterMethod('exportScene', {path : filepath, data : cmd}, function (err, res, id) {
 					if (err) {
 						console.log(err);
 					}
@@ -418,7 +517,7 @@
 	};
 	
 	HiveCore.prototype.reloadScene = function (callback) {
-		var cmd = createSceneCommand(this.sceneInfo, false);
+		var cmd = createSceneCommand(this.sceneInfo, false, false, null);
 		if (cmd && cmd.command) {
 			this.modelCount = cmd.modelcount;
 			
