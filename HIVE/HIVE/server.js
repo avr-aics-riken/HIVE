@@ -121,6 +121,8 @@ function saveScene(filepath, data, msg_id) {
 		console.log("saved:" + filepath);
 	} catch (e) {
 		console.error('[Error] Failed to save: ' + filepath);
+		sendErrorMessage(clientNode, '[Error] Failed to save: ' + filepath, msg_id);
+		return;
 	}
 	clientNode.send(JSON.stringify({
 		JSONRPC: "2.0",
@@ -152,6 +154,8 @@ function exportScene(filepath, data, msg_id) {
 		console.log("saved:" + filepath);
 	} catch (e) {
 		console.error('[Error] Failed to export: ' + filepath);
+		sendErrorMessage(clientNode, '[Error] Failed to export: ' + filepath, msg_id);
+		return;
 	}
 	clientNode.send(JSON.stringify({
 		JSONRPC: "2.0",
@@ -173,6 +177,8 @@ function loadScene(filepath, msg_id) {
 		}));
 	} catch (e) {
 		console.error('[Error] Failed to load: ' + filepath);
+		sendErrorMessage(clientNode, '[Error] Failed to load: ' + filepath, msg_id);
+		return;
 	}
 	clientNode.send(JSON.stringify({
 		JSONRPC: "2.0",
@@ -201,6 +207,8 @@ function copyShaderFile(filepath, srcFileNames, msg_id) {
 		}
 	} catch (e) {
 		console.error('[Error] Failed to copy shader: ' + srcFileNames);
+		sendErrorMessage(clientNode, '[Error] Failed to copy shader: ' + srcFileNames, msg_id);
+		return;
 	}
 	clientNode.send(JSON.stringify({
 		JSONRPC: "2.0",
