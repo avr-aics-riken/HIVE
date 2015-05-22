@@ -112,7 +112,7 @@ function requestShaderList(msg_id) {
 	}));
 }
 
-function saveScene(filepath, data) {
+function saveScene(filepath, data, msg_id) {
 	'use strict';
 	var jsonstr;
 	try {
@@ -122,16 +122,42 @@ function saveScene(filepath, data) {
 	} catch (e) {
 		console.error('[Error] Failed to save: ' + filepath);
 	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
 }
 
-function exportScene(filepath, data) {
+function copyResourceFile(filepath) {
+	'use strict';
+	var basedir = path.resolve(__dirname, '.'),
+		hiveCommandFile = path.join(basedir, 'HiveCommand.lua'),
+		dstpath;
+	try {
+		if (fs.existsSync(hiveCommandFile)) {
+			dstpath = path.join(path.dirname(filepath), 'HiveCommand.lua');
+			fs.createReadStream(hiveCommandFile).pipe(fs.createWriteStream(dstpath));
+		}
+	} catch (e) {
+		console.error('[Error] Failed to copy resource file: ' + filepath);
+	}
+}
+
+function exportScene(filepath, data, msg_id) {
 	'use strict';
 	try {
 		fs.writeFileSync(filepath, data);
+		copyResourceFile(filepath);
 		console.log("saved:" + filepath);
 	} catch (e) {
 		console.error('[Error] Failed to export: ' + filepath);
 	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
 }
 
 function loadScene(filepath, msg_id) {
@@ -148,6 +174,39 @@ function loadScene(filepath, msg_id) {
 	} catch (e) {
 		console.error('[Error] Failed to load: ' + filepath);
 	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
+}
+
+function copyShaderFile(filepath, srcFileNames, msg_id) {
+	'use strict';
+	var basedir = path.resolve(__dirname, '.'),
+		fileNames,
+		srcpath,
+		dstpath,
+		i;
+	try {
+		fileNames = srcFileNames;
+		for (i = 0; i < fileNames.length; i = i + 1) {
+			srcpath = path.join(basedir, fileNames[i]);
+			dstpath = path.join(path.dirname(filepath), path.basename(fileNames[i]));
+			if (fs.existsSync(srcpath)) {
+				if (!fs.existsSync(dstpath)) {
+					fs.createReadStream(srcpath).pipe(fs.createWriteStream(dstpath));
+				}
+			}
+		}
+	} catch (e) {
+		console.error('[Error] Failed to copy shader: ' + srcFileNames);
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
 }
 
 ws.on('request', function (request) {
@@ -181,11 +240,13 @@ ws.on('request', function (request) {
 		} else if (method === 'requestShaderList') {
 			requestShaderList(msg_id);
 		} else if (method === 'saveScene') {
-			saveScene(param.path, param.data);
+			saveScene(param.path, param.data, msg_id);
 		} else if (method === 'exportScene') {
-			exportScene(param.path, param.data);
+			exportScene(param.path, param.data, msg_id);
 		} else if (method === 'loadScene') {
 			loadScene(param.path, msg_id);
+		} else if (method === 'copyShaderFile') {
+			copyShaderFile(param.path, param.data, msg_id);
 		} else {
 			console.error('Error: Unknow method');
 		}
