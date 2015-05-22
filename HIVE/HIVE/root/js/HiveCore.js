@@ -352,7 +352,8 @@
 			},
 			modelCount = 0,
 			ext,
-			fileName;
+			fileName,
+			shaderName;
 		
 		if (!sceneInfo) {
 			return;
@@ -400,15 +401,18 @@
 			obj = sceneInfo.objectlist[i];
 			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
 				if (obj.type !== 'CAMERA') {
-					if (hasProp(obj.info, 'filename')) {
-						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, obj.info.shader) + "\n";
+					if (hasProp(obj.info, 'filename') && hasProp(obj.info, 'shader')) {
+						if (isExport) {
+							shaderName = obj.info.shader.split('./shader/').join('');
+						} else {
+							shaderName = obj.info.shader;
+						}
+						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, shaderName) + "\n";
 						modelCount = modelCount + 1;
 						if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
 							cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
 						}
-						if (hasProp(obj.info, 'shader')) {
-							cmd = cmd + HiveCommand.setModelShader(obj.name, obj.info.shader) + "\n";
-						}
+						cmd = cmd + HiveCommand.setModelShader(obj.name, shaderName) + "\n";
 						cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
 					}
 				}
@@ -453,6 +457,29 @@
 		cmd = cmd + 'end)();\n\n';
 		return { command : cmd, modelcount : modelCount };
 	}
+
+	function getShaderNameListFromScene(sceneInfo) {
+		var i,
+			obj,
+			hasProp = function (target, prop) {
+				return target.hasOwnProperty(prop);
+			},
+			shaderNames = [];
+			
+		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+			obj = sceneInfo.objectlist[i];
+			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+				if (obj.type !== 'CAMERA') {
+					if (hasProp(obj.info, 'filename')) {
+						if (shaderNames.indexOf(obj.info.shader) < 0) {
+							shaderNames.push(obj.info.shader);
+						}
+					}
+				}
+			}
+		}
+		return shaderNames;
+	}
 	
 	//----------------------------------------------------------------------------------------------
 	// Scene operation
@@ -484,7 +511,8 @@
 			dt,
 			start,
 			end,
-			fps;
+			fps,
+			shaderNameList;
 		if (this.sceneInfo) {
 			console.log(time);
 			start = parseFloat(time.start);
@@ -508,11 +536,23 @@
 			console.log("exportScene:", cmd);
 			if (cmd) {
 				console.log("prototype.exportScene");
-				this.conn.masterMethod('exportScene', {path : filepath, data : cmd}, function (err, res, id) {
-					if (err) {
-						console.log(err);
-					}
-				});
+				this.conn.masterMethod('exportScene', {path : filepath, data : cmd}, (function (self) {
+					return function (err, res, id) {
+						console.log("prototype.exportScene done");
+						if (err) {
+							console.log(err);
+						} else {
+							shaderNameList = getShaderNameListFromScene(self.sceneInfo);
+							console.log("copyShaderFile:" + shaderNameList);
+							self.conn.masterMethod('copyShaderFile', {path : filepath, data : shaderNameList }, function (err, res, id) {
+								console.log("copyShaderFile done");
+								if (err) {
+									console.log(err);
+								}
+							});
+						}
+					};
+				}(this)));
 			}
 		}
 	};
