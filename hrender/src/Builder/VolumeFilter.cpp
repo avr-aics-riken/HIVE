@@ -35,27 +35,23 @@ inline ssize_t IDX(ssize_t comps, ssize_t x, ssize_t y, ssize_t z, ssize_t c, ss
 
 template<typename T>
 inline float D(const T* data, ssize_t comps, ssize_t x, ssize_t y, ssize_t z, ssize_t c, ssize_t sx, ssize_t sy, ssize_t sz) {
-    ssize_t dx = (std::max)((ssize_t)0, (std::min)(sx-1, x));
-    ssize_t dy = (std::max)((ssize_t)0, (std::min)(sy-1, y));
-    ssize_t dz = (std::max)((ssize_t)0, (std::min)(sz-1, z));
-    ssize_t idx = comps * (dz * sx * sy + dy * sx + dx) + c;
-    return data[idx];
+    return data[IDX(comps, x, y, z, c, sx, sy, sz)];
 }
 
 
 template<typename T>
 inline T laplacian7(const T* data, ssize_t x, ssize_t y, ssize_t z, ssize_t sx, ssize_t sy, ssize_t sz)
 {
-    T xyz = D(data, 1, x, y, z, 1, sx, sy, sz);
+    T xyz = D(data, 1, x, y, z, 0, sx, sy, sz);
 
-    T x1 = D(data, 1, x+1, y, z, 1, sx, sy, sz);
-    T x0 = D(data, 1, x-1, y, z, 1, sx, sy, sz);
+    T x1 = D(data, 1, x+1, y, z, 0, sx, sy, sz);
+    T x0 = D(data, 1, x-1, y, z, 0, sx, sy, sz);
 
-    T y1 = D(data, 1, x, y+1, z, 1, sx, sy, sz);
-    T y0 = D(data, 1, x, y-1, z, 1, sx, sy, sz);
+    T y1 = D(data, 1, x, y+1, z, 0, sx, sy, sz);
+    T y0 = D(data, 1, x, y-1, z, 0, sx, sy, sz);
 
-    T z1 = D(data, 1, x, y, z+1, 1, sx, sy, sz);
-    T z0 = D(data, 1, x, y, z-1, 1, sx, sy, sz);
+    T z1 = D(data, 1, x, y, z+1, 0, sx, sy, sz);
+    T z0 = D(data, 1, x, y, z-1, 0, sx, sy, sz);
 
     return x1 + x0 + y1 + y0 + z1 + z0 - 6.0 * xyz;
 }
