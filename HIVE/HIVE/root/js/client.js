@@ -591,7 +591,21 @@
 			console.log('SAVE SCENE');
 		});
 		$('exportbtn').addEventListener('click', function (ev) {
-			var fdlg = new FileDialog("savesceneDialog", true, '.json');
+			var fdlg = new FileDialog("savesceneDialog", true, '.json'),
+				time = {};
+			if ($('tlEnableAnimation').checked) {
+				time = {
+					start : document.getElementById('tlStartTime').value,
+					end : document.getElementById('tlEndTime').value,
+					fps : document.getElementById('tlFps').value
+				};
+			} else {
+				time = {
+					start : activeTime,
+					end : activeTime,
+					fps : document.getElementById('tlFps').value
+				};
+			}
 			fdlg.ExportSceneFile("", (function (core, fdlg) {
 				return function (path) {
 					core.getFileList(path, function (err, res) {
@@ -600,11 +614,17 @@
 					});
 				};
 			}(core, fdlg)), function (filepath) {
-				core.exportScene(filepath);
+				core.exportScene(filepath, time);
 				console.log("FileDialog export:" + filepath);
 			});
 
 			console.log('EXPORT SCENE');
+		});
+		$('tlEnableAnimation').addEventListener('change', function (ev) {
+			var check = ev.target.checked;
+			$('tlStartTime').disabled = !check;
+			$('tlEndTime').disabled = !check;
+			$('tlFps').disabled = !check;
 		});
 
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {
