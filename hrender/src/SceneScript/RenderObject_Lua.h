@@ -91,14 +91,24 @@
         LuaTable t; \
         for (it = m.begin(); it != eit; ++it) { \
             LuaTable im; \
-            im.map("width", it->second->Width()); \
-            im.map("height", it->second->Height()); \
-            LuaTable rgba; \
-            for (int i = 0; i < it->second->Bytes(); ++i) { \
-                rgba.push(it->second->FloatImageBuffer()->GetBuffer()[i]); \
+            if (it->second) { \
+                im.map("width", it->second->Width()); \
+                im.map("height", it->second->Height()); \
+                LuaTable rgba; \
+                if (it->second->FloatImageBuffer()) { \
+                    int size = it->second->FloatImageBuffer()->GetNum(); \
+                    for (int i = 0; i < size; ++i) { \
+                        rgba.push(it->second->FloatImageBuffer()->GetBuffer()[i]); \
+                    } \
+                } else if (it->second->ImageBuffer()) { \
+                    int size = it->second->ImageBuffer()->GetNum(); \
+                    for (int i = 0; i < size; ++i) { \
+                        rgba.push(it->second->ImageBuffer()->GetBuffer()[i]); \
+                    } \
+                } \
+                im.map("rgba", rgba); \
+                t.map(it->first, im); \
             } \
-            im.map("rgba", rgba); \
-            t.map(it->first, im); \
         } \
         return t; \
     } \
