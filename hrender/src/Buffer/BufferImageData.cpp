@@ -41,6 +41,20 @@ public:
         m_exposure = data->Exposure();
     }
     
+    /// コンストラクタ
+    /// @param data イメージデータ
+    Impl(const BufferImageData* data)
+    {
+        Clear();
+        m_width = data->Width();
+        m_height = data->Height();
+        m_format = data->Format();
+        m_floatbuffer = data->FloatImageBuffer();
+        m_bytebuffer = data->ImageBuffer();
+        m_gamma = data->Gamma();
+        m_exposure = data->Exposure();
+    }
+    
     
     /**
      * ImageBuffer作成
@@ -209,6 +223,12 @@ BufferImageData::BufferImageData() : BufferData(TYPE_IMAGE)
 
 /// constructor
 BufferImageData::BufferImageData(BufferImageData* inst) : BufferData(TYPE_IMAGE)
+{
+    m_imp = new Impl(inst);
+}
+
+/// constructor
+BufferImageData::BufferImageData(const BufferImageData* inst) : BufferData(TYPE_IMAGE)
 {
     m_imp = new Impl(inst);
 }
