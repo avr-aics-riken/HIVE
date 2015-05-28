@@ -736,14 +736,18 @@
 				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i].val);
 			} else if (uniforms[i].uniform === 'rgbatex') {
 				obj.info.rgbatex[name] = {width: uniforms[i].width, height: uniforms[i].height, rgba: uniforms[i].rgba};
+				
 				if (uniforms[i].rgba.length === 0) {
 					// Generate RGBA (TEST)
 					uniforms[i].rgba = [256];
 					for (j = 0; j < 256; j = j + 1) {
-						uniforms[i].rgba[j] = j;
+						uniforms[i].rgba[j] = j / 255.0;
 					}
 				}
-				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
+				
+				if (uniforms[i].rgba.length > 0) {
+					src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
+				}
 			}
 			
 		}
@@ -807,7 +811,7 @@
 		for (i in uniforms) {
 			if (uniforms.hasOwnProperty(i)) {
 				name = i;
-				obj.info.float[name] = uniforms[i];
+				obj.info.rgbatex[name] = uniforms[i];
 				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 			}
 		}

@@ -140,7 +140,7 @@
 			src += height + ',';
 			src += '{';
 			for (i = 0; i < height * width * 4; i = i + 1) {
-				src += i + ',';
+				src += rgbaVal[i] + ',';
 			}
 			src += '}';
 			src += ')\n';
