@@ -4,6 +4,7 @@
  */
 #ifndef _RENDEROBJECT_LUA_H_
 #define _RENDEROBJECT_LUA_H_
+#include "Buffer.h"
 #include "BufferImageData_Lua.h"
 #include "BufferExtraData_Lua.h"
 
@@ -89,7 +90,15 @@
         TextureMap::const_iterator it, eit = m.end(); \
         LuaTable t; \
         for (it = m.begin(); it != eit; ++it) { \
-            t.push("TODO: IMPLEMENTATION");/* TODO */ \
+            LuaTable im; \
+            im.map("width", it->second->Width()); \
+            im.map("height", it->second->Height()); \
+            LuaTable rgba; \
+            for (int i = 0; i < it->second->Bytes(); ++i) { \
+                rgba.push(it->second->FloatImageBuffer()->GetBuffer()[i]); \
+            } \
+            im.map("rgba", rgba); \
+            t.map(it->first, im); \
         } \
         return t; \
     } \
