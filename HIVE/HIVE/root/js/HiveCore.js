@@ -741,7 +741,7 @@
 					// Generate RGBA (TEST)
 					uniforms[i].rgba = [256];
 					for (j = 0; j < 256; j = j + 1) {
-						uniforms[i].rgba[j] = j / 255.0;
+						uniforms[i].rgba[j] = j;
 					}
 				}
 				

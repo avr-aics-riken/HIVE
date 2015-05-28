@@ -170,10 +170,10 @@
 					i;
 				//console.log(maxv, minv, redv, grnv, bluv, alpv, vnum);
 				for (i = 0; i < vnum; i = i + 1) {
-					rgbaVal[4 * i]     = redv[i];
-					rgbaVal[4 * i + 1] = grnv[i];
-					rgbaVal[4 * i + 2] = bluv[i];
-					rgbaVal[4 * i + 3] = alpv[i];
+					rgbaVal[4 * i]     = redv[i] * 255;
+					rgbaVal[4 * i + 1] = grnv[i] * 255;
+					rgbaVal[4 * i + 2] = bluv[i] * 255;
+					rgbaVal[4 * i + 3] = alpv[i] * 255;
 				}
 				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
 			};
