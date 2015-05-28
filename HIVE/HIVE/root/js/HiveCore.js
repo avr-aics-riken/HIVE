@@ -740,7 +740,7 @@
 				if (uniforms[i].rgba.length === 0) {
 					// Generate RGBA (TEST)
 					uniforms[i].rgba = [256];
-					for (j = 0; j < 256; j = j + 1) {
+					for (j = 0; j < 256 * 4; j = j + 1) {
 						uniforms[i].rgba[j] = j;
 					}
 				}
