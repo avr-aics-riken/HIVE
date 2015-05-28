@@ -13,7 +13,7 @@ local function getObjectList()
 		info.vec3      = robj:GetVec3Table()
 		info.vec2      = robj:GetVec2Table()
 		info.float     = robj:GetFloatTable()
-		info.rgbatex   = {}; --robj:GetTexTable();
+		info.rgbatex   = robj:GetTextureTable();
 		if robj:GetType() == 'CAMERA' then
 			info.position = robj:GetPosition()
 			info.target = robj:GetTarget()
