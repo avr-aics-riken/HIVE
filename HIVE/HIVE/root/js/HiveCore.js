@@ -120,10 +120,12 @@
 					result[prop] = val;
 				}
 				// texture
-				for (tx in preInfo.info.rgbatex) {
-					if (preInfo.info.rgbatex.hasOwnProperty(tx)) {
-						val = lerp(preInfo.info.rgbatex[tx].rgba, postInfo.info.rgbatex[tx].rgba, s);
-						result.rgbatex[tx].rgba = val;
+				if (preInfo.info.rgbatex) {
+					for (tx in preInfo.info.rgbatex) {
+						if (preInfo.info.rgbatex.hasOwnProperty(tx)) {
+							val = lerp(preInfo.info.rgbatex[tx].rgba, postInfo.info.rgbatex[tx].rgba, s);
+							result.rgbatex[tx].rgba = val;
+						}
 					}
 				}
 			}
