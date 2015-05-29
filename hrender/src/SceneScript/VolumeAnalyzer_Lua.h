@@ -5,6 +5,7 @@
 #ifndef _VOLUMEANALYZER_LUA_H_
 #define _VOLUMEANALYZER_LUA_H_
 
+#include <vector>
 #include "../RenderObject/RenderObject.h"
 #include "LuaUtil.h"
 #include "Analyzer.h"
@@ -46,6 +47,15 @@ public:
         VolumeAnalyzer::Execute(model);
         return true;
     }
+    
+    LuaTable GetHistgram() {
+        const std::vector<float>& histgram = VolumeAnalyzer::GetHistgram();
+        LuaTable t;
+        for (int i = 0, size = static_cast<int>(histgram.size()); i < size; ++i) {
+            t.push(histgram[i]);
+        }
+        return t;
+    }
 
     LUA_SCRIPTCLASS_BEGIN(VolumeAnalyzer_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MinX)
@@ -55,6 +65,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxZ)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Execute, VolumeModel_Lua*)
+    LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetHistgram);
     LUA_SCRIPTCLASS_END();
 
 };

@@ -177,6 +177,10 @@
 					rgbaVal[4 * i + 3] = alpv[i] * 255;
 				}
 				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
+				
+				core.getVolumeAnalyzerData(objname, minv, maxv, function (result) {
+					//console.log(JSON.stringify(result));
+				});
 			};
 		}
 			
