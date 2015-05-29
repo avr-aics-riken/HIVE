@@ -1054,10 +1054,10 @@ KTransferFunctionClass.prototype = {
 				this.hist[i] = hist[i * componentNum + component];
 			}
 			
-			this.defaultValMin = result.min[component];
-			this.defaultValMax = result.max[component];
-			this.valMin = this.defaultValMin
-			this.valMax = this.defaultValMax;
+			this.defaultValMin = result.defaultValMin;
+			this.defaultValMax = result.defaultValMax;
+			this.valMin = result.min[component];
+			this.valMax = result.max[component];
 		}
 	}
 }
