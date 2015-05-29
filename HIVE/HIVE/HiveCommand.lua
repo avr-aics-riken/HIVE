@@ -152,9 +152,9 @@ local function GetVolumeAnalyzerData(name, min, max)
 	--	histgram = analyzer:GetHistgramInRange(model, min, max);
 	--end
 	if min == nil or max == nil then
-		return {name=name, defaultMin=volMin, defaultMin=volMax, min=volMin, max=volMax, histgram=histgram}
+		return {name=name, defaultMin=volMin, defaultMax=volMax, min=volMin, max=volMax, histgram=histgram}
 	else
-		return {name=name, defaultMin=volMin, defaultMin=volMax, min=min, max=max, histgram=histgram}
+		return {name=name, defaultMin=volMin, defaultMax=volMax, min=min, max=max, histgram=histgram}
 	end
 end
 
