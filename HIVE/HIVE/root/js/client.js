@@ -168,7 +168,7 @@
 					bluv = transfuncui.getGraphValueBlue(),
 					alpv = transfuncui.getGraphValueAlpha(),
 					vnum = transfuncui.getNumValues(),
-					rgbaVal = [vnum],
+					rgbaVal = [vnum * 4],
 					tmax,
 					tmin,
 					i;
