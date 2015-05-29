@@ -978,12 +978,12 @@ KTransferFunctionClass = function(wrapper){
 		thisptr.oldx = e.clientX - thisptr.wrapper.getBoundingClientRect().left;
 		thisptr.oldy = e.clientY - thisptr.wrapper.getBoundingClientRect().top;
 		thisptr.mspress = true;
-		document.addEventListener('mousemove', thisptr.mouseMoveFunc);
-	}}(this));
-	document.body.addEventListener('mouseup', function(thisptr){ return function(e){
+		document.addEventListener('mousemove', thisptr.mouseMoveFunc, true);
+	}}(this), true);
+	document.addEventListener('mouseup', function(thisptr){ return function(e){
 		thisptr.mspress = false;
 		document.removeEventListener('mousemove', thisptr.mouseMoveFunc);
-	}}(this));
+	}}(this), true);
 	
 	this.drawGraph();
 }
