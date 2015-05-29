@@ -29,6 +29,7 @@ public:
     double MaxY();
     double MaxZ();
     const std::vector<float>& GetHistgram() const;
+    const std::vector<float> GetHistgramInRange(VolumeModel*, double min, double max) const;
     bool Execute(VolumeModel*);
 };
 
