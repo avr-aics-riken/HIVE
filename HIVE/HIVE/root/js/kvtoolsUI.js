@@ -914,7 +914,7 @@ KTransferFunctionClass = function(wrapper){
 		}
 		for (var i = 0; i < numVals; ++i){
 			//this.ctx.lineTo(i / numVals *  cw, (1.0 - vals[i]) * ch); // MODE NORMAL
-			this.ctx.lineTo((i / numVals  * gscale + goffset) *  cw , ch - this.transFunc(vals[i])*ch); // MODE SQRT
+			this.ctx.lineTo(((i / numVals + goffset)  * gscale) *  cw , ch - this.transFunc(vals[i])*ch); // MODE SQRT
 		}
 		this.ctx.stroke();
 		this.ctx.lineWidth = 1;
