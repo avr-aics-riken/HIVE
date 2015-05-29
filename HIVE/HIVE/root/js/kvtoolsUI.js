@@ -704,7 +704,7 @@ KTransferFunctionClass = function(wrapper){
 		
 		thisptr.drawGraph();
 		if (thisptr.changeCallback){
-			thisptr.changeCallback();
+			thisptr.changeCallback(thisptr);
 		}
 	}}(this));
 	
