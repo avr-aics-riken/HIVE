@@ -883,7 +883,7 @@ KTransferFunctionClass = function(wrapper){
 		this.drawColorBar(this.valueRed, this.valueGreen, this.valueBlue, this.valueAlpha);
 		ctx.globalCompositeOperation = 'source-over';
 		this.drawValueLine(this.valueAlpha, '#000');
-		this.drawValueLine(this.hist, 'rgb(154, 79, 40)', false);//true);
+		this.drawValueLine(this.hist, 'rgb(154, 79, 40)', true);
 		
 		this.minInput.value = this.valMin;
 		this.maxInput.value = this.valMax;
