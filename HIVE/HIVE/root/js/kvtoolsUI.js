@@ -740,22 +740,28 @@ KTransferFunctionClass = function(wrapper){
 
 	this.minInput = minInput;
 	this.maxInput = maxInput;
-	minInput.addEventListener('keyup', function (thisptr) { return function(e) {
-		if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
+	minInput.addEventListener('change', function (thisptr) { return function(e) {
+		//if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
 			console.log(parseFloat(minInput.value));
 			if (parseFloat(minInput.value) !== NaN) {
 				thisptr.valMin = parseFloat(minInput.value);
 				thisptr.drawGraph();
+				if (thisptr.changeCallback){
+					thisptr.changeCallback(thisptr);
+				}
 			}
-		}
+		//}
 	}}(this));
-	maxInput.addEventListener('keyup', function (thisptr) { return function(e) {
-		if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
+	maxInput.addEventListener('change', function (thisptr) { return function(e) {
+		//if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
 			if (parseFloat(maxInput.value) !== NaN) {
 				thisptr.valMax = parseFloat(maxInput.value);
 				thisptr.drawGraph();
+				if (thisptr.changeCallback){
+					thisptr.changeCallback(thisptr);
+				}
 			}
-		}
+		//}
 	}}(this));
 	
 	
