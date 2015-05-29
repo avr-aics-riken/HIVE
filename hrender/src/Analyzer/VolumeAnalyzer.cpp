@@ -83,6 +83,44 @@ const std::vector<float>& VolumeAnalyzer::GetHistgram() const
 }
 
 /**
+ * 最小最大を指定し, ヒストグラムを返す
+ * @return ヒストグラム
+ */
+const std::vector<float> VolumeAnalyzer::GetHistgramInRange(VolumeModel *model, double min, double max) const
+{
+    VolumeAnalyzerProc proc;
+    std::vector<float> histgram[3];
+    if(model->GetVolume()) {
+        BufferVolumeData *volume = model->GetVolume();
+        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+        int temp_num[3] = {
+            volume->Width(),
+            volume->Height(),
+            volume->Depth()
+        };
+        
+        const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
+        if(fnum > 0)
+        {
+            fprintf(stderr,"Volume data empty\n");
+        }
+        else
+        {
+            if (volume->Component() == 1) {
+                proc.AnalyzeScalarInRange(histgram[0], min, max, buffer, temp_num);
+            } else if (volume->Component() == 3) {
+                double temp_min[3] = { min, min, min };
+                double temp_max[3] = { min, min, min };
+                proc.AnalyzeVectorInRange(histgram, temp_min, temp_max, buffer, temp_num);
+            } else {
+                fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
+            }
+        }
+    }
+    return histgram[0];
+}
+
+/**
  * ボリュームモデル解析
  * @param model 解析対象PolygonModel
  * @retval true 成功
