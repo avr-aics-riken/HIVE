@@ -143,6 +143,7 @@
 			d,
 			i,
 			ggg,
+			tff,
 			pp = document.getElementById('uniformproperty'),
 			objinfo = core.findObject(objname).info,
 			colpick;
@@ -168,6 +169,8 @@
 					alpv = transfuncui.getGraphValueAlpha(),
 					vnum = transfuncui.getNumValues(),
 					rgbaVal = [vnum],
+					tmax,
+					tmin,
 					i;
 				//console.log(maxv, minv, redv, grnv, bluv, alpv, vnum);
 				for (i = 0; i < vnum; i = i + 1) {
@@ -177,6 +180,17 @@
 					rgbaVal[4 * i + 3] = alpv[i] * 255;
 				}
 				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
+				
+
+				tmax = transfuncui.getMaxValue();
+				tmin = transfuncui.getMinValue();
+				core.setModelFloat(objname, "volumemax", tmax);
+				core.setModelFloat(objname, "volumemin", tmax);
+
+				core.getVolumeAnalyzerData(objname, minv, maxv, function (result) {
+					//console.log(JSON.stringify(result));
+				});
+
 			};
 		}
 			
@@ -244,18 +258,32 @@
 						'</div></div>';
 					pp.appendChild(d);
 					kvtoolsUI_update(d);
-					kUI(paramname).changeCallback = changeTransferFunc(core, objname, paramname);
-					
+					tff = kUI(paramname);
+					tff.changeCallback = changeTransferFunc(core, objname, paramname);
+
+					(function (core, tff) { 
+						core.getVolumeAnalyzerData(objname, 0, 1.0, function (result) {
+							console.log(result);
+						
+							var volumeMax =  result.max,
+								volumeMin = result.min,
+								hist = result.histgram;							
+							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
+								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:volumeMin, defaultValMax:volumeMax, histgram:hist}, 1);
+							tff.drawGraph();
+						});
+					}(core, tff));
+
 					if (objinfo.rgbatex.hasOwnProperty(paramname)) {
 						var rgba = objinfo.rgbatex[paramname].rgba;
 						for (ggg = 0; ggg < 256; ggg = ggg + 1) {
-							kUI(paramname).setGraphValue(ggg,
-														 rgba[ggg*4]/255.0,
-														 rgba[ggg*4+1]/255.0,
-														 rgba[ggg*4+2]/255.0,
-														 rgba[ggg*4+3]/255.0);
+							tff.setGraphValue(ggg,
+											  rgba[ggg*4]/255.0,
+											  rgba[ggg*4+1]/255.0,
+											  rgba[ggg*4+2]/255.0,
+											  rgba[ggg*4+3]/255.0);
 						}
-						kUI(paramname).drawGraph();
+						tff.drawGraph();
 					}
 					
 				} else {
