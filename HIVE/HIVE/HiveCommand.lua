@@ -139,6 +139,14 @@ local function CameraOutputFilename(name, filename)
 	return 'SetFilename:' .. name
 end
 
+local function GetVolumeAnalyzerData(name, min, max)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	local analyzer = VolumeAnalyzer()
+	analyzer:Execute(model)
+	local histgram = analyzer:GetHistgram();
+	return {name=name, histgram=histgram}
+end
 
 local function SetModelShader(name, shaderpath)
 	local model = HIVE_ObjectTable[name]
@@ -355,5 +363,6 @@ return {
 	UpdateSceneInformation = UpdateSceneInformation,
 	RenderCamera = RenderCamera,
 	CameraLookat = CameraLookat,
+	GetVolumeAnalyzerData = GetVolumeAnalyzerData,
 	StoreObjectTimeline = StoreObjectTimeline
 }
