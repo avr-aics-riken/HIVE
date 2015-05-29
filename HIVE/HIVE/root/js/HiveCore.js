@@ -88,6 +88,7 @@
 			s,
 			prop,
 			val,
+			tx,
 			lerpProps = [
 				"position",
 				"target",
@@ -96,7 +97,11 @@
 				"clearcolor",
 				"scale",
 				"rotate",
-				"translate"
+				"translate",
+				"vec4",
+				"vec3",
+				"vec2",
+				"float"
 			];
 		if (!preInfo && !postInfo) {
 			return result;
@@ -114,8 +119,16 @@
 					val = lerp(preInfo.info[prop], postInfo.info[prop], s);
 					result[prop] = val;
 				}
+				// texture
+				for (tx in preInfo.info.rgbatex) {
+					if (preInfo.info.rgbatex.hasOwnProperty(tx)) {
+						val = lerp(preInfo.info.rgbatex[tx].rgba, postInfo.info.rgbatex[tx].rgba, s);
+						result.rgbatex[tx].rgba = val;
+					}
+				}
 			}
 		}
+		
 		return result;
 	}
 	
