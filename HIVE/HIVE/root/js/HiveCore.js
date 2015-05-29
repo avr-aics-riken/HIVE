@@ -231,6 +231,18 @@
 		return this.sceneInfo;
 	};
 	
+	HiveCore.prototype.getVolumeAnalyzerData = function (name, min, max, callback) {
+		var cmd = HiveCommand.getVolumeAnalyzerData(name, min, max);
+		console.log(cmd);
+		runScript(this.conn, cmd, function (err, res) {
+			if (!err) {
+				if (callback) {
+					callback(res);
+				}
+			}
+		});
+	};
+
 	//----------------------------------------------------------------------------------------------
 	// Command creation functions
 	//
