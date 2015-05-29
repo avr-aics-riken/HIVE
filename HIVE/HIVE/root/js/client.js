@@ -265,9 +265,9 @@
 						core.getVolumeAnalyzerData(objname, 0, 1.0, function (result) {
 							console.log(result);
 						
-							var volumeMax =  result.max,
-								volumeMin = result.min,
-								hist = result.histgram;							
+							var volumeMax = parseFloat(result.max),
+								volumeMin = parseFloat(result.min),
+								hist = result.histgram;
 							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
 								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:volumeMin, defaultValMax:volumeMax, histgram:hist}, 1);
 							tff.drawGraph();
