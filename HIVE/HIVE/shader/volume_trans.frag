@@ -17,6 +17,9 @@ uniform vec3 volumescale;
 uniform vec3 volumedim;
 uniform vec3 offset;
 
+uniform float     volumemin;
+uniform float     volumemax;
+
 uniform sampler2D trans;
 
 
@@ -51,8 +54,15 @@ vec4 density_to_color(float dens)
 
 vec4 samplingVolume(vec3 texpos, vec4 sum)
 {
-	vec4 dens = texture3D(tex0, texpos);
-	vec4 col = texture2D(trans, vec2(dens.x, 0.5));//density_to_color(0.4 * dens.x);
+	//vec4 dens = texture3D(tex0, texpos);
+	//vec4 col = texture2D(trans, vec2(dens.x, 0.5));//density_to_color(0.4 * dens.x);
+
+    vec4 temp = texture3D(tex0, texpos);
+    float vmin = 0.0; //volumemin;
+    float vmax = 0.01; //volumemax;
+    float f = clamp(temp.x, vmin, vmax);
+    float x = (f - vmin) / (vmax - vmin); // normalize
+    vec4 col = texture2D(trans, vec2(x, 0.5));    
 	
 	col.w *= kDensity;
 	
