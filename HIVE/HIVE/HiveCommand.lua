@@ -82,7 +82,7 @@ local function CreateCamera(name)
 		0,1,0,
 		60
 	)
-	camera:SetFilename('output.jpg')
+	camera:SetFilename(name .. '.jpg')
 	HIVE_ObjectTable[name] = camera
 	updateInfo()
 	return 'CreateCamera:' .. name
