@@ -256,18 +256,20 @@
 					tff = kUI(paramname);
 					tff.changeCallback = changeTransferFunc(core, objname, paramname);
 
-					(function (core, tff) { 
+					(function (core, tff, objinfo) { 
 						core.getVolumeAnalyzerData(objname, objinfo.float["volumemin"], objinfo.float["volumemax"], function (result) {
-							//console.log(result);
+							console.log('HIGE', result);
 							var volumeMax = parseFloat(result.max),
 								volumeMin = parseFloat(result.min),
+								defMax =  parseFloat(result.defaultMax),
+								defMin =  parseFloat(result.defaultMin),
 								hist = result.histgram;
 							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
-								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:volumeMin, defaultValMax:volumeMax, histgram:hist}, 1);
+								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:defMin, defaultValMax:defMax, histgram:hist}, 1);
 							tff.drawGraph();
 							tff.changeCallback(tff);
 						});
-					}(core, tff));
+					}(core, tff, objinfo));
 
 					if (objinfo.rgbatex.hasOwnProperty(paramname)) {
 						var rgba = objinfo.rgbatex[paramname].rgba;
