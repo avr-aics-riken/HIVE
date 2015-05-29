@@ -207,4 +207,10 @@ void SparseVolumeBuffer::Render() const
     }
 }
 
+void SparseVolumeBuffer::Update()
+{
+    cacheTextures(m_model);
+}
+
+
 

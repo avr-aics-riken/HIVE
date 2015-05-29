@@ -67,6 +67,7 @@ public:
     bool RemoveExtraBuffer(const std::string& varyingName);
     const ExtraBufferMap& GetExtraBuffers() const;
 
+    void UpdateBuffers();
 protected:
     //--------------------------------------------------
     //Set

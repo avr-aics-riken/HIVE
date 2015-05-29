@@ -34,5 +34,6 @@ public:
     bool Create(const PolygonModel* model);
     void Render() const;
     void Clear();
+    void Update();
 };
 

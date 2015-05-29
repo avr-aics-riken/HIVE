@@ -45,5 +45,6 @@ public:
 
     bool Create(const SparseVolumeModel* model);
     void Render() const;
+    void Update();
 };
 
