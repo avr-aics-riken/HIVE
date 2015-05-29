@@ -216,4 +216,10 @@ void VolumeBuffer::Render() const
     }
 }
 
+void VolumeBuffer::Update()
+{
+    cacheTextures(m_model);
+}
+
+
 

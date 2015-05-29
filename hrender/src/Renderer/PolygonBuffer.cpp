@@ -119,4 +119,9 @@ void PolygonBuffer::Render() const
         DrawArrays_SGL(m_vertex_num);
 }
 
+void PolygonBuffer::Update()
+{
+    cacheTextures(m_model);
+}
+
 
