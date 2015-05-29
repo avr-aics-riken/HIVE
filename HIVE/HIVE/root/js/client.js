@@ -184,13 +184,8 @@
 
 				tmax = transfuncui.getMaxValue();
 				tmin = transfuncui.getMinValue();
+				core.setModelFloat(objname, "volumemin", tmin);
 				core.setModelFloat(objname, "volumemax", tmax);
-				core.setModelFloat(objname, "volumemin", tmax);
-
-				core.getVolumeAnalyzerData(objname, minv, maxv, function (result) {
-					//console.log(JSON.stringify(result));
-				});
-
 			};
 		}
 			
@@ -262,7 +257,7 @@
 					tff.changeCallback = changeTransferFunc(core, objname, paramname);
 
 					(function (core, tff) { 
-						core.getVolumeAnalyzerData(objname, 0, 1.0, function (result) {
+						core.getVolumeAnalyzerData(objname, objinfo.float["volumemin"], objinfo.float["volumemax"], function (result) {
 							console.log(result);
 						
 							var volumeMax = parseFloat(result.max),
