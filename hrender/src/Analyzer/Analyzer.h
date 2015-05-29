@@ -152,8 +152,34 @@ public:
 		}
 		
 		hist.GetNormalizedHistogram(outHistogram);
-	}
-
+    }
+    
+    /** Analyzer volume in range
+     * @param [out] outHistogram
+     * @param [in] minVal
+     * @param [in] maxVal
+     * @param [in] vol
+     * @param [in] res
+     * @param [in] numBins
+     * @return histogram.
+     */
+    template <typename T>
+    void AnalyzeScalarInRange(std::vector<float> &outHistogram, double minVal,
+                       double maxVal, const T *vol, int res[3],
+                       int numBins = 256) {
+        
+        // compute histogram;
+        Histogram hist(numBins, minVal, maxVal);
+        for (size_t i = 0; i < res[0] * res[1] * res[2]; i++) {
+            hist.Contribute(vol[i]);
+        }
+        
+        hist.GetNormalizedHistogram(outHistogram);
+    }
+    
+    /**
+     * Analyzer vector volume
+     */
 	template <typename T>
 	void AnalyzeVector(std::vector<float> outHistograms[3],
 							 double minVal[3], double maxVal[3], const T *vol,
@@ -178,7 +204,32 @@ public:
 			
 			hist.GetNormalizedHistogram(outHistograms[k]);
 		}
-	}
+    }
+    
+    /** Analyzer vector volume in range
+     * @param [out] outHistogram
+     * @param [in] minVal
+     * @param [in] maxVal
+     * @param [in] vol
+     * @param [in] res
+     * @param [in] numBins
+     * @return histogram.
+     */
+    template <typename T>
+    void AnalyzeVectorInRange(std::vector<float> outHistograms[3],
+                              double minVal[3], double maxVal[3], const T *vol,
+                              int res[3], int numBins = 256, int component = 3) {
+        
+        for (int k = 0; k < 3; k++) { // TODO: component
+            // compute histogram;
+            Histogram hist(numBins, minVal[k], maxVal[k]);
+            for (size_t i = 0; i < res[0] * res[1] * res[2]; i++) {
+                hist.Contribute(vol[component * i + k]);
+            }
+            
+            hist.GetNormalizedHistogram(outHistograms[k]);
+        }
+    }
 	
 	// Dump information as JSON string.
 	static std::string DumpScalar(std::vector<float> hist, double minVal,

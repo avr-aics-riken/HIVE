@@ -144,7 +144,12 @@ local function GetVolumeAnalyzerData(name, min, max)
 	if model == nil then return 'Not found Model:' .. name end
 	local analyzer = VolumeAnalyzer()
 	analyzer:Execute(model)
-	local histgram = analyzer:GetHistgram();
+	local histgram;
+	if min == nil or max == nil then
+		histgram = analyzer:GetHistgram();
+	else
+		histgram = analyzer:GetHistgramInRange(model, min, max);
+	end
 	return {name=name, histgram=histgram}
 end
 
