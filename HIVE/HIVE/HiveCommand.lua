@@ -147,12 +147,15 @@ local function GetVolumeAnalyzerData(name, min, max)
 	local histgram;
 	local volMin = analyzer:MinX()
 	local volMax = analyzer:MaxX()
+	histgram = analyzer:GetHistgram();
+	--else
+	--	histgram = analyzer:GetHistgramInRange(model, min, max);
+	--end
 	if min == nil or max == nil then
-		histgram = analyzer:GetHistgram();
+		return {name=name, min=volMin, max=volMax, histgram=histgram}
 	else
-		histgram = analyzer:GetHistgramInRange(model, min, max);
+		return {name=name, min=min, max=max, histgram=histgram}
 	end
-	return {name=name, min=volMin, max=volMax, histgram=histgram}
 end
 
 local function SetModelShader(name, shaderpath)
