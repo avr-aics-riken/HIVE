@@ -517,12 +517,12 @@ KColorPickerClass = function(wrapper){
 				thisptr.pickColorAlpha(x,y);
 			}
 		}}(thisptr));
-		document.body.addEventListener('mouseup', function(thisptr){ return function(e){
+		document.addEventListener('mouseup', function(thisptr){ return function(e){
 			thisptr.mspress = false;
 			thisptr.mspressGrad = false;
 			thisptr.mspressAlpha = false;
 		}}(thisptr));
-		document.body.addEventListener('mousemove', function(thisptr){ return function(e){
+		document.addEventListener('mousemove', function(thisptr){ return function(e){
 			var x = e.clientX - thisptr.wrapper.getBoundingClientRect().left,
 				y = e.clientY - thisptr.wrapper.getBoundingClientRect().top;
 			if (thisptr.mspress){
@@ -1154,7 +1154,7 @@ KSliderClass = function(wrapper){
 		self.mspress = true;
 		document.addEventListener('mousemove', self.mouseMoveFunc);
 	}}(this));
-	document.body.addEventListener('mouseup', function(self){ return function(e){
+	document.addEventListener('mouseup', function(self){ return function(e){
 		self.mspress = false;
 		document.removeEventListener('mousemove', self.mouseMoveFunc);
 	}}(this));
@@ -1433,7 +1433,7 @@ KTimelineClass = function(wrapper){
 			document.addEventListener('mousemove', self.mouseMoveFunc);
 		}
 	}}(this));
-	document.body.addEventListener('mouseup', function(self){ return function(e){
+	document.addEventListener('mouseup', function(self){ return function(e){
 		self.mspress = false;
 		document.removeEventListener('mousemove', self.mouseMoveFunc);
 	}}(this));
