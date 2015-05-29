@@ -58,10 +58,11 @@ vec4 samplingVolume(vec3 texpos, vec4 sum)
 	//vec4 col = texture2D(trans, vec2(dens.x, 0.5));//density_to_color(0.4 * dens.x);
 
     vec4 temp = texture3D(tex0, texpos);
-    float vmin = 0.0; //volumemin;
-    float vmax = 0.01; //volumemax;
+    float vmin = volumemin;
+    float vmax = volumemax;
     float f = clamp(temp.x, vmin, vmax);
     float x = (f - vmin) / (vmax - vmin); // normalize
+    //x = clamp(temp.x, 0.0, 1.0);
     vec4 col = texture2D(trans, vec2(x, 0.5));    
 	
 	col.w *= kDensity;

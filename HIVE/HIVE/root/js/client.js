@@ -258,14 +258,14 @@
 
 					(function (core, tff) { 
 						core.getVolumeAnalyzerData(objname, objinfo.float["volumemin"], objinfo.float["volumemax"], function (result) {
-							console.log(result);
-						
+							//console.log(result);
 							var volumeMax = parseFloat(result.max),
 								volumeMin = parseFloat(result.min),
 								hist = result.histgram;
 							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
 								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:volumeMin, defaultValMax:volumeMax, histgram:hist}, 1);
 							tff.drawGraph();
+							tff.changeCallback(tff);
 						});
 					}(core, tff));
 
