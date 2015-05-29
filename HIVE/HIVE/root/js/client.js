@@ -181,10 +181,16 @@
 				}
 				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
 				
+
 				tmax = transfuncui.getMaxValue();
 				tmin = transfuncui.getMinValue();
 				core.setModelFloat(objname, "volumemax", tmax);
 				core.setModelFloat(objname, "volumemin", tmax);
+
+				core.getVolumeAnalyzerData(objname, minv, maxv, function (result) {
+					//console.log(JSON.stringify(result));
+				});
+
 			};
 		}
 			

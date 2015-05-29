@@ -74,6 +74,15 @@ double VolumeAnalyzer::MaxZ() {
 }
 
 /**
+ * ヒストグラムを返す
+ * @return ヒストグラム
+ */
+const std::vector<float>& VolumeAnalyzer::GetHistgram() const
+{
+    return m_volHist[0];
+}
+
+/**
  * ボリュームモデル解析
  * @param model 解析対象PolygonModel
  * @retval true 成功
@@ -82,7 +91,6 @@ double VolumeAnalyzer::MaxZ() {
 bool VolumeAnalyzer::Execute(VolumeModel *model)
 {
     VolumeAnalyzerProc proc;
-    std::vector<float> m_volHist[3];
     if(model->GetVolume()) {
         BufferVolumeData *volume = model->GetVolume();
         const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());

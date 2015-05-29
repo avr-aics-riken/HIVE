@@ -5,6 +5,7 @@
 #ifndef _VOLUMEANALYZER_H_
 #define _VOLUMEANALYZER_H_
 
+#include <vector>
 #include "Ref.h"
 #include "VolumeModel.h"
 
@@ -16,6 +17,7 @@ class VolumeAnalyzer : public RefCount
 private:
     double m_minVal[3];
     double m_maxVal[3];
+    std::vector<float> m_volHist[3];
     void Clear();
 public:
     VolumeAnalyzer();
@@ -26,6 +28,7 @@ public:
     double MaxX();
     double MaxY();
     double MaxZ();
+    const std::vector<float>& GetHistgram() const;
     bool Execute(VolumeModel*);
 };
 
