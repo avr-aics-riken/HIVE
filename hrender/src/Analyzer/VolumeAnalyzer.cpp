@@ -100,7 +100,7 @@ const std::vector<float> VolumeAnalyzer::GetHistgramInRange(VolumeModel *model, 
         };
         
         const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
-        if(fnum > 0)
+        if(fnum <= 0)
         {
             fprintf(stderr,"Volume data empty\n");
         }
