@@ -136,8 +136,8 @@
 				prop = vecProps[i];
 				if (preInfo.info.hasOwnProperty(prop)) {
 					for (tx in preInfo.info[prop]) {
-						if (preInfo.info.vec4.hasOwnProperty(tx)) {
-							val = lerp(preInfo.info.vec4[tx], postInfo.info.vec4[tx], s);
+						if (preInfo.info[prop].hasOwnProperty(tx)) {
+							val = lerp(preInfo.info[prop][tx], postInfo.info[prop][tx], s);
 							result[prop][tx] = val;
 						}
 					}
