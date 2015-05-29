@@ -260,15 +260,20 @@
 					kvtoolsUI_update(d);
 					tff = kUI(paramname);
 					tff.changeCallback = changeTransferFunc(core, objname, paramname);
-					var volumeMax =  1.0,
-						volumeMin = 0.0,
-						hist = [],
-						qqq;
-					for (qqq = 0; qqq < 256; qqq = qqq + 1) {
-						hist[qqq] = qqq;
-					}
-					tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin], max:[volumeMax,volumeMax,volumeMax], defaultValMin:volumeMin, defaultValMax:volumeMax, histgram:hist}, 1);
-					
+
+					(function (core, tff) { 
+						core.getVolumeAnalyzerData(objname, 0, 1.0, function (result) {
+							console.log(result);
+						
+							var volumeMax =  result.max,
+								volumeMin = result.min,
+								hist = result.histgram;							
+							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
+								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:volumeMin, defaultValMax:volumeMax, histgram:hist}, 1);
+							tff.drawGraph();
+						});
+					}(core, tff));
+
 					if (objinfo.rgbatex.hasOwnProperty(paramname)) {
 						var rgba = objinfo.rgbatex[paramname].rgba;
 						for (ggg = 0; ggg < 256; ggg = ggg + 1) {
