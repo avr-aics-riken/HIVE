@@ -97,11 +97,13 @@
 				"clearcolor",
 				"scale",
 				"rotate",
-				"translate",
-				"vec4",
-				"vec3",
+				"translate"
+			],
+			vecProps = [
+				"float",
 				"vec2",
-				"float"
+				"vec3",
+				"vec4"
 			];
 		if (!preInfo && !postInfo) {
 			return result;
@@ -125,6 +127,18 @@
 						if (preInfo.info.rgbatex.hasOwnProperty(tx)) {
 							val = lerp(preInfo.info.rgbatex[tx].rgba, postInfo.info.rgbatex[tx].rgba, s);
 							result.rgbatex[tx].rgba = val;
+						}
+					}
+				}
+			}
+			// vectors
+			for (i = 0; i < vecProps.length; i = i + 1) {
+				prop = vecProps[i];
+				if (preInfo.info.hasOwnProperty(prop)) {
+					for (tx in preInfo.info[prop]) {
+						if (preInfo.info.vec4.hasOwnProperty(tx)) {
+							val = lerp(preInfo.info.vec4[tx], postInfo.info.vec4[tx], s);
+							result[prop][tx] = val;
 						}
 					}
 				}
