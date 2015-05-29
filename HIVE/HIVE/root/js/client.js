@@ -246,15 +246,17 @@
 					kvtoolsUI_update(d);
 					kUI(paramname).changeCallback = changeTransferFunc(core, objname, paramname);
 					
-					var rgba = objinfo.rgbatex[paramname].rgba;
-					for (ggg = 0; ggg < 256; ggg = ggg + 1) {
-						kUI(paramname).setGraphValue(ggg,
-													 rgba[ggg*4]/255.0,
-													 rgba[ggg*4+1]/255.0,
-													 rgba[ggg*4+2]/255.0,
-													 rgba[ggg*4+3]/255.0);
+					if (objinfo.rgbatex.hasOwnProperty(paramname)) {
+						var rgba = objinfo.rgbatex[paramname].rgba;
+						for (ggg = 0; ggg < 256; ggg = ggg + 1) {
+							kUI(paramname).setGraphValue(ggg,
+														 rgba[ggg*4]/255.0,
+														 rgba[ggg*4+1]/255.0,
+														 rgba[ggg*4+2]/255.0,
+														 rgba[ggg*4+3]/255.0);
+						}
+						kUI(paramname).drawGraph();
 					}
-					kUI(paramname).drawGraph();
 					
 				} else {
 					console.log('Error: Unkown UI type -> ' + unif[i].ui + ' - ' + unif[i].name);
