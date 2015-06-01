@@ -564,11 +564,13 @@ KColorPickerClass.prototype = {
 			blue = 1;
 			this.blackWhiteX = 0;
 		} else {
+			/*
 			var n = Math.sqrt(red * red + green * green + blue * blue);
 			this.blackWhiteX = n;
 			red /= n;
 			green /= n;
 			blue /= n;
+			*/
 		}
 		this.circleRGB = [Math.floor(red   * 255),
 						  Math.floor(green * 255),
