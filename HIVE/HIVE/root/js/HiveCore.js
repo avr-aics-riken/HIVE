@@ -1263,6 +1263,28 @@
 		this.storeObjectTimeline();
 	};
 	
+	HiveCore.prototype.deleteKey = function (objname, tm) {
+		var obj = this.findObject(objname),
+			tinfo,
+			i,
+			key;
+		
+		tinfo = this.sceneInfo.objecttimeline[objname];
+		if (tinfo === undefined) {
+			return;
+		}
+		for (i = 0; i < tinfo.length; i = i + 1) {
+			key = tinfo[i];
+			console.log(key.time, tm);
+			if (key.time === tm) {
+				tinfo.splice(i, 1);
+				// server store
+				this.storeObjectTimeline();
+				break;
+			}
+		}
+	};
+	
 	HiveCore.prototype.updateTime = function (tm) {
 		if (!this.sceneInfo) { return; }
 		if (!this.sceneInfo.objectlist) { return; }

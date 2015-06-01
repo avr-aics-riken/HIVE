@@ -584,6 +584,13 @@
 				updateProperty(core, activeObjectName);
 			}
 		});
+		kUI('timeline').SelectCallback(function (name, tm) {
+			console.log("selected", name, tm);
+		});
+		kUI('timeline').DeleteCallback(function (name, tm) {
+			core.deleteKey(name, tm);
+			kUI('timeline').drawGraph();
+		});
 		$('projsetting').addEventListener('click', function (ev) {
 			$toggle($('window-projectproperty'), 500);
 		});

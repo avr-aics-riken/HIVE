@@ -1212,6 +1212,7 @@ KTimelineClass = function(wrapper){
 	this.ctx = c.getContext('2d');
 	
 	this.timeVal = 0;
+	this.selectedData = null;
 		
 	this.value = 0.0;
 	this.maxValue = 1.0;
@@ -1271,6 +1272,29 @@ KTimelineClass = function(wrapper){
 		
 		ctx.stroke();
 		ctx.lineWidth = 1;
+
+		if (this.selectedData)
+		{
+			sy = startYPos;
+			for (name in this.tlData) {
+				if (this.tlData.hasOwnProperty(name)) {
+					n = this.tlData[name].length;
+					if (n === 0) {
+						continue;
+					}
+					if (name === this.selectedData.name) {
+						ctx.strokeStyle = "darkgreen";
+						ctx.fillStyle = "darkgreen";
+						ctx.beginPath();
+						t = this.selectedData.data.time * this.timeScale - this.graphXOffset;
+						ctx.moveTo(t, sy);
+						ctx.arc(t, sy, 3, 0, 2.0 * Math.PI);
+						ctx.fill();
+					}
+					sy += 50;
+				}
+			}
+		}
 	}
 	
 	this.drawBaseGraph = function () {
@@ -1383,6 +1407,9 @@ KTimelineClass = function(wrapper){
 		var x = e.clientX - self.wrapper.getBoundingClientRect().left,
 			y = e.clientY - self.wrapper.getBoundingClientRect().top,
 			i,n, radiusSize = 5;
+		
+		self.selectedData = null;
+		
 		if (e.button == 2) {
 			console.log(x,y);
 			
@@ -1417,8 +1444,11 @@ KTimelineClass = function(wrapper){
 				}
 				for (i = 0; i < n; i += 1) {
 					t = self.tlData[name][i].time * self.timeScale - self.graphXOffset;
-					if (t - radiusSize < x && x < t + radiusSize
-					&&  sy - radiusSize < y && y < sy + radiusSize) {
+					if (t - radiusSize < x && x < t + radiusSize) {
+						self.selectedData = {
+							"name" : name,
+							"data" : self.tlData[name][i]
+						};
 						if (self.selectCallback){
 							self.selectCallback(name, parseFloat(self.tlData[name][i].time));
 						}
