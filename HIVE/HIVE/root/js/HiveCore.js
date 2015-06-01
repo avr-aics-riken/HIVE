@@ -33,8 +33,31 @@
 
 		hiveCore.conn.method('updateInfo', (function (core, infoCallback) {
 			return function (param) {
+				var i,
+					k,
+					info,
+					vecParams = [
+						'vec2',
+						'vec3',
+						'vec4',
+						'float',
+						'rgbatex'
+					];
 				core.sceneInfo = param;
 				
+				// change [] to {}
+				if (param.hasOwnProperty('objectlist')) {
+					for (i = 0; i < param.objectlist.length; i = i + 1) {
+						info = param.objectlist[i].info;
+						for (k = 0; k < vecParams.length; k = k + 1) {
+							if (info.hasOwnProperty(vecParams[k])) {
+								if (info[vecParams[k]] instanceof Array) {
+									info[vecParams[k]] = {};
+								}
+							}
+						}
+					}
+				}
 				// find viewCamera
 				var activecam = null,
 					i;
