@@ -1300,7 +1300,7 @@
 					this.setModelUniformsFromInfo(objname, infoptr);
 					this.setModelTranRotScale(objname, infoptr.translate, infoptr.rotate, infoptr.scale);
 					if (objtype === "CAMERA") {
-						this.setClearColor(objname, infoptr.clearcolor[0], infoptr.clearcolor[1], infoptr.clearcolor[2]);
+						this.setClearColor(objname, infoptr.clearcolor[0], infoptr.clearcolor[1], infoptr.clearcolor[2], infoptr.clearcolor[3]);
 					}
 					this.setCameraParameters(objname, infoptr.position, infoptr.target, infoptr.up, infoptr.fov);
 				}
