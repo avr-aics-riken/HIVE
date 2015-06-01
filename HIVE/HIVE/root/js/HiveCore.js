@@ -109,9 +109,9 @@
 			return result;
 		}
 		if (!preInfo) {
-			result = postInfo.info;
+			result = JSON.parse(JSON.stringify(postInfo.info));
 		} else if (!postInfo) {
-			result = preInfo.info;
+			result = JSON.parse(JSON.stringify(preInfo.info));
 		} else {
 			s = (time - preInfo.time) / (postInfo.time - preInfo.time);
 			result = JSON.parse(JSON.stringify(preInfo.info));

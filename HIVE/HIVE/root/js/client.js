@@ -194,6 +194,10 @@
 		for (i in unif) {
 			if (unif.hasOwnProperty(i)) {
 				if (unif[i].ui === 'colorpicker') {
+					if (!objinfo.vec4.hasOwnProperty('color')) {
+						objinfo.vec4 = {};
+						objinfo.vec4['color'] = JSON.parse(JSON.stringify(unif[i].val));
+					}
 					paramname = unif[i].name;
 					d = document.createElement('div');
 					d.classList.add('ppTable');
