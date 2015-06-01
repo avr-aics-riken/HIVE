@@ -194,10 +194,6 @@
 		for (i in unif) {
 			if (unif.hasOwnProperty(i)) {
 				if (unif[i].ui === 'colorpicker') {
-					if (!objinfo.vec4.hasOwnProperty('color')) {
-						objinfo.vec4 = {};
-						objinfo.vec4['color'] = JSON.parse(JSON.stringify(unif[i].val));
-					}
 					paramname = unif[i].name;
 					d = document.createElement('div');
 					d.classList.add('ppTable');
@@ -299,8 +295,8 @@
 			console.log('[DEBUG] CHANGE SHADER', objectname, shaderpath);
 			kUI('shader_name').Select(splitfilename(shaderpath));
 			
-			updateShaderParameters(core, objectname, info.uniforms);
 			core.setModelUniforms(objectname, info.uniforms);
+			updateShaderParameters(core, objectname, info.uniforms);
 			core.setModelShader(objectname, shaderpath);
 			core.render();
 		};
