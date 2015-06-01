@@ -1148,7 +1148,7 @@
 		red = Math.min(1.0, red);
 		green = Math.min(1.0, green);
 		blue  = Math.min(1.0, blue);
-		alpha = Math.min(1.0, green);
+		alpha = Math.min(1.0, alpha);
 		obj.info.clearcolor[0] = red;
 		obj.info.clearcolor[1] = green;
 		obj.info.clearcolor[2] = blue;
