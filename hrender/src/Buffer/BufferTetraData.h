@@ -6,6 +6,7 @@
 #define _BUFFERTETRADATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 
 class Vec3Buffer;
 class Vec2Buffer;
@@ -15,7 +16,7 @@ class UintBuffer;
 /**
  * BufferTetraDataクラス
  */
-class BufferTetraData : public RefCount
+class BufferTetraData : public BufferData
 {
 private:
     class Impl;

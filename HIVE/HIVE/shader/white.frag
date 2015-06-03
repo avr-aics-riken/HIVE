@@ -7,10 +7,11 @@ uniform vec2  resolution;
 varying float matID;
 varying vec3  mnormal;
 uniform vec4  color;
+uniform float power;
 
 void main(void)
 {
-	gl_FragColor = vec4(1,1,1,1);
+	gl_FragColor = vec4(power,power,power,1);
 	return;
 }
 

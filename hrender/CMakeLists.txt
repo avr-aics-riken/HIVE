@@ -15,6 +15,11 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   SET(HIVE_BUILD_WITH_BCMTOOLS On)
 ENDIF()
 
+# HDMlib depends on BCMTOOLS
+IF(HIVE_BUILD_WITH_HDMLIB)
+  SET(HIVE_BUILD_WITH_BCMTOOLS On)
+ENDIF()
+
 # --------------------------------------
 # 
 #  SAME Build Option with SURFACE
@@ -130,6 +135,10 @@ IF(HIVE_BUILD_WITH_HDMLIB)
   add_definitions(-DHIVE_WITH_HDMLIB)
 ENDIF()
 
+IF(HIVE_BUILD_WITH_UDMLIB)
+  add_definitions(-DHIVE_WITH_UDMLIB)
+ENDIF()
+
 IF(HIVE_BUILD_WITH_COMPOSITOR)
   IF(NOT HIVE_BUILD_WITH_MPI)
     message(FATAL_ERROR "HIVE_BUILD_WITH_MPI must be defined when HIVE_BUILD_WITH_COMPOSIOR is enabled")
@@ -192,24 +201,33 @@ set(SOURCES
 	src/Buffer/BufferPointData.cpp
 	src/Buffer/BufferVectorData.cpp
 	src/Buffer/BufferTetraData.cpp
-	src/Buffer/BufferImageData.cpp
+  src/Buffer/BufferImageData.cpp
+  src/Buffer/BufferExtraData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Builder/PointToVolume.cpp
 	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToVector.cpp
+	src/Builder/VolumeFilter.cpp
+	src/Builder/CompileUtil.cpp
 	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
 	src/Image/jpgd.cpp
 	src/Image/lodepng.cpp
+	src/Image/tinyexr.cpp
 	src/Image/ImageLoader.cpp
+	src/Image/GenTexture.cpp
 	src/Image/ImageSaver.cpp
 	src/Loader/ObjLoader.cpp
 	src/Loader/SphLoader.cpp
 	src/Loader/StlLoader.cpp
 	src/Loader/VolLoader.cpp
 	src/Loader/PdbLoader.cpp
+	src/Loader/VtkLoader.cpp
+	src/Loader/RawVolumeLoader.cpp
 	src/Loader/tiny_pdb.cpp
+	src/Loader/tiny_vtkxml.cpp
 	src/Saver/SphSaver.cpp
+	src/Saver/RawVolumeSaver.cpp
 	src/Network/Connection.cpp
 	src/Network/MetaBinary.cpp
 	src/Network/easywsclient.cpp
@@ -218,6 +236,7 @@ set(SOURCES
 	src/RenderObject/RenderObject.cpp
 	src/RenderObject/PolygonModel.cpp
 	src/RenderObject/VolumeModel.cpp
+	src/RenderObject/SparseVolumeModel.cpp
 	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
 	src/RenderObject/TetraModel.cpp
@@ -227,6 +246,7 @@ set(SOURCES
 	src/Renderer/Commands_LSGL.cpp
 	src/Renderer/PolygonBuffer.cpp
 	src/Renderer/VolumeBuffer.cpp
+	src/Renderer/SparseVolumeBuffer.cpp
 	src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
 	src/Renderer/TetraBuffer.cpp
@@ -283,6 +303,7 @@ IF(HIVE_BUILD_WITH_HDMLIB)
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/include)
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
   link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/lib)
   
 ENDIF()
@@ -303,6 +324,22 @@ IF(HIVE_BUILD_WITH_PDMLIB)
   
 ENDIF()
 
+IF(HIVE_BUILD_WITH_UDMLIB)
+
+  SET(UDMLIB_SOURCES
+    src/Loader/UdmLoader.cpp
+  )
+
+  SET(UDMLIB_LIBS
+    udm TPmpi zoltan cgns
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
+  
+ENDIF()
+
 IF(HIVE_BUILD_WITH_COMPOSITOR)
 
   SET(COMPOSITOR_LIBS
@@ -319,13 +356,14 @@ IF(NOT EXECUTABLE_OUTPUT_PATH)
 ENDIF()
 
 add_executable (hrender ${SOURCES} ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES}
-	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} )
+	${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES})
 
 target_link_libraries(hrender pthread)
 target_link_libraries(hrender liblua)
 target_link_libraries(hrender LSGLES)
 target_link_libraries(hrender ${CDMLIB_LIBS})
 target_link_libraries(hrender ${HDMLIB_LIBS})
+target_link_libraries(hrender ${UDMLIB_LIBS})
 target_link_libraries(hrender ${PDMLIB_LIBS})
 target_link_libraries(hrender ${BCMTOOLS_LIBS})
 target_link_libraries(hrender ${COMPOSITOR_LIBS})
@@ -345,9 +383,15 @@ endif()
 
 
 
-# Copy GLSL Compiler
-SET(GLSL_PATH ${PROJECT_SOURCE_DIR}/../third_party/SURFACE/glsl)
-file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
+# Copy GLSL Compiler in post build phase
+# @todo { Don't copy whole directory files }
+SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
+ADD_CUSTOM_TARGET(glslc-copy-files ALL COMMAND cmake -E copy_directory
+	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/glsl
+	${EXECUTABLE_OUTPUT_PATH}/glsl)
+
+# NOTE: COPY command only works at CMake configure phase
+#file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
 # ------------------
 # [For develop]
@@ -387,14 +431,21 @@ add_test(NAME render_cdm.scn             COMMAND hrender  ../../hrender/test/ren
 add_test(NAME render_vol.scn             COMMAND hrender  ../../hrender/test/render_vol.scn           )
 add_test(NAME render_stl.scn             COMMAND hrender  ../../hrender/test/render_stl.scn           )
 add_test(NAME render_pdb.scn             COMMAND hrender  ../../hrender/test/render_pdb.scn           )
-add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/render_obj_transform.scn )
-add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_sph_transform.scn )
+add_test(NAME render_pbs.scn             COMMAND hrender  ../../hrender/test/render_pbs.scn           )
+add_test(NAME render_with_gentex.scn      COMMAND hrender ../../hrender/test/render_with_gentex.scn    )
+add_test(NAME render_with_gentex_F32.scn      COMMAND hrender ../../hrender/test/render_with_gentex_F32.scn    )
+add_test(NAME render_vol_gentex3d.scn      COMMAND hrender ../../hrender/test/render_vol_gentex3d.scn    )
+add_test(NAME render_mirror_glass.scn      COMMAND hrender ../../hrender/test/render_mirror_glass.scn    )
 add_test(NAME render_obj_point.scn       COMMAND hrender  ../../hrender/test/render_obj_point.scn     )
 add_test(NAME render_obj_line.scn        COMMAND hrender  ../../hrender/test/render_obj_line.scn      )
 add_test(NAME render_obj_normal_vector.scn      COMMAND hrender  ../../hrender/test/render_obj_normal_vector.scn)
+add_test(NAME render_obj_extra.scn       COMMAND hrender  ../../hrender/test/render_obj_extra.scn )
 add_test(NAME render_sph_vector.scn      COMMAND hrender  ../../hrender/test/render_sph_vector.scn    )
-add_test(NAME render_with_texture.scn      COMMAND hrender  ../../hrender/test/render_with_texture.scn    )
-
+add_test(NAME render_with_texture.scn    COMMAND hrender  ../../hrender/test/render_with_texture.scn    )
+add_test(NAME render_cube.scn            COMMAND hrender  ../../hrender/test/render_cube.scn    )
+add_test(NAME render_pointlist.scn       COMMAND hrender  ../../hrender/test/render_pointlist.scn    )
+add_test(NAME render_transform_obj.scn   COMMAND hrender  ../../hrender/test/render_obj_transform.scn )
+add_test(NAME render_transform_sph.scn   COMMAND hrender  ../../hrender/test/render_sph_transform.scn )
 #ERROR CASE
 add_test(NAME loader_obj_err.scn         COMMAND hrender ../../hrender/test/err/loader_obj_err.scn           )
 add_test(NAME loader_sph_err.scn         COMMAND hrender ../../hrender/test/err/loader_sph_err.scn           )

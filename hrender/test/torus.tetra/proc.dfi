@@ -1,0 +1,36 @@
+/*
+ * UDMlib - Unstructured Data Management Library
+ * Copyright (C) 2012-2015 Institute of Industrial Science, The University of Tokyo.
+ * All rights reserved.
+ */
+Domain {
+    CellDimension = 3
+    VertexSize = 7984
+    CellSize = 34639
+}
+MPI {
+    NumberOfRank = 4
+    NumberOfGroup = 4
+}
+Process {
+    Rank[@] {
+        ID = 0
+        VertexSize = 2071
+        CellSize = 8307
+    }
+    Rank[@] {
+        ID = 1
+        VertexSize = 2309
+        CellSize = 9370
+    }
+    Rank[@] {
+        ID = 2
+        VertexSize = 2062
+        CellSize = 8456
+    }
+    Rank[@] {
+        ID = 3
+        VertexSize = 2031
+        CellSize = 8506
+    }
+}

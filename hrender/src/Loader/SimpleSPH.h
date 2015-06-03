@@ -103,6 +103,14 @@ private:
 		dim[1] = jmax;
 		dim[2] = kmax;
 		m_component = (svType == 2 ? 3 : 1);
+		m_origin[0] = xorg;
+		m_origin[1] = yorg;
+		m_origin[2] = zorg;
+		m_pitch[0] = xpitch;
+		m_pitch[1] = ypitch;
+		m_pitch[2] = zpitch;
+		m_step = step;
+		m_time = time;
 		grid = new float[dim[0] * dim[1] * dim[2] * m_component];
 		
 		freadEx(&len, 4, 1, fp, enableswap);
@@ -147,16 +155,46 @@ public:
 	
 	int GetDim(int i)
 	{
-		if (i >= 3)
+		if (i < 0 || i >= 3)
 			return 0;
 		return m_dim[i];
 	}
+
 	int GetComponent() {
 		return m_component;
 	}
+
+  double GetTime() {
+    return m_time;
+  }
+
+  double GetStep() {
+    return m_step;
+  }
+
+  double GetOrigin(int i) {
+    if (i < 0 || i >= 3) {
+      return 0;
+    }
+
+    return m_origin[i];
+  }
+
+  double GetPitch(int i) {
+    if (i < 0 || i >= 3) {
+      return 0;
+    }
+
+    return m_pitch[i];
+  }
+
 private:
 	int m_dim[3];
 	int m_component;
+	double m_origin[3];
+	double m_pitch[3];
+  double m_time;
+  double m_step;
 };
 
 #endif /* defined(__SimpleSPH_HEADER__) */

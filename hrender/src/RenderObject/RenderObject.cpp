@@ -5,6 +5,10 @@
 #include "RenderObject.h"
 #include "../Buffer/BufferImageData.h"
 
+#include "BufferExtraData.h"
+#include "Buffer.h"
+
+
 /**
  * レンダーオブジェクト
  */
@@ -23,6 +27,7 @@ public:
             "SETTING",
             "CAMERA",
             "VOLUME",
+            "SPARSEVOLUME",
             "POLYGON",
             "LINE",
             "POINT",
@@ -44,9 +49,14 @@ public:
     /// 変換行列を返す
     const VX::Math::matrix GetTransformMatrix() const
     {
+        return m_mat;
+    }
+    
+    /// 変換行列を計算する
+    const VX::Math::matrix calcMatrix() const {
         return VX::Math::Translation(m_trans[0], m_trans[1], m_trans[2])
-             * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
-             * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
+         * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
+         * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
     }
     
     typedef std::map<std::string, VX::Math::vec4> Vec4Map;
@@ -54,6 +64,7 @@ public:
     typedef std::map<std::string, VX::Math::vec2> Vec2Map;
     typedef std::map<std::string, float>         FloatMap;
     typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
+    typedef std::map<std::string, bool>          FilteringParamMap;
     /// Uniformマップを返す
     const Vec4Map&    GetUniformVec4 ()   const { return m_vec4s;  }
     /// Uniformマップを返す
@@ -64,6 +75,10 @@ public:
     const FloatMap&   GetUniformFloat()   const { return m_floats; }
     /// Uniformテクスチャマップを返す
     const TextureMap& GetUniformTexture() const { return m_imgs;   }
+    /// Filtering parameterを返す
+    const FilteringParamMap& GetTextureFiltering() const { return m_filteringParams;   }
+    /// Wrappign parameterを返す
+    const WrappingParamMap& GetTextureWrapping() const { return m_wrappingParams;   }
 
     //--------------------------------------------------
     //Set
@@ -78,6 +93,7 @@ public:
         m_trans[0] = x;
         m_trans[1] = y;
         m_trans[2] = z;
+        m_mat = calcMatrix();
         return true;
     }
     
@@ -91,6 +107,7 @@ public:
         m_rotat[0] = x;
         m_rotat[1] = y;
         m_rotat[2] = z;
+        m_mat = calcMatrix();
         return true;
     }
     
@@ -104,9 +121,21 @@ public:
         m_scale[0] = x;
         m_scale[1] = y;
         m_scale[2] = z;
+        m_mat = calcMatrix();
         return true;
     }
-    
+
+    /**
+     * スケールの設定
+     * @param m matrix
+     */
+    bool SetTransformMatrix(const float* m) {
+        for (int i = 0; i < 16; ++i) {
+            m_mat.f[i] = m[i];
+        }
+        return true;
+    }
+
     /**
      * Unifrom値の設定
      * @param name Uniform名
@@ -159,16 +188,80 @@ public:
      * @param img イメージデータ
      */
     bool SetTexture(const std::string& name, const BufferImageData* img) {
+        if (img->Bytes() <= 0) {
+            return false;
+        }
         m_imgs[name] = img;
         return true;
     }
 
+    /**
+     * テクスチャ filtering の設定
+     * @param name Uniform名
+     * @param filter filtering flag
+     */
+    bool SetTextureFiltering(const std::string& name, bool filter) {
+        m_filteringParams[name] = filter;
+        return true;
+    }
+
+    /**
+     * テクスチャ wrapping の設定
+     * @param name Uniform名
+     * @param texture wrapping flag
+     */
+    bool SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) {
+        std::vector<bool> wrappings;
+        wrappings.push_back(clampToEdgeS);
+        wrappings.push_back(clampToEdgeT);
+        wrappings.push_back(clampToEdgeR);
+        m_wrappingParams[name] = wrappings;
+        return true;
+    }
+
+    typedef std::map<std::string, RefPtr<BufferExtraData> >  ExtraBufferMap;
+
+    /**
+     * 拡張バッファの追加
+     * @param varyingName varying名
+     * @param data 拡張バッファ
+     */
+    bool AddExtraBuffer(const std::string& varyingName, BufferExtraData* data)
+    {
+        m_extrabuffers[varyingName] = data;
+        return true;
+    }
+
+    /**
+     * 拡張バッファの削除
+     * @param varyingName varying名
+     */
+    bool RemoveExtraBuffer(const std::string& varyingName)
+    {
+        ExtraBufferMap::iterator it = m_extrabuffers.find(varyingName);
+        if (it != m_extrabuffers.end()) {
+            m_extrabuffers.erase(it);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 拡張バッファの取得
+     */
+    const ExtraBufferMap& GetExtraBuffers() const
+    {
+        return m_extrabuffers;
+    }
+    
+    
     /// コンストラクタ
     Impl(MODE_TYPE t) : m_type(t)
     {
         m_trans =  VX::Math::vec3(0, 0, 0);
         m_rotat =  VX::Math::vec3(0, 0, 0);
         m_scale =  VX::Math::vec3(1, 1, 1);
+        m_mat   =  VX::Math::Identity();
     };
     
     /// デストラクタ
@@ -179,6 +272,7 @@ private:
     VX::Math::vec3 m_trans;
     VX::Math::vec3 m_rotat;
     VX::Math::vec3 m_scale;
+    VX::Math::matrix4x4 m_mat;
 
     //mapped data
     std::map<std::string, VX::Math::vec4> m_vec4s;
@@ -187,9 +281,16 @@ private:
     std::map<std::string, float>          m_floats;
     std::map<std::string, int>            m_ints;
     std::map<std::string, RefPtr<const BufferImageData> > m_imgs;
-
+    std::map<std::string, bool>           m_filteringParams;
+    std::map<std::string, std::vector<bool> >  m_wrappingParams;
+    
     //mode type
     RenderObject::MODE_TYPE m_type;
+    
+
+    // Extra buffer
+    ExtraBufferMap m_extrabuffers;
+    
 };
 
 /// コンストラクタ
@@ -223,6 +324,10 @@ const RenderObject::Vec2Map&  RenderObject::GetUniformVec2 ()     const { return
 const RenderObject::FloatMap& RenderObject::GetUniformFloat()     const { return m_imp->GetUniformFloat();    }
 /// Uniformテクスチャマップを返す
 const RenderObject::TextureMap& RenderObject::GetUniformTexture() const { return m_imp->GetUniformTexture();  }
+/// Filtering parameterマップを返す
+const RenderObject::FilteringParamMap& RenderObject::GetTextureFiltering() const { return m_imp->GetTextureFiltering();  }
+/// Wrapping parameterマップを返す
+const RenderObject::WrappingParamMap& RenderObject::GetTextureWrapping() const { return m_imp->GetTextureWrapping();  }
 
 //--------------------------------------------------
 //Set
@@ -248,6 +353,13 @@ bool RenderObject::SetRotate(float x, float y, float z)                         
  * @param z z
  */
 bool RenderObject::SetScale(float x, float y, float z)                                  { return m_imp->SetScale(x, y, z);         }
+
+/**
+ * マトリックスの設定
+ * @param m matrix
+ */
+bool RenderObject::SetTransformMatrix(const float* m)                                   { return m_imp->SetTransformMatrix(m);     }
+
 /**
  * Unifrom値の設定
  * @param name Uniform名
@@ -284,5 +396,39 @@ bool RenderObject::SetFloat(const std::string& name, float x)                   
  * @param img イメージデータ
  */
 bool RenderObject::SetTexture(const std::string& name, const BufferImageData* img)      { return m_imp->SetTexture(name, img);     }
+/**
+ * テクスチャ filtering の設定
+ * @param name Uniform名
+ * @param filter filter flag
+ */
+bool RenderObject::SetTextureFiltering(const std::string& name, bool filter)      { return m_imp->SetTextureFiltering(name, filter);     }
+/**
+ * テクスチャ wrapping の設定
+ * @param name Uniform名
+ * @param clampToEdgeS `true` to set wrapping mode for S to CLAMP_TO_EDGE
+ * @param clampToEdgeT `true` to set wrapping mode for T to CLAMP_TO_EDGE
+ * @param clampToEdgeR `true` to set wrapping mode for R to CLAMP_TO_EDGE
+ */
+bool RenderObject::SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)      { return m_imp->SetTextureWrapping(name, clampToEdgeS, clampToEdgeT, clampToEdgeR);     }
+
+
+
+/// 拡張バッファを追加する
+bool RenderObject::AddExtraBuffer(const std::string& varyingName, BufferExtraData* data)
+{
+    return m_imp->AddExtraBuffer(varyingName, data);
+}
+
+/// 拡張バッファを削除する
+bool RenderObject::RemoveExtraBuffer(const std::string& varyingName)
+{
+    return m_imp->RemoveExtraBuffer(varyingName);
+}
+
+/// 拡張バッファを取得する
+const RenderObject::ExtraBufferMap& RenderObject::GetExtraBuffers() const
+{
+    return m_imp->GetExtraBuffers();
+}
 
 

@@ -13,11 +13,15 @@
 		if (type === 'CAMERA') {
 			$('object-transformshader').style.display = 'none';
 			$('camera-information').style.display = '';
-			$('object-viewsyncbutton').style.display = '';
+			$('uniformproperty').style.display = 'none';
+		} else if (type === 'NONE') {
+			$('object-transformshader').style.display = 'none';
+			$('camera-information').style.display = 'none';
+			$('uniformproperty').style.display = 'none';
 		} else {
 			$('object-transformshader').style.display = '';
 			$('camera-information').style.display = 'none';
-			$('object-viewsyncbutton').style.display = 'none';
+			$('uniformproperty').style.display = '';
 		}
 	}
 	function clearTextChangeEvent() {
@@ -119,6 +123,12 @@
 		$('camera_screen_height').onchange = valueChangeScreenSize(name, objprop.screensize, 1, core);
 		$('camera_output_filename').onchange = valueChangeOutputFiel(name, core);
 
+		kUI('camera_clearcolor').ChangeColorCallback((function (core, name) {
+			return function (r, g, b, a) {
+				//core.setModelVec4(objname, paramname, r, g, b, a, true);
+				core.setClearColor(name, r, g, b, a, true);
+			};
+		}(core, name)));
 	}
 	
 	function splitfilename(fpath) {
@@ -127,13 +137,59 @@
 		if (len === 0) { return fpath; }
 		return fileTypes[len - 1];
 	}
-	function updateShaderParameters(uniforms) {
+	function updateShaderParameters(core, objname, uniforms) {
 		// Uniforms
 		var unif = uniforms,
 			paramname,
 			d,
 			i,
-			pp = document.getElementById('uniformproperty');
+			ggg,
+			tff,
+			pp = document.getElementById('uniformproperty'),
+			objinfo = core.findObject(objname).info,
+			colpick;
+		
+		function changeObjVec4(core, objname, paramname) {
+			return function (r, g, b, a) {
+				core.setModelVec4(objname, paramname, r, g, b, a, true);
+			};
+		}
+		function changeModelFloat(core, objname, paramname) {
+			return function (v) {
+				core.setModelFloat(objname, paramname, v, true);
+			};
+		}
+
+		function changeTransferFunc(core, objname, paramname) {
+			return function (transfuncui) {
+				var maxv = transfuncui.getMaxValue(),
+					minv = transfuncui.getMinValue(),
+					redv = transfuncui.getGraphValueRed(),
+					grnv = transfuncui.getGraphValueGreen(),
+					bluv = transfuncui.getGraphValueBlue(),
+					alpv = transfuncui.getGraphValueAlpha(),
+					vnum = transfuncui.getNumValues(),
+					rgbaVal = [vnum * 4],
+					tmax,
+					tmin,
+					i;
+				//console.log(maxv, minv, redv, grnv, bluv, alpv, vnum);
+				for (i = 0; i < vnum; i = i + 1) {
+					rgbaVal[4 * i]     = redv[i] * 255;
+					rgbaVal[4 * i + 1] = grnv[i] * 255;
+					rgbaVal[4 * i + 2] = bluv[i] * 255;
+					rgbaVal[4 * i + 3] = alpv[i] * 255;
+				}
+				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
+				
+
+				tmax = transfuncui.getMaxValue();
+				tmin = transfuncui.getMinValue();
+				core.setModelFloat(objname, "volumemin", tmin);
+				core.setModelFloat(objname, "volumemax", tmax);
+			};
+		}
+			
 		pp.innerHTML = ''; // clear
 		// Add UIs
 		for (i in unif) {
@@ -147,6 +203,16 @@
 								'<div class="ppCell"><div class="KColorPicker" id="' + paramname + '"></div></div>' +
 								'</div>';
 					pp.appendChild(d);
+					kvtoolsUI_update(d);
+					colpick = kUI(paramname);
+					if (objinfo.vec4.hasOwnProperty(paramname)) {
+						colpick.setColor(objinfo.vec4[paramname][0],
+										objinfo.vec4[paramname][1],
+										objinfo.vec4[paramname][2],
+										objinfo.vec4[paramname][3]);
+						colpick.ChangeColorCallback(changeObjVec4(core, objname, paramname));
+					}
+					
 				} else if (unif[i].ui === 'slider') {
 					paramname = unif[i].name;
 					d = document.createElement('div');
@@ -156,6 +222,9 @@
 						'<div class="ppCell"><div class="KSlider" id="' + paramname + '"></div>' +
 						'</div></div>';
 					pp.appendChild(d);
+					kvtoolsUI_update(d);
+					kUI(paramname).ChangeCallback(changeModelFloat(core, objname, paramname));
+
 				} else if (unif[i].ui === 'vec3') {
 					paramname = unif[i].name;
 					d = document.createElement('div');
@@ -167,7 +236,8 @@
 						'<div class="ppCell"><input class="KInput ppFull" id="' + paramname + '_z" type="number"></div>' +
 						'</div>';
 					pp.appendChild(d);
-
+					kvtoolsUI_update(d);
+					
 				} else if (unif[i].ui === 'transferfunction') {
 					paramname = unif[i].name;
 					d = document.createElement('div');
@@ -183,19 +253,51 @@
 						'<div class="KTransferFunction" id="' + paramname + '"></div>' +
 						'</div></div>';
 					pp.appendChild(d);
+					kvtoolsUI_update(d);
+					tff = kUI(paramname);
+					tff.changeCallback = changeTransferFunc(core, objname, paramname);
+
+					(function (core, tff, objinfo) { 
+						core.getVolumeAnalyzerData(objname, objinfo.float["volumemin"], objinfo.float["volumemax"], function (result) {
+							console.log('HIGE', result);
+							var volumeMax = parseFloat(result.max),
+								volumeMin = parseFloat(result.min),
+								defMax =  parseFloat(result.defaultMax),
+								defMin =  parseFloat(result.defaultMin),
+								hist = result.histgram;
+							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
+								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:defMin, defaultValMax:defMax, histgram:hist}, 1);
+							tff.drawGraph();
+							tff.changeCallback(tff);
+						});
+					}(core, tff, objinfo));
+
+					if (objinfo.rgbatex.hasOwnProperty(paramname)) {
+						var rgba = objinfo.rgbatex[paramname].rgba;
+						for (ggg = 0; ggg < 256; ggg = ggg + 1) {
+							tff.setGraphValue(ggg,
+											  rgba[ggg*4]/255.0,
+											  rgba[ggg*4+1]/255.0,
+											  rgba[ggg*4+2]/255.0,
+											  rgba[ggg*4+3]/255.0);
+						}
+						tff.drawGraph();
+					}
+					
 				} else {
 					console.log('Error: Unkown UI type -> ' + unif[i].ui + ' - ' + unif[i].name);
 				}
 			}
 		}
-		kvtoolsUI_update(pp);
+		//kvtoolsUI_update(pp);
 	}
 	function changeShader(shaderpath, info, objectname, core) {
 		return function (ev) {
 			console.log('[DEBUG] CHANGE SHADER', objectname, shaderpath);
 			kUI('shader_name').Select(splitfilename(shaderpath));
 			
-			updateShaderParameters(info.uniforms);
+			core.setModelUniforms(objectname, info.uniforms);
+			updateShaderParameters(core, objectname, info.uniforms);
 			core.setModelShader(objectname, shaderpath);
 			core.render();
 		};
@@ -268,7 +370,7 @@
 				}
 				
 				if (targetShader) {
-					updateShaderParameters(targetShader.info.uniforms);
+					updateShaderParameters(core, name, targetShader.info.uniforms);
 				}
 				selshader = splitfilename(obj.info.shader);
 				kUI('shader_name').Select(selshader);
@@ -298,6 +400,10 @@
 		$('shader_name').Select(dt[name].shader); // add shader parameters after SELECT.
 		*/
 	}
+	
+	var activeObjectName = '',
+		activeTime = 0;
+	
 	function updateProperty(core, objname) {
 		var scenedata = core.getSceneData(),
 			objprop = null,
@@ -314,6 +420,7 @@
 		if (!objprop) {
 			console.error('Not found object:', objname, scenedata.objectlist);
 		} else {
+			activeObjectName = objname;
 			setPropertyMode(objprop.type);
 			if (objprop.type === "CAMERA") {
 				setCameraProperty(objname, objprop.info, core);
@@ -332,8 +439,12 @@
 		};
 	}
 	function dustClick(core, objname) {
-		return function () {
+		return function (e) {
+			e.stopPropagation();
 			core.deleteObject(objname);
+			
+			activeObjectName = '';
+			setPropertyMode('NONE');
 		};
 	}
 	function getIconColor(type) {
@@ -362,7 +473,6 @@
 			core;
 		
 		function updateObjList(sceneInfo) {
-			console.log(sceneInfo);
 			var i,
 				objlist = sceneInfo.objectlist,
 				lst = kUI('list-itemlist'),
@@ -408,8 +518,9 @@
 						opt.selected = true;
 					}
 				}
-				
 			}
+			kUI('timeline').setTimelineData(core.getTimeline());
+			kUI('timeline').drawGraph();
 			core.render();
 		}
 		
@@ -439,6 +550,21 @@
 			e.preventDefault();
 		});
 
+		function loadModel(filepath) {
+			console.log("FileDialog Select:" + filepath);
+			if (filepath.substr(filepath.length - 4) === ".obj") {
+				core.loadOBJ(filepath, './shader/polygon.frag');
+			} else if (filepath.substr(filepath.length - 4) === ".stl") {
+				core.loadSTL(filepath, './shader/polygon.frag');
+			} else if (filepath.substr(filepath.length - 4) === ".pdb") {
+				core.loadPDB(filepath, './shader/polygon.frag');
+			} else if (filepath.substr(filepath.length - 4) === ".sph") {
+				core.loadSPH(filepath, './shader/polygon.frag');
+			} else {
+				console.error('Not supported file type:', filepath);
+			}
+		}
+
 		//---------------------------
 		//  UI Events
 		//
@@ -449,10 +575,21 @@
 			core.render();
 			//kUI('viewmode').SetCaption('[' + objname + ']');
 		});
-		kUI('timeline').setTimelineData();
+		kUI('timeline').setTimelineData(core.getTimeline());
 		kUI('timeline').drawGraph();
 		kUI('timeline').ChangeTimeCallback(function (tm) {
+			activeTime = tm;
 			core.updateTime(tm);
+			if (activeObjectName) {
+				updateProperty(core, activeObjectName);
+			}
+		});
+		kUI('timeline').SelectCallback(function (name, tm) {
+			console.log("selected", name, tm);
+		});
+		kUI('timeline').DeleteCallback(function (name, tm) {
+			core.deleteKey(name, tm);
+			kUI('timeline').drawGraph();
 		});
 		$('projsetting').addEventListener('click', function (ev) {
 			$toggle($('window-projectproperty'), 500);
@@ -475,12 +612,64 @@
 				};
 			}(core, fdlg)),
 				function (filepath) {
+					core.loadScene(filepath, function () {
+						updateProperty(core, "view");
+					});
 					console.log("FileDialog Select:" + filepath);
 				});
 			//core.render();
 		});
 		$('savescenebtn').addEventListener('click', function (ev) {
+			var fdlg = new FileDialog("savesceneDialog", true, '.json');
+			fdlg.SaveFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)), function (filepath) {
+				core.saveScene(filepath);
+				console.log("FileDialog save:" + filepath);
+			});
+
 			console.log('SAVE SCENE');
+		});
+		$('exportbtn').addEventListener('click', function (ev) {
+			var fdlg = new FileDialog("savesceneDialog", true, '.json'),
+				time = {};
+			if ($('tlEnableAnimation').checked) {
+				time = {
+					start : document.getElementById('tlStartTime').value,
+					end : document.getElementById('tlEndTime').value,
+					fps : document.getElementById('tlFps').value
+				};
+			} else {
+				time = {
+					start : activeTime,
+					end : activeTime,
+					fps : document.getElementById('tlFps').value
+				};
+			}
+			fdlg.ExportSceneFile("", (function (core, fdlg) {
+				return function (path) {
+					core.getFileList(path, function (err, res) {
+						console.log(err, res);
+						fdlg.updateDirlist({list: res, path: path});
+					});
+				};
+			}(core, fdlg)), function (filepath) {
+				core.exportScene(filepath, time);
+				console.log("FileDialog export:" + filepath);
+			});
+
+			console.log('EXPORT SCENE');
+		});
+		$('tlEnableAnimation').addEventListener('change', function (ev) {
+			var check = ev.target.checked;
+			$('tlStartTime').disabled = !check;
+			$('tlEndTime').disabled = !check;
+			$('tlFps').disabled = !check;
 		});
 
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {
@@ -496,47 +685,22 @@
 						fdlg.updateDirlist({list: res, path: path});
 					});
 				};
-			}(core, fdlg)),
-				function (filepath) {
-					console.log("FileDialog Select:" + filepath);
-					if (filepath.substr(filepath.length - 4) === ".obj") {
-						core.loadOBJ(filepath, './shader/polygon.frag');
-					} else if (filepath.substr(filepath.length - 4) === ".stl") {
-						core.loadSTL(filepath, './shader/polygon.frag');
-					} else if (filepath.substr(filepath.length - 4) === ".pdb") {
-						core.loadPDB(filepath, './shader/polygon.frag');
-					} else if (filepath.substr(filepath.length - 4) === ".sph") {
-						core.loadSPH(filepath, './shader/polygon.frag');
-					} else {
-						console.error('Not supported file type:', filepath);
-					}
-				});
+			}(core, fdlg)), loadModel);
 		});
 		//$('savescenebtn').addEventListener('click', function (ev) {
 			//core.getSceneInformation(function (objList) {
 			//);
 		//});
 
+		$('addkeybutton').addEventListener('click', function (ev) {
+			console.log('ADD KEY', activeObjectName, activeTime);
+			if (activeObjectName !== '') {
+				core.addKey(activeObjectName, activeTime);
+				kUI('timeline').drawGraph();
+			}
+		});
 		// ----------------------------
 		// Mouse Event
-		function mouseDown(e) {
-			e.preventDefault();
-			if (e.button === 0) { mouseState.Left   = true; }
-			if (e.button === 2) { mouseState.Right  = true; }
-			if (e.button === 1) { mouseState.Center = true; }
-			mouseState.x = e.clientX;
-			mouseState.y = e.clientY;
-		}
-
-		function mouseUp(e) {
-			e.preventDefault();
-			if (e.button === 0) { mouseState.Left   = false; }
-			if (e.button === 2) { mouseState.Right  = false; }
-			if (e.button === 1) { mouseState.Center = false; }
-			mouseState.x = e.clientX;
-			mouseState.y = e.clientY;
-		}
-
 		function mouseMove(e) {
 			e.preventDefault();
 			var dx = e.clientX - mouseState.x,
@@ -557,9 +721,28 @@
 			mouseState.x = e.clientX;
 			mouseState.y = e.clientY;
 		}
+		function mouseUp(e) {
+			e.preventDefault();
+			if (e.button === 0) { mouseState.Left   = false; }
+			if (e.button === 2) { mouseState.Right  = false; }
+			if (e.button === 1) { mouseState.Center = false; }
+			mouseState.x = e.clientX;
+			mouseState.y = e.clientY;
+			window.removeEventListener('mouseup',   mouseUp);
+			window.removeEventListener('mousemove', mouseMove);
+		}
+		function mouseDown(e) {
+			e.preventDefault();
+			if (e.button === 0) { mouseState.Left   = true; }
+			if (e.button === 2) { mouseState.Right  = true; }
+			if (e.button === 1) { mouseState.Center = true; }
+			mouseState.x = e.clientX;
+			mouseState.y = e.clientY;
+			
+			window.addEventListener('mouseup',   mouseUp);
+			window.addEventListener('mousemove', mouseMove);
+		}
 		$('resultdiv').addEventListener('mousedown', mouseDown);
-		$('resultdiv').addEventListener('mouseup',   mouseUp);
-		$('resultdiv').addEventListener('mousemove', mouseMove);
 		//----------------------------
 	}
 	window.addEventListener('load', init);

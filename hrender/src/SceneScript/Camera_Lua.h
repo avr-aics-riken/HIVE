@@ -57,11 +57,13 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0 (int, GetScreenHeight)
     LUA_SCRIPTCLASS_METHOD_ARG2 (bool, SetScreenSize, unsigned int, unsigned int)
     LUA_SCRIPTCLASS_METHOD_ARG1 (bool, SetFilename, const std::string&)
+    LUA_SCRIPTCLASS_METHOD_ARG1 (bool, SetDepthFilename, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG10(bool, LookAt, float, float, float, float, float, float, float, float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG4 (bool, ClearColor, float, float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG0 (BufferImageData_Lua*,GetImageBuffer)
     LUA_SCRIPTCLASS_METHOD_ARG0 (BufferImageData_Lua*,GetDepthBuffer)
     LUA_SCRIPTCLASS_METHOD_ARG0 (std::string, GetOutputFile)
+    LUA_SCRIPTCLASS_METHOD_ARG0 (std::string, GetDepthOutputFile)
     
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetPosition)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTarget)

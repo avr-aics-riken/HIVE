@@ -1,0 +1,347 @@
+print('Render Maya')
+
+local json = require ("dkjson")
+
+local camera = Camera()
+local screendiv = 0.25
+local windowWidth = 600
+local windowHeight = 450
+local aspectRatio = windowWidth / windowHeight
+camera:SetScreenSize(windowWidth/screendiv, windowHeight/screendiv)
+camera:SetFilename('maya.png')
+
+function LoadCameraJSON(filename)
+
+   -- Load camera JSON file
+   camfile = io.open(filename, "r")
+   local camstr = camfile:read("*all")
+   camfile:close()
+
+   local camobj, pos, err = json.decode (camstr, 1, nil)
+   if err then
+     print ("Error:", err)
+     os.exit()
+   end
+
+   return camobj
+end
+
+function SetCamera(camera, camjson, frame, aspectratio)
+   camera:LookAt(
+      camjson[frame]["eyePoint"][1], camjson[frame]["eyePoint"][2], camjson[frame]["eyePoint"][3],
+      camjson[frame]["lookAt"][1], camjson[frame]["lookAt"][2], camjson[frame]["lookAt"][3],
+      camjson[frame]["upVec"][1], camjson[frame]["upVec"][2], camjson[frame]["upVec"][3],
+      camjson[frame]["fov"] / aspectratio  -- Maya use vertical fov
+   )
+end
+
+function LoadLightJSON(filename)
+   -- Load camera JSON file
+   local f = io.open(filename, "r")
+   local str = f:read("*all")
+   f:close()
+
+   local obj, pos, err = json.decode (str, 1, nil)
+   if err then
+     print ("Error:", err)
+     os.exit()
+   end
+
+   return obj
+end
+
+function BuildLight(lightjson)
+   -- (0, 0, -1) in default light direction
+   local u = {2, 0, 0}
+   local v = {0, -2, 0}
+   local m = lightjson["matrix"]
+   local u_dir = {u[1] * m[1] + u[2] * m[5] + u[3] * m[9], 
+                  u[1] * m[2] + u[2] * m[6] + u[3] * m[10], 
+                  u[1] * m[3] + u[2] * m[7] + u[3] * m[11]}
+   local v_dir = {v[1] * m[1] + v[2] * m[5] + v[3] * m[9], 
+                  v[1] * m[2] + v[2] * m[6] + v[3] * m[10], 
+                  v[1] * m[3] + v[2] * m[7] + v[3] * m[11]}
+   print(u_dir[1], u_dir[2], u_dir[3])
+   print(v_dir[1], v_dir[2], v_dir[3])
+
+   print("u_dir", u_dir[1], u_dir[2], u_dir[3])
+   print("v_dir", v_dir[1], v_dir[2], v_dir[3])
+   print("lightPos", m[13], m[14], m[15])
+
+   local shadowBias = lightjson["shadow_bias"]
+   local invisible = lightjson["invisible"]
+   local nodecay = lightjson["nodecay"]
+   local doubleSided = lightjson["double_sided"]
+   local scale = lightjson["scale"]
+   local rotate = lightjson["rotate"] -- degree
+   local translate = lightjson["translate"]
+   print("rot", rotate[1], rotate[2], rotate[3])
+
+   if shadowBias == nil then
+      shadowBias = 0.01 -- default parameter value
+   end
+
+   if invisible == nil then
+      invisible = 0.0
+   end
+
+   if nodecay == nil then
+      nodecay = 0.0
+   end
+
+   if doubleSided == nil then
+      doubleSided = 0.0
+   end
+
+   -- Create an array of light as texture.
+   -- 8 pixel(RGBA32F) width x # of lights as height
+   local lighttex = GenTexture()
+   local lighttextable = {}
+   local numLights = 1  -- Should be 1 at this time.
+   local lighttexWidth = 8
+
+   -- Memory layout of light info.
+   -- Currently only quad or spherical light is supported.
+   -- [0:3]   3 floats: light color, 1 float: intensityMultiplier
+   -- [4:7]   3 floats: light center, 1 float: light type(0: quad, 1: sphere))
+   -- [8:11]  3 floats: light u dir(quad) or 1 float: light radius
+   -- [12:15] 3 floats: light v dir(quad)
+   -- [16:19] shadow bias(1 float), invisible(1 float), no decay(1 float), double sided(1 float)
+   -- [20:31] reserved.
+   for j = 1, numLights do 
+
+      table.insert(lighttextable, lightjson["color"][1]);
+      table.insert(lighttextable, lightjson["color"][2]);
+      table.insert(lighttextable, lightjson["color"][3]);
+      table.insert(lighttextable, lightjson["intensity"]);
+
+      table.insert(lighttextable, m[13]);
+      table.insert(lighttextable, m[14]);
+      table.insert(lighttextable, m[15]);
+      table.insert(lighttextable, 0.0); -- quad
+
+      table.insert(lighttextable, u_dir[1]);
+      table.insert(lighttextable, u_dir[2]);
+      table.insert(lighttextable, u_dir[3]);
+      table.insert(lighttextable, 0.0);
+
+      table.insert(lighttextable, v_dir[1]);
+      table.insert(lighttextable, v_dir[2]);
+      table.insert(lighttextable, v_dir[3]);
+      table.insert(lighttextable, 0.0);
+
+      table.insert(lighttextable, shadowBias); -- shadow bias
+      table.insert(lighttextable, 0.0); -- invisible
+      table.insert(lighttextable, 0.0); -- no decay
+      table.insert(lighttextable, 0.0); -- double sided
+
+      -- fill unsed area(20:31)
+      for i = 20, 31 do
+         table.insert(lighttextable, 0.0);
+      end
+
+   end
+
+   lighttex:Create2D(lighttextable, 3, lighttexWidth, numLights); -- 3 = RGBA32F
+   local lightimg = lighttex:ImageData()
+
+   -- Build light shape
+
+   local gen = PrimitiveGenerator() 
+   local shape = gen:Quad(1, 1)
+   local lightPoly = PolygonModel()
+   lightPoly:Create(shape)
+   --lightPoly:SetScale(scale[1], scale[2], scale[3])
+   --lightPoly:SetRotate(rotate[1], rotate[2], rotate[3])
+   --lightPoly:SetTranslate(translate[1], translate[2], translate[3])
+   lightPoly:SetTransformMatrix(m)
+   lightPoly:SetShader('pbs.frag') 
+   print("mat0", m[1], m[2], m[3], m[4])
+   print("mat1", m[5], m[6], m[7], m[8])
+   print("mat2", m[9], m[10], m[11], m[12])
+   print("mat3", m[13], m[14], m[15], m[16])
+
+   return numLights, lightPoly, lightimg
+
+end
+
+local camjsonobj = LoadCameraJSON("maya_camera.json")
+SetCamera(camera, camjsonobj, 1, aspectRatio) -- frameno: 1
+
+local lightjsonobj = LoadCameraJSON("maya_arealight.json")
+local numLights, lightPoly, lightimg = BuildLight(lightjsonobj)
+
+-- os.exit()
+
+-- Create an array of material as texture.
+-- 8 pixel(RGBA32F) width x # of materials as height
+local mattex = GenTexture()
+
+local mattextable = {}
+local numMaterials = 2
+local mattexWidth = 8
+
+-- Memory layout of material info.
+-- [0:4]   3 floats: diffuse color, 1 float: unused
+-- [4:7]   3 floats: reflection color, 1 float: reflection glossiness([0,1])
+-- [8:11]  3 floats: refraction color, 1 float: refraction glossiness([0,1])
+-- [12:15] fresnel(float), ior(float), 2 floats: unused
+-- [16:19] 3 floats: emission, 1 float: unused
+-- [20:31] reserved.
+for j = 1, numMaterials do 
+
+	-- 0:3   diffuse(vec3, alpha not used)
+	if j == 1 then
+		table.insert(mattextable, 1);
+		table.insert(mattextable, 1);
+		table.insert(mattextable, 1);
+	else
+		table.insert(mattextable, 0);
+		table.insert(mattextable, 0);
+		table.insert(mattextable, 0);
+	end
+	table.insert(mattextable, 0.0);
+
+	-- 4:7   reflection and glossiness(vec4)
+	if j == 1 then
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	else
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	end
+
+	-- 8:11  refraction and glossiness(vec4)
+	if j == 1 then
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	else
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	end
+
+	-- 12:15 fresnel and ior(vec2, last 2 floats not used)
+	if j == 1 then
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 1.6);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	else
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 1.6);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	end
+
+	-- 16:19 emission(vec3, alpha not used)
+	if j == 1 then
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+		table.insert(mattextable, 0.0);
+	else
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 1.0);
+		table.insert(mattextable, 0.0);
+	end
+
+	-- fill unsed area(20:31)
+	for i = 20, 31 do
+		table.insert(mattextable, 0.0);
+	end
+
+end
+
+mattex:Create2D(mattextable, 3, mattexWidth, numMaterials); -- 3 = RGBA32F
+local matimg = mattex:ImageData()
+
+-- load from file
+local loader = ImageLoader()
+local isloaded = loader:Load("ibl.jpg")
+print('Texture Load = ' .. tostring(isloaded))
+local img = loader:ImageData()
+
+
+-- Generate too big sphere as an environment
+-- local gen  = PrimitiveGenerator()
+-- local envmap = gen:Sphere(100000000)
+-- local pm0 = PointModel();
+-- pm0:Create(envmap);
+-- pm0:SetShader("envmap.frag");
+-- pm0:SetTexture("mytex0", img);
+
+-- local gen1  = PrimitiveGenerator()
+-- local smallsphere = gen1:Sphere(1.0)
+-- local model0 = PointModel();
+-- model0:Create(smallsphere)
+-- model0:SetShader('pbs.frag')
+-- model0:SetFloat('matid', 0)
+-- model0:SetTexture("pbs_envtex", img);
+-- model0:SetTexture("pbs_mattex", matimg);
+-- model0:SetTexture("pbs_lighttex", lightimg);
+-- model0:SetFloat("pbs_num_materials", numMaterials);
+-- model0:SetFloat("pbs_num_lights", numLights);
+-- model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+-- model0:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+
+local obj1 = OBJLoader()
+obj1:Load('maya_polygon.obj')
+local model1 = PolygonModel()
+local meshdata1 = obj1:MeshData()
+model1:Create(meshdata1)
+model1:SetShader('pbs.frag')
+model1:SetFloat('matid', 0)
+model1:SetTexture("pbs_envtex", img);
+model1:SetTexture("pbs_mattex", matimg);
+model1:SetTexture("pbs_lighttex", lightimg);
+model1:SetFloat("pbs_num_materials", numMaterials);
+model1:SetFloat("pbs_num_lights", numLights);
+model1:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+model1:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+local analy = PolygonAnalyzer()
+analy:Execute(model1)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+-- light poly
+-- local obj2 = OBJLoader()
+-- obj2:Load('arealight.obj')
+-- local model2 = PolygonModel()
+-- local meshdata2 = obj2:MeshData()
+-- model2:Create(meshdata2)
+-- model2:SetShader('pbs.frag')
+-- -- model2:SetScale(1.7, 1.7, 1.7)
+-- model2:SetFloat('matid', 1)
+-- model2:SetTexture("pbs_envtex", img);
+-- model2:SetTexture("pbs_mattex", matimg);
+-- model2:SetTexture("pbs_lighttex", lightimg);
+-- model2:SetFloat("pbs_num_materials", numMaterials);
+-- model2:SetFloat("pbs_num_lights", numLights);
+-- model2:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+-- model2:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+lightPoly:SetFloat('matid', 1)
+lightPoly:SetTexture("pbs_envtex", img);
+lightPoly:SetTexture("pbs_mattex", matimg);
+lightPoly:SetTexture("pbs_lighttex", lightimg);
+lightPoly:SetFloat("pbs_num_materials", numMaterials);
+lightPoly:SetFloat("pbs_num_lights", numLights);
+lightPoly:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
+lightPoly:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
+
+render {camera, model0, model1, lightPoly}

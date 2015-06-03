@@ -85,7 +85,11 @@ bool PointBuffer::Create(const PointModel* model)
                   point->Radius()->GetBuffer(),
                   point->Material()->GetBuffer(),
                   m_vtx_id, m_radius_id, m_material_id);
-    cacheTextures(model);
+    
+    createExtraBuffers(m_model);
+
+    cacheTextures(m_model);
+    
     return r;
 }
 
@@ -105,8 +109,14 @@ void PointBuffer::Render() const
     
     bindUniforms(m_model);
     
+    bindExtraBuffers(m_model);
+    
     BindPointVB_SGL(getProgram(), m_vtx_id, m_radius_id, m_material_id);
     DrawPointArrays_SGL(m_vtxnum);
 }
 
+void PointBuffer::Update()
+{
+    cacheTextures(m_model);
+}
 

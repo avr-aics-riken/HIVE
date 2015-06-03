@@ -134,7 +134,7 @@ public:
 };
 
 /// constructor
-BufferLineData::BufferLineData()
+BufferLineData::BufferLineData() : BufferData(TYPE_LINE)
 {
     m_imp = new BufferLineData::Impl();
 }
@@ -146,7 +146,7 @@ BufferLineData::~BufferLineData()
 }
 
 /// constructor
-BufferLineData::BufferLineData(BufferLineData* inst)
+BufferLineData::BufferLineData(BufferLineData* inst) : BufferData(TYPE_LINE)
 {
     m_imp = new BufferLineData::Impl(inst);
 }

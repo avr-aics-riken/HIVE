@@ -53,6 +53,15 @@ bool SPHLoader::Load(const char* filename)
     memcpy(buffer->GetBuffer(), buf, fnum * sizeof(float));
     delete [] buf;
 
+    m_origin[0] = sph.GetOrigin(0);
+    m_origin[1] = sph.GetOrigin(1);
+    m_origin[2] = sph.GetOrigin(2);
+    m_pitch[0] = sph.GetPitch(0);
+    m_pitch[1] = sph.GetPitch(1);
+    m_pitch[2] = sph.GetPitch(2);
+    m_time = sph.GetTime();
+    m_step = sph.GetStep();
+
     return true;
 }
 

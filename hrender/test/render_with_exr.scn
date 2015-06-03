@@ -1,0 +1,29 @@
+print('render_with_exr')
+
+local gen  = PrimitiveGenerator()
+local plane = gen:Quad(100, 100)
+
+local pm = PolygonModel();
+pm:Create(plane);
+pm:SetShader("textured.frag");
+
+
+-- load from file
+local loader = ImageLoader()
+local isloaded = loader:Load("asakusa.exr")
+print('Texture Load = ' .. tostring(isloaded))
+local img = loader:ImageData()
+
+pm:SetTexture('mytex0', img) -- Bind
+
+local cam = Camera()
+cam:SetScreenSize(512, 512)
+cam:SetFilename("render_with_exr.jpg")
+cam:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+render({cam, pm})

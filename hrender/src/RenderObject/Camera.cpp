@@ -21,7 +21,7 @@ public:
         m_clearcolor[0] = 0.0f;
         m_clearcolor[1] = 0.0f;
         m_clearcolor[2] = 0.0f;
-        m_clearcolor[3] = 0.0f;
+        m_clearcolor[3] = 1.0f;
     }
     ~Impl()
     {
@@ -48,6 +48,17 @@ public:
     {
         m_outputfile = filename;
         printf("Debug: FileName = %s\n", filename.c_str());
+        return true;
+    }
+    
+    /**
+     * 結果デプス画像のファイルパスの設定.
+     * @param filename ファイルパス
+     */
+    bool SetDepthFilename(const std::string& filename)
+    {
+        m_depthoutputfile = filename;
+        printf("Debug: Depth FileName = %s\n", filename.c_str());
         return true;
     }
     
@@ -112,6 +123,8 @@ public:
     const Camera::CameraInfo* GetCameraInfo()   const { return &m_info;      }
     /// 出力ファイルパスを返す.
     const std::string&        GetOutputFile()   const { return m_outputfile; }
+    /// 出力デプスファイルパスを返す.
+    const std::string&        GetDepthOutputFile()   const { return m_depthoutputfile; }
     /// 画像バッファを返す.
     BufferImageData*          GetImageBuffer()        { return &m_imagebuffer; }
     /// 深度バッファを返す.
@@ -121,6 +134,7 @@ private:
     unsigned int m_width;
     unsigned int m_height;
     std::string  m_outputfile;
+    std::string  m_depthoutputfile;
     CameraInfo m_info;
     float m_clearcolor[4];
     BufferImageData m_imagebuffer;
@@ -155,6 +169,15 @@ bool Camera::SetScreenSize(unsigned int w, unsigned int h)
 bool Camera::SetFilename(const std::string& filename)
 {
     return m_imp->SetFilename(filename);
+}
+
+/**
+ * 結果デプス画像のファイルパスの設定
+ * @param filename ファイルパス
+ */
+bool Camera::SetDepthFilename(const std::string& filename)
+{
+    return m_imp->SetDepthFilename(filename);
 }
 
 /**
@@ -203,8 +226,10 @@ int                       Camera::GetScreenHeight() const { return m_imp->GetScr
 const Camera::CameraInfo* Camera::GetCameraInfo()   const { return m_imp->GetCameraInfo();   }
 /// 出力ファイルパスを返す.
 const std::string&        Camera::GetOutputFile()   const { return m_imp->GetOutputFile();   }
-/// 画像バッファを返す.
+/// 出力デプスファイルパスを返す.
+const std::string&        Camera::GetDepthOutputFile() const { return m_imp->GetDepthOutputFile();   }
 
+/// 画像バッファを返す.
 BufferImageData*          Camera::GetImageBuffer()        { return m_imp->GetImageBuffer();  }
 /// 深度バッファを返す.
 BufferImageData*          Camera::GetDepthBuffer()        { return m_imp->GetDepthBuffer();  }

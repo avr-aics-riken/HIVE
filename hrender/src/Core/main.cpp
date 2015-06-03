@@ -13,15 +13,25 @@
 #include <stdio.h>
 #include <string.h>
 #include <string>
+#include <vector>
 
 #include "../SceneScript/SceneScript.h"
 
 #include "../Core/Path.h"
 
+#ifdef _WIN32
+	#define strncasecmp(x,y,z) _strnicmp(x,y,z)
+
+	#ifdef _DEBUG
+		#define _CRTDBG_MAP_ALLOC
+		#include <crtdbg.h>
+	#endif
+#endif
+
 /**
  * sceneレンダリングコア関数
  */
-void renderScene(const char* scenefile)
+void renderScene(const char* scenefile, const std::vector<std::string>& sceneargs)
 {
     printf("RENDER!! > %s\n", scenefile);
     
@@ -30,7 +40,7 @@ void renderScene(const char* scenefile)
     changeFileDir(scenefullfile);
     
     SceneScript script;
-    if (!script.Execute(scenefullfile.c_str())) {
+    if (!script.Execute(scenefullfile.c_str(), sceneargs)) {
         fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
     }
 }
@@ -44,6 +54,13 @@ void renderScene(const char* scenefile)
 
 int main(int argc, char* argv[])
 {
+#ifdef _WIN32
+	#ifdef _DEBUG
+		_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+		_CrtSetBreakAlloc(1037);
+	#endif
+#endif
+
     int rank = 0;
 #ifdef HIVE_ENABLE_MPI
     MPI_Init(&argc, &argv);
@@ -52,15 +69,20 @@ int main(int argc, char* argv[])
 #endif
     
     char* scenefile = 0;
+    std::vector<std::string> sceneargs;
     
     // Parse args
     for (int i = 1; i < argc; ++i) {
         //const char* arg = &argv[i][0];
         size_t na = strlen(argv[i]);
-        if (na > 4
+        if (i == 1
+        && na > 4
         && (strncasecmp(&argv[i][na-4],".scn",4) == 0 || strncasecmp(&argv[i][na-4],".lua",4) == 0))
         {
             scenefile = argv[i];
+        }
+        if (i > 1 && na < 2048) {
+            sceneargs.push_back(argv[i]);
         }
     }
     
@@ -75,7 +97,7 @@ int main(int argc, char* argv[])
         return 0;
     }
     
-    renderScene(scenefile);
+    renderScene(scenefile, sceneargs);
     
     printf("Exit hrender.\n");
     

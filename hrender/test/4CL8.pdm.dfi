@@ -1,0 +1,38 @@
+
+Header{
+  Version = "0.1"
+  Endian = "little"
+  BaseFileName = "4CL8.pdm"
+  NumContainer = 1
+}
+
+ContainerList{
+
+  Coordinate{
+    Annotation = "N/A"
+    Compression = "none"
+    Type = "FLOAT"
+    Suffix = "geo"
+    nComp = 3
+    VectorOrder = "IJKN"
+  }
+}
+
+MPI{
+  NumCommWorldProc = 1
+  Communicator = "MPI_COMM_WORLD"
+  NumProc = 1
+}
+
+DomainInfo{
+  NumProc = 1
+  GlobalOrigin = (-0.1,-0.1,-0.1)
+  GlobalRegion = (0,0,0)
+  BoundingBox = (-0.1,-0.1,-0.1,-0.1,-0.1,-0.1)
+}
+
+TimeSlice{
+
+  Slice[@]{
+  }
+}

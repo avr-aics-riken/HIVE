@@ -31,6 +31,7 @@ public:
     bool Create(const TetraModel* model);
     void Render() const;
     void Clear();
+    void Update();
 };
 
 #endif //_TETRABUFFER_H_

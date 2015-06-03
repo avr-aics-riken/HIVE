@@ -12,12 +12,16 @@
 #ifndef __AnimTool__Commands__
 #define __AnimTool__Commands__
 
-void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer);
+void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit);
 void ReleaseBuffer_SGL(unsigned int framebuffer, unsigned int colorRenderbuffer, unsigned int depthRenderbuffer);
 void Clear_SGL(float red, float green, float blue, float alpha);
-void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf);
+void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf, int colorbit);
 void GetDepthBuffer_SGL(int w, int h, float* depthbuf);
-
+void CreateFloatBuffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id);
+void CreateUintBuffer_SGL(unsigned int num, unsigned int* buffer, unsigned int& buf_id);
+void CreateVec4Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id);
+void CreateVec3Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id);
+void CreateVec2Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id);
 void CreateVBIB_SGL(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer, float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
 					unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id, unsigned int& tex_id, unsigned int& index_id);
 void ReleaseBufferVBIB_SGL(unsigned int buffer_id);
@@ -49,6 +53,11 @@ void SetShaderCompiler_SGL(const char* path, const char* opt);
 bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg);
 bool CreateProgramBinary_SGL(const char* soname, unsigned int& prg);
 bool DeleteProgram_SGL(unsigned int prg);
+void BindBufferFloat_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
+void BindBufferUint_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
+void BindBufferVec4_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
+void BindBufferVec3_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
+void BindBufferVec2_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
 void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx);
 void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material);
 void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx);
@@ -60,9 +69,12 @@ void DeleteTextures_SGL(int n, unsigned int* tex);
 void BindTexture3D_SGL(unsigned int tex);
 void BindTexture2D_SGL(unsigned int tex);
 void ActiveTexture_SGL(unsigned int n);
-void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata);
+void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT);
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT);
 
-void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata);
+void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
+void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
+void TexCoordRemap3D_SGL(int axis, int n, const float* values);
 void EvalFragmentShader_SGL();
 void SetCallback_SGL(bool (*callback)(int progress, int y, int height, void* userptr), void* userptr);
 void Finish_SGL();

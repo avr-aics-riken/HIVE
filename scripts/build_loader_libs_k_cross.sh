@@ -121,6 +121,39 @@ function build_pdmlib {
 	cd ${topdir}
 }
 
+function build_udmlib {
+	cd third_party/
+	rm -rf Zoltan_v3.81/
+	rm -rf Zoltan_build/
+	tar -zxvf zoltan_distrib_v3.81.tar.gz
+	mkdir Zoltan_build
+	cd Zoltan_build
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} --host=sparc64-unknown-linux-gnu && make && make install
+	cd ${topdir}
+
+	cd third_party/
+	rm -rf cgnslib_3.2.1/
+	rm -rf cgnslib_build/
+	tar -zxvf cgnslib_3.2.1.tar.gz
+	mkdir cgnslib_build
+	cd cgnslib_build
+	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_BUILD_SHARED=Off ../cgnslib_3.2.1 && make && make install
+	cd ${topdir}
+
+	#
+	# UDMlib
+	#
+	cd third_party/UDMlib
+	if [ -f "Makefile" ]; then
+		make distclean
+	fi
+	autoreconf -ivf
+	# Work around: Use cxx compiler even for CC to compile example programs.
+	CXX=${cxx_compiler} CC=${cxx_compiler} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
+}
+
 function build_compositor {
 
 	cd third_party/ 
@@ -142,4 +175,5 @@ build_polylib
 build_bcmtools
 build_hdmlib
 build_pdmlib
+build_udmlib
 build_compositor

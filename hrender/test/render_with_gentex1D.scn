@@ -1,0 +1,47 @@
+print('render_with_texture')
+--local bit = require("bit")
+
+local gen  = PrimitiveGenerator()
+local plane = gen:Quad(100, 100)
+
+local pm = PolygonModel();
+pm:Create(plane);
+pm:SetShader("textured.frag");
+
+-- load from file
+local gentex = GenTexture()
+
+local textable = {}
+
+function lerp(x, y, s)
+  return x * (1 - s) + y * s;
+end
+
+--create tax texture
+for j = 0, 255 do 
+	table.insert(textable, lerp(0, 255, (j / 256)));
+	table.insert(textable, lerp(0,   0,   (j / 256)));
+	table.insert(textable, lerp(255, 0, (j / 256)));
+	table.insert(textable, 255);
+end
+
+
+print (#textable)
+
+
+gentex:Create2D(textable, 1, 256, 1);
+local img = gentex:ImageData()
+
+pm:SetTexture('mytex0', img) -- Bind
+
+local cam = Camera()
+cam:SetScreenSize(512, 512)
+cam:SetFilename("render_with_gentex1d.jpg")
+cam:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+render({cam, pm})

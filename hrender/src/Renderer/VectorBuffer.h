@@ -31,6 +31,7 @@ public:
     bool Create(const VectorModel* point);
     void Render() const;
     void Clear();
+    void Update();
 };
 
 #endif //_VECTORBUFFER_H_

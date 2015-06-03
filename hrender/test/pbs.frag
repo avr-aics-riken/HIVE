@@ -1,8 +1,24 @@
 //
-// PBR shader
+// PBR shader for HIVE.
 //
-// TODO: * IBL
+// Features
+//   * Diffuse, diffuse indirect
+//   * IBL map
+//   * fresnel
+//   * glossy reflection with GGX microfacet kernel.
+//   * glossy refraction with GGX microfacet kernel.
+//   * Energy conservation among diffuse/reflection/refraction factor.
+//   * Quad area light.
 //
+// TODO
+//   * [ ] MIS sampling for area light
+//   * [x] Consider emission.
+//   * [ ] Sampling optimization.
+//     * [ ] Russian roulette
+//   * [ ] Multiple area lights.
+//   * [ ] Legacy light(directional, spot, point)
+//
+
 #extension GL_LSGL_trace : enable
 #extension GL_LSGL_random : enable
 
@@ -11,21 +27,191 @@ precision mediump float;
 #endif
 
 const float PIVAL = 3.14159265358979323846;
+const float tFar = 1e6; // must be less than the distance to the envmap sphere.
 
 uniform vec3 lightdir;
 uniform sampler2D mytex0;
+uniform float matid;
+
+// PBS parameter
+uniform sampler2D pbs_envtex;
+uniform sampler2D pbs_mattex;       // material info as a texture
+uniform sampler2D pbs_lighttex;     // light info as a texture
+uniform float pbs_num_materials;
+uniform float pbs_num_lights;
+
+//uniform float numIteration;     // # of sample iteration.
+
+varying vec3 mnormal;
 
 float sqr(float x) { return x*x; }
 
 struct Material {
+    vec3  emission;
     vec3  diffuse;
+    float fresnel;      // 0: off, 1: on
     vec3  reflection;
     float reflectionGlossiness;
     vec3  refraction;
     float refractionGlossiness;
     float ior;
-    float fresnel;      // 0: off, 1: on
 };
+
+struct Light {
+    vec3  color;
+    float intensityMultiplier;
+    vec3  position;
+    vec3  uDir;    // quad light
+    vec3  vDir;    // quad light
+    vec3  dir;
+    float radius;   // sphere light
+    int   type;     // 0: quad, 1: sphere
+    float shadowBias;
+    int   invisible;
+    int   nodecay;
+    int   doubleSided;
+};
+
+float MIS(float invpdf, float otherpdf) {
+    // power heuristic is: a^2 / (a^2+b^2)
+    // simplifying: 1 / (1 + (b/a)^2)
+    return 1.0 / (1.0 + otherpdf * otherpdf * invpdf * invpdf);
+}
+
+vec2 XYZtoUV(vec3 n)
+{
+    const float PIVAL = 3.141592;
+
+    // dir to theta,phi. Y up to Z up
+    float theta = acos(n.y);
+    float phi = 0.0;
+    if (n.z == 0.0) {
+    } else {
+        phi = atan(n.x, -n.z);
+    }
+
+    // 0.99999 = Prevent texture warp around.
+    vec2 coord = vec2(phi / (2.0 * PIVAL), clamp(1.0 - theta / PIVAL, 0.0, 0.999999));
+
+    return coord;
+}
+
+vec3
+RandomVectorHemisphereCosWeight(float r0, float r1, vec3 N, vec3 Tn, vec3 Bn)
+{
+    float r = sqrt( r0 );
+    float t = 2.0*PIVAL*r1;
+    float rCosT = r * cos(t);
+    float rSinT = r * sin(t);
+
+    float w = sqrt(max(0.0, 1.0 - rCosT*rCosT - rSinT*rSinT ));
+
+    return normalize( rCosT * Tn + rSinT * Bn + w * N );
+}
+
+
+// Assume quad light with uniform intensity.
+vec3 SampleAreaLight(vec3 center, vec3 u_dir, vec3 v_dir)
+{
+    float r0, r1;
+    random(r0);
+    random(r1);
+
+    return center + (r0 - 0.5) * u_dir + (r1 - 0.5) * v_dir;
+}
+
+
+vec3 EvalAreaLight(Light light, vec3 P, vec3 N, vec3 U, vec3 B, vec3 kdRGB)
+{
+    vec3 Lo = vec3(0.0);
+
+    SampleAreaLight(light.position, light.uDir, light.vDir);
+
+    vec3 Lpos = SampleAreaLight(light.position, light.uDir, light.vDir);
+    vec3 Ldir = normalize(light.dir);
+
+    vec3 LP = Lpos - (P + light.shadowBias * N);
+    float Ldist = max(length(LP), 0.0);
+    vec3 L = normalize(LP);
+
+    float lightCos = abs(dot(Ldir, L));
+    float lightArea = length(cross(light.uDir, light.vDir));
+
+    int frontfaced = 1;
+    if (light.doubleSided == 0) {
+        if (dot(L, light.dir) > 0.0) {
+            frontfaced = 0;
+        }
+    }
+
+    float G = 1.0;
+    if (light.nodecay < 1) {
+        // Apply attenuation;  
+        G = Ldist * Ldist;
+        if (G > 1e-6) {
+            G = 1.0 / G;
+        }
+    }
+
+    if (frontfaced > 0) {
+
+        // Light sampling.
+        float hitExplicit = trace(P+light.shadowBias*N, L);
+        float visibility = 1.0;
+        // hit distance returned by trace() is shorter by shadow bias, thus compensate the distance check 
+        // taking into account shadow bias.
+        if (hitExplicit < (Ldist - light.shadowBias)) {
+            visibility = 0.0;
+        }
+
+        if (visibility > 0.0) {
+            float weightLight = (1.0 / PIVAL) * lightArea * dot(N, L) * lightCos * G;
+
+            // BRDF sampling(fixme).
+            float randu, randv;
+            random(randu);
+            random(randv);
+            vec3 wi = RandomVectorHemisphereCosWeight(randu, randv, N, U, B);
+            float weightBRDF = (1.0 / PIVAL);
+
+            // @todo { MIS }
+            Lo = (1.0/PIVAL) * kdRGB * lightArea * G * lightCos * dot(L, N) * light.color * light.intensityMultiplier;
+        }
+    }
+
+    return Lo;
+}
+
+// Find an intersection with area light(quad)
+// Assume raydir is normalized.
+float IntersectAreaLight(vec3 rayorg, vec3 raydir, vec3 center, vec3 u_dir, vec3 v_dir)
+{
+    vec3 Nn = normalize(cross(u_dir, v_dir));
+    float d = -dot(center, Nn);
+    if (abs(dot(raydir, Nn)) < 0.00001) {
+        // ray is parallel to quad.
+        return -1.0;
+    }
+
+    float t = -(dot(rayorg, Nn) + d) / dot(raydir, Nn);
+    if (t < 0.0) {
+        return -1.0;
+    }
+
+    // Ensure hit point is inside of quad.
+    vec3 p = rayorg + t * raydir;
+    vec3 po = p - center;
+
+    if (abs(dot(po, 0.5 * u_dir)) > dot(0.5 * u_dir, 0.5 * u_dir)) {
+        t = -1.0;
+    }
+
+    if (abs(dot(po, 0.5 * v_dir)) > dot(0.5 * v_dir, 0.5 * v_dir)) {
+        t = -1.0;
+    }
+
+    return t;
+}
 
 float IntersectSphere(vec3 raydir, vec3 rayorg, vec3 spherepos, float sphereradius)
 {
@@ -64,11 +250,11 @@ float IntersectSphere(vec3 raydir, vec3 rayorg, vec3 spherepos, float sphereradi
 
 // Analytic sphere light
 // https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
-vec3 DirectIllumination(vec3 P, vec3 N, vec3 lightCentre, float lightRadius, vec3 lightColour, float cutoff)
+vec3 DirectIllumination(vec3 P, vec3 N, vec3 lightCenter, float lightRadius, vec3 lightColour, float cutoff)
 {
     // calculate normalized light vector and distance to sphere light surface
     float r = lightRadius;
-    vec3 L = lightCentre - P;
+    vec3 L = lightCenter - P;
     float distance = length(L);
     float d = max(distance - r, 0);
     L /= distance;
@@ -493,7 +679,8 @@ vec3 MicrofacetGGXEvalTransmit(vec3 N, vec3 I, float alpha_x, float alpha_y, flo
 	return vec3(outval, outval, outval);
 }
 
-void MicrofacetGGXSample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, float randv, float alpha_x, float alpha_y, float eta, int refractive, out vec3 eval, out vec3 omega_in, out float pdf)
+// NOTE: output `omega_in` vector might not be normalized.
+int MicrofacetGGXSample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, float randv, float alpha_x, float alpha_y, float eta, int refractive, out vec3 eval, out vec3 omega_in, out float pdf)
 {
 	float cosNO = dot(N, I);
     if (cosNO > 0.0) {
@@ -585,11 +772,11 @@ void MicrofacetGGXSample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, f
 			 * eq. 39 - compute actual refractive direction */
 			vec3 R, T;
 			float fresnel;
-			int inside;
+			int inside = 0;
 
 			fresnel = fresnel_dielectric(eta, m, I, R, T, inside);
-			
-			if((inside > 0) && (fresnel != 1.0)) {
+
+			if((inside < 1) && (fresnel < 1.0)) { // (fresnel < 1.0 => no TIR)
 
 				omega_in = T;
 
@@ -627,12 +814,14 @@ void MicrofacetGGXSample(vec3 N, vec3 Ng, vec3 X, vec3 Y, vec3 I, float randu, f
 				}
 			}
 		}
+        return 1; // valid
 	}
+
+    return 0; // invalid
 }
 
-
 // Simplified GGX
-float GGX(float alpha, float cosThetaM)
+float GGXKernel(float alpha, float cosThetaM)
 {
     float CosSquared = cosThetaM*cosThetaM;
     float TanSquared = (1.0-CosSquared)/CosSquared;
@@ -642,7 +831,7 @@ float GGX(float alpha, float cosThetaM)
 vec3 BRDFMicrofacet( vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y, float alpha )
 {
     vec3 H = normalize( L + V );
-    float D = GGX(alpha, dot(N,H));
+    float D = GGXKernel(alpha, dot(N,H));
     return vec3(D);
 }
 
@@ -650,21 +839,68 @@ vec3 BRDFMicrofacet( vec3 L, vec3 V, vec3 N, vec3 X, vec3 Y, float alpha )
 // --------------------------
 //
 
-
-
+// Get material information from a texture.
+// Assume filtering mode of `pbs_mattex` is GL_NEAREST.
 void GetMaterial(int i, out Material mat)
 {
-    // @fixme { Return i'th material data }
-    mat.diffuse = vec3(0.5, 0.5, 0.5);
-    mat.reflection = vec3(0.25, 0.25, 0.25);
-    mat.refraction = vec3(0.0, 0.0, 0.0);
-    mat.ior = 1.6;
-    mat.fresnel = 1.0;
+    const float tex_width = 8.0; // texture width = 8;
+    //float y = (pbs_num_materials - 1.0 - float(i)) / pbs_num_materials;
+    float y = float(i) / pbs_num_materials;
+
+    vec4 diffuse = texture2D(pbs_mattex, vec2(0.5 / tex_width, y));
+    vec4 reflection_and_glossiness = texture2D(pbs_mattex, vec2(1.5 / tex_width, y));
+    vec4 refraction_and_glossiness = texture2D(pbs_mattex, vec2(2.5 / tex_width, y));
+    vec4 fresnel_and_ior = texture2D(pbs_mattex, vec2(3.5 / tex_width, y));
+    vec4 emission = texture2D(pbs_mattex, vec2(4.5 / tex_width, y));
+
+    mat.diffuse = diffuse.rgb;
+    mat.reflection = reflection_and_glossiness.rgb;
+    mat.reflectionGlossiness = reflection_and_glossiness.w;
+    mat.refraction = refraction_and_glossiness.rgb;
+    mat.refractionGlossiness = refraction_and_glossiness.w;
+    mat.ior = fresnel_and_ior.y;
+    mat.fresnel = fresnel_and_ior.x;
+    mat.emission = emission.rgb;
 }
 
-float AverageRGB(vec3 rgb)
+// Get light information from a texture.
+// Assume filtering mode of `pbs_lighttex` is GL_NEAREST.
+void GetLight(int i, out Light lt)
 {
-    return (rgb.x + rgb.y + rgb.z) * 0.3333333;
+    const float tex_width = 8.0; // texture width = 8;
+    float y = float(i) / pbs_num_lights;
+
+    // [0:3]   3 floats: light color, 1 float: intensityMultiplier
+    // [4:7]   3 floats: light center, 1 float: light type(0: quad, 1: sphere))
+    // [8:11]  3 floats: light u dir(quad) or 1 float: light radius
+    // [12:15] 3 floats: light v dir(quad)
+    // [16:19] shadow bias(1 float), invisible(1 float), no decay(1 float), double sided(1 float)
+    // [20:31] reserved.
+
+    vec4 color_and_intensity = texture2D(pbs_lighttex, vec2(0.5 / tex_width, y));
+    vec4 center_and_type = texture2D(pbs_lighttex, vec2(1.5 / tex_width, y));
+    vec4 u_dir_or_radius = texture2D(pbs_lighttex, vec2(2.5 / tex_width, y));
+    vec4 v_dir = texture2D(pbs_lighttex, vec2(3.5 / tex_width, y));
+    vec4 lightattribs = texture2D(pbs_lighttex, vec2(4.5 / tex_width, y));
+
+    lt.color = color_and_intensity.rgb;
+    lt.intensityMultiplier = color_and_intensity.w;
+    lt.position = center_and_type.xyz;
+    lt.uDir = u_dir_or_radius.xyz;
+    lt.vDir = v_dir.xyz;
+    lt.dir = cross(lt.uDir, lt.vDir);
+    lt.type = int(center_and_type.w);
+    lt.radius = u_dir_or_radius.w;
+    lt.shadowBias = lightattribs.x;
+    lt.invisible = int(lightattribs.y);
+    lt.nodecay = int(lightattribs.z);
+    lt.doubleSided  = int(lightattribs.w);
+}
+
+// Assume RGB is in range [0, 1]
+float RGB2Y(vec3 rgb)
+{
+    return 0.299 * rgb.x + 0.587 * rgb.y + 0.114 * rgb.z;
 }
 
 
@@ -683,7 +919,7 @@ void ComputeFresnel(
     refl = reflect(I, N);
 
     refr = refract(I, N, eta);
-    if (refr.x < 0.001 && refr.y < 0.001 && refr.z < 0.001) {
+    if (abs(refr.x) < 0.0001 && abs(refr.y) < 0.0001 && abs(refr.z) < 0.0001) {
         // Total internal reflection.
         kr = 1.0;
         kt = 0.0;
@@ -719,14 +955,22 @@ float FresnelApprox(vec3 V, vec3 L, float ior) {
     return f;
 }
 
+bool isNan(float val)
+{
+  return (val <= 0.0 || 0.0 <= val) ? false : true;
+}
+
 void main()
 {
-    // Spherical light.
-    vec3 lightPos = vec3(-400, 400, -400);
-    float lightSize = 100.0;
-    vec3 lightColor = vec3(100, 100, 100);
+    int depth;
+    raydepth(depth);
 
-	vec3 P;
+    if (depth > 9) {
+        gl_FragColor = vec4(0.01, 0.01, 0.01, 1.0);
+        return;
+    }
+
+    vec3 P;
     vec3 n;
     vec3 ng;
     vec3 tn;
@@ -738,34 +982,18 @@ void main()
     queryIntersect(0, P, n, ng, tn, bn, dir, bary_uv);
 
     Material mat;
-    GetMaterial(0, mat);
- 
-    //
-    // Simple energy conservation model.
-    //
-    vec3 ksRGB0 = mat.reflection;
-    vec3 ktRGB0 = mat.refraction;
-    vec3 ksRGB  = ksRGB0;
-    vec3 ktRGB  = clamp((1.0 - ksRGB0) * ktRGB0, 0.0, 1.0);
-    vec3 kdRGB  = clamp((1.0 - ktRGB - ksRGB) * mat.diffuse, 0.0, 1.0);
+    GetMaterial(int(matid), mat);
 
-    float ks = AverageRGB(ksRGB);
-    float kt = AverageRGB(ktRGB);
-    float kd = AverageRGB(kdRGB);
+    Light light;
+    GetLight(0, light);
 
-    if (mat.fresnel > 0.0) {
-        
+	vec3 N = normalize(mnormal);
+    float Nnorm = length(N);
+    if (isNan(Nnorm) || (Nnorm < 1e7)) { // mnormal attribute is not bound to this object.
+        N = normalize(n);
     }
-
-
-    //isectinfo(p, n, dir);
-	vec3 N = normalize(n);//normalize(mnormal);
     vec3 Ng = normalize(ng);
 	vec3 V = normalize(-dir); // dir: from eye(previous hit point) towards shading point.
-
-    vec3 L = normalize(lightPos - P);
-
-    vec3 H = normalize(L + V);
 
     // Approximate tangent vector.
     vec3 U;
@@ -777,31 +1005,159 @@ void main()
     U = normalize(U);
     vec3 B = normalize(cross(U, N));
 
-    vec3 Br = BRDFMicrofacet(L, V, N, U, B, 0.13);
-    vec3 f = Br * ksRGB + kdRGB;
-    //vec3 U = normalize(tn);
+    bool inside = false;
+
+    vec3 I = V;
+    // dot(N, I) must be positive.
+    if (dot(N, V) < 0.0) {
+        inside = true;
+        I = -I;
+    }
+
+    //
+    // Simple energy conservation model.
+    //
+    vec3 ksRGB0 = mat.reflection;
+    vec3 ktRGB0 = mat.refraction;
+    vec3 ksRGB  = ksRGB0;
+    vec3 ktRGB  = clamp((1.0 - ksRGB0) * ktRGB0, 0.0, 1.0);
+    vec3 kdRGB  = clamp((1.0 - ktRGB - ksRGB) * mat.diffuse, 0.0, 1.0);
+
+    float ks = RGB2Y(ksRGB);
+    float kt = RGB2Y(ktRGB);
+    float kd = RGB2Y(kdRGB);
 
     vec3 Rvec, Tvec;
-    float Rk, Tk;
-    ComputeFresnel(Rvec, Tvec, Rk, Tk, -V, N, 1.0 / mat.ior);
+    float fresnelKr, fresnelKt;
+    float eta = 1.0 / mat.ior;
+    ComputeFresnel(Rvec, Tvec, fresnelKr, fresnelKt, -I, N, eta);
 
-    float randu; random(randu);
-    float randv; random(randv);
-    float alpha_x = 0.05;
-    float alpha_y = alpha_x;
-    float eta = 1.33;
-    int refractive = 0;
-    vec3 throughput;
-    vec3 wi;
-    float pdf;
-    MicrofacetGGXSample(N, Ng, U, B, V, randu, randv, alpha_x, alpha_y, eta, refractive, throughput, wi, pdf);
-    throughput = MicrofacetGGXEvalReflect(N, U, B, V, alpha_x, alpha_y, wi, pdf);
-    //throughput = MicrofacetGGXEvalTransmit(N, L, alpha_x, alpha_y, eta, wi, pdf);
-    float tt = IntersectSphere(normalize(wi), P, lightPos, lightSize);
-    float visibility = 0.0;
-    if (tt > 0.0) visibility = 1.0;
-    vec3 DI = DirectIllumination(P, N, lightPos, lightSize, lightColor, /* cutoff */0.0);
+    if ((ks > 0.0 || kt > 0.0) && (mat.fresnel > 0.0)) {
+        // Adjust reflectance with fresnel term.
+        ksRGB = ksRGB0 * fresnelKr;
+        ktRGB = ktRGB0 * fresnelKt;
+        kdRGB = clamp((1.0 - ktRGB - ksRGB) * mat.diffuse, 0.0, 1.0);
+        ks = RGB2Y(ksRGB);
+        kt = RGB2Y(ktRGB);
+        kd = RGB2Y(kdRGB);
+    }
 
-    vec4 tcol = texture2D(mytex0, bary_uv);
-    gl_FragColor = vec4(dot(N, L) + DI * throughput * visibility, 1.0);
+    vec3 Lo = vec3(0.0);
+
+    //
+    // Add self-emission term.
+    //
+    Lo += mat.emission;
+
+    // @todo { Russian roulette. }
+
+    if (ks > 0.0) {
+        float randu; random(randu);
+        float randv; random(randv);
+        float alpha_x = mat.reflectionGlossiness;
+        float alpha_y = alpha_x;
+        int refractive = 0;
+        vec3 throughput = vec3(0.0);
+        vec3 wi;
+        float pdf;
+        int valid = MicrofacetGGXSample(N, Ng, U, B, V, randu, randv, alpha_x, alpha_y, eta, refractive, throughput, wi, pdf);
+        //throughput = MicrofacetGGXEvalReflect(N, U, B, V, alpha_x, alpha_y, wi, pdf);
+
+        if (valid > 0) {
+            //vec4 reflcol = texture2D(pbs_envtex, XYZtoUV(wi));
+            //Lo += ksRGB * reflcol.xyz;
+#if 0
+            // Implicit light
+            float tLight = IntersectAreaLight(P + 0.001 * Ng, wi, lightCenter, lightU, lightV);
+            if (tLight > 0.0) {
+                // visilibity check
+                float visilibity = 0.0;
+                float t = trace(P + 0.001 * Ng, wi);
+                if (t < 0.0 || (t > tLight)) {
+                   visilibity = 1.0;
+                }
+                    
+                Lo += ksRGB * visilibity * throughput * lightColor;
+            }
+#endif
+
+            // trace reflect ray,
+            vec4 traceCol = vec4(0.0);
+            float t = trace(P + 0.001 * Ng, wi, traceCol, 0.0);
+            if (t > 0.0) {
+                Lo += ksRGB * traceCol.rgb;
+            }
+        }
+    }
+
+    if (kt > 0.0) {
+        float randu; random(randu);
+        float randv; random(randv);
+        float alpha_x = mat.refractionGlossiness;
+        float alpha_y = alpha_x;
+        int refractive = 1;
+        vec3 throughput = vec3(0.0);
+        vec3 wi = vec3(0.0);
+        float pdf = 0.0;
+
+        // NOTE: eta is inverted for transmission event.
+        eta = mat.ior;
+        if (inside) {
+            eta = 1.0/mat.ior;
+        }
+        int valid = MicrofacetGGXSample(N, Ng, U, B, I, randu, randv, alpha_x, alpha_y, eta, refractive, throughput, wi, pdf);
+        //vec3 Ke = MicrofacetGGXEvalTransmit(N, V, alpha_x, alpha_y, eta, wi, pdf);
+
+        if (inside) {
+            wi = -wi;
+        }
+
+        if (valid > 0) {
+            // trace refract ray
+            vec4 reflCol = vec4(0.0);
+            float t = trace(P + 0.01 * wi, wi, reflCol, 0.0);
+            if (t > 0.0) {
+                Lo += ktRGB * reflCol.xyz;
+            }
+        }
+    }
+
+    // Add direct lighting.
+    if (kd > 0.0) {
+        Lo += EvalAreaLight(light, P, N, U, B, kdRGB);
+
+#if 0
+        //
+        // Add indirect
+        //
+        float randu; random(randu);
+        float randv; random(randv);
+
+        vec3 wi = RandomVectorHemisphereCosWeight(randu, randv, N, U, B);
+
+        // Implicit light
+        float tLight = IntersectAreaLight(P + 0.001 * Ng, wi, lightCenter, lightU, lightV);
+        if (tLight > 0.0) {
+            // visilibity check
+            float visilibity = 0.0;
+            float t = trace(P + 0.001 * Ng, wi);
+            if (t < 0.0 || (t > tLight)) {
+               visilibity = 1.0;
+            }
+                
+            Lo += kdRGB * visilibity * lightColor;
+        }
+
+        vec4 traceCol = vec4(0.0);
+        float t = trace(P + 0.001 * Ng, wi, traceCol, 0.0);
+        Lo += kdRGB * traceCol.rgb;
+#endif
+    }
+
+    if (depth == 0) {
+        // apply gamma correction.
+        Lo = pow(Lo, vec3(1.0/2.2));    
+    }
+
+    gl_FragColor = vec4(Lo, 1.0);
 }
