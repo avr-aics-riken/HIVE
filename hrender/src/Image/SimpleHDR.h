@@ -80,7 +80,7 @@ int RGBE_ReadPixels_RLE(FILE *fp, float *data, int scanline_width,
 #define RGBE_DATA_GREEN  1
 #define RGBE_DATA_BLUE   2
 /* number of floats per pixel */
-#define RGBE_DATA_SIZE   3
+#define RGBE_DATA_SIZE   4
 
 enum rgbe_error_codes {
 	rgbe_read_error,
@@ -153,7 +153,7 @@ rgbe2float(float *red, float *green, float *blue, unsigned char rgbe[4])
 /* default minimal header. modify if you want more information in header */
 inline int RGBE_WriteHeader(FILE *fp, int width, int height, rgbe_header_info *info)
 {
-	const char *programtype = "RGBE";
+	const char *programtype = "RADIANCE";
 	
 	if (info && (info->valid & RGBE_VALID_PROGRAMTYPE))
 		programtype = info->programtype;
@@ -467,7 +467,8 @@ inline bool SimpleHDRLoader(const char* hdrfilename, int& w, int& h, float** rgb
 		fclose(fp);
 		return false;
 	}
-	*rgba_float = new float[3 * w * h];
+	//*rgba_float = new float[3 * w * h];
+	*rgba_float = new float[4 * w * h];
 	r = SimpleHDR::RGBE_ReadPixels_RLE(fp ,*rgba_float, w, h);
 	if (r) {
 		fclose(fp);

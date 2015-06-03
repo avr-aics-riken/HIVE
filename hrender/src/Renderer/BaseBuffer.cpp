@@ -8,6 +8,9 @@
 #include "../RenderObject/RenderObject.h"
 #include "../Buffer/Buffer.h"
 #include "../Buffer/BufferImageData.h"
+#include "../Buffer/BufferExtraData.h"
+
+#include "../Renderer/RenderCore.h"
 
 #include "Commands.h"
 
@@ -20,12 +23,6 @@ BaseBuffer::BaseBuffer(RENDER_MODE mode)
 /// デストラクタ
 BaseBuffer::~BaseBuffer()
 {
-    std::map<const BufferImageData*, unsigned int>::const_iterator it, eit = m_texutecache.end();
-    for (it = m_texutecache.begin(); it != eit; ++it) {
-        unsigned int t = it->second;
-        DeleteTextures_SGL(1, &t);
-    }
-    DeleteProgram_SGL(m_prog);
 }
 
 /// シェーダプログラムをバインドする.
@@ -136,6 +133,68 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
 
 }
 
+/**
+ * 拡張バッファの作成.
+ * @param obj レンダーオブジェクト
+ */
+void BaseBuffer::createExtraBuffers(const RenderObject* obj)
+{
+    const RenderObject::ExtraBufferMap& emap = obj->GetExtraBuffers();
+    RenderObject::ExtraBufferMap::const_iterator it, eit = emap.end();
+    for (it = emap.begin(); it != eit; ++it) {
+        const RefPtr<BufferExtraData>& p = it->second;
+        std::string dtype(p->GetDataType());
+        unsigned int bufidx = 0;
+        if (dtype == "float") {
+            CreateFloatBuffer_SGL(p->GetNum(), p->Float()->GetBuffer(), bufidx);
+        } else if (dtype == "vec4") {
+            CreateVec4Buffer_SGL(p->GetNum(), p->Vec4()->GetBuffer(), bufidx);
+        } else if (dtype == "vec3") {
+            CreateVec3Buffer_SGL(p->GetNum(), p->Vec3()->GetBuffer(), bufidx);
+        } else if (dtype == "vec2") {
+            CreateVec2Buffer_SGL(p->GetNum(), p->Vec2()->GetBuffer(), bufidx);
+        } else if (dtype == "uint") {
+            CreateUintBuffer_SGL(p->GetNum(), p->Uint()->GetBuffer(), bufidx);
+        }
+        m_extraIdx[it->first] = bufidx;
+    }
+}
+
+/**
+ * 拡張バッファのバインド.
+ * @param obj レンダーオブジェクト
+ */
+void BaseBuffer::bindExtraBuffers(const RenderObject* obj) const
+{
+    const unsigned int prg = getProgram();
+    if (prg == 0) {
+        return;
+    }
+    
+    const RenderObject::ExtraBufferMap& emap = obj->GetExtraBuffers();
+    RenderObject::ExtraBufferMap::const_iterator it, eit = emap.end();
+    for (it = emap.begin(); it != eit; ++it) {
+        const std::string& name = it->first;
+        const RefPtr<BufferExtraData>& p = it->second;
+        std::map<std::string, unsigned int>::const_iterator it = m_extraIdx.find(name);
+        if (it == m_extraIdx.end())
+            continue;
+        const unsigned int bufidx = it->second;
+        std::string dtype(p->GetDataType());
+        if (dtype == "float") {
+            BindBufferFloat_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "vec4") {
+            BindBufferVec4_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "vec3") {
+            BindBufferVec3_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "vec2") {
+            BindBufferVec2_SGL(prg, name.c_str(), bufidx);
+        } else if (dtype == "uint") {
+            BindBufferUint_SGL(prg, name.c_str(), bufidx);
+        }
+    }
+}
+
 //-------------------------------------------------------------------
 
 /**
@@ -144,7 +203,9 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
  */
 bool BaseBuffer::loadShaderSrc(const char* srcname)
 {
-    return CreateProgramSrc_SGL(srcname, m_prog);
+    RenderCore* core = RenderCore::GetInstance();
+    m_prog = 0;
+    return core->CreateProgramSrc(srcname, m_prog);
 }
 
 /// シェーダプログラムを返す.
@@ -160,38 +221,48 @@ unsigned int BaseBuffer::getProgram() const
  */
 const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
 {
-    std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
-    if (it == m_texutecache.end()) {
-        return 0;
+    RenderCore* core = RenderCore::GetInstance();
+    unsigned int tex = 0;
+    bool haveTex = core->GetTexture(buf, tex);
+    if (!haveTex) {
+        fprintf(stderr, "Not Cached texture\n");
     }
-    return it->second;
+    return tex;
 }
 
 /**
  * テクスチャをキャッシュする.
  * @param buf バッファイメージデータ
  */
-bool BaseBuffer::cacheTexture(const BufferImageData *buf)
+bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
-    std::map<const BufferImageData*, unsigned int>::const_iterator it = m_texutecache.find(buf);
-    if (it != m_texutecache.end()) {
-        return true;
-    } else {
-        unsigned int tex;
-        GenTextures_SGL(1, &tex);
+    RenderCore* core = RenderCore::GetInstance();
+    unsigned int tex;
+    bool haveTex = core->GetTexture(buf, tex);
+    if (!haveTex) {
+        core->CreateTexture(buf, tex);
+    }
+    if (buf->IsNeedUpdate()) {
+        buf->updated();
         BindTexture2D_SGL(tex);
         
         const BufferImageData::FORMAT fmt = buf->Format();
         
-        assert(fmt == BufferImageData::RGBA8); // TODO: SUPPORT others
+        assert(fmt == BufferImageData::RGBA8 || fmt == BufferImageData::RGBA32F || fmt == BufferImageData::R32F ); // TODO: SUPPORT others
         int component = 4;  // TODO: get size from buf->Format();
         
         // TODO: more format
-        TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer());
-        
-        m_texutecache[buf] = tex; //cache
-        return true;
+        if (fmt == BufferImageData::RGBA8) {
+            TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
+        } else if (fmt == BufferImageData::RGBA32F) {
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
+        } else if (fmt == BufferImageData::R32F) {
+            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
+        } else {
+            assert(0);
+        }        
     }
+    return true;
 }
 
 /**
@@ -201,9 +272,30 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf)
 void BaseBuffer::cacheTextures(const RenderObject* model)
 {
     const RenderObject::TextureMap& tex = model->GetUniformTexture();
+    const RenderObject::FilteringParamMap& filtering = model->GetTextureFiltering();
+    const RenderObject::WrappingParamMap& wrapping = model->GetTextureWrapping();
     RenderObject::TextureMap::const_iterator it, eit = tex.end();
     for (it = tex.begin(); it != eit; ++it) {
-        cacheTexture(it->second);
+        bool filter = true; // default: GL_LINEAR
+        if (filtering.find(it->first) != filtering.end()) {
+            RenderObject::FilteringParamMap::const_iterator itFilter = filtering.find(it->first);
+            filter = itFilter->second;
+        }
+        bool clampToEdgeS = false;
+        bool clampToEdgeT = false;
+        bool clampToEdgeR = false;
+        if (wrapping.find(it->first) != wrapping.end()) {
+            RenderObject::WrappingParamMap::const_iterator itWrapping = wrapping.find(it->first);
+            std::vector<bool> wrappings = itWrapping->second;
+            if (wrappings.size() >= 2) {
+                clampToEdgeS = wrappings[0];
+                clampToEdgeT = wrappings[1];
+            }
+            if (wrappings.size() >= 3) {
+                clampToEdgeR = wrappings[2];
+            }
+        }
+        cacheTexture(it->second, filter, clampToEdgeS, clampToEdgeT);
     }
 }
 

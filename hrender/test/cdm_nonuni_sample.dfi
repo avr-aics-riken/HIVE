@@ -1,0 +1,74 @@
+FileInfo {
+
+  DFIType            = "Non_Uniform_Cartesian"
+  DirectoryPath      = "./output_NonUni"
+  TimeSliceDirectory = "off"
+  Prefix             = "field"
+  FileFormat         = "plot3d"
+  FieldFilenameFormat= "step_rank"
+  GuideCell          = 1
+  DataType           = "Float32"
+  Endian             = "little"
+  NumVariables       = 4
+  Variable[@]{ name  = "u" }
+  Variable[@]{ name  = "v" }
+  Variable[@]{ name  = "w" }
+  Variable[@]{ name  = "P" }
+
+}
+
+FilePath {
+
+  Process = "proc_NonUni.dfi"
+
+}
+
+VisIt {
+
+  PlotGuideCell = "off"
+ResultFormat  =  "FBinary"
+
+}
+
+UnitList {
+
+  Length {
+    Unit       = "NonDimensional"
+    Reference  = 1.000000e+00
+  }
+  Pressure {
+    Unit       = "NonDimensional"
+    Reference  = 0.000000e+00
+    Difference = 0.000000e+00
+  }
+  Velocity {
+    Unit       = "NonDimensional"
+    Reference  = 1.000000e+00
+  }
+
+}
+
+TimeSlice {
+
+  Slice[@] {
+    Step = 10
+    Time = 0.000000e+00
+    MinMax[@] {
+      Min = 0.000000e+00
+      Max = 0.000000e+00
+    }
+    MinMax[@] {
+      Min = 0.000000e+00
+      Max = 0.000000e+00
+    }
+    MinMax[@] {
+      Min = 0.000000e+00
+      Max = 0.000000e+00
+    }
+    MinMax[@] {
+      Min = 0.000000e+00
+      Max = 0.000000e+00
+    }
+  }
+}
+

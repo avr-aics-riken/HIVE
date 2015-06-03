@@ -26,3 +26,6 @@
 [submodule "third_party/TextParser"]
 	path = third_party/TextParser
 	url = git@github.com:avr-aics-riken/TextParser.git
+[submodule "third_party/UDMlib"]
+	path = third_party/UDMlib
+	url = git@github.com:avr-aics-riken/UDMlib.git

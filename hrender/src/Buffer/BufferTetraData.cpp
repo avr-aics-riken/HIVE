@@ -74,13 +74,13 @@ public:
 };
 
 /// constructor
-BufferTetraData::BufferTetraData()
+BufferTetraData::BufferTetraData() : BufferData(TYPE_TETRA)
 {
     m_imp = new BufferTetraData::Impl();
 }
 
 /// constructor
-BufferTetraData::BufferTetraData(BufferTetraData* inst)
+BufferTetraData::BufferTetraData(BufferTetraData* inst) : BufferData(TYPE_TETRA)
 {
     m_imp = new BufferTetraData::Impl(inst);
 }

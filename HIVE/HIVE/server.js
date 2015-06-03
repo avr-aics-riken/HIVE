@@ -1,12 +1,14 @@
-/*jslint devel:true*/
+/*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
 var	HRENDER = '../hrender',
 	HRENDER_ARG = ['hrender_server.lua'],
+	HRENDER_THUMBNAIL_ARG = ['hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = './root/',
 	port = process.argv.length > 2 ? process.argv[2] : 8080,
 	http = require('http'),
 	metabin = require('./lib/metabinary'),
+	path = require('path'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
 	seserver = http.createServer(function (req, res) {
@@ -110,6 +112,111 @@ function requestShaderList(msg_id) {
 	}));
 }
 
+function saveScene(filepath, data, msg_id) {
+	'use strict';
+	var jsonstr;
+	try {
+		jsonstr = JSON.stringify(data, function (key, val) { return val; }, "    ");
+		fs.writeFileSync(filepath, jsonstr);
+		console.log("saved:" + filepath);
+	} catch (e) {
+		console.error('[Error] Failed to save: ' + filepath);
+		sendErrorMessage(clientNode, '[Error] Failed to save: ' + filepath, msg_id);
+		return;
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
+}
+
+function copyResourceFile(filepath) {
+	'use strict';
+	var basedir = path.resolve(__dirname, '.'),
+		hiveCommandFile = path.join(basedir, 'HiveCommand.lua'),
+		dstpath;
+	try {
+		if (fs.existsSync(hiveCommandFile)) {
+			dstpath = path.join(path.dirname(filepath), 'HiveCommand.lua');
+			fs.createReadStream(hiveCommandFile).pipe(fs.createWriteStream(dstpath));
+		}
+	} catch (e) {
+		console.error('[Error] Failed to copy resource file: ' + filepath);
+	}
+}
+
+function exportScene(filepath, data, msg_id) {
+	'use strict';
+	try {
+		fs.writeFileSync(filepath, data);
+		copyResourceFile(filepath);
+		console.log("saved:" + filepath);
+	} catch (e) {
+		console.error('[Error] Failed to export: ' + filepath);
+		sendErrorMessage(clientNode, '[Error] Failed to export: ' + filepath, msg_id);
+		return;
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
+}
+
+function loadScene(filepath, msg_id) {
+	'use strict';
+	var json;
+	try {
+		json = JSON.parse(fs.readFileSync(filepath));
+		console.log("loaded:" + filepath);
+		clientNode.send(JSON.stringify({
+			JSONRPC: "2.0",
+			result: JSON.stringify(json),
+			id: msg_id
+		}));
+	} catch (e) {
+		console.error('[Error] Failed to load: ' + filepath);
+		sendErrorMessage(clientNode, '[Error] Failed to load: ' + filepath, msg_id);
+		return;
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
+}
+
+function copyShaderFile(filepath, srcFileNames, msg_id) {
+	'use strict';
+	var basedir = path.resolve(__dirname, '.'),
+		fileNames,
+		srcpath,
+		dstpath,
+		i;
+	try {
+		fileNames = srcFileNames;
+		for (i = 0; i < fileNames.length; i = i + 1) {
+			srcpath = path.join(basedir, fileNames[i]);
+			dstpath = path.join(path.dirname(filepath), path.basename(fileNames[i]));
+			if (fs.existsSync(srcpath)) {
+				if (!fs.existsSync(dstpath)) {
+					fs.createReadStream(srcpath).pipe(fs.createWriteStream(dstpath));
+				}
+			}
+		}
+	} catch (e) {
+		console.error('[Error] Failed to copy shader: ' + srcFileNames);
+		sendErrorMessage(clientNode, '[Error] Failed to copy shader: ' + srcFileNames, msg_id);
+		return;
+	}
+	clientNode.send(JSON.stringify({
+		JSONRPC: "2.0",
+		result: "{}",
+		id: msg_id
+	}));
+}
+
 ws.on('request', function (request) {
 	"use strict";
 	var connection = request.accept(null, request.origin),
@@ -140,6 +247,14 @@ ws.on('request', function (request) {
 			requestFileList(param.path, msg_id);
 		} else if (method === 'requestShaderList') {
 			requestShaderList(msg_id);
+		} else if (method === 'saveScene') {
+			saveScene(param.path, param.data, msg_id);
+		} else if (method === 'exportScene') {
+			exportScene(param.path, param.data, msg_id);
+		} else if (method === 'loadScene') {
+			loadScene(param.path, msg_id);
+		} else if (method === 'copyShaderFile') {
+			copyShaderFile(param.path, param.data, msg_id);
 		} else {
 			console.error('Error: Unknow method');
 		}
@@ -254,6 +369,79 @@ ws.on('request', function (request) {
 		}
 	});
 });
+
+function captureThumbnail() {
+	'use strict';
+	var shaderdir = path.resolve(__dirname, './shader'),
+		files,
+		thumbnailCount = 0,
+		captureCount = 0,
+		i,
+		iterateFrags = function (index, callback) {
+			var outdir = path.resolve(__dirname, './root/shader'),
+				fullpath,
+				filename,
+				outpath,
+				jsonpath,
+				json;
+
+			if (files.hasOwnProperty(index)) {
+				fullpath = path.join(shaderdir, files[index]);
+				if (path.extname(fullpath) === ".frag") {
+					captureCount = captureCount + 1;
+					console.log("[CaptureThumbnail]  " + captureCount + "/" + thumbnailCount);
+					filename = path.basename(fullpath, path.extname(fullpath));
+					outpath = path.join(outdir, path.basename(fullpath, path.extname(fullpath)) + '.jpg');
+					jsonpath = path.join(path.dirname(fullpath), filename + '.json');
+					json = fs.readFileSync(jsonpath);
+					if (!fs.existsSync(outpath)) {
+						callback(index, fullpath, outpath, json);
+					} else {
+						iterateFrags(index + 1, callback);
+					}
+				} else {
+					iterateFrags(index + 1, callback);
+				}
+			}
+		},
+		executeFunc = function (index, fragpath, outpath, json) {
+			var process = spawn(HRENDER, [HRENDER_THUMBNAIL_ARG, fragpath, outpath, json]);
+			
+			console.log("fragpath:" + fragpath);
+			console.log("outpath:" + outpath);
+			
+			process.stdout.on('data', function (data) {
+				console.log('stdout: ' + data);
+			});
+			process.stderr.on('data', function (data) {
+				console.error('stderr: ' + data);
+			});
+			process.on('exit', function (code) {
+				console.log('exit code: ' + code);
+				iterateFrags(index + 1, executeFunc);
+			});
+			process.on('error', function (err) {
+				console.log('process error', err);
+			});
+		};
+	
+	try {
+		files = fs.readdirSync(shaderdir);
+		// search valid frags for progress
+		for (i in files) {
+			if (files.hasOwnProperty(i)) {
+				if (path.extname(path.join(shaderdir, files[i])) === ".frag") {
+					thumbnailCount = thumbnailCount + 1;
+				}
+			}
+		}
+		console.log("captureThumbnail");
+		iterateFrags(0, executeFunc);
+	} catch (e) {
+		console.log('process error', e);
+	}
+}
+captureThumbnail();
 
 function startupHRenderServer() {
 	'use strict';

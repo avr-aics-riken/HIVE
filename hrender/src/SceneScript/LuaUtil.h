@@ -325,6 +325,7 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 #define LUA_SCRIPTCLASS_END() \
 		lua_setfield(L,-2,"__index"); \
 		LUA_CLASS_REGISTER_DESTRUCTOR(L); \
+        lua_pop(L, 1); \
 		return 1; \
 	}\
 
@@ -389,6 +390,17 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 		return LUAPUSH<RET>(L,thisptr->FUNCNAME(arg1,arg2,arg3,arg4,arg5)); \
 	INTERNAL_LUA_SCRIPTCLASS_METHOD_END(RET,FUNCNAME)
 
+#define LUA_SCRIPTCLASS_METHOD_ARG6(RET,FUNCNAME,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6) \
+	INTERNAL_LUA_SCRIPTCLASS_METHOD_BEGIN(RET,FUNCNAME) \
+		ARG1 arg1 = LUACAST<ARG1>(L, 2); \
+		ARG2 arg2 = LUACAST<ARG2>(L, 3); \
+		ARG3 arg3 = LUACAST<ARG3>(L, 4); \
+		ARG4 arg4 = LUACAST<ARG4>(L, 5); \
+		ARG5 arg5 = LUACAST<ARG5>(L, 6); \
+		ARG6 arg6 = LUACAST<ARG6>(L, 7); \
+		return LUAPUSH<RET>(L,thisptr->FUNCNAME(arg1,arg2,arg3,arg4,arg5,arg6)); \
+	INTERNAL_LUA_SCRIPTCLASS_METHOD_END(RET,FUNCNAME)
+
 #define LUA_SCRIPTCLASS_METHOD_ARG10(RET,FUNCNAME,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,ARG9,ARG10) \
 	INTERNAL_LUA_SCRIPTCLASS_METHOD_BEGIN(RET,FUNCNAME) \
 		ARG1 arg1  = LUACAST<ARG1>(L, 2); \
@@ -413,6 +425,7 @@ class LuaTable
 {
 public:
     enum VALUE_TYPE {
+        TYPE_INVALID,
         TYPE_NUMBER,
         TYPE_STRING,
         TYPE_ARRAY,
@@ -451,7 +464,33 @@ public:
     
     // from Lua stack
     LuaTable(lua_State* L, int stacki) {
-        m_type = TYPE_ARRAY;
+        if (lua_isnumber(L, stacki)) {
+            m_type = TYPE_NUMBER;
+            m_number = lua_tonumber(L, stacki);
+        } else if (lua_isstring(L, stacki)) {
+            m_type = TYPE_STRING;
+            m_string = std::string(lua_tostring(L, stacki));
+        } else if (lua_istable(L, stacki)) {
+            lua_pushnil(L); // first nil
+            while (lua_next(L, stacki) != 0) {
+                if(lua_isnumber(L, -1)){
+                    LuaTable val(L, -1);
+                    if (val.GetType() != TYPE_INVALID) {
+                        if (lua_isnumber(L, -2)) {
+                            m_type = TYPE_ARRAY;
+                            this->push(val);
+                        } else if (lua_isstring(L, -2)) {
+                            m_type = TYPE_MAP;
+                            const char* s = lua_tostring(L, -2);
+                            this->map(s, val);
+                        }
+                    }
+                }
+                lua_pop(L, 1);
+            }
+        } else {
+            m_type = TYPE_INVALID;
+        }
     }
 
     //---------------------------------

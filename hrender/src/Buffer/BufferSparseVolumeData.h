@@ -6,6 +6,7 @@
 #define _BUFFERSPARSEVOLUMEDATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 #include <vector>
 
 class BufferVolumeData;
@@ -13,7 +14,7 @@ class BufferVolumeData;
 /**
  * BufferSparseVolumeDataクラス
  */
-class BufferSparseVolumeData : public RefCount
+class BufferSparseVolumeData : public BufferData
 {
 private:
     class Impl;
@@ -33,12 +34,12 @@ public:
                    BufferVolumeData* vol);
     void Clear();
     void print();
-    int Width() ;
-    int Height();
-    int Depth() ;
-    int Component();
-    const std::vector<VolumeBlock>& Buffers() const;
-    std::vector<VolumeBlock>& Buffers();
+    const int Width() const;
+    const int Height() const;
+    const int Depth() const;
+    const int Component() const;
+    const std::vector<VolumeBlock>& VolumeBlocks() const;
+    std::vector<VolumeBlock>& VolumeBlocks();
 
     // Fetch voxel data. `ret` pointer must have enough storage space to store voxel data,
     // larger than # of compoents in this volume data.

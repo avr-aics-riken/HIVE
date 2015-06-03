@@ -1,0 +1,34 @@
+-- Tetra
+print('Render UDM')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_udm_tetra.jpg')
+
+camera:LookAt(
+	600,600,600,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local udm = UDMLoader()
+-- Specify .dfi file
+udm:Load('torus.tetra/index.dfi')
+
+local model = TetraModel()
+local tetradata = udm:TetraData()
+model:Create(tetradata)
+model:SetShader('white.frag')
+
+-- local analy = PolygonAnalyzer()
+-- analy:Execute(model)
+-- print(analy:MinX())
+-- print(analy:MaxX())
+-- print(analy:MinY())
+-- print(analy:MaxY())
+-- print(analy:MinZ())
+-- print(analy:MaxZ())
+
+render {camera, model}

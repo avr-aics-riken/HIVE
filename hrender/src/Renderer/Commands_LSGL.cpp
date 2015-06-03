@@ -21,9 +21,11 @@
  * @param h 高さ
  * @param framebuffer フレームバッファ
  * @param colorRenderbuffer カラーレンダーバッファ
+ * @param colorbit 色ビット
  * @param despthRenderBuffer デプスレンダーバッファ
+ * @param depthbit 深度ビット
  */
-void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer)
+void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glGenFramebuffers(1, &framebuffer);
@@ -32,13 +34,27 @@ void CreateBuffer_SGL(int w, int h, unsigned int& framebuffer, unsigned int& col
 	// create color renderbuffer and attach
 	sgl.glGenRenderbuffers(1, &colorRenderbuffer);
 	sgl.glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-	sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, w, h);
+    if (colorbit == 8) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, w, h);
+    } else if (colorbit == 32) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA32F_EXT, w, h);
+    } else {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8_OES, w, h);
+        fprintf(stderr, "Error: Invalid color buffer format [colorbit = %d]\n use 8 or 32\n", colorbit);
+    }
 	sgl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
 	
 	// create depth renderbuffer and attach
 	sgl.glGenRenderbuffers(1, &depthRenderbuffer);
 	sgl.glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
+    if (depthbit == 16) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+    } else if (depthbit == 32) {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
+    } else {
+        sgl.glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32_OES, w, h);
+        fprintf(stderr, "Error: Invalid depth buffer format [depthbit = %d]\n use 16 or 32\n", depthbit);
+    }
 	sgl.glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
 	
 	sgl.glViewport(0, 0, w, h);
@@ -78,19 +94,26 @@ void Clear_SGL(float red, float green, float blue, float alpha)
  * @param w 幅
  * @param h 高さ
  * @param imgbuf 結果を格納するバッファ
+ * @param colorbit 色ビット
  */
-void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf)
+void GetColorBuffer_SGL(int w, int h, unsigned char* imgbuf, int colorbit)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glFinish();
-	sgl.glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
+    if (colorbit == 8) {
+        sgl.glReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
+    } else if (colorbit == 32) {
+        sgl.glReadPixels(0, 0, w, h, GL_RGBA, GL_FLOAT, imgbuf);
+    } else {
+        fprintf(stderr, "Error: Invalid color buffer format [colorbit = %d]\n use 8 or 32\n", colorbit);
+    }
 }
 
 /**
  * SGLデプスバッファ値取得.
  * @param w 幅
  * @param h 高さ
- * @param imgbuf 結果を格納するバッファ
+ * @param depthbuf 結果を格納するバッファ
  */
 
 void GetDepthBuffer_SGL(int w, int h, float* depthbuf)
@@ -98,6 +121,39 @@ void GetDepthBuffer_SGL(int w, int h, float* depthbuf)
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	sgl.glReadPixels(0, 0, w, h, GL_DEPTH_COMPONENT, GL_FLOAT, depthbuf);
 }
+
+
+void CreateFloatBuffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * num, buffer, GL_STATIC_DRAW);
+}
+void CreateUintBuffer_SGL(unsigned int num, unsigned int* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec4Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec3Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec2Buffer_SGL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.glGenBuffers(1, &buf_id);
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, buf_id);
+    sgl.glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * num, buffer, GL_STATIC_DRAW);
+}
+
 
 /**
  * SGLバッファの作成
@@ -478,6 +534,47 @@ private:
     char* buf;
 };
 
+namespace {
+
+    void printShaderInfoLog(GLuint shader)
+    {
+        int bufSize = 0;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH , &bufSize);
+        if (bufSize > 1) {
+            char* infoLog;
+            infoLog = new char[bufSize];
+            if (infoLog != NULL) {
+                int length;
+                glGetShaderInfoLog(shader, bufSize, &length, infoLog);
+                fprintf(stderr, "InfoLog:\n%s\n", infoLog);
+                delete [] infoLog;
+            } else {
+                fprintf(stderr, "Could not allocate InfoLog buffer.");
+            }
+        }
+    }
+
+    void printProgramInfoLog(GLuint program)
+    {
+        int bufSize;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH , &bufSize);
+        if (bufSize > 1) {
+            char *infoLog;
+            infoLog = new char[bufSize];
+            if (infoLog != NULL) {
+                int length;
+                glGetProgramInfoLog(program, bufSize, &length, infoLog);
+                fprintf(stderr, "InfoLog:\n%s\n", infoLog);
+                delete [] infoLog;
+            } else {
+                fprintf(stderr, "Could not allocate InfoLog buffer.");
+            }
+        }
+    }
+
+}
+
+
 /**
  * シェーダプログラムの作成.
  * @param srcname ソースファイルパス.
@@ -485,6 +582,8 @@ private:
  */
 bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 {
+    printf("CreateProgramSrc\n");
+
 	//static GLchar srcbuf[16384];
     stringbuf srcbuf;
 	FILE *fp = fopen(srcname, "rb");
@@ -516,6 +615,7 @@ bool CreateProgramSrc_SGL(const char* srcname, unsigned int& prg)
 	//assert(val == GL_TRUE && "failed to compile shader");
 	if (val!=GL_TRUE) {
 		fprintf(stderr, "Error: failed to compile shader [%s]\n", srcname);
+        printShaderInfoLog(fragShader);
 		return false;
 	}
 	
@@ -582,6 +682,63 @@ bool DeleteProgram_SGL(unsigned int prg)
 	sgl.glDeleteProgram(prg);
 	return true;
 }
+
+void BindBufferFloat_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferUint_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec4_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec3_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec2_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, bufidx);
+        sgl.glVertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+        sgl.glEnableVertexAttribArray(attr);
+    }
+}
+
 
 /**
  * バッファのバインド.
@@ -785,7 +942,7 @@ void ActiveTexture_SGL(unsigned int n)
  * @param component 種類
  * @param pixeldata ピクセルデータ
  */
-void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata)
+void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -795,9 +952,59 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
 	else {
 		assert(0);
 	}
-	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	sgl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixeldata);
+    sgl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixeldata);
+
+    if (filter) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+}
+
+/**
+ * Float テクスチャの生成
+ * @param width 幅
+ * @param height 高さ
+ * @param component 種類
+ * @param pixeldata ピクセルデータ
+ */
+void TexImage2DFloat_SGL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint format = GL_LUMINANCE;
+	if      (component == 3) format = GL_RGB;
+	else if (component == 4) format = GL_RGBA;
+	else if (component == 1) format = GL_LUMINANCE;
+	else {
+		assert(0);
+	}
+    sgl.glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_FLOAT, pixeldata);
+    if (filter) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
 }
 
 /**
@@ -808,7 +1015,7 @@ void TexImage2D_SGL(unsigned int width, unsigned int height, unsigned int compon
  * @param component 種類
  * @param volumedata ボリュームデータ
  */
-void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata)
+void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -822,6 +1029,68 @@ void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int
 		assert(0);
 	}
 	sgl.lsglTexImage3DPointer(GL_TEXTURE_3D, 0, format, width, height, depth, 0, format, GL_FLOAT, volumedata);
+
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeR) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+}
+
+/**
+ * Sparse 3Dテクスチャの生成
+ * @param width 幅
+ * @param height 高さ
+ * @param depth 深度
+ * @param component 種類
+ * @param volumedata ボリュームデータ
+ */
+void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint format = GL_LUMINANCE;
+	if (component == 4) {
+		format = GL_RGBA; 
+	} else if (component == 3) {
+		format = GL_RGB; // as vector
+	} else if (component == 1){
+		format = GL_LUMINANCE;
+	} else {
+		assert(0);
+	}
+	sgl.lsglTexPageCommitment(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, width, height, depth, GL_TRUE);
+	sgl.lsglTexSubImage3DPointer(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, width, height, depth, format, GL_FLOAT, volumedata);
+
+	// @fixme { Setting TexParameter is only required to set once, not everytime. }
+    if (clampToEdgeS) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeT) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+
+    if (clampToEdgeR) {
+        sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    }
+}
+
+void TexCoordRemap3D_SGL(int axis, int n, const float* values)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	if (axis == 0) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_X, n, values);
+	} else if (axis == 1) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_Y, n, values);
+	} else if (axis == 2) {
+		sgl.lsglTexCoordRemap(GL_TEXTURE_3D, GL_COORDINATE_Z, n, values);
+	}
 }
 
 /**

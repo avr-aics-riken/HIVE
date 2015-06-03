@@ -18,7 +18,7 @@ inline double GetTimeCount()
 	//ULONGLONG tm = GetTickCount64();// upper Vista
 	static MMRESULT r = timeBeginPeriod(1); // run once.
 	const DWORD tm = timeGetTime();
-	return static_cast<f64>(tm) * 1e-3;
+	return static_cast<double>(tm)* 1e-3;
 }
 
 #else // other OS

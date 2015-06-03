@@ -88,6 +88,8 @@ bool PolygonBuffer::Create(const PolygonModel* model)
                    inum, mesh->Index()->GetBuffer(),
                    m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     
+    createExtraBuffers(m_model);
+    
     cacheTextures(model);
     return r;
 }
@@ -98,7 +100,7 @@ bool PolygonBuffer::Create(const PolygonModel* model)
 void PolygonBuffer::Render() const
 {
     if (!m_model) {
-        fprintf(stderr,"[Error] Not setpolygonmodel\n");
+        fprintf(stderr,"[Error] Not set polygonmodel\n");
     }
     
     if (m_vertex_num == 0) {
@@ -108,11 +110,18 @@ void PolygonBuffer::Render() const
     
     bindUniforms(m_model);
     
+    bindExtraBuffers(m_model);
+    
     BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     if (m_index_id)
         DrawElements_SGL(m_index_num);
     else
         DrawArrays_SGL(m_vertex_num);
+}
+
+void PolygonBuffer::Update()
+{
+    cacheTextures(m_model);
 }
 
 

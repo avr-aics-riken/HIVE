@@ -37,6 +37,9 @@ var FileDialog = (function () {
 	FileDialog.prototype.SaveFile = function (exttype, dirListCallback, callback) {
 		this.Show("Save", exttype, dirListCallback, callback);
 	};
+	FileDialog.prototype.ExportSceneFile = function (exttype, dirListCallback, callback) {
+		this.Show("Export", exttype, dirListCallback, callback);
+	};
 
 	FileDialog.prototype.Show = function (mode, exttype, dirListCallback, callback) {
 		var htmlpath = "filedlg.html",
@@ -148,6 +151,9 @@ var FileDialog = (function () {
 				} else if (mode.toLowerCase() === "save") {
 					self.dir_only = false;
 					btnname.innerHTML = "Save";
+				} else if (mode.toLowerCase() === "export") {
+					self.dir_only = false;
+					btnname.innerHTML = "Export";
 				} else if (mode.toLowerCase() === "opendir") {
 					self.dir_only = true;
 					btnname.innerHTML = "Open";

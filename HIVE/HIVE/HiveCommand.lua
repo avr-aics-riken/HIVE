@@ -5,6 +5,7 @@ local function getObjectList()
 		print(i, v)
 		local robj = v
 		local info = {}
+		info.filename  = HIVE_DataTable[i]
 		info.translate = robj:GetTranslate()
 		info.rotate    = robj:GetRotate()
 		info.scale     = robj:GetScale()
@@ -12,6 +13,7 @@ local function getObjectList()
 		info.vec3      = robj:GetVec3Table()
 		info.vec2      = robj:GetVec2Table()
 		info.float     = robj:GetFloatTable()
+		info.rgbatex   = robj:GetTextureTable();
 		if robj:GetType() == 'CAMERA' then
 			info.position = robj:GetPosition()
 			info.target = robj:GetTarget()
@@ -28,13 +30,27 @@ local function getObjectList()
 	return lst
 end
 
+local function getObjectTimeline()
+	return HIVE_ObjectTimeline
+end
+
+local function StoreObjectTimeline(timeline_json)
+	local timeline = JSON.decode(timeline_json)
+	HIVE_ObjectTimeline = timeline
+end
+
 local function updateInfo()
+	if not network then
+		return
+	end
 	local objlst = getObjectList()
+	local objtimeline = getObjectTimeline()
 	local data = {
 		JSONRPC = "2.0",
 		method  = "updateInfo",
 		param   = {
 			objectlist = objlst,
+			objecttimeline = objtimeline
 		},
 		to = "client",
 		id = 0
@@ -50,6 +66,7 @@ end
 
 local function ClearObjects()
 	HIVE_ObjectTable = {}
+	HIVE_ObjectTimeline = {}
 	clearCache()
 	collectgarbage('collect')
 	print('MEMORY=', collectgarbage('count') .. '[KB]')
@@ -65,7 +82,7 @@ local function CreateCamera(name)
 		0,1,0,
 		60
 	)
-	camera:SetFilename('output.jpg')
+	camera:SetFilename(name .. '.jpg')
 	HIVE_ObjectTable[name] = camera
 	updateInfo()
 	return 'CreateCamera:' .. name
@@ -90,7 +107,7 @@ local function CameraPos(name, camerapos_x, camerapos_y, camerapos_z)
 	)
 end
 
-local function CameraLookat(name, pos_x, pos_y, pos_z, tar_x, tar_y, ctar_z, up_x, up_y, up_z, fov)
+local function CameraLookat(name, pos_x, pos_y, pos_z, tar_x, tar_y, tar_z, up_x, up_y, up_z, fov)
 	local camera = HIVE_ObjectTable[name]
 	if camera == nil then return 'Not found camera' end
 	camera:LookAt(
@@ -122,6 +139,24 @@ local function CameraOutputFilename(name, filename)
 	return 'SetFilename:' .. name
 end
 
+local function GetVolumeAnalyzerData(name, min, max)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	local analyzer = VolumeAnalyzer()
+	analyzer:Execute(model)
+	local histgram;
+	local volMin = analyzer:MinX()
+	local volMax = analyzer:MaxX()
+	histgram = analyzer:GetHistgram();
+	--else
+	--	histgram = analyzer:GetHistgramInRange(model, min, max);
+	--end
+	if min == nil or max == nil then
+		return {name=name, defaultMin=volMin, defaultMax=volMax, min=volMin, max=volMax, histgram=histgram}
+	else
+		return {name=name, defaultMin=volMin, defaultMax=volMax, min=min, max=max, histgram=histgram}
+	end
+end
 
 local function SetModelShader(name, shaderpath)
 	local model = HIVE_ObjectTable[name]
@@ -136,13 +171,51 @@ local function SetModelTranslation(name, trans_x, trans_y, trans_z, rot_x, rot_y
 	model:SetTranslate(trans_x, trans_y, trans_z)
 	model:SetRotate(rot_x, rot_y, rot_z)
 	model:SetScale(scale_x, scale_y, scale_z)
-	return 'SetModelTranslation:' .. name 
+	return 'SetModelTranslation:' .. name
 end
+
+local function SetModelUniformVec4(name, vname, x, y, z, w)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetVec4(vname, x, y, z, w)
+	return 'SetModelUniformVec4:' .. name
+end
+local function SetModelUniformVec3(name, vname, x, y, z)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetVec3(vname, x, y, z)
+	return 'SetModelUniformVec3:' .. name
+end
+local function SetModelUniformVec2(name, vname, x, y)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetVec2(vname, x, y)
+	return 'SetModelUniformVec2:' .. name
+end
+local function SetModelUniformFloat(name, vname, val)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	model:SetFloat(vname, val)
+	return 'SetModelUniformFloat:' .. name
+end
+
+local function SetModelUniformTex(name, vname, width, height, rgba)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+
+	local gentex = GenTexture()
+	gentex:Create2D(rgba, 1, width, height);
+	model:SetTexture(vname, gentex:ImageData())
+	return 'SetModelUniformTex:' .. name
+end
+
 
 local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
 	if obj == nil then return 'Not found object' end
 	HIVE_ObjectTable[name] = nil
+	HIVE_ObjectTimeline[name] = nil
+	HIVE_DataTable[name] = nil
 	updateInfo();
 end
 	
@@ -155,6 +228,7 @@ local function LoadSPH(name, filename, shader)
 	    volumemodel:Create(volume)
 	    volumemodel:SetShader(shader)
 		HIVE_ObjectTable[name] = volumemodel
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
@@ -169,6 +243,7 @@ local function LoadOBJ(name, filename, shader)
 		model:Create(meshdata)
 		model:SetShader(shader)
 		HIVE_ObjectTable[name] = model
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadOBJ:' .. tostring(ret)
@@ -184,6 +259,7 @@ local function LoadSTL(name, filename, shader)
 		model:Create(meshdata)
 		model:SetShader(shader)
 		HIVE_ObjectTable[name] = model
+		HIVE_DataTable[name] = filename
 		updateInfo()
 	end
 	return 'LoadSTL:' .. tostring(ret)
@@ -204,6 +280,8 @@ local function LoadPDB(name, filename, shader)
 	    stickmodel:SetShader(shader)
 		HIVE_ObjectTable[name .. '_ball']  = ballmodel
 		HIVE_ObjectTable[name .. '_stick'] = stickmodel
+		HIVE_DataTable[name .. '_ball'] = filename -- TODO
+		HIVE_DataTable[name .. '_stick'] = filename -- TODO
 		updateInfo()
 	end
 	return 'LoadPDB:' .. tostring(ret)
@@ -258,10 +336,12 @@ local function RenderCamera(w, h, cameraname)
 		"to": "client",
 		"id": 0
 	}]]
-	HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
 	local createtm = os.clock()
-	-- send through websocket
-	network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+	if HIVE_metabin then
+		HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+	-- 	send through websocket
+		network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+	end
 	local sendtm = os.clock()
 	print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 
@@ -276,8 +356,15 @@ return {
 	CreateCamera = CreateCamera,
 	CameraPos = CameraPos,
 	CameraScreenSize = CameraScreenSize,
+	CameraClearColor = CameraClearColor,
+	CameraOutputFilename = CameraOutputFilename,
 	SetModelShader = SetModelShader,
 	SetModelTranslation = SetModelTranslation,
+	SetModelUniformVec4 = SetModelUniformVec4,
+	SetModelUniformVec3 = SetModelUniformVec3,
+	SetModelUniformVec2 = SetModelUniformVec2,
+	SetModelUniformFloat = SetModelUniformFloat,
+	SetModelUniformTex = SetModelUniformTex,
 	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,
@@ -286,4 +373,6 @@ return {
 	UpdateSceneInformation = UpdateSceneInformation,
 	RenderCamera = RenderCamera,
 	CameraLookat = CameraLookat,
+	GetVolumeAnalyzerData = GetVolumeAnalyzerData,
+	StoreObjectTimeline = StoreObjectTimeline
 }

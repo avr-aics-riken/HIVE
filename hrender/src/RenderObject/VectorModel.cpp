@@ -43,9 +43,9 @@ public:
      */
     bool Create(BufferVectorData* vectordata)
     {
-        if (!vectordata) {
-            return false;
-        }
+        if (!vectordata || vectordata->GetType() != BufferData::TYPE_VECTOR) {
+			return false;
+		}
         m_vector = vectordata;
         
         return true;

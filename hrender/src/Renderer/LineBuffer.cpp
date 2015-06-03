@@ -101,6 +101,10 @@ bool LineBuffer::Create(const LineModel* model)
                          m_vtx_id, m_radius_id, m_material_id, m_idx_id);
     }
     
+    createExtraBuffers(m_model);
+    
+    cacheTextures(m_model);
+
     return r;
 }
 
@@ -120,6 +124,8 @@ void LineBuffer::Render() const
 
     bindUniforms(m_model);
     
+    bindExtraBuffers(m_model);
+    
     float w = m_model->GetLineWidth();
     LineWidth_SGL(w);
     
@@ -130,4 +136,8 @@ void LineBuffer::Render() const
         DrawLineElements_SGL(m_indexnum);
 }
 
+void LineBuffer::Update()
+{
+    cacheTextures(m_model);
+}
 

@@ -33,5 +33,5 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(SPHSaver_Lua);
 
-#endif //_SPHLOADER_LUA_H_
+#endif //_SPHSAVER_LUA_H_
 

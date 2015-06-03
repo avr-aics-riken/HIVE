@@ -1,0 +1,28 @@
+local gen  = PrimitiveGenerator()
+local plane = gen:Quad(100, 100)
+
+local pm = PolygonModel();
+pm:Create(plane);
+pm:SetShader("textured.frag");
+
+
+-- load from file
+local loader = ImageLoader()
+local isloaded = loader:Load("testimg.tga")
+print('Texture Load = ' .. tostring(isloaded))
+local img = loader:ImageData()
+
+pm:SetTexture('mytex0', img) -- Bind
+pm:SetTextureFiltering('mytex0', false)
+
+local cam = Camera()
+cam:SetScreenSize(2048, 2048)
+cam:SetFilename("render_with_texture_nofiltering.jpg")
+cam:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+render({cam, pm})

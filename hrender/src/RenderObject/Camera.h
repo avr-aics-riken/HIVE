@@ -30,6 +30,7 @@ public:
     int                GetScreenHeight() const;
     const CameraInfo*  GetCameraInfo() const;
     const std::string& GetOutputFile() const;
+    const std::string& GetDepthOutputFile() const;
     BufferImageData*   GetImageBuffer();
     BufferImageData*   GetDepthBuffer();
 
@@ -47,6 +48,7 @@ protected:
 	~Camera();
 	bool SetScreenSize(unsigned int width, unsigned int height);
 	bool SetFilename(const std::string& outputfile);
+    bool SetDepthFilename(const std::string& outputfile);
     
 	bool LookAt(float eye_x, float eye_y, float eye_z,
 				float tar_x, float tar_y, float tar_z,

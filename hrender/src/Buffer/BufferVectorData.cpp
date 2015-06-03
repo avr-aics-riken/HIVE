@@ -71,13 +71,16 @@ public:
 };
 
 /// constructor
-BufferVectorData::BufferVectorData()
+BufferVectorData::BufferVectorData() : BufferData(TYPE_VECTOR)
 {
     m_imp = new BufferVectorData::Impl();
 }
 
 /// constructor
-BufferVectorData::BufferVectorData(BufferVectorData* inst) : m_imp(new BufferVectorData::Impl(inst)) {}
+BufferVectorData::BufferVectorData(BufferVectorData* inst) : BufferData(TYPE_VECTOR)
+{
+    m_imp = new BufferVectorData::Impl(inst);
+}
 /// destructor
 BufferVectorData::~BufferVectorData()
 {

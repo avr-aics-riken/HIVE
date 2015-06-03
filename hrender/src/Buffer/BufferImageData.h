@@ -6,6 +6,7 @@
 #define _BUFFERIMAGEDATA_H_
 
 #include "Ref.h"
+#include "BufferData.h"
 
 class FloatBuffer;
 class ByteBuffer;
@@ -13,7 +14,7 @@ class ByteBuffer;
 /**
  * BufferImageDataクラス
  */
-class BufferImageData : public RefCount
+class BufferImageData : public BufferData
 {
 private:
     class Impl;

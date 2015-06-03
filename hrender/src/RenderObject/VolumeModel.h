@@ -24,9 +24,14 @@ public:
     VolumeModel();
     ~VolumeModel();
     bool SetShader(const std::string& shaderfile);
+    bool SetClampToEdge(bool s, bool t, bool r);
     bool Create(BufferVolumeData* volume);
     BufferVolumeData* GetVolume() const;
     const std::string& GetShader() const;
+
+    bool GetClampToEdgeS() const;  
+    bool GetClampToEdgeT() const; 
+    bool GetClampToEdgeR() const; 
 
 };
 

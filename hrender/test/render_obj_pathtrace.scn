@@ -1,0 +1,72 @@
+function makeFloor(size, shader)
+	local gen = PrimitiveGenerator()
+	local bottom = PolygonModel()
+	bottom:Create(gen:Quad(size*1.01, size*1.01))
+	bottom:SetRotate   (-90,    0,    0)
+
+	bottom:SetShader(shader);
+	local white = {0.9, 0.9, 0.9, 1.0}
+	bottom:SetVec4('color', white[1], white[2], white[3], white[4]);
+	return bottom
+end
+
+function makeEnvironment(envfile, size, rot)
+	local gen  = PrimitiveGenerator()
+	local env = PointModel()
+	env:Create(gen:Sphere(size))
+	env:SetShader('envsphere.frag');
+
+	if rot then
+		env:SetRotate(0, rot, 0)
+	end
+
+	local loader = ImageLoader()
+	local isloaded = loader:Load(envfile)
+	local img = nil
+	if isloaded then
+		img = loader:ImageData()
+		env:SetTexture('mytex0', img)
+	else
+		print('Failed to load Environment texture:', envfile)
+	end
+	return env, img
+end
+
+---------------------------------------------------------------------------
+
+local floor = makeFloor(100, 'pathtrace.frag')
+floor:SetTranslate(0,-14,0)
+
+local camera = Camera()
+camera:SetScreenSize(256, 256)
+camera:SetFilename('render_obj_pathtrace.exr')
+camera:LookAt(
+	0,0,50,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local env
+local img
+--env, img = makeEnvironment('IMG_2043 Panorama_RAW.hdr', 1000, 90)
+env, img = makeEnvironment('aosky_016_16k.hdr', 1000, 90)
+
+local objloader = OBJLoader()
+local r = objloader:Load('bunny.obj')
+if not r then
+	print('Failed to load bunny.obj');
+end
+
+local gen = PrimitiveGenerator()
+local model = PolygonModel()
+local meshdata = objloader:MeshData()
+model:Create(meshdata)
+model:SetVec4('color', 0.98, 0.98, 0.98, 1.0)
+model:SetScale(0.4,0.4,0.4)
+model:SetShader('pathtrace.frag')
+
+
+render({camera, floor, model, env})
+
+
