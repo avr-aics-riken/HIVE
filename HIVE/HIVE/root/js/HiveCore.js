@@ -33,8 +33,31 @@
 
 		hiveCore.conn.method('updateInfo', (function (core, infoCallback) {
 			return function (param) {
+				var i,
+					k,
+					info,
+					vecParams = [
+						'vec2',
+						'vec3',
+						'vec4',
+						'float',
+						'rgbatex'
+					];
 				core.sceneInfo = param;
 				
+				// change [] to {}
+				if (param.hasOwnProperty('objectlist')) {
+					for (i = 0; i < param.objectlist.length; i = i + 1) {
+						info = param.objectlist[i].info;
+						for (k = 0; k < vecParams.length; k = k + 1) {
+							if (info.hasOwnProperty(vecParams[k])) {
+								if (info[vecParams[k]] instanceof Array) {
+									info[vecParams[k]] = {};
+								}
+							}
+						}
+					}
+				}
 				// find viewCamera
 				var activecam = null,
 					i;
@@ -88,6 +111,7 @@
 			s,
 			prop,
 			val,
+			tx,
 			lerpProps = [
 				"position",
 				"target",
@@ -97,14 +121,20 @@
 				"scale",
 				"rotate",
 				"translate"
+			],
+			vecProps = [
+				"float",
+				"vec2",
+				"vec3",
+				"vec4"
 			];
 		if (!preInfo && !postInfo) {
 			return result;
 		}
 		if (!preInfo) {
-			result = postInfo.info;
+			result = JSON.parse(JSON.stringify(postInfo.info));
 		} else if (!postInfo) {
-			result = preInfo.info;
+			result = JSON.parse(JSON.stringify(preInfo.info));
 		} else {
 			s = (time - preInfo.time) / (postInfo.time - preInfo.time);
 			result = JSON.parse(JSON.stringify(preInfo.info));
@@ -114,8 +144,30 @@
 					val = lerp(preInfo.info[prop], postInfo.info[prop], s);
 					result[prop] = val;
 				}
+				// texture
+				if (preInfo.info.rgbatex) {
+					for (tx in preInfo.info.rgbatex) {
+						if (preInfo.info.rgbatex.hasOwnProperty(tx)) {
+							val = lerp(preInfo.info.rgbatex[tx].rgba, postInfo.info.rgbatex[tx].rgba, s);
+							result.rgbatex[tx].rgba = val;
+						}
+					}
+				}
+			}
+			// vectors
+			for (i = 0; i < vecProps.length; i = i + 1) {
+				prop = vecProps[i];
+				if (preInfo.info.hasOwnProperty(prop)) {
+					for (tx in preInfo.info[prop]) {
+						if (preInfo.info[prop].hasOwnProperty(tx)) {
+							val = lerp(preInfo.info[prop][tx], postInfo.info[prop][tx], s);
+							result[prop][tx] = val;
+						}
+					}
+				}
 			}
 		}
+		
 		return result;
 	}
 	
@@ -231,46 +283,66 @@
 		return this.sceneInfo;
 	};
 	
+	HiveCore.prototype.getVolumeAnalyzerData = function (name, min, max, callback) {
+		var cmd = HiveCommand.getVolumeAnalyzerData(name, min, max);
+		console.log(cmd);
+		runScript(this.conn, cmd, function (err, res) {
+			if (!err) {
+				if (callback) {
+					callback(res);
+				}
+			}
+		});
+	};
+
 	//----------------------------------------------------------------------------------------------
 	// Command creation functions
 	//
-	function createModelUniformCommand(objname, objinfo) {
-		var name,
-			uniforms,
-			src = '';
-		
+	function createModelUniformsFromInfoCommand(objname, objinfo) {
+		var i,
+			name,
+			src = '',
+			uniforms;
+
 		uniforms = objinfo.vec4;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformVec4(objname, name, uniforms[i]);
 			}
 		}
 		uniforms = objinfo.vec3;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformVec3(objname, name, uniforms[i]);
 			}
 		}
 		uniforms = objinfo.vec2;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformVec2(objname, name, uniforms[i]);
 			}
 		}
 		uniforms = objinfo.float;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[name]);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i]);
 			}
 		}
+
 		uniforms = objinfo.rgbatex;
-		for (name in uniforms) {
-			if (uniforms.hasOwnProperty(name)) {
-				src += HiveCommand.setModelUniformTex(objname, name, uniforms[name].width, uniforms[name].height, uniforms[name].rgba);
+		for (i in uniforms) {
+			if (uniforms.hasOwnProperty(i)) {
+				name = i;
+				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 			}
 		}
 		return src;
 	}
+
 	
 	function createSceneRenderCommandHeader() {
 		var header = "package.path = './?.lua;' .. package.path \n"
@@ -281,11 +353,55 @@
 				+ "function HIVE_fetchEvent(progress) \n"
 				+ "    return true \n"
 				+ "end \n"
-				+ "hcmd = require('HiveCommand') \n";
+				+ "hcmd = require('HiveCommand'); \n";
 		return header;
 	}
 	
-	function createSceneCommand(sceneInfo, isExport) {
+	function createUpdateTimeCommand(time, obj, timeline) {
+		var objname = obj.name,
+			objtype = obj.type,
+			tinfo = timeline,
+			infoptr = null,
+			preInfo = null,
+			postInfo = null,
+			j,
+			m,
+			cmd = '',
+			r,
+			g,
+			b,
+			a;
+		
+		if (tinfo !== undefined) {
+			m = tinfo.length;
+			for (j = 0; j < m; j = j + 1) {
+				if (tinfo[j].time < time) {
+					preInfo = tinfo[j];
+				} else {
+					postInfo = tinfo[j];
+					break;
+				}
+			}
+			//console.log("pre", this.sceneInfo.objectlist[i]);
+			//console.log("post", postInfo);
+			infoptr = lerpInfo(preInfo, postInfo, time);
+			if (infoptr) {
+				cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
+				cmd = cmd + HiveCommand.setModelTranslation(obj.name, infoptr.translate, infoptr.rotate, infoptr.scale) + "\n";
+				if (objtype === "CAMERA") {
+					r = Math.min(1.0, infoptr.clearcolor[0]);
+					g = Math.min(1.0, infoptr.clearcolor[1]);
+					b = Math.min(1.0, infoptr.clearcolor[2]);
+					a = Math.min(1.0, infoptr.clearcolor[1]);
+					cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+					cmd = cmd + HiveCommand.cameraLookat(obj.name, infoptr.position, infoptr.target, infoptr.up, infoptr.fov) + "\n";
+				}
+			}
+		}
+		return cmd;
+	}
+	
+	function createSceneCommand(sceneInfo, isExport, includeHeader, time, frameIndex) {
 		var cmd,
 			i,
 			r,
@@ -298,7 +414,10 @@
 			hasProp = function (target, prop) {
 				return target.hasOwnProperty(prop);
 			},
-			modelCount = 0;
+			modelCount = 0,
+			ext,
+			fileName,
+			shaderName;
 		
 		if (!sceneInfo) {
 			return;
@@ -306,10 +425,13 @@
 		if (!sceneInfo.objectlist) {
 			return;
 		}
-		if (isExport) {
-			cmd = createSceneRenderCommandHeader() + HiveCommand.newScene() + "\n";
+		if (includeHeader) {
+			cmd = createSceneRenderCommandHeader();
+			cmd = cmd + '(function ()' + "\n";
+			cmd = cmd + HiveCommand.newScene() + "\n";
 		} else {
-			cmd = HiveCommand.newScene() + "\n";
+			cmd = '(function ()' + "\n";
+			cmd = cmd + HiveCommand.newScene() + "\n";
 		}
 		
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -343,22 +465,34 @@
 			obj = sceneInfo.objectlist[i];
 			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
 				if (obj.type !== 'CAMERA') {
-					if (hasProp(obj.info, 'filename')) {
-						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, obj.info.shader) + "\n";
+					if (hasProp(obj.info, 'filename') && hasProp(obj.info, 'shader')) {
+						if (isExport) {
+							shaderName = obj.info.shader.split('./shader/').join('');
+						} else {
+							shaderName = obj.info.shader;
+						}
+						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, shaderName) + "\n";
 						modelCount = modelCount + 1;
 						if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
 							cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
 						}
-						if (hasProp(obj.info, 'shader')) {
-							cmd = cmd + HiveCommand.setModelShader(obj.name, obj.info.shader) + "\n";
-						}
-						cmd = cmd + createModelUniformCommand(obj.name, obj.info);
+						cmd = cmd + HiveCommand.setModelShader(obj.name, shaderName) + "\n";
+						cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
 					}
 				}
 			}
 		}
-		if (!isExport && hasProp(sceneInfo, 'objecttimeline')) {
-			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+		if (hasProp(sceneInfo, 'objecttimeline')) {
+			if (isExport) {
+				for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+					obj = sceneInfo.objectlist[i];
+					if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+						cmd = cmd + createUpdateTimeCommand(time, obj, sceneInfo.objecttimeline[obj.name]);
+					}
+				}
+			} else {
+				cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
+			}
 		}
 		if (isExport) {
 			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -369,14 +503,46 @@
 							cmd = cmd
 								+ HiveCommand.renderCamera(parseInt(obj.info.screensize[0], 10), parseInt(obj.info.screensize[1], 10), obj.name, false) + "\n"
 								+ "local camera = HIVE_ObjectTable['" + obj.name + "'] \n"
-								+ "local imageBuffer = camera:GetImageBuffer() \n"
-								+ "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
+								+ "local imageBuffer = camera:GetImageBuffer() \n";
+							if (frameIndex >= 0) {
+								fileName = obj.info.outputfile.substr(0, obj.info.outputfile.length - 4);
+								ext = obj.info.outputfile.substr(obj.info.outputfile.length - 4);
+								frameIndex = ("0000000" + frameIndex).substr(-6);
+								cmd = cmd + "HIVE_ImageSaver:Save('" + fileName + "_" + frameIndex + ext + "', imageBuffer) \n";
+							} else {
+								cmd = cmd + "HIVE_ImageSaver:Save(camera:GetOutputFile(), imageBuffer) \n";
+							}
 						}
 					}
 				}
 			}
 		}
+		
+		cmd = cmd + 'end)();\n\n';
 		return { command : cmd, modelcount : modelCount };
+	}
+
+	function getShaderNameListFromScene(sceneInfo) {
+		var i,
+			obj,
+			hasProp = function (target, prop) {
+				return target.hasOwnProperty(prop);
+			},
+			shaderNames = [];
+			
+		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+			obj = sceneInfo.objectlist[i];
+			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+				if (obj.type !== 'CAMERA') {
+					if (hasProp(obj.info, 'filename')) {
+						if (shaderNames.indexOf(obj.info.shader) < 0) {
+							shaderNames.push(obj.info.shader);
+						}
+					}
+				}
+			}
+		}
+		return shaderNames;
 	}
 	
 	//----------------------------------------------------------------------------------------------
@@ -401,24 +567,62 @@
 		}
 	};
 	
-	HiveCore.prototype.exportScene = function (filepath) {
+	HiveCore.prototype.exportScene = function (filepath, time) {
 		var cmd = '',
-			jsonstr;
+			jsonstr,
+			i,
+			t,
+			dt,
+			start,
+			end,
+			fps,
+			shaderNameList;
 		if (this.sceneInfo) {
-			cmd = createSceneCommand(this.sceneInfo, true);
-			if (cmd && cmd.command) {
-				console.log("prototype.exportScene");
-				this.conn.masterMethod('exportScene', {path : filepath, data : cmd.command}, function (err, res, id) {
-					if (err) {
-						console.log(err);
+			console.log(time);
+			start = parseFloat(time.start);
+			end = parseFloat(time.end);
+			fps = parseFloat(time.fps);
+			dt = 1.0 / fps;
+			if (start === end) {
+				// export one frame
+				cmd = cmd + createSceneCommand(this.sceneInfo, true, true, start, -1).command;
+			} else {
+				i = 0;
+				for (t = start; t < end; t = t + dt) {
+					if (!cmd) {
+						cmd = cmd + createSceneCommand(this.sceneInfo, true, true, t, i).command;
+					} else {
+						cmd = cmd + createSceneCommand(this.sceneInfo, true, false, t, i).command;
 					}
-				});
+					i = i + 1;
+				}
+			}
+			console.log("exportScene:", cmd);
+			if (cmd) {
+				console.log("prototype.exportScene");
+				this.conn.masterMethod('exportScene', {path : filepath, data : cmd}, (function (self) {
+					return function (err, res, id) {
+						console.log("prototype.exportScene done");
+						if (err) {
+							console.log(err);
+						} else {
+							shaderNameList = getShaderNameListFromScene(self.sceneInfo);
+							console.log("copyShaderFile:" + shaderNameList);
+							self.conn.masterMethod('copyShaderFile', {path : filepath, data : shaderNameList }, function (err, res, id) {
+								console.log("copyShaderFile done");
+								if (err) {
+									console.log(err);
+								}
+							});
+						}
+					};
+				}(this)));
 			}
 		}
 	};
 	
 	HiveCore.prototype.reloadScene = function (callback) {
-		var cmd = createSceneCommand(this.sceneInfo, false);
+		var cmd = createSceneCommand(this.sceneInfo, false, false, null);
 		if (cmd && cmd.command) {
 			this.modelCount = cmd.modelcount;
 			
@@ -595,15 +799,22 @@
 				obj.info.float[name] = uniforms[i].val;
 				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i].val);
 			} else if (uniforms[i].uniform === 'rgbatex') {
-				obj.info.rgbatex[name] = {width: uniforms[i].width, height: uniforms[i].height, rgba: uniforms[i].rgba};
+				
 				if (uniforms[i].rgba.length === 0) {
-					// Generate RGBA (TEST)
+					// Generate RGBA
 					uniforms[i].rgba = [256];
 					for (j = 0; j < 256; j = j + 1) {
-						uniforms[i].rgba[j] = j;
+						uniforms[i].rgba[4*j]   = j;
+						uniforms[i].rgba[4*j+1] = parseInt(256 * 0.8);
+						uniforms[i].rgba[4*j+2] = 256 - j;
+						uniforms[i].rgba[4*j+3] = 255;
 					}
 				}
-				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
+				obj.info.rgbatex[name] = {width: uniforms[i].width, height: uniforms[i].height, rgba: uniforms[i].rgba};
+				
+				if (uniforms[i].rgba.length > 0) {
+					src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
+				}
 			}
 			
 		}
@@ -667,7 +878,7 @@
 		for (i in uniforms) {
 			if (uniforms.hasOwnProperty(i)) {
 				name = i;
-				obj.info.float[name] = uniforms[i];
+				obj.info.rgbatex[name] = uniforms[i];
 				src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 			}
 		}
@@ -937,7 +1148,7 @@
 		red = Math.min(1.0, red);
 		green = Math.min(1.0, green);
 		blue  = Math.min(1.0, blue);
-		alpha = Math.min(1.0, green);
+		alpha = Math.min(1.0, alpha);
 		obj.info.clearcolor[0] = red;
 		obj.info.clearcolor[1] = green;
 		obj.info.clearcolor[2] = blue;
@@ -1052,6 +1263,28 @@
 		this.storeObjectTimeline();
 	};
 	
+	HiveCore.prototype.deleteKey = function (objname, tm) {
+		var obj = this.findObject(objname),
+			tinfo,
+			i,
+			key;
+		
+		tinfo = this.sceneInfo.objecttimeline[objname];
+		if (tinfo === undefined) {
+			return;
+		}
+		for (i = 0; i < tinfo.length; i = i + 1) {
+			key = tinfo[i];
+			console.log(key.time, tm);
+			if (key.time === tm) {
+				tinfo.splice(i, 1);
+				// server store
+				this.storeObjectTimeline();
+				break;
+			}
+		}
+	};
+	
 	HiveCore.prototype.updateTime = function (tm) {
 		if (!this.sceneInfo) { return; }
 		if (!this.sceneInfo.objectlist) { return; }
@@ -1089,7 +1322,7 @@
 					this.setModelUniformsFromInfo(objname, infoptr);
 					this.setModelTranRotScale(objname, infoptr.translate, infoptr.rotate, infoptr.scale);
 					if (objtype === "CAMERA") {
-						this.setClearColor(objname, infoptr.clearcolor[0], infoptr.clearcolor[1], infoptr.clearcolor[2]);
+						this.setClearColor(objname, infoptr.clearcolor[0], infoptr.clearcolor[1], infoptr.clearcolor[2], infoptr.clearcolor[3]);
 					}
 					this.setCameraParameters(objname, infoptr.position, infoptr.target, infoptr.up, infoptr.fov);
 				}

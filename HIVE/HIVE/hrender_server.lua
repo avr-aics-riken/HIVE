@@ -42,8 +42,9 @@ HIVE_ImageSaver = ImageSaver()
 HIVE_metabin = MetaBinary()
 
 
-local defaultCamera = Camera()
+local defaultCamera = Camera() -- 'view'
 defaultCamera:SetScreenSize(256,256)
+defaultCamera:SetFilename('view.jpg')
 defaultCamera:LookAt(0,0,300, 0,0,0, 0,1,0, 60)
 HIVE_ObjectTable = {view=defaultCamera} -- Global: All Object List
 HIVE_ObjectTimeline = {}

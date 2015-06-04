@@ -136,4 +136,8 @@ void LineBuffer::Render() const
         DrawLineElements_SGL(m_indexnum);
 }
 
+void LineBuffer::Update()
+{
+    cacheTextures(m_model);
+}
 

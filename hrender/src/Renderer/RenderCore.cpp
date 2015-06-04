@@ -395,7 +395,7 @@ private:
             return;
         }
         
-        const BaseBuffer* buffer = 0;
+        BaseBuffer* buffer = 0;
         BufferMap::const_iterator it = m_buffers_SGL.find(robj);
         if (it != m_buffers_SGL.end()) {
             buffer = it->second.Get();
@@ -408,7 +408,7 @@ private:
         assert(buffer);
 
         const float res[] = {m_width, m_height};
-
+        buffer->Update();
         buffer->BindProgram();
         buffer->Uniform2fv("resolution", res);
         buffer->Uniform4fv("backgroundColor", &m_clearcolor.x);

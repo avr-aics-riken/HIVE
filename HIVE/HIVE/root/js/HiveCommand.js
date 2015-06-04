@@ -66,7 +66,14 @@
 			src += ')';
 			return src;
 		},
-		
+		getVolumeAnalyzerData : function (objname, min, max) {
+			var src = 'return hcmd.GetVolumeAnalyzerData(';
+			src += '"' + objname + '",';
+			src += min + ',';
+			src += max;
+			src += ')\n';
+			return src;
+		},
 		setModelShader : function (objname, shaderpath) {
 			var src = 'hcmd.SetModelShader(';
 			src += '"' + objname + '",';
@@ -140,7 +147,7 @@
 			src += height + ',';
 			src += '{';
 			for (i = 0; i < height * width * 4; i = i + 1) {
-				src += i + ',';
+				src += rgbaVal[i] + ',';
 			}
 			src += '}';
 			src += ')\n';

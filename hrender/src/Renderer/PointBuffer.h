@@ -28,6 +28,7 @@ public:
     bool Create(const PointModel* point);
     void Render() const;
     void Clear();
+    void Update();
 };
 
 #endif //_POINTBUFFER_H_

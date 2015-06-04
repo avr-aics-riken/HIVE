@@ -517,12 +517,12 @@ KColorPickerClass = function(wrapper){
 				thisptr.pickColorAlpha(x,y);
 			}
 		}}(thisptr));
-		document.body.addEventListener('mouseup', function(thisptr){ return function(e){
+		document.addEventListener('mouseup', function(thisptr){ return function(e){
 			thisptr.mspress = false;
 			thisptr.mspressGrad = false;
 			thisptr.mspressAlpha = false;
 		}}(thisptr));
-		document.body.addEventListener('mousemove', function(thisptr){ return function(e){
+		document.addEventListener('mousemove', function(thisptr){ return function(e){
 			var x = e.clientX - thisptr.wrapper.getBoundingClientRect().left,
 				y = e.clientY - thisptr.wrapper.getBoundingClientRect().top;
 			if (thisptr.mspress){
@@ -564,11 +564,13 @@ KColorPickerClass.prototype = {
 			blue = 1;
 			this.blackWhiteX = 0;
 		} else {
+			/*
 			var n = Math.sqrt(red * red + green * green + blue * blue);
 			this.blackWhiteX = n;
 			red /= n;
 			green /= n;
 			blue /= n;
+			*/
 		}
 		this.circleRGB = [Math.floor(red   * 255),
 						  Math.floor(green * 255),
@@ -704,7 +706,7 @@ KTransferFunctionClass = function(wrapper){
 		
 		thisptr.drawGraph();
 		if (thisptr.changeCallback){
-			thisptr.changeCallback();
+			thisptr.changeCallback(thisptr);
 		}
 	}}(this));
 	
@@ -740,22 +742,28 @@ KTransferFunctionClass = function(wrapper){
 
 	this.minInput = minInput;
 	this.maxInput = maxInput;
-	minInput.addEventListener('keyup', function (thisptr) { return function(e) {
-		if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
+	minInput.addEventListener('change', function (thisptr) { return function(e) {
+		//if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
 			console.log(parseFloat(minInput.value));
 			if (parseFloat(minInput.value) !== NaN) {
 				thisptr.valMin = parseFloat(minInput.value);
 				thisptr.drawGraph();
+				if (thisptr.changeCallback){
+					thisptr.changeCallback(thisptr);
+				}
 			}
-		}
+		//}
 	}}(this));
-	maxInput.addEventListener('keyup', function (thisptr) { return function(e) {
-		if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
+	maxInput.addEventListener('change', function (thisptr) { return function(e) {
+		//if (e.keyCode === 8 || (46 <= e.keyCode && e.keyCode <= 57) || (187 <= e.keyCode && e.keyCode <= 190)) {
 			if (parseFloat(maxInput.value) !== NaN) {
 				thisptr.valMax = parseFloat(maxInput.value);
 				thisptr.drawGraph();
+				if (thisptr.changeCallback){
+					thisptr.changeCallback(thisptr);
+				}
 			}
-		}
+		//}
 	}}(this));
 	
 	
@@ -908,7 +916,7 @@ KTransferFunctionClass = function(wrapper){
 		}
 		for (var i = 0; i < numVals; ++i){
 			//this.ctx.lineTo(i / numVals *  cw, (1.0 - vals[i]) * ch); // MODE NORMAL
-			this.ctx.lineTo((i / numVals  * gscale + goffset) *  cw , ch - this.transFunc(vals[i])*ch); // MODE SQRT
+			this.ctx.lineTo(((i / numVals + goffset)  * gscale) *  cw , ch - this.transFunc(vals[i])*ch); // MODE SQRT
 		}
 		this.ctx.stroke();
 		this.ctx.lineWidth = 1;
@@ -972,12 +980,12 @@ KTransferFunctionClass = function(wrapper){
 		thisptr.oldx = e.clientX - thisptr.wrapper.getBoundingClientRect().left;
 		thisptr.oldy = e.clientY - thisptr.wrapper.getBoundingClientRect().top;
 		thisptr.mspress = true;
-		document.addEventListener('mousemove', thisptr.mouseMoveFunc);
-	}}(this));
-	document.body.addEventListener('mouseup', function(thisptr){ return function(e){
+		document.addEventListener('mousemove', thisptr.mouseMoveFunc, true);
+	}}(this), true);
+	document.addEventListener('mouseup', function(thisptr){ return function(e){
 		thisptr.mspress = false;
 		document.removeEventListener('mousemove', thisptr.mouseMoveFunc);
-	}}(this));
+	}}(this), true);
 	
 	this.drawGraph();
 }
@@ -1048,10 +1056,10 @@ KTransferFunctionClass.prototype = {
 				this.hist[i] = hist[i * componentNum + component];
 			}
 			
-			this.defaultValMin = result.min[component];
-			this.defaultValMax = result.max[component];
-			this.valMin = this.defaultValMin
-			this.valMax = this.defaultValMax;
+			this.defaultValMin = result.defaultValMin;
+			this.defaultValMax = result.defaultValMax;
+			this.valMin = result.min[component];
+			this.valMax = result.max[component];
 		}
 	}
 }
@@ -1148,7 +1156,7 @@ KSliderClass = function(wrapper){
 		self.mspress = true;
 		document.addEventListener('mousemove', self.mouseMoveFunc);
 	}}(this));
-	document.body.addEventListener('mouseup', function(self){ return function(e){
+	document.addEventListener('mouseup', function(self){ return function(e){
 		self.mspress = false;
 		document.removeEventListener('mousemove', self.mouseMoveFunc);
 	}}(this));
@@ -1204,6 +1212,7 @@ KTimelineClass = function(wrapper){
 	this.ctx = c.getContext('2d');
 	
 	this.timeVal = 0;
+	this.selectedData = null;
 		
 	this.value = 0.0;
 	this.maxValue = 1.0;
@@ -1263,6 +1272,29 @@ KTimelineClass = function(wrapper){
 		
 		ctx.stroke();
 		ctx.lineWidth = 1;
+
+		if (this.selectedData)
+		{
+			sy = startYPos;
+			for (name in this.tlData) {
+				if (this.tlData.hasOwnProperty(name)) {
+					n = this.tlData[name].length;
+					if (n === 0) {
+						continue;
+					}
+					if (name === this.selectedData.name) {
+						ctx.strokeStyle = "darkgreen";
+						ctx.fillStyle = "darkgreen";
+						ctx.beginPath();
+						t = this.selectedData.data.time * this.timeScale - this.graphXOffset;
+						ctx.moveTo(t, sy);
+						ctx.arc(t, sy, 3, 0, 2.0 * Math.PI);
+						ctx.fill();
+					}
+					sy += 50;
+				}
+			}
+		}
 	}
 	
 	this.drawBaseGraph = function () {
@@ -1375,6 +1407,9 @@ KTimelineClass = function(wrapper){
 		var x = e.clientX - self.wrapper.getBoundingClientRect().left,
 			y = e.clientY - self.wrapper.getBoundingClientRect().top,
 			i,n, radiusSize = 5;
+		
+		self.selectedData = null;
+		
 		if (e.button == 2) {
 			console.log(x,y);
 			
@@ -1409,8 +1444,11 @@ KTimelineClass = function(wrapper){
 				}
 				for (i = 0; i < n; i += 1) {
 					t = self.tlData[name][i].time * self.timeScale - self.graphXOffset;
-					if (t - radiusSize < x && x < t + radiusSize
-					&&  sy - radiusSize < y && y < sy + radiusSize) {
+					if (t - radiusSize < x && x < t + radiusSize) {
+						self.selectedData = {
+							"name" : name,
+							"data" : self.tlData[name][i]
+						};
 						if (self.selectCallback){
 							self.selectCallback(name, parseFloat(self.tlData[name][i].time));
 						}
@@ -1427,7 +1465,7 @@ KTimelineClass = function(wrapper){
 			document.addEventListener('mousemove', self.mouseMoveFunc);
 		}
 	}}(this));
-	document.body.addEventListener('mouseup', function(self){ return function(e){
+	document.addEventListener('mouseup', function(self){ return function(e){
 		self.mspress = false;
 		document.removeEventListener('mousemove', self.mouseMoveFunc);
 	}}(this));

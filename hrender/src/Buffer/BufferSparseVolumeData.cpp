@@ -50,11 +50,11 @@ private:
 		double y = position[1] - block.offset[1];
 		double z = position[2] - block.offset[2];
 		int ix = (std::max)(
-			(std::min)(block.offset[0] + block.volume->Width() - 1, (int)x), 0);
+			(std::min)(block.volume->Width() - 1, (int)x), 0);
 		int iy = (std::max)(
-			(std::min)(block.offset[1] + block.volume->Height() - 1, (int)y), 1);
+			(std::min)(block.volume->Height() - 1, (int)y), 0);
 		int iz = (std::max)(
-			(std::min)(block.offset[2] + block.volume->Depth() - 1, (int)z), 2);
+			(std::min)(block.volume->Depth() - 1, (int)z), 0);
 
 		 size_t idx =
 			  iz * block.volume->Width()  * block.volume->Height() + iy * block.volume->Depth() + ix;
