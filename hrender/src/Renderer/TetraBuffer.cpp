@@ -110,4 +110,9 @@ void TetraBuffer::Render() const
     DrawTetraArrays_SGL(m_vtxnum);
 }
 
+void TetraBuffer::Update()
+{
+    cacheTextures(m_model);
+}
+
 

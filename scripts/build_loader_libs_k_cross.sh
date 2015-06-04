@@ -149,7 +149,7 @@ function build_udmlib {
 	fi
 	autoreconf -ivf
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} ./configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${cxx_compiler} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }

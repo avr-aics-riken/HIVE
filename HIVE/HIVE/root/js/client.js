@@ -122,6 +122,7 @@
 		$('camera_screen_width').onchange = valueChangeScreenSize(name, objprop.screensize, 0, core);
 		$('camera_screen_height').onchange = valueChangeScreenSize(name, objprop.screensize, 1, core);
 		$('camera_output_filename').onchange = valueChangeOutputFiel(name, core);
+
 		kUI('camera_clearcolor').ChangeColorCallback((function (core, name) {
 			return function (r, g, b, a) {
 				//core.setModelVec4(objname, paramname, r, g, b, a, true);
@@ -142,6 +143,8 @@
 			paramname,
 			d,
 			i,
+			ggg,
+			tff,
 			pp = document.getElementById('uniformproperty'),
 			objinfo = core.findObject(objname).info,
 			colpick;
@@ -166,16 +169,24 @@
 					bluv = transfuncui.getGraphValueBlue(),
 					alpv = transfuncui.getGraphValueAlpha(),
 					vnum = transfuncui.getNumValues(),
-					rgbaVal = [vnum],
+					rgbaVal = [vnum * 4],
+					tmax,
+					tmin,
 					i;
 				//console.log(maxv, minv, redv, grnv, bluv, alpv, vnum);
 				for (i = 0; i < vnum; i = i + 1) {
-					rgbaVal[4 * i]     = redv[i];
-					rgbaVal[4 * i + 1] = grnv[i];
-					rgbaVal[4 * i + 2] = bluv[i];
-					rgbaVal[4 * i + 3] = alpv[i];
+					rgbaVal[4 * i]     = redv[i] * 255;
+					rgbaVal[4 * i + 1] = grnv[i] * 255;
+					rgbaVal[4 * i + 2] = bluv[i] * 255;
+					rgbaVal[4 * i + 3] = alpv[i] * 255;
 				}
 				core.setModelTex(objname, paramname, vnum, 1, rgbaVal, true);
+				
+
+				tmax = transfuncui.getMaxValue();
+				tmin = transfuncui.getMinValue();
+				core.setModelFloat(objname, "volumemin", tmin);
+				core.setModelFloat(objname, "volumemax", tmax);
 			};
 		}
 			
@@ -243,7 +254,35 @@
 						'</div></div>';
 					pp.appendChild(d);
 					kvtoolsUI_update(d);
-					kUI(paramname).changeCallback = changeTransferFunc(core, objname, paramname);
+					tff = kUI(paramname);
+					tff.changeCallback = changeTransferFunc(core, objname, paramname);
+
+					(function (core, tff, objinfo) { 
+						core.getVolumeAnalyzerData(objname, objinfo.float["volumemin"], objinfo.float["volumemax"], function (result) {
+							console.log('HIGE', result);
+							var volumeMax = parseFloat(result.max),
+								volumeMin = parseFloat(result.min),
+								defMax =  parseFloat(result.defaultMax),
+								defMin =  parseFloat(result.defaultMin),
+								hist = result.histgram;
+							tff.setAnalyzeResult({min:[volumeMin, volumeMin, volumeMin],
+								 max:[volumeMax,volumeMax,volumeMax], defaultValMin:defMin, defaultValMax:defMax, histgram:hist}, 1);
+							tff.drawGraph();
+							tff.changeCallback(tff);
+						});
+					}(core, tff, objinfo));
+
+					if (objinfo.rgbatex.hasOwnProperty(paramname)) {
+						var rgba = objinfo.rgbatex[paramname].rgba;
+						for (ggg = 0; ggg < 256; ggg = ggg + 1) {
+							tff.setGraphValue(ggg,
+											  rgba[ggg*4]/255.0,
+											  rgba[ggg*4+1]/255.0,
+											  rgba[ggg*4+2]/255.0,
+											  rgba[ggg*4+3]/255.0);
+						}
+						tff.drawGraph();
+					}
 					
 				} else {
 					console.log('Error: Unkown UI type -> ' + unif[i].ui + ' - ' + unif[i].name);
@@ -257,8 +296,8 @@
 			console.log('[DEBUG] CHANGE SHADER', objectname, shaderpath);
 			kUI('shader_name').Select(splitfilename(shaderpath));
 			
-			updateShaderParameters(core, objectname, info.uniforms);
 			core.setModelUniforms(objectname, info.uniforms);
+			updateShaderParameters(core, objectname, info.uniforms);
 			core.setModelShader(objectname, shaderpath);
 			core.render();
 		};
@@ -479,7 +518,6 @@
 						opt.selected = true;
 					}
 				}
-
 			}
 			kUI('timeline').setTimelineData(core.getTimeline());
 			kUI('timeline').drawGraph();
@@ -546,6 +584,13 @@
 				updateProperty(core, activeObjectName);
 			}
 		});
+		kUI('timeline').SelectCallback(function (name, tm) {
+			console.log("selected", name, tm);
+		});
+		kUI('timeline').DeleteCallback(function (name, tm) {
+			core.deleteKey(name, tm);
+			kUI('timeline').drawGraph();
+		});
 		$('projsetting').addEventListener('click', function (ev) {
 			$toggle($('window-projectproperty'), 500);
 		});
@@ -591,7 +636,21 @@
 			console.log('SAVE SCENE');
 		});
 		$('exportbtn').addEventListener('click', function (ev) {
-			var fdlg = new FileDialog("savesceneDialog", true, '.json');
+			var fdlg = new FileDialog("savesceneDialog", true, '.json'),
+				time = {};
+			if ($('tlEnableAnimation').checked) {
+				time = {
+					start : document.getElementById('tlStartTime').value,
+					end : document.getElementById('tlEndTime').value,
+					fps : document.getElementById('tlFps').value
+				};
+			} else {
+				time = {
+					start : activeTime,
+					end : activeTime,
+					fps : document.getElementById('tlFps').value
+				};
+			}
 			fdlg.ExportSceneFile("", (function (core, fdlg) {
 				return function (path) {
 					core.getFileList(path, function (err, res) {
@@ -600,11 +659,17 @@
 					});
 				};
 			}(core, fdlg)), function (filepath) {
-				core.exportScene(filepath);
+				core.exportScene(filepath, time);
 				console.log("FileDialog export:" + filepath);
 			});
 
 			console.log('EXPORT SCENE');
+		});
+		$('tlEnableAnimation').addEventListener('change', function (ev) {
+			var check = ev.target.checked;
+			$('tlStartTime').disabled = !check;
+			$('tlEndTime').disabled = !check;
+			$('tlFps').disabled = !check;
 		});
 
 		$('list-cameraaddbutton').addEventListener('click', function (ev) {

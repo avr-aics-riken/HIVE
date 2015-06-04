@@ -13,7 +13,7 @@ local function getObjectList()
 		info.vec3      = robj:GetVec3Table()
 		info.vec2      = robj:GetVec2Table()
 		info.float     = robj:GetFloatTable()
-		info.rgbatex   = {}; --robj:GetTexTable();
+		info.rgbatex   = robj:GetTextureTable();
 		if robj:GetType() == 'CAMERA' then
 			info.position = robj:GetPosition()
 			info.target = robj:GetTarget()
@@ -82,7 +82,7 @@ local function CreateCamera(name)
 		0,1,0,
 		60
 	)
-	camera:SetFilename('output.jpg')
+	camera:SetFilename(name .. '.jpg')
 	HIVE_ObjectTable[name] = camera
 	updateInfo()
 	return 'CreateCamera:' .. name
@@ -139,6 +139,24 @@ local function CameraOutputFilename(name, filename)
 	return 'SetFilename:' .. name
 end
 
+local function GetVolumeAnalyzerData(name, min, max)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	local analyzer = VolumeAnalyzer()
+	analyzer:Execute(model)
+	local histgram;
+	local volMin = analyzer:MinX()
+	local volMax = analyzer:MaxX()
+	histgram = analyzer:GetHistgram();
+	--else
+	--	histgram = analyzer:GetHistgramInRange(model, min, max);
+	--end
+	if min == nil or max == nil then
+		return {name=name, defaultMin=volMin, defaultMax=volMax, min=volMin, max=volMax, histgram=histgram}
+	else
+		return {name=name, defaultMin=volMin, defaultMax=volMax, min=min, max=max, histgram=histgram}
+	end
+end
 
 local function SetModelShader(name, shaderpath)
 	local model = HIVE_ObjectTable[name]
@@ -355,5 +373,6 @@ return {
 	UpdateSceneInformation = UpdateSceneInformation,
 	RenderCamera = RenderCamera,
 	CameraLookat = CameraLookat,
+	GetVolumeAnalyzerData = GetVolumeAnalyzerData,
 	StoreObjectTimeline = StoreObjectTimeline
 }

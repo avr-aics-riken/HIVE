@@ -163,4 +163,9 @@ void VectorBuffer::Render() const
     DrawTetraArrays_SGL(m_tetra_vnum);
 }
 
+void VectorBuffer::Update()
+{
+    cacheTextures(m_model);
+}
+
 

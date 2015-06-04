@@ -115,4 +115,8 @@ void PointBuffer::Render() const
     DrawPointArrays_SGL(m_vtxnum);
 }
 
+void PointBuffer::Update()
+{
+    cacheTextures(m_model);
+}
 

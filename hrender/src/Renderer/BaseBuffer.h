@@ -35,6 +35,7 @@ protected:
     
 public:
     virtual void Render() const = 0;
+    virtual void Update() = 0;
     
     void BindProgram() const;
     void Uniform2fv(const char* name, const float*) const;
