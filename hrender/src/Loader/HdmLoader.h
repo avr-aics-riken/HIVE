@@ -20,7 +20,7 @@ class HDMLoader : public RefCount
 	void Clear();
 	bool Load(const char *cellidFilename, const char *dataFilename,
 			  const char *fieldName, const char *fieldType, int components,
-			  int virtualCells = 2);
+			  int timeStepIndex = 0, int virtualCells = 2);
 	int Width();
 	int Height();
 	int Depth();

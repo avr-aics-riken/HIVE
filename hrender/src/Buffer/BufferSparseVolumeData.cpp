@@ -9,6 +9,8 @@
 // Use SparseVolume feature from SURFACE to provide Sample() function
 #include "render_bvh_tree.h"
 
+#include <limits>
+
 /**
  * BufferSparseVolumeDataクラス
  */
@@ -213,6 +215,20 @@ public:
 		}
 
 #ifndef _WIN32
+		// debug
+		double minval = std::numeric_limits<double>::max();
+		double maxval = -std::numeric_limits<double>::max();
+
+		for (size_t i = 0; i < m_volumeBlocks.size(); i++) {
+			const BufferVolumeData* vb = m_volumeBlocks[i].volume;
+
+			for (size_t j = 0; j < vb->Buffer()->GetNum(); j++) {
+				double val = vb->Buffer()->GetBuffer()[j];
+				minval = (std::min)(minval, val);
+				maxval = (std::max)(maxval, val);
+			}
+		}
+		printf("[DBG] minval = %f, maxval = %f\n", minval, maxval);
 
 		for (size_t i = 0; i < m_volumeBlocks.size(); i++) {
 
