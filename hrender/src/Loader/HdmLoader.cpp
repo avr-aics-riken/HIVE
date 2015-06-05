@@ -331,6 +331,7 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		BufferVolumeData *vol = new BufferVolumeData();
 		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 1);
 
+		//printf("offset = %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2]; i++)
 		{
@@ -392,13 +393,14 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
  * @param fieldName      field name
  * @param fieldType      field type("Float32", "Float64", etc)
  * @param components     The number of components(1 = scalar, 3 = vector)
+ * @param timeStepIndex  Time step index
  * @param virtualCells   The number of virtual cells(Usually 2)
  * @retval true 成功
  * @retval false 失敗
  */
 bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 					 const char *fieldName, const char *fieldType,
-					 int components, int virtualCells)
+					 int components, int timeStepIndex, int virtualCells)
 {
 	Clear();
 
@@ -470,6 +472,11 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	const std::list<unsigned int> *stepList = step->GetStepList();
 	// printf("dbg: # of steps = %d\n", stepList->size());
 
+	if (timeStepIndex >= stepList->size()) {
+		fprintf(stderr, "[HDMloader] Given time step index %d exceeds the maximum time step in the file %d.\n", timeStepIndex, (int)stepList->size());
+		return false;
+	}
+
 	int vc = virtualCells;
 
 	int id_cid = 0;
@@ -483,8 +490,13 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	// Prepare SparseVolume
 	m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
 
-	// @fixme { stepList }
 	std::list<unsigned int>::const_iterator it = stepList->begin();
+
+	// Move to specified time step.
+	for (int i = 0; i < timeStepIndex; i++) {
+		it++;
+	}
+
 	{
 
 		if (type == TYPE_FLOAT32)
