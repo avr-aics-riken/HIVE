@@ -181,6 +181,11 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 	ox = (std::min)(rootDim[0] * dx, ox);
 	oy = (std::min)(rootDim[1] * dy, oy);
 	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
 	// printf("lv = %d\n", level);
 	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
 	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
@@ -255,6 +260,11 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 	ox = (std::min)(rootDim[0] * dx, ox);
 	oy = (std::min)(rootDim[1] * dy, oy);
 	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
 	// printf("lv = %d\n", level);
 	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
 	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
@@ -329,9 +339,12 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		vb.id = id;
 
 		BufferVolumeData *vol = new BufferVolumeData();
+		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
+		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
 		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 1);
 
 		//printf("offset = %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2]; i++)
 		{

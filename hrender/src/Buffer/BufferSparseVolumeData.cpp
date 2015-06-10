@@ -23,6 +23,7 @@ private:
 
 	// For `Sample()` method.
 	lsgl::render::BVHTree m_tree;
+	bool m_isBuilt;
 
 	// Grabbed from SURFACE/render/render_accel_volume.cc
 	bool SampleSparseVolume(
@@ -78,6 +79,8 @@ public:
 		m_dim[0] = -1;
 		m_dim[1] = -1;
 		m_dim[2] = -1;
+		m_isBuilt = false;
+
     }
     
     /// コンストラクタ
@@ -91,7 +94,8 @@ public:
 
 		m_volumeBlocks = inst->VolumeBlocks();
 
-		// @todo { m_sparseVolumeAccel, _sparseVolume }
+		// @todo { m_tree }
+		m_isBuilt = false;
     }
     
     /// デストラクタ
@@ -107,7 +111,6 @@ public:
 		m_dim[2] = d;
 		m_components = component;
 
-		//m_sparseVolume = new lsgl::render::SparseVolume();
     }
     
     /**
@@ -141,6 +144,8 @@ public:
 		m_dim[1] = -1;
 		m_dim[2] = -1;
 		m_components = -1;
+		m_tree.Clear();
+		m_isBuilt = false;
     }
     
     /// デバッグ用
@@ -183,9 +188,9 @@ public:
     /**
      * サンプルする
      * @param ret サンプル結果
-     * @param x x
-     * @param y y
-     * @param z z
+     * @param x x(normalized)
+     * @param y y(normalized)
+     * @param z z(normalized)
      */
     void Sample(float* ret, float x, float y, float z) {
 
@@ -195,9 +200,10 @@ public:
         double value[4];
         double position[3];
 
-        position[0] = x * Width();
-        position[1] = y * Height();
-        position[2] = z * Depth();
+		position[0] = x * Width();
+		position[1] = y * Height();
+		position[2] = z * Depth();
+
 #ifndef _WIN32
 		SampleSparseVolume(value, position);
 #endif
@@ -212,6 +218,10 @@ public:
 
 		if (m_volumeBlocks.empty()) {
 			return false;
+		}
+
+		if (m_isBuilt) {
+			return true;
 		}
 
 #ifndef _WIN32
@@ -248,12 +258,23 @@ public:
 		}
 
 		m_tree.BuildTree();
+
+		double bmin[3], bmax[3];
+		m_tree.BoundingBox(bmin, bmax);
+		printf("[BufferSparseVolumeData] bmin = (%f, %f, %f)\n", bmin[0], bmin[1], bmin[2]);
+		printf("[BufferSparseVolumeData] bmax = (%f, %f, %f)\n", bmax[0], bmax[1], bmax[2]);
+
+		m_isBuilt = true;
 		return true;
 #else
 		return false;
 #endif
 
     }
+
+	bool IsBuilt() const {
+		return m_isBuilt;
+	}
 
 };
 
@@ -360,3 +381,7 @@ bool BufferSparseVolumeData::Build()
     return m_imp->Build();
 }
 
+bool BufferSparseVolumeData::IsBuilt() const
+{
+    return m_imp->IsBuilt();
+}
