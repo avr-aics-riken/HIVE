@@ -50,16 +50,18 @@ template <typename T> class VoxelBlock
 
 	~VoxelBlock(){};
 
-	void Resize(int sx, int sy, int sz)
+	void Resize(int sx, int sy, int sz, int n)
 	{
-		data.resize(sx * sy * sz);
+		data.resize(sx * sy * sz * n);
 		size[0] = sx;
 		size[1] = sy;
 		size[2] = sz;
+		numComponents = n;
 	}
 
 	int size[3];
 	int offset[3];
+	int numComponents;
 	std::vector<T> data;
 	int id;
 };
@@ -193,7 +195,7 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
 	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
 
-	block.Resize(dx, dy, dz);
+	block.Resize(dx, dy, dz, 1 /* scalar */);
 	block.offset[0] = ox;
 	block.offset[1] = oy;
 	block.offset[2] = oz;
@@ -272,7 +274,7 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
 	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
 
-	block.Resize(dx, dy, dz);
+	block.Resize(dx, dy, dz, 3 /* vector */);
 	block.offset[0] = ox;
 	block.offset[1] = oy;
 	block.offset[2] = oz;
@@ -341,7 +343,8 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		BufferVolumeData *vol = new BufferVolumeData();
 		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
 		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
-		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 1);
+		assert(vb.numComponents == 1);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
 		//printf("offset = %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
 		
@@ -386,7 +389,8 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 		vb.id = id;
 
 		BufferVolumeData *vol = new BufferVolumeData();
-		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 3);
+		assert(vb.numComponents == 3);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * 3; i++)
