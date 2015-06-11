@@ -104,7 +104,7 @@ void PolygonBuffer::Render() const
     }
     
     if (m_vertex_num == 0) {
-        fprintf(stderr,"[Error] Not invalid point data\n");
+        fprintf(stderr,"[Error] Invalid vertex data\n");
         return;
     }
     
