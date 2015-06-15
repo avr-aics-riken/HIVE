@@ -782,6 +782,7 @@ int VolumeToMeshData::IsoSurface() {
 
     if (m_volume->Component() != 1) {
         fprintf(stderr, "[VolumeToMeshData] The number of component of voxel must be 1. Only see the first component of voxel data.\n");
+		printf("Build failed\n");
     }
     
     const float *source  = static_cast<const float*>(m_volume->Buffer()->GetBuffer());
@@ -789,6 +790,10 @@ int VolumeToMeshData::IsoSurface() {
     dim[0] = m_volume->Width();
     dim[1] = m_volume->Height();
     dim[2] = m_volume->Depth();
+    printf("[VolumeToMeshData] Create marching cube  isosurface value = %f\n", m_isovalue);
+    printf("[VolumeToMeshData] dim[0] = %d\n", dim[0]);
+    printf("[VolumeToMeshData] dim[1] = %d\n", dim[1]);
+    printf("[VolumeToMeshData] dim[2] = %d\n", dim[2]);
 
     marching_cubes_generator<float> generator(source, dim, m_volume->Component());
     generator.generate(m_isovalue);
@@ -804,6 +809,7 @@ int VolumeToMeshData::IsoSurface() {
     size_t numIndices  = indices.size();
 
     if (numIndices < 3 || numVertices < 3) {
+        printf("[VolumeToMeshData] Index or Vertex invalid...\n");
         return 0;
     }
 
@@ -827,6 +833,7 @@ int VolumeToMeshData::IsoSurface() {
     for (size_t i = 0; i < numIndices; i++) {
         idxDst[i] = static_cast<unsigned int>(indices[i]);
     }
+    printf("[VolumeToMeshData] numVertices = %d\n", numVertices);
 
     return numVertices;
 }
