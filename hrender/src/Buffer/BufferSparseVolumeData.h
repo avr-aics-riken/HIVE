@@ -49,7 +49,10 @@ public:
     // Build spatial acceraltion for SparseVolume.
     // Only required if you want to fetch voxel data through Sample() function.
     bool Build();
+
+    // Return whether Build() has been called already.
+    bool IsBuilt() const;
+
 };
 
 #endif //_BUFFERSPARSEVOLUMEDATA_H_
-
