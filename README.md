@@ -7,6 +7,9 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 * cmake 2.8 or later
 * HDF5
 * MPI compiler(optional for macosx and linux x64 environment)
+* Zoltan v.3.81(Required when you build HIVE with PDMlib support)
+* fpzip 1.0.1(Required when you build HIVE with PDMlib support)
+* cgnslib 3.2.1(Required when you build HIVE with UDMlib support)
 
 ## git clone
 
@@ -16,6 +19,12 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 ## Setup
 
 Build third party libraries.
+
+### K/FX10
+
+Download fpzip, Zoltan and cgnslib and put files into `third_party/`, then
+
+    $ ./scripts/build_loader_libs_k_cross.sh
 
 ### Linux
 
@@ -48,6 +57,13 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
     $ make
     
+### K/FX10
+
+Optionally edit `./scripts/cmake_k_cross.sh`, then
+
+    $ ./scripts/cmake_k_cross.sh
+    $ cd build
+    $ make
 
 ### MacOSX OpenMP build with GCC
 
