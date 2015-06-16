@@ -201,12 +201,13 @@ set(SOURCES
 	src/Buffer/BufferPointData.cpp
 	src/Buffer/BufferVectorData.cpp
 	src/Buffer/BufferTetraData.cpp
-  src/Buffer/BufferImageData.cpp
-  src/Buffer/BufferExtraData.cpp
+	src/Buffer/BufferImageData.cpp
+	src/Buffer/BufferExtraData.cpp
 	src/Builder/FloatsToFloat.cpp
 	src/Builder/PointToVolume.cpp
 	src/Builder/VolumeToMeshData.cpp
 	src/Builder/VolumeToVector.cpp
+	src/Builder/SparseVolumeToVolume.cpp
 	src/Builder/VolumeFilter.cpp
 	src/Builder/CompileUtil.cpp
 	src/Generator/PrimitiveGenerator.cpp

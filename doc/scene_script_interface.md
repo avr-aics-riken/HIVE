@@ -146,7 +146,26 @@ BDMファイルを読み込むローダークラス. hrender が BCMTools とリ
 
 ## SPHSaver()
 
-[TODO]
+SPH 形式でボリュームデータを保存する.
+float 形式の SPH の書き出しのみに対応する.
+
+    local sphSaver = SPHSaver()
+    sphSaver:SetVolumeDatta(volumedata)
+    sphSaver:Save('output.sph')
+
+
+## RawVolumeSaver()
+
+RAW 形式でボリュームデータを保存する. 他のボリュームデータビューアなどで閲覧するときに利用する.
+データはメモリ上の生の形式で(endian 変換は行われない), `width * height * depth * sizeof(type)` bytes のデータが保存される.
+Save() にはファイル名と, footer を付けるかどうか(HIVE 独自形式)を指定する.
+
+    local volSaver = RawVolumeSaver()
+    local appendFooter = false
+    volSaver:SetVolumeData(volumedata)
+    volSaver:Save("output.raw", appendFooter)
+
+footer を付ける場合, 20 bytes(4 int x 5)のデータ `(width, height, depth, type, components)` がフッターとしてファイルの最後に追記される.
 
 ## PDMSaver()
 
@@ -155,7 +174,7 @@ PDM 形式で点群データを保存する. hrender が PDMlib とリンクさ�
 
     local saver = PDMSaver()
     saver:SetPointData(ball)
-    saver:Save('output') -- ベースファイル名を指定
+    saver:Save('output') -- ベースファイル名を指定.
 
 
 ---------------------------------
@@ -209,6 +228,8 @@ marching cubes 法を用いて, ボリュームデータをメッシュ(triangle
     surfacer:IsoSurface()
     local isosurface = surfacer:MeshData()
 
+入力のボリュームデータは scalar ボリューム(`Component() = 1`) でなければならない.
+vector ボリュームは一度 VolumeFilter や FloatsToFloat を介して scalar ボリュームに変換する必要がある.
 
 ## PointToVolume()	
 
@@ -220,5 +241,54 @@ ToVolume メソッドにはボリュームの解像度を指定する.
     p2v:Create(pnt:PointData())
     
     p2v:ToVolume(128,128,128)
+
+## SparseVolumeToVolume()	
+
+疎ボリュームを(一様)ボリュームデータに変換する.
+Create メソッドにはリサンプリングレートを指定する.
+たとえば 0.25 だと疎ボリュームの元データの 1/4 の解像度で一様ボリュームを生成する.
+2.0 だと 2 倍となる.
+
+    local s2v = SparseVolumeToVolume()
+    local resampleRate = 0.25
+    s2v:Create(volumedata, resampleRate)
+    
+
+## VolumeFilter()
+
+ボリュームデータに対してフィルタ処理を行う. 疎ボリュームに対しては適用できない.
+ボリュームの型は `float` のみとする.
+
+`Expr` では C 言語でのフィルタコードを走らせて処理を行うことができる.
+
+    local filter = VolumeFilter()
+    filter:Laplacian(volumedata)    -- Laplacian を計算する
+    filter:Norm(volumedata)         -- Norm を計算する
+
+    filter:VolumeData() -- 処理されたボリュームデータを取得する
+    
+    -- カスタムのフィルタを実行する(C コンパイラが必要)
+    -- 最大で 4 つのボリュームデータを入力として指定できる. ボリュームはすべて同じ大きさとする.
+    -- 利用しない場合は nil を指定する.
+    -- targetNumberOfComonents には生成するボリュームのコンポーネント数を指定する.
+    -- source にはフィルタ文字列を指定する.
+    filter:SetCompoleOption(compiler, compileOpts) -- コンパイラ名とコンパイルオプションを指定する.
+    filter:Expr(vol0, vol1, vol2, vol4, targetNumberOfComonents, source)
+
+カスタムフィルタでは以下の変数とマクロを利用できる.
+
+    float* dst : destination ボリュームへのポインタ
+    const flooat* src0, src1, src2, src3 : 入力ボリュームへのポインタ
+    size_t x, y, z : ボクセル位置
+    size_t width, height, depth : ボリュームの大きさ
+    IDX : ボクセル位置からメモリアドレス(配列インデックス)を算出するマクロ
+          引数は number of components, x, y, z, current component index, w, h, d となる.
+   
+    -- example
+    local filterCode = [[
+      dst[IDX(1,x,y,z,0,width,height,depth)] = src0[IDX(1,x,y,z,0,width,height,depth)];
+    ]]
+
+    filter:SetCompoleOption('gcc', '-O2')
 
 
