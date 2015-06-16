@@ -33,8 +33,8 @@ public:
         return Component();
     }
 
-    bool Load(const char* cellidFilename, const char* dataFilename, const char* fieldName, const char* fieldType, int components, int virtualCells=2) {
-        return HDMLoader::Load(cellidFilename, dataFilename, fieldName, fieldType, components, virtualCells);
+    bool Load(const char* cellidFilename, const char* dataFilename, const char* fieldName, const char* fieldType, int components, int timeStepIndex = 0, int virtualCells=2) {
+        return HDMLoader::Load(cellidFilename, dataFilename, fieldName, fieldType, components, timeStepIndex, virtualCells);
     }
 
     BufferSparseVolumeData_Lua* SparseVolumeData() {
@@ -46,7 +46,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
-    LUA_SCRIPTCLASS_METHOD_ARG6(bool,Load,const char*, const char*, const char*, const char*, int, int)
+    LUA_SCRIPTCLASS_METHOD_ARG7(bool,Load,const char*, const char*, const char*, const char*, int, int, int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferSparseVolumeData_Lua*,SparseVolumeData)
     LUA_SCRIPTCLASS_END()
 };

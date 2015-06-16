@@ -50,16 +50,18 @@ template <typename T> class VoxelBlock
 
 	~VoxelBlock(){};
 
-	void Resize(int sx, int sy, int sz)
+	void Resize(int sx, int sy, int sz, int n)
 	{
-		data.resize(sx * sy * sz);
+		data.resize(sx * sy * sz * n);
 		size[0] = sx;
 		size[1] = sy;
 		size[2] = sz;
+		numComponents = n;
 	}
 
 	int size[3];
 	int offset[3];
+	int numComponents;
 	std::vector<T> data;
 	int id;
 };
@@ -181,6 +183,11 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 	ox = (std::min)(rootDim[0] * dx, ox);
 	oy = (std::min)(rootDim[1] * dy, oy);
 	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
 	// printf("lv = %d\n", level);
 	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
 	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
@@ -188,7 +195,7 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
 	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
 
-	block.Resize(dx, dy, dz);
+	block.Resize(dx, dy, dz, 1 /* scalar */);
 	block.offset[0] = ox;
 	block.offset[1] = oy;
 	block.offset[2] = oz;
@@ -255,6 +262,11 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 	ox = (std::min)(rootDim[0] * dx, ox);
 	oy = (std::min)(rootDim[1] * dy, oy);
 	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
 	// printf("lv = %d\n", level);
 	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
 	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
@@ -262,7 +274,7 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
 	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
 
-	block.Resize(dx, dy, dz);
+	block.Resize(dx, dy, dz, 3 /* vector */);
 	block.offset[0] = ox;
 	block.offset[1] = oy;
 	block.offset[2] = oz;
@@ -329,8 +341,13 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		vb.id = id;
 
 		BufferVolumeData *vol = new BufferVolumeData();
-		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 1);
+		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
+		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		assert(vb.numComponents == 1);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
+		//printf("offset = %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2]; i++)
 		{
@@ -372,7 +389,8 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 		vb.id = id;
 
 		BufferVolumeData *vol = new BufferVolumeData();
-		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 3);
+		assert(vb.numComponents == 3);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * 3; i++)
@@ -392,13 +410,14 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
  * @param fieldName      field name
  * @param fieldType      field type("Float32", "Float64", etc)
  * @param components     The number of components(1 = scalar, 3 = vector)
+ * @param timeStepIndex  Time step index
  * @param virtualCells   The number of virtual cells(Usually 2)
  * @retval true 成功
  * @retval false 失敗
  */
 bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 					 const char *fieldName, const char *fieldType,
-					 int components, int virtualCells)
+					 int components, int timeStepIndex, int virtualCells)
 {
 	Clear();
 
@@ -470,6 +489,11 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	const std::list<unsigned int> *stepList = step->GetStepList();
 	// printf("dbg: # of steps = %d\n", stepList->size());
 
+	if (timeStepIndex >= stepList->size()) {
+		fprintf(stderr, "[HDMloader] Given time step index %d exceeds the maximum time step in the file %d.\n", timeStepIndex, (int)stepList->size());
+		return false;
+	}
+
 	int vc = virtualCells;
 
 	int id_cid = 0;
@@ -483,8 +507,13 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	// Prepare SparseVolume
 	m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
 
-	// @fixme { stepList }
 	std::list<unsigned int>::const_iterator it = stepList->begin();
+
+	// Move to specified time step.
+	for (int i = 0; i < timeStepIndex; i++) {
+		it++;
+	}
+
 	{
 
 		if (type == TYPE_FLOAT32)

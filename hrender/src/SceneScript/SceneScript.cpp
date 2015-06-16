@@ -64,6 +64,7 @@
 #include "PointToVolume_Lua.h"
 #include "VolumeToVector_Lua.h"
 #include "VolumeToMeshData_Lua.h"
+#include "SparseVolumeToVolume_Lua.h"
 #include "VolumeFilter_Lua.h"
 #include "GenTexture_Lua.h"
 
@@ -120,6 +121,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, VolumeToVector_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VolumeToMeshData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VolumeFilter_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeToVolume_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
@@ -174,6 +176,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "VolumeToVector",      LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));
     SetFunction(L, "VolumeToMeshData",    LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToMeshData_Lua));
     SetFunction(L, "VolumeFilter",        LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeFilter_Lua));
+    SetFunction(L, "SparseVolumeToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
 }
 // ------------------------
