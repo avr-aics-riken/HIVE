@@ -112,10 +112,12 @@ CDMファイルを読み込むローダークラス. hrender が CDMlib とリ�
 ## PDMLoader()
 
 PDMファイルを読み込むローダークラス. hrender が PDMlib とリンクされているときのみ利用可能.
-ポイントプリミティブが取得可能.
+Load() でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
+ファイル名に相対パスが含まれていてはならない.
 
     local loader = PDMLoader()
-    loader:Load('input') -- ベースファイル名を指定
+    local timestep = 0
+    loader:Load('input.dfi', timestep)
 
 ## HDMLoader()
 
