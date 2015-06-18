@@ -7,7 +7,7 @@
 
 /// コンストラクタ
 FloatsToFloat::FloatsToFloat(){
-    m_volume = new BufferVolumeData();
+    m_volume = 0;
 }
 
 /**
@@ -19,16 +19,8 @@ FloatsToFloat::FloatsToFloat(){
 int FloatsToFloat::Create(BufferVolumeData *volume, int offset){
     if (!volume)
         return 0;
-    const int component = volume->Component();
-    const int n = volume->Buffer()->GetNum() / component;
-    // TODO: FIX
-/*    m_volume->m_buffer = new FloatBuffer();
-    m_volume->Buffer()->Create(n);
-    printf("%p :  %d %p %p\n", m_volume, n, volume->Buffer(), m_volume->Buffer());
-    for (int i = 0; i < n; ++i){
-        (m_volume->Buffer()->GetBuffer())[i] = volume->Buffer()->GetBuffer()[component * i + offset];
-    }*/
-    return volume->Buffer()->GetNum();
+    m_offset = offset;
+    m_volume = volume;
 }
 
 /// コンポーネント数取得(1固定)
@@ -44,6 +36,31 @@ int FloatsToFloat::Component()
 
 BufferVolumeData* FloatsToFloat::VolumeData()
 {
-    return m_volume;
+    if (!m_volume) {
+        return 0;
+    }
+    
+    const int component = m_volume->Component();
+    const int n = m_volume->Buffer()->GetNum() / component;
+
+    int ofs = m_offset;
+    if (component <= m_offset) {
+        ofs = component - 1;
+    }
+   
+    BufferVolumeData* volume = new BufferVolumeData();
+    const int w = m_volume->Width();
+    const int h = m_volume->Height();
+    const int d = m_volume->Depth();
+    volume->Create(w, h, d, 1);
+    printf("FloatsToFloat : %d %d %d\n", w, h, d);
+    
+    float* tarbuf = volume->Buffer()->GetBuffer();
+    const float* srcbuf = m_volume->Buffer()->GetBuffer();
+    
+    for (int i = 0; i < n; ++i){
+        tarbuf[i] = srcbuf[component * i + ofs];
+    }
+    return volume;
 }
 

@@ -18,6 +18,7 @@ class FloatsToFloat : public RefCount
 {
 private:
     BufferVolumeData* m_volume;
+    int m_offset;
 public:
     FloatsToFloat();
     int Create(BufferVolumeData *volume, int offset);
