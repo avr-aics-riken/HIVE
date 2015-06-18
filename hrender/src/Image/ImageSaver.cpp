@@ -84,130 +84,138 @@ public:
         
         std::string path(filename);
         std::string::size_type pos = path.rfind('.');
+        std::string ext;
         if (pos != std::string::npos)
         {
-            const std::string ext = make_lowercase(path.substr(pos+1));
-            const int width = data->Width();
-            const int height = data->Height();
-            if (ext == "png" || ext == "PNG")
+            ext = make_lowercase(path.substr(pos+1));
+        }
+        else
+        {
+            ext = "jpg";
+            path += ".jpg";
+        }
+        
+        const int width = data->Width();
+        const int height = data->Height();
+        if (ext == "png" || ext == "PNG")
+        {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+            if (data->Format() == BufferImageData::RGBA8)
             {
-                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
-                if (data->Format() == BufferImageData::RGBA8)
+                unsigned char* pngbuffer = NULL;
+                int bytes = SimplePNGSaverRGBA((void**)&pngbuffer, width, height, srcbuffer);
+                //printf("PNG: bytes: %d\n", bytes);
+                if (bytes && pngbuffer)
                 {
-                    unsigned char* pngbuffer = NULL;
-                    int bytes = SimplePNGSaverRGBA((void**)&pngbuffer, width, height, srcbuffer);
-                    //printf("PNG: bytes: %d\n", bytes);
-                    if (bytes && pngbuffer)
-                    {
-                        result = SaveFile(path, pngbuffer, bytes);
-                    }
-                    delete [] pngbuffer;
+                    result = SaveFile(path, pngbuffer, bytes);
                 }
+                delete [] pngbuffer;
             }
-            else if (ext == "jpg" || ext == "jpeg")
+        }
+        else if (ext == "jpg" || ext == "jpeg")
+        {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+            if (data->Format() == BufferImageData::RGBA8)
             {
-                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
-                if (data->Format() == BufferImageData::RGBA8)
+                unsigned char* jpgbuffer = NULL;
+                int bytes = SimpleJPGSaverRGBA((void**)&jpgbuffer, width, height, srcbuffer);
+                if (bytes && jpgbuffer)
                 {
-                    unsigned char* jpgbuffer = NULL;
-                    int bytes = SimpleJPGSaverRGBA((void**)&jpgbuffer, width, height, srcbuffer);
-                    if (bytes && jpgbuffer)
-                    {
-                        result = SaveFile(path, jpgbuffer, bytes);
-                    }
-                    delete [] jpgbuffer;
+                    result = SaveFile(path, jpgbuffer, bytes);
                 }
+                delete [] jpgbuffer;
             }
-            else if (ext == "tga")
+        }
+        else if (ext == "tga")
+        {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+            if (data->Format() == BufferImageData::RGBA8)
             {
-                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
-                if (data->Format() == BufferImageData::RGBA8)
+                unsigned char* tgabuffer = NULL;
+                const int bytes = SimpleTGASaverRGBA((void**)&tgabuffer, width, height, srcbuffer);
+                if (bytes && tgabuffer)
                 {
-                    unsigned char* tgabuffer = NULL;
-                    const int bytes = SimpleTGASaverRGBA((void**)&tgabuffer, width, height, srcbuffer);
-                    if (bytes && tgabuffer)
-                    {
-                        result = SaveFile(path, tgabuffer, bytes);
-                    }
-                    delete [] tgabuffer;
+                    result = SaveFile(path, tgabuffer, bytes);
                 }
+                delete [] tgabuffer;
             }
-            else if (ext == "exr" || ext == "EXR")
-            {
-                if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
-                    const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
-                    if (data->Format() == BufferImageData::RGBA32F)
+        }
+        else if (ext == "exr" || ext == "EXR")
+        {
+            if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
+                const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+                if (data->Format() == BufferImageData::RGBA32F)
+                {
+                    unsigned char* exrbuffer = NULL;
+                    const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, srcbuffer);
+                    if (bytes && exrbuffer)
                     {
-                        unsigned char* exrbuffer = NULL;
-                        const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, srcbuffer);
-                        if (bytes && exrbuffer)
-                        {
-                            result = SaveFile(path, exrbuffer, bytes);
-                        }
-                        delete [] exrbuffer;
+                        result = SaveFile(path, exrbuffer, bytes);
                     }
-                    else if (data->Format() == BufferImageData::R32F)
+                    delete [] exrbuffer;
+                }
+                else if (data->Format() == BufferImageData::R32F)
+                {
+                    unsigned char* exrbuffer = NULL;
+                    const int bytes = SimpleEXRSaverZ((void**)&exrbuffer, width, height, srcbuffer);
+                    if (bytes && exrbuffer)
                     {
-                        unsigned char* exrbuffer = NULL;
-                        const int bytes = SimpleEXRSaverZ((void**)&exrbuffer, width, height, srcbuffer);
-                        if (bytes && exrbuffer)
-                        {
-                            result = SaveFile(path, exrbuffer, bytes);
-                        }
-                        delete [] exrbuffer;
+                        result = SaveFile(path, exrbuffer, bytes);
                     }
-                } else {
-                    const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
-                    if (data->Format() == BufferImageData::RGBA8) {
-                        // BYTE -> float
-                        float *hdrbuffer = new float[width*height*4];
-                        for (size_t i = 0; i < width * height * 4; i++) {
-                            hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
-                        }
+                    delete [] exrbuffer;
+                }
+            } else {
+                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                if (data->Format() == BufferImageData::RGBA8) {
+                    // BYTE -> float
+                    float *hdrbuffer = new float[width*height*4];
+                    for (size_t i = 0; i < width * height * 4; i++) {
+                        hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                    }
 
-                        unsigned char* exrbuffer = NULL;
-                        const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, hdrbuffer);
-                        if (bytes && exrbuffer)
-                        {
-                            result = SaveFile(path, exrbuffer, bytes);
-                        }
-                        delete [] exrbuffer;
-                        delete [] hdrbuffer;
-                    }
-                }
-            }
-            else if (ext == "hdr")
-            {
-                if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
-                    const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
-                    if (data->Format() == BufferImageData::RGBA32F)
+                    unsigned char* exrbuffer = NULL;
+                    const int bytes = SimpleEXRSaverRGBA((void**)&exrbuffer, width, height, hdrbuffer);
+                    if (bytes && exrbuffer)
                     {
-                        result = SimpleHDRSaver(filename, width, height, srcbuffer);
+                        result = SaveFile(path, exrbuffer, bytes);
                     }
-                    else if (data->Format() == BufferImageData::R32F)
-                    {
-                        // TODO:
-                        assert(0);
-                        printf("TODO: implementation. R32F HDR saver\n");
-                    }
-                } else {
-                    const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
-                    if (data->Format() == BufferImageData::RGBA8) {
-                        // BYTE -> float
-                        float *hdrbuffer = new float[width*height*4];
-                        for (size_t i = 0; i < width * height * 4; i++) {
-                            hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
-                        }
-                        
-                        result = SimpleHDRSaver(filename, width, height, hdrbuffer);
-                        
-                        delete [] hdrbuffer;
-                    }
+                    delete [] exrbuffer;
+                    delete [] hdrbuffer;
                 }
             }
         }
+        else if (ext == "hdr")
+        {
+            if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
+                const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
+                if (data->Format() == BufferImageData::RGBA32F)
+                {
+                    result = SimpleHDRSaver(path.c_str(), width, height, srcbuffer);
+                }
+                else if (data->Format() == BufferImageData::R32F)
+                {
+                    // TODO:
+                    assert(0);
+                    printf("TODO: implementation. R32F HDR saver\n");
+                }
+            } else {
+                const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+                if (data->Format() == BufferImageData::RGBA8) {
+                    // BYTE -> float
+                    float *hdrbuffer = new float[width*height*4];
+                    for (size_t i = 0; i < width * height * 4; i++) {
+                        hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                    }
+                    
+                    result = SimpleHDRSaver(path.c_str(), width, height, hdrbuffer);
+                    
+                    delete [] hdrbuffer;
+                }
+            }
+        }
+    
         if (result) {
-            printf("Save:%s\n", filename);
+            printf("Save:%s\n", path.c_str());
         }
         return result;
     }
