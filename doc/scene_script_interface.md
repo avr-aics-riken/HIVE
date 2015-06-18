@@ -122,10 +122,16 @@ Load() でファイル名と timestep 番号を指定し, 該当の timestep の
 ## HDMLoader()
 
 HDMファイルを読み込むローダークラス. hrender が HDMlib とリンクされているときのみ利用可能.
-ボリュームプリミティブが取得可能.
+Sparse ボリュームプリミティブが取得可能.
+HDMlib の制約により, 1 シーン内で 1 HDMlib 形式のファイルしか読む事ができない.
+(Init() を呼べるのは一回のみ)
 
     local loader = HDMLoader()
-    loader:Load('cellid.bcm', 'data.bcm')
+    loader:Init('cellid.bcm', 'data.bcm')
+
+    # 指定されたフィールドと timestep の sparse volume プリミティブを取得
+    # fieldname, fieldtype, components, stepNo
+    local svolumedata = loader:LoadField('Tmp32', 'Float32', 1, 0)
 
 ## BCMLoader()
 
