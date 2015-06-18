@@ -9,6 +9,13 @@
 #include "Buffer.h"
 #include "BufferSparseVolumeData.h"
 
+// Forward decl.
+namespace BCMFileIO {
+
+class BCMFileLoader;
+
+}
+
 /**
  * HDMデータローダー
  */
@@ -18,19 +25,21 @@ class HDMLoader : public RefCount
 	HDMLoader();
 	~HDMLoader();
 	void Clear();
-	bool Load(const char *cellidFilename, const char *dataFilename,
-			  const char *fieldName, const char *fieldType, int components,
-			  int virtualCells = 2);
-	int Width();
-	int Height();
-	int Depth();
-	int Component();
-	FloatBuffer *Buffer();
 
-	BufferSparseVolumeData *SparseVolumeData();
+	// Initialize HDM loading.
+	// @note { Due to the API design of HDMLoader, Init() can be called only once in the program lifecycle.
+	// (i.e. You cannot create two instance of HDMLoader.) }
+	bool Init(const char *cellidFilename, const char *dataFilename);
+
+	// Load field data of given name, type, compoents and timeStep. Valid after Init().
+	BufferSparseVolumeData* LoadField(const char *fieldName, const char *fieldType, int components,
+			  int timeStepIndex = 0, int virtualCells = 2);
 
   private:
-	BufferSparseVolumeData m_sparseVolume;
+	bool m_initialized;
+	BCMFileIO::BCMFileLoader *m_loader;
+
+	std::map<std::string, RefPtr<BufferSparseVolumeData> > m_fields;
 };
 
 #endif //_HDMLOADER_H_

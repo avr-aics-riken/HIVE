@@ -32,13 +32,21 @@
 #include "BCMFileSaver.h"
 
 /// コンストラクタ
-HDMLoader::HDMLoader() { Clear(); }
+HDMLoader::HDMLoader() : m_initialized(false), m_loader(NULL) { Clear(); }
 
 /// デストラクタ
 HDMLoader::~HDMLoader() { Clear(); }
 
 /// ボリュームクリア
-void HDMLoader::Clear() { m_sparseVolume.Clear(); }
+void HDMLoader::Clear() {
+	std::map<std::string, RefPtr<BufferSparseVolumeData> >::iterator it(m_fields.begin());
+	std::map<std::string, RefPtr<BufferSparseVolumeData> >::iterator itEnd(m_fields.end());
+
+	for (; it != itEnd; it++) {
+		it->second = 0;
+	}
+}
+
 
 namespace
 {
@@ -50,16 +58,18 @@ template <typename T> class VoxelBlock
 
 	~VoxelBlock(){};
 
-	void Resize(int sx, int sy, int sz)
+	void Resize(int sx, int sy, int sz, int n)
 	{
-		data.resize(sx * sy * sz);
+		data.resize(sx * sy * sz * n);
 		size[0] = sx;
 		size[1] = sy;
 		size[2] = sz;
+		numComponents = n;
 	}
 
 	int size[3];
 	int offset[3];
+	int numComponents;
 	std::vector<T> data;
 	int id;
 };
@@ -181,6 +191,11 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 	ox = (std::min)(rootDim[0] * dx, ox);
 	oy = (std::min)(rootDim[1] * dy, oy);
 	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
 	// printf("lv = %d\n", level);
 	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
 	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
@@ -188,7 +203,7 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
 	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
 
-	block.Resize(dx, dy, dz);
+	block.Resize(dx, dy, dz, 1 /* scalar */);
 	block.offset[0] = ox;
 	block.offset[1] = oy;
 	block.offset[2] = oz;
@@ -255,6 +270,11 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 	ox = (std::min)(rootDim[0] * dx, ox);
 	oy = (std::min)(rootDim[1] * dy, oy);
 	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
 	// printf("lv = %d\n", level);
 	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
 	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
@@ -262,7 +282,7 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
 	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
 
-	block.Resize(dx, dy, dz);
+	block.Resize(dx, dy, dz, 3 /* vector */);
 	block.offset[0] = ox;
 	block.offset[1] = oy;
 	block.offset[2] = oz;
@@ -303,6 +323,80 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 }
 
 template <typename T>
+void LoadCellIDBlock(VoxelBlock<float> &block, Scalar3D<T> *mesh, Vec3i sz,
+						 size_t level, size_t maxLevel, size_t rootDim[3],
+						 const Vec3d &org, const Vec3d &globalOrigin,
+						 const Vec3d &pitch, const Vec3d &globalRegion)
+{
+	T *data = mesh->getData();
+	Index3DS idx = mesh->getIndex();
+
+	// Compute voxel size in global voxel resolutuon
+	size_t dx = sz.x * (1 << (maxLevel - level));
+	size_t dy = sz.y * (1 << (maxLevel - level));
+	size_t dz = sz.z * (1 << (maxLevel - level));
+
+	size_t bx = (1 << (maxLevel - level));
+	size_t by = (1 << (maxLevel - level));
+	size_t bz = (1 << (maxLevel - level));
+
+	size_t ox = sz.x * rootDim[0] *
+				((1 << (maxLevel - level)) *
+				 ((double)(org.x - globalOrigin.x) / (double)globalRegion.x));
+	size_t oy = sz.y * rootDim[1] *
+				((1 << (maxLevel - level)) *
+				 ((double)(org.y - globalOrigin.y) / (double)globalRegion.y));
+	size_t oz = sz.z * rootDim[2] *
+				((1 << (maxLevel - level)) *
+				 ((double)(org.z - globalOrigin.z) / (double)globalRegion.z));
+	ox = (std::min)(rootDim[0] * dx, ox);
+	oy = (std::min)(rootDim[1] * dy, oy);
+	oz = (std::min)(rootDim[2] * dz, oz);
+
+	ox *= (1 << level);
+	oy *= (1 << level);
+	oz *= (1 << level);
+
+	// printf("lv = %d\n", level);
+	// printf("org = %f, %f, %f\n", org.x, org.y, org.z);
+	// printf("pitch = %f, %f, %f\n", pitch.x, pitch.y, pitch.z);
+	// printf("o = %d, %d, %d, d = %d, %d, %d\n", ox, oy, oz, dx, dy, dz);
+	// printf("%f\n", rootDim[0] * sz.x * (1 << (maxLevel - level)) *
+	// (double)(org.x - globalOrigin.x) / (double)globalRegion.x);
+
+	block.Resize(dx, dy, dz, 1 /* scalar */);
+	block.offset[0] = ox;
+	block.offset[1] = oy;
+	block.offset[2] = oz;
+
+	// NOTE: Skip virtual Cell
+	for (size_t z = 0; z < sz.z; z++)
+	{
+		for (size_t y = 0; y < sz.y; y++)
+		{
+			for (size_t x = 0; x < sz.x; x++)
+			{
+				T val = data[idx(x, y, z)];
+
+				// Splat voxel value
+				for (size_t w = 0; w < bz; w++)
+				{
+					for (size_t v = 0; v < by; v++)
+					{
+						for (size_t u = 0; u < bx; u++)
+						{
+							// Assume T is uchar
+							block.data[(z * bz + w) * dy * dx +
+									   (y * by + v) * dx + (x * bx + u)] = (float)val;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+template <typename T>
 void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 							const int dcid, size_t maxLevel, size_t rootDim[3],
 							const Vec3d &globalOrigin,
@@ -329,8 +423,59 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		vb.id = id;
 
 		BufferVolumeData *vol = new BufferVolumeData();
-		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 1);
+		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
+		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		assert(vb.numComponents == 1);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
+		//printf("offset = %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		
+		// Implicitly convert voxel data to float precision if T is double.
+		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2]; i++)
+		{
+			vol->Buffer()->GetBuffer()[i] = vb.data[i];
+		}
+
+		sparseVolume.AddVolume(vb.offset[0], vb.offset[1], vb.offset[2], vol);
+	}
+}
+
+// Usually CellID is represented as uchar, and we convert it to float type since
+// currently HIVE only supports float type volume data.
+template <typename T>
+void ConvertCellIDBlock(BufferSparseVolumeData &sparseVolume,
+							const int dcid, size_t maxLevel, size_t rootDim[3],
+							const Vec3d &globalOrigin,
+							const Vec3d &globalRegion)
+{
+	BlockManager &blockManager = BlockManager::getInstance();
+	const MPI::Intracomm &comm = blockManager.getCommunicator();
+	Vec3i sz = blockManager.getSize();
+
+	for (int id = 0; id < blockManager.getNumBlock(); ++id)
+	{
+		BlockBase *block = blockManager.getBlock(id);
+
+		size_t level = block->getLevel();
+		const Vec3d &org = block->getOrigin();
+		const Vec3d &pitch = block->getCellSize();
+
+		Scalar3D<T> *mesh =
+			dynamic_cast<Scalar3D<T> *>(block->getDataClass(dcid));
+
+		VoxelBlock<float> vb;
+		LoadCellIDBlock<unsigned char>(vb, mesh, sz, level, maxLevel, rootDim, org,
+							globalOrigin, pitch, globalRegion);
+		vb.id = id;
+
+		BufferVolumeData *vol = new BufferVolumeData();
+		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
+		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		assert(vb.numComponents == 1);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
+
+		//printf("offset = %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
+		
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2]; i++)
 		{
@@ -372,7 +517,8 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 		vb.id = id;
 
 		BufferVolumeData *vol = new BufferVolumeData();
-		vol->Create(vb.size[0], vb.size[1], vb.size[2], /* components */ 3);
+		assert(vb.numComponents == 3);
+		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
 		// Implicitly convert voxel data to float precision if T is double.
 		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * 3; i++)
@@ -386,21 +532,62 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 }
 
 /**
- * HDMデータのロード
+ * HDMデータの initialize
  * @param cellidFilename Cell ID ファイルパス
  * @param dataFilename   data ファイルパス
- * @param fieldName      field name
- * @param fieldType      field type("Float32", "Float64", etc)
- * @param components     The number of components(1 = scalar, 3 = vector)
- * @param virtualCells   The number of virtual cells(Usually 2)
  * @retval true 成功
  * @retval false 失敗
  */
-bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
-					 const char *fieldName, const char *fieldType,
-					 int components, int virtualCells)
+bool HDMLoader::Init(const char *cellidFilename, const char *dataFilename)
 {
-	Clear();
+	m_initialized = false;
+
+	// cellid.bcm
+	BoundaryConditionSetter *bcsetter = new BoundaryConditionSetter;
+	m_loader = new BCMFileIO::BCMFileLoader(cellidFilename, bcsetter);
+	delete bcsetter;
+
+	BlockManager &blockManager = BlockManager::getInstance();
+	blockManager.printBlockLayoutInfo();
+
+	// data.bcm
+	if (!m_loader->LoadAdditionalIndex(dataFilename))
+	{
+		fprintf(stderr, "[HDMLoader] Load File Error %s\n", dataFilename);
+		return false;
+	}
+
+	m_initialized = true;
+
+	return true;
+}
+
+/**
+ * HDMデータのロード
+ * @param fieldName      field name
+ * @param fieldType      field type("Float32", "Float64", etc)
+ * @param components     The number of components(1 = scalar, 3 = vector)
+ * @param timeStepIndex  Time step index
+ * @param virtualCells   The number of virtual cells(Usually 2)
+ * @retval non-NULL 成功
+ * @retval NULL 失敗
+ */
+BufferSparseVolumeData* HDMLoader::LoadField(const char *fieldName, const char *fieldType,
+					 int components, int timeStepIndex, int virtualCells)
+{
+	//Clear();
+
+	if (fieldName == NULL) {
+		fprintf(stderr, "[HDMLoader] NULL input for fieldName.\n",
+				components);
+		return NULL;
+	}
+
+	if (fieldType == NULL) {
+		fprintf(stderr, "[HDMLoader] NULL input for fieldType.\n",
+				components);
+		return NULL;
+	}
 
 	if (components == 1 || components == 3)
 	{
@@ -410,23 +597,25 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	{
 		fprintf(stderr, "[HDMLoader] components must be 1 or 3, but %d given\n",
 				components);
-		return false;
+		return NULL;
 	}
 
 	DataType type = ParseDataType(fieldType);
 	if (type == TYPE_UNKNOWN)
 	{
 		fprintf(stderr, "[HDMLoader] Unsupported field type: %s\n", fieldType);
-		return false;
+		return NULL;
 	}
 
-	// cellid.bcm
-	BoundaryConditionSetter *bcsetter = new BoundaryConditionSetter;
-	BCMFileIO::BCMFileLoader loader(cellidFilename, bcsetter);
-	delete bcsetter;
+	std::string fieldTag(fieldName);
 
-	const Vec3d &globalOrigin = loader.GetGlobalOrigin();
-	const Vec3d &globalRegion = loader.GetGlobalRegion();
+	// Find cache
+	if (m_fields.find(fieldName) != m_fields.end()) {
+		return m_fields[fieldName];
+	}
+
+	const Vec3d &globalOrigin = m_loader->GetGlobalOrigin();
+	const Vec3d &globalRegion = m_loader->GetGlobalRegion();
 
 	BlockManager &blockManager = BlockManager::getInstance();
 	blockManager.printBlockLayoutInfo();
@@ -440,15 +629,8 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	}
 	// printf("maxLevel = %d\n", maxLevel);
 
-	// data.bcm
-	if (!loader.LoadAdditionalIndex(dataFilename))
-	{
-		fprintf(stderr, "[HDMLoader] Load File Error %s\n", dataFilename);
-		return false;
-	}
-
 	//
-	const BCMOctree *octree = loader.GetOctree();
+	const BCMOctree *octree = m_loader->GetOctree();
 	const RootGrid *rootGrid = octree->getRootGrid();
 
 	Vec3i lbSize = blockManager.getSize();
@@ -464,102 +646,99 @@ bool HDMLoader::Load(const char *cellidFilename, const char *dataFilename,
 	dim[1] = (1 << maxLevel) * lbSize.y * rootDim[1];
 	dim[2] = (1 << maxLevel) * lbSize.z * rootDim[2];
 
-	// Get timestep for given field
-	const BCMFileIO::IdxStep *step = loader.GetStep(fieldName);
-
-	const std::list<unsigned int> *stepList = step->GetStepList();
-	// printf("dbg: # of steps = %d\n", stepList->size());
-
 	int vc = virtualCells;
 
-	int id_cid = 0;
 	int id_s32 = 0;
 	int id_s64 = 0;
 	int id_v32[3] = {0}; // 0:u, 1:v, 2:w
 	int id_v64[3] = {0}; // 0:u, 1:v, 2:w
 
-	loader.LoadLeafBlock(&id_cid, "CellID", vc);
-
 	// Prepare SparseVolume
-	m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
+	//m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
+	BufferSparseVolumeData *sparseVolume = new BufferSparseVolumeData();
+	sparseVolume->Create(dim[0], dim[1], dim[2], components);
 
-	// @fixme { stepList }
-	std::list<unsigned int>::const_iterator it = stepList->begin();
 	{
+		// Treat 'CellID' as a special case.
+		std::string fieldNameStr(fieldName);
+		if (fieldNameStr.compare("CellID") == 0) {
 
-		if (type == TYPE_FLOAT32)
-		{
+			int id_cid = 0;
+			m_loader->LoadLeafBlock(&id_cid, "CellID", vc);
+			// Assume CellID has type uchar.
+			ConvertCellIDBlock<unsigned char>((*sparseVolume), id_cid, maxLevel,
+										  rootDim, globalOrigin,
+										  globalRegion);
 
-			if (components == 1)
-			{
-				loader.LoadLeafBlock(&id_s32, fieldName, vc, *it);
-				ConvertLeafBlockScalar<float>(m_sparseVolume, id_s32, maxLevel,
-											  rootDim, globalOrigin,
-											  globalRegion);
+		} else {
+
+			// Get timestep for given field
+			const BCMFileIO::IdxStep *step = m_loader->GetStep(fieldName);
+
+			const std::list<unsigned int> *stepList = step->GetStepList();
+			// printf("dbg: # of steps = %d\n", stepList->size());
+
+			if (timeStepIndex >= stepList->size()) {
+				fprintf(stderr, "[HDMloader] Given time step index %d exceeds the maximum time step in the file %d.\n", timeStepIndex, (int)stepList->size());
+				delete sparseVolume;
+				return NULL;
 			}
-			else
-			{
-				loader.LoadLeafBlock(id_v32, fieldName, vc, *it);
-				ConvertLeafBlockVector<float>(m_sparseVolume, id_v32, maxLevel,
-											  rootDim, globalOrigin,
-											  globalRegion);
+
+
+			std::list<unsigned int>::const_iterator it = stepList->begin();
+
+			// Move to specified time step.
+			for (int i = 0; i < timeStepIndex; i++) {
+				it++;
 			}
-		}
-		else if (type == TYPE_FLOAT64)
-		{
-			if (components == 1)
+
 			{
-				loader.LoadLeafBlock(&id_s64, fieldName, vc, *it);
-				ConvertLeafBlockScalar<double>(m_sparseVolume, id_s64, maxLevel,
-											   rootDim, globalOrigin,
-											   globalRegion);
-			}
-			else
-			{
-				loader.LoadLeafBlock(id_v64, fieldName, vc, *it);
-				ConvertLeafBlockVector<double>(m_sparseVolume, id_v64, maxLevel,
-											   rootDim, globalOrigin,
-											   globalRegion);
+
+				if (type == TYPE_FLOAT32)
+				{
+
+					if (components == 1)
+					{
+						m_loader->LoadLeafBlock(&id_s32, fieldName, vc, *it);
+						ConvertLeafBlockScalar<float>((*sparseVolume), id_s32, maxLevel,
+													  rootDim, globalOrigin,
+													  globalRegion);
+					}
+					else
+					{
+						m_loader->LoadLeafBlock(id_v32, fieldName, vc, *it);
+						ConvertLeafBlockVector<float>((*sparseVolume), id_v32, maxLevel,
+													  rootDim, globalOrigin,
+													  globalRegion);
+					}
+				}
+				else if (type == TYPE_FLOAT64)
+				{
+					if (components == 1)
+					{
+						m_loader->LoadLeafBlock(&id_s64, fieldName, vc, *it);
+						ConvertLeafBlockScalar<double>((*sparseVolume), id_s64, maxLevel,
+													   rootDim, globalOrigin,
+													   globalRegion);
+					}
+					else
+					{
+						m_loader->LoadLeafBlock(id_v64, fieldName, vc, *it);
+						ConvertLeafBlockVector<double>((*sparseVolume), id_v64, maxLevel,
+													   rootDim, globalOrigin,
+													   globalRegion);
+					}
+				}
 			}
 		}
 	}
 
 	// @note { Must call `Build` here to build spacial data structure for sparse
 	// volume(to use `Sample` meethod in later phase. }
-	m_sparseVolume.Build();
+	sparseVolume->Build();
 
-	return true;
-}
+	// Add to table
+	m_fields[fieldTag] = sparseVolume;
 
-/**
- * HDMWidth取得
- * @retval int HDMWidth
- */
-int HDMLoader::Width() { return m_sparseVolume.Width(); }
-
-/**
- * HDMHeight取得
- * @retval int HDMHeight
- */
-int HDMLoader::Height() { return m_sparseVolume.Height(); }
-
-/**
- * HDMDepth取得
- * @retval int HDMDepth
- */
-int HDMLoader::Depth() { return m_sparseVolume.Depth(); }
-
-/**
- * HDMComponent取得
- * @retval int Component数
- */
-int HDMLoader::Component() { return m_sparseVolume.Component(); }
-
-/**
- * SparseVolumeData取得
- * @retval SparseVolumeData* SparseVolumeDataアドレス
- */
-BufferSparseVolumeData *HDMLoader::SparseVolumeData()
-{
-	return &m_sparseVolume;
+	return m_fields[fieldTag];
 }
