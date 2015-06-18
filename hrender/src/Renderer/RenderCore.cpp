@@ -600,6 +600,9 @@ private:
             color->Clear();
             depth->Clear();
             if (w != 0 && h != 0) {
+                if (colorfmt == BufferImageData::INVALID) {
+                    colorfmt = BufferImageData::RGBA8;
+                }
                 color->Create(colorfmt, w, h);
                 depth->Create(BufferImageData::R32F,  w, h);
             }
