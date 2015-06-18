@@ -13,11 +13,13 @@ camera:LookAt(
 
 
 local hdm = HDMLoader()
--- cellid file, data file, field name, field type, components(1=scalar, 3=vector), stepNo
-hdm:Load('hdm_out/cellid.bcm', 'hdm_out/data.bcm', "Tmp32", "Float32", 1, 0)
+hdm:Init('hdm_out/cellid.bcm', 'hdm_out/data.bcm')
+
+-- field name, field type, components(1=scalar, 3=vector), stepNo
+local volumedata = hdm:LoadField("Tmp32", "Float32", 1, 0)
+print("volumedata", volumedata)
 
 local volume = SparseVolumeModel()
-local volumedata = hdm:SparseVolumeData()
 volume:Create(volumedata)
 volume:SetShader('def_volume_raymarch4.frag')
 render {camera, volume}
