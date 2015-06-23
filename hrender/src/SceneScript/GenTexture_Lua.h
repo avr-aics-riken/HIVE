@@ -70,6 +70,7 @@ public:
 			GenTexture::Create2D_RGBA32(&buf[0], width, height);
 			return true;
 		}
+        return false;
 	}
 
 	bool Create3D(LuaTable tbl, int type, int width, int height, int depth) { 
@@ -88,6 +89,7 @@ public:
 			GenTexture::Create3D_F32(&buf[0], width, height, depth);
 			return true;
 		}
+        return false;
 	}
 	BufferImageData_Lua* ImageData() {
 		return new BufferImageData_Lua(GenTexture::ImageData());
