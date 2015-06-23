@@ -9,6 +9,8 @@
 #include "Buffer.h"
 #include "BufferSparseVolumeData.h"
 
+#include <map>
+
 // Forward decl.
 namespace BCMFileIO {
 
