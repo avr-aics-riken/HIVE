@@ -8,3 +8,5 @@ HIVE/test/node_modules
 HIVE/HIVE/node_modules
 third_party/fpzip-1.0.1.tar.gz
 third_party/zoltan_distrib_v3.81.tar.gz
+.drone.yml
+DEVELOPER.md
