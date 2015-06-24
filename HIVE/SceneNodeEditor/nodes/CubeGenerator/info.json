@@ -1,0 +1,14 @@
+{
+	"name": "CubeGenerator",
+	"funcname": "CubeGenerator",
+	"info":"Cubeを生成するためのノード",
+	"pos": [100, 100],
+	"varname": "instCubeGen",
+	"customfuncfile":"generator.lua", 
+	"input": [
+		{"name": "size", "type": "vec3", "value": [1.0, 1.0, 1.0]}
+	],
+	"output": [
+		{"name": "MeshData",  "type": "BufferMeshData"}
+	]
+}

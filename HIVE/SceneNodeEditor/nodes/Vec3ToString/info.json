@@ -1,0 +1,14 @@
+{
+	"name": "Vec3ToString",
+	"funcname": "Vec3ToString",
+	"info":"Vec3をStringにするノード",
+	"pos": [400, 100],
+	"varname": "instVec3ToString",
+	"customfuncfile":"conv.lua",
+	"input": [
+		{"name": "Vec3",  "type": "vec3", "value":[0,0,0]}
+	],
+	"output": [
+		{"name": "String", "type": "string" }
+	]
+}
