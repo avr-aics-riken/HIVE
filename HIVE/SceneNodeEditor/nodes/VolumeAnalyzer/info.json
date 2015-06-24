@@ -1,0 +1,15 @@
+{
+	"name": "VolumeAnalyzer",
+	"funcname": "VolumeAnalizeFunc",
+	"info":"VolumeDataの統計情報を取得するするノード",
+	"pos": [400, 100],
+	"varname": "instVolumeAnalyze",
+	"customfuncfile":"volumeanalyzer.lua",
+	"input": [
+		{"name": "volume", "type": "BufferVolumeData"}
+	],
+	"output": [
+		{"name": "min", "type": "vec3" },
+		{"name": "max", "type": "vec3" }
+	]
+}
