@@ -1,0 +1,15 @@
+{
+	"name": "SparseVolumeToVolume",
+	"funcname": "SparseVolumeToVolumeFunc",
+	"info":"SparseVolumeからVolumeデータを作成するノード",
+	"pos": [130, 300],
+	"varname": "instSparseVolumeToVolumeFilter",
+	"customfuncfile": "sparsetovolume.lua",
+	"input": [
+		{"name": "sparsevolume", "type": "BufferSparseVolumeData"},
+		{"name": "resample", "type": "float", "value": 1.0}
+	],
+	"output": [
+		{"name": "volume", "type": "BufferVolumeData"}
+	]
+}
