@@ -1,0 +1,6 @@
+{
+"type":"POLYGON",
+"uniforms":[
+	{"label" : "Color", "name" : "color", "ui" : "colorpicker", "uniform" : "vec4", "val" : [0.95, 0.95, 0.95, 1.0] }
+]
+}
