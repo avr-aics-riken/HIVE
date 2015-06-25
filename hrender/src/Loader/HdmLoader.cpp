@@ -310,10 +310,10 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 									   0] = valU;
 							block.data[3 * ((z * bz + w) * dy * dx +
 											(y * by + v) * dx + (x * bx + u)) +
-									   0] = valV;
+									   1] = valV;
 							block.data[3 * ((z * bz + w) * dy * dx +
 											(y * by + v) * dx + (x * bx + u)) +
-									   0] = valW;
+									   2] = valW;
 						}
 					}
 				}
@@ -521,7 +521,7 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
 		// Implicitly convert voxel data to float precision if T is double.
-		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * 3; i++)
+		for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * vb.numComponents; i++)
 		{
 			vol->Buffer()->GetBuffer()[i] = vb.data[i];
 		}
