@@ -1,0 +1,14 @@
+{
+	"name": "LoadImage",
+	"funcname": "LoadImage",
+	"info":"イメージファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instImageLoader",
+	"customfuncfile":"imageloader.lua", 
+	"input": [
+		{"name": "filepath", "type": "string", "value": "test.jpg"}
+	],
+	"output": [
+		{"name": "ImageData",  "type": "BufferImageData"}
+	]
+}

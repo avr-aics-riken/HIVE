@@ -5,7 +5,11 @@ function CreateCamera(property)
 		property.filename)
 	cam = Camera()
 	cam:SetScreenSize(property.screensize[1], property.screensize[2])
-	cam:SetFilename(property.filename)
+	cam:SetFilename(property.color_file)
+	if property.depth_file ~= nil then
+		cam:SetDepthFilename(property.depth_file)
+	end
+	cam:ClearColor(property.clearcolor[1],property.clearcolor[2],property.clearcolor[3],property.clearcolor[4])
 	cam:LookAt(
 		property.position[1], property.position[2], property.position[3],
 		property.target[1], property.target[2], property.target[3],
