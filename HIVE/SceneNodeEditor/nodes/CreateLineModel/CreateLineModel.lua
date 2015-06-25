@@ -24,6 +24,10 @@ function CreateLineModel(property)
 			print('float[' .. v.name .. '] = (', v.value, ')')
 			lm:SetFloat(v.name, v.value)
 		end
+		if v.type == 'texture' then
+			print('texture[' .. v.name .. '] = (', v.value, ')')
+			lm:SetTexture(v.name, v.value)
+		end
 	end
 	function getModel()
 		return lm

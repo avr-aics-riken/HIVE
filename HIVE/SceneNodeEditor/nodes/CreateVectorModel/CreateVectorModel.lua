@@ -26,6 +26,10 @@ function CreateVectorModel(property)
 			print('float[' .. v.name .. '] = (', v.value, ')')
 			vm:SetFloat(v.name, v.value)
 		end
+		if v.type == 'texture' then
+			print('texture[' .. v.name .. '] = (', v.value, ')')
+			vm:SetTexture(v.name, v.value)
+		end
 	end
 	function getModel()
 		return vm

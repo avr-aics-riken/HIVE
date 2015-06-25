@@ -1,0 +1,15 @@
+{
+	"name": "UniformTexture",
+	"funcname": "UniformTexture",
+	"info":"Uniform Textureをつくるノード",
+	"pos": [110, 200],
+	"varname": "instUniformTexture",
+	"customfuncfile":"texture.lua",
+	"input": [
+		{"name": "name", "type": "string", "value": "img0"},
+		{"name": "val",  "type": "BufferImageData"}
+	],
+	"output": [
+		{"name": "uniform",  "type": "Uniform"}
+	]
+}
