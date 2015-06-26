@@ -1,0 +1,14 @@
+{
+	"name": "SaveImage",
+	"funcname": "SaveImage",
+	"info":"イメージファイルを保存するためのノード",
+	"pos": [100, 100],
+	"varname": "instImageSaver",
+	"customfuncfile":"imagesaver.lua", 
+	"rootnode":true,
+	"input": [
+		{"name": "imageData", "type": "BufferImageData" },
+		{"name": "filepath", "type": "string", "value": "test.jpg"}
+	],
+	"output": []
+}
