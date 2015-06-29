@@ -2,11 +2,13 @@
  * @file PdmLoader.cpp
  * PDMデータローダー
  */
-#include "PdmLoader.h"
-
 #ifndef HIVE_WITH_PDMLIB
 #error "HIVE_WITH_PDMLIB must be defined when you compile CDMLoader module"
 #endif
+
+#include <mpi.h> // must include mpi.h befor stdio.h for Intel MPI compiler.
+
+#include "PdmLoader.h"
 
 #include <cstring>
 
