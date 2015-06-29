@@ -56,7 +56,31 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     # (This looks like a problem of cmake...)
     $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
     $ make
-    
+
+### Build options
+
+#### Compilers
+
+Use `CXX` and `CC` flag to specify custom compiler. e.g.:
+
+    CXX=mympicxx CC=mympicc /path/to/cmake ...
+
+#### Options
+
+    -DLUA_USE_READLINE=Off -DLUA_USE_CURSES=Off : disable link with curses and readlines in lua
+
+    HIVE_BUILD_UNIT_TEST OFF CACHE BOOL "Build unit test?"
+    HIVE_BUILD_K_CROSS_COMPILE OFF CACHE BOOL "Build for K/FX10 target with corss compiling?"
+    HIVE_BUILD_WITH_MPI OFF CACHE BOOL "Build with MPI support?"
+    HIVE_BUILD_WITH_OPENMP OFF CACHE BOOL "Build with OpenMP support?"
+    HIVE_BUILD_SCREEN_PARALLEL OFF CACHE BOOL "Build with screen parallel support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    HIVE_BUILD_WITH_CDMLIB OFF CACHE BOOL "Build with CDMlib support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    HIVE_BUILD_WITH_PDMLIB OFF CACHE BOOL "Build with PDMlib support?"
+    HIVE_BUILD_WITH_HDMLIB OFF CACHE BOOL "Build with HDMlib support?"
+    HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?"
+    HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+
 ### K/FX10
 
 Optionally edit `./scripts/cmake_k_cross.sh`, then
