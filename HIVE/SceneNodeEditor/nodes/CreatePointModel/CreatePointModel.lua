@@ -23,6 +23,10 @@ function CreatePointModel(property)
 			print('float[' .. v.name .. '] = (', v.value, ')')
 			pm:SetFloat(v.name, v.value)
 		end
+		if v.type == 'texture' then
+			print('texture[' .. v.name .. '] = (', v.value, ')')
+			pm:SetTexture(v.name, v.value)
+		end
 	end
 	function getModel()
 		return pm
