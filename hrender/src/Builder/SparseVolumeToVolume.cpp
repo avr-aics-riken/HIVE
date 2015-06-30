@@ -47,6 +47,9 @@ int SparseVolumeToVolume::Create(BufferSparseVolumeData *sparseVolume, float res
 	}
 
 	// Resample sparse voxel and create voxel data.
+	#ifdef _OPENMP
+	#pragma omp parallel for
+	#endif
 	for (size_t z = 0; z < destDepth; z++) {
 		for (size_t y = 0; y < destHeight; y++) {
 			for (size_t x = 0; x < destWidth; x++) {
