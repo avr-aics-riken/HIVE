@@ -90,6 +90,21 @@ VOLファイルを読み込むローダークラス
     local loader = VOLLoader()
     loader:Load('data.vol')
 
+## RawVolumeSaver()
+
+RAW 形式のボリュームデータを読み込む. 他のボリュームツールから出力されたデータなどを読み込むときに利用する.
+(e.g. http://ospray.github.io )
+
+    local loader = RawVolumeLoader()
+    -- width, height, depth, component, type
+    loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
+    local volume = VolumeModel()
+    local volumedata = loader:VolumeData()
+
+type には現状 'float' のみ指定可能.
+
+[render_rawvolume.scn](hrender/test/render_rawvolume.scn) 参考例
+
 ## PDBLoader()
 
 PDB(Protein Data Bank)ファイルを読み込むローダークラス.
@@ -100,14 +115,23 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
     loader:Load('input.pdb')
     loader:Load('input.pdb', true) -- generate bond
 
+    local ballModel = pdb:BallData() -- Atom をポイントプリミティブとして取得
+    local stickModel = pdb:StickData() -- Bond 情報を Line プリミティブとして取得(generate bond で bond 情報を構築している場合のみ取得可能.
+
+[render_pdb.scn](hrender/test/render_pdb.scn) 参考例
 
 ## CDMLoader()
 
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
-ボリュームプリミティブが取得可能.
+(非一様)ボリュームプリミティブが取得可能.
+データが非一様で読み込まれるかは .dfi ファイルでの指定に従う.
 
     local loader = CDMLoader()
     loader:Load('input.dfi')
+    local volumeData = loader:VolumeData() -- volume プリミティブを取得
+
+[render_cdm.scn](hrender/test/render_cdm.scn) 参考例
+[render_cdm_nonuni.scn](hrender/test/render_cdm_nonuni.scn) 参考例(非一様)
 
 ## PDMLoader()
 
@@ -118,28 +142,47 @@ Load() でファイル名と timestep 番号を指定し, 該当の timestep の
     local loader = PDMLoader()
     local timestep = 0
     loader:Load('input.dfi', timestep)
+    
+    -- 点データのコンテナ名と, 点の半径を指定(半径は省略可能. 省略時は 1.0 に設定)
+    local pointData = pdm:PointData('Coordinate', 0.2)
+
+    -- 任意形式のコンテナデータを取得.
+    -- コンテナ名に対するデータ形式(float, vec3, etc)はユーザが既知とする.
+    local extraData = pdm:ExtraData('velocity')
+
+[render_pdm.scn](hrender/test/render_pdm.scn) 参考例
 
 ## HDMLoader()
 
 HDMファイルを読み込むローダークラス. hrender が HDMlib とリンクされているときのみ利用可能.
 Sparse ボリュームプリミティブが取得可能.
 HDMlib の制約により, 1 シーン内で 1 HDMlib 形式のファイルしか読む事ができない.
-(Init() を呼べるのは一回のみ)
+(Init() を呼べるのは .scn 内で一回のみ)
 
     local loader = HDMLoader()
     loader:Init('cellid.bcm', 'data.bcm')
 
     # 指定されたフィールドと timestep の sparse volume プリミティブを取得
-    # fieldname, fieldtype, components, stepNo
-    local svolumedata = loader:LoadField('Tmp32', 'Float32', 1, 0)
+    # フールド名, 型, コンポーネント数はユーザがあらかじめ .bcm ファイルなどから
+    # 情報を取得して既知であるとする.
+    # fieldname, fieldtype, components(1=scalar, 3=vector), timeStepNo, virtualCellSize
+    # timeStepNo と virtualCelLSize は省略可能. デフォルトではそれぞれ 0, 2 となる.
+    local svolumedata = loader:LoadField('Tmp32', 'Float32', 1, 0, 2)
 
-## BCMLoader()
+[render_hdm.scn](hrender/test/render_hdm.scn) 参考例
 
-BDMファイルを読み込むローダークラス. hrender が BCMTools とリンクされているときのみ利用可能.
-ボリュームプリミティブが取得可能.
+## UDMLoader()
 
-    local loader = BCMLoader()
-    loader:Load('cellid.bcm', 'data.bcm')
+UDMファイルを読み込むローダークラス. hrender が UDMlib とリンクされているときのみ利用可能.
+非構造プリミティブ(三角形, テトラ, 六面体)が取得可能.
+六面体はポリゴンへと変換される.
+
+    local loader = UDMLoader()
+    loader:Load('index.dfi')
+
+    local tetra = loader:TetraData() -- テトラプリミティブを取得
+
+[render_udm_tetra.scn](hrender/test/render_udm_tetra.scn) 参考例
 
 ## ImageLoader()
 
