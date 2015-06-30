@@ -9,6 +9,8 @@
 #include "Buffer.h"
 #include "BufferExtraData.h"
 
+#include <map>
+
 class BufferMeshData;
 class BufferTetraData;
 
