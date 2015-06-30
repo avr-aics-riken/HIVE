@@ -45,13 +45,15 @@ function build_tp {
 	#
 	cd third_party/ 
 	cd TextParser/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
 
-	# Assume CXX and CC is set to use MPI compiler.
+	# It looks like setting CXX/CC require regeneration of configure.
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/TextParser && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/TextParser && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -62,11 +64,15 @@ function build_cdmlib {
 	#
 	cd third_party/
 	cd CDMlib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+
+	# It looks like setting CXX/CC require regeneration of configure.
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -77,11 +83,15 @@ function build_polylib {
 	#
 	cd third_party/
 	cd Polylib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+
+	# It looks like setting CXX/CC require regeneration of configure.
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
