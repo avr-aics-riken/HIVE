@@ -1,0 +1,14 @@
+{
+	"name": "LoadCDM",
+	"funcname": "LoadCDM",
+	"info":"CDMファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instCDMLoader",
+	"customfuncfile":"cdmloader.lua", 
+	"input": [
+		{"name": "filepath", "type": "string", "value": "input.dfi"}
+	],
+	"output": [
+		{"name": "VolumeData", "type": "BufferVolumeData"}
+	]
+}

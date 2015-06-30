@@ -1,0 +1,15 @@
+{
+	"name": "SaveSPH",
+	"funcname": "SaveSPH",
+	"info":"SPHファイルを出力するためのノード",
+	"pos": [100, 100],
+	"varname": "instSPHSaver",
+	"customfuncfile":"sphsaver.lua", 
+	"rootnode": true,
+	"input": [
+		{"name": "volumedata", "type": "BufferVolumeData"},
+		{"name": "filepath", "type": "string", "value": "output.sph"}
+	],
+	"output": [
+	]
+}

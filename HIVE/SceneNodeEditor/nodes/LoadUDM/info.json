@@ -1,0 +1,14 @@
+{
+	"name": "LoadUDM",
+	"funcname": "LoadUDM",
+	"info":"UDMファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instUDMLoader",
+	"customfuncfile":"udmloader.lua", 
+	"input": [
+		{"name": "filepath", "type": "string", "value": "data.dfi"}
+	],
+	"output": [
+		{"name": "TetraData", "type": "BufferTetraData"}
+	]
+}
