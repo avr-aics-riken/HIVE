@@ -1,0 +1,15 @@
+{
+	"name": "SavePDM",
+	"funcname": "SavePDM",
+	"info":"PDMファイルを出力するためのノード",
+	"pos": [100, 100],
+	"varname": "instPDMSaver",
+	"customfuncfile":"pdmsaver.lua", 
+	"rootnode": true,
+	"input": [
+		{"name": "pointdata", "type": "BufferPointData"},
+		{"name": "basefilepath", "type": "string", "value": "output"}
+	],
+	"output": [
+	]
+}
