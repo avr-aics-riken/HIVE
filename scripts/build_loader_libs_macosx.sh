@@ -16,12 +16,15 @@ function build_tp {
 	#
 	cd third_party/ 
 	cd TextParser/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+
+	autoreconf -ivf
+
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
+	cd BUILD_DIR
 
 	# Assume CXX and CC is set to use MPI compiler.
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/TextParser && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
 
@@ -31,11 +34,14 @@ function build_cdmlib {
 	#
 	cd third_party/
 	cd CDMlib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
+
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
+	cd BUILD_DIR
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
 	cd ${topdir}
 }
 
@@ -45,10 +51,14 @@ function build_polylib {
 	#
 	cd third_party/
 	cd Polylib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
+
+	autoreconf -ivf
+
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
+	cd BUILD_DIR
+	
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
  
@@ -61,7 +71,9 @@ function build_bcmtools {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
+
 	autoreconf -ivf
+
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib && make && make install
 	cd ${topdir}
 }
