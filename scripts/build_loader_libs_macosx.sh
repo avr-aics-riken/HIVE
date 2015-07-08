@@ -6,6 +6,8 @@ c_compiler=mpicc
 cxx_compiler=mpicxx
 cmake_bin=cmake
 
+set -e
+
 function clean_install_dir {
 	rm -rf ${installdir}
 }
@@ -16,6 +18,9 @@ function build_tp {
 	#
 	cd third_party/ 
 	cd TextParser/
+	if [ -f "Makefile" ]; then
+		make distclean
+	fi
 
 	autoreconf -ivf
 
@@ -34,6 +39,9 @@ function build_cdmlib {
 	#
 	cd third_party/
 	cd CDMlib/
+	if [ -f "Makefile" ]; then
+		make distclean
+	fi
 
 	autoreconf -ivf
 
@@ -51,6 +59,9 @@ function build_polylib {
 	#
 	cd third_party/
 	cd Polylib/
+	if [ -f "Makefile" ]; then
+		make distclean
+	fi
 
 	autoreconf -ivf
 
@@ -87,7 +98,12 @@ function build_hdmlib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
+
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
+	cd BUILD_DIR
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
 	cd ${topdir}
 }
 
@@ -162,9 +178,9 @@ function build_compositor {
 
 	cd third_party/ 
 	cd 234Compositor/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+	#if [ -f "Makefile" ]; then
+	#	make distclean
+	#fi
 
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/234Compositor && make && make install
 	cd ${topdir}
