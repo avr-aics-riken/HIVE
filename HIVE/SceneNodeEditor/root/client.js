@@ -10,20 +10,63 @@
 		instance_no = 1,
 		popupNodeList = null,
 		consoleTab,
-		propertyTab;
+		propertyTab,
+		imageTab;
 	
 	socket.on('stdout', function (data) {
 		var output = document.getElementById('consoleOutput'),
-			text = document.getElementById('consoleTextBlock');
-		text.innerHTML = text.innerHTML + "<pre class='stdout'>" + data + "</pre>";
+			text = document.getElementById('consoleTextBlock'),
+			pre = document.createElement('pre');
+		pre.className = "stdout";
+		pre.innerHTML = data;
+		text.appendChild(pre);
 		output.scrollTop = output.scrollHeight;
 	});
 	
 	socket.on('stderr', function (data) {
 		var output = document.getElementById('consoleOutput'),
-			text = document.getElementById('consoleTextBlock');
-		text.innerHTML = text.innerHTML + "<pre class='stderr'>" + data + "</pre>";
+			text = document.getElementById('consoleTextBlock'),
+			pre = document.createElement('pre');
+		pre.className = "stderr";
+		pre.innerHTML = data;
+		text.appendChild(pre);
 		output.scrollTop = output.scrollHeight;
+	});
+	
+	function showResultImage(evt) {
+		console.log("click result image");
+		var image = document.createElement('img'),
+			div = document.createElement('div'),
+			popupBackground = document.getElementById('popupBackground'),
+			clickedElem = document.getElementById('resultImage');
+		image.src = clickedElem.src;
+		image.zIndex = 20;
+		div.className = 'resultImageMax';
+		div.appendChild(image);
+		popupBackground.innerHTML = "";
+		popupBackground.appendChild(div);
+		popupBackground.style.display = "block";
+		popupBackground.onclick = function () {
+			popupBackground.style.display = "none";
+			popupBackground.innerHTML = "";
+		};
+	}
+	
+	socket.on('resultimage', function (data) {
+		if (!data || data.length === 0) { return; }
+		console.log(data);
+		var blob = new Blob([data], {type: "image/jpeg"}),
+			parent = document.getElementById('consoleTextBlock'),
+			image;
+		if (blob) {
+			image = document.createElement('img');
+			image.className = 'resultImage';
+			image.src = URL.createObjectURL(blob);
+			image.id = 'resultImage';
+			image.zIndex = 10;
+			parent.insertBefore(image, parent.firstChild);
+			image.addEventListener('click', showResultImage);
+		}
 	});
 	
 	function clearConsoleOutput() {
@@ -452,7 +495,7 @@
 		clearConsoleOutput();
 	}
 
-	function ButtonRender(e) {
+	function ButtonRender() {
 		console.log(propertyTab);
 		consoleTab(true);
 		var customlua = nui.exportLua();
@@ -550,9 +593,9 @@
 			renderbutton = document.getElementById('Render'),
 			clearbutton  = document.getElementById('Clear'),
 			nodecanvas   = document.getElementById('nodecanvas'),
-
 		//init canvas.
 			draw = SVG('nodecanvas');//.size(1280, 768);
+		
 		nui      = svgNodeUI(draw);
 		nui.clearNodes();
 

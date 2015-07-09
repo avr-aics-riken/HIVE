@@ -26,6 +26,15 @@ function RenderForSIP(arg)
 			network:Connect(arg.send) --'ws://localhost:8082/v1/')
 			network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
 			network:Close()
+
+			--[[
+			print('Send:', 'ws://localhost:58432');
+			local network2 = Connection()
+			network2:Connect('ws://localhost:58432')
+			network2:SendBinary(imageBuffer, imageBufferSize)
+			network2:Close()
+			]]--
+			
 		end
 	end
 end
