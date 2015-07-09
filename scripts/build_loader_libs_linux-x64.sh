@@ -11,6 +11,8 @@
 # $ sudo yum install cmake28
 # 
 
+set -e
+
 topdir=`pwd`
 installdir=`pwd`/third_party/local
 
@@ -117,11 +119,13 @@ function build_hdmlib {
 	#
 	cd third_party/
 	cd HDMlib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -200,9 +204,9 @@ function build_compositor {
 
 	cd third_party/ 
 	cd 234Compositor/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+	#if [ -f "Makefile" ]; then
+	#	make distclean
+	#fi
 
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/234Compositor && make && make install
