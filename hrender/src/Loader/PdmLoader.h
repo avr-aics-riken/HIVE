@@ -30,10 +30,20 @@ public:
 	void Clear();
 
 protected:
+
+	/**
+	 * Loads PDM data for a given timeStep(-1 = read the first timestep in the PDM file).
+	 */
 	bool Load(const char* filename, int timeStep = -1);
 
+	/**
+	 * Read point(coordinate) data.
+	 */
 	BufferPointData* PointData(const char* containerName = "Coordinate", float radius = 1.0);
 
+	/**
+	 * Read cutom attribute(container).
+	 */
 	BufferExtraData* ExtraData(const char* containerName);
 
 	int m_timeStep;
@@ -50,4 +60,3 @@ protected:
 };
 
 #endif //_PDMLOADERNATIVE_H
-
