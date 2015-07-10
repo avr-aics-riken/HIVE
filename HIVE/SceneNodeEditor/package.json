@@ -6,6 +6,7 @@
 		"start": "node server.js"
 	},
 	"dependencies": {
-		"socket.io": "*"
+		"socket.io": "*",
+		"websocket": "*"
 	}
 }
