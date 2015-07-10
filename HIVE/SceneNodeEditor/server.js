@@ -9,7 +9,16 @@ var http = require('http'),
 	exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
 	HRENDER = '../hrender',
-	port = 8080;
+	port = 8080,
+	wshttpserver = http.createServer(function (req, res) {
+		'use strict';
+		console.log('REQ>', req.url);
+		res.end("websocket operator");
+	}).listen(58432),
+	websocket = require('websocket'),
+	ws = new websocket.server({httpServer : wshttpserver,
+							   maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
+							   autoAcceptConnections : false});
 
 //-----------------------------------------------------
 
@@ -150,4 +159,27 @@ io.on('connection', function (socket) {
 	});
 });
 
+ws.on('request', function (request) {
+	"use strict";
+	console.log(request.origin);
+	var connection = request.accept(null, request.origin);
+	console.log('[CONNECTION] Websocket connection accepted : + (new Date())');
+	connection.on('message', function (message) {
+		var buffer;
+		console.log("on websocket message");
+		console.log(message);
+		if (message.type === 'binary') {
+			if (message.binaryData && message.binaryData.length > 0) {
+				io.sockets.emit('resultimage', message.binaryData);
+			}
+		}
+	});
+});
+
+ws.on('close', function () {
+	"use strict";
+	console.log('[CONNECTION CLOSED]');
+});
+
+//------------------------------------------------------------
 
