@@ -1,0 +1,14 @@
+{
+	"name": "VolumeNormFilter",
+	"funcname": "VolumeNormFilterFunc",
+	"info":"Volumeベクトルデータの要素のノルム求めるノード",
+	"pos": [430, 300],
+	"varname": "instVolumeNormFilter",
+	"customfuncfile": "norm.lua",
+	"input": [
+		{"name": "srcvolume", "type": "BufferVolumeData"}
+	],
+	"output": [
+		{"name": "volume", "type": "BufferVolumeData"}
+	]
+}
