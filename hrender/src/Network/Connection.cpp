@@ -507,7 +507,9 @@ public:
     
     std::string Recv() {
         int rank = 0;
+        int nnodes = 0;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
         
         std::string buf;
         int len = 0;
@@ -515,20 +517,31 @@ public:
             buf = m_imp.Recv();
             len = buf.size();
         }
+
+		if (len == 0) {
+			return "";
+		}
+
+		if (nnodes > 1) {
         
-        MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
-        if (len > 0) {
-            if (rank != 0) {
-                buf.resize(len);
-            }
-            MPI_Bcast(&buf.at(0), len, MPI_BYTE, 0, MPI_COMM_WORLD);
-        }
-        
-        if (len > 0) {
-            return std::string(buf, len);
-        } else {
-            return "";
-        }
+			MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
+			if (len > 0) {
+				if (rank != 0) {
+					buf.resize(len);
+				}
+				MPI_Bcast(&buf.at(0), len, MPI_BYTE, 0, MPI_COMM_WORLD);
+			}
+			
+			if (len > 0) {
+				std::string msg = buf;
+				return msg;
+			} else {
+				return "";
+			}
+		} else {
+			std::string msg = buf;
+			return msg;
+		}
     }
     
     std::string GetState() {
