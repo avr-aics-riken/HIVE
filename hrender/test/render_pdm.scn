@@ -12,7 +12,7 @@ camera:LookAt(
 
 
 local pdm = PDMLoader()
-pdm:Load('4CL8.pdm.dfi', -1)
+pdm:Load('4CL8.pdm.dfi', -1) -- -1 => load first timeStep
 
 local pointmodel = PointModel()
 local pointdata = pdm:PointData('Coordinate', 0.2) -- container name, radius
