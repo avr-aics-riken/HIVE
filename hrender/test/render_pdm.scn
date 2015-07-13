@@ -12,6 +12,7 @@ camera:LookAt(
 
 
 local pdm = PDMLoader()
+-- -1 => load first timeStep
 pdm:Load('4CL8.pdm.dfi', -1)
 
 local pointmodel = PointModel()
