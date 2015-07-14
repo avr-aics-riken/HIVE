@@ -160,13 +160,24 @@ body {
 	user-select: none;
 }
 
-.NodeCanvas
+.NodeDiv
 {
 	position:absolute;
 	left:0px;
 	top:0px;
 	right:0px;
 	bottom:0px;
+	overflow: auto;
+}
+.NodeCanvas
+{
+	position:absolute;
+	/*left:0px;
+	top:0px;
+	right:0px;
+	bottom:0px;*/
+	width:4000px;
+	height:4000px;
 }
 
 .consoleArea

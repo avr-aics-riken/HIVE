@@ -213,7 +213,11 @@ function svgNodeUI(draw) {
 		pole.dragstart = poleDragstart(this);
 		pole.dragmove = function (delta, event) {
 			event.stopPropagation();
-			this.line[this.line.length - 1].endPos(event.pageX, event.pageY);
+			console.log(draw.parent);
+			var rect = draw.parent.getBoundingClientRect(),
+				positionX = rect.left,
+				positionY = rect.top;
+			this.line[this.line.length - 1].endPos(event.clientX - positionX, event.clientY - positionY);
 		};
 		pole.dragend = poleDragend(this);
 	}
