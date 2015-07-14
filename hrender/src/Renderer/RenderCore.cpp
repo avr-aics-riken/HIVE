@@ -442,6 +442,30 @@ private:
         if (fbuf) {
             float* imgbuf = fbuf->GetBuffer();
             GetDepthBuffer_SGL(m_width, m_height, imgbuf);
+
+#ifdef HIVE_WITH_COMPOSITOR
+			// @todo { Consider non-screen parallel rendering. }
+			// 234 compositor does not support Z only compositing at this time.
+			// Thus we simply use MPI_Reduce o merge image.
+			
+            int rank;
+            int nnodes;
+            MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+            MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
+
+			int n = m_width * m_height;
+			std::vector<float> buf(n);
+			memcpy(&buf.at(0), imgbuf, n * sizeof(float));
+
+			MPI_Barrier(MPI_COMM_WORLD);
+
+			// Assume screen parallel rendering(i.e. no image overlapping),
+			int ret = MPI_Reduce(&buf.at(0), reinterpret_cast<void*>(imgbuf), n, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
+
+			MPI_Barrier(MPI_COMM_WORLD);
+
+#endif
+
         }
     }
     /// 画像の書き戻し
@@ -496,11 +520,9 @@ private:
             MPI_Comm_rank(MPI_COMM_WORLD, &rank);
             MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
             
-            assert(0); // TODO: Implementation
-            /*
-            // @fixme { pixel format. }
-            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
-            */
+            // @fixme { it looks RGBA128 is not yet supported. Will crash at the run time  }
+            //Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA128, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+			assert(0); // not yet supported.
 #endif
             
             // merge to bgcolor
