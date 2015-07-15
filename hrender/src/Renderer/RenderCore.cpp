@@ -121,6 +121,11 @@ private:
     ShaderCache  m_shaderCache;
     
     ImageSaver m_imagesaver;
+
+#ifdef HIVE_WITH_COMPOSITOR
+	int  m_compPixelType;
+	bool m_compInitialized;
+#endif
     
     double m_renderTimeout;
     double m_oldCallbackTime;
@@ -168,12 +173,19 @@ public:
         LSGL_CompilerSetting();
 #endif
         SetCallback_SGL(Impl::progressCallbackFunc_, this);
+#ifdef HIVE_WITH_COMPOSITOR
+		m_compPixelType = ID_RGBA32;
+		m_compInitialized = false;
+#endif
     }
     
     /// デストラクタ
     ~Impl() {
         ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
         //ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);
+#ifdef HIVE_WITH_COMPOSITOR
+
+#endif
     }
     
     /// LSGLコンパイラセッティング
@@ -493,8 +505,9 @@ private:
             MPI_Comm_rank(MPI_COMM_WORLD, &rank);
             MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
 
-            // @fixme { pixel format. }
-            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA32, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+			// Assume m_compPixelType == ID_RGBA32
+			assert(m_compPixelType == ID_RGBA32);
+            Do_234Composition(rank, nnodes, m_width, m_height, m_compPixelType, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
 #endif
 
             // merge to bgcolor
@@ -521,8 +534,7 @@ private:
             MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
             
             // @fixme { it looks RGBA128 is not yet supported. Will crash at the run time  }
-            //Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA128, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
-			assert(0); // not yet supported.
+            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA128, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
 #endif
             
             // merge to bgcolor
@@ -604,14 +616,17 @@ private:
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
         MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
 
+        m_compPixelType = (colorfmt == BufferImageData::RGBA32F ? ID_RGBA128 : ID_RGBA32);
+
         // Re-allocate compositor buffer for the change of screen resolution.
         // @fixme { Support various image format. Currently only RGBA 8bit allowd. }
         if (m_width != w || m_height != h) {
             if (m_width == 0 || m_height ==0) { // Assume first call of resize() function.
             } else {
-                Destroy_234Composition(ID_RGBA32);
+                Destroy_234Composition(m_compPixelType);
             }
-            Init_234Composition (rank, nnodes, w, h, ID_RGBA32);
+            Init_234Composition (rank, nnodes, w, h, m_compPixelType);
+			m_compInitialized = true;
         }
 #endif
         
