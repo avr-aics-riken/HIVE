@@ -245,6 +245,11 @@ public:
         m_shaderCache.clear();
         
     }
+    
+    void SetParallelRendering(bool enableParallel)
+    {
+        SetScreenParallel_SGL(enableParallel, false);
+    }
 
     /// レンダーオブジェクトの追加
     /// @param robj レンダーオブジェクト
@@ -337,12 +342,23 @@ public:
                 readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
                 const double readbacktm = GetTimeCount();
+
+#ifdef HIVE_ENABLE_MPI
+                int rank = 0;
+                MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+                if (rank == 0) {
+#endif
+                
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
                 }
                 if (!depth_outfile.empty()) {
                     m_imagesaver.Save(depth_outfile.c_str(), depth);
                 }
+                    
+#ifdef HIVE_ENABLE_MPI
+                }
+#endif
                 const double savetm = GetTimeCount();
                 printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
@@ -702,6 +718,11 @@ void RenderCore::ClearRenderObject()
 void RenderCore::ClearBuffers()
 {
     m_imp->ClearBuffers();
+}
+
+void RenderCore::SetParallelRendering(bool enableParallel)
+{
+    m_imp->SetParallelRendering(enableParallel);
 }
 
 /// プログレスコールバックの設定
