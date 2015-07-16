@@ -32,7 +32,8 @@ public:
     void ClearRenderObject();
     
     void ClearBuffers(); // Clear RenderBuffer resouces
-    
+    void SetParallelRendering(bool enableParallel);
+
     bool CreateProgramSrc(const char* src, unsigned int& prog);
     
     
