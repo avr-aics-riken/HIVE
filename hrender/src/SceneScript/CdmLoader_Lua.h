@@ -113,8 +113,8 @@ public:
       return CDMLoader::GetTimeStep(i);
     }
 
-    bool Load(const char* filename, int timeStepIndex, int virtualCellSize) {
-        return CDMLoader::Load(filename, timeStepIndex, virtualCellSize);
+    bool Load(const char* filename, int timeStepIndex) {
+        return CDMLoader::Load(filename, timeStepIndex);
     }
 
     BufferVolumeData_Lua* VolumeData() {
@@ -140,7 +140,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionZ)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool,Load,const char*,int,int)
+    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 };

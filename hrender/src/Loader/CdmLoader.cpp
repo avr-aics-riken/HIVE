@@ -47,11 +47,10 @@ void CDMLoader::Clear()
  * CDMデータのロード
  * @param filename ファイルパス
  * @param timeSliceIndex timeslice index
- * @param virtualCell # of virtual cells
  * @retval true 成功
  * @retval false 失敗
  */
-bool CDMLoader::Load(const char* filename, int timeSliceIndex, int virtualCells)
+bool CDMLoader::Load(const char* filename, int timeSliceIndex)
 {
     Clear();
 
@@ -275,7 +274,11 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex, int virtualCells)
     }
 
     int numVariables = DFI_IN->GetNumVariables();
-    //printf("num variables = %d\n", numVariables);
+	//
+	int numGuideCells = DFI_IN->GetNumGuideCell();
+	printf("[CdmLoader] NumGuideCells = %d\n", numGuideCells);
+
+	int virtualCells = 2 * numGuideCells;
 
     // Get unit
     std::string Lunit;
@@ -323,8 +326,6 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex, int virtualCells)
     // Create volume data by stripping virtual cells.
     //
     m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables, isNonUniform); // @fixme
-	printf("g = %d, %d, %d\n", GVoxel[0], GVoxel[1], GVoxel[2]);
-	printf("vcell = %d\n", virtualCells);
     float* dst = m_volume.Buffer()->GetBuffer();
 
     size_t sx = GVoxel[0] + virtualCells;
