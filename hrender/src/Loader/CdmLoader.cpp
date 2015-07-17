@@ -46,12 +46,12 @@ void CDMLoader::Clear()
 /**
  * CDMデータのロード
  * @param filename ファイルパス
- * @param virtualCell # of virtual cells
  * @param timeSliceIndex timeslice index
+ * @param virtualCell # of virtual cells
  * @retval true 成功
  * @retval false 失敗
  */
-bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
+bool CDMLoader::Load(const char* filename, int timeSliceIndex, int virtualCells)
 {
     Clear();
 
@@ -115,6 +115,7 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
     }
 
     for (size_t i = 0; i < timeSlice.SliceList.size(); i++) {
+		//printf("timestep[%d] = %d\n", i, timeSlice.SliceList[i].step);
         m_timeSteps.push_back(timeSlice.SliceList[i].step);
     } 
 
@@ -244,6 +245,7 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
 
     unsigned int step = 0; 
 
+	//printf("sliceIndex= %d\n", timeSliceIndex);
     if (timeSliceIndex < m_timeSteps.size()) {
        step = m_timeSteps[timeSliceIndex];
     } else {
