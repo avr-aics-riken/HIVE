@@ -329,6 +329,15 @@ int clearCache(lua_State* L)
     return 1;
 }
 
+int screenParallelRendering(lua_State* L)
+{
+    RenderCore* core = RenderCore::GetInstance();
+    const bool para = lua_toboolean(L, 1);
+    core->SetParallelRendering(para);
+    lua_pushboolean(L, true);
+    return 1;
+}
+
 void registerFuncs(lua_State* L)
 {
     SetFunction(L, "render", render);
@@ -340,6 +349,8 @@ void registerFuncs(lua_State* L)
     SetFunction(L, "platform", platform);
     SetFunction(L, "dllExtension", dllExtension);
     SetFunction(L, "endian", endian);
+    
+    SetFunction(L, "screenParallelRendering", screenParallelRendering);
 
     RegisterSceneClass(L);
 }
