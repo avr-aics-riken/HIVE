@@ -323,6 +323,8 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex, int virtualCells)
     // Create volume data by stripping virtual cells.
     //
     m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables, isNonUniform); // @fixme
+	printf("g = %d, %d, %d\n", GVoxel[0], GVoxel[1], GVoxel[2]);
+	printf("vcell = %d\n", virtualCells);
     float* dst = m_volume.Buffer()->GetBuffer();
 
     size_t sx = GVoxel[0] + virtualCells;
@@ -331,7 +333,7 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex, int virtualCells)
         for (size_t y = 0; y < GVoxel[1]; y++) {
             for (size_t x = 0; x < GVoxel[0]; x++) {
                 for (size_t c = 0; c < numVariables; c++) {
-                    size_t srcIdx = (z + virtualCells/2) * sy * sx + (y + virtualCells/2) + sx + (x + virtualCells/2);
+                    size_t srcIdx = (z + virtualCells/2) * sy * sx + (y + virtualCells/2) * sx + (x + virtualCells/2);
                     size_t dstIdx = z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
                     float val = d_v[numVariables * srcIdx + c];
                     dst[numVariables * dstIdx + c] = val;
