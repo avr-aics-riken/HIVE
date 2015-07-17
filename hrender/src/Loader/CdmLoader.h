@@ -18,7 +18,8 @@ public:
     CDMLoader();
     ~CDMLoader();
     void Clear();
-    bool Load(const char* filename, int timeSliceIndex = 0, int virtualCells = 2);
+	// Load CDMlib data
+    bool Load(const char* filename, int timeSliceIndex = 0);
     int Width();
     int Height();
     int Depth();

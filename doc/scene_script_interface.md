@@ -324,15 +324,14 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 ## CDMLoader()
 
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
-(非一様)ボリュームプリミティブが取得可能.
+(一様/非一様)ボリュームプリミティブが取得可能.
 データが非一様で読み込まれるかは .dfi ファイルでの指定に従う.
 timeStepIndex には 0 からのインデックス番号を指定する(timeStep の時刻ではないことに注意. 省略可能. デフォルトは 0)
-virtualCellSize には仮想セルの大きさを指定する(省略可能. デフォルトは 2)
 
     local loader = CDMLoader()
     local timeStepIndex = 0
     local virtualCellSize = 2
-    loader:Load('input.dfi', timeStepIndex, virtualCellSize)
+    loader:Load('input.dfi', timeStepIndex)
     local volumeData = loader:VolumeData() -- volume プリミティブを取得
 
 [render_cdm.scn](hrender/test/render_cdm.scn) 参考例
