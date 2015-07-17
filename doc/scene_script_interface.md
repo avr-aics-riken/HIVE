@@ -98,86 +98,108 @@ RenderObjectは以下の種類がある。
 
 RenderObjectは共通のインターフェースを持つ
       
-      -- オブジェクトのトランスフォームの平行移動値を設定
-      obj:SetTranslate(translate_x, translate_y, translate_z)
+- オブジェクトのトランスフォームの平行移動値を設定
+ 
+      SetTranslate(translate_x, translate_y, translate_z)
 
-      -- オブジェクトのトランスフォームの回転値を設定
-	  obj:SetRotate(rotate_x, translate_y, translate_z)
+- オブジェクトのトランスフォームの回転値を設定
+ 
+      SetRotate(rotate_x, translate_y, translate_z)
 
-      -- オブジェクトのトランスフォームの拡大値を設定
-	  obj:SetScale(scale_x, scale_y, scale_z)
+- オブジェクトのトランスフォームの拡大値を設定
+ 
+	  SetScale(scale_x, scale_y, scale_z)
 	  
-	  -- オブジェクトのトランスフォームマトリックスを直接設定する
-	  obj:SetTransformMatrix(LuaTable matrix)
-
-      -- オブジェクトのシェーダファイルを設定
-	  obj:SetShader(shader_name)	
+- オブジェクトのトランスフォームマトリックスを直接設定する
+ 
+	  SetTransformMatrix(LuaTable matrix)
 	
-	  -- オブジェクトのシェーダのUniform変数(vec4)の値を設定
-	  obj:SetVec4(uniform_name, x, y, z, w)
+- オブジェクトのシェーダのUniform変数(vec4)の値を設定
+ 
+	  SetVec4(uniform_name, x, y, z, w)
 
-	  -- オブジェクトのシェーダのUniform変数(vec3)の値を設定
-	  obj:SetVec3(uniform_name, x, y, z)
+- オブジェクトのシェーダのUniform変数(vec3)の値を設定
 
-	  -- オブジェクトのシェーダのUniform変数(vec2)の値を設定
-	  obj:SetVec2(uniform_name, x, y)
+	  SetVec3(uniform_name, x, y, z)
 
-	  -- オブジェクトのシェーダのUniform変数(float)の値を設定
-	  obj:SetFloat(uniform_name, x)
+- オブジェクトのシェーダのUniform変数(vec2)の値を設定
 
-	  -- オブジェクトのシェーダのUniform変数(sampler2D)の値を設定
-	  obj:SetTexture(uniform_name, texture)
+	  SetVec2(uniform_name, x, y)
+
+- オブジェクトのシェーダのUniform変数(float)の値を設定
+
+	  SetFloat(uniform_name, x)
+
+- オブジェクトのシェーダのUniform変数(sampler2D)の値を設定
+
+	  SetTexture(uniform_name, texture)
 	  
-	  -- テクスチャのフィルタを設定
+- テクスチャのフィルタを設定
+
 	  boolean SetTextureFiltering(string, boolean)
 	  
-	  -- テクスチャのラップ処理を設定
+- テクスチャのラップ処理を設定
+
       boolean SetTextureWrapping(string, boolean, boolean, boolean)
       
-      -- オブジェクトの平行移動量を取得
+- オブジェクトの平行移動量を取得
+
       LuaTable GetTranslate()
       
-      -- オブジェクトの回転量を取得
+- オブジェクトの回転量を取得
+
       LuaTable GetRotate()
       
-      -- オブジェクトの拡大量を取得
+- オブジェクトの拡大量を取得
+
       LuaTable GetScale()
       
-      -- シェーダのUniform変数(Vec4)の値をすべて取得
+- シェーダのUniform変数(Vec4)の値をすべて取得
+
       LuaTable GetVec4Table()
 
-      -- シェーダのUniform変数(Vec3)の値をすべて取得      
+- シェーダのUniform変数(Vec3)の値をすべて取得      
+
       LuaTable GetVec3Table()
       
-      -- シェーダのUniform変数(Vec2)の値をすべて取得
+- シェーダのUniform変数(Vec2)の値をすべて取得
+
       LuaTable GetVec2Table()
       
-      -- シェーダのUniform変数(float)の値をすべて取得
+- シェーダのUniform変数(float)の値をすべて取得
+
       LuaTable GetFloatTable()
       
-      -- シェーダのUniform変数(sampler2D)の値をすべて取得
+- シェーダのUniform変数(sampler2D)の値をすべて取得
+
       LuaTable GetTextureTable()
       
-      
-      -- シェーダのUniform変数(Vec4)の指定変数の値を取得
+- シェーダのUniform変数(Vec4)の指定変数の値を取得
+
       LuaTable GetVec4(string)
 
-      -- シェーダのUniform変数(Vec3)の指定変数の値を取得      
+- シェーダのUniform変数(Vec3)の指定変数の値を取得      
+
       LuaTable GetVec3(string)
       
-      -- シェーダのUniform変数(Vec2)の指定変数の値を取得
+- シェーダのUniform変数(Vec2)の指定変数の値を取得
+
       LuaTable GetVec2(string)
       
-      -- シェーダのUniform変数(float)の指定変数の値を取得
+- シェーダのUniform変数(float)の指定変数の値を取得
+
       float GetFloat(string)
       
-     　-- シェーダのUniform変数(sampler2D)の指定変数の値を取得
+- シェーダのUniform変数(sampler2D)の指定変数の値を取得
+
       BufferImageData GetTexture(string)
 
-      -- 拡張バッファを設定
+- 拡張バッファを設定
+
       Number AddExtraBuffer(string, BufferExtraData)
       
-      -- 拡張バッファを取得
+- 拡張バッファを取得
+
 	  Number RemoveExtraBuffer(string)
 	
 	 
@@ -217,114 +239,223 @@ RenderObjectは共通のインターフェースを持つ
 インタフェース一覧
 
 
-    --[[
-     * スクリーンサイズの設定.
-     * @param w 幅
-     * @param h 高さ
-    --]]
-    boolean SetScreenSize(w, h)
+- スクリーンサイズの設定.
+  * w 幅
+  * h 高さ
+
+        boolean SetScreenSize(w, h)
     
-    --[[
-     * 結果画像のファイルパスの設定.
-     * @param filename ファイルパス
-    --]]
-    boolean SetFilename(filename)
+- 結果画像のファイルパスの設定.
+  * filename ファイルパス
+
+        boolean SetFilename(filename)
     
-    --[[
-     * 結果デプス画像のファイルパスの設定.
-     * @param filename ファイルパス
-    --]]
-    boolean SetDepthFilename(filename)
+
+- 結果デプス画像のファイルパスの設定.
+  * filename ファイルパス
+
+        boolean SetDepthFilename(filename)
     
-    --[[
-     * 視線の設定.
-     * @param eye_x 視点ベクトルx
-     * @param eye_y 視点ベクトルy
-     * @param eye_z 視点ベクトルz
-     * @param tar_x ターゲットベクトルx
-     * @param tar_y ターゲットベクトルy
-     * @param tar_z ターゲットベクトルz
-     * @param up_x アップベクトルx
-     * @param up_y アップベクトルy
-     * @param up_z アップベクトルz
-     * @param fov 縦方向視野角
-    --]]
-    boolean LookAt(eye_x, eye_y, eye_z,
-                   tar_x, tar_y, tar_z,
-                   up_x,  up_y,  up_z,
-                   fov)
+
+- 視線の設定.
+  * eye_x 視点ベクトルx
+  * eye_y 視点ベクトルy
+  * eye_z 視点ベクトルz
+  * tar_x ターゲットベクトルx
+  * tar_y ターゲットベクトルy
+  * tar_z ターゲットベクトルz
+  * up_x アップベクトルx
+  * up_y アップベクトルy
+  * up_z アップベクトルz
+  * fov 縦方向視野角
+
+         boolean LookAt(eye_x, eye_y, eye_z,
+                        tar_x, tar_y, tar_z,
+                        up_x,  up_y,  up_z,
+                        fov)
     
-    --[[
-     * クリアカラーの設定.
-     * @param red 赤 (0.0 ~ 1.0)
-     * @param green 緑 (0.0 ~ 1.0)
-     * @param blue 青 (0.0 ~ 1.0)
-     * @param alpha アルファ (0.0 ~ 1.0)
-    --]]
-    boolean ClearColor(red, green, blue, alpha)
+
+- クリアカラーの設定.
+  * red 赤 (0.0 ~ 1.0)
+  * green 緑 (0.0 ~ 1.0)
+  * blue 青 (0.0 ~ 1.0)
+  * alpha アルファ (0.0 ~ 1.0)
+
+        boolean ClearColor(red, green, blue, alpha)
     
-    -- 位置を返す
-    Table GetPosition()
+- 位置を返す
+
+        Table GetPosition()
     
-    -- ターゲットを返す
-    Table GetTarget()
+- ターゲットを返す
+
+        Table GetTarget()
     
-    -- アップベクトルを返す
-    Table GetUp()
+- アップベクトルを返す
+
+        Table GetUp()
     
-    -- 視野角を返す
-    Number GetFov()
+- 視野角を返す
+
+        Number GetFov()
     
-    -- スクリーン幅を返す.
-    Number GetScreenWidth()
+- スクリーン幅を返す.
+
+        Number GetScreenWidth()
     
-    -- スクリーン高さを返す.
-    Number GetScreenHeight()
+- スクリーン高さを返す.
+
+        Number GetScreenHeight()
         
-    -- 出力ファイルパスを返す.
-    string GetOutputFile()
+- 出力ファイルパスを返す.
+
+        string GetOutputFile()
     
-    -- 出力デプスファイルパスを返す.
-    string GetDepthOutputFile()
+- 出力デプスファイルパスを返す.
+
+        string GetDepthOutputFile()
     
-    -- 画像バッファを返す.
-    BufferImageData GetImageBuffer()
+- 画像バッファを返す.
+
+        BufferImageData GetImageBuffer()
    	
-   	-- 深度バッファを返す.
-    BufferImageData GetDepthBuffer()
+- 深度バッファを返す.
+    
+        BufferImageData GetDepthBuffer()
 
 
 ## PolygonModel
 
 ポリゴンをレンダリングするためのオブジェクト
 
-[TODO]
-     
+    local model = PolygonModel()
+
+インターフェース一覧
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- meshデータからポリゴンモデルを作成する
+
+        boolean Create(BufferMeshData)
+
+
 ## VolumeModel
 
 ボリュームデータをレンダリングするためのオブジェクト
 
-[TODO]
+    local model = VolumeModel()
+
+インターフェース一覧
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- volumeデータからポリゴンモデルを作成する
+
+        boolean Create(BufferVolumeData)
+        
+- ボリュームサンプリングのエッジのクランプ処理を設定する
+  * xclamp Z軸方向のクランプ処理をするかどうか
+  * yclamp Y軸方向のクランプ処理をするかどうか
+  * zclamp Z軸方向のクランプ処理をするかどうか
+  
+ 
+        bool SetClampToEdge(xclamp, yclamp, zclamp)
+        
+  
 
 
 ## PointModel
 
 ポイントデータをレンダリングするためのオブジェクト
 
-[TODO]
+    local model = PointModel()
+
+インターフェース一覧
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- pointデータからポリゴンモデルを作成する
+
+        boolean Create(BufferPointData)
 
 ## LineMode
 
 ラインデータをレンダリングするためのオブジェクト
 
-[TODO]
+    local model = LineModel()
+
+インターフェース一覧
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- lineデータからポリゴンモデルを作成する
+
+        boolean Create(BufferLineData)
+
+- lineの太さを設定する
+
+        boolean SetLineWidth(Number)
+        
 
 
 ## SparseVolumeModel
 
 スパースボリュームデータをレンダリングするためのオブジェクト
 
-[TODO]
+    local model = SparseVolumeModel()
+
+インターフェース一覧
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- volumeデータからポリゴンモデルを作成する
+
+        boolean Create(BufferSparseVolumeData)
+        
+- ボリュームサンプリングのエッジのクランプ処理を設定する
+  * xclamp Z軸方向のクランプ処理をするかどうか
+  * yclamp Y軸方向のクランプ処理をするかどうか
+  * zclamp Z軸方向のクランプ処理をするかどうか
+  
+ 
+        bool SetClampToEdge(xclamp, yclamp, zclamp)
+        
+  
 
 
 
@@ -332,14 +463,53 @@ RenderObjectは共通のインターフェースを持つ
 
 テトラ構造のデータをレンダリングするためのオブジェクト
 
-[TODO]
+     local model = TetraModel()
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- tetraデータからポリゴンモデルを作成する
+
+        boolean Create(BufferTetraData)
 
 
 ## VectorModel
 
 ベクターアローデータをレンダリングするためのオブジェクト
 
-[TODO]
+     local model = VectorModel()
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- vectorデータからポリゴンモデルを作成する
+
+        boolean Create(BufferVectorData)
+        
+- lineの太さを設定する
+
+        boolean SetLineWidth(Number)
+        
+- 矢印の大きさを設定する
+
+        boolean SetArrowSize(Number)
+
+- 矢印の長さを設定する
+
+        boolean SetLengthScale(Number)
+
 
 
 -----------------
@@ -385,12 +555,28 @@ RenderObjectは共通のインターフェースを持つ
       local spheredata = gen:Sphere(radius)
       model:Create(spheredata)
 
--  SphereList(Table spherelist, Number num, Number radius)
+- テーブルから複数のSphereを生成する例
   
--  LineList(Table linelist, Number num, Number radius)
+      local gen = PrimitiveGenerator()
+      local model = PointModel()
+      local spheredata = gen:SphereList(spherelist_table, num, radius)
+      model:Create(spheredata)
 
--  TriangleList(Table trianglelist, Number num)
-  
+     
+- テーブルから複数のLine(cylinder形状)を生成する例
+
+      local gen = PrimitiveGenerator()
+      local model = PolygonModel()
+      local linedata = gen:LineList(linelist_table, num, radius)
+      model:Create(linedata)
+
+- テーブルから複数の３角形形状を生成する例
+
+      local gen = PrimitiveGenerator()
+      local model = PolygonModel()
+      local tridata = gen:TriangleList(trianglelist_table, num)
+      model:Create(tridata)
+ 
 
 
 ---------------------------------
@@ -605,24 +791,137 @@ PDM 形式で点群データを保存する. hrender が PDMlib とリンクさ�
 
 ## PolygonAnalyzer
 
+PolygonModelから情報を取得する
+
 	local analyzer = PolygonAnalyzer()
+
+
+インターフェース一覧
     
-[TODO]
+- 解析結果の最小X座標を取得
+    
+        Number MinX()
+
+- 解析結果の最大Y座標を取得
+       
+        Number MinY()
+    
+- 解析結果の最小Z座標を取得
+
+        Number MinZ()
+
+- 解析結果の最大X座標を取得
+
+        Number MaxX()
+
+- 解析結果の最大Y座標を取得
+
+        Number MaxY()
+    
+- 解析結果の最大Z座標を取得
+
+        Number MaxZ()
+
+- 解析を実行する
+
+        boolean Execute(PolygonModel)
+
 
 ## VolumeAnalyzer
 
+VolumeModelから情報を取得する
+
 	local analyzer = VolumeAnalyzer()
 
-[TODO]
+インターフェース一覧
+
+- 解析結果の最小X座標を取得
+    
+        Number MinX()
+
+- 解析結果の最大Y座標を取得
+       
+        Number MinY()
+    
+- 解析結果の最小Z座標を取得
+
+        Number MinZ()
+
+- 解析結果の最大X座標を取得
+
+        Number MaxX()
+
+- 解析結果の最大Y座標を取得
+
+        Number MaxY()
+    
+- 解析結果の最大Z座標を取得
+
+        Number MaxZ()
+
+- 解析結果のヒストグラムを取得する
+
+        Table GetHistgram()
+
+- 解析結果の指定値範囲のヒストグラムを取得する
+
+        Table GetHistgramInRange(VolumeModel, Number, Number)
+
+- 解析を実行する
+
+        boolean Execute(VolumeModel)
+	
 
 ---------------------------------
 # Network
 
 ## Connection
 
+ネットワークの接続処理を行う。
+
 	local con = Connection()
 
-[TODO]
+インターフェース一覧
+
+- 接続する
+
+        boolean Connect(string)
+
+- テキストを送信する
+
+        boolean SendText(string)
+    
+- JSONを送信する
+    
+        boolean SendJSON(string)
+
+- バイナリデータを送信する
+  * buffer 送信データ
+  * size 送信データサイズ 
+    
+        boolean SendBinary(buffer, size)
+
+- 画像データを送信する
+    
+        boolean SendImage(string)
+
+- データを受信する
+    
+        string  Recv()
+
+- 接続の状態を取得する
+    
+        string  GetState()
+
+- タイムアウト時間を設定する
+    
+        boolean SetTimeout(Number)
+
+- 切断する
+    
+        boolean Close()
+
+
 
 ---------------------------------
 # Builder
