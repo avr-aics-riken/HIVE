@@ -48,11 +48,20 @@ MPIモードで起動している場合、MPIのランク番号を取得する�
 - so
 
 ## endian()	
-レンダラが動作するプラットフォームのエンディアンのタイプを取得する
+レンダラが動作するプラットフォームのエンディアンのタイプを取得する。
 取得可能な値は以下のいずれかの文字列。
 
-- little
-- big
+- little - リトルエンディアン
+- big - ビッグエンディアン
+
+## screenParallelRendering(enable)
+MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。以下のいずれかの値が設定可能
+
+- true - 有効
+- false - 無効
+ 
+初期値はfalse。
+
 
 
 --------------
@@ -89,18 +98,20 @@ RenderObjectは以下の種類がある。
 
 RenderObjectは共通のインターフェースを持つ
       
-      -- オブジェクトの平行移動値を設定
+      -- オブジェクトのトランスフォームの平行移動値を設定
       obj:SetTranslate(translate_x, translate_y, translate_z)
 
-      -- オブジェクトの回転値を設定
+      -- オブジェクトのトランスフォームの回転値を設定
 	  obj:SetRotate(rotate_x, translate_y, translate_z)
 
-      -- オブジェクトの拡大値を設定
+      -- オブジェクトのトランスフォームの拡大値を設定
 	  obj:SetScale(scale_x, scale_y, scale_z)
+	  
+	  -- オブジェクトのトランスフォームマトリックスを直接設定する
+	  obj:SetTransformMatrix(LuaTable matrix)
 
       -- オブジェクトのシェーダファイルを設定
-	  obj:SetShader(shader_name)
-	
+	  obj:SetShader(shader_name)	
 	
 	  -- オブジェクトのシェーダのUniform変数(vec4)の値を設定
 	  obj:SetVec4(uniform_name, x, y, z, w)
@@ -116,7 +127,61 @@ RenderObjectは共通のインターフェースを持つ
 
 	  -- オブジェクトのシェーダのUniform変数(sampler2D)の値を設定
 	  obj:SetTexture(uniform_name, texture)
+	  
+	  -- テクスチャのフィルタを設定
+	  boolean SetTextureFiltering(string, boolean)
+	  
+	  -- テクスチャのラップ処理を設定
+      boolean SetTextureWrapping(string, boolean, boolean, boolean)
+      
+      -- オブジェクトの平行移動量を取得
+      LuaTable GetTranslate()
+      
+      -- オブジェクトの回転量を取得
+      LuaTable GetRotate()
+      
+      -- オブジェクトの拡大量を取得
+      LuaTable GetScale()
+      
+      -- シェーダのUniform変数(Vec4)の値をすべて取得
+      LuaTable GetVec4Table()
+
+      -- シェーダのUniform変数(Vec3)の値をすべて取得      
+      LuaTable GetVec3Table()
+      
+      -- シェーダのUniform変数(Vec2)の値をすべて取得
+      LuaTable GetVec2Table()
+      
+      -- シェーダのUniform変数(float)の値をすべて取得
+      LuaTable GetFloatTable()
+      
+      -- シェーダのUniform変数(sampler2D)の値をすべて取得
+      LuaTable GetTextureTable()
+      
+      
+      -- シェーダのUniform変数(Vec4)の指定変数の値を取得
+      LuaTable GetVec4(string)
+
+      -- シェーダのUniform変数(Vec3)の指定変数の値を取得      
+      LuaTable GetVec3(string)
+      
+      -- シェーダのUniform変数(Vec2)の指定変数の値を取得
+      LuaTable GetVec2(string)
+      
+      -- シェーダのUniform変数(float)の指定変数の値を取得
+      float GetFloat(string)
+      
+     　-- シェーダのUniform変数(sampler2D)の指定変数の値を取得
+      BufferImageData GetTexture(string)
+
+      -- 拡張バッファを設定
+      Number AddExtraBuffer(string, BufferExtraData)
+      
+      -- 拡張バッファを取得
+	  Number RemoveExtraBuffer(string)
 	
+	 
+	  
 
 ## Camera
 
@@ -147,6 +212,86 @@ RenderObjectは共通のインターフェースを持つ
      	45
      )
      render {camera1, camera2}
+
+
+インタフェース一覧
+
+
+    --[[
+     * スクリーンサイズの設定.
+     * @param w 幅
+     * @param h 高さ
+    --]]
+    boolean SetScreenSize(w, h)
+    
+    --[[
+     * 結果画像のファイルパスの設定.
+     * @param filename ファイルパス
+    --]]
+    boolean SetFilename(filename)
+    
+    --[[
+     * 結果デプス画像のファイルパスの設定.
+     * @param filename ファイルパス
+    --]]
+    boolean SetDepthFilename(filename)
+    
+    --[[
+     * 視線の設定.
+     * @param eye_x 視点ベクトルx
+     * @param eye_y 視点ベクトルy
+     * @param eye_z 視点ベクトルz
+     * @param tar_x ターゲットベクトルx
+     * @param tar_y ターゲットベクトルy
+     * @param tar_z ターゲットベクトルz
+     * @param up_x アップベクトルx
+     * @param up_y アップベクトルy
+     * @param up_z アップベクトルz
+     * @param fov 縦方向視野角
+    --]]
+    boolean LookAt(eye_x, eye_y, eye_z,
+                   tar_x, tar_y, tar_z,
+                   up_x,  up_y,  up_z,
+                   fov)
+    
+    --[[
+     * クリアカラーの設定.
+     * @param red 赤 (0.0 ~ 1.0)
+     * @param green 緑 (0.0 ~ 1.0)
+     * @param blue 青 (0.0 ~ 1.0)
+     * @param alpha アルファ (0.0 ~ 1.0)
+    --]]
+    boolean ClearColor(red, green, blue, alpha)
+    
+    -- 位置を返す
+    Table GetPosition()
+    
+    -- ターゲットを返す
+    Table GetTarget()
+    
+    -- アップベクトルを返す
+    Table GetUp()
+    
+    -- 視野角を返す
+    Number GetFov()
+    
+    -- スクリーン幅を返す.
+    Number GetScreenWidth()
+    
+    -- スクリーン高さを返す.
+    Number GetScreenHeight()
+        
+    -- 出力ファイルパスを返す.
+    string GetOutputFile()
+    
+    -- 出力デプスファイルパスを返す.
+    string GetDepthOutputFile()
+    
+    -- 画像バッファを返す.
+    BufferImageData GetImageBuffer()
+   	
+   	-- 深度バッファを返す.
+    BufferImageData GetDepthBuffer()
 
 
 ## PolygonModel
@@ -239,6 +384,13 @@ RenderObjectは共通のインターフェースを持つ
       local model = PointModel()
       local spheredata = gen:Sphere(radius)
       model:Create(spheredata)
+
+-  SphereList(Table spherelist, Number num, Number radius)
+  
+-  LineList(Table linelist, Number num, Number radius)
+
+-  TriangleList(Table trianglelist, Number num)
+  
 
 
 ---------------------------------
