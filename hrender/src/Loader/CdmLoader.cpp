@@ -46,12 +46,11 @@ void CDMLoader::Clear()
 /**
  * CDMデータのロード
  * @param filename ファイルパス
- * @param virtualCell # of virtual cells
  * @param timeSliceIndex timeslice index
  * @retval true 成功
  * @retval false 失敗
  */
-bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
+bool CDMLoader::Load(const char* filename, int timeSliceIndex)
 {
     Clear();
 
@@ -115,6 +114,7 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
     }
 
     for (size_t i = 0; i < timeSlice.SliceList.size(); i++) {
+		//printf("timestep[%d] = %d\n", i, timeSlice.SliceList[i].step);
         m_timeSteps.push_back(timeSlice.SliceList[i].step);
     } 
 
@@ -244,6 +244,7 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
 
     unsigned int step = 0; 
 
+	//printf("sliceIndex= %d\n", timeSliceIndex);
     if (timeSliceIndex < m_timeSteps.size()) {
        step = m_timeSteps[timeSliceIndex];
     } else {
@@ -273,7 +274,11 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
     }
 
     int numVariables = DFI_IN->GetNumVariables();
-    //printf("num variables = %d\n", numVariables);
+	//
+	int numGuideCells = DFI_IN->GetNumGuideCell();
+	printf("[CdmLoader] NumGuideCells = %d\n", numGuideCells);
+
+	int virtualCells = 2 * numGuideCells;
 
     // Get unit
     std::string Lunit;
@@ -329,7 +334,7 @@ bool CDMLoader::Load(const char* filename, int virtualCells, int timeSliceIndex)
         for (size_t y = 0; y < GVoxel[1]; y++) {
             for (size_t x = 0; x < GVoxel[0]; x++) {
                 for (size_t c = 0; c < numVariables; c++) {
-                    size_t srcIdx = (z + virtualCells/2) * sy * sx + (y + virtualCells/2) + sx + (x + virtualCells/2);
+                    size_t srcIdx = (z + virtualCells/2) * sy * sx + (y + virtualCells/2) * sx + (x + virtualCells/2);
                     size_t dstIdx = z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
                     float val = d_v[numVariables * srcIdx + c];
                     dst[numVariables * dstIdx + c] = val;

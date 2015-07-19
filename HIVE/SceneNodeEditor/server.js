@@ -8,6 +8,7 @@ var http = require('http'),
 	socketio = require('socket.io'),
 	exec = require('child_process').exec,
 	spawn = require('child_process').spawn,
+    path = require('path'),
 	HRENDER = '../hrender',
 	port = 8080,
 	wshttpserver = http.createServer(function (req, res) {
@@ -116,7 +117,7 @@ function renderScene(scene, socket) {
 var server = http.createServer(function (req, res) {
     'use strict';
     console.log('REQ>', req.url);
-    var file, fname;
+    var file, fname, url, ext;
     if (req.url === '/') {
         file = fs.readFileSync('./root/index.html');
         res.end(file);
@@ -129,8 +130,20 @@ var server = http.createServer(function (req, res) {
 		}(res)));
     } else {
         try {
-            file = fs.readFileSync('./root' + req.url);
-            res.end(file);
+            url = './root' + req.url;
+            fs.readFile(url, function (err, data) {
+    			ext = path.extname(url);
+    			if (ext === ".css") {
+    				res.writeHead(200, {'Content-Type': 'text/css', charaset: 'UTF-8'});
+    			} else if (ext === ".html" || ext === ".htm") {
+    				res.writeHead(200, {'Content-Type': 'text/html', charaset: 'UTF-8'});
+    			} else if (ext === ".js" || ext === ".json") {
+    				res.writeHead(200, {'Content-Type': 'text/javascript', charaset: 'UTF-8'});
+    			} else {
+    				res.writeHead(200);
+    			}
+                res.end(data);
+            });
         } catch (e) {
             res.writeHead(404, {'Content-Type': 'text/plain'});
             res.end('not found\n');
@@ -182,4 +195,3 @@ ws.on('close', function () {
 });
 
 //------------------------------------------------------------
-

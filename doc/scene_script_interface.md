@@ -5,7 +5,7 @@
 # Basic function
 
 ## render()
-指定されたレンダーオブジェクトでレンダリングを行う
+指定されたRenderObjectでレンダリングを行う
 
      render({renderobject1, renderobject2, renderobject3 })
 
@@ -14,6 +14,7 @@
      render({renderobject1, renderobject2, renderobject3 }, funciton (progress) 
      	print('Progress = ' .. progress)
      end)
+
 
 
 ## clearCache()
@@ -53,44 +54,243 @@ MPIモードで起動している場合、MPIのランク番号を取得する�
 - little
 - big
 
+
+--------------
+
+#RenderObject
+
+HIVEではレンダリング対象となるオブジェクトはRenderObjectと呼ばれる.
+RenderObjectは以下の種類がある。
+
+- Camera
+- PolygonModel
+- VolumeModel
+- PointModel
+- LineMode
+- SparseVolumeModel
+- TetraModel
+- VectorModel
+
+レンダリングし、画像を保存するには１つ以上のCameraが必要となる。
+以下は何もないシーンをレンダリングし、image.jpgに保存する例
+
+
+     local camera = Camera()
+     camera:SetScreenSize(1024, 1024)
+     camera:SetFilename('image.jpg')
+     camera:LookAt(
+     	0,0,300,
+     	0,0,0,
+     	0,1,0,
+     	60
+     }
+     render {camera}
+
+
+RenderObjectは共通のインターフェースを持つ
+      
+      -- オブジェクトの平行移動値を設定
+      obj:SetTranslate(translate_x, translate_y, translate_z)
+
+      -- オブジェクトの回転値を設定
+	  obj:SetRotate(rotate_x, translate_y, translate_z)
+
+      -- オブジェクトの拡大値を設定
+	  obj:SetScale(scale_x, scale_y, scale_z)
+
+      -- オブジェクトのシェーダファイルを設定
+	  obj:SetShader(shader_name)
+	
+	
+	  -- オブジェクトのシェーダのUniform変数(vec4)の値を設定
+	  obj:SetVec4(uniform_name, x, y, z, w)
+
+	  -- オブジェクトのシェーダのUniform変数(vec3)の値を設定
+	  obj:SetVec3(uniform_name, x, y, z)
+
+	  -- オブジェクトのシェーダのUniform変数(vec2)の値を設定
+	  obj:SetVec2(uniform_name, x, y)
+
+	  -- オブジェクトのシェーダのUniform変数(float)の値を設定
+	  obj:SetFloat(uniform_name, x)
+
+	  -- オブジェクトのシェーダのUniform変数(sampler2D)の値を設定
+	  obj:SetTexture(uniform_name, texture)
+	
+
+## Camera
+
+任意視点でレンダリングし、画像に保存するためのオブジェクト
+複数のカメラの同時設定が可能.
+以下は複数のカメラの視点を設定し、それぞれの背景色を変更する例
+
+
+     local camera1 = Camera()
+     camera1:SetScreenSize(1024, 1024)
+     camera1:ClearColor(1,0,0,1);
+     camera1:SetFilename('render_camera2_image1.jpg')
+     camera1:LookAt(
+     	0,0,300,
+     	0,0,0,
+     	0,1,0,
+     	60
+     )
+
+     local camera2 = Camera()
+     camera2:SetScreenSize(512, 512)
+     camera2:ClearColor(0,1,0,1);
+     camera2:SetFilename('render_camera2_image2.jpg')
+     camera2:LookAt(
+     	0,300,300,
+     	0,0,0,
+     	0,1,0,
+     	45
+     )
+     render {camera1, camera2}
+
+
+## PolygonModel
+
+ポリゴンをレンダリングするためのオブジェクト
+
+[TODO]
+     
+## VolumeModel
+
+ボリュームデータをレンダリングするためのオブジェクト
+
+[TODO]
+
+
+## PointModel
+
+ポイントデータをレンダリングするためのオブジェクト
+
+[TODO]
+
+## LineMode
+
+ラインデータをレンダリングするためのオブジェクト
+
+[TODO]
+
+
+## SparseVolumeModel
+
+スパースボリュームデータをレンダリングするためのオブジェクト
+
+[TODO]
+
+
+
+## TetraModel
+
+テトラ構造のデータをレンダリングするためのオブジェクト
+
+[TODO]
+
+
+## VectorModel
+
+ベクターアローデータをレンダリングするためのオブジェクト
+
+[TODO]
+
+
+-----------------
+
 # Generator
 ## PrimitiveGenerator
 
-プリミティブを作成するためのジェネレータークラス
+プリミティブを作成するためのジェネレータークラス.
+
+- Quad(四角ポリゴン)を生成する例
+
+      local gen = PrimitiveGenerator()
+      local width  = 2
+      local height = 1.5
+      local model = PolygonModel()
+      local meshdata = gen:Quad(width, height)
+      model:Create(meshdata)
+
+- Cube(立方体)を生成する例
+
+      local gen = PrimitiveGenerator()
+      local width  = 5
+      local height = 5
+      local depth  = 5
+      local model = PolygonModel()
+      local meshdata = gen:Cube(width, height, depth)
+      model:Create(meshdata)
+
+
+- teapotを生成する例
+ 
+	  local gen = PrimitiveGenerator()
+	  local model = PolygonModel()
+	  local meshdata = gen:Teapot(3.0)
+	  model:Create(meshdata)
+
+- sphereを生成する例
+
+
+      local gen = PrimitiveGenerator()
+      local radius = 2
+      local model = PointModel()
+      local spheredata = gen:Sphere(radius)
+      model:Create(spheredata)
+
 
 ---------------------------------
 
 # Loader
 ## OBJLoader()
 
-Objファイルを読み込むローダークラス
+Objファイルを読み込むローダークラス.
+以下はObjファイルを読み込みPolygonModelを作成し、データをセットする例
 
     local loader = OBJLoader()
     loader:Load('bunny.obj')
-    
+    local model = PolygonModel()
+    local meshdata = loader:MeshData()
+    model:Create(meshdata)
 
 ## STLLoader()
 
 STLファイルを読み込むローダークラス
+以下はSTLファイルを読み込みPolygonModelを作成し、データをセットする例
 
     local loader = STLLoader()
     loader:Load('bunny.stl')
+    local model = PolygonModel()
+    local meshdata = loader:MeshData()
+    model:Create(meshdata)
 
 ## SPHLoader()
 
 SPHファイルを読み込むローダークラス
+STLファイルはバイナリ形式のみ. 
+ビッグエンディアン・リトルエンディアンの判定は自動で行われる.
+以下はSPHファイルを読み込みVolumeModelを作成し、データをセットする例
 
     local loader = SPHLoader()
     loader:Load('data.sph')
+    local volume = VolumeModel()
+    local volumedata = loader:VolumeData()
+    volume:Create(volumedata)
 
 ## VOLLoader()
 
 VOLファイルを読み込むローダークラス
+以下はVOLファイルを読み込みVolumeModelを作成し、データをセットする例
 
     local loader = VOLLoader()
     loader:Load('data.vol')
+    local volume = VolumeModel()
+    local volumedata = loader:VolumeData()
+    volume:Create(volumedata)
 
-## RawVolumeSaver()
+## RawVolumeLoader()
 
 RAW 形式のボリュームデータを読み込む. 他のボリュームツールから出力されたデータなどを読み込むときに利用する.
 (e.g. http://ospray.github.io )
@@ -100,7 +300,8 @@ RAW 形式のボリュームデータを読み込む. 他のボリュームツ�
     loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
     local volume = VolumeModel()
     local volumedata = loader:VolumeData()
-
+    volume:Create(volumedata)
+    
 type には現状 'float' のみ指定可能.
 
 [render_rawvolume.scn](hrender/test/render_rawvolume.scn) 参考例
@@ -123,11 +324,14 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 ## CDMLoader()
 
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
-(非一様)ボリュームプリミティブが取得可能.
+(一様/非一様)ボリュームプリミティブが取得可能.
 データが非一様で読み込まれるかは .dfi ファイルでの指定に従う.
+timeStepIndex には 0 からのインデックス番号を指定する(timeStep の時刻ではないことに注意. 省略可能. デフォルトは 0)
 
     local loader = CDMLoader()
-    loader:Load('input.dfi')
+    local timeStepIndex = 0
+    local virtualCellSize = 2
+    loader:Load('input.dfi', timeStepIndex)
     local volumeData = loader:VolumeData() -- volume プリミティブを取得
 
 [render_cdm.scn](hrender/test/render_cdm.scn) 参考例
@@ -186,14 +390,29 @@ UDMファイルを読み込むローダークラス. hrender が UDMlib とリ�
 
 ## ImageLoader()
 
-[TODO]
+画像データを読み込む.
+オブジェクトにテクスチャとして画像を設定したい場合は以下のように行う.
+
+
+    local loader = ImageLoader()
+    local isloaded = loader:Load("image.jpg")
+    local img = loader:ImageData()
+    model:SetTexture('mytex', img) --> uniform sampler2D mytex0;
 
 ---------------------------------
 # Saver
 
 ## ImageSaver()
 
-[TODO]
+イメージデータを保存できる.
+以下は読み込んだ画像データを別形式で保存する例.
+
+    local loader = ImageLoader()
+	loader:Load("input_image.hdr")
+
+	local saver = ImageSaver()
+	saver:Save("output_image.jpg", loader:ImageData())
+
 
 ## SPHSaver()
 
@@ -229,13 +448,6 @@ PDM 形式で点群データを保存する. hrender が PDMlib とリンクさ�
 
 
 ---------------------------------
-# Generator
-
-## PrimitiveGenerator()
-
-[TODO]
-
----------------------------------
 
 # Analyzer
 
@@ -265,8 +477,16 @@ PDM 形式で点群データを保存する. hrender が PDMlib とリンクさ�
 
 ## VolumeToVector()
 
-[TODO]
+ボリュームデータからベクトルアローに変換する.
+ベクトルアローの間隔を設定し、ベクトルアローを生成する
 
+     local vtv = VolumeToVector()
+	 vtv:DivideNumber(divX, divY, divZ)
+	 vtv:Create(volumedata)
+	 local vectordata = vtv:VectorData()
+	 local vm = VectorModel();
+	 vm:Create(vectordata);
+	
 ## VolumeToMeshData()
 
 marching cubes 法を用いて, ボリュームデータをメッシュ(triangle)に変換する. 
@@ -341,5 +561,6 @@ Create メソッドにはリサンプリングレートを指定する.
     ]]
 
     filter:SetCompoleOption('gcc', '-O2')
+
 
 
