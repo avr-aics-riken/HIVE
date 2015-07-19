@@ -77,6 +77,8 @@ void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, uns
 void TexCoordRemap3D_SGL(int axis, int n, const float* values);
 void EvalFragmentShader_SGL();
 void SetCallback_SGL(bool (*callback)(int progress, int y, int height, void* userptr), void* userptr);
+void SetScreenParallel_SGL(bool enable, bool mergeEnable);
+
 void Finish_SGL();
 
 #ifndef USE_OPENGL

@@ -518,6 +518,17 @@ void SetShaderCompiler_SGL(const char* path, const char* opt)
 }
 
 /**
+ * 並列レンダリングの設定.
+ * @param enable 並列レンダリング有効フラグ
+ * @param mergeEnable 並列レンダリング有効フラグ
+ */
+void SetScreenParallel_SGL(bool enable, bool mergeEnable)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    sgl.lsglSetScreenParallelRendering(enable, mergeEnable);
+}
+
+/**
  * 文字列バッファ.
  */
 class stringbuf

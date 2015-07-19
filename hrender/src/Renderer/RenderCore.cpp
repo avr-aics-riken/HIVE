@@ -245,6 +245,11 @@ public:
         m_shaderCache.clear();
         
     }
+    
+    void SetParallelRendering(bool enableParallel)
+    {
+        SetScreenParallel_SGL(enableParallel, false);
+    }
 
     /// レンダーオブジェクトの追加
     /// @param robj レンダーオブジェクト
@@ -337,12 +342,23 @@ public:
                 readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
                 const double readbacktm = GetTimeCount();
+
+#ifdef HIVE_ENABLE_MPI
+                int rank = 0;
+                MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+                if (rank == 0) {
+#endif
+                
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
                 }
                 if (!depth_outfile.empty()) {
                     m_imagesaver.Save(depth_outfile.c_str(), depth);
                 }
+                    
+#ifdef HIVE_ENABLE_MPI
+                }
+#endif
                 const double savetm = GetTimeCount();
                 printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
@@ -456,7 +472,6 @@ private:
             GetDepthBuffer_SGL(m_width, m_height, imgbuf);
 
 #ifdef HIVE_WITH_COMPOSITOR
-			// @todo { Consider non-screen parallel rendering. }
 			// 234 compositor does not support Z only compositing at this time.
 			// Thus we simply use MPI_Reduce o merge image.
 			
@@ -465,16 +480,19 @@ private:
             MPI_Comm_rank(MPI_COMM_WORLD, &rank);
             MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
 
-			int n = m_width * m_height;
-			std::vector<float> buf(n);
-			memcpy(&buf.at(0), imgbuf, n * sizeof(float));
+			if (nnodes > 1) {
 
-			MPI_Barrier(MPI_COMM_WORLD);
+				int n = m_width * m_height;
+				std::vector<float> buf(n);
+				memcpy(&buf.at(0), imgbuf, n * sizeof(float));
 
-			// Assume screen parallel rendering(i.e. no image overlapping),
-			int ret = MPI_Reduce(&buf.at(0), reinterpret_cast<void*>(imgbuf), n, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
+				MPI_Barrier(MPI_COMM_WORLD);
 
-			MPI_Barrier(MPI_COMM_WORLD);
+				// Assume screen parallel rendering(i.e. no image overlapping),
+				int ret = MPI_Reduce(&buf.at(0), reinterpret_cast<void*>(imgbuf), n, MPI_FLOAT, MPI_MIN, 0, MPI_COMM_WORLD);
+
+				MPI_Barrier(MPI_COMM_WORLD);
+			}
 
 #endif
 
@@ -505,9 +523,12 @@ private:
             MPI_Comm_rank(MPI_COMM_WORLD, &rank);
             MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
 
-			// Assume m_compPixelType == ID_RGBA32
-			assert(m_compPixelType == ID_RGBA32);
-            Do_234Composition(rank, nnodes, m_width, m_height, m_compPixelType, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+			if (nnodes > 1) {
+
+				// Assume m_compPixelType == ID_RGBA32
+				assert(m_compPixelType == ID_RGBA32);
+				Do_234Composition(rank, nnodes, m_width, m_height, m_compPixelType, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+			}
 #endif
 
             // merge to bgcolor
@@ -533,8 +554,9 @@ private:
             MPI_Comm_rank(MPI_COMM_WORLD, &rank);
             MPI_Comm_size(MPI_COMM_WORLD, &nnodes);
             
-            // @fixme { it looks RGBA128 is not yet supported. Will crash at the run time  }
-            Do_234Composition(rank, nnodes, m_width, m_height, ID_RGBA128, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+			if (nnodes > 1) {
+				Do_234Composition(rank, nnodes, m_width, m_height, m_compPixelType, ALPHA_BtoF, imgbuf, MPI_COMM_WORLD );
+			}
 #endif
             
             // merge to bgcolor
@@ -702,6 +724,11 @@ void RenderCore::ClearRenderObject()
 void RenderCore::ClearBuffers()
 {
     m_imp->ClearBuffers();
+}
+
+void RenderCore::SetParallelRendering(bool enableParallel)
+{
+    m_imp->SetParallelRendering(enableParallel);
 }
 
 /// プログレスコールバックの設定
