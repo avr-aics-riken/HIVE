@@ -659,6 +659,18 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 
 [render_pdb.scn](hrender/test/render_pdb.scn) 参考例
 
+## VTKLoader()
+
+.pvti 形式の VTK 階層一様ボリュームを読み込むローダークラス.
+第二引数で実データへのパスを設定する.
+第三引数でフィールド名を指定する.
+第四引数でデータのバイトスワップを行うかどうかを指定する.
+
+    local vtk = VTKLoader()
+    vtk:Load('input.pvti', '/path/to/data/VTI/', 'p', true)
+
+[render_pvti.scn](hrender/test/render_pvti.scn) 参考例
+
 ## CDMLoader()
 
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
