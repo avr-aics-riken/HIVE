@@ -393,9 +393,10 @@ function captureThumbnail() {
 					filename = path.basename(fullpath, path.extname(fullpath));
 					outpath = path.join(outdir, path.basename(fullpath, path.extname(fullpath)) + '.jpg');
 					jsonpath = path.join(path.dirname(fullpath), filename + '.json');
-					json = fs.readFileSync(jsonpath);
-					if (!fs.existsSync(outpath)) {
-						callback(index, fullpath, outpath, json);
+
+					//json = fs.readFileSync(jsonpath);
+					if (!fs.existsSync(outpath) && fs.existsSync(jsonpath)) {
+						callback(index, fullpath, outpath, jsonpath);
 					} else {
 						iterateFrags(index + 1, callback);
 					}
