@@ -367,6 +367,9 @@
 			j,
 			m,
 			cmd = '',
+			hasProp = function (target, prop) {
+				return target.hasOwnProperty(prop);
+			},
 			r,
 			g,
 			b,
@@ -386,15 +389,25 @@
 			//console.log("post", postInfo);
 			infoptr = lerpInfo(preInfo, postInfo, time);
 			if (infoptr) {
-				cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
+				cmd = cmd + createModelUniformsFromInfoCommand(obj.name, infoptr);
 				cmd = cmd + HiveCommand.setModelTranslation(obj.name, infoptr.translate, infoptr.rotate, infoptr.scale) + "\n";
 				if (objtype === "CAMERA") {
-					r = Math.min(1.0, infoptr.clearcolor[0]);
-					g = Math.min(1.0, infoptr.clearcolor[1]);
-					b = Math.min(1.0, infoptr.clearcolor[2]);
-					a = Math.min(1.0, infoptr.clearcolor[1]);
-					cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
-					cmd = cmd + HiveCommand.cameraLookat(obj.name, infoptr.position, infoptr.target, infoptr.up, infoptr.fov) + "\n";
+					if (hasProp(infoptr, 'position') && hasProp(infoptr, 'target') && hasProp(infoptr, 'up') && hasProp(infoptr, 'fov')) {
+						cmd = cmd + HiveCommand.cameraLookat(obj.name, infoptr.position, infoptr.target, infoptr.up, infoptr.fov) + "\n";
+					}
+					if (hasProp(infoptr, 'clearcolor')) {
+						r = Math.min(1.0, infoptr.clearcolor[0]);
+						g = Math.min(1.0, infoptr.clearcolor[1]);
+						b = Math.min(1.0, infoptr.clearcolor[2]);
+						a = Math.min(1.0, infoptr.clearcolor[3]);
+						cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+					}
+					if (hasProp(infoptr, 'screensize')) {
+						cmd = cmd + HiveCommand.cameraScreenSize(obj.name, infoptr.screensize[0], infoptr.screensize[1]) + "\n";
+					}
+					if (hasProp(infoptr, 'outputfile')) {
+						cmd = cmd + HiveCommand.cameraFilename(obj.name, infoptr.outputfile) + "\n";
+					}
 				}
 			}
 		}
@@ -417,7 +430,9 @@
 			modelCount = 0,
 			ext,
 			fileName,
-			shaderName;
+			shaderName,
+			isExportAnimation,
+			isSaveAnimationScene;
 		
 		if (!sceneInfo) {
 			return;
@@ -425,6 +440,9 @@
 		if (!sceneInfo.objectlist) {
 			return;
 		}
+		isExportAnimation = hasProp(sceneInfo, 'objecttimeline') && isExport;
+		isSaveAnimationScene = hasProp(sceneInfo, 'objecttimeline') && (!isExport);
+		
 		if (includeHeader) {
 			cmd = createSceneRenderCommandHeader();
 			cmd = cmd + '(function ()' + "\n";
@@ -440,23 +458,26 @@
 				if (obj.type === 'CAMERA') {
 					cmd = cmd + HiveCommand.createCamera(obj.name) + "\n";
 					modelCount = modelCount + 1;
-					if (hasProp(obj.info, 'position') && hasProp(obj.info, 'target') && hasProp(obj.info, 'up') && hasProp(obj.info, 'fov')) {
-						cmd = cmd + HiveCommand.cameraLookat(obj.name, obj.info.position, obj.info.target, obj.info.up, obj.info.fov) + "\n";
-					}
-					if (hasProp(obj.info, 'clearcolor')) {
-						r = Math.min(Math.max(obj.info.clearcolor[0], 0.0), 1.0);
-						g = Math.min(Math.max(obj.info.clearcolor[1], 0.0), 1.0);
-						b = Math.min(Math.max(obj.info.clearcolor[2], 0.0), 1.0);
-						a = Math.min(Math.max(obj.info.clearcolor[3], 0.0), 1.0);
-						cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
-					}
-					if (hasProp(obj.info, 'screensize')) {
-						width = obj.info.screensize[0];
-						height = obj.info.screensize[1];
-						cmd = cmd + HiveCommand.cameraScreenSize(obj.name, width, height) + "\n";
-					}
-					if (hasProp(obj.info, 'outputfile')) {
-						cmd = cmd + HiveCommand.cameraFilename(obj.name, obj.info.outputfile) + "\n";
+					
+					if (!(isExportAnimation && sceneInfo.objecttimeline[obj.name] !== undefined)) {
+						if (hasProp(obj.info, 'position') && hasProp(obj.info, 'target') && hasProp(obj.info, 'up') && hasProp(obj.info, 'fov')) {
+							cmd = cmd + HiveCommand.cameraLookat(obj.name, obj.info.position, obj.info.target, obj.info.up, obj.info.fov) + "\n";
+						}
+						if (hasProp(obj.info, 'clearcolor')) {
+							r = Math.min(Math.max(obj.info.clearcolor[0], 0.0), 1.0);
+							g = Math.min(Math.max(obj.info.clearcolor[1], 0.0), 1.0);
+							b = Math.min(Math.max(obj.info.clearcolor[2], 0.0), 1.0);
+							a = Math.min(Math.max(obj.info.clearcolor[3], 0.0), 1.0);
+							cmd = cmd + HiveCommand.cameraClearColor(obj.name, r, g, b, a) + "\n";
+						}
+						if (hasProp(obj.info, 'screensize')) {
+							width = obj.info.screensize[0];
+							height = obj.info.screensize[1];
+							cmd = cmd + HiveCommand.cameraScreenSize(obj.name, width, height) + "\n";
+						}
+						if (hasProp(obj.info, 'outputfile')) {
+							cmd = cmd + HiveCommand.cameraFilename(obj.name, obj.info.outputfile) + "\n";
+						}
 					}
 				}
 			}
@@ -473,26 +494,28 @@
 						}
 						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, shaderName) + "\n";
 						modelCount = modelCount + 1;
-						if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
-							cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
+						
+						if (!(isExportAnimation && sceneInfo.objecttimeline[obj.name] !== undefined)) {
+							if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
+								cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
+							}
+							cmd = cmd + HiveCommand.setModelShader(obj.name, shaderName) + "\n";
+							cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
 						}
-						cmd = cmd + HiveCommand.setModelShader(obj.name, shaderName) + "\n";
-						cmd = cmd + createModelUniformsFromInfoCommand(obj.name, obj.info);
 					}
 				}
 			}
 		}
-		if (hasProp(sceneInfo, 'objecttimeline')) {
-			if (isExport) {
-				for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
-					obj = sceneInfo.objectlist[i];
-					if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
-						cmd = cmd + createUpdateTimeCommand(time, obj, sceneInfo.objecttimeline[obj.name]);
-					}
+		
+		if (isExportAnimation) {
+			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
+				obj = sceneInfo.objectlist[i];
+				if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
+					cmd = cmd + createUpdateTimeCommand(time, obj, sceneInfo.objecttimeline[obj.name]);
 				}
-			} else {
-				cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
 			}
+		} else if (isSaveAnimationScene) {
+			cmd = cmd + HiveCommand.storeObjectTimeline(sceneInfo.objecttimeline) + "\n";
 		}
 		if (isExport) {
 			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
@@ -816,7 +839,6 @@
 					src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 				}
 			}
-			
 		}
 		if (redraw) {
 			redrawfunc = (function (core) {
