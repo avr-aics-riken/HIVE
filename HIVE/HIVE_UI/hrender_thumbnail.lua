@@ -14,7 +14,10 @@ for i = 1, #arg do
 		outputpath = arg[i]
 	end
 	if i == 3 then
-		jsonstr = arg[i]
+		local jsonfile = arg[i]
+		local f = io.open(jsonfile, 'r')
+		jsonstr = f:read("*a")
+		f:close()
 	end
 end
 
