@@ -10,6 +10,7 @@ var http = require('http'),
 	spawn = require('child_process').spawn,
     path = require('path'),
 	HRENDER = '../hrender',
+	HRENDER_ARG = ['scene.scn', 'MODE=EDITOR'],
 	port = 8080,
 	wshttpserver = http.createServer(function (req, res) {
 		'use strict';
@@ -89,7 +90,7 @@ function renderScene(scene, socket) {
 	console.log('TRY RENDER');
 	writeFile(scene, "./scene.scn", function () {
 		try {
-			var process = spawn(HRENDER, ['scene.scn', 'MODE=EDITOR']);
+			var process = spawn(HRENDER, HRENDER_ARG);
 			process.stdout.on('data', function (data) {
 				console.log('stdout: ' + data);
 				socket.emit('stdout', data.toString());
@@ -150,9 +151,22 @@ var server = http.createServer(function (req, res) {
         }
     }
 });
-if (process.argv.length > 2) {
+if (process.argv.length === 3) {
     port = process.argv[2];
+} else if (process.argv.length > 3) {
+	var np = 1;
+	for (i=2; i < process.argv.length; i = i + 2) {
+		if (process.argv[i] == '-p') {
+			port = process.argv[i+1];
+		} else if (process.argv[i] == '-np') {
+			console.log('MPI mode');
+			np = process.argv[i+1];
+	    	HRENDER_ARG = ['-np', np, HRENDER, 'scene.scn', 'MODE=EDITOR'],
+ 		   	HRENDER = 'mpirun';
+		}
+	}
 }
+
 server.listen(port);
 console.log('start server "http://localhost:' + port + '/"');
 
