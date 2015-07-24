@@ -11,6 +11,8 @@ if [ -z "${CMAKE_BIN+x}" ]; then
   CMAKE_BIN=/opt/local/bin/cmake
 fi
 
+set -e
+
 function clean_install_dir {
 	rm -rf ${installdir}
 }
@@ -21,12 +23,15 @@ function build_tp {
 	#
 	cd third_party/ 
 	cd TextParser/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
 
+	# It looks like setting CXX/CC require regeneration of configure.
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ./configure --host=sparc64-unknown-linux-gnu --prefix=${installdir}/TextParser && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ../configure --host=sparc64-unknown-linux-gnu --prefix=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
 
@@ -36,11 +41,15 @@ function build_cdmlib {
 	#
 	cd third_party/
 	cd CDMlib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+
+	# It looks like setting CXX/CC require regeneration of configure.
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} F90=${f90_compiler} F90FLAGS=${f90_flags} ./configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes && make && make install
 	cd ${topdir}
 }
 
@@ -53,8 +62,15 @@ function build_polylib {
 	if [ -f "Makefile" ]; then
 		make distclean
 	fi
+
+	# It looks like setting CXX/CC require regeneration of configure.
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="-Kfast,ocl,preex,simd=2,uxsimd,array_private,parallel,openmp" ./configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="-Kfast,ocl,preex,simd=2,uxsimd,array_private,parallel,openmp" ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
  
@@ -78,11 +94,14 @@ function build_hdmlib {
 	#
 	cd third_party/
 	cd HDMlib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools --host=sparc64-unknown-linux-gnu && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
