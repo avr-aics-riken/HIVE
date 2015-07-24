@@ -3,7 +3,7 @@
  * hrenderコア機能部
  */
 
-#ifdef HIVE_WITH_COMPOSITOR
+#ifdef HIVE_ENABLE_MPI
 #include <mpi.h>
 #endif
 
