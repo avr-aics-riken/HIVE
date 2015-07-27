@@ -223,7 +223,10 @@
 						'</div></div>';
 					pp.appendChild(d);
 					kvtoolsUI_update(d);
-					kUI(paramname).ChangeCallback(changeModelFloat(core, objname, paramname));
+					var slider = kUI(paramname);
+					slider.ChangeCallback(changeModelFloat(core, objname, paramname));
+					slider.setMaxValue(unif[i].max);
+					slider.setMinValue(unif[i].min);
 
 				} else if (unif[i].ui === 'vec3') {
 					paramname = unif[i].name;
