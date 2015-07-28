@@ -2,5 +2,6 @@
 
 function LoadUDM(property)
 	local udm = UDMLoader()
-	return udm:Load(property.filepath)
+	udm:Load(property.filepath)
+	return udm
 end
