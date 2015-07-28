@@ -1,0 +1,40 @@
+
+print('Render Obj')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename(string.format('render_obj.%06d.jpg', mpiRank()))
+camera:SetDepthFilename(string.format('render_obj_depth.%06d.exr', mpiRank()))
+
+camera:LookAt(
+	0,0,150,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local obj = OBJLoader()
+obj:Load('bunny.obj')
+
+local model = PolygonModel()
+local meshdata = obj:MeshData()
+model:Create(meshdata)
+model:SetShader('polygon.frag')
+
+local analy = PolygonAnalyzer()
+analy:Execute(model)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+
+-- Enable screen parallel rendering
+if mpiMode() == true then
+  screenParallelRendering(true)
+end
+
+render {camera, model}
+
+
