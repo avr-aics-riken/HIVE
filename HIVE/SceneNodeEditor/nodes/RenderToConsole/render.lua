@@ -1,8 +1,19 @@
-function RenderToConsole(arg)
-	render(arg.RenderObject)
-	for i,v in pairs(arg.RenderObject) do
+
+function RenderToConsole(farg)
+	render(farg.RenderObject)
+	local mode = false
+	local a
+	local b
+	if arg then
+		for a,b in pairs(arg) do
+			if b == "MODE=EDITOR" then
+				mode = true
+			end
+		end
+	end
+	for i,v in pairs(farg.RenderObject) do
 		print(i, v:GetType())
-		if v:GetType() == 'CAMERA' then
+		if v:GetType() == 'CAMERA' and mode then
 			-- save render image as jpg on memory
 			local saver = ImageSaver()
 			local imageBuffer = saver:SaveMemory(1, v:GetImageBuffer())

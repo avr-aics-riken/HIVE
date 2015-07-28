@@ -213,8 +213,8 @@ function svgNodeUI(draw) {
 		pole.dragstart = poleDragstart(this);
 		pole.dragmove = function (delta, event) {
 			event.stopPropagation();
-			console.log(draw.parent);
-			var rect = draw.parent.getBoundingClientRect(),
+			//console.log(draw.parent);
+			var rect = draw.node.getBoundingClientRect(),
 				positionX = rect.left,
 				positionY = rect.top;
 			this.line[this.line.length - 1].endPos(event.clientX - positionX, event.clientY - positionY);

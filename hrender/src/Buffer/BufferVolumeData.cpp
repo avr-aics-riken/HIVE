@@ -148,7 +148,7 @@ public:
      * NonUniformフラグ取得
      * @return NonUniformフラグ値
      */
-    const bool NonUniform() const {
+    bool NonUniform() const {
         return m_isNonUniform;
     }
     
@@ -175,9 +175,9 @@ public:
      */
     void Sample(float* ret, float x, float y, float z) {
 
-        float xx = xx;
-        float yy = yy;
-        float zz = zz;
+        float xx = x;
+        float yy = y;
+        float zz = z;
 
         if (m_isNonUniform) {
 
@@ -298,7 +298,7 @@ FloatBuffer *BufferVolumeData::Buffer() const {
  * NonUniformフラグ取得
  * @return NonUniformフラグ値
  */
-const bool BufferVolumeData::NonUniform() const {
+bool BufferVolumeData::NonUniform() const {
     return m_imp->NonUniform();
 }
 

@@ -27,7 +27,7 @@ public:
     FloatBuffer* SpacingX();
     FloatBuffer* SpacingY();
     FloatBuffer* SpacingZ();
-    const bool NonUniform() const;
+    bool NonUniform() const;
     void Clear();
     void print();
     int Width() const;

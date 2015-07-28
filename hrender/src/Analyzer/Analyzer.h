@@ -35,7 +35,7 @@ inline std::string string_format(const std::string fmt, ...) {
 		else
 			size *= 2;
 	}
-	return str;
+	//return str;
 }
 
 /**
