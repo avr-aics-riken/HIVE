@@ -378,7 +378,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		int numIndices = triangleIndices.size();
 		//printf("verts = %d\n", numVertices);
 		//printf("inds = %d\n", numIndices);
-		//m_mesh = new BufferMeshData();
+		m_mesh = new BufferMeshData();
 
 		//for (int x = 0; x < numIndices/3; x++) {
 		//	printf("inds[%d] = %d, %d, %d\n", x,
