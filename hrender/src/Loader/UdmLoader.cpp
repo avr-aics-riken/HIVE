@@ -3,8 +3,7 @@
  * UDMデータローダー
  */
 //
-// TODO: - timestep support
-//       - support various element data type
+// TODO: - support various element data type
 //
 
 #ifndef HIVE_WITH_UDMLIB
