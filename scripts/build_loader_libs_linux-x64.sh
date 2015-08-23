@@ -190,12 +190,14 @@ function build_udmlib {
 	# UDMlib
 	#
 	cd third_party/UDMlib
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
 	autoreconf -ivf
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} ./configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${cxx_compiler} ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
