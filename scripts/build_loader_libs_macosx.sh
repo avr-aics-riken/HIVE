@@ -148,7 +148,7 @@ function build_udmlib {
 	tar -zxvf cgnslib_3.2.1.tar.gz
 	mkdir cgnslib_build
 	cd cgnslib_build
-	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DCMAKE_INSTALL_PREFIX=${installdir} ../cgnslib_3.2.1 && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_ENABLE_64BIT=On ../cgnslib_3.2.1 && make && make install
 	cd ${topdir}
 
 	cd third_party/
@@ -164,12 +164,14 @@ function build_udmlib {
 	# UDMlib
 	#
 	cd third_party/UDMlib
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
 	autoreconf -ivf
+
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
+	cd BUILD_DIR
+
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} ./configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${cxx_compiler} ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }

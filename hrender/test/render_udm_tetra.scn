@@ -20,15 +20,6 @@ udm:Load('torus.tetra/index.dfi')
 local model = TetraModel()
 local tetradata = udm:TetraData()
 model:Create(tetradata)
-model:SetShader('white.frag')
-
--- local analy = PolygonAnalyzer()
--- analy:Execute(model)
--- print(analy:MinX())
--- print(analy:MaxX())
--- print(analy:MinY())
--- print(analy:MaxY())
--- print(analy:MinZ())
--- print(analy:MaxZ())
+model:SetShader('normal.frag')
 
 render {camera, model}
