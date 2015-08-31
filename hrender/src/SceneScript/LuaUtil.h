@@ -413,6 +413,19 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 		return LUAPUSH<RET>(L,thisptr->FUNCNAME(arg1,arg2,arg3,arg4,arg5,arg6,arg7)); \
 	INTERNAL_LUA_SCRIPTCLASS_METHOD_END(RET,FUNCNAME)
 
+#define LUA_SCRIPTCLASS_METHOD_ARG8(RET,FUNCNAME,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8) \
+	INTERNAL_LUA_SCRIPTCLASS_METHOD_BEGIN(RET,FUNCNAME) \
+		ARG1 arg1 = LUACAST<ARG1>(L, 2); \
+		ARG2 arg2 = LUACAST<ARG2>(L, 3); \
+		ARG3 arg3 = LUACAST<ARG3>(L, 4); \
+		ARG4 arg4 = LUACAST<ARG4>(L, 5); \
+		ARG5 arg5 = LUACAST<ARG5>(L, 6); \
+		ARG6 arg6 = LUACAST<ARG6>(L, 7); \
+		ARG7 arg7 = LUACAST<ARG7>(L, 8); \
+		ARG7 arg8 = LUACAST<ARG8>(L, 9); \
+		return LUAPUSH<RET>(L,thisptr->FUNCNAME(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8)); \
+	INTERNAL_LUA_SCRIPTCLASS_METHOD_END(RET,FUNCNAME)
+
 #define LUA_SCRIPTCLASS_METHOD_ARG10(RET,FUNCNAME,ARG1,ARG2,ARG3,ARG4,ARG5,ARG6,ARG7,ARG8,ARG9,ARG10) \
 	INTERNAL_LUA_SCRIPTCLASS_METHOD_BEGIN(RET,FUNCNAME) \
 		ARG1 arg1  = LUACAST<ARG1>(L, 2); \
@@ -420,11 +433,11 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 		ARG3 arg3  = LUACAST<ARG3>(L, 4); \
 		ARG4 arg4  = LUACAST<ARG4>(L, 5); \
 		ARG5 arg5  = LUACAST<ARG5>(L, 6); \
-		ARG5 arg6  = LUACAST<ARG5>(L, 7); \
-		ARG5 arg7  = LUACAST<ARG5>(L, 8); \
-		ARG5 arg8  = LUACAST<ARG5>(L, 9); \
-		ARG5 arg9  = LUACAST<ARG5>(L,10); \
-		ARG5 arg10 = LUACAST<ARG5>(L,11); \
+		ARG5 arg6  = LUACAST<ARG6>(L, 7); \
+		ARG5 arg7  = LUACAST<ARG7>(L, 8); \
+		ARG5 arg8  = LUACAST<ARG8>(L, 9); \
+		ARG5 arg9  = LUACAST<ARG9>(L,10); \
+		ARG5 arg10 = LUACAST<ARG10>(L,11); \
 		return LUAPUSH<RET>(L,thisptr->FUNCNAME(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10)); \
 	INTERNAL_LUA_SCRIPTCLASS_METHOD_END(RET,FUNCNAME)
 
