@@ -210,6 +210,7 @@ set(SOURCES
 	src/Builder/SparseVolumeToVolume.cpp
 	src/Builder/VolumeFilter.cpp
 	src/Builder/CompileUtil.cpp
+	src/Builder/MeshAttribToVolume.cpp
 	src/Generator/PrimitiveGenerator.cpp
 	src/Image/jpge.cpp
 	src/Image/jpgd.cpp
