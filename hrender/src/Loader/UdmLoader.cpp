@@ -73,10 +73,10 @@ void UDMLoader::Clear()
  * Add solution to be loaded
  * @param name Name of soltion(e.g. Temperature, Pressure)
  */
-void UDMLoader::AddSolution(const char* filename)
+void UDMLoader::AddSolution(const char* solutionName)
 {
 	SolutionInfo info;
-	info.name = std::string(filename);
+	info.name = std::string(solutionName);
 	// .type is not used here.
 
 	m_solutions.push_back(info);
@@ -178,7 +178,8 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 	solutions->getSolutionNameList(solutionNameList);
 	printf("[UDMloader] # of solutions = %d\n", static_cast<int>(solutionNameList.size()));
 	for (size_t i = 0; i < solutionNameList.size(); i++) {
-		printf("  [%d] solution name = %s\n", i, solutionNameList[i].c_str()); 
+		printf("  [%d] solution name = \"%s\"\n", i, solutionNameList[i].c_str()); 
+		AddSolution(solutionNameList[i].c_str());
 	}
 
 	// Supported datat type: Float or Double, 1 or 3 components
@@ -258,6 +259,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 				double x, y, z;
 				node->getCoords(x, y, z);
 				//printf("  [%d] = %f, %f, %f\n", n, x, y, z);
+
 				points.push_back(static_cast<float>(x));
 				points.push_back(static_cast<float>(y));
 				points.push_back(static_cast<float>(z));
@@ -477,6 +479,9 @@ BufferExtraData* UDMLoader::ExtraData(const char* name) {
 		m_data[name] = buf;
 		return m_data[name];
 	}
+
+	printf("[UdmLoader] Error: Specified solution not found \"%s\"\n", name);
+
 	return NULL;
 }
 
