@@ -15,7 +15,9 @@ void main(void)
 	vec3 p,n,dir;
 	isectinfo(p, n, dir);
 
-	gl_FragColor = vec4(abs(n), 1.0);
+    vec3 Nn = normalize(n);
+
+	gl_FragColor = vec4(abs(Nn), 1.0);
 	return;
 }
 
