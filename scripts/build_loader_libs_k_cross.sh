@@ -7,8 +7,12 @@ cxx_compiler=mpiFCCpx
 cxx_flags="-Kfast"
 f90_flags="-Kfast"
 f90_compiler=mpifrtpx
-if [ -z "${CMAKE_BIN+x}" ]; then
-  CMAKE_BIN=/opt/local/bin/cmake
+CMAKE_K=/opt/local/bin/cmake
+CMAKE_FX10=/usr/local/bin/cmake
+if [ -x $CMAKE_K ]; then
+  CMAKE_BIN=$CMAKE_K
+else
+  CMAKE_BIN=$CMAKE_FX10
 fi
 
 set -e
