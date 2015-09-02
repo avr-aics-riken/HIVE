@@ -248,6 +248,7 @@ int VolumeToVector::Create(BufferVolumeData *volume) {
 
 				// Skip zero value voxel.
 				if (fabsf(v1[0]) < 1.0e-20f && fabsf(v1[1]) < 1.0e-20f && fabsf(v1[2]) < 1.0e-20f) {
+                	offsetX += offset_incX;
 					continue;
 				}
 
