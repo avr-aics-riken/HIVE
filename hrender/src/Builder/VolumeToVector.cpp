@@ -245,7 +245,14 @@ int VolumeToVector::Create(BufferVolumeData *volume) {
 
                 VX::Math::vec3 v0 = VX::Math::vec3(offsetX, offsetY, offsetZ);
                 VX::Math::vec3 v1 = volbuf[buf_offset];
+
+				// Skip zero value voxel.
+				if (fabsf(v1[0]) < 1.0e-20f && fabsf(v1[1]) < 1.0e-20f && fabsf(v1[2]) < 1.0e-20f) {
+					continue;
+				}
+
                 v1 = normalize(v1);
+
 
                 vposbuf.push_back(v0);
                 vdirbuf.push_back(v1);
