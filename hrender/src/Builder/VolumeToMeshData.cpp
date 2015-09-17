@@ -1,6 +1,6 @@
 /**
  * @file VolumeToMeshData.cpp
- * VolumeData‚©‚çƒƒbƒVƒ…¶¬‚ðs‚¤ƒ‚ƒWƒ…[ƒ‹
+ * VolumeDataÃ‡Â©Ã‡ÃÃ‰Ã…Ã‰bÃ‰VÃ‰Ã–Ãªâˆ‚ÃªÂ¨Ã‡ï£¿Ã§sÃ‡Â§Ã‰Ã‡Ã‰WÃ‰Ã–Ã…[Ã‰Ã£
  */
 
 #include "VolumeToMeshData.h"
@@ -824,6 +824,17 @@ int VolumeToMeshData::IsoSurface() {
     pos->Create(numVertices);
     float* pp = pos->GetBuffer();
     memcpy(pp, &vertices.at(0), sizeof(float)*3*numVertices);
+    // offset to center
+    float offset[3];
+    offset[0] = dim[0] * 0.5;
+    offset[1] = dim[1] * 0.5;
+    offset[2] = dim[2] * 0.5;
+    for (int i = 0; i < numVertices; ++i) {
+        pp[3*i  ] -= offset[0];
+        pp[3*i+1] -= offset[1];
+        pp[3*i+2] -= offset[2];
+    }
+
 
     normal->Create(numVertices);
     memcpy(normal->GetBuffer(), &normals.at(0), sizeof(float)*3*numVertices);
