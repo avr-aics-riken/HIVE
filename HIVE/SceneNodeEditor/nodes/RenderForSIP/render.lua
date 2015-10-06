@@ -11,13 +11,17 @@ function RenderForSIP(arg)
 			-- create metabinary
 			local metabin = MetaBinary()
 			local json = [[{
-				 "command" : "reqAddContent",
-				 "type" : "image",
-				 "posx" : "100",
-				 "posy" : "100",
-				 "width" : "512",
-				 "height" : "512"}
-			 ]]
+				 "jsonrpc" : "2.0",
+				 "method" : "AddContent",
+				 "to" : "master",
+				 "params" : {
+					 "type" : "image",
+					 "posx" : "100",
+					 "posy" : "100",
+					 "width" : "512",
+					 "height" : "512"
+				 }
+			}]]
 			metabin:Create(json, imageBuffer, imageBufferSize) 
 
 			print('Send:', arg.send);
