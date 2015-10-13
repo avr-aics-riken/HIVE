@@ -30,14 +30,14 @@
 			"method" : "AddContent",
 			"to" : "master",
 			"params" : {
-				"id" : "hive_screenshot",
+				"id" : "hive_" + connection.id,
 				"type" : "image"
 			}
 		}, metabin;
 
 		metabin = metabinary.createMetaBinary(json, image);
 		if (metabin !== null && metabin !== undefined) {
-			console.log("send metabin", metabin);
+			console.log("send metabin", connection);
 			connection.send(metabin);
 		}
 	}
@@ -251,9 +251,10 @@
 		try {
 			client = new WebSocket(url);
 			client.onopen = (function (self, clie) {
-				return function () {
+				return function (ev) {
 					self.websocketConn = client;
-					console.log("websocket open");
+					self.websocketConn.id = ev.timeStamp;
+					console.log("websocket open", ev);
 					if (openCallback) {
 						openCallback();
 					}
@@ -271,9 +272,7 @@
 				console.log("websocket message:", message);
 			};
 		} catch (e) {
-			if (endCallback) {
-				endCallback(e);
-			}
+			console.error(e);
 			this.websocketConn = null;
 		}
 	};
