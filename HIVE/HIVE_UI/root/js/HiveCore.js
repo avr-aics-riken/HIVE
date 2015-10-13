@@ -245,22 +245,28 @@
 		runScript(this.conn, cmd);
 	};
 	
-	HiveCore.prototype.connectToSIP = function (url, endCallback) {
+	HiveCore.prototype.connectToSIP = function (url, openCallback, closeCallback) {
 		var client;
-		if (this.websocketConn) {
-			this.websocketConn.close();
-		}
+		
 		try {
 			client = new WebSocket(url);
-			client.onopen = function () {
-				console.log("websocket open");
-				if (endCallback) {
-					endCallback(null);
-				}
-			};
-			client.onclose = function () {
-				console.log("websocket close");
-			};
+			client.onopen = (function (self, clie) {
+				return function () {
+					self.websocketConn = client;
+					console.log("websocket open");
+					if (openCallback) {
+						openCallback();
+					}
+				};
+			}(this, client));
+			client.onclose = (function (self) {
+				return function () {
+					console.log("websocket close");
+					if (closeCallback) {
+						closeCallback();
+					}
+				};
+			}(this));
 			client.onmessage = function (message) {
 				console.log("websocket message:", message);
 			};
@@ -268,9 +274,15 @@
 			if (endCallback) {
 				endCallback(e);
 			}
+			this.websocketConn = null;
 		}
-		
-		this.websocketConn = client;
+	};
+	
+	HiveCore.prototype.closeSIP = function () {
+		if (this.websocketConn) {
+			this.websocketConn.close();
+			this.websocketConn = null;
+		}
 	};
 	
 	//----------------------------------------------------------------------------------------------
