@@ -610,6 +610,17 @@
 		$('chowder-button-cancel').addEventListener('click', function (ev) {
 			$('popup_background').style.display = "none";
 		});
+		$('chowder-button-connect').addEventListener('click', function (ev) {
+			var url = $('chowder-input').value;
+			console.log("chowderconnect");
+			core.connectToSIP(url, function (err) {
+				if (!err) {
+					$('popup_background').style.display = "none";
+				} else {
+					console.error(err);
+				}
+			});
+		});
 		$('loadscenebtn').addEventListener('click', function (ev) {
 			var fdlg = new FileDialog("loadsceneDialog", true, '.json');
 			fdlg.OpenFile("", (function (core, fdlg) {

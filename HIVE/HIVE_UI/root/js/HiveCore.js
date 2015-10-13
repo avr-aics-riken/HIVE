@@ -23,6 +23,24 @@
 	function runScript(conn, src, callback) {
 		conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 	}
+
+	function sendImageToSIP(connection, image) {
+		var json = {
+			"jsonrpc" : "2.0",
+			"method" : "AddContent",
+			"to" : "master",
+			"params" : {
+				"id" : "hive_screenshot",
+				"type" : "image"
+			}
+		}, metabin;
+
+		metabin = metabinary.createMetaBinary(json, image);
+		if (metabin !== null && metabin !== undefined) {
+			console.log("send metabin", metabin);
+			connection.send(metabin);
+		}
+	}
 	
 	function registerMethods(hiveCore, resultElement, infoCallback) {
 		if (!hiveCore.conn) { return; }
@@ -90,6 +108,9 @@
 		hiveCore.conn.method('renderedImage', function (param, data) {
 			if (param.type === 'jpg') {
 				resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+				if (hiveCore.websocketConn) {
+					sendImageToSIP(hiveCore.websocketConn, data);
+				}
 			}
 			
 			// Refine render
@@ -205,6 +226,7 @@
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
 		this.sceneInfo.objecttimeline = {};
+		this.websocketConn = null;
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -221,6 +243,34 @@
 		cmd += HiveCommand.cameraLookat(this.activeCamera, this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
 		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera, true);
 		runScript(this.conn, cmd);
+	};
+	
+	HiveCore.prototype.connectToSIP = function (url, endCallback) {
+		var client;
+		if (this.websocketConn) {
+			this.websocketConn.close();
+		}
+		try {
+			client = new WebSocket(url);
+			client.onopen = function () {
+				console.log("websocket open");
+				if (endCallback) {
+					endCallback(null);
+				}
+			};
+			client.onclose = function () {
+				console.log("websocket close");
+			};
+			client.onmessage = function (message) {
+				console.log("websocket message:", message);
+			};
+		} catch (e) {
+			if (endCallback) {
+				endCallback(e);
+			}
+		}
+		
+		this.websocketConn = client;
 	};
 	
 	//----------------------------------------------------------------------------------------------
