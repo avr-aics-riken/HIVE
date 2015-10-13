@@ -206,6 +206,14 @@ body {
 	overflow-y: scroll;
 }
 
+#chowderbtn{
+	position: absolute;
+	top:15px;
+	right:335px;
+	z-index: 5;
+	width: 100px;
+}
+
 #newscenebtn{
 	position: absolute;
 	top:15px;
@@ -268,6 +276,124 @@ body {
 	margin: 5px;
 }
 
+#chowder-input-title {
+	position : relative;
+	top : 20px;
+	width : 400px;
+	height : 50px;
+	font-size : 20px;
+	color : white;
+	/*background-color: gray;*/
+}
+
+#chowder-input {
+	font-family:sans-serif;
+	font-size:16px;
+	color:#fff;
+	text-align:left;
+	width: 600px;
+	height : 30px;
+	margin-top : 30px;
+	margin-left: 0px;
+	margin-bottom:5px;
+	background-color:rgba(20,20,20,1.0);
+
+	border-color: #852414;
+	border-style:solid;
+	border-radius:2px;
+	border-width:2px;
+}
+
+.chowder_background {
+	position: absolute;
+	left: 0px;
+	top:0px;
+	right: 0px;
+	bottom: 0px;
+	z-index:101;
+	background-color: rgba(0,0,0,0.5);
+	display : none;
+}
+
+.chowder-dialog {
+	text-align:center;
+	width:840px;
+	height:260px;
+	margin:auto;
+	margin-left:8%;
+	padding:0px;
+	z-index:102;
+	top:100px;
+	position:fixed;
+	background-color:#292929;
+	border:solid;
+	border-radius:20px;
+	border-width:12px;
+	border-color:#571700;
+	box-shadow:8px 15px 26px #111111;
+}
+
+.chowder-button-connect {
+	background-color:#434343;
+	color:#FFF;
+	text-align: center;
+	padding-top:2px;
+	padding-left:5px;
+	font-size: 16px;
+	width:100px;
+	height:40px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-ktml-border-radius: 5px;
+	cursor: default;
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ktml-user-select: none;
+}
+.chowder-button-connect:active {
+	background-color:rgb(206,79,30);
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.chowder-button-cancel {
+	width: 165px;
+	height: 101px;
+	margin-top:20px;
+	margin-left:10px;
+	position: absolute;
+	right:30px;
+	top:130px;
+	color:#FFF;
+	text-align:center;
+	background:transparent;
+	border:none;
+	background-image:url("../image/button_bg_action_red.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
+
+.chowder-cancel-text {
+	position : relative;
+	top : -10px;
+	font-family:sans-serif;
+	font-size : 20px;
+}
+
+.chowder-url-text {
+	font-family:sans-serif;
+	font-size : 20px;
+	color:#FFF;
+}
+
+.chowder-button-cancel:active{
+	border:none;
+	background-image:url("../image/button_bg_action_red_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
 
 .ppTable { display:table; table-layout:fixed; width:100%; margin: 0px 0px 3px 0px;}
 .ppRow   { display:table-row;}
