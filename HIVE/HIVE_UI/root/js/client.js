@@ -604,6 +604,12 @@
 			ev.preventDefault();
 			core.newScene();
 		});
+		$('chowderbtn').addEventListener('click', function (ev) {
+			$('popup_background').style.display = "block";
+		});
+		$('chowder-button-cancel').addEventListener('click', function (ev) {
+			$('popup_background').style.display = "none";
+		});
 		$('loadscenebtn').addEventListener('click', function (ev) {
 			var fdlg = new FileDialog("loadsceneDialog", true, '.json');
 			fdlg.OpenFile("", (function (core, fdlg) {
