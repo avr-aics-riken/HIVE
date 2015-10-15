@@ -291,7 +291,7 @@ body {
 	font-size:16px;
 	color:#fff;
 	text-align:left;
-	width: 600px;
+	width: 700px;
 	height : 30px;
 	margin-top : 30px;
 	margin-left: 0px;
@@ -316,7 +316,6 @@ body {
 }
 
 .chowder-dialog {
-	text-align:center;
 	width:840px;
 	height:260px;
 	margin:auto;
@@ -334,26 +333,24 @@ body {
 }
 
 .chowder-button-connect {
-	background-color:#434343;
+	width: 165px;
+	height: 101px;
+	margin-top:20px;
+	margin-left:10px;
+	position: absolute;
+	right:200px;
+	top:130px;
 	color:#FFF;
-	text-align: center;
-	padding-top:2px;
-	padding-left:5px;
-	font-size: 16px;
-	width:100px;
-	height:40px;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-ktml-border-radius: 5px;
-	cursor: default;
-	user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ktml-user-select: none;
+	text-align:center;
+	background:transparent;
+	border:none;
+	background-image:url("../image/button_bg_action.png");
+	background-repeat:no-repeat;
+	background-size: contain;
 }
 .chowder-button-connect:active {
-	background-color:rgb(206,79,30);
+	border:none;
+	background-image:url("../image/button_bg_action_press.png");
 	background-repeat:no-repeat;
 	background-size: contain;
 }
@@ -374,8 +371,14 @@ body {
 	background-repeat:no-repeat;
 	background-size: contain;
 }
+.chowder-button-cancel:active{
+	border:none;
+	background-image:url("../image/button_bg_action_red_press.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+}
 
-.chowder-cancel-text {
+.chowder-text {
 	position : relative;
 	top : -10px;
 	font-family:sans-serif;
@@ -388,12 +391,11 @@ body {
 	color:#FFF;
 }
 
-.chowder-button-cancel:active{
-	border:none;
-	background-image:url("../image/button_bg_action_red_press.png");
-	background-repeat:no-repeat;
-	background-size: contain;
+.chowder-input-area {
+	position : relative;
+	left : 50px;
 }
+
 
 .ppTable { display:table; table-layout:fixed; width:100%; margin: 0px 0px 3px 0px;}
 .ppRow   { display:table-row;}
