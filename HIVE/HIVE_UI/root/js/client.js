@@ -604,25 +604,32 @@
 			ev.preventDefault();
 			core.newScene();
 		});
+		function connectToSIP() {
+			var url = $('chowder-input').value,
+				reconnectTimeout = 2000;
+			
+			core.connectToSIP(url, function (err) {
+				if (!err) {
+					$('popup_background').style.display = "none";
+					$('chowderbtn').style.backgroundColor = "rgb(181, 52, 40)";
+				}
+			}, function (closeEvent) {
+				$('chowderbtn').style.backgroundColor = "";
+				if (core.websocketConn) {
+					setTimeout(connectToSIP, reconnectTimeout);
+				}
+			});
+		}
 		$('chowderbtn').addEventListener('click', function (ev) {
 			$('popup_background').style.display = "block";
 		});
 		$('chowder-button-cancel').addEventListener('click', function (ev) {
 			$('popup_background').style.display = "none";
+			$('chowderbtn').style.backgroundColor = "";
+			core.closeSIP();
 		});
-		function connectToSIP() {
-			var url = $('chowder-input').value,
-				reconnectTimeout = 2000;
-			console.log("chowderconnect");
-			core.connectToSIP(url, function (err) {
-				$('popup_background').style.display = "none";
-			}, function () {
-				setTimeout(function () {
-					connectToSIP();
-				}, reconnectTimeout);
-			});
-		}
 		$('chowder-button-connect').addEventListener('click', function (ev) {
+			$('chowderbtn').style.backgroundColor = "";
 			core.closeSIP();
 			connectToSIP();
 		});

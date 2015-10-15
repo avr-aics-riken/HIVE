@@ -253,15 +253,17 @@
 		
 		<div class="chowder_background" id="popup_background">
 			<div class="chowder-dialog">
-				<div id="chowder-input-title">ChOWDER URL Setting</div>
-				<span class="chowder-url-text">URL:</span>
-				<input id="chowder-input" value="ws://localhost:8082/v2/"></input>
+				<div class="chowder-input-area">
+					<div id="chowder-input-title">ChOWDER URL Setting</div>
+					<span class="chowder-url-text">URL:</span>
+					<input id="chowder-input" value="ws://localhost:8082/v2/"></input>
+				</div>
 
-				<button type="button" class="chowder-button-connect">
-					<span class="chowder-connect-text">Connect</span>
+				<button type="button" class="chowder-button-connect" id="chowder-button-connect">
+					<span class="chowder-text" id="chowder-connect-text">Connect</span>
 				</button>
 				<button type="button" class="chowder-button-cancel" id="chowder-button-cancel">
-					<span class="chowder-cancel-text">Cancel</span>
+					<span class="chowder-text">Cancel</span>
 				</button>
 			</div>
 		</div>
