@@ -24,14 +24,16 @@
 		conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 	}
 
-	function sendImageToSIP(connection, image) {
+	function sendImageToSIP(connection, image, width, height) {
 		var json = {
 			"jsonrpc" : "2.0",
 			"method" : "AddContent",
 			"to" : "master",
 			"params" : {
 				"id" : "hive_" + connection.id,
-				"type" : "image"
+				"type" : "image",
+				"width" : width,
+				"height" : height
 			}
 		}, metabin;
 
@@ -106,10 +108,13 @@
 		}(hiveCore, infoCallback)));
 		
 		hiveCore.conn.method('renderedImage', function (param, data) {
+			var w, h;
 			if (param.type === 'jpg') {
 				resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
 				if (hiveCore.websocketConn) {
-					sendImageToSIP(hiveCore.websocketConn, data);
+					w = hiveCore.screenSize[0];
+					h = hiveCore.screenSize[1];
+					sendImageToSIP(hiveCore.websocketConn, data, w, h);
 				}
 			}
 			
