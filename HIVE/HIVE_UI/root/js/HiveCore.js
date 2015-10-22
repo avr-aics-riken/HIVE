@@ -31,6 +31,7 @@
 			"to" : "master",
 			"params" : {
 				"id" : "hive_" + connection.id,
+				"content_id" : "hive_" + connection.id,
 				"type" : "image",
 				"width" : width,
 				"height" : height
