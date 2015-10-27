@@ -1,9 +1,11 @@
 function PolygonAnalizeFunc(arg)
-	-- TODO
-	print('TODO:PolygonAnalyzerFunc')
-	--execute(arg.model)
+	local model = PolygonModel()
+	model:Create(arg.mesh)
+	print('PolygonAnalyzerFunc')
+ 	local analy = PolygonAnalyzer()
+	analy:Execute(model)
 	return {
-		min=function () return {0,0,0} end,
-		max=function () return {0,0,0} end
+    	min=function () return {analy:MinX(), analy:MinY(), analy:MinZ()} end,
+    	max=function () return {analy:MaxX(), analy:MaxY(), analy:MaxZ()} end
 	}
 end

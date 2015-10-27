@@ -24,7 +24,7 @@ uniform float     tf_max;
 uniform float     tf_opacity;
 
 #define EPS        0.005
-#define SAMPLES    500.0
+#define SAMPLES    2500.0
 #define num_steps  SAMPLES
 
 vec4 samplingVolume(vec3 texpos) {
@@ -113,13 +113,23 @@ void  main(void) {
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);
 
-        float f = clamp(temp.x, tf_min, tf_max);
-        float x = (f - tf_min) / (tf_max - tf_min); // normalize
+        if (abs(temp.x) < 0.00001 && abs(temp.x) < 0.00001 && abs(temp.y) < 0.00001 && abs(temp.z) < 0.00001) {
+            // Skip
+        } else if (temp.x < tf_min) {
+            // Skip
+        } else if (temp.x > tf_max) {
+            // Skip
+        } else {
 
-        vec4 tfCol = texture2D(tf_tex, vec2(x, 0));
-        tfCol = tf_opacity * vec4(tfCol.rgb, 1.0);
-        col += (1.0 - col.w) * tfCol;
-        col += tfCol;
+            float f = clamp(temp.x, tf_min, tf_max);
+            float x = (f - tf_min) / (tf_max - tf_min); // normalize
+
+            vec4 tfCol = texture2D(tf_tex, vec2(x, 0));
+            tfCol = tf_opacity * vec4(tfCol.rgb, 1.0);
+            col += (1.0 - col.w) * tfCol;
+            col += tfCol;
+        }
+
 		count = count + 1.0;
 		t += tstep;
 		i = i + 1.0;

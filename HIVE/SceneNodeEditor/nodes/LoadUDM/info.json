@@ -9,6 +9,12 @@
 		{"name": "filepath", "type": "string", "value": "data.dfi"}
 	],
 	"output": [
-		{"name": "TetraData", "type": "BufferTetraData"}
+		{"name": "Tetra", "type": "BufferTetraData"},
+		{"name": "Mesh", "type": "BufferMeshData"},
+		{"name": "ExtraP", "type": "BufferExtraData"},
+		{"name": "ExtraT", "type": "BufferExtraData"},
+		{"name": "ExtraU", "type": "BufferExtraData"},
+		{"name": "ExtraV", "type": "BufferExtraData"},
+		{"name": "ExtraW", "type": "BufferExtraData"}
 	]
 }
