@@ -38,7 +38,7 @@
 			}
 		}, metabin;
 
-		metabin = metabinary.createMetaBinary(json, image);
+		metabin = window.metabinary.createMetaBinary(json, image);
 		if (metabin !== null && metabin !== undefined) {
 			console.log("send metabin", connection);
 			connection.send(metabin);
