@@ -40,6 +40,7 @@
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
 #include "PrimitiveGenerator_Lua.h"
+#include "MeshAttribToVolume_Lua.h"
 
 #ifdef HIVE_WITH_CDMLIB
 #include "CdmLoader_Lua.h"
@@ -97,6 +98,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VTKLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, PrimitiveGenerator_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, MeshAttribToVolume_Lua);
 #ifdef HIVE_WITH_CDMLIB
     LUA_SCRIPTCLASS_REGISTER(L, CDMLoader_Lua);
 #endif
@@ -152,6 +154,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
     SetFunction(L, "VTKLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VTKLoader_Lua));
     SetFunction(L, "PrimitiveGenerator",  LUA_SCRIPTCLASS_NEW_FUNCTION(PrimitiveGenerator_Lua));
+    SetFunction(L, "MeshAttribToVolume",  LUA_SCRIPTCLASS_NEW_FUNCTION(MeshAttribToVolume_Lua));
 #ifdef HIVE_WITH_CDMLIB
     SetFunction(L, "CDMLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(CDMLoader_Lua));
 #endif

@@ -976,6 +976,19 @@ ToVolume メソッドにはボリュームの解像度を指定する.
     
     p2v:ToVolume(128,128,128)
 
+## MeshAttribToVolume()	
+
+ポリゴンモデルの頂点アトリビュート(ExtraData)をボリュームデータに変換する.
+頂点の位置に対応するボクセル要素にアトリビュートを付与する.
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)にはポリゴンメッシュのバウンディングボックスを指定する.
+(バウンディングボックスは PolygonAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度を指定する.
+
+    local ma2v = PointToVolume()
+    ma2v:Create(mesh, attrib, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+    
+    ma2v:ToVolume(128,128,128)
+
 ## SparseVolumeToVolume()	
 
 疎ボリュームを(一様)ボリュームデータに変換する.

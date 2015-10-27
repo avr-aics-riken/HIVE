@@ -1,0 +1,13 @@
+{
+	"name": "CreateJetTransferTexture",
+	"funcname": "CreateJetTransferTexture",
+	"info":"JetTransferのテクスチャを生成するノード",
+	"pos": [430, 300],
+	"varname": "instCreateJetTransferTexture",
+	"customfuncfile": "jettrans.lua",
+	"input": [
+	],
+	"output": [
+		{"name": "Image", "type": "BufferImageData"}
+	]
+}

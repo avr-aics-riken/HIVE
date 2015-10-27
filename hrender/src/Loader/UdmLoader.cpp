@@ -3,8 +3,7 @@
  * UDMデータローダー
  */
 //
-// TODO: - timestep support
-//       - support various element data type
+// TODO: - support various element data type
 //
 
 #ifndef HIVE_WITH_UDMLIB
@@ -74,10 +73,10 @@ void UDMLoader::Clear()
  * Add solution to be loaded
  * @param name Name of soltion(e.g. Temperature, Pressure)
  */
-void UDMLoader::AddSolution(const char* filename)
+void UDMLoader::AddSolution(const char* solutionName)
 {
 	SolutionInfo info;
-	info.name = std::string(filename);
+	info.name = std::string(solutionName);
 	// .type is not used here.
 
 	m_solutions.push_back(info);
@@ -179,7 +178,8 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 	solutions->getSolutionNameList(solutionNameList);
 	printf("[UDMloader] # of solutions = %d\n", static_cast<int>(solutionNameList.size()));
 	for (size_t i = 0; i < solutionNameList.size(); i++) {
-		printf("  [%d] solution name = %s\n", i, solutionNameList[i].c_str()); 
+		printf("  [%d] solution name = \"%s\"\n", i, solutionNameList[i].c_str()); 
+		AddSolution(solutionNameList[i].c_str());
 	}
 
 	// Supported datat type: Float or Double, 1 or 3 components
@@ -259,6 +259,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 				double x, y, z;
 				node->getCoords(x, y, z);
 				//printf("  [%d] = %f, %f, %f\n", n, x, y, z);
+
 				points.push_back(static_cast<float>(x));
 				points.push_back(static_cast<float>(y));
 				points.push_back(static_cast<float>(z));
@@ -344,17 +345,17 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 				//
 				// Hexa cube with shared vertex.
 				const int idx [] = {
-					0, 2, 1, 1, 2, 3,	// -Y(bottom)
-					1, 3, 5, 3, 7, 5,   // +X
-					5, 7, 6, 5, 6, 4,   // +Y(top)
-					4, 6, 2, 4, 2, 0,   // -X
+					0, 2, 1, 0, 3, 2,	// -Y(bottom)
+					1, 2, 5, 2, 6, 5,   // +X
+					5, 6, 7, 5, 7, 4,   // +Y(top)
+					4, 7, 3, 4, 3, 0,   // -X
 					0, 1, 5, 0, 5, 4,   // +Z
-					6, 7, 3, 6, 3, 2    // -Z
+					6, 2, 3, 6, 3, 7    // -Z
 				};
 
 				size_t indexOffset = trianglePoints.size() / 3;
 				for (int i = 0; i < 36; i++) {
-					triangleIndices.push_back(indexOffset + i);
+					triangleIndices.push_back(indexOffset + idx[i]);
 				}
 				trianglePoints.insert(trianglePoints.end(), points.begin(), points.end());
 			} else {
@@ -376,7 +377,23 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 	if ((trianglePoints.size() > 0) && (triangleIndices.size() > 0)) {
 		int numVertices = trianglePoints.size() / 3;
 		int numIndices = triangleIndices.size();
+		//printf("verts = %d\n", numVertices);
+		//printf("inds = %d\n", numIndices);
 		m_mesh = new BufferMeshData();
+
+		//for (int x = 0; x < numIndices/3; x++) {
+		//	printf("inds[%d] = %d, %d, %d\n", x,
+		//					triangleIndices[3*x+0],
+		//					triangleIndices[3*x+1],
+		//					triangleIndices[3*x+2]);
+		//}
+
+		//for (int x = 0; x < numVertices; x++) {
+		//	printf("verts[%d] = %f, %f, %f\n", x,
+		//					trianglePoints[3*x+0],
+		//					trianglePoints[3*x+1],
+		//					trianglePoints[3*x+2]);
+		//}
 
 		m_mesh->Create(numVertices, numIndices);
 		Vec3Buffer* pos = m_mesh->Position();
@@ -462,6 +479,9 @@ BufferExtraData* UDMLoader::ExtraData(const char* name) {
 		m_data[name] = buf;
 		return m_data[name];
 	}
+
+	printf("[UdmLoader] Error: Specified solution not found \"%s\"\n", name);
+
 	return NULL;
 }
 

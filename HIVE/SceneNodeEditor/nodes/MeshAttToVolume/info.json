@@ -1,0 +1,18 @@
+{
+	"name": "MeshAttToVolume",
+	"funcname": "MeshAttToVolume",
+	"info":"Meshからボリュームに変換するためのノード",
+	"pos": [100, 100],
+	"varname": "instMeshAttToVolume",
+	"customfuncfile":"meshattrib.lua", 
+	"input": [
+		{"name": "mesh", "type": "BufferMeshData"},
+		{"name": "extra", "type": "BufferExtraData"},
+		{"name": "min", "type": "vec3", "value": [ 1.0, 1.0, 1.0]},
+		{"name": "max", "type": "vec3", "value": [-1.0,-1.0,-1.0]},
+		{"name": "size", "type": "vec3", "value": [128,128,128]}
+		],
+	"output": [
+		{"name": "Volume", "type": "BufferVolumeData"}
+	]
+}
