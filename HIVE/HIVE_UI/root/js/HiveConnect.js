@@ -68,7 +68,7 @@
 				//console.log('[RECV]', event.data);
 				if (event.data instanceof Blob) {
 					//console.log('[DEBUG] binary data recved.');
-					metabinary.loadMetaBinary(event.data, function (meta, binData) {
+					window.metabinary.loadMetaBinary(event.data, function (meta, binData) {
 						//console.log('[DEBUG] Meta=', meta);
 						if (self.methodFuncs[meta.method]) {
 							//console.log('[DEBUG] Call Method=>', meta.method);

@@ -604,6 +604,38 @@
 			ev.preventDefault();
 			core.newScene();
 		});
+		function connectToSIP() {
+			var url = $('chowder-input').value,
+				reconnectTimeout = 2000;
+			
+			core.connectToSIP(url, function (err) {
+				if (!err) {
+					$('popup_background').style.display = "none";
+					$('chowderbtn').style.backgroundColor = "rgb(181, 52, 40)";
+					$('chowder-connect-text').innerHTML = "Disconnect";
+				}
+			}, function (closeEvent) {
+				$('popup_background').style.display = "none";
+				$('chowderbtn').style.backgroundColor = "";
+				$('chowder-connect-text').innerHTML = "Connect";
+				if (core.websocketConn) {
+					setTimeout(connectToSIP, reconnectTimeout);
+				}
+			});
+		}
+		$('chowderbtn').addEventListener('click', function (ev) {
+			$('popup_background').style.display = "block";
+		});
+		$('chowder-button-cancel').addEventListener('click', function (ev) {
+			$('popup_background').style.display = "none";
+		});
+		$('chowder-button-connect').addEventListener('click', function (ev) {
+			$('chowderbtn').style.backgroundColor = "";
+			core.closeSIP();
+			if ($('chowder-connect-text').innerHTML !== 'Disconnect') {
+				connectToSIP();
+			}
+		});
 		$('loadscenebtn').addEventListener('click', function (ev) {
 			var fdlg = new FileDialog("loadsceneDialog", true, '.json');
 			fdlg.OpenFile("", (function (core, fdlg) {

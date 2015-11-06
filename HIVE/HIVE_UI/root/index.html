@@ -28,6 +28,7 @@
 
 		<div class="KFrameHeader" id="part-header">
 			<div class="KTitle">HIVE 1.0</div>
+			<div class="KButton" id="chowderbtn">ChOWDER</div>
 			<div class="KButton" id="newscenebtn">New</div>
 			<div class="KButton" id="loadscenebtn">Load</div>
 			<div class="KButton" id="savescenebtn">Save</div>
@@ -239,7 +240,7 @@
 				</button>
 			</div>
 		</div>
-		
+
 		<div id="nodeDialog" style="position:absolute; left:0px; top:0px; right:0px; bottom:0px; overflow:hidden; background-color:rgba(0,0,0,0.8); z-index:10; display:none">
 			<svg id="nodecanvas" style="position:absolute;left:0px;top:0px;right:0px; bottom:0px;"></svg>
 			<button type="button" class="button_open">
@@ -248,6 +249,23 @@
 				<button type="button" class="button_cancel">
 					<span class="text_button_action">Cancel</span>
 				</button>
+		</div>
+		
+		<div class="chowder_background" id="popup_background">
+			<div class="chowder-dialog">
+				<div class="chowder-input-area">
+					<div id="chowder-input-title">ChOWDER URL Setting</div>
+					<span class="chowder-url-text">URL:</span>
+					<input id="chowder-input" value="ws://localhost:8082/v2/"></input>
+				</div>
+
+				<button type="button" class="chowder-button-connect" id="chowder-button-connect">
+					<span class="chowder-text" id="chowder-connect-text">Connect</span>
+				</button>
+				<button type="button" class="chowder-button-cancel" id="chowder-button-cancel">
+					<span class="chowder-text">Cancel</span>
+				</button>
+			</div>
 		</div>
 	</body>
 </html>
