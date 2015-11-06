@@ -3,7 +3,6 @@
 function LoadUDM(property)
 	local udm = UDMLoader()
 	udm:Load(property.filepath)
-
 	local udminst = {
 		Tetra = function()
 			return udm:TetraData()

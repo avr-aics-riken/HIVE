@@ -7,7 +7,7 @@
 	"customfuncfile":"render.lua",
 	"rootnode":true,
 	"input": [
-		{"name": "send", "type":"string", "value":"ws://localhost:8082/v1/"},
+		{"name": "send", "type":"string", "value":"ws://localhost:8082/v2/"},
 		{"name": "RenderObject",  "type": "RenderObject", "array": [
 			{"name": "RenderObject0",  "type": "RenderObject"},
 			{"name": "RenderObject1",  "type": "RenderObject"},

@@ -6,12 +6,21 @@
 	
 	var metabinary = {};
 	
-	//
-	// Array Buffer To String funciton
-	//
+	/**
+	 * arrayBufferをStringに変換して返す
+	 * @method arrayBufferToString
+	 * @param {ArrayBuffer} arraybuf arrayBuffer
+	 * @return URLデコードした文字列
+	 */
 	function arrayBufferToString(arraybuf) {
-		var encodedString = String.fromCharCode.apply(null, new Uint8Array(arraybuf)),
-			decodedString = decodeURIComponent(escape(encodedString));
+		var chars = new Uint8Array(arraybuf),
+			encodedString = "",
+			decodedString = "",
+			i;
+		for (i = 0; i < chars.length; i = i + 1) {
+			encodedString = encodedString + String.fromCharCode(chars[i]);
+		}
+		decodedString = decodeURIComponent(escape(encodedString));
 		return decodedString;
 	}
 	
@@ -20,6 +29,12 @@
 	//
 	// quate: http://jsperf.com/test-unicode-to-utf8
 	//
+	/**
+	 * UTF8文字列をArrayBufferに変換して返す
+	 * @method utf8StringToArray
+	 * @param {String} str UTF8文字列
+	 * @return ArrayBuffer
+	 */
 	function utf8StringToArray(str) {
 		var n = str.length,
 			idx = 0,
@@ -59,9 +74,12 @@
 		return bytes;
 	}
 	
-	/// load metabinary
-	/// @param binary Blob data
-	/// @param endCallback end callback with loaded data (metadata, binary)
+	/**
+	 * メタバイナリの読み込み.
+	 * @method loadMetaBinary
+	 * @param {BLOB} binary バイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
+	 */
 	function loadMetaBinary(binary, endCallback) {
 		var reader = new FileReader();
 		reader.addEventListener('loadend', function (e) {
@@ -70,7 +88,8 @@
 				version,
 				head,
 				metasize,
-				metadata,
+				metaData,
+				params = null,
 				binary,
 				pos = 0;
 			
@@ -89,22 +108,32 @@
 			pos = pos + 4;
 			
 			if (buf.byteLength < pos + metasize) { return; }
-			metadata = arrayBufferToString(buf.slice(pos, pos + metasize));
-			metadata = JSON.parse(metadata);
+			metaData = arrayBufferToString(buf.slice(pos, pos + metasize));
+			metaData = JSON.parse(metaData);
 			pos = pos + metasize;
 			
+			if (metaData.hasOwnProperty('params')) {
+				params = metaData.params;
+			} else if (metaData.hasOwnProperty('result')) {
+				params = metaData.result;
+			}
+			
 			binary = buf.slice(pos, buf.byteLength);
-			if (metadata.type === 'text') {
+			if (params !== null && params.type === 'text') {
 				binary = arrayBufferToString(binary);
 			}
-			endCallback(metadata, binary);
+			endCallback(metaData, binary);
 		});
 		reader.readAsArrayBuffer(binary);
 	}
 	
-	/// create metabinary
-	/// @param metaData json
-	/// @param binary arraybuffer
+	/**
+	 * メタバイナリの作成
+	 * @method createMetaBinary
+	 * @param {Object} metaData メタデータ
+	 * @param {Object} data バイナリデータまたはUTF8文字列
+	 * @return メタバイナリ
+	 */
 	function createMetaBinary(metaData, data) {
 		var binary,
 			metaDataStr = JSON.stringify(metaData),
@@ -116,12 +145,19 @@
 			binaryView,
 			pos = 0,
 			i,
-			c;
+			c,
+			params;
 		
-		if (metaData.type === 'url') {
+		if (metaData.hasOwnProperty('params')) {
+			params = metaData.params;
+		} else if (metaData.hasOwnProperty('result')) {
+			params = metaData.result;
+		}
+		
+		if (params.type === 'url') {
 			binary = utf8StringToArray(encodeURI(data));
 			dstBufferSize = head.length + 8 + metaDataStr.length + binary.length;
-		} else if (metaData.type === 'text') {
+		} else if (params.type === 'text') {
 			binary = utf8StringToArray(data);
 			dstBufferSize = head.length + 8 + metaDataStr.length + binary.length;
 		} else {
@@ -151,7 +187,7 @@
 		}
 		pos = pos + metaDataStr.length;
 		
-		if (metaData.type === 'text' || metaData.type === 'url') {
+		if (params.type === 'text' || params.type === 'url') {
 			for (i = pos; i < dstBufferSize; i = i + 1) {
 				view.setUint8(i, binary[i - pos], false);
 			}

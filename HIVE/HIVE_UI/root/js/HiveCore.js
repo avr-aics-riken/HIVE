@@ -23,6 +23,27 @@
 	function runScript(conn, src, callback) {
 		conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 	}
+
+	function sendImageToSIP(connection, image, width, height) {
+		var json = {
+			"jsonrpc" : "2.0",
+			"method" : "AddContent",
+			"to" : "master",
+			"params" : {
+				"id" : "hive_" + connection.id,
+				"content_id" : "hive_" + connection.id,
+				"type" : "image",
+				"width" : width,
+				"height" : height
+			}
+		}, metabin;
+
+		metabin = window.metabinary.createMetaBinary(json, image);
+		if (metabin !== null && metabin !== undefined) {
+			console.log("send metabin", connection);
+			connection.send(metabin);
+		}
+	}
 	
 	function registerMethods(hiveCore, resultElement, infoCallback) {
 		if (!hiveCore.conn) { return; }
@@ -88,8 +109,14 @@
 		}(hiveCore, infoCallback)));
 		
 		hiveCore.conn.method('renderedImage', function (param, data) {
+			var w, h;
 			if (param.type === 'jpg') {
 				resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+				if (hiveCore.websocketConn) {
+					w = hiveCore.screenSize[0];
+					h = hiveCore.screenSize[1];
+					sendImageToSIP(hiveCore.websocketConn, data, w, h);
+				}
 			}
 			
 			// Refine render
@@ -205,6 +232,7 @@
 		this.activeCamera = 'view';
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
 		this.sceneInfo.objecttimeline = {};
+		this.websocketConn = null;
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -221,6 +249,45 @@
 		cmd += HiveCommand.cameraLookat(this.activeCamera, this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
 		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera, true);
 		runScript(this.conn, cmd);
+	};
+	
+	HiveCore.prototype.connectToSIP = function (url, openCallback, closeCallback) {
+		var client;
+		
+		try {
+			client = new WebSocket(url);
+			client.onopen = (function (self, clie) {
+				return function (ev) {
+					self.websocketConn = client;
+					self.websocketConn.id = ev.timeStamp;
+					console.log("websocket open", ev);
+					if (openCallback) {
+						openCallback();
+					}
+				};
+			}(this, client));
+			client.onclose = (function (self) {
+				return function () {
+					console.log("websocket close");
+					if (closeCallback) {
+						closeCallback();
+					}
+				};
+			}(this));
+			client.onmessage = function (message) {
+				console.log("websocket message:", message);
+			};
+		} catch (e) {
+			console.error(e);
+			this.websocketConn = null;
+		}
+	};
+	
+	HiveCore.prototype.closeSIP = function () {
+		if (this.websocketConn) {
+			this.websocketConn.close();
+			this.websocketConn = null;
+		}
 	};
 	
 	//----------------------------------------------------------------------------------------------
