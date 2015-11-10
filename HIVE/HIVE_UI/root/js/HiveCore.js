@@ -33,8 +33,8 @@
 				"id" : "hive_" + connection.id,
 				"content_id" : "hive_" + connection.id,
 				"type" : "image",
-				"width" : width,
-				"height" : height
+				"orgWidth" : width,
+				"orgHeight" : height
 			}
 		}, metabin;
 
