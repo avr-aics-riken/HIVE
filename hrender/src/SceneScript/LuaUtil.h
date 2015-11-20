@@ -487,8 +487,11 @@ public:
         m_table.push_back(y);
     }
     
+    
     // from Lua stack
     LuaTable(lua_State* L, int stacki) {
+        dumpStack(L);
+        
         if (lua_isnumber(L, stacki)) {
             m_type = TYPE_NUMBER;
             m_number = lua_tonumber(L, stacki);
@@ -497,8 +500,10 @@ public:
             m_string = std::string(lua_tostring(L, stacki));
         } else if (lua_istable(L, stacki)) {
             lua_pushnil(L); // first nil
+            dumpStack(L);
             while (lua_next(L, stacki) != 0) {
-                if(lua_isnumber(L, -1)){
+                dumpStack(L);
+                if (lua_isnumber(L, -1)) {
                     LuaTable val(L, -1);
                     if (val.GetType() != TYPE_INVALID) {
                         if (lua_isnumber(L, -2)) {
@@ -509,6 +514,18 @@ public:
                             const char* s = lua_tostring(L, -2);
                             this->map(s, val);
                         }
+                    }
+                } else if (lua_istable(L, -1)) {
+                    const int top = lua_gettop(L);
+                    LuaTable val(L, top);
+                    dumpStack(L);
+                    if (lua_isnumber(L, -2)) {
+                        m_type = TYPE_ARRAY;
+                        this->push(val);
+                    } else if (lua_isstring(L, -2)) {
+                        m_type = TYPE_MAP;
+                        const char* s = lua_tostring(L, -2);
+                        this->map(s, val);
                     }
                 }
                 lua_pop(L, 1);
