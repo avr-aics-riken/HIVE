@@ -126,9 +126,9 @@ bool MeshAttribToVolume::ToVolume(int w, int h, int d) {
 
     FloatBuffer* buffer = m_volume->Buffer();
 
-    assert(m_point);
-    assert(m_point->Position());
-    assert(m_point->Position()->GetNum() > 0);
+//    assert(m_point);
+//    assert(m_point->Position());
+//    assert(m_point->Position()->GetNum() > 0);
 
     float* voxels = m_volume->Buffer()->GetBuffer();
 
