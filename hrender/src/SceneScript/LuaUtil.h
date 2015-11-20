@@ -490,8 +490,6 @@ public:
     
     // from Lua stack
     LuaTable(lua_State* L, int stacki) {
-        dumpStack(L);
-        
         if (lua_isnumber(L, stacki)) {
             m_type = TYPE_NUMBER;
             m_number = lua_tonumber(L, stacki);
@@ -500,9 +498,7 @@ public:
             m_string = std::string(lua_tostring(L, stacki));
         } else if (lua_istable(L, stacki)) {
             lua_pushnil(L); // first nil
-            dumpStack(L);
             while (lua_next(L, stacki) != 0) {
-                dumpStack(L);
                 if (lua_isnumber(L, -1)) {
                     LuaTable val(L, -1);
                     if (val.GetType() != TYPE_INVALID) {
@@ -518,7 +514,6 @@ public:
                 } else if (lua_istable(L, -1)) {
                     const int top = lua_gettop(L);
                     LuaTable val(L, top);
-                    dumpStack(L);
                     if (lua_isnumber(L, -2)) {
                         m_type = TYPE_ARRAY;
                         this->push(val);
