@@ -56,41 +56,41 @@ public:
     }
 
     BufferPointData_Lua* PointList(LuaTable tbl, float num, float radius) {
-        std::vector<LuaTable>           lt       = tbl.GetTable();
-        std::vector<LuaTable>::iterator ite      = lt.begin();
-        std::vector<LuaTable>::iterator ite_end  = lt.end();
+        const std::vector<LuaTable>&          lt       = tbl.GetTable();
+        std::vector<LuaTable>::const_iterator ite      = lt.begin();
+        const std::vector<LuaTable>::const_iterator ite_end  = lt.end();
         std::vector<float> buf;
         while(ite != ite_end) {
             double param = ite->GetNumber();
             buf.push_back(param);
-            ite++;
+            ++ite;
         }
         return CreateLuaPointData(PrimitiveGenerator::SphereList(&buf[0], num, radius));
     }
 
 
     BufferLineData_Lua* LineList(LuaTable tbl, float num, float radius) {
-        std::vector<LuaTable>           lt       = tbl.GetTable();
-        std::vector<LuaTable>::iterator ite      = lt.begin();
-        std::vector<LuaTable>::iterator ite_end  = lt.end();
+        const std::vector<LuaTable>&          lt       = tbl.GetTable();
+        std::vector<LuaTable>::const_iterator ite      = lt.begin();
+        const std::vector<LuaTable>::const_iterator ite_end  = lt.end();
         std::vector<float> buf;
         while(ite != ite_end) {
             double param = ite->GetNumber();
             buf.push_back(param);
-            ite++;
+            ++ite;
         }
         return CreateLuaLineData(PrimitiveGenerator::LineList(&buf[0], num, radius));
     }
 
     BufferMeshData_Lua* TriangleList(LuaTable tbl, float num) {
-        std::vector<LuaTable>           lt       = tbl.GetTable();
-        std::vector<LuaTable>::iterator ite      = lt.begin();
-        std::vector<LuaTable>::iterator ite_end  = lt.end();
+        const std::vector<LuaTable>&          lt       = tbl.GetTable();
+        std::vector<LuaTable>::const_iterator ite      = lt.begin();
+        const std::vector<LuaTable>::const_iterator ite_end  = lt.end();
         std::vector<float> buf;
         while(ite != ite_end) {
             double param = ite->GetNumber();
             buf.push_back(param);
-            ite++;
+            ++ite;
         }
         return CreateLuaMeshData(PrimitiveGenerator::TriangleList(&buf[0], num));
     }
