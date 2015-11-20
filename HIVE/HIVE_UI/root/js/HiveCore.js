@@ -24,17 +24,17 @@
 		conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 	}
 
-	function sendImageToSIP(connection, image, width, height) {
+	function sendImageToSIP(connection, id, image, width, height) {
 		var json = {
 			"jsonrpc" : "2.0",
 			"method" : "AddContent",
 			"to" : "master",
 			"params" : {
-				"id" : "hive_" + connection.id,
-				"content_id" : "hive_" + connection.id,
+				"id" : "hive_" + id,
+				"content_id" : "hive_" + id,
 				"type" : "image",
-				"width" : width,
-				"height" : height
+				"orgWidth" : width,
+				"orgHeight" : height
 			}
 		}, metabin;
 
@@ -115,7 +115,7 @@
 				if (hiveCore.websocketConn) {
 					w = hiveCore.screenSize[0];
 					h = hiveCore.screenSize[1];
-					sendImageToSIP(hiveCore.websocketConn, data, w, h);
+					sendImageToSIP(hiveCore.websocketConn, hiveCore.chowderConnectionID, data, w, h);
 				}
 			}
 			
@@ -233,6 +233,7 @@
 		this.viewCamera = {position: vec3(0, 0, 300), target: vec3(0, 0, 0), up: vec3(0, 1, 0), fov: 60}; // default
 		this.sceneInfo.objecttimeline = {};
 		this.websocketConn = null;
+		this.chowderConnectionID = 0;
 		registerMethods(this, resultElement, infoCallback);
 	};
 
@@ -260,6 +261,9 @@
 				return function (ev) {
 					self.websocketConn = client;
 					self.websocketConn.id = ev.timeStamp;
+					if (!self.chowderConnectionID) {
+						self.chowderConnectionID = ev.timeStamp;
+					}
 					console.log("websocket open", ev);
 					if (openCallback) {
 						openCallback();
