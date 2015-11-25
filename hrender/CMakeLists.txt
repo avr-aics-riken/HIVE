@@ -269,7 +269,7 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   )
 
   SET(CDMLIB_LIBS
-    CDM TPmpi
+    CDM netcdf hdf5_hl hdf5 TPmpi
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/include)

@@ -5,11 +5,12 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 ## Requirements
 
 * cmake 2.8 or later
-* HDF5
 * MPI compiler(optional for macosx and linux x64 environment)
 * Zoltan v.3.81(Required when you build HIVE with PDMlib support)
 * fpzip 1.0.1(Required when you build HIVE with PDMlib support)
 * cgnslib 3.2.1(Required when you build HIVE with UDMlib support)
+* netcdf4 4.2.1.1(Required when you build HIVE with CDMlib support)
+* HDF5 1.8.10 patch1(Required when you buil HIVE with CDMlib support)
 
 ## git clone
 
@@ -141,6 +142,7 @@ Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
   * [x] double precision voxel type(scalar and vector)
     * Convert to float precision for internal representation
   * [x] non-uniform spacing 
+  * [ ] NetCDF4 format support
 
 * PDMlib
   * [x] particle data
