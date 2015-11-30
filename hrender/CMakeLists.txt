@@ -268,13 +268,23 @@ IF(HIVE_BUILD_WITH_CDMLIB)
     src/Loader/CdmLoader.cpp
   )
 
+  IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+    SET(NETCDF_LIBS netcdf hdf5_hl hdf5 sz)
+  ELSE()
+    SET(NETCDF_LIBS netcdf hdf5_hl hdf5)
+  ENDIF()
+
   SET(CDMLIB_LIBS
-    CDM netcdf hdf5_hl hdf5 TPmpi
+    CDM ${NETCDF_LIBS} TPmpi
   )
 
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/include)
   link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/lib)
-  
+
+  IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+    include_directories(/opt/aics/netcdf/k/include)
+    link_directories(/opt/aics/netcdf/k/lib-static)
+  ENDIF()
 ENDIF()
 
 IF(HIVE_BUILD_WITH_BCMTOOLS)
