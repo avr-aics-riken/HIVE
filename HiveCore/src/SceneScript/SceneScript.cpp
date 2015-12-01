@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "../Renderer/RenderCore.h"
-
+/*
 // --- Script Classes ----
 #include "PolygonModel_Lua.h"
 #include "VolumeModel_Lua.h"
@@ -68,6 +68,7 @@
 #include "SparseVolumeToVolume_Lua.h"
 #include "VolumeFilter_Lua.h"
 #include "GenTexture_Lua.h"
+
 
 void RegisterSceneClass(lua_State* L)
 {
@@ -182,6 +183,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "SparseVolumeToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
 }
+*/
 // ------------------------
 
 /*
@@ -254,7 +256,7 @@ int endian(lua_State* L)
 
 
 // ------------------------
-int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
+/*int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
 {
     lua_pushvalue(L, n); // stack on top
 
@@ -269,7 +271,7 @@ int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& ro
         lua_pop(L, 1);
     }
     return num;
-}
+}*/
 
 static lua_State* g_L = 0;
 static bool progressCallback(double val)
@@ -298,10 +300,14 @@ int render(lua_State* L)
     }
     
     // register models
-    std::vector<RenderObject*> robjs;
-    const int modelnum = getRenderObjectFromTable(L, 1, robjs);
-    printf("RenderObjects Num = %d\n", modelnum);
- 
+    //std::vector<RenderObject*> robjs;
+    //const int modelnum = getRenderObjectFromTable(L, 1, robjs);
+    //printf("RenderObjects Num = %d\n", modelnum);
+    
+    LuaTable tbl(L, 1);
+    const std::vector<LuaTable>& robjs = tbl.GetTable();
+    printf("RenderObjects Num = %d\n", static_cast<int>(robjs.size()));
+    
     RenderCore* core = RenderCore::GetInstance();
 
     if (stnum > 1 && lua_type(L, 2) == LUA_TFUNCTION) { // progress callback function
@@ -311,7 +317,10 @@ int render(lua_State* L)
 
     
     for (size_t i = 0; i < robjs.size(); ++i) {
-        core->AddRenderObject(robjs[i]);
+        LuaRefPtr<RenderObject>* ro = robjs[i].GetUserData<RenderObject>();
+        if (!ro)
+            continue;
+        core->AddRenderObject(*ro);
     }
     
     // call render
@@ -355,7 +364,7 @@ void registerFuncs(lua_State* L)
     
     SetFunction(L, "screenParallelRendering", screenParallelRendering);
 
-    RegisterSceneClass(L);
+    //RegisterSceneClass(L);
 }
 
 void registerArg(lua_State* L, const std::vector<std::string>& sceneargs)
