@@ -452,6 +452,7 @@ public:
     enum VALUE_TYPE {
         TYPE_INVALID,
         TYPE_NUMBER,
+        TYPE_USERDATA,
         TYPE_STRING,
         TYPE_ARRAY,
         TYPE_MAP,
@@ -462,27 +463,29 @@ private:
     VALUE_TYPE m_type;
     double m_number;
     std::string m_string;
+    void* m_userdata;
     
 public:
-    LuaTable() : m_type(TYPE_ARRAY), m_number(0.0) {}
+    LuaTable() : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {}
     VALUE_TYPE GetType() const { return m_type; }
 
     //---------------------------------
     // for initialization
-    LuaTable(double num) : m_type(TYPE_NUMBER), m_number(num) {}
-    LuaTable(const std::string& str) : m_type(TYPE_STRING), m_number(0.0), m_string(str) {}
-    LuaTable(double x, double y, double z, double w) : m_type(TYPE_ARRAY), m_number(0.0) {
+    LuaTable(double num) : m_type(TYPE_NUMBER), m_number(num), m_userdata(0) {}
+    LuaTable(const std::string& str) : m_type(TYPE_STRING), m_number(0.0), m_string(str), m_userdata(0) {}
+    LuaTable(void* ptr) : m_type(TYPE_USERDATA), m_number(0.0), m_userdata(ptr) {}
+    LuaTable(double x, double y, double z, double w) : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {
         m_table.push_back(x);
         m_table.push_back(y);
         m_table.push_back(z);
         m_table.push_back(w);
     }
-    LuaTable(double x, double y, double z) : m_type(TYPE_ARRAY), m_number(0.0) {
+    LuaTable(double x, double y, double z) : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {
         m_table.push_back(x);
         m_table.push_back(y);
         m_table.push_back(z);
     }
-    LuaTable(double x, double y) : m_type(TYPE_ARRAY), m_number(0.0) {
+    LuaTable(double x, double y) : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {
         m_table.push_back(x);
         m_table.push_back(y);
     }
@@ -490,7 +493,10 @@ public:
     
     // from Lua stack
     LuaTable(lua_State* L, int stacki) {
-        if (lua_isnumber(L, stacki)) {
+        if (lua_isuserdata(L, stacki)) {
+            m_type = TYPE_USERDATA;
+            m_userdata = lua_touserdata(L, stacki);
+        } else if (lua_isnumber(L, stacki)) {
             m_type = TYPE_NUMBER;
             m_number = lua_tonumber(L, stacki);
         } else if (lua_isstring(L, stacki)) {
@@ -499,7 +505,7 @@ public:
         } else if (lua_istable(L, stacki)) {
             lua_pushnil(L); // first nil
             while (lua_next(L, stacki) != 0) {
-                if (lua_isnumber(L, -1)) {
+                if (lua_isnumber(L, -2)) {
                     LuaTable val(L, -1);
                     if (val.GetType() != TYPE_INVALID) {
                         if (lua_isnumber(L, -2)) {
@@ -511,7 +517,7 @@ public:
                             this->map(s, val);
                         }
                     }
-                } else if (lua_istable(L, -1)) {
+                } else if (lua_istable(L, -2)) {
                     const int top = lua_gettop(L);
                     LuaTable val(L, top);
                     if (lua_isnumber(L, -2)) {
@@ -549,18 +555,28 @@ public:
     void push(double val)                                     { m_type = TYPE_ARRAY; m_table.push_back(LuaTable(val)); }
     void push(const char* val)                                { m_type = TYPE_ARRAY; m_table.push_back(LuaTable(val)); }
     void push(const std::string& val)                         { m_type = TYPE_ARRAY; m_table.push_back(val);           }
+    void push(void* ptr)                                      { m_type = TYPE_ARRAY; m_table.push_back(LuaTable(ptr)); }
     //---------------------------------
     // for map operation
     void map(const std::string& name, const LuaTable& val)    { m_type = TYPE_MAP; m_map[name] = val;           }
     void map(const std::string& name, double val)             { m_type = TYPE_MAP; m_map[name] = LuaTable(val); }
     void map(const std::string& name, const char* val)        { m_type = TYPE_MAP; m_map[name] = LuaTable(val); }
     void map(const std::string& name, const std::string& val) { m_type = TYPE_MAP; m_map[name] = LuaTable(val); }
+    void map(const std::string& name, void* ptr)              { m_type = TYPE_MAP; m_map[name] = LuaTable(ptr); }
     //---------------------------------
     // Get methods
     double GetNumber() const                                  { return m_number; }
     const std::string& GetString() const                      { return m_string; }
+    void* GetUserData() const                                 { return m_userdata; }
+    template<typename T> LuaRefPtr<T>* GetUserData() const    {
+        if (!m_userdata)
+            return 0;
+        return *static_cast<LuaRefPtr<T>**>(m_userdata);
+    }
+    
     const std::vector<LuaTable>& GetTable() const             { return m_table;  }
     const std::map<std::string, LuaTable>& GetMap() const     { return m_map;    }
+
 
     //---------------------------------
     // for Lua binding
