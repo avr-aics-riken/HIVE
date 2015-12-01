@@ -42,6 +42,16 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
 
 ### MacOSX
 
+MacOSX requires gcc-4.8 or later and openmpi.
+
+#### Setup
+
+Assume homebrew is installed.
+
+    $ brew install gcc48
+    $ brew install openmpi
+    $ export OMPI_CC=gcc-4.8
+    $ export OMPI_CXX=g++-4.8
     $ ./scripts/build_loader_libs_macosx.sh
 
 
