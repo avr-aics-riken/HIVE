@@ -42,7 +42,8 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
 
 ### MacOSX
 
-MacOSX requires gcc-4.8 or later and openmpi.
+MacOSX requires gcc-4.8 and openmpi.
+(gcc-5 is not supported due to New ABI problem)
 
 #### Setup
 
