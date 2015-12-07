@@ -14,7 +14,7 @@
 
 #include "Graphics.h"
 #include <stdio.h>
-#include "Math.h"
+#include "../Core/vxmath.h"
 
 namespace  {
 	float g_near = 10.0;
@@ -34,28 +34,45 @@ VX::Graphics& GetCurrentGraphics()
  * @param h 高さ
  * @param framebuffer フレームバッファ
  * @param colorRenderbuffer カラーレンダーバッファ
+ * @param colorbit 色ビット
  * @param despthRenderBuffer デプスレンダーバッファ
+ * @param depthbit 深度ビット
  */
-void CreateBuffer_GL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer,unsigned int& depthRenderbuffer)
+void CreateBuffer_GL(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit)
 {
-	VX::Graphics& g = GetCurrentGraphics();
-	g.GenFramebuffers(1, &framebuffer);
-	g.BindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	
-	// create color renderbuffer and attach
-	g.GenRenderbuffers(1, &colorRenderbuffer);
-	g.BindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
-	g.RenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, w, h);
-	g.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
-	
-	// create depth renderbuffer and attach
-	g.GenRenderbuffers(1, &depthRenderbuffer);
-	g.BindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
-	g.RenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
-	g.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
-	
-	g.Viewport(0, 0, w, h);
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenFramebuffers(1, &framebuffer);
+    g.BindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    
+    // create color renderbuffer and attach
+    g.GenRenderbuffers(1, &colorRenderbuffer);
+    g.BindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer);
+    if (colorbit == 8) {
+        g.RenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, w, h);
+    } else if (colorbit == 32) {
+        g.RenderbufferStorage(GL_RENDERBUFFER, GL_RGBA32F_ARB, w, h);
+    } else {
+        g.RenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, w, h);
+        fprintf(stderr, "Error: Invalid color buffer format [colorbit = %d]\n use 8 or 32\n", colorbit);
+    }
+    g.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer);
+    
+    // create depth renderbuffer and attach
+    g.GenRenderbuffers(1, &depthRenderbuffer);
+    g.BindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer);
+    if (depthbit == 16) {
+        g.RenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+    } else if (depthbit == 32) {
+        g.RenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, w, h);
+    } else {
+        g.RenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, w, h);
+        fprintf(stderr, "Error: Invalid depth buffer format [depthbit = %d]\n use 16 or 32\n", depthbit);
+    }
+    g.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
+    
+    g.Viewport(0, 0, w, h);
 }
+
 /**
  * GLバッファの解放
  * @param framebuffer フレームバッファ
@@ -89,13 +106,18 @@ void Clear_GL(float red, float green, float blue, float alpha)
  * @param h 高さ
  * @param imgbuf 結果を格納するバッファ
  */
-void GetColorBuffer_GL(int w, int h, unsigned char* imgbuf)
+void GetColorBuffer_GL(int w, int h, unsigned char* imgbuf, int colorbit)
 {
-  //glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-  //glPixelStorei(GL_PACK_ALIGNMENT,1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+    glPixelStorei(GL_PACK_ALIGNMENT,1);
 	VX::Graphics& g = GetCurrentGraphics();
-	g.ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
-	g.Finish();
+    if (colorbit == 8) {
+        g.ReadPixels(0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, imgbuf);
+    } else if (colorbit == 32) {
+        g.ReadPixels(0, 0, w, h, GL_RGBA, GL_FLOAT, imgbuf);
+    } else {
+        fprintf(stderr, "Error: Invalid color buffer format [colorbit = %d]\n use 8 or 32\n", colorbit);
+    }
 }
 
 /**
@@ -320,7 +342,7 @@ void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val)
  * @param nearVal ニア
  * @param farVal ファー
  */
-void SetCamera_GL(unsigned int prg, float* eye, float* lookat, float* up, float fov, int w, int h, float nearVal, float farVal)
+void SetCamera_GL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov, int w, int h, float nearVal, float farVal)
 {
 	g_near = nearVal;
 	g_far  = farVal;
@@ -549,12 +571,12 @@ bool findstr(const char* str1, const char* str2)
  * シェーダプログラムの作成.
  * @param srcname　シェーダパス
  * @param [out] prg シェーダプログラムID.
- * @param usePointShader 点シェーダを使うかどうか.
  * @retval true 成功.
  * @retval false 失敗.
  */
-bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointShader)
+bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg)
 {
+    bool usePointShader = false;
 	static GLchar srcbuf[16384];
 	char fbuf[1024] = {};
 	//sprintf(fbuf, "%s.gl", srcname); // old specification (add .gl)
@@ -610,7 +632,7 @@ bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointSh
 	printf("FShader compiled=%d\n",val);
 	//assert(val == GL_TRUE && "failed to compile shader");
 	if (val!=GL_TRUE) {
-		fprintf(stderr, ("Error: failed to compile shader [%s]\n", srcname);
+		fprintf(stderr, "Error: failed to compile shader [%s]\n", srcname);
 		return false;
 	}
 	
@@ -743,6 +765,17 @@ void GenTextures_GL(int n, unsigned int* tex)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.GenTextures(n, tex);
+}
+
+/**
+ * テクスチャの削除.
+ * @param n 個数
+ * @param tex テクスチャID
+ */
+void DeleteTextures_GL(int n, unsigned int* tex)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    g.DeleteTextures(n, tex);
 }
 
 /**
