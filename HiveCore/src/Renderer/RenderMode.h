@@ -9,6 +9,6 @@
 */
 
 enum RENDER_MODE{
-    RENDER_OPENGL,
-    RENDER_LSGL
+    RENDER_OPENGL = 0,
+    RENDER_LSGL = 1
 };

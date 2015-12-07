@@ -11,6 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "GLDevice/GLDevice.h"
+#include "GLDevice/GLDeviceExtention.h"
+
+
 #include "RenderCore.h"
 
 #include "Commands.h"
@@ -48,6 +52,7 @@
 
 #include "../Core/Path.h"
 
+
 #ifdef HIVE_WITH_COMPOSITOR
 extern "C" {
 #include "234compositor.h"
@@ -82,6 +87,18 @@ namespace {
             return BufferImageData::RGBA8;
         }
     }
+    
+    bool (* const CreateProgramSrc_GS[])(const char*, unsigned int& prg) = {CreateProgramSrc_GL, CreateProgramSrc_SGL};
+    bool (* const DeleteProgram_GS[])(unsigned int prg) = {DeleteProgram_GL, DeleteProgram_SGL};
+    void (* const DeleteTextures_GS[])(int n, unsigned int* tex) = {DeleteTextures_GL, DeleteTextures_SGL};
+    void (* const GenTextures_GS[])(int n, unsigned int* tex) = {GenTextures_GL, GenTextures_SGL};
+    void (* const Clear_GS[])(float r, float g, float b, float a) = {Clear_GL, Clear_SGL};
+    void (* const GetColorBuffer_GS[])(int w, int h, unsigned char* imgbuf, int colorbit) = {GetColorBuffer_GL, GetColorBuffer_SGL};
+    void (* const GetDepthBuffer_GS[])(int w, int h, float* depthbuf) = {GetDepthBuffer_GL, GetDepthBuffer_SGL};
+    
+    void (* const CreateBuffer_GS[])(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit) = {CreateBuffer_GL, CreateBuffer_SGL};
+    void (* const ReleaseBuffer_GS[])(unsigned int framebuffer, unsigned int colorRenderbuffer, unsigned int depthRenderbuffer) = {ReleaseBuffer_GL, ReleaseBuffer_SGL};
+
 }
 
 /**
@@ -95,8 +112,7 @@ private:
     RENDER_MODE m_mode;
     
     // Framebuffers
-    unsigned int m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer;
-    unsigned int m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer;
+    unsigned int m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer;
     VX::Math::vec4 m_clearcolor;
     
     const Camera* m_currentCamera;
@@ -115,8 +131,7 @@ private:
     typedef std::map<const std::string, unsigned int> ShaderCache;
     typedef std::map<const BufferImageData*, unsigned int> TextureCache;
     typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
-    BufferMap m_buffers_SGL;
-    BufferMap m_buffers_GL;
+    BufferMap m_buffers;
     TextureCache m_textureCache;
     ShaderCache  m_shaderCache;
     
@@ -156,23 +171,26 @@ public:
     /// コンストラクタ
     Impl()
     {
-        m_mode   = RENDER_LSGL;//RENDER_OPENGL;
+        m_mode   = RENDER_LSGL;//RENDER_OPENGL; // RENDER_LSGL;
         m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
-        m_sgl_depthbuffer = 0;
-        m_sgl_colorbuffer = 0;
-        m_sgl_framebuffer = 0;
-        m_gl_depthbuffer  = 0;
-        m_gl_colorbuffer  = 0;
-        m_gl_framebuffer  = 0;
+        m_gs_depthbuffer = 0;
+        m_gs_colorbuffer = 0;
+        m_gs_framebuffer = 0;
 
         m_renderTimeout    = 0.2; // sec
         m_oldCallbackTime  = 0.0;
         m_progressCallback = defaultProgressCallbackFunc;
         
+        if (m_mode == RENDER_LSGL) {
 #ifndef USE_GLSL_CONFIG
-        LSGL_CompilerSetting();
+            LSGL_CompilerSetting();
 #endif
-        SetCallback_SGL(Impl::progressCallbackFunc_, this);
+            SetCallback_SGL(Impl::progressCallbackFunc_, this);
+        } else {
+            GLDevice* dev = CreateGLDeviceInstance();
+            dev->Init(256, 256, 32, 16, true);
+        }
+        
 #ifdef HIVE_WITH_COMPOSITOR
 		m_compPixelType = ID_RGBA32;
 		m_compInitialized = false;
@@ -181,8 +199,8 @@ public:
     
     /// デストラクタ
     ~Impl() {
-        ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
-        //ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);
+        ReleaseBuffer_GS[m_mode](m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer);
+        
 #ifdef HIVE_WITH_COMPOSITOR
 
 #endif
@@ -227,20 +245,19 @@ public:
     /// バッファのクリア
     void ClearBuffers()
     {
-        m_buffers_SGL.clear();
-        m_buffers_GL.clear();
+        m_buffers.clear();
         
         TextureCache::const_iterator it, eit = m_textureCache.end();
         for (it = m_textureCache.begin(); it != eit; ++it) {
             unsigned int t = it->second;
-            DeleteTextures_SGL(1, &t);
+            DeleteTextures_GS[m_mode](1, &t);
         }
         m_textureCache.clear();
 
         ShaderCache::const_iterator sit, seit = m_shaderCache.end();
         for (sit = m_shaderCache.begin(); sit != seit; ++sit) {
             const unsigned int p = sit->second;
-            DeleteProgram_SGL(p);
+            DeleteProgram_GS[m_mode](p);
         }
         m_shaderCache.clear();
         
@@ -248,6 +265,8 @@ public:
     
     void SetParallelRendering(bool enableParallel)
     {
+        if (m_mode != RENDER_LSGL)
+            return;
         SetScreenParallel_SGL(enableParallel, false);
     }
 
@@ -286,7 +305,7 @@ public:
         if (it != m_textureCache.end()) {
             DeleteTexture(bufimg);
         }
-        GenTextures_SGL(1, &tex);
+        GenTextures_GS[m_mode](1, &tex);
         m_textureCache[bufimg] = tex;
         return true;
     }
@@ -295,7 +314,7 @@ public:
     {
         TextureCache::iterator it = m_textureCache.find(bufimg);
         if (it != m_textureCache.end()) {
-            DeleteTextures_SGL(1, &it->second);
+            DeleteTextures_GS[m_mode](1, &it->second);
             m_textureCache.erase(it);
             return true;
         }
@@ -309,7 +328,7 @@ public:
             prg = it->second;
             return true;
         }
-        bool r = CreateProgramSrc_SGL(srcname, prg);
+        bool r = CreateProgramSrc_GS[m_mode](srcname, prg);
         if (!r)
             return false;
         m_shaderCache[std::string(srcname)] = prg;
@@ -376,35 +395,35 @@ private:
     
     /// SGLバッファの作成
     /// @param robj レンダーオブジェクト
-    BaseBuffer* createBufferSGL(const RenderObject* robj)
+    BaseBuffer* createBuffer(const RenderObject* robj, RENDER_MODE mode)
     {
         BaseBuffer* buffer = 0;
         if (robj->GetType() == RenderObject::TYPE_POLYGON) {
-            PolygonBuffer* pbuf = new PolygonBuffer(RENDER_LSGL);
+            PolygonBuffer* pbuf = new PolygonBuffer(mode);
             pbuf->Create(static_cast<const PolygonModel*>(robj));
             buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_POINT) {
-            PointBuffer* pbuf = new PointBuffer(RENDER_LSGL);
+            PointBuffer* pbuf = new PointBuffer(mode);
             pbuf->Create(static_cast<const PointModel*>(robj));
             buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_LINE) {
-            LineBuffer* lbuf = new LineBuffer(RENDER_LSGL);
+            LineBuffer* lbuf = new LineBuffer(mode);
             lbuf->Create(static_cast<const LineModel*>(robj));
             buffer = lbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
-             VolumeBuffer* vbuf = new VolumeBuffer(RENDER_LSGL);
+             VolumeBuffer* vbuf = new VolumeBuffer(mode);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
              buffer = vbuf;
         } else if (robj->GetType() == RenderObject::TYPE_SPARSEVOLUME) {
-             SparseVolumeBuffer* vbuf = new SparseVolumeBuffer(RENDER_LSGL);
+             SparseVolumeBuffer* vbuf = new SparseVolumeBuffer(mode);
              vbuf->Create(static_cast<const SparseVolumeModel*>(robj));
              buffer = vbuf;
         } else if (robj->GetType() == RenderObject::TYPE_TETRA) {
-            TetraBuffer* tbuf = new TetraBuffer(RENDER_LSGL);
+            TetraBuffer* tbuf = new TetraBuffer(mode);
             tbuf->Create(static_cast<const TetraModel*>(robj));
             buffer = tbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VECTOR) {
-             VectorBuffer* vbuf = new VectorBuffer(RENDER_LSGL);
+             VectorBuffer* vbuf = new VectorBuffer(mode);
              vbuf->Create(static_cast<const VectorModel*>(robj));
              buffer = vbuf;
         } else {
@@ -417,19 +436,19 @@ private:
     
     /// SGLで描画
     /// @param robj レンダーオブジェクト
-    void draw_SGL(const RenderObject* robj)
+    void draw(const RenderObject* robj, RENDER_MODE mode)
     {
         if (robj->GetType() == RenderObject::TYPE_CAMERA) {
             return;
         }
         
         BaseBuffer* buffer = 0;
-        BufferMap::const_iterator it = m_buffers_SGL.find(robj);
-        if (it != m_buffers_SGL.end()) {
+        BufferMap::const_iterator it = m_buffers.find(robj);
+        if (it != m_buffers.end()) {
             buffer = it->second.Get();
         } else {
-            BaseBuffer* buf = createBufferSGL(robj);
-            m_buffers_SGL[robj] = buf;
+            BaseBuffer* buf = createBuffer(robj, mode);
+            m_buffers[robj] = buf;
             buffer = buf;
         }
 
@@ -445,22 +464,6 @@ private:
         buffer->UnbindProgram();
         
     }
-    
-    void draw_GL(const RenderObject* robj)
-    {
-        // TODO
-         /// old code
-        /* unsigned int prog = (*it)->GetGLProgram();
-         if (!prog)
-         continue;
-         // TODO: move to Render()
-         BindProgram_GL(prog);
-         SetUniform2fv_GL(prog, "resolution", res);
-         SetUniform4fv_GL(prog, "backgroundColor", bgcolor);
-         
-         SetCamera_GL(prog, m_eye, m_lookat, m_up, m_fov, m_width, m_height, m_near, m_far);
-         (*it)->Render(RENDER_OPENGL);*/
-    }
 
     /// 画像の書き戻し
     /// @param color カラーバッファ
@@ -469,7 +472,7 @@ private:
         FloatBuffer* fbuf = depth->FloatImageBuffer();
         if (fbuf) {
             float* imgbuf = fbuf->GetBuffer();
-            GetDepthBuffer_SGL(m_width, m_height, imgbuf);
+            GetDepthBuffer_GS[m_mode](m_width, m_height, imgbuf);
 
 #ifdef HIVE_WITH_COMPOSITOR
 			// 234 compositor does not support Z only compositing at this time.
@@ -511,11 +514,7 @@ private:
         if (bbuf) {
             unsigned char* imgbuf = bbuf->GetBuffer();
             const int colorbit = 8;
-        
-            if (m_mode == RENDER_LSGL)
-                GetColorBuffer_SGL(m_width, m_height, imgbuf, colorbit);
-            //else
-            //	GetColorBuffer_GL(m_width, m_height, m_imgbuf);// todo nothing here!
+            GetColorBuffer_GS[m_mode](m_width, m_height, imgbuf, colorbit);
         
 #ifdef HIVE_WITH_COMPOSITOR
             int rank;
@@ -545,8 +544,7 @@ private:
             FloatBuffer* fbuf = color->FloatImageBuffer();
             float* imgbuf = fbuf->GetBuffer();
             const int colorbit = 32;
-            if (m_mode == RENDER_LSGL)
-                GetColorBuffer_SGL(m_width, m_height, reinterpret_cast<unsigned char*>(imgbuf), colorbit);
+            GetColorBuffer_GS[m_mode](m_width, m_height, reinterpret_cast<unsigned char*>(imgbuf), colorbit);
 
 #ifdef HIVE_WITH_COMPOSITOR
             int rank;
@@ -582,32 +580,36 @@ private:
         printf("RenderCore::RENDER!!!!\n");
         
         if (m_mode == RENDER_LSGL) {
-            Clear_SGL(m_clearcolor.x, m_clearcolor.y, m_clearcolor.z, m_clearcolor.w);
-            
             //SampleCoverage_SGL(m_fsaa, 0);
             //PixelStep_SGL(m_pixelstep);
-            
-            RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
-            for (it = m_renderObjects.begin(); it != eit; ++it)
-            {
-                draw_SGL((*it));
-            }
-            
-            //BindProgram_SGL(0); // TODO: not need to release?
-        } else {
+        }
+        
+        Clear_GS[m_mode](m_clearcolor.x, m_clearcolor.y, m_clearcolor.z, m_clearcolor.w);
+        
+        RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
+        for (it = m_renderObjects.begin(); it != eit; ++it)
+        {
+            draw((*it), m_mode);
+        }
+        
+        //BindProgram_SGL(0); // TODO: not need to release?
+        
+        
+        /*
+         } else { // GL mode
             //bindGLBuffer();
             Clear_GL(m_clearcolor.x, m_clearcolor.y, m_clearcolor.z, m_clearcolor.w);
             
             RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
             for (it = m_renderObjects.begin(); it != eit; ++it)
             {
-                draw_GL((*it));
+                draw((*it), RENDER_OPENGL);
             }
             
             BindProgram_GL(0);
             
             //unbindGLBuffer();
-        }
+        }*/
  
     }
     
@@ -623,14 +625,11 @@ private:
         const int w = camera->GetScreenWidth();
         const int h = camera->GetScreenHeight();
         
-        if (m_sgl_framebuffer || m_sgl_colorbuffer || m_sgl_depthbuffer)
-            ReleaseBuffer_SGL(m_sgl_framebuffer, m_sgl_colorbuffer, m_sgl_depthbuffer);
-        //		if (m_gl_framebuffer || m_gl_colorbuffer || m_gl_depthbuffer)
-        //			ReleaseBuffer_GL(m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer); // todo nothing here
+        if (m_gs_framebuffer || m_gs_colorbuffer || m_gs_depthbuffer)
+            ReleaseBuffer_GS[m_mode](m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer);
         
         const int colorbit = (colorfmt == BufferImageData::RGBA32F ? 32 : 8);
-        CreateBuffer_SGL(w, h, m_sgl_framebuffer, m_sgl_colorbuffer, colorbit, m_sgl_depthbuffer, 32);
-        //		CreateBuffer_GL  (w, h, m_gl_framebuffer, m_gl_colorbuffer, m_gl_depthbuffer);  // todo nothing here
+        CreateBuffer_GS[m_mode](w, h, m_gs_framebuffer, m_gs_colorbuffer, colorbit, m_gs_depthbuffer, 32);
 
 #ifdef HIVE_WITH_COMPOSITOR
         int rank;
