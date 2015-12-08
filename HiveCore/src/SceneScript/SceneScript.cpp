@@ -8,6 +8,7 @@
 #include "SceneScript.h"
 
 #include "LuaUtil.h"
+#include "Path.h"
 
 #include <vector>
 
@@ -128,6 +129,8 @@ int dllExtension(lua_State* L)
 {
 #if _WIN32
     lua_pushstring(L, "dll");
+#elif __APPLE__
+    lua_pushstring(L, "dylib");
 #else
     lua_pushstring(L, "so");
 #endif
@@ -291,6 +294,12 @@ bool SceneScript::Execute(const char* scenefile, const std::vector<std::string>&
     
     lua_State* L = createLua();
     registerFuncs(L);
+    
+    // Reference path bin dir
+    std::string includeBinDir = std::string("package.cpath=\"") + getBinaryDir() + std::string("?.\" .. dllExtension() .. \";\"..package.cpath");
+    //printf("HH=%s",includeBinDir.c_str());
+    doLua(L, includeBinDir.c_str());
+
     if (!sceneargs.empty()) {
         registerArg(L, sceneargs);
     }

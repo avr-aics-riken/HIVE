@@ -171,7 +171,7 @@ public:
     /// コンストラクタ
     Impl()
     {
-        m_mode   = RENDER_OPENGL;
+        m_mode   = RENDER_LSGL;// RENDER_OPENGL;
         m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
         m_gs_depthbuffer = 0;
         m_gs_colorbuffer = 0;
