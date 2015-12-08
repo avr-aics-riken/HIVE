@@ -12,14 +12,14 @@ camera:LookAt(
 	60
 )
 
-local gen  = PrimitiveGenerator()
+local gen  = require("PrimitiveGenerator")()
 local ppp = gen:Sphere(100)
 --local pm = PointModel();
 local pm = PolygonModel();
 pm:Create(ppp);
 pm:SetShader("white.frag");
 
-local stl = STLLoader()
+local stl = require("StlLoader")()
 stl:Load('bunny.stl')
 local model = PolygonModel()
 model:Create(stl:MeshData())

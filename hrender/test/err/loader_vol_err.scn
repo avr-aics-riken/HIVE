@@ -1,7 +1,7 @@
 
 print('load VOL')
 
-local vol = VOLLoader()
+local vol = require("VolLoader")()
 vol:Load('invalid.vol')
 
 

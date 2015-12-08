@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local stl = STLLoader()
+local stl = require("StlLoader")()
 stl:Load('bunny.stl')
 
 local model = PolygonModel()
@@ -21,7 +21,7 @@ local meshdata = stl:MeshData()
 model:Create(meshdata)
 model:SetShader('white.frag')
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -32,5 +32,3 @@ print(analy:MaxZ())
 
 
 render {camera, model}
-
-

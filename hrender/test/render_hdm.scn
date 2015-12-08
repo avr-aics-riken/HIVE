@@ -32,7 +32,7 @@ function JetTransferFunctionTexture()
 end
 
 
-local hdm = HDMLoader()
+local hdm = require("HdmLoader")()
 hdm:Init('hdm_out/cellid.bcm', 'hdm_out/data.bcm')
 
 -- field name, field type, components(1=scalar, 3=vector), stepNo

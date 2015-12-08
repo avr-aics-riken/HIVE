@@ -11,14 +11,14 @@ camera:LookAt(
 	60
 )
 
-local gen = PrimitiveGenerator()
+local gen = require("PrimitiveGenerator")()
 
 local model = PolygonModel()
 local meshdata = gen:Teapot(3.0)
 model:Create(meshdata)
 model:SetShader('normal.frag')
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())

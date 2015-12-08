@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('fvel_0000001470.sph')
 
 print("origin", sph:OriginX(), sph:OriginY(), sph:OriginZ())
