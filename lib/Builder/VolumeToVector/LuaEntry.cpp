@@ -9,7 +9,8 @@ extern "C" {
 int luaopen_VolumeToVector(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, VolumeToVector_Lua);
-    SetFunction(L, "VolumeToVector",          LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));
+    return 1;
 }
 
 }

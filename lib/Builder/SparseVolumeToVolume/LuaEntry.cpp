@@ -8,7 +8,8 @@ extern "C" {
 int luaopen_SparseVolumeToVolume(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeToVolume_Lua);
-    SetFunction(L, "SparseVolumeToVolume",          LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
+    return 1;
 }
 
 }

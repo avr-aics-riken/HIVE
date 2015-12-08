@@ -8,7 +8,8 @@ extern "C" {
 int luaopen_VolumeFilter(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, VolumeFilter_Lua);
-    SetFunction(L, "VolumeFilter",          LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeFilter_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeFilter_Lua));
+    return 1;
 }
 
 

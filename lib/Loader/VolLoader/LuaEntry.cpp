@@ -7,7 +7,8 @@ extern "C" {
 int luaopen_VolLoader(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
-    SetFunction(L, "VOLLoader",          LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
+    return 1;
 }
 
 }

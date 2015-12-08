@@ -7,7 +7,8 @@ extern "C" {
 int luaopen_SphSaver(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, SPHSaver_Lua);
-    SetFunction(L, "SPHSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(SPHSaver_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(SPHSaver_Lua));
+    return 1;
 }
 
 }
