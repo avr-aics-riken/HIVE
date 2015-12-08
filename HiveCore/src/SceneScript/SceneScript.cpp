@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "../Renderer/RenderCore.h"
-/*
+
 // --- Script Classes ----
 #include "PolygonModel_Lua.h"
 #include "VolumeModel_Lua.h"
@@ -76,7 +76,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
 }
-*/
+
 // ------------------------
 
 /*
@@ -257,7 +257,7 @@ void registerFuncs(lua_State* L)
     
     SetFunction(L, "screenParallelRendering", screenParallelRendering);
 
-    //RegisterSceneClass(L);
+    RegisterSceneClass(L);
 }
 
 void registerArg(lua_State* L, const std::vector<std::string>& sceneargs)
