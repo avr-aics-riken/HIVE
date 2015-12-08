@@ -1,4 +1,6 @@
 
+local loader = require("ObjLoader")
+
 print('Render Obj')
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
@@ -11,15 +13,16 @@ camera:LookAt(
 	60
 )
 
-local obj = OBJLoader()
+local obj = loader()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
 local meshdata = obj:MeshData()
-model:Create(meshdata)
-model:SetShader('white.frag')
+model:SetShader('normal.frag')
 
-local analy = PolygonAnalyzer()
+model:Create(meshdata)
+
+--[[local analy = PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -27,7 +30,7 @@ print(analy:MinY())
 print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
-
+]]
 
 render {camera, model}
 
