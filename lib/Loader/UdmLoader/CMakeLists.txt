@@ -2,6 +2,18 @@ IF(HIVE_BUILD_WITH_UDMLIB)
 
 add_definitions(-DHIVE_WITH_UDMLIB)
 
+  SET(UDMLIB_SOURCES
+    UdmLoader.cpp
+  )
+
+  SET(UDMLIB_LIBS
+    udm TPmpi zoltan cgns
+  )
+
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/UDMlib/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/UDMlib/lib)
+
 # Headers
 set(INCLUDES
 	.
@@ -22,19 +34,8 @@ set(SOURCES
 )
 add_library(UdmLoader SHARED ${SOURCES})
 target_link_libraries(UdmLoader hiveCore)
+target_link_libraries(UdmLoader ${UDMLIB_LIBS})
 set_target_properties(UdmLoader PROPERTIES PREFIX "")
-
-  SET(UDMLIB_SOURCES
-    UdmLoader.cpp
-  )
-
-  SET(UDMLIB_LIBS
-    udm TPmpi zoltan cgns
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
 
 ENDIF() # HIVE_BUILD_WITH_UDMLIB
 

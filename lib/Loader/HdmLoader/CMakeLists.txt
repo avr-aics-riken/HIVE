@@ -3,6 +3,19 @@ IF(HIVE_BUILD_WITH_HDMLIB)
 SET(HIVE_BUILD_WITH_BCMTOOLS On)
 add_definitions(-DHIVE_WITH_HDMLIB)
 
+  SET(HDMLIB_SOURCES
+    HdmLoader.cpp
+  )
+
+  SET(HDMLIB_LIBS
+    HDM TPmpi
+  )
+
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/lib)
+  
 # Headers
 set(INCLUDES
 	.
@@ -23,22 +36,10 @@ set(SOURCES
 )
 add_library(HdmLoader SHARED ${SOURCES})
 target_link_libraries(HdmLoader hiveCore)
+target_link_libraries(HdmLoader ${HDMLIB_LIBS})
 set_target_properties(HdmLoader PROPERTIES PREFIX "")
 
 
-  SET(HDMLIB_SOURCES
-    HdmLoader.cpp
-  )
-
-  SET(HDMLIB_LIBS
-    HDM TPmpi
-  )
-
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/lib)
-  
 ENDIF() # HIVE_BUILD_WITH_HDMLIB
 
  
