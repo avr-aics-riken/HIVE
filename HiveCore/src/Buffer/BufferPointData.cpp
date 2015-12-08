@@ -125,6 +125,11 @@ BufferPointData::~BufferPointData()
     delete m_imp;
 }
 
+BufferPointData* BufferPointData::CreateInstance()
+{
+    return new BufferPointData();
+}
+
 /// メンバクリア
 void BufferPointData::Clear()
 {

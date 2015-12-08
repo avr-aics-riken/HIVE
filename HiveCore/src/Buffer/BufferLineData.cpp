@@ -151,6 +151,14 @@ BufferLineData::BufferLineData(BufferLineData* inst) : BufferData(TYPE_LINE)
     m_imp = new BufferLineData::Impl(inst);
 }
 
+
+BufferLineData* BufferLineData::CreateInstance()
+{
+    return new BufferLineData();
+}
+
+
+
 /// メンバクリア
 void BufferLineData::Clear()
 {

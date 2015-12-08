@@ -33,23 +33,24 @@ namespace
 class ImageLoader::Impl
 {
 private:
-    BufferImageData m_image;
+    RefPtr<BufferImageData> m_image;
     
 public:
     /// コンストラクタ
     Impl() {
-        m_image.Clear();
+        m_image = BufferImageData::CreateInstance();
+        m_image->Clear();
     }
 
     /// デストラクタ
     ~Impl() {
-        m_image.Clear();
+        m_image->Clear();
     }
     
     /// イメージデータへの参照
     BufferImageData* ImageData()
     {
-        return &m_image;
+        return m_image;
     }
 
     /**
@@ -86,8 +87,8 @@ public:
         bool result = SimpleTGALoaderRGBA(srcbuffer, width, height, &dstbuffer);
         if (result && dstbuffer)
         {
-            m_image.Create(BufferImageData::RGBA8, width, height);
-            memcpy(m_image.ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+            m_image->Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
         delete [] srcbuffer;
         delete [] dstbuffer;
@@ -108,14 +109,14 @@ public:
         bool result = SimpleHDRLoader(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
-            m_image.Create(BufferImageData::RGBA32F, width, height);
+            m_image->Create(BufferImageData::RGBA32F, width, height);
             
             //memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
             // flip y copy
             for (int y = 0; y < height; ++y) {
                 const int src_offsety = sizeof(float) * width * y;
                 const int dst_offsety = sizeof(float) * width * (height - 1 - y);
-                memcpy(m_image.FloatImageBuffer()->GetBuffer() + src_offsety, dstbuffer + dst_offsety, sizeof(float) * 4 * width);
+                memcpy(m_image->FloatImageBuffer()->GetBuffer() + src_offsety, dstbuffer + dst_offsety, sizeof(float) * 4 * width);
             }
         }
         delete [] dstbuffer;
@@ -136,8 +137,8 @@ public:
         bool result = SimplePNGLoader(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
-            m_image.Create(BufferImageData::RGBA8, width, height);
-            memcpy(m_image.ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+            m_image->Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
         delete [] dstbuffer;
         return result;
@@ -157,8 +158,8 @@ public:
         bool result = SimpleJPGLoaderRGBA(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
-            m_image.Create(BufferImageData::RGBA8, width, height);
-            memcpy(m_image.ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+            m_image->Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
         delete [] dstbuffer;
         return result;
@@ -180,8 +181,8 @@ public:
         printf("ret: %d: %d x %d \n", result, width, height);
         if (result && dstbuffer)
         {
-            m_image.Create(BufferImageData::RGBA32F, width, height);
-            memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
+            m_image->Create(BufferImageData::RGBA32F, width, height);
+            memcpy(m_image->FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
         }
         delete [] dstbuffer;
         return result;
@@ -196,7 +197,7 @@ public:
     bool Load(const char* filename)
     {
         bool result = false;
-        m_image.Clear();
+        m_image->Clear();
         std::string path(filename);
         std::string::size_type pos = path.rfind('.');
         if (pos != std::string::npos)
@@ -232,7 +233,7 @@ public:
      */
     const ImageLoader::Buffer ImageBuffer() const
     {
-        unsigned char* buf = m_image.ImageBuffer()->GetBuffer();
+        unsigned char* buf = m_image->ImageBuffer()->GetBuffer();
         return reinterpret_cast<ImageLoader::Buffer>(buf);
     }
 
@@ -242,7 +243,7 @@ public:
      */
     int ImageBufferSize() const
     {
-        return m_image.ImageBuffer()->GetNum();
+        return m_image->ImageBuffer()->GetNum();
     }
 };
 

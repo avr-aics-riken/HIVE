@@ -21,6 +21,7 @@ class RenderCore
 {
 public:
     static RenderCore* GetInstance();
+    static void Finalize();
     
     void AddRenderObject(RenderObject* robj);
     

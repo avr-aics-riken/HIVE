@@ -45,6 +45,7 @@ PolygonBuffer::~PolygonBuffer()
 /// クリア
 void PolygonBuffer::Clear()
 {
+    m_model = 0;
     if (m_vtx_id)    ReleaseBufferVBIB_GS[m_mode](m_vtx_id);
     if (m_mat_id)    ReleaseBufferVBIB_GS[m_mode](m_mat_id);
     if (m_normal_id) ReleaseBufferVBIB_GS[m_mode](m_normal_id);

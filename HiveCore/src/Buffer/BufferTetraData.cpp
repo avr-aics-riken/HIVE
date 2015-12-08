@@ -91,6 +91,12 @@ BufferTetraData::~BufferTetraData()
     delete m_imp;
 }
 
+
+BufferTetraData* BufferTetraData::CreateInstance()
+{
+    return new BufferTetraData();
+}
+
 /**
  * BufferTetraDataの作成
  * @param vertexnum 作成頂点数

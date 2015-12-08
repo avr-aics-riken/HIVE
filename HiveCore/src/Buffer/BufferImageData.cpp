@@ -239,6 +239,12 @@ BufferImageData::~BufferImageData()
     delete m_imp;
 }
 
+BufferImageData* BufferImageData::CreateInstance()
+{
+    return new BufferImageData();
+}
+
+
 /**
  * ImageBuffer作成
  * @param type 作成するBufferType

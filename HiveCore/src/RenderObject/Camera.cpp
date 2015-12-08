@@ -22,6 +22,8 @@ public:
         m_clearcolor[1] = 0.0f;
         m_clearcolor[2] = 0.0f;
         m_clearcolor[3] = 1.0f;
+        m_imagebuffer = BufferImageData::CreateInstance();
+        m_depthbuffer = BufferImageData::CreateInstance();
     }
     ~Impl()
     {
@@ -126,9 +128,9 @@ public:
     /// 出力デプスファイルパスを返す.
     const std::string&        GetDepthOutputFile()   const { return m_depthoutputfile; }
     /// 画像バッファを返す.
-    BufferImageData*          GetImageBuffer()        { return &m_imagebuffer; }
+    BufferImageData*          GetImageBuffer()        { return m_imagebuffer; }
     /// 深度バッファを返す.
-    BufferImageData*          GetDepthBuffer()        { return &m_depthbuffer; }
+    BufferImageData*          GetDepthBuffer()        { return m_depthbuffer; }
 
 private:
     unsigned int m_width;
@@ -137,8 +139,8 @@ private:
     std::string  m_depthoutputfile;
     CameraInfo m_info;
     float m_clearcolor[4];
-    BufferImageData m_imagebuffer;
-    BufferImageData m_depthbuffer;
+    RefPtr<BufferImageData> m_imagebuffer;
+    RefPtr<BufferImageData> m_depthbuffer;
 
 };
 

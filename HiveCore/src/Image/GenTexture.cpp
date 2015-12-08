@@ -16,67 +16,69 @@
 class GenTexture::Impl
 {
 private:
-	BufferImageData m_image;
-	BufferVolumeData m_volimage;
+	RefPtr<BufferImageData> m_image;
+	RefPtr<BufferVolumeData> m_volimage;
 
 public:
 	Impl() {
-		m_image.Clear();
-		m_volimage.Clear();
+        m_image = BufferImageData::CreateInstance();
+        m_volimage = BufferVolumeData::CreateInstance();
+		m_image->Clear();
+		m_volimage->Clear();
 	}
 
 	~Impl() {
-		m_image.Clear();
-		m_volimage.Clear();
+		m_image->Clear();
+		m_volimage->Clear();
 	}
 
 	BufferImageData* ImageData()
 	{
-		return &m_image;
+		return m_image;
 	}
 
 	BufferVolumeData* VolumeData()
 	{
-		return &m_volimage;
+		return m_volimage;
 	}
 
 	bool Create2D_RGBA8(unsigned char *buf, int width, int height )
 	{
-		m_image.Create(BufferImageData::RGBA8, width, height);
-		memcpy(m_image.ImageBuffer()->GetBuffer(), buf, sizeof(unsigned char) * 4 * width * height);
+		m_image->Create(BufferImageData::RGBA8, width, height);
+		memcpy(m_image->ImageBuffer()->GetBuffer(), buf, sizeof(unsigned char) * 4 * width * height);
 		return true;
 	}
 
 	bool Create2D_F32(float *buf, int width, int height )
 	{
-		m_image.Create(BufferImageData::R32F, width, height);
-		memcpy(m_image.FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * width * height);
+		m_image->Create(BufferImageData::R32F, width, height);
+		memcpy(m_image->FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * width * height);
 		return true;
 	}
 
 	bool Create2D_RGBA32(float *buf, int width, int height )
 	{
-		m_image.Create(BufferImageData::RGBA32F, width, height);
-		memcpy(m_image.FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * 4 * width * height);
+		m_image->Create(BufferImageData::RGBA32F, width, height);
+		memcpy(m_image->FloatImageBuffer()->GetBuffer(), buf, sizeof(float) * 4 * width * height);
 		return true;
 	}
 
 	bool Create3D_F32(float *buf, int width, int height, int depth)
 	{
-		m_volimage.Create(width, height, depth, 1);
-		memcpy(m_volimage.Buffer()->GetBuffer(), buf, sizeof(float) * width * height * depth);
+		m_volimage->Create(width, height, depth, 1);
+		memcpy(m_volimage->Buffer()->GetBuffer(), buf, sizeof(float) * width * height * depth);
 		return true;
 	}
 
 	const Buffer ImageBuffer() const
 	{
-		unsigned char* buf = m_image.ImageBuffer()->GetBuffer();
+		unsigned char* buf = m_image->ImageBuffer()->GetBuffer();
 		return reinterpret_cast<GenTexture::Buffer>(buf);
 	}
 
 	int ImageBufferSize() const
 	{
-		return m_image.ImageBuffer()->GetNum();
+		return m_image->ImageBuffer()->GetNum();
 	}
 };
 

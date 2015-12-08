@@ -12,10 +12,13 @@
  */
 class BufferMeshData_Lua : public BufferMeshData
 {
-	public:
+protected:
     BufferMeshData_Lua(BufferMeshData* mesh) : BufferMeshData(mesh) { }
     BufferMeshData_Lua(){}
 	~BufferMeshData_Lua(){}
+    
+public:
+    static BufferMeshData_Lua* CreateInstance(BufferMeshData* bufferMeshData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferMeshData_Lua)
     LUA_SCRIPTCLASS_END();
 };

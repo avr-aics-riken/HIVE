@@ -45,7 +45,7 @@ void OBJLoader::Clear()
  */
 BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
 {
-    BufferMeshData* mesh  = new BufferMeshData();
+    BufferMeshData* mesh  = BufferMeshData::CreateInstance();
     if (!obj) {
         return mesh;
     }
@@ -82,7 +82,7 @@ BufferMeshData* OBJLoader::createMeshData(const SimpleObj* obj) const
  */
 BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
 {
-    BufferPointData* point = new BufferPointData();
+    BufferPointData* point = BufferPointData::CreateInstance();
     if (!obj) {
         return point;
     }
@@ -110,7 +110,7 @@ BufferPointData* OBJLoader::createPointData(const SimpleObj* obj) const
  */
 BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
 {
-    BufferLineData* line = new BufferLineData();
+    BufferLineData* line = BufferLineData::CreateInstance();
     if (!obj) {
         return line;
     }
@@ -171,7 +171,7 @@ BufferLineData* OBJLoader::createLineData(const SimpleObj* obj) const
  */
 BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
 {
-    BufferTetraData* tetra = new BufferTetraData();
+    BufferTetraData* tetra = BufferTetraData::CreateInstance();
     if (!obj) {
         return tetra;
     }
@@ -188,7 +188,7 @@ BufferTetraData* OBJLoader::createTetraData(const SimpleObj* obj) const
  */
 BufferVectorData* OBJLoader::createNormalVectorData(const SimpleObj* obj) const
 {
-    BufferVectorData* vec = new BufferVectorData();
+    BufferVectorData* vec = BufferVectorData::CreateInstance();
     if (!obj) {
         return vec;
     }
@@ -297,7 +297,7 @@ BufferExtraData *OBJLoader::ExtraData()
 // FOR TEST
 BufferExtraData* OBJLoader::createExtraData(const SimpleObj* obj) const
 {
-    BufferExtraData* vec = new BufferExtraData();
+    BufferExtraData* vec = BufferExtraData::CreateInstance();
     if (!obj) {
         return vec;
     }

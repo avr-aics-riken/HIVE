@@ -19,10 +19,14 @@ private:
     class Impl;
     Impl* m_imp;
     
-public:
+protected:
     BufferVolumeData();
     BufferVolumeData(BufferVolumeData* inst);
     ~BufferVolumeData();
+
+public:
+    static BufferVolumeData* CreateInstance();
+    
     void Create(int w, int h, int d, int component, bool nonUniform = false);
     FloatBuffer* SpacingX();
     FloatBuffer* SpacingY();

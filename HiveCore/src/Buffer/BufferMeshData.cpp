@@ -97,6 +97,12 @@ BufferMeshData::BufferMeshData() : BufferData(TYPE_MESH)
     m_imp = new BufferMeshData::Impl();
 }
 
+BufferMeshData* BufferMeshData::CreateInstance()
+{
+    return new BufferMeshData();
+}
+
+
 /// constructor
 /// @param inst メッシュデータ
 BufferMeshData::BufferMeshData(BufferMeshData* inst) : BufferData(TYPE_MESH)

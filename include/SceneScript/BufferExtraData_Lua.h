@@ -16,6 +16,9 @@ public:
     BufferExtraData_Lua(BufferExtraData* edata) : BufferExtraData(edata) { }
     BufferExtraData_Lua() {}
     ~BufferExtraData_Lua() {}
+    
+public:
+    static BufferExtraData_Lua* CreateInstance(BufferExtraData* bufferExtraData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferExtraData_Lua)
     LUA_SCRIPTCLASS_END();
 };
