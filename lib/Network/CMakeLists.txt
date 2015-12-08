@@ -18,8 +18,8 @@ set(SOURCES
 	happyhttp.cpp
 	LuaEntry.cpp
 )
-add_library(Connection SHARED ${SOURCES})
-target_link_libraries(Connection hiveCore)
-set_target_properties(Connection PROPERTIES PREFIX "")
+add_library(Network SHARED ${SOURCES})
+target_link_libraries(Network hiveCore)
+set_target_properties(Network PROPERTIES PREFIX "")
 
  

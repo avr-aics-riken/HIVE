@@ -1,5 +1,4 @@
 
-add_subdirectory(BcmLoader)
 add_subdirectory(HdmLoader)
 add_subdirectory(PdbLoader)
 add_subdirectory(RawVolumeLoader)
@@ -11,4 +10,5 @@ add_subdirectory(PdmLoader)
 add_subdirectory(SphLoader)
 add_subdirectory(UdmLoader)
 add_subdirectory(VtkLoader)
+add_subdirectory(BcmLoader)
 

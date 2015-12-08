@@ -22,7 +22,6 @@
 #include "VectorModel_Lua.h"
 #include "TetraModel_Lua.h"
 #include "Camera_Lua.h"
-#include "MetaBinary_Lua.h"
 #include "BufferMeshData_Lua.h"
 #include "BufferLineData_Lua.h"
 #include "BufferVolumeData_Lua.h"
@@ -46,7 +45,6 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, VectorModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, TetraModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
-    LUA_SCRIPTCLASS_REGISTER(L, MetaBinary_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferLineData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
@@ -66,7 +64,6 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "VectorModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VectorModel_Lua));
     SetFunction(L, "TetraModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(TetraModel_Lua));
     SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
-    SetFunction(L, "MetaBinary",          LUA_SCRIPTCLASS_NEW_FUNCTION(MetaBinary_Lua));
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
     SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
