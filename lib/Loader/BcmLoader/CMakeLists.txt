@@ -2,6 +2,13 @@ IF(HIVE_BUILD_WITH_BCMTOOLS)
 
 add_definitions(-DHIVE_WITH_BCMTOOLS)
 
+# Additional Libraries
+if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if(HIVE_BUILD_WITH_BCMTOOLS)
+        add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
+    endif()
+endif()
+
   SET(BCMTOOLS_SOURCES
     BcmLoader.cpp
   )
@@ -35,13 +42,7 @@ set(SOURCES
 )
 add_library(BcmLoader SHARED ${SOURCES})
 target_link_libraries(BcmLoader hiveCore)
+target_link_libraries(BcmLoader ${BCMTOOLS_LIBS})
 set_target_properties(BcmLoader PROPERTIES PREFIX "")
-
-# Additional Libraries
-if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if(HIVE_BUILD_WITH_BCMTOOLS)
-        add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
-    endif()
-endif()
 
 ENDIF() # HIVE_BUILD_WITH_BCMTOOLS
