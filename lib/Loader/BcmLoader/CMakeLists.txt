@@ -42,11 +42,6 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     if(HIVE_BUILD_WITH_BCMTOOLS)
         add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
     endif()
-        find_library(COCOA Cocoa)
-        if (NOT COCOA)
-            message(FATAL_ERROR "Cocoa Framework not found")
-        endif()
-        target_link_libraries(hiveCore ${COCOA})
 endif()
 
 ENDIF() # HIVE_BUILD_WITH_BCMTOOLS
