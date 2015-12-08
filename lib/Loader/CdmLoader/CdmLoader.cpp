@@ -20,7 +20,7 @@
 #include <fstream>
 
 #include "CdmLoader.h"
-#include "SimpleVOL.h"
+//#include "SimpleVOL.h"
 
 #include "cdm_DFI.h"
 #include "cdm_TextParser.h"

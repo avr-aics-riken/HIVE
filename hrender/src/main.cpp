@@ -15,9 +15,9 @@
 #include <string>
 #include <vector>
 
-#include "../SceneScript/SceneScript.h"
+#include "SceneScript/SceneScript.h"
 
-#include "../Core/Path.h"
+#include "Core/Path.h"
 
 #ifdef _WIN32
 	#define strncasecmp(x,y,z) _strnicmp(x,y,z)

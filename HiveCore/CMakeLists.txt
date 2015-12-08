@@ -10,16 +10,6 @@ PROJECT(hrender)
 
 message(CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR})
 
-# CDMlib depends on BCMTOOLS
-IF(HIVE_BUILD_WITH_CDMLIB)
-  SET(HIVE_BUILD_WITH_BCMTOOLS On)
-ENDIF()
-
-# HDMlib depends on BCMTOOLS
-IF(HIVE_BUILD_WITH_HDMLIB)
-  SET(HIVE_BUILD_WITH_BCMTOOLS On)
-ENDIF()
-
 # --------------------------------------
 # 
 #  SAME Build Option with SURFACE
@@ -119,25 +109,6 @@ ENDIF()
 # --------------------------------------
 # third party lib flags
 #
-IF(HIVE_BUILD_WITH_CDMLIB)
-  add_definitions(-DHIVE_WITH_CDMLIB)
-ENDIF()
-
-IF(HIVE_BUILD_WITH_BCMTOOLS)
-  add_definitions(-DHIVE_WITH_BCMTOOLS)
-ENDIF()
-
-IF(HIVE_BUILD_WITH_PDMLIB)
-  add_definitions(-DHIVE_WITH_PDMLIB)
-ENDIF()
-
-IF(HIVE_BUILD_WITH_HDMLIB)
-  add_definitions(-DHIVE_WITH_HDMLIB)
-ENDIF()
-
-IF(HIVE_BUILD_WITH_UDMLIB)
-  add_definitions(-DHIVE_WITH_UDMLIB)
-ENDIF()
 
 IF(HIVE_BUILD_WITH_COMPOSITOR)
   IF(NOT HIVE_BUILD_WITH_MPI)
@@ -157,6 +128,7 @@ ENDIF()
 # Headers
 set(INCLUDES
   ${PROJECT_SOURCE_DIR}/../third_party/lua/src
+  ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/third_party/lua/
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
 	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
@@ -164,16 +136,18 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/local
 	${PROJECT_SOURCE_DIR}/../third_party/local/include
 	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/include
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Analyzer
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Buffer
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Builder
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Generator
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Loader
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Saver
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Network
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/RenderObject
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/SceneScript
-	${PROJECT_SOURCE_DIR}/../HiveCore/src/Core
+	${CMAKE_SOURCE_DIR}/include/Analyzer
+	${CMAKE_SOURCE_DIR}/include/Buffer
+	${CMAKE_SOURCE_DIR}/include/Builder
+#	${CMAKE_SOURCE_DIR}/include/Generator
+#	${CMAKE_SOURCE_DIR}/include/Loader
+#	${CMAKE_SOURCE_DIR}/include/Saver
+	${CMAKE_SOURCE_DIR}/include/Network
+	${CMAKE_SOURCE_DIR}/include/RenderObject
+	${CMAKE_SOURCE_DIR}/include/Renderer
+	${CMAKE_SOURCE_DIR}/include/SceneScript
+	${CMAKE_SOURCE_DIR}/include/Core
+	${CMAKE_SOURCE_DIR}/include/Image
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
@@ -232,118 +206,33 @@ set(HIVECORE_SOURCES
 )
 
 set(EX_SOURCES
-  src/Analyzer/PolygonAnalyzer.cpp
-  src/Analyzer/VolumeAnalyzer.cpp
-  src/Builder/FloatsToFloat.cpp
-  src/Builder/PointToVolume.cpp
-  src/Builder/VolumeToMeshData.cpp
-  src/Builder/VolumeToVector.cpp
-  src/Builder/SparseVolumeToVolume.cpp
-  src/Builder/VolumeFilter.cpp
-  src/Builder/CompileUtil.cpp
-  src/Builder/MeshAttribToVolume.cpp
-  src/Generator/PrimitiveGenerator.cpp
-  src/Loader/ObjLoader.cpp
-  src/Loader/SphLoader.cpp
-  src/Loader/StlLoader.cpp
-  src/Loader/VolLoader.cpp
-  src/Loader/PdbLoader.cpp
-  src/Loader/VtkLoader.cpp
-  src/Loader/RawVolumeLoader.cpp
-  src/Loader/tiny_pdb.cpp
-  src/Loader/tiny_vtkxml.cpp
-  src/Saver/SphSaver.cpp
-  src/Saver/RawVolumeSaver.cpp
-  src/Network/Connection.cpp
-  src/Network/MetaBinary.cpp
-  src/Network/easywsclient.cpp
-  src/Network/happyhttp.cpp
+#  src/Analyzer/PolygonAnalyzer.cpp
+#  src/Analyzer/VolumeAnalyzer.cpp
+#  src/Builder/FloatsToFloat.cpp
+#  src/Builder/PointToVolume.cpp
+#  src/Builder/VolumeToMeshData.cpp
+#  src/Builder/VolumeToVector.cpp
+#  src/Builder/SparseVolumeToVolume.cpp
+#  src/Builder/VolumeFilter.cpp
+#  src/Builder/CompileUtil.cpp
+#  src/Builder/MeshAttribToVolume.cpp
+#  src/Generator/PrimitiveGenerator.cpp
+#  src/Loader/ObjLoader.cpp
+#  src/Loader/SphLoader.cpp
+#  src/Loader/StlLoader.cpp
+#  src/Loader/VolLoader.cpp
+#  src/Loader/PdbLoader.cpp
+#  src/Loader/VtkLoader.cpp
+#  src/Loader/RawVolumeLoader.cpp
+#  src/Loader/tiny_pdb.cpp
+#  src/Loader/tiny_vtkxml.cpp
+#  src/Saver/SphSaver.cpp
+#  src/Saver/RawVolumeSaver.cpp
+#  src/Network/Connection.cpp
+#  src/Network/MetaBinary.cpp
+#  src/Network/easywsclient.cpp
+#  src/Network/happyhttp.cpp
 )
-
-
-IF(HIVE_BUILD_WITH_CDMLIB)
-
-  IF(NOT HIVE_BUILD_WITH_MPI)
-    add_definitions(-D_CDM_WITHOUT_MPI_)	# Use stub MPI defines(provided in CDMlib/include/mpi_stubs.h)
-  ENDIF()
-
-  SET(CDMLIB_SOURCES
-    src/Loader/CdmLoader.cpp
-  )
-
-  SET(CDMLIB_LIBS
-    CDM TPmpi
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/CDMlib/lib)
-  
-ENDIF()
-
-IF(HIVE_BUILD_WITH_BCMTOOLS)
-
-  SET(BCMTOOLS_SOURCES
-    src/Loader/BcmLoader.cpp
-  )
-
-  SET(BCMTOOLS_LIBS
-    BCM POLYmpi TPmpi
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/lib)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/lib)
-  
-ENDIF()
-
-IF(HIVE_BUILD_WITH_HDMLIB)
-
-  SET(HDMLIB_SOURCES
-    src/Loader/HdmLoader.cpp
-  )
-
-  SET(HDMLIB_LIBS
-    HDM TPmpi
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/include)
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/BCMTools/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/HDMlib/lib)
-  
-ENDIF()
-
-IF(HIVE_BUILD_WITH_PDMLIB)
-
-  SET(PDMLIB_SOURCES
-    src/Loader/PdmLoader.cpp
-    src/Saver/PdmSaver.cpp
-  )
-
-  SET(PDMLIB_LIBS
-    PDM TPmpi fpzip zoltan z
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PDMlib/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PDMlib/lib)
-  
-ENDIF()
-
-IF(HIVE_BUILD_WITH_UDMLIB)
-
-  SET(UDMLIB_SOURCES
-    src/Loader/UdmLoader.cpp
-  )
-
-  SET(UDMLIB_LIBS
-    udm TPmpi zoltan cgns
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
-  
-ENDIF()
 
 IF(HIVE_BUILD_WITH_COMPOSITOR)
 
@@ -362,38 +251,23 @@ ENDIF()
 
 
 # HIVE Core
-add_library (hiveCore ${HIVECORE_SOURCES}
-    ${EX_SOURCES}
-    ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES} ${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES})
+add_library (hiveCore SHARED ${HIVECORE_SOURCES}
+    ${EX_SOURCES})
+#    ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES} ${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES})
 
 
 # EXT Libs (TODO each modules)
-target_link_libraries(hiveCore ${CDMLIB_LIBS})
-target_link_libraries(hiveCore ${HDMLIB_LIBS})
-target_link_libraries(hiveCore ${UDMLIB_LIBS})
-target_link_libraries(hiveCore ${PDMLIB_LIBS})
-target_link_libraries(hiveCore ${BCMTOOLS_LIBS})
+#target_link_libraries(hiveCore ${CDMLIB_LIBS})
+#target_link_libraries(hiveCore ${HDMLIB_LIBS})
+#target_link_libraries(hiveCore ${UDMLIB_LIBS})
+#target_link_libraries(hiveCore ${PDMLIB_LIBS})
+#target_link_libraries(hiveCore ${BCMTOOLS_LIBS})
 target_link_libraries(hiveCore ${COMPOSITOR_LIBS})
 
 # Link
 target_link_libraries(hiveCore pthread)
 target_link_libraries(hiveCore liblua)
 target_link_libraries(hiveCore LSGLES)
-
-
-
-# Additional Libraries
-if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if(HIVE_BUILD_WITH_BCMTOOLS)
-    	add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
-    endif()
-	find_library(COCOA Cocoa)
-	if (NOT COCOA)
-	    message(FATAL_ERROR "Cocoa Framework not found")
-	endif()
-	target_link_libraries(hiveCore ${COCOA})
-endif()
-
 
 
 # Copy GLSL Compiler in post build phase
