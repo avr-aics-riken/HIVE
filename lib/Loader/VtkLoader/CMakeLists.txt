@@ -15,6 +15,7 @@ include_directories(${INCLUDES})
 set(SOURCES
 	VtkLoader.cpp
 	LuaEntry.cpp
+	tiny_vtkxml.cpp
 )
 add_library(VtkLoader SHARED ${SOURCES})
 target_link_libraries(VtkLoader hiveCore)
