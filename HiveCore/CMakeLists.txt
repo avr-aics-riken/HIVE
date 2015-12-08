@@ -205,34 +205,22 @@ set(HIVECORE_SOURCES
   src/Image/ImageSaver.cpp
 )
 
-set(EX_SOURCES
-#  src/Analyzer/PolygonAnalyzer.cpp
-#  src/Analyzer/VolumeAnalyzer.cpp
-#  src/Builder/FloatsToFloat.cpp
-#  src/Builder/PointToVolume.cpp
-#  src/Builder/VolumeToMeshData.cpp
-#  src/Builder/VolumeToVector.cpp
-#  src/Builder/SparseVolumeToVolume.cpp
-#  src/Builder/VolumeFilter.cpp
-#  src/Builder/CompileUtil.cpp
-#  src/Builder/MeshAttribToVolume.cpp
-#  src/Generator/PrimitiveGenerator.cpp
-#  src/Loader/ObjLoader.cpp
-#  src/Loader/SphLoader.cpp
-#  src/Loader/StlLoader.cpp
-#  src/Loader/VolLoader.cpp
-#  src/Loader/PdbLoader.cpp
-#  src/Loader/VtkLoader.cpp
-#  src/Loader/RawVolumeLoader.cpp
-#  src/Loader/tiny_pdb.cpp
-#  src/Loader/tiny_vtkxml.cpp
-#  src/Saver/SphSaver.cpp
-#  src/Saver/RawVolumeSaver.cpp
-#  src/Network/Connection.cpp
-#  src/Network/MetaBinary.cpp
-#  src/Network/easywsclient.cpp
-#  src/Network/happyhttp.cpp
-)
+IF(HIVE_BUILD_WITH_OPENGL)
+  if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # MacOSX
+    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceCGL.cpp
+                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
+  else()
+    # Linux
+    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceGLX.cpp
+                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
+  endif()
+ELSEIF(HIVE_BUILD_WITH_OSMESA)
+    # Mesa
+    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceOSMesa.cpp
+                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
+ENDIF()
+
 
 IF(HIVE_BUILD_WITH_COMPOSITOR)
 
@@ -251,9 +239,7 @@ ENDIF()
 
 
 # HIVE Core
-add_library (hiveCore SHARED ${HIVECORE_SOURCES}
-    ${EX_SOURCES})
-#    ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES} ${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES})
+add_library (hiveCore SHARED ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
 
 
 # EXT Libs (TODO each modules)
@@ -264,7 +250,24 @@ add_library (hiveCore SHARED ${HIVECORE_SOURCES}
 #target_link_libraries(hiveCore ${BCMTOOLS_LIBS})
 target_link_libraries(hiveCore ${COMPOSITOR_LIBS})
 
+
 # Link
+if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  find_library(COCOA Cocoa)
+  if (NOT COCOA)
+    message(FATAL_ERROR "Cocoa Framework not found")
+  endif()
+  target_link_libraries(hiveCore ${COCOA})
+  if (HIVE_BUILD_WITH_OPENGL)
+    find_library(OPENGL OpenGL)
+    if (NOT OPENGL)
+      message(FATAL_ERROR "OpenGL Framework not found")
+    endif()
+    target_link_libraries(hiveCore ${OPENGL})
+  endif()
+
+endif()
+
 target_link_libraries(hiveCore pthread)
 target_link_libraries(hiveCore liblua)
 target_link_libraries(hiveCore LSGLES)

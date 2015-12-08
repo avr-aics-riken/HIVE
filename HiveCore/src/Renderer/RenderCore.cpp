@@ -187,8 +187,10 @@ public:
 #endif
             SetCallback_SGL(Impl::progressCallbackFunc_, this);
         } else {
+#ifdef HIVE_BUILD_WITH_OPENGL
             GLDevice* dev = CreateGLDeviceInstance();
             dev->Init(256, 256, 32, 16, true);
+#endif
         }
         
 #ifdef HIVE_WITH_COMPOSITOR
