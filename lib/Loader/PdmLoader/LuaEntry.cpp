@@ -8,7 +8,8 @@ extern "C" {
 int luaopen_PdmLoader(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, PDMLoader_Lua);
-    SetFunction(L, "PDMLoader",          LUA_SCRIPTCLASS_NEW_FUNCTION(PDMLoader_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(PDMLoader_Lua));
+    return 1;
 }
 
 }
