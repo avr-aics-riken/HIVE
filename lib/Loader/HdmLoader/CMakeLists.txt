@@ -1,7 +1,6 @@
-
 IF(HIVE_BUILD_WITH_HDMLIB)
-  add_definitions(-DHIVE_WITH_HDMLIB)
-ENDIF()
+
+add_definitions(-DHIVE_WITH_HDMLIB)
 
 # Headers
 set(INCLUDES
@@ -26,8 +25,6 @@ target_link_libraries(HdmLoader hiveCore)
 set_target_properties(HdmLoader PROPERTIES PREFIX "")
 
 
-IF(HIVE_BUILD_WITH_HDMLIB)
-
   SET(HDMLIB_SOURCES
     HdmLoader.cpp
   )
@@ -41,7 +38,6 @@ IF(HIVE_BUILD_WITH_HDMLIB)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/lib)
   
-ENDIF()
-
+ENDIF() # HIVE_BUILD_WITH_HDMLIB
 
  

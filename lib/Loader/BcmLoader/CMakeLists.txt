@@ -1,9 +1,6 @@
-
 IF(HIVE_BUILD_WITH_BCMTOOLS)
-  add_definitions(-DHIVE_WITH_BCMTOOLS)
-ENDIF()
 
-IF(HIVE_BUILD_WITH_BCMTOOLS)
+add_definitions(-DHIVE_WITH_BCMTOOLS)
 
   SET(BCMTOOLS_SOURCES
     BcmLoader.cpp
@@ -17,7 +14,6 @@ IF(HIVE_BUILD_WITH_BCMTOOLS)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/lib)
   
-ENDIF()
 
 # Headers
 set(INCLUDES
@@ -53,3 +49,4 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         target_link_libraries(hiveCore ${COCOA})
 endif()
 
+ENDIF() # HIVE_BUILD_WITH_BCMTOOLS

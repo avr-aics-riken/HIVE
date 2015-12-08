@@ -1,7 +1,6 @@
-
 IF(HIVE_BUILD_WITH_UDMLIB)
-  add_definitions(-DHIVE_WITH_UDMLIB)
-ENDIF()
+
+add_definitions(-DHIVE_WITH_UDMLIB)
 
 # Headers
 set(INCLUDES
@@ -25,9 +24,6 @@ add_library(UdmLoader SHARED ${SOURCES})
 target_link_libraries(UdmLoader hiveCore)
 set_target_properties(UdmLoader PROPERTIES PREFIX "")
 
-
-IF(HIVE_BUILD_WITH_UDMLIB)
-
   SET(UDMLIB_SOURCES
     UdmLoader.cpp
   )
@@ -40,7 +36,6 @@ IF(HIVE_BUILD_WITH_UDMLIB)
   include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
   link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
 
-ENDIF()
-
+ENDIF() # HIVE_BUILD_WITH_UDMLIB
 
  

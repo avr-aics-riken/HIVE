@@ -1,5 +1,6 @@
 IF(HIVE_BUILD_WITH_CDMLIB)
-  add_definitions(-DHIVE_WITH_CDMLIB)
+
+add_definitions(-DHIVE_WITH_CDMLIB)
 
 # Headers
 set(INCLUDES
@@ -23,7 +24,6 @@ add_library(CdmLoader SHARED ${SOURCES})
 target_link_libraries(CdmLoader hiveCore)
 set_target_properties(CdmLoader PROPERTIES PREFIX "")
 
-IF(HIVE_BUILD_WITH_CDMLIB)
 
   IF(NOT HIVE_BUILD_WITH_MPI)
     add_definitions(-D_CDM_WITHOUT_MPI_)        # Use stub MPI defines(provided in CDMlib/include/mpi_stubs.h)
@@ -40,8 +40,4 @@ IF(HIVE_BUILD_WITH_CDMLIB)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/lib)
 
-ENDIF()
-
-
- 
-ENDIF()
+ENDIF() # HIVE_WITH_CDMLIB
