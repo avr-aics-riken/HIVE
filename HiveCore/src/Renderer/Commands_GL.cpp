@@ -211,6 +211,45 @@ void CreateVBRM_GL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer
 	//g.BufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_STATIC_DRAW);
 }
 
+
+/**
+ * GLバッファの作成
+ * @param vertexnum 頂点数
+ * @param posbuffer 頂点バッファ
+ * @param radiusbuffer 半径バッファ
+ * @param matbuffer マテリアルバッファ
+ * @param indexnum インデックス数
+ * @param indexbuffer インデックスバッファ
+ * @param vtx_id 頂点ID
+ * @param radius_id 半径ID
+ * @param mat_id マテリアルID
+ * @param index_id インデックスID
+ */
+void CreateVBIBRM_GL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                      unsigned int indexnum, unsigned int* indexbuffer,
+                      unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenBuffers(1, &vtx_id);
+    g.BindBuffer(GL_ARRAY_BUFFER, vtx_id);
+    g.BufferData(GL_ARRAY_BUFFER, sizeof(float)*3*vertexnum, posbuffer, GL_STATIC_DRAW);
+    
+    if (radiusbuffer) {
+        g.GenBuffers(1, &radius_id);
+        g.BindBuffer(GL_ARRAY_BUFFER, radius_id);
+        g.BufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, radiusbuffer, GL_STATIC_DRAW);
+    }
+    if (mat_id) {
+        g.GenBuffers(1, &mat_id);
+        g.BindBuffer(GL_ARRAY_BUFFER, mat_id);
+        g.BufferData(GL_ARRAY_BUFFER, sizeof(float)*vertexnum, matbuffer, GL_STATIC_DRAW);
+    }
+    
+    g.GenBuffers(1, &index_id);
+    g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_id);
+    g.BufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)*indexnum, indexbuffer, GL_DYNAMIC_DRAW);
+}
+
 /**
  * GLバッファの解放
  * @param buffer_id バッファID
@@ -366,12 +405,28 @@ void DrawElements_GL(unsigned int indexnum)
 	g.DrawElements(GL_TRIANGLES, indexnum, GL_UNSIGNED_INT, (void*)0);
 }
 
+/// インデックスで描画
+/// @param indexnum インデックス数
+void DrawLineElements_GL(unsigned int indexnum)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    g.DrawElements(GL_LINES, indexnum, GL_UNSIGNED_INT, (void*)0);
+}
+
 /// 三角形の描画.
 /// @param vertexnum 頂点数.
 void DrawArrays_GL(unsigned int vertexnum)
 {
 	VX::Graphics& g = GetCurrentGraphics();
 	g.DrawArrays(GL_TRIANGLES, 0, vertexnum);
+}
+
+/// ラインの描画.
+/// @param vertexnum 頂点数.
+void DrawLineArrays_GL(unsigned int vertexnum)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    g.DrawArrays(GL_LINES, 0, vertexnum);
 }
 
 /// 点の描画.
@@ -381,6 +436,18 @@ void DrawPointArrays_GL(unsigned int vertexnum)
 	VX::Graphics& g = GetCurrentGraphics();
 	g.DrawArrays(GL_POINTS, 0, vertexnum);
 }
+
+/// 三角錐の描画.
+/// @param vtxnum 頂点数.
+void DrawTetraArrays_GL(unsigned int vtxnum)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    
+    // TODO!!
+    assert(0);
+    //g.DrawArrays(GL_TETRAHEDRONS_EXT, 0, vtxnum);
+}
+
 
 #define STRINGIFY(A) #A
 #define STRINGIFY2(A) "#version 120\n"#A
@@ -713,6 +780,41 @@ void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, 
 	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
+
+/**
+ * ラインバッファのバインド
+ * @param prg シェーダプログラムID
+ * @param vtxidx 頂点インデックスバッファID
+ * @param vtx_radius 半径バッファID
+ * @param vtx_material マテリアルバッファID
+ * @param indexidx インデックスバッファID
+ */
+void BindLineVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attrRadius   = g.GetAttribLocation(prg, "lsgl_LineWidth"); // TODO
+    GLint attrMaterial = g.GetAttribLocation(prg, "matID");
+    GLint attrPos      = g.GetAttribLocation(prg, "position");
+    
+    if (attrRadius != -1 && vtx_radius > 0) {
+        g.BindBuffer(GL_ARRAY_BUFFER, vtx_radius);
+        g.VertexAttribPointer(attrRadius, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        g.EnableVertexAttribArray(attrRadius);
+    }
+    if (attrMaterial != -1 && vtx_material > 0) {
+        g.BindBuffer(GL_ARRAY_BUFFER, vtx_material);
+        g.VertexAttribPointer(attrMaterial, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        g.EnableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, vtxidx);
+        g.VertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        g.EnableVertexAttribArray(attrPos);
+    }
+    
+    g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+}
+
 /**
  * ポイントバッファのバインド
  * @param prg シェーダプログラムID
@@ -723,7 +825,7 @@ void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, 
 void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material)
 {
 	VX::Graphics& g = GetCurrentGraphics();
-	GLint attrRadius   = g.GetAttribLocation(prg, "lsgl_PointSize");
+	GLint attrRadius   = g.GetAttribLocation(prg, "lsgl_PointSize"); // TODO
 	GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
 	GLint attrPos      = g.GetAttribLocation(prg, "position");
 	
@@ -745,6 +847,35 @@ void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radi
 //	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
+
+/**
+ * 三角錐バッファのバインド
+ * @param prg シェーダプログラムID
+ * @param vtxidx 頂点インデックスバッファID
+ * @param vtx_radius 半径バッファID
+ * @param vtx_material マテリアルバッファID
+ * @param indexidx インデックスバッファID
+ */
+void BindTetraVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attrMaterial = g.GetAttribLocation(prg, "matID");
+    GLint attrPos      = g.GetAttribLocation(prg, "position");
+    
+    if (attrMaterial != -1 && vtx_material > 0) {
+        g.BindBuffer(GL_ARRAY_BUFFER, vtx_material);
+        g.VertexAttribPointer(attrMaterial, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        g.EnableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, vtxidx);
+        g.VertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        g.EnableVertexAttribArray(attrPos);
+    }
+    
+    g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+}
+
 /**
  * フレームバッファのバインド
  * @param frame フレームバッファID
@@ -755,7 +886,18 @@ void BindFramebuffer_GL(unsigned int frame)
 	if (frame)
 		g.BindFramebuffer(GL_FRAMEBUFFER, frame);
 }
-           
+
+
+/**
+ * ライン幅の指定.
+ * @param w ライン幅.
+ */
+void LineWidth_GL(float w)
+{
+    VX::Graphics& g = GetCurrentGraphics();
+    g.LineWidth(w);
+}
+
 /**
  * テクスチャバッファの生成
  * @param n 個数

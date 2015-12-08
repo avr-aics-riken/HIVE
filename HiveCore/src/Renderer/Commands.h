@@ -102,6 +102,9 @@ CMDINLINE void CreateVBIB_GL(unsigned int vertexnum, float* posbuffer, float* no
 CMDINLINE void ReleaseBufferVBIB_GL(unsigned int buffer_id) BLANKFUNC;
 CMDINLINE void CreateVBRM_GL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
 						  unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) BLANKFUNC;
+CMDINLINE void CreateVBIBRM_GL(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                               unsigned int indexnum, unsigned int* indexbuffer,
+                               unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id) BLANKFUNC;
 
 CMDINLINE void BindProgram_GL(unsigned int prg) BLANKFUNC;
 CMDINLINE void SetUniform1i_GL(unsigned int prg, const char* name, int val) BLANKFUNC;
@@ -113,15 +116,20 @@ CMDINLINE void SetUniformFloatArray_GL(unsigned int prg, const char* name, const
 CMDINLINE void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val) BLANKFUNC;
 CMDINLINE void SetCamera_GL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov, int w, int h, float nearVal, float farVal) BLANKFUNC;
 CMDINLINE void DrawElements_GL(unsigned int indexnum) BLANKFUNC;
+CMDINLINE void DrawLineElements_GL(unsigned int indexnum) BLANKFUNC;
 CMDINLINE void DrawArrays_GL(unsigned int indexnum) BLANKFUNC;
+CMDINLINE void DrawLineArrays_GL(unsigned int vertexnum) BLANKFUNC;
 CMDINLINE void DrawPointArrays_GL(unsigned int vertexnum) BLANKFUNC;
 CMDINLINE void DrawTetraArrays_GL(unsigned int vertexnum) BLANKFUNC;
 CMDINLINE bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg) BLANKFUNC_BOOL;
 CMDINLINE bool CreateProgramBinary_GL(const char* soname, unsigned int& prg) BLANKFUNC_BOOL;
 CMDINLINE bool DeleteProgram_GL(unsigned int prg) BLANKFUNC_BOOL;
 CMDINLINE void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx) BLANKFUNC;
+CMDINLINE void BindLineVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) BLANKFUNC;
 CMDINLINE void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) BLANKFUNC;
+CMDINLINE void BindTetraVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) BLANKFUNC;
 CMDINLINE void BindFramebuffer_GL(unsigned int frame) BLANKFUNC;
+CMDINLINE void LineWidth_GL(float w) BLANKFUNC;
 CMDINLINE void GenTextures_GL(int n, unsigned int* tex) BLANKFUNC;
 CMDINLINE void DeleteTextures_GL(int n, unsigned int* tex) BLANKFUNC;
 CMDINLINE void BindTexture2D_GL(unsigned int tex) BLANKFUNC;
