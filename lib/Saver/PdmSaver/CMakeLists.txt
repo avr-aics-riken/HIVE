@@ -1,6 +1,6 @@
 IF(HIVE_BUILD_WITH_PDMLIB)
-  add_definitions(-DHIVE_WITH_PDMLIB)
-ENDIF()
+
+add_definitions(-DHIVE_WITH_PDMLIB)
 
 # Headers
 set(INCLUDES
@@ -24,8 +24,6 @@ target_link_libraries(PdmSaver hiveCore)
 set_target_properties(PdmSaver PROPERTIES PREFIX "")
 
 
-IF(HIVE_BUILD_WITH_PDMLIB)
-
   SET(PDMLIB_SOURCES
     ../../Loader/PdmLoader/PdmLoader.cpp
     PdmSaver.cpp
@@ -38,7 +36,6 @@ IF(HIVE_BUILD_WITH_PDMLIB)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/lib)
 
-ENDIF()
-
+ENDIF() # HIVE_BUILD_WITH_PDMLIB
 
  
