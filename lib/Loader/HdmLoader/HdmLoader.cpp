@@ -15,7 +15,7 @@
 #include <string>
 
 #include "HdmLoader.h"
-#include "SimpleVOL.h"
+//#include "SimpleVOL.h"
 #include "BufferVolumeData.h"
 
 #include "BlockFactory.h"

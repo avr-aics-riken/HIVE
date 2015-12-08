@@ -4,7 +4,6 @@
  */
 #include <string>
 
-#include "Analyzer.h"
 #include "LineBuffer.h"
 #include "BufferLineData.h"
 #include "../RenderObject/LineModel.h"

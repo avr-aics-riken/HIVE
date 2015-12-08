@@ -4,13 +4,14 @@
  */
 #include <string>
 
-#include "Analyzer.h"
+//#include "Analyzer.h"
 #include "VolumeBuffer.h"
 #include "BufferVolumeData.h"
 #include "../RenderObject/VolumeModel.h"
 #include "../Buffer/BufferMeshData.h"
 #include "Buffer.h"
 #include "Commands.h"
+#include <string.h>
 
 /// コンストラクタ
 VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
@@ -24,11 +25,13 @@ VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_index_num  = 0;
     memset(m_boxsize, 0, sizeof(m_boxsize));
     memset(m_voldim, 0, sizeof(m_voldim));
+/*
     memset(m_volMinVal, 0, sizeof(m_volMinVal));
     memset(m_volMaxVal, 0, sizeof(m_volMaxVal));
     m_volHist[0].clear();
     m_volHist[1].clear();
     m_volHist[2].clear();
+*/
     m_model      = 0;
 }
 
@@ -100,6 +103,7 @@ bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsi
     m_voldim[1] = height;
     m_voldim[2] = depth;
 
+/*
     VolumeAnalyzerProc analyze;
     int dim[] = {static_cast<int>(width), static_cast<int>(height), static_cast<int>(depth)};
     if (component == 1) {
@@ -114,7 +118,7 @@ bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsi
     } else {
         analyze.AnalyzeVector(m_volHist, m_volMinVal, m_volMaxVal, (const float*)volumedata, dim, 256, component);
     }
-
+*/
     return true;
 }
 

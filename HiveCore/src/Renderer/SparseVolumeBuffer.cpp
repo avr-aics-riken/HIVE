@@ -3,8 +3,9 @@
  * Volumeバッファ
  */
 #include <string>
+#include <string.h>
 
-#include "Analyzer.h"
+//#include "Analyzer.h"
 #include "SparseVolumeBuffer.h"
 #include "BufferSparseVolumeData.h"
 #include "../RenderObject/SparseVolumeModel.h"
