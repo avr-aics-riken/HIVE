@@ -122,16 +122,17 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../third_party/local
 	${PROJECT_SOURCE_DIR}/../third_party/local/include
 	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/include
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Analyzer
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Buffer
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Builder
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Generator
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Loader
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Saver
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Network
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/RenderObject
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/SceneScript
-	${PROJECT_SOURCE_DIR}/../hiveCore/src/Core
+	${CMAKE_SOURCE_DIR}/include
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Analyzer
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Buffer
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Builder
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Generator
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Loader
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Saver
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Network
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/RenderObject
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/SceneScript
+#	${PROJECT_SOURCE_DIR}/../hiveCore/src/Core
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 

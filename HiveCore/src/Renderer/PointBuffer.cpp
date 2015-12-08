@@ -4,7 +4,6 @@
  */
 #include <string>
 
-#include "Analyzer.h"
 #include "PointBuffer.h"
 #include "BufferPointData.h"
 #include "../RenderObject/PointModel.h"
