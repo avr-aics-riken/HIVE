@@ -8,7 +8,8 @@ extern "C" {
 int luaopen_PointToVolume(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, PointToVolume_Lua);
-    SetFunction(L, "PointToVolume",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointToVolume_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(PointToVolume_Lua));
+    return 1;
 }
 
 }

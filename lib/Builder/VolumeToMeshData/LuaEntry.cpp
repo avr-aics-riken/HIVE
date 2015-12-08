@@ -8,7 +8,8 @@ extern "C" {
 int luaopen_VolumeToMeshData(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, VolumeToMeshData_Lua);
-    SetFunction(L, "VolumeToMeshData",          LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToMeshData_Lua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToMeshData_Lua));
+    return 1;
 }
 
 }
