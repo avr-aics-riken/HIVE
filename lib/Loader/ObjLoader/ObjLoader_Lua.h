@@ -28,28 +28,28 @@ public:
     }
 
     BufferMeshData_Lua* MeshData() {
-        return new BufferMeshData_Lua(OBJLoader::MeshData());
+        return BufferMeshData_Lua::CreateInstance(OBJLoader::MeshData());
     }
 
     BufferPointData_Lua* PointData() {
-        return new BufferPointData_Lua(OBJLoader::PointData());
+        return BufferPointData_Lua::CreateInstance(OBJLoader::PointData());
     }
 
     BufferLineData_Lua* LineData() {
-        return new BufferLineData_Lua(OBJLoader::LineData());
+        return BufferLineData_Lua::CreateInstance(OBJLoader::LineData());
     }
 
     BufferTetraData_Lua* TetraData() {
-        return new BufferTetraData_Lua(OBJLoader::TetraData());
+        return BufferTetraData_Lua::CreateInstance(OBJLoader::TetraData());
     }
     
     BufferVectorData_Lua* NormalData() {
-        return new BufferVectorData_Lua(OBJLoader::NormalData());
+        return BufferVectorData_Lua::CreateInstance(OBJLoader::NormalData());
     }
 
     // TEST
     BufferExtraData_Lua* ExtraData() {
-        return new BufferExtraData_Lua(OBJLoader::ExtraData());
+        return BufferExtraData_Lua::CreateInstance(OBJLoader::ExtraData());
     }
     
     LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)

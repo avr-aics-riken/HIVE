@@ -20,10 +20,14 @@ private:
     class Impl;
     Impl* m_imp;
     
-public:
+protected:
     BufferPointData();
     BufferPointData(BufferPointData* inst);
     ~BufferPointData();
+
+public:
+    static BufferPointData* CreateInstance();
+    
     void Create(int vertexnum);
     void Clear();
     Vec3Buffer*  Position();

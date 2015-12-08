@@ -22,10 +22,14 @@ private:
     class Impl;
     Impl* m_imp;
     
-public:
+protected:
     BufferTetraData(BufferTetraData* inst);
     BufferTetraData();
     ~BufferTetraData();
+    
+public:
+    static BufferTetraData* CreateInstance();
+    
     void Create(int vertexnum, int indexnum);
     void Clear();
     void print();

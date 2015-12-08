@@ -17,6 +17,9 @@ public:
     BufferImageData_Lua(const BufferImageData* data) : BufferImageData(data) { }
     BufferImageData_Lua() {}
     ~BufferImageData_Lua() {}
+    
+public:
+    static BufferImageData_Lua* CreateInstance(BufferImageData* bufferImageData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferImageData_Lua)
     LUA_SCRIPTCLASS_END();
 };

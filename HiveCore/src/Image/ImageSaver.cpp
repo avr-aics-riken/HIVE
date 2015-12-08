@@ -32,24 +32,25 @@ namespace
 class ImageSaver::Impl
 {
 private:
-    BufferImageData m_image;
+    RefPtr<BufferImageData> m_image;
     std::string m_memory;
     
 public:
     /// コンストラクタ
     Impl() {
-        m_image.Clear();
+        m_image = BufferImageData::CreateInstance();
+        m_image->Clear();
     }
 
     /// デストラクタ
     ~Impl() {
-        m_image.Clear();
+        m_image->Clear();
     }
 
     /// イメージデータへの参照
     BufferImageData* ImageData()
     {
-        return &m_image;
+        return m_image;
     }
 
     /**

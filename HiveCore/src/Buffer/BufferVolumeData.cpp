@@ -229,6 +229,13 @@ BufferVolumeData::~BufferVolumeData()
     delete m_imp;
 }
 
+
+BufferVolumeData* BufferVolumeData::CreateInstance()
+{
+    return new BufferVolumeData();
+}
+
+
 /**
  * BufferVolumeDataの作成
  * @param w Widthサイズ

@@ -26,9 +26,14 @@ public:
         BufferVolumeData* volume;
     } VolumeBlock;
 
+protected:
     BufferSparseVolumeData();
     BufferSparseVolumeData(BufferSparseVolumeData* inst);
     ~BufferSparseVolumeData();
+    
+public:
+    static BufferSparseVolumeData* CreateInstance();
+    
     void Create(int w, int h, int d, int component);
     void AddVolume(int offset_x, int offset_y, int offset_z,
                    BufferVolumeData* vol);

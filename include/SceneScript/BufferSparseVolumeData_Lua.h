@@ -11,10 +11,13 @@
  */
 class BufferSparseVolumeData_Lua : public BufferSparseVolumeData
 {
-public:
+protected:
     BufferSparseVolumeData_Lua(BufferSparseVolumeData* vol) : BufferSparseVolumeData(vol) { }
     BufferSparseVolumeData_Lua() {}
     ~BufferSparseVolumeData_Lua() {}
+    
+public:
+    static BufferSparseVolumeData_Lua* CreateInstance(BufferSparseVolumeData* bufferSparseVolumeData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferSparseVolumeData_Lua)
     LUA_SCRIPTCLASS_END();
 };

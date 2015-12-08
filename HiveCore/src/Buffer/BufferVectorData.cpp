@@ -87,6 +87,13 @@ BufferVectorData::~BufferVectorData()
     delete m_imp;
 }
 
+
+BufferVectorData* BufferVectorData::CreateInstance()
+{
+    return new BufferVectorData();
+}
+
+
 /**
  * BufferVectorDataの作成
  * @param vertexnum 作成頂点数

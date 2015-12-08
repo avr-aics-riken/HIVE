@@ -675,11 +675,24 @@ private:
 // ----------------------------------------------------
 
 /// インスタンスの取得
+namespace {
+    RenderCore* rc_inst = 0;
+}
+
 RenderCore* RenderCore::GetInstance()
 {
-	static RenderCore inst;
-	return &inst;
+    if (!rc_inst) {
+        rc_inst = new RenderCore();
+    }
+	return rc_inst;
 }
+
+void RenderCore::Finalize()
+{
+    delete rc_inst;
+    rc_inst = 0;
+}
+
 
 /// コンストラクタ
 RenderCore::RenderCore() : m_imp(new Impl()) {}

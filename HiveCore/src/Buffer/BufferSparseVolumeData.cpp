@@ -297,6 +297,13 @@ BufferSparseVolumeData::~BufferSparseVolumeData()
     delete m_imp;
 }
 
+
+BufferSparseVolumeData* BufferSparseVolumeData::CreateInstance()
+{
+    return new BufferSparseVolumeData();
+}
+
+
 void BufferSparseVolumeData::Create(int w, int h, int d, int component)
 {
     m_imp->Create(w, h, d, component);

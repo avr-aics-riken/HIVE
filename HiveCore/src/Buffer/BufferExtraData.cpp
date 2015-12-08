@@ -113,6 +113,12 @@ BufferExtraData::~BufferExtraData()
     delete m_imp;
 }
 
+BufferExtraData* BufferExtraData::CreateInstance()
+{
+    return new BufferExtraData();
+}
+
+
 void BufferExtraData::Create(const char* dataType, int num)
 {
     m_imp->Create(dataType, num);

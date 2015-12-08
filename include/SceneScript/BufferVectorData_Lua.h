@@ -11,10 +11,13 @@
  */
 class BufferVectorData_Lua : public BufferVectorData
 {
-public:
+protected:
     BufferVectorData_Lua(BufferVectorData* vec) : BufferVectorData(vec) { }
     BufferVectorData_Lua() {}
     ~BufferVectorData_Lua() {}
+    
+public:
+    static BufferVectorData_Lua* CreateInstance(BufferVectorData* bufferVectorData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferVectorData_Lua)
     LUA_SCRIPTCLASS_END();
 };

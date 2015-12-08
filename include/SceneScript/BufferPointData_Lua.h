@@ -12,10 +12,13 @@
  */
 class BufferPointData_Lua : public BufferPointData
 {
-public:
+protected:
     BufferPointData_Lua(BufferPointData* pnt) : BufferPointData(pnt) { }
     BufferPointData_Lua() {}
     ~BufferPointData_Lua() {}
+    
+public:
+    static BufferPointData_Lua* CreateInstance(BufferPointData* bufferPointData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferPointData_Lua)
     LUA_SCRIPTCLASS_END();
 };

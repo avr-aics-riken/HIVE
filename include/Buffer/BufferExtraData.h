@@ -23,10 +23,14 @@ private:
     class Impl;
     Impl* m_imp;
 
-public:
+protected:
     BufferExtraData();
     BufferExtraData(const BufferExtraData* inst);
     ~BufferExtraData();
+
+public:
+    static BufferExtraData* CreateInstance();
+    
     void Create(const char* dataType, int num);
     const char* GetDataType() const;
     void Clear();

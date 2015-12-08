@@ -15,6 +15,9 @@ public:
     BufferVolumeData_Lua(BufferVolumeData* vol) : BufferVolumeData(vol) { }
     BufferVolumeData_Lua() {}
     ~BufferVolumeData_Lua() {}
+    
+public:
+    static BufferVolumeData_Lua* CreateInstance(BufferVolumeData* bufferVolumeData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferVolumeData_Lua)
     LUA_SCRIPTCLASS_END();
 };

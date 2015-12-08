@@ -22,10 +22,14 @@ private:
     class Impl;
     Impl* m_imp;
     
-public:
+protected:
     BufferVectorData(BufferVectorData* inst);
     BufferVectorData();
     ~BufferVectorData();
+
+public:
+    static BufferVectorData* CreateInstance();
+    
     void Create(int vertexnum);
     void Clear();
     void print();

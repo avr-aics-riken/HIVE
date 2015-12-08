@@ -22,10 +22,14 @@ private:
     class Impl;
     Impl* m_imp;
     
-public:
+protected:
     BufferMeshData(BufferMeshData* inst);
-	BufferMeshData();
-	~BufferMeshData();
+    BufferMeshData();
+    ~BufferMeshData();
+    
+public:
+    static BufferMeshData* CreateInstance();
+    
     void Create(int vertexnum, int indexnum);
 	void Clear();
 	void print();

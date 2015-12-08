@@ -11,10 +11,13 @@
  */
 class BufferTetraData_Lua : public BufferTetraData
 {
-public:
+protected:
     BufferTetraData_Lua(BufferTetraData* vol) : BufferTetraData(vol) { }
     BufferTetraData_Lua() {}
     ~BufferTetraData_Lua() {}
+
+public:
+    static BufferTetraData_Lua* CreateInstance(BufferTetraData* bufferTetraData = 0);
     LUA_SCRIPTCLASS_BEGIN(BufferTetraData_Lua)
     LUA_SCRIPTCLASS_END();
 };

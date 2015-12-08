@@ -28,11 +28,16 @@ public:
         R32F,
         RGBA32F,
     };
-    
+
+protected:
     BufferImageData();
     BufferImageData(BufferImageData* inst);
     BufferImageData(const BufferImageData* inst);
     ~BufferImageData();
+    
+public:
+    static BufferImageData* CreateInstance();
+    
     void Create(FORMAT type, int w, int h);
     void Clear();
     int Width() const;
