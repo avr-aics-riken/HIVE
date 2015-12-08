@@ -127,21 +127,16 @@ ENDIF()
 
 # Headers
 set(INCLUDES
-  ${PROJECT_SOURCE_DIR}/../third_party/lua/src
+  ${CMAKE_SOURCE_DIR}/third_party/lua/src
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/third_party/lua/
-	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/include
-	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/gles
-	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/render
-	${PROJECT_SOURCE_DIR}/../third_party/local
-	${PROJECT_SOURCE_DIR}/../third_party/local/include
-	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/include
-	${CMAKE_SOURCE_DIR}/include/Analyzer
+	${CMAKE_SOURCE_DIR}/third_party/SURFACE/include
+	${CMAKE_SOURCE_DIR}/third_party/SURFACE/gles
+	${CMAKE_SOURCE_DIR}/third_party/SURFACE/render
+	${CMAKE_SOURCE_DIR}/third_party/local
+	${CMAKE_SOURCE_DIR}/third_party/local/include
+	${CMAKE_SOURCE_DIR}/third_party/local/TextParser/include
 	${CMAKE_SOURCE_DIR}/include/Buffer
-	${CMAKE_SOURCE_DIR}/include/Builder
-#	${CMAKE_SOURCE_DIR}/include/Generator
-#	${CMAKE_SOURCE_DIR}/include/Loader
-#	${CMAKE_SOURCE_DIR}/include/Saver
 	${CMAKE_SOURCE_DIR}/include/Network
 	${CMAKE_SOURCE_DIR}/include/RenderObject
 	${CMAKE_SOURCE_DIR}/include/Renderer
@@ -155,8 +150,8 @@ INCLUDE_DIRECTORIES(${INCLUDES})
 # Links
 set(LIBS
 	${CMAKE_BINARY_DIR}/third_party/lua
-	${PROJECT_SOURCE_DIR}/../third_party/local/lib		# fpzip, zoltan
-	${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/lib
+	${CMAKE_SOURCE_DIR}/third_party/local/lib		# fpzip, zoltan
+	${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib
 )
 link_directories(${LIBS})
 
@@ -221,15 +216,14 @@ ELSEIF(HIVE_BUILD_WITH_OSMESA)
                       src/Renderer/GLDevice/GLDeviceExtention.cpp)
 ENDIF()
 
-
 IF(HIVE_BUILD_WITH_COMPOSITOR)
 
   SET(COMPOSITOR_LIBS
     234comp
   )
 
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/lib)
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/lib)
   
 ENDIF()
 
@@ -242,12 +236,8 @@ ENDIF()
 add_library (hiveCore SHARED ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
 
 
+
 # EXT Libs (TODO each modules)
-#target_link_libraries(hiveCore ${CDMLIB_LIBS})
-#target_link_libraries(hiveCore ${HDMLIB_LIBS})
-#target_link_libraries(hiveCore ${UDMLIB_LIBS})
-#target_link_libraries(hiveCore ${PDMLIB_LIBS})
-#target_link_libraries(hiveCore ${BCMTOOLS_LIBS})
 target_link_libraries(hiveCore ${COMPOSITOR_LIBS})
 
 
@@ -271,13 +261,23 @@ endif()
 target_link_libraries(hiveCore pthread)
 target_link_libraries(hiveCore liblua)
 target_link_libraries(hiveCore LSGLES)
-
+# Additional Libraries
+if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if(HIVE_BUILD_WITH_BCMTOOLS)
+        add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
+    endif()
+        find_library(COCOA Cocoa)
+        if (NOT COCOA)
+            message(FATAL_ERROR "Cocoa Framework not found")
+        endif()
+        target_link_libraries(hiveCore ${COCOA})
+endif()
 
 # Copy GLSL Compiler in post build phase
 # @todo { Don't copy whole directory files }
 SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
 ADD_CUSTOM_TARGET(glslc-copy-files ALL COMMAND cmake -E copy_directory
-	${PROJECT_SOURCE_DIR}/../third_party/SURFACE/glsl
+	${CMAKE_SOURCE_DIR}/third_party/SURFACE/glsl
 	${EXECUTABLE_OUTPUT_PATH}/glsl)
 
 # NOTE: COPY command only works at CMake configure phase
