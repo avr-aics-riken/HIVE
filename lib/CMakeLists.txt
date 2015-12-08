@@ -1,17 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 enable_testing()
 
-# CDMlib depends on BCMTOOLS
-IF(HIVE_BUILD_WITH_CDMLIB)
-  SET(HIVE_BUILD_WITH_BCMTOOLS On)
-ENDIF()
-
-# HDMlib depends on BCMTOOLS
-IF(HIVE_BUILD_WITH_HDMLIB)
-  SET(HIVE_BUILD_WITH_BCMTOOLS On)
-ENDIF()
-
-
 # --------------------------------------
 # 
 #  SAME Build Option with SURFACE
@@ -75,8 +64,6 @@ ENDIF()
 # --------------------------------------
 
 set(THIRD_INCLUDES
-        ${CMAKE_SOURCE_DIR}/inclue/Core
-        ${CMAKE_SOURCE_DIR}/inclue/Buffer
         ${CMAKE_SOURCE_DIR}/third_party/SURFACE/include
         ${CMAKE_SOURCE_DIR}/third_party/SURFACE/gles
         ${CMAKE_SOURCE_DIR}/third_party/SURFACE/render
@@ -87,14 +74,14 @@ set(THIRD_INCLUDES
 INCLUDE_DIRECTORIES(${THIRD_INCLUDES})
 
 set(LIBS
-        ${CMAKE_BINARY_DIR}/third_party/lua
-        ${PROJECT_SOURCE_DIR}/../third_party/local/lib          # fpzip, zoltan
-        ${PROJECT_SOURCE_DIR}/../third_party/local/TextParser/lib
+        ${CMAKE_SOURCE_DIR}/third_party/lua
+        ${CMAKE_SOURCE_DIR}/third_party/local/lib          # fpzip, zoltan
+        ${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib
 )
 link_directories(${LIBS})
 
 add_subdirectory(Analyzer)
-add_subdirectory(Connection)
+add_subdirectory(Network)
 add_subdirectory(Generator)
 add_subdirectory(Loader)
 add_subdirectory(Saver)
