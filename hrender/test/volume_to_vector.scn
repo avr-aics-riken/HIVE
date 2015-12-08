@@ -13,10 +13,10 @@ camera:LookAt(
 	60
 )
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('fvel_0000001470.sph')
 
-local vtovec = VolumeToVector()
+local vtovec = require("VolumeToVector")()
 local voldata = sph:VolumeData()
 print(vtovec)
 print(voldata)

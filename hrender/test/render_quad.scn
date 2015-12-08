@@ -11,7 +11,7 @@ camera:LookAt(
 	60
 )
 
-local gen = PrimitiveGenerator()
+local gen = require("PrimitiveGenerator")()
 
 local width  = 2
 local height = 1.5
@@ -22,7 +22,7 @@ local meshdata = gen:Quad(width, height)
 model:Create(meshdata)
 model:SetShader('white.frag')
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -32,5 +32,3 @@ print(analy:MinZ())
 print(analy:MaxZ())
 
 render {camera, model}
-
-

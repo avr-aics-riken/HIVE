@@ -11,7 +11,7 @@ camera:LookAt(
 	60
 )
 
-local obj = OBJLoader()
+local obj = require("ObjLoader")()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
@@ -23,7 +23,7 @@ local buf = obj:ExtraData()
 print('EXT buf', buf)
 model:AddExtraBuffer("testvec3", buf)
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -34,5 +34,3 @@ print(analy:MaxZ())
 
 
 render {camera, model}
-
-

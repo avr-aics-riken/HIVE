@@ -18,7 +18,7 @@ local mattex = GenTexture()
 local mattextable = {}
 local numMaterials = 2
 local mattexWidth = 8
-for j = 1, numMaterials do 
+for j = 1, numMaterials do
 
 	-- 0:3   diffuse(vec3, alpha not used)
 	if j == 1 then
@@ -88,14 +88,14 @@ local img = loader:ImageData()
 
 
 -- Generate too big sphere as an environment
-local gen  = PrimitiveGenerator()
+local gen  = require("PrimitiveGenerator")()
 local envmap = gen:Sphere(100000000)
 local pm0 = PointModel();
 pm0:Create(envmap);
 pm0:SetShader("envmap.frag");
 pm0:SetTexture("mytex0", img);
 
-local gen1  = PrimitiveGenerator()
+local gen1  = require("PrimitiveGenerator")()
 local smallsphere = gen1:Sphere(1.0)
 local model0 = PointModel();
 model0:Create(smallsphere)
@@ -108,7 +108,7 @@ model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we us
 
 
 -- blob surface
--- local obj0 = OBJLoader()
+-- local obj0 = require("ObjLoader")()
 -- obj0:Load('blob.obj')
 -- local model0 = PolygonModel()
 -- local meshdata0 = obj0:MeshData()
@@ -120,7 +120,7 @@ model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we us
 -- model0:SetFloat("pbs_num_materials", numMaterials);
 -- model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model0)
 print(analy:MinX())
 print(analy:MaxX())
@@ -130,7 +130,7 @@ print(analy:MinZ())
 print(analy:MaxZ())
 
 -- floor surface
-local obj1 = OBJLoader()
+local obj1 = require("ObjLoader")()
 obj1:Load('md_plane.obj')
 local model1 = PolygonModel()
 local meshdata1 = obj1:MeshData()

@@ -1,6 +1,6 @@
 print('Send image through http')
 
-local network = Connection()
+local network = require("Network").Connection()
 network:Connect('http://localhost:8080')
 network:SendImage('render_obj.jpg')
 network:Close()

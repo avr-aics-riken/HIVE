@@ -1,6 +1,6 @@
 print('render_with_exr')
 
-local gen  = PrimitiveGenerator()
+local gen  = require("PrimitiveGenerator")()
 local plane = gen:Quad(100, 100)
 
 local pm = PolygonModel();

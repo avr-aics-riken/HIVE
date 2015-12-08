@@ -33,7 +33,7 @@ for j = 1, maxnum do
 end
 
 --Create Point List
-local gen   = PrimitiveGenerator()
+local gen   = require("PrimitiveGenerator")()
 local pl    = gen:LineList(ptable, maxnum, 0.5)
 local model = LineModel()
 

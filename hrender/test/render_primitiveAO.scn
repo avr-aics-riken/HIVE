@@ -2,7 +2,7 @@ function SphereGenerator(property)
 	local size = property.size
 	return {
 		PointData = function ()
-			local gen  = PrimitiveGenerator()
+			local gen  = require("PrimitiveGenerator")()
 			return gen:Sphere(size)
 		end
 	}
@@ -47,7 +47,7 @@ function QuadGenerator(property)
 
 	return {
 		MeshData = function ()
-			local gen  = PrimitiveGenerator()
+			local gen  = require("PrimitiveGenerator")()
 			return gen:Quad(size[1], size[2])
 		end
 	}
