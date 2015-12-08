@@ -273,6 +273,23 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         target_link_libraries(hiveCore ${COCOA})
 endif()
 
+
+if (HIVE_BUILD_WITH_OPENGL)
+ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  find_library(OPENGL OpenGL)
+  if (NOT OPENGL)
+    message(FATAL_ERROR "OpenGL Framework not found")
+  endif()
+  target_link_libraries(hiveCore ${OPENGL})
+ else()
+  find_library(OPENGL GL)
+  if (NOT OPENGL)
+    message(FATAL_ERROR "OpenGL Framework not found")
+  endif()
+  target_link_libraries(hiveCore ${OPENGL})
+ endif()
+endif()
+
 # Copy GLSL Compiler in post build phase
 # @todo { Don't copy whole directory files }
 SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
