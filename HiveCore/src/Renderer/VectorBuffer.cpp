@@ -4,7 +4,6 @@
  */
 #include <string>
 
-#include "Analyzer.h"
 #include "VectorBuffer.h"
 #include "BufferVectorData.h"
 #include "../RenderObject/VectorModel.h"

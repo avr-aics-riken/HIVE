@@ -14,11 +14,11 @@
 #include <string>
 
 #include "BcmLoader.h"
-#include "SimpleVOL.h"
+//#include "SimpleVOL.h"
 
 #include "BCMTools.h"
 #include "BCMOctree.h"
-#include "PolygonBBoxDivider.h"
+//#include "PolygonBBoxDivider.h"
 
 //#include "Config.h"
 
