@@ -220,7 +220,7 @@ local function DeleteObject(name)
 end
 	
 local function LoadSPH(name, filename, shader)
-	local sph = SPHLoader()
+	local sph = require("SphLoader")()
 	local ret = sph:Load(filename)
 	if ret then
 	    local volumemodel = VolumeModel()
@@ -235,7 +235,7 @@ local function LoadSPH(name, filename, shader)
 end
 
 local function LoadOBJ(name, filename, shader)
-	local obj = OBJLoader()
+	local obj = require("ObjLoader")()
 	local ret = obj:Load(filename)
 	if ret then
 		local model = PolygonModel()
@@ -251,7 +251,7 @@ end
 
 
 local function LoadSTL(name, filename, shader)
-	local stl = STLLoader()
+	local stl = require("StlLoader")()
 	local ret = stl:Load(filename)
 	if ret then
 		local model = PolygonModel()
@@ -266,7 +266,7 @@ local function LoadSTL(name, filename, shader)
 end
 
 local function LoadPDB(name, filename, shader)
-	local pdb = PDBLoader()
+	local pdb = require("PdbLoader")()
 	local ret = pdb:Load(filename)
 	if ret then
 	    local ballmodel = PointModel()

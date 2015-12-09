@@ -32,14 +32,14 @@ package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
 -- Global Weboket Connection
-network = Connection()
+network = require("Network").Connection()
 network:SetTimeout(100)
 
 -- Global Jpeg Saver
 HIVE_ImageSaver = ImageSaver()
 
 -- Global Metabin
-HIVE_metabin = MetaBinary()
+HIVE_metabin = require("Network").MetaBinary()
 
 
 local defaultCamera = Camera() -- 'view'
