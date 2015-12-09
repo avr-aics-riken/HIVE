@@ -1,5 +1,5 @@
 function makeCornellBox(size, shader)
-	local gen = require("PrimitiveGenerator")()
+	local gen = PrimitiveGenerator()
 	local back   = PolygonModel()
 	local top    = PolygonModel()
 	local bottom = PolygonModel()
@@ -42,7 +42,7 @@ function makeCornellBox(size, shader)
 end
 
 function makeEnvironment(envfile, size, rot)
-	local gen  = require("PrimitiveGenerator")()
+	local gen  = PrimitiveGenerator()
 	local env = PointModel()
 	env:Create(gen:Sphere(size))
 	env:SetShader('envsphere.frag');
