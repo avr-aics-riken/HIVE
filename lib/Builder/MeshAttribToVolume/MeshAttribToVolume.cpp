@@ -119,7 +119,7 @@ inline void findLoc27(size_t locs[27], float x, float y, float z, const float bm
 bool MeshAttribToVolume::ToVolume(int w, int h, int d) {
     delete m_volume;
 
-    m_volume = new BufferVolumeData();
+    m_volume = BufferVolumeData::CreateInstance();
 
     int c = 1; // Store scalar density.
     m_volume->Create(w, h, d, c);

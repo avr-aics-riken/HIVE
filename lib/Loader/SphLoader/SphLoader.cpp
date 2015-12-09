@@ -35,7 +35,7 @@ void SPHLoader::Clear()
 bool SPHLoader::Load(const char* filename)
 {
     Clear();
-    m_volume = new BufferVolumeData();
+    m_volume = BufferVolumeData::CreateInstance();
 
     SimpleSPH sph;
     const float* buf = sph.Load(filename);

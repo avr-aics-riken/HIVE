@@ -378,7 +378,7 @@ void VTKLoader::Clear()
 bool VTKLoader::Load(const char* filename, const char* searchpath, const char* fieldname, bool doByteSwap)
 {
     Clear();
-    m_volume = new BufferVolumeData();
+    m_volume = BufferVolumeData::CreateInstance();
 
     std::vector<std::string> searchPaths;
 

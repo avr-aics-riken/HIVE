@@ -422,7 +422,7 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 							globalOrigin, pitch, globalRegion);
 		vb.id = id;
 
-		BufferVolumeData *vol = new BufferVolumeData();
+		BufferVolumeData *vol = BufferVolumeData::CreateInstance();
 		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
 		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
 		assert(vb.numComponents == 1);
@@ -468,7 +468,7 @@ void ConvertCellIDBlock(BufferSparseVolumeData &sparseVolume,
 							globalOrigin, pitch, globalRegion);
 		vb.id = id;
 
-		BufferVolumeData *vol = new BufferVolumeData();
+		BufferVolumeData *vol = BufferVolumeData::CreateInstance();
 		//printf("lv: %d, vb: %d, %d, %d\n", level, vb.size[0], vb.size[1], vb.size[2]);
 		//printf("offset: %d, %d, %d\n", vb.offset[0], vb.offset[1], vb.offset[2]);
 		assert(vb.numComponents == 1);
@@ -516,7 +516,7 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 							rootDim, org, globalOrigin, pitch, globalRegion);
 		vb.id = id;
 
-		BufferVolumeData *vol = new BufferVolumeData();
+		BufferVolumeData *vol = BufferVolumeData::CreateInstance();
 		assert(vb.numComponents == 3);
 		vol->Create(vb.size[0], vb.size[1], vb.size[2], vb.numComponents);
 
