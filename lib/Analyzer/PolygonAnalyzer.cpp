@@ -85,7 +85,9 @@ bool PolygonAnalyzer::Execute(PolygonModel *model)
 {
     PolygonAnalyzerProc proc;
     std::vector<float> m_volHist[3];
-    if(model->GetMesh()) {
+    
+    // TODO!
+    /*if(model->GetMesh()) {
         int number = model->GetMesh()->Position()->GetNum();
         const float* buffer = static_cast<const float*>(model->GetMesh()->Position()->GetBuffer());
         if(number <= 0) {
@@ -95,7 +97,8 @@ bool PolygonAnalyzer::Execute(PolygonModel *model)
         proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
     } else {
         fprintf(stderr,"Mesh data not found.");
-    }
+    }*/
+    
     return true;
 }
 

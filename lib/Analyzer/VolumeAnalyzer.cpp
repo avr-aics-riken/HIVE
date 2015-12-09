@@ -90,7 +90,9 @@ const std::vector<float> VolumeAnalyzer::GetHistgramInRange(VolumeModel *model, 
 {
     VolumeAnalyzerProc proc;
     std::vector<float> histgram[3];
-    if(model->GetVolume()) {
+    
+    // TODO!
+    /*if(model->GetVolume()) {
         BufferVolumeData *volume = model->GetVolume();
         const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
         int temp_num[3] = {
@@ -116,7 +118,7 @@ const std::vector<float> VolumeAnalyzer::GetHistgramInRange(VolumeModel *model, 
                 fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
             }
         }
-    }
+    }*/
     return histgram[0];
 }
 
@@ -129,7 +131,9 @@ const std::vector<float> VolumeAnalyzer::GetHistgramInRange(VolumeModel *model, 
 bool VolumeAnalyzer::Execute(VolumeModel *model)
 {
     VolumeAnalyzerProc proc;
-    if(model->GetVolume()) {
+    
+    // TODO!
+    /*if(model->GetVolume()) {
         BufferVolumeData *volume = model->GetVolume();
         const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
 
@@ -155,7 +159,7 @@ bool VolumeAnalyzer::Execute(VolumeModel *model)
         }
     } else {
         fprintf(stderr,"Volume data not found.");
-    }
+    }*/
     return true;
 }
 
