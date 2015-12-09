@@ -20,7 +20,7 @@ function RenderToConsole(farg)
 			local imageBufferSize = saver:MemorySize()
 
 			print('Send:', 'ws://localhost:58432');
-			local network = Connection()
+			local network = require("Network").Connection()
 			network:Connect('ws://localhost:58432')
 			network:SendBinary(imageBuffer, imageBufferSize)
 			network:Close()
