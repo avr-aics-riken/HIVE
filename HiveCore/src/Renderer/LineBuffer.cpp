@@ -79,7 +79,6 @@ bool LineBuffer::Create(const LineModel* model)
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
         fprintf(stderr,"[Error]Not set shader\n");
-        return false;
     }
 
     // make LineData

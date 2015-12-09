@@ -69,7 +69,7 @@ void BaseBuffer::SetCamera(const Camera* camera) const
     //if (camera->CameraType() == TYPE_STEREO) {
     //  SetStereoEnvCamera_SGL(prog, info->eye, info->tar, info->up, 20.0f, 0.03f); // fixme
     //else
-    if (m_mode == RENDER_LSGL) {
+    if (m_mode == RENDER_SURFACE) {
         SetCamera_SGL(m_prog, info->eye, info->tar, info->up, info->fov);
     } else {
         SetCamera_GL(m_prog, info->eye, info->tar, info->up, info->fov, 512, 512, 0.1f, 500.0f); // TEMP value

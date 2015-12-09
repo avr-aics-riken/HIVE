@@ -125,6 +125,14 @@ IF(HIVE_BUILD_WITH_MPI)
 ENDIF()
 # --------------------------------------
 
+# --------------------------------------
+# MPI
+IF(HIVE_BUILD_WITH_OPENGL)
+  add_definitions(-DHIVE_BUILD_WITH_OPENGL)
+ENDIF()
+# --------------------------------------
+
+
 # Headers
 set(INCLUDES
   ${CMAKE_SOURCE_DIR}/third_party/lua/src

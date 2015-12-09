@@ -169,9 +169,9 @@ private:
     
 public:
     /// コンストラクタ
-    Impl()
+    Impl(RENDER_MODE mode)
     {
-        m_mode   = RENDER_LSGL;
+        m_mode       = mode;
         m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
         m_gs_depthbuffer = 0;
         m_gs_colorbuffer = 0;
@@ -190,10 +190,16 @@ public:
         
         if (m_mode == RENDER_OPENGL) {
 #ifdef HIVE_BUILD_WITH_OPENGL
+            printf("Start OpenGL mode\n");
             GLDevice* dev = CreateGLDeviceInstance();
-            dev->Init(256, 256, 32, 16, true);
+            bool r = dev->Init(256, 256, 32, 16, true);
+            if (!r) {
+                printf("[Error] Failed to initialize OpenGL mode\n");
+                m_mode = RENDER_SURFACE;
+            }
 #else
             printf("[Error] Not Support OpenGL mode\n");
+            m_mode = RENDER_SURFACE;
 #endif
         }
         
@@ -271,7 +277,7 @@ public:
     
     void SetParallelRendering(bool enableParallel)
     {
-        if (m_mode != RENDER_LSGL)
+        if (m_mode != RENDER_SURFACE)
             return;
         SetScreenParallel_SGL(enableParallel, false);
     }
@@ -585,7 +591,7 @@ private:
     {
         printf("RenderCore::RENDER!!!!\n");
         
-        if (m_mode == RENDER_LSGL) {
+        if (m_mode == RENDER_SURFACE) {
             //SampleCoverage_SGL(m_fsaa, 0);
             //PixelStep_SGL(m_pixelstep);
         }
@@ -600,23 +606,6 @@ private:
         
         //BindProgram_SGL(0); // TODO: not need to release?
         
-        
-        /*
-         } else { // GL mode
-            //bindGLBuffer();
-            Clear_GL(m_clearcolor.x, m_clearcolor.y, m_clearcolor.z, m_clearcolor.w);
-            
-            RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
-            for (it = m_renderObjects.begin(); it != eit; ++it)
-            {
-                draw((*it), RENDER_OPENGL);
-            }
-            
-            BindProgram_GL(0);
-            
-            //unbindGLBuffer();
-        }*/
- 
     }
     
     /// リサイズ
@@ -683,10 +672,10 @@ namespace {
     RenderCore* rc_inst = 0;
 }
 
-RenderCore* RenderCore::GetInstance()
+RenderCore* RenderCore::GetInstance(RENDER_MODE mode)
 {
     if (!rc_inst) {
-        rc_inst = new RenderCore();
+        rc_inst = new RenderCore(mode);
     }
 	return rc_inst;
 }
@@ -699,7 +688,7 @@ void RenderCore::Finalize()
 
 
 /// コンストラクタ
-RenderCore::RenderCore() : m_imp(new Impl()) {}
+RenderCore::RenderCore(RENDER_MODE mode) : m_imp(new Impl(mode)) {}
 /// デストラクタ
 RenderCore::~RenderCore()  { delete m_imp; }
 
