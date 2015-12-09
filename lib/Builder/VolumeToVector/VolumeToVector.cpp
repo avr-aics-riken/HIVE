@@ -54,7 +54,7 @@ inline void GenerateTetra(
 
 /// コンストラクタ
 VolumeToVector::VolumeToVector(){
-    m_vector      = new BufferVectorData();
+    m_vector      = BufferVectorData::CreateInstance();
     m_pitchX      = 1.0;
     m_pitchY      = 1.0;
     m_pitchZ      = 1.0;

@@ -851,7 +851,6 @@ int VolumeToMeshData::IsoSurface() {
     const std::vector<float>& normals = generator.get_normals();
     const std::vector<size_t>& indices = generator.get_indices();
 
-    delete m_mesh;
     m_mesh  = BufferMeshData::CreateInstance();
 
     size_t numVertices = vertices.size() / 3;

@@ -19,7 +19,7 @@
 class VolumeToVector : public RefCount
 {
 private:
-    BufferVectorData* m_vector;
+    RefPtr<BufferVectorData> m_vector;
     double            m_pitchX;
     double            m_pitchY;
     double            m_pitchZ;
