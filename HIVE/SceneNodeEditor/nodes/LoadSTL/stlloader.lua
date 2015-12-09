@@ -1,6 +1,6 @@
 function LoadSTL(property)
 	local stlloader
-	stlloader = STLLoader()
+	stlloader = require("StlLoader")()
 	stlloader:Load(property.filepath)
 	return stlloader
 end

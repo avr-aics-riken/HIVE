@@ -3,7 +3,7 @@ function VolumeElementFilterFunc(property)
 	if elem == nil then
 		elem = 0
 	end
-	local vm = FloatsToFloat();
+	local vm = require("FloatsToFloat")();
 	vm:Create(property.srcvolume, elem)
 	function volume()
 		return vm:VolumeData()

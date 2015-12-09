@@ -1,5 +1,5 @@
 function SavePDM(property)
-	local saver = PDMSaver()
+	local saver = require("PdmSaver")()()
 	saver:SetPointData(property.pointdata)
 	saver:Save(property.basefilepath)
 end

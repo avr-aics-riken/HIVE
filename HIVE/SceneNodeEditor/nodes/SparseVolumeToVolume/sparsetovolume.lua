@@ -4,7 +4,7 @@ function SparseVolumeToVolumeFunc(property)
 		rs = 1.0
 	end
 
-	local vm = SparseVolumeToVolume();
+	local vm = require("SparseVolumeToVolume")();
 	vm:Create(property.sparsevolume, rs)
 	function volume()
 		return vm:VolumeData()
