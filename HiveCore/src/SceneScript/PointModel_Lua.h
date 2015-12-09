@@ -6,8 +6,8 @@
 #define _POINTMODEL_LUA_H_
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/PointModel.h"
 #include "LuaUtil.h"
-#include "PointModel.h"
 #include "BufferPointData_Lua.h"
 #include "RenderObject_Lua.h"
 /**

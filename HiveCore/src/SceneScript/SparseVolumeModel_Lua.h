@@ -6,8 +6,8 @@
 #define _SPARSEVOLUMEMODEL_LUA_H_
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/SparseVolumeModel.h"
 #include "LuaUtil.h"
-#include "SparseVolumeModel.h"
 #include "BufferSparseVolumeData_Lua.h"
 #include "RenderObject_Lua.h"
 /**
