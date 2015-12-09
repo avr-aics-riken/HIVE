@@ -804,7 +804,7 @@ protected:
 } // namespace
 
 VolumeToMeshData::VolumeToMeshData() : m_isovalue(0.0), m_volume(NULL) {
-    m_mesh = new BufferMeshData();
+    m_mesh = BufferMeshData::CreateInstance();
 }
 
 void VolumeToMeshData::SetIsoValue(double isovalue) {
@@ -852,7 +852,7 @@ int VolumeToMeshData::IsoSurface() {
     const std::vector<size_t>& indices = generator.get_indices();
 
     delete m_mesh;
-    m_mesh  = new BufferMeshData();
+    m_mesh  = BufferMeshData::CreateInstance();
 
     size_t numVertices = vertices.size() / 3;
     size_t numIndices  = indices.size();

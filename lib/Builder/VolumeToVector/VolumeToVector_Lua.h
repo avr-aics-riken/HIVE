@@ -22,7 +22,8 @@ public:
     }
 
     BufferVectorData_Lua* VectorData() {
-        return new BufferVectorData_Lua(VolumeToVector::VectorData());
+        RefPtr<BufferVectorData> data = VolumeToVector::VectorData();
+        return BufferVectorData_Lua::CreateInstance(data);
     }
 
     bool DividePitchX(double a) {

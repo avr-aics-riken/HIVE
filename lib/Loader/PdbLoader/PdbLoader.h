@@ -23,8 +23,8 @@ public:
 	PDBLoader();
 	~PDBLoader();
 	void Clear();
-	BufferPointData ball;
-	BufferLineData stick;
+	RefPtr<BufferPointData> ball;
+	RefPtr<BufferLineData> stick;
 protected:
 	bool Load(const char* filename, bool generateBond = false);
 	BufferPointData* BallData();

@@ -16,8 +16,8 @@ PDBLoader::~PDBLoader(){};
 /// メンバクリア
 void PDBLoader::Clear()
 {
-	ball.Clear();
-	stick.Clear();
+	ball->Clear();
+	stick->Clear();
 	m_atoms.clear();
 }
 
@@ -42,10 +42,10 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
     int numAtoms = static_cast<int>(pdb.GetAtoms().size());
 
     {
-        ball.Create(numAtoms);
-        Vec3Buffer*  pos     = ball.Position();
-        FloatBuffer* mat     = ball.Material();
-        FloatBuffer* radius  = ball.Radius();
+        ball->Create(numAtoms);
+        Vec3Buffer*  pos     = ball->Position();
+        FloatBuffer* mat     = ball->Material();
+        FloatBuffer* radius  = ball->Radius();
 
         printf("[PDBLoader] # of atoms: %ld\n", numAtoms);
 
@@ -101,11 +101,11 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
 
         printf("[PDBLoader] # of bonds: %ld\n", numBonds);
 
-        stick.Create(numBondVertices, /* index num = */0, /* use vrying radius */false);
-        Vec3Buffer*  pos     = stick.Position();
-        FloatBuffer* mat     = stick.Material();
-        //FloatBuffer* radius  = stick.Radius();
-        //UintBuffer*  index   = stick.Index();  // not used.
+        stick->Create(numBondVertices, /* index num = */0, /* use vrying radius */false);
+        Vec3Buffer*  pos     = stick->Position();
+        FloatBuffer* mat     = stick->Material();
+        //FloatBuffer* radius  = stick->Radius();
+        //UintBuffer*  index   = stick->Index();  // not used.
 
         float* pp = pos->GetBuffer();
         for (size_t i = 0; i < numBondVertices; i++) {
@@ -134,7 +134,7 @@ bool PDBLoader::Load(const char* filename, bool generateBond){
  */
 BufferPointData *PDBLoader::BallData()
 {
-	return &ball;
+	return ball;
 }
 
 /**
@@ -143,7 +143,7 @@ BufferPointData *PDBLoader::BallData()
  */
 BufferLineData *PDBLoader::StickData()
 {
-	return &stick;
+	return stick;
 }
 
 
@@ -153,7 +153,7 @@ BufferLineData *PDBLoader::StickData()
  * @param matID マテリアルID
  */
 void PDBLoader::SetMaterial(int i, float matID) {
-    FloatBuffer* mat     = ball.Material();
+    FloatBuffer* mat     = ball->Material();
 	if (i < 0 || i >= mat->GetNum()) {
 		return;
 	}

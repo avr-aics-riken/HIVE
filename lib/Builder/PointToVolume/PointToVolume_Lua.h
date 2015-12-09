@@ -29,7 +29,8 @@ public:
     /// Retrieve volume data.
     /// Valid after ToVolume()
     BufferVolumeData_Lua* VolumeData() {
-        return new BufferVolumeData_Lua(PointToVolume::VolumeData());
+        RefPtr<BufferVolumeData> data = PointToVolume::VolumeData();
+        return BufferVolumeData_Lua::CreateInstance(data);
     }
 
     LUA_SCRIPTCLASS_BEGIN(PointToVolume_Lua)

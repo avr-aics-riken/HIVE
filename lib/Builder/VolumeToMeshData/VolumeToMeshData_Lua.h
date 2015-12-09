@@ -35,7 +35,8 @@ public:
     /// Retrieve isosurface mesh.
     /// Valid after IsoSurface()
     BufferMeshData_Lua* MeshData() {
-        return new BufferMeshData_Lua(VolumeToMeshData::MeshData());
+        RefPtr<BufferMeshData> mesh = VolumeToMeshData::MeshData();
+        return BufferMeshData_Lua::CreateInstance(mesh);
     }
 
     LUA_SCRIPTCLASS_BEGIN(VolumeToMeshData_Lua)

@@ -23,11 +23,13 @@ public:
     }
 
     BufferPointData_Lua* BallData() {
-        return new BufferPointData_Lua(PDBLoader::BallData());
+        RefPtr<BufferPointData> data = PDBLoader::BallData();
+        return BufferPointData_Lua::CreateInstance(data);
     }
 
     BufferLineData_Lua* StickData() {
-        return new BufferLineData_Lua(PDBLoader::StickData());
+        RefPtr<BufferLineData> data = PDBLoader::StickData();
+        return BufferLineData_Lua::CreateInstance(data);
     }
 
 	int NumAtoms() {
