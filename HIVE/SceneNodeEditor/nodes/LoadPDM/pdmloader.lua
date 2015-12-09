@@ -1,5 +1,5 @@
 function LoadPDM(property)
-	local loader = PDMLoader()
+	local loader = require("PdmLoader")()
 	loader:Load(property.filepath, property.timestep)
 	local pointData = loader:PointData(property.container, property.radius)
 
