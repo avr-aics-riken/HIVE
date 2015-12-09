@@ -2,7 +2,7 @@ function SphereGenerator(property)
 	local size = property.size
 	return {
 		PointData = function ()
-			local gen  = require("PrimitiveGenerator")()
+			local gen  = PrimitiveGenerator()
 			return gen:Sphere(size)
 		end
 	}
@@ -53,7 +53,7 @@ function QuadGenerator(property)
 
 	return {
 		MeshData = function ()
-			local gen  = require("PrimitiveGenerator")()
+			local gen  = PrimitiveGenerator()
 			return gen:Quad(size[1], size[2])
 		end
 	}
@@ -181,7 +181,7 @@ mattex:Create2D(mattextable, 3, mattexWidth, numMaterials); -- 3 = RGBA32F
 local matimg = mattex:ImageData()
 
 -- Generate too big sphere as an environment
-local gen  = require("PrimitiveGenerator")()
+local gen  = PrimitiveGenerator()
 local envmap = gen:Sphere(1000000)
 
 local pm0 = PointModel();

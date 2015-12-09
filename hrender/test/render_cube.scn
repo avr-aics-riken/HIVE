@@ -11,7 +11,7 @@ camera:LookAt(
 	60
 )
 
-local gen = require("PrimitiveGenerator")()
+local gen = PrimitiveGenerator()
 
 local width  = 5
 local height = 5

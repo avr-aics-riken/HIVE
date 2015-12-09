@@ -2,7 +2,7 @@ print('render_with_texture')
 
 
 
-local gen  = require("PrimitiveGenerator")()
+local gen  = PrimitiveGenerator()
 local plane = gen:Quad(100, 100)
 
 local pm = PolygonModel();
