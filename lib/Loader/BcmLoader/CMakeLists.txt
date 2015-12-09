@@ -9,10 +9,6 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     endif()
 endif()
 
-  SET(BCMTOOLS_SOURCES
-    BcmLoader.cpp
-  )
-
   SET(BCMTOOLS_LIBS
     BCM POLYmpi TPmpi
   )

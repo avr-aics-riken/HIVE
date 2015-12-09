@@ -2,11 +2,6 @@ IF(HIVE_BUILD_WITH_PDMLIB)
 
 add_definitions(-DHIVE_WITH_PDMLIB)
 
-  SET(PDMLIB_SOURCES
-    ../../Loader/PdmLoader/PdmLoader.cpp
-    PdmSaver.cpp
-  )
-
   SET(PDMLIB_LIBS
     PDM TPmpi fpzip zoltan z
   )
@@ -33,7 +28,7 @@ set(SOURCES
 )
 add_library(PdmSaver SHARED ${SOURCES})
 target_link_libraries(PdmSaver hiveCore)
-target_link_libraries(PdmSaver ${PMDLIB_LIBS})
+target_link_libraries(PdmSaver ${PDMLIB_LIBS})
 set_target_properties(PdmSaver PROPERTIES PREFIX "")
 
 ENDIF() # HIVE_BUILD_WITH_PDMLIB

@@ -2,10 +2,6 @@ IF(HIVE_BUILD_WITH_UDMLIB)
 
 add_definitions(-DHIVE_WITH_UDMLIB)
 
-  SET(UDMLIB_SOURCES
-    UdmLoader.cpp
-  )
-
   SET(UDMLIB_LIBS
     udm TPmpi zoltan cgns
   )

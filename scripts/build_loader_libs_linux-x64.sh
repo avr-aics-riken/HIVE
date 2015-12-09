@@ -136,7 +136,7 @@ function build_pdmlib {
 	tar -zxvf fpzip-1.0.1.tar.gz
 	cd fpzip-1.0.1/src
 	# TODO: Provide our own Makefile
-	make
+	 CFLAGS="-fPIC" CXXFLAGS="-fPIC" make
 	cd ..
 	mkdir -p ${installdir}/include
 	mkdir -p ${installdir}/lib
@@ -150,7 +150,7 @@ function build_pdmlib {
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
 	mkdir Zoltan_build
 	cd Zoltan_build
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-fPIC" CXXFLAGS="-fPIC"  ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-fPIC" CXXFLAGS="-fPIC" ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 
@@ -173,7 +173,7 @@ function build_udmlib {
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
 	mkdir Zoltan_build
 	cd Zoltan_build
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-fPIC" CXXFLAGS="-fPIC"  ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-fPIC" CXXFLAGS="-fPIC" ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 
@@ -197,7 +197,7 @@ function build_udmlib {
 	cd build
 
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} CFLAGS="-fPIC" CXXFLAGS="-fPIC"  ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${cxx_compiler} CFLAGS="-fPIC" CXXFLAGS="-fPIC" ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
