@@ -17,7 +17,7 @@ set(SOURCES
 	CompileUtil.cpp
 	LuaEntry.cpp
 )
-add_library(VolumeFilter SHARED ${SOURCES})
+add_library(VolumeFilter ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(VolumeFilter hiveCore)
 target_link_libraries(VolumeFilter liblua)
 set_target_properties(VolumeFilter PROPERTIES PREFIX "")

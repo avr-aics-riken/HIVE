@@ -16,7 +16,7 @@ set(SOURCES
 	RawVolumeLoader.cpp
 	LuaEntry.cpp
 )
-add_library(RawVolumeLoader SHARED ${SOURCES})
+add_library(RawVolumeLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(RawVolumeLoader hiveCore)
 set_target_properties(RawVolumeLoader PROPERTIES PREFIX "")
  

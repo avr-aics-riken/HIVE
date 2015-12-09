@@ -16,7 +16,7 @@ set(SOURCES
 	PointToVolume.cpp
 	LuaEntry.cpp
 )
-add_library(PointToVolume SHARED ${SOURCES})
+add_library(PointToVolume ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(PointToVolume hiveCore)
 set_target_properties(PointToVolume PROPERTIES PREFIX "")
 

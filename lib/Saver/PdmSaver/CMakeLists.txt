@@ -26,7 +26,7 @@ set(SOURCES
 	PdmSaver.cpp
 	LuaEntry.cpp
 )
-add_library(PdmSaver SHARED ${SOURCES})
+add_library(PdmSaver ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(PdmSaver hiveCore)
 target_link_libraries(PdmSaver ${PDMLIB_LIBS})
 set_target_properties(PdmSaver PROPERTIES PREFIX "")
