@@ -10,6 +10,7 @@
 /// コンストラクタ
 VOLLoader::VOLLoader()
 {
+    m_volume = BufferVolumeData::CreateInstance();
     Clear();
 }
 /// デストラクタ
