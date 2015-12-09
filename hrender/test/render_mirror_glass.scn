@@ -1,4 +1,4 @@
-local gen  = require("PrimitiveGenerator")()
+local gen  = PrimitiveGenerator()
 local env = PointModel()
 env:Create(gen:Sphere(10000))
 env:SetShader('envsphere.frag');

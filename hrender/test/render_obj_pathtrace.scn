@@ -1,5 +1,5 @@
 function makeFloor(size, shader)
-	local gen = require("PrimitiveGenerator")()
+	local gen = PrimitiveGenerator()
 	local bottom = PolygonModel()
 	bottom:Create(gen:Quad(size*1.01, size*1.01))
 	bottom:SetRotate   (-90,    0,    0)
@@ -11,7 +11,7 @@ function makeFloor(size, shader)
 end
 
 function makeEnvironment(envfile, size, rot)
-	local gen  = require("PrimitiveGenerator")()
+	local gen  = PrimitiveGenerator()
 	local env = PointModel()
 	env:Create(gen:Sphere(size))
 	env:SetShader('envsphere.frag');
@@ -58,7 +58,7 @@ if not r then
 	print('Failed to load bunny.obj');
 end
 
-local gen = require("PrimitiveGenerator")()
+local gen = PrimitiveGenerator()
 local model = PolygonModel()
 local meshdata = objloader:MeshData()
 model:Create(meshdata)
