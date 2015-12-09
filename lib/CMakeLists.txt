@@ -82,7 +82,6 @@ link_directories(${LIBS})
 
 add_subdirectory(Analyzer)
 add_subdirectory(Network)
-add_subdirectory(PrimitiveGenerator)
 add_subdirectory(Loader)
 add_subdirectory(Saver)
 add_subdirectory(Builder)
