@@ -22,11 +22,13 @@ public:
     }
 
     BufferPointData_Lua* PointData(const char* containerName = "Coordinate", double radius = 1.0) {
-        return new BufferPointData_Lua(PDMLoader::PointData(containerName, (float)radius));
+        RefPtr<BufferPointData> data = PDMLoader::PointData(containerName, (float)radius);
+        return BufferPointData_Lua::CreateInstance(data);
     }
 
     BufferExtraData_Lua* ExtraData(const char* containerName) {
-        return new BufferExtraData_Lua(PDMLoader::ExtraData(containerName));
+        RefPtr<BufferExtraData> data = PDMLoader::ExtraData(containerName);
+        return BufferExtraData_Lua::CreateInstance(data);
     }
 
     LUA_SCRIPTCLASS_BEGIN(PDMLoader_Lua)

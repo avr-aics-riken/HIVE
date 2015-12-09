@@ -655,7 +655,7 @@ BufferSparseVolumeData* HDMLoader::LoadField(const char *fieldName, const char *
 
 	// Prepare SparseVolume
 	//m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
-	BufferSparseVolumeData *sparseVolume = new BufferSparseVolumeData();
+    RefPtr<BufferSparseVolumeData> sparseVolume = BufferSparseVolumeData::CreateInstance();
 	sparseVolume->Create(dim[0], dim[1], dim[2], components);
 
 	{
@@ -680,7 +680,6 @@ BufferSparseVolumeData* HDMLoader::LoadField(const char *fieldName, const char *
 
 			if (timeStepIndex >= stepList->size()) {
 				fprintf(stderr, "[HDMloader] Given time step index %d exceeds the maximum time step in the file %d.\n", timeStepIndex, (int)stepList->size());
-				delete sparseVolume;
 				return NULL;
 			}
 

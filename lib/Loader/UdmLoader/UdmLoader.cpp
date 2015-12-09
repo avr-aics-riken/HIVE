@@ -379,7 +379,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		int numIndices = triangleIndices.size();
 		//printf("verts = %d\n", numVertices);
 		//printf("inds = %d\n", numIndices);
-		m_mesh = new BufferMeshData();
+        m_mesh = BufferMeshData::CreateInstance();
 
 		//for (int x = 0; x < numIndices/3; x++) {
 		//	printf("inds[%d] = %d, %d, %d\n", x,
@@ -411,11 +411,11 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 
 	if ((tetraPoints.size() > 0) && (tetraIndices.size() > 0)) {
 		// @todo
-		m_tetra = new BufferTetraData();
+        m_tetra = BufferTetraData::CreateInstance();
 
 		int numVertices = tetraPoints.size() / 3;
 		int numIndices = tetraIndices.size();
-		m_tetra = new BufferTetraData();
+        m_tetra = BufferTetraData::CreateInstance();
 
 		m_tetra->Create(numVertices, numIndices);
 		Vec3Buffer* pos = m_tetra->Position();
@@ -449,31 +449,31 @@ BufferExtraData* UDMLoader::ExtraData(const char* name) {
 
 	// Create buffer
 	if (m_scalarArrayList.find(name) != m_scalarArrayList.end()) {
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create("float", m_scalarArrayList[name].size());
 		std::copy(m_scalarArrayList[name].begin(), m_scalarArrayList[name].end(), buf->Float()->GetBuffer());
 		m_data[name] = buf;
 		return m_data[name];
 	} else if (m_vec2ArrayList.find(name) != m_vec2ArrayList.end()) {
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create("vec2", m_vec2ArrayList[name].size()/2);
 		std::copy(m_vec2ArrayList[name].begin(), m_vec2ArrayList[name].end(), buf->Vec2()->GetBuffer());
 		m_data[name] = buf;
 		return m_data[name];
 	} else if (m_vec3ArrayList.find(name) != m_vec3ArrayList.end()) {
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create("vec3", m_vec3ArrayList[name].size()/3);
 		std::copy(m_vec3ArrayList[name].begin(), m_vec3ArrayList[name].end(), buf->Vec3()->GetBuffer());
 		m_data[name] = buf;
 		return m_data[name];
 	} else if (m_vec4ArrayList.find(name) != m_vec4ArrayList.end()) {
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create("vec4", m_vec4ArrayList[name].size()/4);
 		std::copy(m_vec4ArrayList[name].begin(), m_vec4ArrayList[name].end(), buf->Vec4()->GetBuffer());
 		m_data[name] = buf;
 		return m_data[name];
 	} else if (m_uintArrayList.find(name) != m_uintArrayList.end()) {
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create("uint", m_uintArrayList[name].size());
 		std::copy(m_uintArrayList[name].begin(), m_uintArrayList[name].end(), buf->Vec4()->GetBuffer());
 		m_data[name] = buf;

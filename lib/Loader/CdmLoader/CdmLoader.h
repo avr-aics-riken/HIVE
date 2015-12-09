@@ -65,7 +65,7 @@ public:
 
     BufferVolumeData *VolumeData();
 private:
-    BufferVolumeData m_volume;
+    RefPtr<BufferVolumeData> m_volume;
     std::vector<unsigned int> m_timeSteps;
 
     double m_globalOffset[3];

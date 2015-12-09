@@ -38,10 +38,10 @@ public:
     }
 
     BufferSparseVolumeData_Lua* LoadField(const char* fieldName, const char* fieldType, int components, int timeStepIndex = 0, int virtualCells=2) {
-		BufferSparseVolumeData* p = HDMLoader::LoadField(fieldName, fieldType, components, timeStepIndex, virtualCells);
+		RefPtr<BufferSparseVolumeData> p = HDMLoader::LoadField(fieldName, fieldType, components, timeStepIndex, virtualCells);
 
 		if (p) {
-			return new BufferSparseVolumeData_Lua(p);
+            return BufferSparseVolumeData_Lua::CreateInstance(p);
 		} else {
 			return NULL;
 		}
