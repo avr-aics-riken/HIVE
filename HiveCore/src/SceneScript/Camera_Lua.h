@@ -5,8 +5,8 @@
 #ifndef _CAMERA_LUA_H_
 #define _CAMERA_LUA_H_
 
+#include "../RenderObject/Camera.h"
 #include "LuaUtil.h"
-#include "Camera.h"
 #include "BufferImageData_Lua.h"
 #include "RenderObject_Lua.h"
 /**

@@ -6,8 +6,8 @@
 #define _VOLUMEMODEL_LUA_H_
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/VolumeModel.h"
 #include "LuaUtil.h"
-#include "VolumeModel.h"
 #include "BufferVolumeData_Lua.h"
 #include "RenderObject_Lua.h"
 /**

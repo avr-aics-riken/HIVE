@@ -7,8 +7,8 @@
 
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/PolygonModel.h"
 #include "LuaUtil.h"
-#include "PolygonModel.h"
 #include "BufferMeshData_Lua.h"
 #include "RenderObject_Lua.h"
 /**

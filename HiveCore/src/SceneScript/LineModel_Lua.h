@@ -6,8 +6,8 @@
 #define _LINEMODEL_LUA_H_
 
 #include "../RenderObject/RenderObject.h"
+#include "../RenderObject/LineModel.h"
 #include "LuaUtil.h"
-#include "LineModel.h"
 #include "BufferLineData_Lua.h"
 #include "RenderObject_Lua.h"
 /**
