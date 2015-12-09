@@ -20,7 +20,7 @@ set(SOURCES
 	LuaEntry.cpp
 )
 
-add_library(Analyzer SHARED ${SOURCES})
+add_library(Analyzer ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(Analyzer hiveCore)
 set_target_properties(Analyzer PROPERTIES PREFIX "")
 

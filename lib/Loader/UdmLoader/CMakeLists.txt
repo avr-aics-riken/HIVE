@@ -28,7 +28,7 @@ set(SOURCES
 	UdmLoader.cpp
 	LuaEntry.cpp
 )
-add_library(UdmLoader SHARED ${SOURCES})
+add_library(UdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(UdmLoader hiveCore)
 target_link_libraries(UdmLoader ${UDMLIB_LIBS})
 set_target_properties(UdmLoader PROPERTIES PREFIX "")

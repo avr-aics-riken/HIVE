@@ -15,7 +15,7 @@ set(SOURCES
 	RawVolumeSaver.cpp
 	LuaEntry.cpp
 )
-add_library(RawVolumeSaver SHARED ${SOURCES})
+add_library(RawVolumeSaver ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(RawVolumeSaver hiveCore)
 set_target_properties(RawVolumeSaver PROPERTIES PREFIX "")
 
