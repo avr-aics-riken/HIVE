@@ -88,14 +88,14 @@ local img = loader:ImageData()
 
 
 -- Generate too big sphere as an environment
-local gen  = require("PrimitiveGenerator")()
+local gen  = PrimitiveGenerator()
 local envmap = gen:Sphere(100000000)
 local pm0 = PointModel();
 pm0:Create(envmap);
 pm0:SetShader("envmap.frag");
 pm0:SetTexture("mytex0", img);
 
-local gen1  = require("PrimitiveGenerator")()
+local gen1  = PrimitiveGenerator()
 local smallsphere = gen1:Sphere(1.0)
 local model0 = PointModel();
 model0:Create(smallsphere)
