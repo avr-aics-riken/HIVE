@@ -23,6 +23,12 @@
 #include "VectorModel_Lua.h"
 #include "TetraModel_Lua.h"
 #include "Camera_Lua.h"
+#include "PrimitiveGenerator_Lua.h"
+#include "ImageLoader_Lua.h"
+#include "ImageSaver_Lua.h"
+#include "GenTexture_Lua.h"
+
+#define CPP_IMPL_INSTANCE
 #include "BufferMeshData_Lua.h"
 #include "BufferLineData_Lua.h"
 #include "BufferVolumeData_Lua.h"
@@ -32,11 +38,7 @@
 #include "BufferImageData_Lua.h"
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
-#include "PrimitiveGenerator_Lua.h"
-#include "ImageLoader_Lua.h"
-#include "ImageSaver_Lua.h"
-#include "GenTexture_Lua.h"
-
+#undef CPP_IMPL_INSTANCE
 
 void RegisterSceneClass(lua_State* L)
 {
@@ -328,71 +330,3 @@ bool SceneScript::Execute(const char* luascript, const std::vector<std::string>&
     
     return true;
 }
-
-//-----------------
-
-// Wrapper createInstance functions
-
-BufferMeshData_Lua* BufferMeshData_Lua::CreateInstance(BufferMeshData* bufferMeshData)
-{
-    if (bufferMeshData) {
-        return new BufferMeshData_Lua(bufferMeshData);
-    } else {
-        return new BufferMeshData_Lua();
-    }
-}
-
-BufferLineData_Lua* BufferLineData_Lua::CreateInstance(BufferLineData* bufferLineData)
-{
-    if (bufferLineData) {
-        return new BufferLineData_Lua(bufferLineData);
-    } else {
-        return new BufferLineData_Lua();
-    }
-}
-
-BufferExtraData_Lua* BufferExtraData_Lua::CreateInstance(BufferExtraData* bufferExtraData)
-{
-    if (bufferExtraData) {
-        return new BufferExtraData_Lua(bufferExtraData);
-    } else {
-        return new BufferExtraData_Lua();
-    }
-}
-
-BufferPointData_Lua* BufferPointData_Lua::CreateInstance(BufferPointData* bufferPointData)
-{
-    if (bufferPointData) {
-        return new BufferPointData_Lua(bufferPointData);
-    } else {
-        return new BufferPointData_Lua();
-    }
-}
-
-BufferTetraData_Lua* BufferTetraData_Lua::CreateInstance(BufferTetraData* bufferTetraData)
-{
-    if (bufferTetraData) {
-        return new BufferTetraData_Lua(bufferTetraData);
-    } else {
-        return new BufferTetraData_Lua();
-    }
-}
-
-BufferVectorData_Lua* BufferVectorData_Lua::CreateInstance(BufferVectorData* bufferVectorData)
-{
-    if (bufferVectorData) {
-        return new BufferVectorData_Lua(bufferVectorData);
-    } else {
-        return new BufferVectorData_Lua();
-    }
-}
-
-BufferVolumeData_Lua* BufferVolumeData_Lua::CreateInstance(BufferVolumeData* bufferVolumeData)
-{
-    if (bufferVolumeData) {
-        return new BufferVolumeData_Lua(bufferVolumeData);
-    } else {
-        return new BufferVolumeData_Lua();
-    }
-}
-
