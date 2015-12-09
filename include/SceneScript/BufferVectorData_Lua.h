@@ -23,5 +23,19 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferVectorData_Lua);
 
+
+#ifdef CPP_IMPL_INSTANCE
+
+BufferVectorData_Lua* BufferVectorData_Lua::CreateInstance(BufferVectorData* bufferVectorData)
+{
+    if (bufferVectorData) {
+        return new BufferVectorData_Lua(bufferVectorData);
+    } else {
+        return new BufferVectorData_Lua();
+    }
+}
+
+#endif
+
 #endif //_BUFFERVECTORDATA_LUA_H_
 
