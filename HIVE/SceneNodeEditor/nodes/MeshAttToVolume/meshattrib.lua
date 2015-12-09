@@ -13,7 +13,7 @@ function MeshAttToVolume(property)
 
 	return {
 		Volume = function ()
-			local ma2vP = MeshAttribToVolume()
+			local ma2vP = require("MeshAttribToVolume")()
 			ma2vP:Create(mesh, extra, minX, minY, minZ, maxX, maxY, maxZ)
 			ma2vP:ToVolume(sizeX, sizeY, sizeZ)
 			local volumedata = ma2vP:VolumeData()
