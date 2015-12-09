@@ -11,7 +11,7 @@
 /// コンストラクタ
 STLLoader::STLLoader()
 {
-	mesh.Clear();
+	mesh->Clear();
 }
 
 /// デストラクタ
@@ -20,7 +20,7 @@ STLLoader::~STLLoader(){};
 /// メンバクリア
 void STLLoader::Clear()
 {
-	mesh.Clear();
+	mesh->Clear();
 }
 
 /**
@@ -34,12 +34,12 @@ bool STLLoader::Load(const char* filename){
 	SimpleSTLB obj;
 	bool r = obj.Load(filename);
 
-    mesh.Create(obj.GetVertexNum(), obj.GetIndexNum());
-    Vec3Buffer* pos = mesh.Position();
-    Vec3Buffer* normal = mesh.Normal();
-    FloatBuffer* mat = mesh.Material();
-    UintBuffer* index = mesh.Index();
-    Vec2Buffer* texcoord = mesh.Texcoord();
+    mesh->Create(obj.GetVertexNum(), obj.GetIndexNum());
+    Vec3Buffer* pos = mesh->Position();
+    Vec3Buffer* normal = mesh->Normal();
+    FloatBuffer* mat = mesh->Material();
+    UintBuffer* index = mesh->Index();
+    Vec2Buffer* texcoord = mesh->Texcoord();
 
 	memcpy(pos->GetBuffer(), obj.GetPositionBuffer(), sizeof(float) * 3 * pos->GetNum());
 	normal->Create(obj.GetVertexNum());
@@ -63,6 +63,6 @@ bool STLLoader::Load(const char* filename){
  */
 BufferMeshData *STLLoader::MeshData()
 {
-	return &mesh;
+	return mesh;
 }
 

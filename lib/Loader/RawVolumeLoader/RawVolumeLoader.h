@@ -32,7 +32,7 @@ public:
 
     BufferVolumeData *VolumeData();
 private:
-    BufferVolumeData m_volume;
+    RefPtr<BufferVolumeData> m_volume;
 };
 
 #endif //_RAWVOLUMELOADER_H_

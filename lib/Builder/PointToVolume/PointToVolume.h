@@ -17,8 +17,8 @@
 class PointToVolume : public RefCount
 {
 private:
-    BufferPointData*  m_point;
-    BufferVolumeData* m_volume;
+    RefPtr<BufferPointData>  m_point;
+    RefPtr<BufferVolumeData> m_volume;
 
 public:
     PointToVolume();

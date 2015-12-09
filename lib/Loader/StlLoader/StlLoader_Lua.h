@@ -25,7 +25,8 @@ public:
     }
 
     BufferMeshData_Lua* MeshData() {
-        return new BufferMeshData_Lua(STLLoader::MeshData());
+        RefPtr<BufferMeshData> mesh = STLLoader::MeshData();
+        return BufferMeshData_Lua::CreateInstance(mesh);
     }
 
     LUA_SCRIPTCLASS_BEGIN(STLLoader_Lua)

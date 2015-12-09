@@ -21,7 +21,7 @@ VOLLoader::~VOLLoader()
 /// メンバクリア
 void VOLLoader::Clear()
 {
-    m_volume.Clear();
+    m_volume->Clear();
 }
 
 /**
@@ -45,8 +45,8 @@ bool VOLLoader::Load(const char* filename)
     const int h = vol.GetDim(1);
     const int d = vol.GetDim(2);
     const int c = vol.GetComponent();
-    m_volume.Create(w, h, d, c);
-    memcpy(m_volume.Buffer()->GetBuffer(), buf, w * h * d * c * sizeof(float));
+    m_volume->Create(w, h, d, c);
+    memcpy(m_volume->Buffer()->GetBuffer(), buf, w * h * d * c * sizeof(float));
     delete [] buf;
 
     return true;
@@ -57,7 +57,7 @@ bool VOLLoader::Load(const char* filename)
  * @retval int Width
  */
 int VOLLoader::Width()    {
-    return m_volume.Width();
+    return m_volume->Width();
 }
 
 /**
@@ -65,7 +65,7 @@ int VOLLoader::Width()    {
  * @retval int Height
  */
 int VOLLoader::Height()   {
-    return m_volume.Height();
+    return m_volume->Height();
 }
 
 /**
@@ -73,7 +73,7 @@ int VOLLoader::Height()   {
  * @retval int Depth
  */
 int VOLLoader::Depth()    {
-    return m_volume.Depth();
+    return m_volume->Depth();
 }
 
 /**
@@ -81,7 +81,7 @@ int VOLLoader::Depth()    {
  * @retval int Component数
  */
 int VOLLoader::Component() {
-    return m_volume.Component();
+    return m_volume->Component();
 }
 
 /**
@@ -89,7 +89,7 @@ int VOLLoader::Component() {
  * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* VOLLoader::Buffer() {
-    return m_volume.Buffer();
+    return m_volume->Buffer();
 }
 
 /**
@@ -98,6 +98,6 @@ FloatBuffer* VOLLoader::Buffer() {
  */
 BufferVolumeData *VOLLoader::VolumeData()
 {
-    return &m_volume;
+    return m_volume;
 }
 

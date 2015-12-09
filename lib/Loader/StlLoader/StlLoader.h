@@ -17,7 +17,7 @@ public:
 	STLLoader();
 	~STLLoader();
 	void Clear();
-	BufferMeshData mesh;
+	RefPtr<BufferMeshData> mesh;
 protected:
 	bool Load(const char* filename);
 	BufferMeshData *MeshData();

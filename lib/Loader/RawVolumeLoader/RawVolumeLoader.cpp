@@ -20,7 +20,7 @@ RawVolumeLoader::~RawVolumeLoader()
 /// メンバクリア
 void RawVolumeLoader::Clear()
 {
-    m_volume.Clear();
+    m_volume->Clear();
 }
 
 /**
@@ -57,8 +57,8 @@ bool RawVolumeLoader::Load(const char* filename, int width, int height, int dept
 
 	size_t len = ((size_t)width) * ((size_t)height) * ((size_t)depth) * ((size_t)components) * pixelDataSize;
     
-    m_volume.Create(width, height, depth, components);
-    size_t n = fread(m_volume.Buffer()->GetBuffer(), 1, len, fp);
+    m_volume->Create(width, height, depth, components);
+    size_t n = fread(m_volume->Buffer()->GetBuffer(), 1, len, fp);
 	fclose(fp);
 	if (n != len) {
         fprintf(stderr,"[RawVolumeLoader] Failed to load raw volume: %llu bytes expected, but %llu bytes read.\n", len, n);
@@ -72,7 +72,7 @@ bool RawVolumeLoader::Load(const char* filename, int width, int height, int dept
  * @retval int Width
  */
 int RawVolumeLoader::Width()    {
-    return m_volume.Width();
+    return m_volume->Width();
 }
 
 /**
@@ -80,7 +80,7 @@ int RawVolumeLoader::Width()    {
  * @retval int Height
  */
 int RawVolumeLoader::Height()   {
-    return m_volume.Height();
+    return m_volume->Height();
 }
 
 /**
@@ -88,7 +88,7 @@ int RawVolumeLoader::Height()   {
  * @retval int Depth
  */
 int RawVolumeLoader::Depth()    {
-    return m_volume.Depth();
+    return m_volume->Depth();
 }
 
 /**
@@ -96,7 +96,7 @@ int RawVolumeLoader::Depth()    {
  * @retval int Component数
  */
 int RawVolumeLoader::Component() {
-    return m_volume.Component();
+    return m_volume->Component();
 }
 
 /**
@@ -104,7 +104,7 @@ int RawVolumeLoader::Component() {
  * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* RawVolumeLoader::Buffer() {
-    return m_volume.Buffer();
+    return m_volume->Buffer();
 }
 
 /**
@@ -113,6 +113,6 @@ FloatBuffer* RawVolumeLoader::Buffer() {
  */
 BufferVolumeData *RawVolumeLoader::VolumeData()
 {
-    return &m_volume;
+    return m_volume;
 }
 

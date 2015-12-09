@@ -42,7 +42,6 @@ inline size_t findLoc(float x, float y, float z, const float bmin[3], const floa
  * @retval false 変換失敗
  */
 bool PointToVolume::ToVolume(int w, int h, int d) {
-    delete m_volume;
 
     m_volume = BufferVolumeData::CreateInstance();
 
