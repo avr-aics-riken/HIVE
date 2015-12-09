@@ -31,15 +31,18 @@ public:
     }
 
     BufferMeshData_Lua* MeshData() {
-        return new BufferMeshData_Lua(UDMLoader::MeshData());
+        RefPtr<BufferMeshData> mesh = UDMLoader::MeshData();
+        return BufferMeshData_Lua::CreateInstance(mesh);
     }
 
     BufferTetraData_Lua* TetraData() {
-        return new BufferTetraData_Lua(UDMLoader::TetraData());
+        RefPtr<BufferTetraData> data = UDMLoader::TetraData();
+        return BufferTetraData_Lua::CreateInstance(data);
     }
 
     BufferExtraData_Lua* ExtraData(const char *name) {
-        return new BufferExtraData_Lua(UDMLoader::ExtraData(name));
+        RefPtr<BufferExtraData> data = UDMLoader::ExtraData(name);
+        return BufferExtraData_Lua::CreateInstance(data);
     }
 
     LUA_SCRIPTCLASS_BEGIN(UDMLoader_Lua)

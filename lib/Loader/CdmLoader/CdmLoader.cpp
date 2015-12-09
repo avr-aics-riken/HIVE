@@ -40,7 +40,7 @@ CDMLoader::~CDMLoader()
 /// ボリュームクリア
 void CDMLoader::Clear()
 {
-    m_volume.Clear();
+    m_volume->Clear();
 }
 
 /**
@@ -325,8 +325,8 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex)
     //
     // Create volume data by stripping virtual cells.
     //
-    m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables, isNonUniform); // @fixme
-    float* dst = m_volume.Buffer()->GetBuffer();
+    m_volume->Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables, isNonUniform); // @fixme
+    float* dst = m_volume->Buffer()->GetBuffer();
 
     size_t sx = GVoxel[0] + virtualCells;
     size_t sy = GVoxel[1] + virtualCells;
@@ -344,9 +344,9 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex)
     }
 
 	if (isNonUniform) {
-		std::copy(coords[0].begin(), coords[0].end(), m_volume.SpacingX()->GetBuffer());
-		std::copy(coords[1].begin(), coords[1].end(), m_volume.SpacingY()->GetBuffer());
-		std::copy(coords[2].begin(), coords[2].end(), m_volume.SpacingZ()->GetBuffer());
+		std::copy(coords[0].begin(), coords[0].end(), m_volume->SpacingX()->GetBuffer());
+		std::copy(coords[1].begin(), coords[1].end(), m_volume->SpacingY()->GetBuffer());
+		std::copy(coords[2].begin(), coords[2].end(), m_volume->SpacingZ()->GetBuffer());
 	}
 
     delete [] d_v;
@@ -362,7 +362,7 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex)
  * @retval int Width
  */
 int CDMLoader::Width()    {
-    return m_volume.Width();
+    return m_volume->Width();
 }
 
 /**
@@ -370,7 +370,7 @@ int CDMLoader::Width()    {
  * @retval int Height
  */
 int CDMLoader::Height()   {
-    return m_volume.Height();
+    return m_volume->Height();
 }
 
 /**
@@ -378,7 +378,7 @@ int CDMLoader::Height()   {
  * @retval int Depth
  */
 int CDMLoader::Depth()    {
-    return m_volume.Depth();
+    return m_volume->Depth();
 }
 
 /**
@@ -386,7 +386,7 @@ int CDMLoader::Depth()    {
  * @retval int Component数
  */
 int CDMLoader::Component() {
-    return m_volume.Component();
+    return m_volume->Component();
 }
 
 /**
@@ -394,7 +394,7 @@ int CDMLoader::Component() {
  * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* CDMLoader::Buffer() {
-    return m_volume.Buffer();
+    return m_volume->Buffer();
 }
 
 /**
@@ -403,6 +403,6 @@ FloatBuffer* CDMLoader::Buffer() {
  */
 BufferVolumeData *CDMLoader::VolumeData()
 {
-    return &m_volume;
+    return m_volume;
 }
 

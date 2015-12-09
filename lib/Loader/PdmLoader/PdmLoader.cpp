@@ -142,7 +142,7 @@ BufferPointData *PDMLoader::PointData(const char* containerName, float radius)
 	printf("[PDMloader] %s : n = %d\n", containerName, n);
 
 	// Alloc
-	BufferPointData* buf = new BufferPointData();
+    BufferPointData* buf = BufferPointData::CreateInstance();
 	buf->Create(n/3);
 	std::copy(points, points + n, buf->Position()->GetBuffer());
 
@@ -191,7 +191,7 @@ BufferExtraData *PDMLoader::ExtraData(const char* containerName)
 		}
 
 		// Alloc
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create(info->type.c_str(), numElems);
 
 		if (info->type == "float") {
@@ -224,7 +224,7 @@ BufferExtraData *PDMLoader::ExtraData(const char* containerName)
 		int numElems = n;
 
 		// Alloc
-		BufferExtraData* buf = new BufferExtraData();
+        BufferExtraData* buf = BufferExtraData::CreateInstance();
 		buf->Create(info->type.c_str(), numElems);
 
 		std::copy(values, values + n, buf->Uint()->GetBuffer());
