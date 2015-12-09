@@ -18,9 +18,9 @@
 class VolumeToMeshData : public RefCount
 {
 private:
-    BufferMeshData*           m_mesh;
+    RefPtr<BufferMeshData>    m_mesh;
     double                    m_isovalue;
-    BufferVolumeData*         m_volume;   // mutable
+    RefPtr<BufferVolumeData>  m_volume;   // mutable
 public:
     VolumeToMeshData();
     int Create(BufferVolumeData *volume);

@@ -117,7 +117,6 @@ inline void findLoc27(size_t locs[27], float x, float y, float z, const float bm
  * @retval false 変換失敗
  */
 bool MeshAttribToVolume::ToVolume(int w, int h, int d) {
-    delete m_volume;
 
     m_volume = BufferVolumeData::CreateInstance();
 

@@ -18,9 +18,9 @@
 class MeshAttribToVolume : public RefCount
 {
 private:
-    BufferMeshData*   m_mesh;
-    BufferExtraData*  m_attrib;
-    BufferVolumeData* m_volume;
+    RefPtr<BufferMeshData>   m_mesh;
+    RefPtr<BufferExtraData>  m_attrib;
+    RefPtr<BufferVolumeData> m_volume;
 
     float             m_bmin[3];
     float             m_bmax[3];
