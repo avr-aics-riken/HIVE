@@ -23,5 +23,19 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferTetraData_Lua);
 
+
+#ifdef CPP_IMPL_INSTANCE
+
+BufferTetraData_Lua* BufferTetraData_Lua::CreateInstance(BufferTetraData* bufferTetraData)
+{
+    if (bufferTetraData) {
+        return new BufferTetraData_Lua(bufferTetraData);
+    } else {
+        return new BufferTetraData_Lua();
+    }
+}
+
+#endif
+
 #endif //_BUFFERTETRADATA_LUA_H_
 

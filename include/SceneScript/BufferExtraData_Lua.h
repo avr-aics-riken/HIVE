@@ -24,5 +24,19 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferExtraData_Lua);
 
+
+#ifdef CPP_IMPL_INSTANCE
+
+BufferExtraData_Lua* BufferExtraData_Lua::CreateInstance(BufferExtraData* bufferExtraData)
+{
+    if (bufferExtraData) {
+        return new BufferExtraData_Lua(bufferExtraData);
+    } else {
+        return new BufferExtraData_Lua();
+    }
+}
+
+#endif
+
 #endif //_BUFFEREXTRADATA_LUA_H_
 

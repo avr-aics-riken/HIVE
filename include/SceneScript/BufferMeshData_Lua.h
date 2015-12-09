@@ -25,5 +25,18 @@ public:
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferMeshData_Lua);
 
 
+#ifdef CPP_IMPL_INSTANCE
+
+BufferMeshData_Lua* BufferMeshData_Lua::CreateInstance(BufferMeshData* bufferMeshData)
+{
+    if (bufferMeshData) {
+        return new BufferMeshData_Lua(bufferMeshData);
+    } else {
+        return new BufferMeshData_Lua();
+    }
+}
+
+#endif
+
 #endif
 

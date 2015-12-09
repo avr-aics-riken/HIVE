@@ -25,5 +25,19 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferImageData_Lua);
 
+
+#ifdef CPP_IMPL_INSTANCE
+
+BufferImageData_Lua* BufferImageData_Lua::CreateInstance(BufferImageData* bufferImageData)
+{
+    if (bufferImageData) {
+        return new BufferImageData_Lua(bufferImageData);
+    } else {
+        return new BufferImageData_Lua();
+    }
+}
+
+#endif
+
 #endif //_BUFFERIMAGEDATA_LUA_H_
 

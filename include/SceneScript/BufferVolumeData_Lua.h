@@ -23,5 +23,20 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferVolumeData_Lua);
 
+
+#ifdef CPP_IMPL_INSTANCE
+
+BufferVolumeData_Lua* BufferVolumeData_Lua::CreateInstance(BufferVolumeData* bufferVolumeData)
+{
+    if (bufferVolumeData) {
+        return new BufferVolumeData_Lua(bufferVolumeData);
+    } else {
+        return new BufferVolumeData_Lua();
+    }
+}
+
+#endif
+
+
 #endif //_BUFFERVOLUMEDATA_LUA_H_
 

@@ -24,5 +24,19 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(BufferPointData_Lua);
 
+
+#ifdef CPP_IMPL_INSTANCE
+
+BufferPointData_Lua* BufferPointData_Lua::CreateInstance(BufferPointData* bufferPointData)
+{
+    if (bufferPointData) {
+        return new BufferPointData_Lua(bufferPointData);
+    } else {
+        return new BufferPointData_Lua();
+    }
+}
+
+#endif
+
 #endif //_BUFFERPOINTDATA_LUA_H_
 
