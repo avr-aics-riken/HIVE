@@ -16,7 +16,7 @@ set(SOURCES
 	SphLoader.cpp
 	LuaEntry.cpp
 )
-add_library(SphLoader SHARED ${SOURCES})
+add_library(SphLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(SphLoader hiveCore)
 set_target_properties(SphLoader PROPERTIES PREFIX "")
  

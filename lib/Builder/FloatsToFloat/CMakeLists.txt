@@ -16,7 +16,7 @@ set(SOURCES
 	FloatsToFloat.cpp
 	LuaEntry.cpp
 )
-add_library(FloatsToFloat SHARED ${SOURCES})
+add_library(FloatsToFloat ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(FloatsToFloat hiveCore)
 set_target_properties(FloatsToFloat PROPERTIES PREFIX "")
 

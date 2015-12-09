@@ -36,7 +36,7 @@ set(SOURCES
 	BcmLoader.cpp
 	LuaEntry.cpp
 )
-add_library(BcmLoader SHARED ${SOURCES})
+add_library(BcmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(BcmLoader hiveCore)
 target_link_libraries(BcmLoader ${BCMTOOLS_LIBS})
 set_target_properties(BcmLoader PROPERTIES PREFIX "")

@@ -18,7 +18,7 @@ set(SOURCES
 	happyhttp.cpp
 	LuaEntry.cpp
 )
-add_library(Network SHARED ${SOURCES})
+add_library(Network ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(Network hiveCore)
 set_target_properties(Network PROPERTIES PREFIX "")
 

@@ -80,6 +80,10 @@ set(LIBS
 )
 link_directories(${LIBS})
 
+IF(BUILD_SHARED_LIBS)
+  SET(HIVE_LIBRARY_TYPE SHARED)
+ENDIF()
+
 add_subdirectory(Analyzer)
 add_subdirectory(Network)
 add_subdirectory(Loader)

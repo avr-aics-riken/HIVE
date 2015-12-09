@@ -30,7 +30,7 @@ set(SOURCES
 	HdmLoader.cpp
 	LuaEntry.cpp
 )
-add_library(HdmLoader SHARED ${SOURCES})
+add_library(HdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(HdmLoader hiveCore)
 target_link_libraries(HdmLoader ${HDMLIB_LIBS})
 set_target_properties(HdmLoader PROPERTIES PREFIX "")

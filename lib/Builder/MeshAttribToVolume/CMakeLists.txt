@@ -16,7 +16,7 @@ set(SOURCES
 	LuaEntry.cpp
 )
 
-add_library(MeshAttribToVolume SHARED ${SOURCES})
+add_library(MeshAttribToVolume ${HIVE_LIBRARY_TYPE} ${SOURCES})
 
 target_link_libraries(MeshAttribToVolume hiveCore)
 set_target_properties(MeshAttribToVolume PROPERTIES PREFIX "")

@@ -36,7 +36,7 @@ set(SOURCES
 	CdmLoader.cpp
 	LuaEntry.cpp
 )
-add_library(CdmLoader SHARED ${SOURCES})
+add_library(CdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(CdmLoader hiveCore)
 target_link_libraries(CdmLoader ${CDMLIB_LIBS})
 set_target_properties(CdmLoader PROPERTIES PREFIX "")

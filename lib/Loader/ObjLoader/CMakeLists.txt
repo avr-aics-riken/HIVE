@@ -15,7 +15,7 @@ set(SOURCES
 	ObjLoader.cpp
 	LuaEntry.cpp
 )
-add_library(ObjLoader SHARED ${SOURCES})
+add_library(ObjLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(ObjLoader hiveCore)
 set_target_properties(ObjLoader PROPERTIES PREFIX "")
  
