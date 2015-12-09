@@ -20,7 +20,7 @@ class BufferImageData;
 class RenderCore
 {
 public:
-    static RenderCore* GetInstance();
+    static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
     static void Finalize();
     
     void AddRenderObject(RenderObject* robj);
@@ -37,12 +37,10 @@ public:
 
     bool CreateProgramSrc(const char* src, unsigned int& prog);
     
-    
-    
     void SetProgressCallback(bool (*func)(double));
 
 private:
-    RenderCore();
+    RenderCore(RENDER_MODE mode);
     ~RenderCore();
 
     class Impl;

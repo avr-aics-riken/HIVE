@@ -10,5 +10,5 @@
 
 enum RENDER_MODE{
     RENDER_OPENGL = 0,
-    RENDER_LSGL = 1
+    RENDER_SURFACE = 1
 };

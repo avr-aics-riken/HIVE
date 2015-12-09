@@ -81,6 +81,10 @@ void SetScreenParallel_SGL(bool enable, bool mergeEnable);
 
 void Finish_SGL();
 
+#ifdef HIVE_BUILD_WITH_OPENGL
+#define USE_OPENGL
+#endif
+
 #ifndef USE_OPENGL
 #define BLANKFUNC {}
 #define BLANKFUNC_BOOL {return false;}

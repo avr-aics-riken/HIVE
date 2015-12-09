@@ -193,6 +193,18 @@ static bool progressCallback(double val)
     return true; // true:continue, false: exit
 }
 
+int renderMode(lua_State* L)
+{
+    if (lua_isstring(L, -1)) {
+        std::string modestr(lua_tostring(L, -1));
+        if (modestr == std::string("OpenGL")) {
+            RenderCore::GetInstance(RENDER_OPENGL);
+        } else if (modestr == std::string("Surface")) {
+            RenderCore::GetInstance(RENDER_SURFACE);
+        }
+    }
+}
+
 int render(lua_State* L)
 {
     const int stnum = lua_gettop(L);
@@ -257,7 +269,8 @@ void registerFuncs(lua_State* L)
 {
     SetFunction(L, "render", render);
     SetFunction(L, "clearCache", clearCache);
-
+    SetFunction(L, "renderMode", renderMode);
+    
     SetFunction(L, "mpiMode", mpiMode);
     SetFunction(L, "mpiRank", mpiRank);
     SetFunction(L, "mpiSize", mpiSize);
@@ -310,8 +323,11 @@ bool SceneScript::ExecuteFile(const char* scenefile, const std::vector<std::stri
 
 bool SceneScript::Execute(const char* luascript, const std::vector<std::string>& sceneargs)
 {
-    RenderCore::GetInstance();
-    
+    for (size_t i = 0; i < sceneargs.size(); ++i) {
+        if (sceneargs[i] == "--opengl") {
+            RenderCore::GetInstance(RENDER_OPENGL); // Switch OpenGL mode
+        }
+    }
     lua_State* L = createLua();
     registerFuncs(L);
     

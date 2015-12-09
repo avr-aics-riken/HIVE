@@ -145,7 +145,6 @@ bool SparseVolumeBuffer::Create(const SparseVolumeModel* model)
     r &= loadShaderSrc(shadername.c_str());
     if (!r) {
         fprintf(stderr,"[Error]Not set shader\n");
-        return false;
     }
 
     // make VolumeData

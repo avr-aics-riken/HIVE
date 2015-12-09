@@ -70,6 +70,9 @@ void CreateBuffer_GL(int w, int h, unsigned int& framebuffer, unsigned int& colo
     }
     g.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer);
     
+    g.Enable(GL_DEPTH_TEST);
+    g.Enable(GL_BLEND);
+    g.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     g.Viewport(0, 0, w, h);
 }
 
