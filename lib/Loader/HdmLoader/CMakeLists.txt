@@ -3,10 +3,6 @@ IF(HIVE_BUILD_WITH_HDMLIB)
 SET(HIVE_BUILD_WITH_BCMTOOLS On)
 add_definitions(-DHIVE_WITH_HDMLIB)
 
-  SET(HDMLIB_SOURCES
-    HdmLoader.cpp
-  )
-
   SET(HDMLIB_LIBS
     HDM TPmpi
   )
