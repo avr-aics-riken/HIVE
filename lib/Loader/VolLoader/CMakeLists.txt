@@ -16,7 +16,7 @@ set(SOURCES
 	VolLoader.cpp
 	LuaEntry.cpp
 )
-add_library(VolLoader SHARED ${SOURCES})
+add_library(VolLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(VolLoader hiveCore)
 set_target_properties(VolLoader PROPERTIES PREFIX "")
  

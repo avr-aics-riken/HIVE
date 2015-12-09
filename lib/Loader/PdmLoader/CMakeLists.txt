@@ -32,7 +32,7 @@ set(SOURCES
 	PdmLoader.cpp
 	LuaEntry.cpp
 )
-add_library(PdmLoader SHARED ${SOURCES})
+add_library(PdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(PdmLoader hiveCore)
 target_link_libraries(PdmLoader ${PMDLIB_LIBS})
 set_target_properties(PdmLoader PROPERTIES PREFIX "")

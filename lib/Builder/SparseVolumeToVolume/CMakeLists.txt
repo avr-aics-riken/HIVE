@@ -16,7 +16,7 @@ set(SOURCES
 	SparseVolumeToVolume.cpp
 	LuaEntry.cpp
 )
-add_library(SparseVolumeToVolume SHARED ${SOURCES})
+add_library(SparseVolumeToVolume ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(SparseVolumeToVolume hiveCore)
 set_target_properties(SparseVolumeToVolume PROPERTIES PREFIX "")
 

@@ -17,7 +17,7 @@ set(SOURCES
 	tiny_pdb.cpp
 	LuaEntry.cpp
 )
-add_library(PdbLoader SHARED ${SOURCES})
+add_library(PdbLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(PdbLoader hiveCore)
 set_target_properties(PdbLoader PROPERTIES PREFIX "")
  

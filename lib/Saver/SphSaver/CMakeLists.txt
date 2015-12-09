@@ -16,7 +16,7 @@ set(SOURCES
 	SphSaver.cpp
 	LuaEntry.cpp
 )
-add_library(SphSaver SHARED ${SOURCES})
+add_library(SphSaver ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(SphSaver hiveCore)
 set_target_properties(SphSaver PROPERTIES PREFIX "")
 

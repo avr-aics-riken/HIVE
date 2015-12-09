@@ -15,7 +15,7 @@ set(SOURCES
 	VolumeToVector.cpp
 	LuaEntry.cpp
 )
-add_library(VolumeToVector SHARED ${SOURCES})
+add_library(VolumeToVector ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(VolumeToVector hiveCore)
 set_target_properties(VolumeToVector PROPERTIES PREFIX "")
 

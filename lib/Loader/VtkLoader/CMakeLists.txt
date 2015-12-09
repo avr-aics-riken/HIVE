@@ -17,7 +17,7 @@ set(SOURCES
 	LuaEntry.cpp
 	tiny_vtkxml.cpp
 )
-add_library(VtkLoader SHARED ${SOURCES})
+add_library(VtkLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(VtkLoader hiveCore)
 set_target_properties(VtkLoader PROPERTIES PREFIX "")
  
