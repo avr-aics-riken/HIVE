@@ -144,6 +144,12 @@ set(INCLUDES
 	${CMAKE_SOURCE_DIR}/include/Core
 	${CMAKE_SOURCE_DIR}/include/Image
 	${CMAKE_SOURCE_DIR}/include/Generator
+	${CMAKE_SOURCE_DIR}/HiveCore/src/Buffer
+	${CMAKE_SOURCE_DIR}/HiveCore/src/RenderObject
+	${CMAKE_SOURCE_DIR}/HiveCore/src/SceneScript
+	${CMAKE_SOURCE_DIR}/HiveCore/src/Core
+	${CMAKE_SOURCE_DIR}/HiveCore/src/Image
+	${CMAKE_SOURCE_DIR}/HiveCore/src/Generator
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
