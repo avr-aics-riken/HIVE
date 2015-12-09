@@ -40,7 +40,7 @@ local table_ID0_grid = {
 }
 
 local model_ID0_grid = LineModel()
-local pgen_ID0_grid = require("PrimitiveGenerator")()
+local pgen_ID0_grid = PrimitiveGenerator()
 model_ID0_grid:Create(pgen_ID0_grid:LineList(table_ID0_grid, (#table_ID0_grid) / 3, 1) )
 model_ID0_grid:SetScale(
 1, 1, 1
@@ -406,7 +406,7 @@ local table_ID2_G0_G1_G6_Point = {
 }
 
 local model_ID2_G0_G1_G6_Point = PointModel()
-local pgen_ID2_G0_G1_G6_Point = require("PrimitiveGenerator")()
+local pgen_ID2_G0_G1_G6_Point = PrimitiveGenerator()
 model_ID2_G0_G1_G6_Point:Create(pgen_ID2_G0_G1_G6_Point:PointList(table_ID2_G0_G1_G6_Point, (#table_ID2_G0_G1_G6_Point) / 3, 3) )
 model_ID2_G0_G1_G6_Point:SetScale(
 1, 1, 1
@@ -772,7 +772,7 @@ local table_ID3_G0_G1_G6_Line = {
 }
 
 local model_ID3_G0_G1_G6_Line = LineModel()
-local pgen_ID3_G0_G1_G6_Line = require("PrimitiveGenerator")()
+local pgen_ID3_G0_G1_G6_Line = PrimitiveGenerator()
 model_ID3_G0_G1_G6_Line:Create(pgen_ID3_G0_G1_G6_Line:LineList(table_ID3_G0_G1_G6_Line, (#table_ID3_G0_G1_G6_Line) / 3, 1) )
 model_ID3_G0_G1_G6_Line:SetScale(
 1, 1, 1

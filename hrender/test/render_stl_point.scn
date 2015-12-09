@@ -12,7 +12,7 @@ camera:LookAt(
 	60
 )
 
-local gen  = require("PrimitiveGenerator")()
+local gen  = PrimitiveGenerator()
 local ppp = gen:Sphere(100)
 --local pm = PointModel();
 local pm = PolygonModel();

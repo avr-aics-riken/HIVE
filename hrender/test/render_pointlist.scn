@@ -33,7 +33,7 @@ for j = 1, maxnum do
 end
 
 --Create Point List
-local gen   = require("PrimitiveGenerator")()
+local gen   = PrimitiveGenerator()
 local pl    = gen:PointList(ptable, maxnum, 3.5)
 local model = PointModel()
 

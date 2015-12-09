@@ -11,7 +11,7 @@ camera:LookAt(
 	60
 )
 
-local gen = require("PrimitiveGenerator")()
+local gen = PrimitiveGenerator()
 
 local model = PolygonModel()
 local meshdata = gen:Teapot(3.0)
