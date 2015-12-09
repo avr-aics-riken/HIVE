@@ -48,7 +48,7 @@ BufferVolumeData* FloatsToFloat::VolumeData()
         ofs = component - 1;
     }
    
-    BufferVolumeData* volume = new BufferVolumeData();
+    BufferVolumeData* volume = BufferVolumeData::CreateInstance();
     const int w = m_volume->Width();
     const int h = m_volume->Height();
     const int d = m_volume->Depth();

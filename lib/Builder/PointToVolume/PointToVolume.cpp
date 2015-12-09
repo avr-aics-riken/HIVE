@@ -44,7 +44,7 @@ inline size_t findLoc(float x, float y, float z, const float bmin[3], const floa
 bool PointToVolume::ToVolume(int w, int h, int d) {
     delete m_volume;
 
-    m_volume = new BufferVolumeData();
+    m_volume = BufferVolumeData::CreateInstance();
 
     int c = 1; // Store scalar density.
     m_volume->Create(w, h, d, c);

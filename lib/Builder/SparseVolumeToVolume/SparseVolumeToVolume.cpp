@@ -9,7 +9,7 @@
 
 /// コンストラクタ
 SparseVolumeToVolume::SparseVolumeToVolume(){
-    m_volume      = new BufferVolumeData();
+    m_volume      = BufferVolumeData::CreateInstance();
 }
 
 

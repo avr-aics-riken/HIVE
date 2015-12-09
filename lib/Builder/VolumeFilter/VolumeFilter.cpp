@@ -93,7 +93,7 @@ int VolumeFilter::Laplacian(BufferVolumeData *volume) {
 	// Assume float data
 	const float* src = volume->Buffer()->GetBuffer();
 
-	m_filteredVolume = new BufferVolumeData();
+	m_filteredVolume = BufferVolumeData::CreateInstance();
 	m_filteredVolume->Create(width, height, depth, 1); // scalar volume
 	float* dst = m_filteredVolume->Buffer()->GetBuffer();
 
@@ -147,7 +147,7 @@ int VolumeFilter::Norm(BufferVolumeData *volume) {
 	// Assume float data
 	const float* src = volume->Buffer()->GetBuffer();
 
-	m_filteredVolume = new BufferVolumeData();
+	m_filteredVolume = BufferVolumeData::CreateInstance();
 	m_filteredVolume->Create(width, height, depth, 1); // scalar volume
 	float* dst = m_filteredVolume->Buffer()->GetBuffer();
 
@@ -269,7 +269,7 @@ int VolumeFilter::Expr(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
         info.src3 = volume3->Buffer()->GetBuffer();
     }
 
-	m_filteredVolume = new BufferVolumeData();
+	m_filteredVolume = BufferVolumeData::CreateInstance();
 	m_filteredVolume->Create(info.width, info.height, info.depth, targetNumberOfComponents);
 	float* dst = m_filteredVolume->Buffer()->GetBuffer();
     info.dst = dst;
