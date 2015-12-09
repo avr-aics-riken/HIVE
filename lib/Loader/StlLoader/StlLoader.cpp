@@ -11,6 +11,7 @@
 /// コンストラクタ
 STLLoader::STLLoader()
 {
+    mesh = BufferMeshData::CreateInstance();
 	mesh->Clear();
 }
 

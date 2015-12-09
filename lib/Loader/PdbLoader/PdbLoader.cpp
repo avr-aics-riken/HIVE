@@ -8,7 +8,11 @@
 #include <cstring>
 
 /// コンストラクタ
-PDBLoader::PDBLoader(){}
+PDBLoader::PDBLoader(){
+    ball = BufferPointData::CreateInstance();
+    stick = BufferLineData::CreateInstance();
+    Clear();
+}
 
 /// デストラクタ
 PDBLoader::~PDBLoader(){};

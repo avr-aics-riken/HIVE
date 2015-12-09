@@ -9,6 +9,7 @@
 /// コンストラクタ
 RawVolumeLoader::RawVolumeLoader()
 {
+    m_volume = BufferVolumeData::CreateInstance();
     Clear();
 }
 /// デストラクタ
