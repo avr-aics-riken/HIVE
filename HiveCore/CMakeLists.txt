@@ -143,6 +143,7 @@ set(INCLUDES
 	${CMAKE_SOURCE_DIR}/include/SceneScript
 	${CMAKE_SOURCE_DIR}/include/Core
 	${CMAKE_SOURCE_DIR}/include/Image
+	${CMAKE_SOURCE_DIR}/include/Generator
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
@@ -198,6 +199,7 @@ set(HIVECORE_SOURCES
   src/Image/ImageLoader.cpp
   src/Image/GenTexture.cpp
   src/Image/ImageSaver.cpp
+  src/Generator/PrimitiveGenerator.cpp
 )
 
 IF(HIVE_BUILD_WITH_OPENGL)
