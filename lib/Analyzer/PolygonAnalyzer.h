@@ -7,7 +7,8 @@
 #define _POLYGONANALYZER_H_
 
 #include "Ref.h"
-#include "PolygonModel.h"
+//#include "PolygonModel.h"
+class PolygonModel;
 
 /**
  * ポリゴンデータ解析クラス

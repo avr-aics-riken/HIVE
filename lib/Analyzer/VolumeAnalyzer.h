@@ -7,7 +7,8 @@
 
 #include <vector>
 #include "Ref.h"
-#include "VolumeModel.h"
+//#include "VolumeModel.h"
+class VolumeModel;
 
 /**
  * ボリュームデータ解析クラス
