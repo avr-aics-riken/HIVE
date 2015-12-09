@@ -13,7 +13,8 @@
 class SceneScript
 {
 public:
-    bool Execute(const char* scenefile, const std::vector<std::string>& sceneargs);
+    bool Execute(const char* luascript, const std::vector<std::string>& sceneargs);
+    bool ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs);
     
 };
 
