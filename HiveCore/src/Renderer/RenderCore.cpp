@@ -171,7 +171,7 @@ public:
     /// コンストラクタ
     Impl()
     {
-        m_mode   = RENDER_LSGL;// RENDER_OPENGL;
+        m_mode   = RENDER_LSGL;
         m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
         m_gs_depthbuffer = 0;
         m_gs_colorbuffer = 0;
@@ -181,15 +181,19 @@ public:
         m_oldCallbackTime  = 0.0;
         m_progressCallback = defaultProgressCallbackFunc;
         
-        if (m_mode == RENDER_LSGL) {
+        
 #ifndef USE_GLSL_CONFIG
-            LSGL_CompilerSetting();
+        LSGL_CompilerSetting();
 #endif
-            SetCallback_SGL(Impl::progressCallbackFunc_, this);
-        } else {
+        SetCallback_SGL(Impl::progressCallbackFunc_, this);
+        
+        
+        if (m_mode == RENDER_OPENGL) {
 #ifdef HIVE_BUILD_WITH_OPENGL
             GLDevice* dev = CreateGLDeviceInstance();
             dev->Init(256, 256, 32, 16, true);
+#else
+            printf("[Error] Not Support OpenGL mode\n");
 #endif
         }
         

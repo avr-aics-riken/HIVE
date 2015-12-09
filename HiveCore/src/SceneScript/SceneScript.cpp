@@ -280,16 +280,16 @@ void registerArg(lua_State* L, const std::vector<std::string>& sceneargs)
     //dumpStack(L);
 }
 
-bool SceneScript::Execute(const char* scenefile, const std::vector<std::string>& sceneargs)
-{
-    RenderCore::GetInstance();
 
+bool SceneScript::ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs)
+{
+    
     printf("Execute Scene file:%s\n", scenefile);
     
     FILE* fp = fopen(scenefile, "rb");
     if (!fp)
         return false;
-    
+
     fseek(fp, 0, SEEK_END);
     const int scriptsize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
@@ -297,6 +297,17 @@ bool SceneScript::Execute(const char* scenefile, const std::vector<std::string>&
     char* luascript = new char[scriptsize + 1];
     fread(luascript, scriptsize, 1, fp);
     luascript[scriptsize] = 0; // END
+
+    bool r = Execute(luascript, sceneargs);
+    
+    delete [] luascript;
+    
+    return r;
+}
+
+bool SceneScript::Execute(const char* luascript, const std::vector<std::string>& sceneargs)
+{
+    RenderCore::GetInstance();
     
     lua_State* L = createLua();
     registerFuncs(L);
@@ -312,7 +323,6 @@ bool SceneScript::Execute(const char* scenefile, const std::vector<std::string>&
     doLua(L, luascript);
     closeLua(L);
     
-    delete [] luascript;
     
     RenderCore::Finalize();
     

@@ -40,7 +40,7 @@ void renderScene(const char* scenefile, const std::vector<std::string>& scenearg
     changeFileDir(scenefullfile);
     
     SceneScript script;
-    if (!script.Execute(scenefullfile.c_str(), sceneargs)) {
+    if (!script.ExecuteFile(scenefullfile.c_str(), sceneargs)) {
         fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
     }
 }
