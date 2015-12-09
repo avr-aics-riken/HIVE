@@ -14,20 +14,6 @@
 
 #include "../Renderer/RenderCore.h"
 
-// --- Script Classes ----
-#include "PolygonModel_Lua.h"
-#include "VolumeModel_Lua.h"
-#include "SparseVolumeModel_Lua.h"
-#include "PointModel_Lua.h"
-#include "LineModel_Lua.h"
-#include "VectorModel_Lua.h"
-#include "TetraModel_Lua.h"
-#include "Camera_Lua.h"
-#include "PrimitiveGenerator_Lua.h"
-#include "ImageLoader_Lua.h"
-#include "ImageSaver_Lua.h"
-#include "GenTexture_Lua.h"
-
 #define CPP_IMPL_INSTANCE
 #include "BufferMeshData_Lua.h"
 #include "BufferLineData_Lua.h"
@@ -38,7 +24,22 @@
 #include "BufferImageData_Lua.h"
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
+#include "BufferExtraData_Lua.h"
 #undef CPP_IMPL_INSTANCE
+
+// --- Script Classes ----
+#include "PolygonModel_Lua.h"
+#include "VolumeModel_Lua.h"
+#include "SparseVolumeModel_Lua.h"
+#include "PointModel_Lua.h"
+#include "LineModel_Lua.h"
+#include "VectorModel_Lua.h"
+#include "TetraModel_Lua.h"
+#include "Camera_Lua.h"
+#include "ImageLoader_Lua.h"
+#include "ImageSaver_Lua.h"
+#include "GenTexture_Lua.h"
+#include "PrimitiveGenerator_Lua.h"
 
 void RegisterSceneClass(lua_State* L)
 {
