@@ -387,4 +387,12 @@ BufferVectorData_Lua* BufferVectorData_Lua::CreateInstance(BufferVectorData* buf
     }
 }
 
+BufferVolumeData_Lua* BufferVolumeData_Lua::CreateInstance(BufferVolumeData* bufferVolumeData)
+{
+    if (bufferVolumeData) {
+        return new BufferVolumeData_Lua(bufferVolumeData);
+    } else {
+        return new BufferVolumeData_Lua();
+    }
+}
 

@@ -21,6 +21,7 @@ local meshdata = stl:MeshData()
 model:Create(meshdata)
 model:SetShader('white.frag')
 
+--[[
 local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
@@ -29,6 +30,7 @@ print(analy:MinY())
 print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
+]]--
 
 
 render {camera, model}
