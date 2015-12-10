@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdio.h>
 
 namespace
 {
@@ -7,7 +8,7 @@ namespace
 		if (extensions){
 			char *str = (char *)extensions;
 			int len = static_cast<int>(strlen(extension));
-			
+
 			while ((str = strstr(str, extension)) != NULL) {
 				str += len;
 				if (*str == ' ' || *str == '\0') {
@@ -17,7 +18,7 @@ namespace
 		}
 		return false;
 	}
-	
+
 };// namespace
 
 
@@ -27,15 +28,15 @@ namespace
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <GL/wglext.h>
-	
+
 extern "C"
 {
-// OpenGLägí£ñΩóﬂÇÃí«â¡ï˚ñ@ (WindowsÇÃèÍçá)
-// GLDeviceExtention.cpp Ç…ä÷êîÉ|ÉCÉìÉ^Çí«â¡
-// InitGLExtention() Ç≈ä÷êîÉ|ÉCÉìÉ^ÇéÊìæ
-// GLDeviceExtention.h Ç…externêÈåæÇí«â¡
+// OpenGLÊã°ÂºµÂëΩ‰ª§„ÅÆËøΩÂä†ÊñπÊ≥ï (Windows„ÅÆÂ†¥Âêà)
+// GLDeviceExtention.cpp „Å´Èñ¢Êï∞„Éù„Ç§„É≥„Çø„ÇíËøΩÂä†
+// InitGLExtention() „ÅßÈñ¢Êï∞„Éù„Ç§„É≥„Çø„ÇíÂèñÂæó
+// GLDeviceExtention.h „Å´externÂÆ£Ë®Ä„ÇíËøΩÂä†
 
-// Ç±Ç±Ç…ïKóvÇ»ägí£ñΩóﬂÇãLèqÇ∑ÇÈ
+// „Åì„Åì„Å´ÂøÖË¶Å„Å™Êã°ÂºµÂëΩ‰ª§„ÇíË®òËø∞„Åô„Çã
 PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB = 0;
 PFNWGLCREATEPBUFFERARBPROC wglCreatePbufferARB = 0;
 PFNWGLGETPBUFFERDCARBPROC wglGetPbufferDCARB = 0;
@@ -66,7 +67,7 @@ PFNGLMAPBUFFERARBPROC glMapBufferARB = 0;                       // map VBO proce
 PFNGLUNMAPBUFFERARBPROC glUnmapBufferARB = 0;                   // unmap VBO procedure
 
 PFNGLCREATESHADERPROC glCreateShader = 0;
-PFNGLSHADERSOURCEPROC glShaderSource = 0; 
+PFNGLSHADERSOURCEPROC glShaderSource = 0;
 PFNGLCOMPILESHADERPROC glCompileShader = 0;
 PFNGLGETSHADERIVPROC glGetShaderiv = 0;
 PFNGLDELETESHADERPROC glDeleteShader = 0;
@@ -112,7 +113,7 @@ PFNGLPROGRAMPARAMETERIEXTPROC glProgramParameteri = 0;
 
 namespace
 {
-	
+
 bool extensionSupported(const char *extension)
 {
 	const char* ext = (const char *)::glGetString(GL_EXTENSIONS);
@@ -142,19 +143,25 @@ bool extensionSupported(const char *extension)
 
 bool InitGLExtention()
 {
-	// Ç±Ç±Ç≈ïKóvÇ»GL Extentionä÷êîÉ|ÉCÉìÉ^ÇéÊìæÇ∑ÇÈ
-	if (!extensionSupported("GL_ARB_multitexture"))
+	// „Åì„Åì„ÅßÂøÖË¶Å„Å™GL ExtentionÈñ¢Êï∞„Éù„Ç§„É≥„Çø„ÇíÂèñÂæó„Åô„Çã
+	if (!extensionSupported("GL_ARB_multitexture")) {
+		printf("Not found GL_ARB_multitexture\n");
 		return false;
+	}
 	else
 	{
 		glActiveTexture = (PFNGLACTIVETEXTUREPROC)::wglGetProcAddress("glActiveTexture");
 	}
 
-	if (!extensionSupported("GL_ARB_texture_non_power_of_two"))
+	if (!extensionSupported("GL_ARB_texture_non_power_of_two")) {
+		printf("Not found GL_ARB_texture_non_power_of_two\n");
 		return false;
+	}
 
-	if (!extensionSupported("WGL_ARB_pbuffer"))
+	if (!extensionSupported("WGL_ARB_pbuffer")) {
+		printf("Not found WGL_ARB_pbuffer\n");
 		return false;
+	}
 	else
 	{
 		wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)::wglGetProcAddress("wglCreatePbufferARB");
@@ -164,9 +171,11 @@ bool InitGLExtention()
 		wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)::wglGetProcAddress("wglQueryPbufferARB");
 		wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)::wglGetProcAddress("wglGetPixelFormatAttribivARB");
 	}
-	
-	if (!extensionSupported("GL_EXT_framebuffer_object"))
+
+	if (!extensionSupported("GL_EXT_framebuffer_object")) {
+		printf("Not found GL_EXT_framebuffer_object\n");
 		return false;
+	}
 	else
 	{
 		glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
@@ -182,8 +191,10 @@ bool InitGLExtention()
 	}
 
 	// check PBO is supported by your video card
-    if (!extensionSupported("GL_ARB_pixel_buffer_object"))
+    if (!extensionSupported("GL_ARB_pixel_buffer_object")) {
+		printf("Not found GL_ARB_pixel_buffer_object");
 		return false;
+	}
 	else
 	{
 		// get pointers to GL functions
@@ -197,8 +208,10 @@ bool InitGLExtention()
 		glUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)wglGetProcAddress("glUnmapBufferARB");
     }
 
-	if (!extensionSupported("GL_ARB_shader_objects"))
+	if (!extensionSupported("GL_ARB_shader_objects")) {
+		printf("Not found GL_ARB_shader_objects");
 		return false;
+	}
 	else
 	{
 		glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
@@ -253,44 +266,71 @@ bool InitGLExtention()
 
 #if defined(__APPLE__) || defined(MACOSX)
 // MacOSX
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+	#include <OpenGL/OpenGL.h>
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+	namespace
+	{
+		bool extensionSupported(const char *extension)
+		{
+			const char* ext = (const char *)glGetString(GL_EXTENSIONS);
+			bool r = serchExtention(ext, extension);
+			return r;
+		}
+	} //namespace
 #else
 // Linux
-#ifdef USE_OSMesa
-#include <GL/osmesa.h>
-#else
-#include <GL/gl.h>
+	#ifdef USE_OSMesa
+	#include <GL/osmesa.h>
+	#else
+	#include <GL/gl.h>
+	#endif
+	#define GL_GLEXT_PROTOTYPES
+	#include <GL/glext.h>
+	#include <GL/glx.h>
+	namespace
+	{
+		PFNGLGETSTRINGIPROC glGetStringi = 0;
+		inline bool extensionSupported(const char *extension)
+		{
+			glGetStringi = (PFNGLGETSTRINGIPROC)glXGetProcAddress((const GLubyte*)"glGetStringi");
+			bool r = false;
+			GLint n = 30000; // because glGetIntegerv(GL_NUM_EXTENSIONS, &n); returns bad value by LSGL
+			for (GLint i = 0; i < n; ++i) {
+				const char* exti = (const char*)glGetStringi(GL_EXTENSIONS, (GLuint)i);
+				if (serchExtention(exti, extension)) {
+					r = true;
+					break;
+				}
+			}
+			return r;
+		}
+	} //namespace
 #endif
-#include <GL/glext.h>
-#endif
-namespace
-{
-
-bool extensionSupported(const char *extension)
-{
-	const char* ext = (const char *)glGetString(GL_EXTENSIONS);
-	bool r = serchExtention(ext, extension);
-	
-	return r;
-}
-	
-}; // namespace
 
 bool InitGLExtention()
 {
-	if (!extensionSupported("GL_ARB_multitexture"))
+	if (!extensionSupported("GL_ARB_multitexture")) {
+		printf("Not found GL_ARB_multitexture\n");
 		return false;
-	if (!extensionSupported("GL_ARB_texture_non_power_of_two"))
+	}
+	if (!extensionSupported("GL_ARB_texture_non_power_of_two")) {
+		printf("Not found GL_ARB_texture_non_power_of_two\n");
 		return false;
-	if (!extensionSupported("GL_EXT_framebuffer_object"))
+	}
+	if (!extensionSupported("GL_EXT_framebuffer_object")) {
+		printf("Not found GL_EXT_framebuffer_object\n");
 		return false;
-    if (!extensionSupported("GL_ARB_pixel_buffer_object"))
+	}
+	if (!extensionSupported("GL_ARB_pixel_buffer_object")) {
+		printf("Not found GL_ARB_pixel_buffer_object\n");
 		return false;
-	if (!extensionSupported("GL_ARB_shader_objects"))
+	}
+	if (!extensionSupported("GL_ARB_shader_objects")) {
+		printf("Not found GL_ARB_shader_objects\n");
 		return false;
-	
+	}
+
 	return true;
 }
 
