@@ -11,3 +11,4 @@ third_party/zoltan_distrib_v3.81.tar.gz
 HIVE/SceneNodeEditor/node_modules
 HIVE/HIVE_UI/node_modules
 HIVE/glsl
+tools/electronviewer/node_modules
