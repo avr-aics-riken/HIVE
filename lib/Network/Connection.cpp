@@ -11,6 +11,9 @@
 #include "happyhttp.h"
 #include "easywsclient.hpp"
 
+#include "nn.hpp"
+#include <nanomsg/pair.h>
+
 #include "Connection.h"
 #include <queue>
 
@@ -127,6 +130,7 @@ public:
     {
         m_connection = NULL;
         m_ws = NULL;
+        m_nn = NULL;
         m_timeout = 1000;
 #ifndef SINGLE_THREAD_RECV
         m_wsrecvthread = NULL;
@@ -143,6 +147,8 @@ public:
         m_connection = NULL;
         delete m_ws;
         m_ws = NULL;
+        delete m_nn;
+        m_nn = NULL;
     }
 
     bool Connect(const std::string& url)
@@ -157,6 +163,8 @@ public:
             return connectHTTP(url);
         } else if (url.find("ws://") != std::string::npos) {
             return connectWS(url);
+        } else {
+            return connectNN(url);
         }
         return false;
     }
@@ -184,6 +192,11 @@ public:
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Leave();
 #endif
+            return true;
+        } else if (m_nn) {
+            const unsigned char* body = reinterpret_cast<const unsigned char*>(text.c_str());
+            const int size = static_cast<int>(text.size());
+            m_nn->send(body, size, 0);
             return true;
         }
         return false;
@@ -213,6 +226,11 @@ public:
             g_wsclientCS.Leave();
 #endif
             return true;
+        } else if (m_nn) {
+            const unsigned char* body = reinterpret_cast<const unsigned char*>(json.c_str());
+            const int size = static_cast<int>(json.size());
+            m_nn->send(body, size, 0);
+            return true;
         }
         return false;
     }
@@ -240,6 +258,9 @@ public:
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Leave();
 #endif
+            return true;
+        } else if (m_nn) {
+            m_nn->send(binary, size, 0);
             return true;
         }
         return false;
@@ -294,9 +315,14 @@ public:
 #endif
             delete [] buffer;
             return true;
+        } else if (m_nn) {
+            m_nn->send(buffer, fsize, 0);
+            delete [] buffer;
+            return true;
         }
         return false;
     }
+    
     
     std::string GetState() {
         if (m_connection) {
@@ -449,9 +475,17 @@ private:
 #endif
         return true;
     }
+    
+    bool connectNN(const std::string& url) {
+        m_nn = new nn::socket(AF_SP, NN_PAIR);
+        if (m_nn->connect(url.c_str()) < 0)
+            return false;
+        return true;
+    }
 
     easywsclient::WebSocket::pointer m_ws;
     happyhttp::Connection* m_connection;
+    nn::socket* m_nn;
     std::string m_recvBuf;
     int m_timeout;
 #ifndef SINGLE_THREAD_RECV
