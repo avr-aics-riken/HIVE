@@ -18,7 +18,7 @@
 		var buffer,
 			pos = 0,
 			metaStr = JSON.stringify(metaData);
-		if (!metaStr || !binary) { return; }
+		if (!metaStr || !binary) { return null; }
 		//console.log('binary size:' + binary.length);
 		//console.log('meta size:' + metaStr.length);
 		
@@ -47,7 +47,7 @@
 			metaData,
 			version,
 			content;
-		if (head !== headerStr) { return; }
+		if (head !== headerStr) { return false; }
 		
 		version = binary.slice(headerStr.length, headerStr.length + 4).readUInt32LE(0);
 		metaSize = binary.slice(headerStr.length + 4, headerStr.length + 8).readUInt32LE(0);
@@ -63,6 +63,7 @@
 		if (metaData && content) {
 			endCallback(metaData, content);
 		}
+		return true;
 	}
 	
 	module.exports.loadMetaBinary = loadMetaBinary;

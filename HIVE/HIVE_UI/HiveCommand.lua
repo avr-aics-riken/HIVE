@@ -286,7 +286,7 @@ local function LoadPDB(name, filename, shader)
 	end
 	return 'LoadPDB:' .. tostring(ret)
 end
-local function RenderCamera(w, h, cameraname)
+local function RenderCamera(w, h, cameraname, imagemode)
 	--print('RenderCamera', w, h, cameraname)
 	local starttm = os.clock()
 	local camera = HIVE_ObjectTable[cameraname]
@@ -315,20 +315,21 @@ local function RenderCamera(w, h, cameraname)
 	camera:SetScreenSize(oldscreensize[1], oldscreensize[2])
 	camera:SetFilename(oldfilename)
 
-	
+	local rendertm = os.clock()	
 	--print('Render Ret = ', r)
-	
-	-- save jpg
-	local rendertm = os.clock()
-	local imageBuffer = HIVE_ImageSaver:SaveMemory(1, camera:GetImageBuffer())
-	local imageBufferSize = HIVE_ImageSaver:MemorySize()
-	local savetm = os.clock()
+
 	-- make metabin
+
+	local sendmode = "jpg"
+	if imagemode ~= nil then
+		sendmode = imagemode
+	end
+
 	local json = [[{
 		"JSONRPC": "2.0",
 		"method" : "renderedImage",
 		"param" : {
-		 	"type": "jpg",
+		 	"type": "]] .. sendmode .. [[",
 		    "width" : ]] .. w .. [[,
 			"height" : ]] .. h .. [[,
 		 	"canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[
@@ -336,10 +337,22 @@ local function RenderCamera(w, h, cameraname)
 		"to": "client",
 		"id": 0
 	}]]
-	local createtm = os.clock()
+	local createtm = 0
 	if HIVE_metabin then
-		HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-	-- 	send through websocket
+		if (sendmode == "jpg") then
+			-- save jpg
+			local imageBuffer = HIVE_ImageSaver:SaveMemory(1, camera:GetImageBuffer())
+			local imageBufferSize = HIVE_ImageSaver:MemorySize()
+			savetm = os.clock()
+			HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+			createtm = os.clock()
+		elseif (sendmode == "raw") then
+			savetm = rendertm -- no save
+			local img = camera:GetImageBuffer()
+			HIVE_metabin:Create(json, img:GetBuffer(), img:GetSize())
+			createtm = os.clock()
+		end
+		-- 	send through websocket		
 		network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
 	end
 	local sendtm = os.clock()

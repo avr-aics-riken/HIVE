@@ -351,6 +351,8 @@ public:
             } else {
                 return std::string("UNKNOWN");
             }
+        } else if (m_nn) {
+            return std::string("OPEN");
         } else {
             return std::string("NOT_CONNECTED");
         }
@@ -378,6 +380,11 @@ public:
             std::string msg = m_wsrecvthread->Pop();
             return msg;
 #endif
+        } else if (m_nn) {
+            static const int size = 16*1024;
+            static char cbuf[size];
+            m_nn->recv(cbuf, size, 0);
+            return cbuf;
         }
         return "";
     }
