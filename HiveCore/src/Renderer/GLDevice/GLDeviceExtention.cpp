@@ -31,12 +31,12 @@ namespace
 
 extern "C"
 {
-// OpenGL�g�����߂̒ǉ����@ (Windows�̏ꍇ)
-// GLDeviceExtention.cpp �Ɋ֐��|�C���^���ǉ�
-// InitGLExtention() �Ŋ֐��|�C���^���擾
-// GLDeviceExtention.h ��extern�錾���ǉ�
+// OpenGL拡張命令の追加方法 (Windowsの場合)
+// GLDeviceExtention.cpp に関数ポインタを追加
+// InitGLExtention() で関数ポインタを取得
+// GLDeviceExtention.h にextern宣言を追加
 
-// �����ɕK�v�Ȋg�����߂��L�q����
+// ここに必要な拡張命令を記述する
 PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB = 0;
 PFNWGLCREATEPBUFFERARBPROC wglCreatePbufferARB = 0;
 PFNWGLGETPBUFFERDCARBPROC wglGetPbufferDCARB = 0;
@@ -143,7 +143,7 @@ bool extensionSupported(const char *extension)
 
 bool InitGLExtention()
 {
-	// �����ŕK�v��GL Extention�֐��|�C���^���擾����
+	// ここで必要なGL Extention関数ポインタを取得する
 	if (!extensionSupported("GL_ARB_multitexture")) {
 		printf("Not found GL_ARB_multitexture\n");
 		return false;
