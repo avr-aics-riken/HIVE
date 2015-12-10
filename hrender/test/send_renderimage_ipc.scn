@@ -45,11 +45,13 @@ for i=1,300 do
 	-- create metabinary
 	local json = [[{
 	 "method" : "reqAddContent",
-	 "type" : "]] .. sendmode .. [[",
-	 "posx" : "0",
-	 "posy" : "0",
-	 "width" : "]] .. width .. [[",
-	 "height" : "]] .. height .. [["}
+	 "param": {
+		 "type" : "]] .. sendmode .. [[",
+		 "posx" : "0",
+		 "posy" : "0",
+		 "width" : "]] .. width .. [[",
+		 "height" : "]] .. height .. [["}
+	 }
 	 ]]
 
 

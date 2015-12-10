@@ -26,6 +26,7 @@ var bufsize = 0,
 
 s.on('data', function (data) {
 	//console.log('RecvData=', data.length);
+	//console.log(data.toString());
 	if (bufsize === 0) {
 		starttm = Date.now();
 	}
@@ -41,18 +42,33 @@ s.on('data', function (data) {
 		framecnt = 0;
 	}
 	 
-	meta.loadMetaBinary(data, function(meta, data) {
+	if (!meta.loadMetaBinary(data, function(meta, data) {
+		//console.log(meta);
 		var img = document.getElementById('img');
-		if (meta.type === 'jpg') {
+		if (meta.param.type === 'jpg') {
 			img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
-		} else if (meta.type === 'raw'){
-			canvas.setAttribute('width', meta.width),
-			canvas.setAttribute('height', meta.height);
-			imageData = context.createImageData(meta.width, meta.height);
+		} else if (meta.param.type === 'raw'){
+			canvas.setAttribute('width', meta.param.width),
+			canvas.setAttribute('height', meta.param.height);
+			imageData = context.createImageData(meta.param.width, meta.param.height);
 			var r = s.BufferCopy(data, imageData.data);
 			context.putImageData(imageData, 0, 0);
 		}
-	});
+	})) {
+		// Not metabin	
+		var j = JSON.parse(data.toString());
+		if (j.method == "register") {
+			var json = {
+					"JSONRPC": 2.0,
+					"method": "runscript",
+					"param": {
+						"script": "hcmd.RenderCamera(1024,1024,'view', 'raw')"
+					}
+				},
+				jtxt = JSON.stringify(json);
+			s.send(jtxt);
+		}
+	};
 	//var i;
 	/*var ub = new Uint8Array(data);
 	imageData.data.set(ub);
