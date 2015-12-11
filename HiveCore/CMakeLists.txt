@@ -272,22 +272,6 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 endif()
 
-target_link_libraries(hiveCore pthread)
-target_link_libraries(hiveCore liblua)
-target_link_libraries(hiveCore LSGLES)
-# Additional Libraries
-if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if(HIVE_BUILD_WITH_BCMTOOLS)
-        add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
-    endif()
-        find_library(COCOA Cocoa)
-        if (NOT COCOA)
-            message(FATAL_ERROR "Cocoa Framework not found")
-        endif()
-        target_link_libraries(hiveCore ${COCOA})
-endif()
-
-
 if (HIVE_BUILD_WITH_OPENGL)
  if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   find_library(OPENGL OpenGL)
@@ -303,6 +287,22 @@ if (HIVE_BUILD_WITH_OPENGL)
   target_link_libraries(hiveCore ${OPENGL})
  endif()
 endif()
+
+target_link_libraries(hiveCore pthread)
+target_link_libraries(hiveCore liblua)
+target_link_libraries(hiveCore LSGLES)
+# Additional Libraries
+if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    if(HIVE_BUILD_WITH_BCMTOOLS)
+        add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
+    endif()
+        find_library(COCOA Cocoa)
+        if (NOT COCOA)
+            message(FATAL_ERROR "Cocoa Framework not found")
+        endif()
+        target_link_libraries(hiveCore ${COCOA})
+endif()
+
 
 # Copy GLSL Compiler in post build phase
 # @todo { Don't copy whole directory files }
