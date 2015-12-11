@@ -3,8 +3,7 @@
  * CDMデータローダー
  */
 //
-// TODO: - timestep support
-//       - support various volume data type
+// TODO: - support various volume data type
 //
 
 #ifndef HIVE_WITH_CDMLIB
