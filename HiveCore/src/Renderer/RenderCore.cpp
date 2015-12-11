@@ -368,6 +368,7 @@ public:
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects();
+                
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
                 readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
@@ -391,7 +392,7 @@ public:
                 }
 #endif
                 const double savetm = GetTimeCount();
-                printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
+                //printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
         }
     }
@@ -523,6 +524,9 @@ private:
         const float clearcolor_a = clr_a;
 
         ByteBuffer* bbuf = color->ImageBuffer();
+        if (bbuf == 0) {
+            bbuf = bbuf;
+        }
         if (bbuf) {
             unsigned char* imgbuf = bbuf->GetBuffer();
             const int colorbit = 8;
@@ -589,7 +593,7 @@ private:
     /// オブジェクトのレンダリング
     void renderObjects()
     {
-        printf("RenderCore::RENDER!!!!\n");
+        //printf("RenderCore::RENDER!!!!\n");
         
         if (m_mode == RENDER_SURFACE) {
             //SampleCoverage_SGL(m_fsaa, 0);
@@ -620,6 +624,11 @@ private:
         const int w = camera->GetScreenWidth();
         const int h = camera->GetScreenHeight();
         
+        ByteBuffer* bbuf = color->ImageBuffer();
+        if (w == m_width && h == m_height && bbuf != 0) {
+            return;
+        }
+
         if (m_gs_framebuffer || m_gs_colorbuffer || m_gs_depthbuffer)
             ReleaseBuffer_GS[m_mode](m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer);
         

@@ -16,9 +16,15 @@ else
 	print('---------------------')
 end
 
-local connectAddress = 'ipc:///tmp/HIVEtest' --'ws://localhost:8080/'
+local connectAddress = 'ws://localhost:8080/' 
+local ipcAddress = 'ipc:///tmp/HIVE_server_ipc'
+
 if arg[1] and arg[1]:sub(1,5) == 'ws://' then
 	connectAddress = arg[1]
+end
+
+if arg[2] and arg[2]:sub(1,5) == 'ipc://' then
+	ipcAddress = arg[2]
 end
 
 print('HIVE renderer START. Connect to', connectAddress);
@@ -26,7 +32,7 @@ print('HIVE renderer START. Connect to', connectAddress);
 
 local Log = function() end
 -- for Debug
-Log = print
+--Log = print
 
 package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
@@ -34,6 +40,10 @@ JSON = require('dkjson')
 -- Global Weboket Connection
 network = require("Network").Connection()
 network:SetTimeout(100)
+
+network_ipc = require("Network").Connection()
+local ipcr = network_ipc:Connect(ipcAddress)
+
 
 -- Global Jpeg Saver
 HIVE_ImageSaver = ImageSaver()
@@ -134,7 +144,7 @@ function renderMethod(method, param, id)
 				return JSON.encode(ret)
 			end)
 			if jsonSuccess then
-				sendClientResult(rjson,id);
+				--sendClientResult(rjson,id); --- TOOOOOOOOOOOOOOOOOSLOWWWWWWW!!!!!! / TODO
 			else -- json error
 				sendClientError(rjson, id)
 			end
@@ -147,7 +157,7 @@ HIVE_nextEvent = ''
 HIVE_isRenderCanceled = false
 function HIVE_fetchEvent(progress)
 	HIVE_nextEvent = network:Recv()
-	print('Rendering: ', progress .. '%', HIVE_nextEvent)
+	--print('Rendering: ', progress .. '%', HIVE_nextEvent)
 	if HIVE_nextEvent ~= '' then
 		HIVE_isRenderCanceled = true
 		return false
@@ -156,15 +166,14 @@ function HIVE_fetchEvent(progress)
 	end
 end
 
-function HIVE_fetchEvent(progress)
+--function HIVE_fetchEvent(progress)
 	-- for GL
-end
+--end
 
 function mainloop()
-	local src
+	local src = ''
 	local data
 	local err
-	HIVE_nextEvent = ''
 	while true do
 		if HIVE_nextEvent ~= '' then
 			src = HIVE_nextEvent
@@ -173,7 +182,7 @@ function mainloop()
 			src = network:Recv()
 		end
 		if src ~= '' then
-			--Log('[DEBUG] SRC:', src);
+			Log('[DEBUG] SRC:', src);
 			data = JSON.decode(src)
 			if data.method == 'end' then
 				network:Close()
@@ -195,7 +204,7 @@ function mainloop()
 					package.loaded['HiveCommand'] = nil
 					hcmd = require('HiveCommand')
 				end
-			end
+			end		
 		end
 	end
 end

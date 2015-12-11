@@ -221,7 +221,7 @@ int render(lua_State* L)
     
     LuaTable tbl(L, 1);
     const std::vector<LuaTable>& robjs = tbl.GetTable();
-    printf("RenderObjects Num = %d\n", static_cast<int>(robjs.size()));
+    //printf("RenderObjects Num = %d\n", static_cast<int>(robjs.size()));
     
     RenderCore* core = RenderCore::GetInstance();
 
