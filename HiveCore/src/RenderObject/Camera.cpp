@@ -49,7 +49,7 @@ public:
     bool SetFilename(const std::string& filename)
     {
         m_outputfile = filename;
-        printf("Debug: FileName = %s\n", filename.c_str());
+        //printf("Debug: FileName = %s\n", filename.c_str());
         return true;
     }
     

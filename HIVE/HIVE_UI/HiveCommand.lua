@@ -286,7 +286,7 @@ local function LoadPDB(name, filename, shader)
 	end
 	return 'LoadPDB:' .. tostring(ret)
 end
-local function RenderCamera(w, h, cameraname, imagemode)
+local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
 	--print('RenderCamera', w, h, cameraname)
 	local starttm = os.clock()
 	local camera = HIVE_ObjectTable[cameraname]
@@ -295,7 +295,7 @@ local function RenderCamera(w, h, cameraname, imagemode)
 	local oldfilename   = camera:GetOutputFile();
 	local renderList = {camera}
 	for i,v in pairs(HIVE_ObjectTable) do
-		print ("OBJECT = ", i, v)
+		--print ("OBJECT = ", i, v)
 	    if v:GetType() ~= "CAMERA" then
 		        renderList[#renderList + 1] = v
 	    end
@@ -303,7 +303,7 @@ local function RenderCamera(w, h, cameraname, imagemode)
 	--print('RenderObject = ', #renderList)
 	local prefetchNextEvent = HIVE_fetchEvent(0)
 	if prefetchNextEvent == false then -- false is any queued
-		print('Skip rendering')
+		--print('Skip rendering')
 		return 'Skip rendering'
 	end
 
@@ -352,11 +352,15 @@ local function RenderCamera(w, h, cameraname, imagemode)
 			HIVE_metabin:Create(json, img:GetBuffer(), img:GetSize())
 			createtm = os.clock()
 		end
-		-- 	send through websocket		
-		network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+		-- 	send through websocket
+		if ipcmode == true then
+			network_ipc:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+		else
+			network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+		end
 	end
 	local sendtm = os.clock()
-	print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
+	--print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 
 	
 	collectgarbage('collect') -- NEED for GC

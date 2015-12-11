@@ -260,7 +260,7 @@ public:
 #endif
             return true;
         } else if (m_nn) {
-            m_nn->send(binary, size, 0);
+            m_nn->send(binary, size, 0);///NN_DONTWAIT);
             return true;
         }
         return false;
@@ -334,11 +334,11 @@ public:
             
         } else if (m_ws) {
 #ifndef SINGLE_THREAD_RECV
-            g_wsclientCS.Enter();
+            //g_wsclientCS.Enter(); // Now ignore, because too slow!! : TODO-> cache state!
 #endif
             easywsclient::WebSocket::readyStateValues state = m_ws->getReadyState();
 #ifndef SINGLE_THREAD_RECV
-            g_wsclientCS.Leave();
+            //g_wsclientCS.Leave();
 #endif
             if (state == easywsclient::WebSocket::CLOSED) {
                 return std::string("CLOSED");

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Electron Read Us</title>
+<script src="HiveConnect.js"></script>
+<script src="HiveCommand.js"></script>
+<script src="js/metabinary.js"></script>
+<script type="text/javascript">
+	
+
+//-----------------------------------
+var net = require('net');
+var nano = require('nanomsg');
+var s = nano.socket('pair');
+var meta = require('./metabinary');
+var buffercopy = require('buffercopy');
+console.log(buffercopy);
+
+console.log(meta);
+
+window.onload = function() {
+var canvas = document.getElementById('screen'),
+  	context = canvas.getContext('2d');
+  	
+var rc = s.bind("ipc:///tmp/HIVE_server_ipc");
+console.log("connect=", rc);
+var bufsize = 0,
+	framecnt = 0,
+	starttm = 0,
+	hiveCon = new HiveConnect();
+
+s.on('data', function (data) {
+	//console.log('RecvData=', data.length);
+	//console.log(data.toString());
+	if (bufsize === 0) {
+		starttm = Date.now();
+	}
+	bufsize += data.length;
+	var tm = Date.now(),
+		difftm = tm - starttm;
+	framecnt = framecnt + 1;
+	if (difftm > 1000.0) {
+		//console.log("speed=", bufsize / (difftm / 1000.0) / (1024.0*1024.0), "[MB/s]");
+		document.getElementById("fps").innerText =  "FPS=" + framecnt + " / speed=" +  (bufsize / (difftm / 1000.0) / (1024.0*1024.0)).toFixed(2) + "[MB/s]"
+		bufsize = 0;
+		starttm = tm;
+		framecnt = 0;
+	}
+	 
+	if (!meta.loadMetaBinary(data, function(meta, data) {
+		//console.log(meta);
+		var img = document.getElementById('img');
+		if (meta.param.type === 'jpg') {
+			img.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+		} else if (meta.param.type === 'raw'){
+			canvas.setAttribute('width', meta.param.width),
+			canvas.setAttribute('height', meta.param.height);
+			imageData = context.createImageData(meta.param.width, meta.param.height);
+			buffercopy.buffercopy(data, imageData.data);
+			context.putImageData(imageData, 0, 0);
+		}
+	})) {
+		// Not metabin	
+		/*var j = JSON.parse(data.toString());
+		if (j.method == "register") {
+			var json = {
+					"JSONRPC": 2.0,
+					"method": "runscript",
+					"param": {
+						"script": "hcmd.RenderCamera(1024,1024,'view', 'raw')"
+					}
+				},
+				jtxt = JSON.stringify(json);
+			s.send(jtxt);
+		}*/
+	};
+	//var i;
+	/*var ub = new Uint8Array(data);
+	imageData.data.set(ub);
+	*/
+//	var r = s.BufferCopy(data, imageData.data);
+//	console.log("r=", r);
+	/*for (i = 0; i < 1920*1080*4; ++i) {
+		imageData.data[i] = data.readUInt8(i);
+	} */ 
+	//console.log(ub);//imageData.data);
+// 	context.putImageData(imageData, 0, 0);
+});
+
+	var press = false,
+		mx = 0, my = 0,
+		rotY = 0,
+		rotX = 0;
+		
+		
+	function runScript(con, cmd) {
+		con.rendererMethod('runscript', {script:cmd}, function (err, ret) {
+			if (err) {
+				console.error(err);
+				return;
+			}
+			//console.log(ret);
+		});		
+	}
+	function hiveRender() {
+		// TODO: Temp camera
+		var cmd = '',
+			px = 100*Math.sin(-rotY) * Math.cos(rotX),
+			py = 100*Math.sin(rotX);
+			pz = 100*Math.cos(-rotY);
+		cmd += HiveCommand.cameraLookat('view', [px,py,pz], [0,0,0], [0,1,0], 60);
+		cmd += HiveCommand.renderCamera(1024, 1024, 'view', 'raw', true);
+		runScript(hiveCon, cmd);
+	};
+	
+	function MyScene() {
+		var cmd = HiveCommand.newScene() + "\n";
+		cmd += HiveCommand.loadOBJ('bunny', '../../hrender/test/bunny.obj', '../../hrender/test/normal.frag' , false);
+		runScript(hiveCon, cmd);
+	}
+	
+	var btn = document.getElementById('btn');
+	btn.addEventListener('click', function () {
+		MyScene();
+	});
+			
+	canvas.addEventListener('mousedown', function(e) {
+		press = true;
+		mx = e.clientX;
+		my = e.clientY;
+	});
+	canvas.addEventListener('mouseup', function(e) {
+		press = false;
+	});
+	
+	var sss = 0;
+	canvas.addEventListener('mousemove', function (e) {
+		var dx, dy, buf;
+		
+		if (press) {
+			dx = e.clientX - mx;
+			dy = e.clientY - my;
+			
+			rotY += dx * 0.05;
+			rotX += dy * 0.05;
+			
+			//console.log(rotY);
+			
+			//buf = "rot=" + rotY.toFixed(4);
+			//s.send(buf);
+			//sss += 1;
+			//if (sss % 3 == 0) {
+				hiveRender();
+			//}
+		}
+		mx = e.clientX;
+		my = e.clientY;
+	});
+	
+}
+
+/*
+var PIPE_NAME = "mypipe2";
+var PIPE_PATH = PIPE_NAME; //"\\\\.\\pipe\\" + PIPE_NAME;
+
+var datasize = 100*1000*1000;
+
+var server = net.createServer(function(stream) {
+    console.log('Server: on connection')
+
+    var fst = 0
+    stream.on('data', function(c) {
+   		//L('Server: on data:', c.toString());
+   		if (fst === 0) {
+   			fst = process.hrtime();
+   			//L('Server: on data:', fst);
+   		}
+   		//L('Size=', c.length);
+    });
+
+	stream.on('end', function() {
+		var etm = process.hrtime(),
+			dif = (etm[0] + etm[1] * 1e-9) - (fst[0] - fst[1] * 1e-9);
+		console.log('Server: on end', 10*datasize/(1024*1024)/dif, '[MB/s]')
+	   	server.close();
+	});
+
+	stream.write('Take it easy!');
+});
+
+server.on('close',function(){
+	console.log('Server: on close');
+});
+
+server.listen(PIPE_PATH,function(e){
+	if (e) {
+		console.log(e);
+		return;
+	}
+	console.log('Server: on listening');
+});*/
+
+
+</script>
+</head>
+<body>
+<h1 style="z-index:5" >Hello, HIVE!</h1>
+<div id="fps" style="z-index:5;">FPS:</div>
+<img id="img"/>
+<div>
+  <canvas id="screen" style="position:relative;left:0px;top:0px;transform: scale(1.0,-1.0);"></canvas>
+</div>
+<button id="btn">HOGE</button>
+</body>
+</html>
