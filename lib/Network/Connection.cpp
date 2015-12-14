@@ -44,11 +44,11 @@ namespace {
         
         bool process() {
             
-            g_wsclientCS.Enter();
+            //g_wsclientCS.Enter();
             const easywsclient::WebSocket::readyStateValues rs = m_ws->getReadyState();
-            g_wsclientCS.Leave();
+            //g_wsclientCS.Leave();
             if (rs == easywsclient::WebSocket::CLOSED) {
-                return false;
+                return true; // exit
             }
             
             // Assume single thread, single instance execution.
@@ -57,35 +57,85 @@ namespace {
             m_ws->dispatch(recvCallback);
             g_wsclientCS.Leave();
             
-            return false;
+            return false; // retry
         }
         std::string Pop() {
-            m_cs.Enter();
+            m_recvCS.Enter();
             size_t num = s_recvBuffer.size();
-            m_cs.Leave();
+            m_recvCS.Leave();
             if (num == 0) {
                 return "";
             }
-            m_cs.Enter();
+            m_recvCS.Enter();
             std::string msg = s_recvBuffer.front();
             s_recvBuffer.pop();
-            m_cs.Leave();
+            m_recvCS.Leave();
             return msg;
         }
         
     private:
         easywsclient::WebSocket::pointer m_ws;
-        static VX::CriticalSection m_cs;
+        static VX::CriticalSection m_recvCS;
         static std::queue<std::string> s_recvBuffer;
         static void recvCallback(const std::string& message) {
             //printf("WEBSOCKET RECV: %s\n", message.c_str());
-            m_cs.Enter();
+            m_recvCS.Enter();
             s_recvBuffer.push(message);
-            m_cs.Leave();
+            m_recvCS.Leave();
         }
     };
-    VX::CriticalSection WsRecvThread::m_cs;
+    VX::CriticalSection WsRecvThread::m_recvCS;
     std::queue<std::string> WsRecvThread::s_recvBuffer;
+
+    class WsSendThread : public VX::Thread
+    {
+    public:
+        WsSendThread(easywsclient::WebSocket::pointer ws) : VX::Thread(), m_ws(ws) { go(); }
+        ~WsSendThread() {}
+        
+        bool process() {
+            
+            //g_wsclientCS.Enter(); // NOT NEED?
+            const easywsclient::WebSocket::readyStateValues rs = m_ws->getReadyState();
+            //g_wsclientCS.Leave();
+            if (rs == easywsclient::WebSocket::CLOSED) {
+                return true; // exit
+            }
+            
+            // Assume single thread, single instance execution.
+            
+            m_sendCS.Enter();
+            const size_t num = s_sendBuffer.size();
+            std::string msg;
+            if (num != 0) {
+                msg = s_sendBuffer.front();
+                s_sendBuffer.pop();
+            }
+            m_sendCS.Leave();
+            
+            if (msg != std::string("")) {
+                g_wsclientCS.Enter();
+                m_ws->send(msg);
+                m_ws->poll();
+                g_wsclientCS.Leave();
+            }
+            
+            return false; // retry
+        }
+        void Send(const std::string& msg) {
+            m_sendCS.Enter();
+            s_sendBuffer.push(msg);
+            m_sendCS.Leave();
+        }
+        
+    private:
+        easywsclient::WebSocket::pointer m_ws;
+        static VX::CriticalSection m_sendCS;
+        static std::queue<std::string> s_sendBuffer;
+    };
+    VX::CriticalSection WsSendThread::m_sendCS;
+    std::queue<std::string> WsSendThread::s_sendBuffer;
+    
 #endif
     
     // callback  for http
@@ -134,6 +184,7 @@ public:
         m_timeout = 1000;
 #ifndef SINGLE_THREAD_RECV
         m_wsrecvthread = NULL;
+        m_wssendthread = NULL;
 #endif
     }
     
@@ -141,6 +192,7 @@ public:
     {
 #ifndef SINGLE_THREAD_RECV
         delete m_wsrecvthread;
+        delete m_wssendthread;
 #endif
         Close();
         delete m_connection;
@@ -184,6 +236,7 @@ public:
             }
             return true;
         } else if (m_ws) {
+#ifdef SINGLE_THREAD_SEND
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Enter();
 #endif
@@ -192,6 +245,10 @@ public:
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Leave();
 #endif
+#else
+            m_wssendthread->Send(text);
+#endif
+            
             return true;
         } else if (m_nn) {
             const unsigned char* body = reinterpret_cast<const unsigned char*>(text.c_str());
@@ -217,6 +274,7 @@ public:
             }
             return true;
         } else if (m_ws) {
+#ifdef SINGLE_THREAD_SEND
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Enter();
 #endif
@@ -225,6 +283,10 @@ public:
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Leave();
 #endif
+#else
+            m_wssendthread->Send(json);
+#endif
+
             return true;
         } else if (m_nn) {
             const unsigned char* body = reinterpret_cast<const unsigned char*>(json.c_str());
@@ -250,6 +312,7 @@ public:
             return true;
         } else if (m_ws) {
             std::string body(reinterpret_cast<const char*>(binary), size);
+#ifdef SINGLE_THREAD_SEND
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Enter();
 #endif
@@ -258,6 +321,10 @@ public:
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Leave();
 #endif
+#else
+            m_wssendthread->Send(body);
+#endif
+
             return true;
         } else if (m_nn) {
             m_nn->send(binary, size, 0);///NN_DONTWAIT);
@@ -305,6 +372,7 @@ public:
         // Websocket
         else if (m_ws) {
             std::string binary(buffer, fsize);
+#ifdef SINGLE_THREAD_SEND
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Enter();
 #endif
@@ -312,6 +380,9 @@ public:
             m_ws->poll();
 #ifndef SINGLE_THREAD_RECV
             g_wsclientCS.Leave();
+#endif
+#else
+            m_wssendthread->Send(binary);
 #endif
             delete [] buffer;
             return true;
@@ -408,6 +479,8 @@ public:
 #ifndef SINGLE_THREAD_RECV
             delete m_wsrecvthread;
             m_wsrecvthread = NULL;
+            delete m_wssendthread;
+            m_wssendthread = NULL;
 #endif
             m_ws->close();
             /*
@@ -479,6 +552,7 @@ private:
             return false;
 #ifndef SINGLE_THREAD_RECV
         m_wsrecvthread = new WsRecvThread(m_ws);
+        m_wssendthread = new WsSendThread(m_ws);
 #endif
         return true;
     }
@@ -497,6 +571,7 @@ private:
     int m_timeout;
 #ifndef SINGLE_THREAD_RECV
     WsRecvThread* m_wsrecvthread;
+    WsSendThread* m_wssendthread;
 #endif
 };
 

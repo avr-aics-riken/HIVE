@@ -144,7 +144,7 @@ function renderMethod(method, param, id)
 				return JSON.encode(ret)
 			end)
 			if jsonSuccess then
-				--sendClientResult(rjson,id); --- TOOOOOOOOOOOOOOOOOSLOWWWWWWW!!!!!! / TODO
+				sendClientResult(rjson,id); --- TOOOOOOOOOOOOOOOOOSLOWWWWWWW!!!!!! / TODO
 			else -- json error
 				sendClientError(rjson, id)
 			end
