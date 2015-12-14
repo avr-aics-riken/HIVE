@@ -295,6 +295,10 @@
 		}
 	};
 
+	HiveCore.prototype.runScript = function (script, callback) {
+		runScript(this.conn, script, callback);
+	};
+
 	//----------------------------------------------------------------------------------------------
 	// Loader
 	//
