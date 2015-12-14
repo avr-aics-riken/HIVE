@@ -1183,6 +1183,7 @@ Terminal.prototype.bindMouse = function() {
   //  on(self.document, 'mousemove', sendMove);
   //}
 
+/*
   on(el, wheelEvent, function(ev) {
     if (!self.mouseEvents) return;
     if (self.x10Mouse
@@ -1204,6 +1205,7 @@ Terminal.prototype.bindMouse = function() {
     }
     return cancel(ev);
   });
+  */
 };
 
 /**
