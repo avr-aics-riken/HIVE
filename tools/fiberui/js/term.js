@@ -27,7 +27,7 @@
 
 		bash.on('data', (function (term) {
 			return function (data) {
-				var elem = target_element.getElementsByClassName('terminal')[0],
+				var elem = target_element.getElementsByClassName('terminal')[0];
 				term.write(data);
 				// カーソル行が見た上画面一番下あたりに来るように、スクロール量を調整する.
 				// term.y はterminalカーソルの行数.
