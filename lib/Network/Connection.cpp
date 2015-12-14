@@ -106,35 +106,43 @@ namespace {
             
             m_sendCS.Enter();
             const size_t num = s_sendBuffer.size();
-            std::string msg;
+            std::pair<std::string, bool> msg;
             if (num != 0) {
                 msg = s_sendBuffer.front();
                 s_sendBuffer.pop();
             }
             m_sendCS.Leave();
             
-            if (msg != std::string("")) {
+            if (num != 0) {
                 g_wsclientCS.Enter();
-                m_ws->send(msg);
+                if (msg.second) {
+                    m_ws->sendBinary(msg.first);
+                } else {
+                    m_ws->send(msg.first);
+                }
                 m_ws->poll();
                 g_wsclientCS.Leave();
             }
             
             return false; // retry
         }
-        void Send(const std::string& msg) {
+        void Send(const std::string& msg, bool binary = false) {
             m_sendCS.Enter();
-            s_sendBuffer.push(msg);
+            s_sendBuffer.push(std::make_pair(msg, binary));
             m_sendCS.Leave();
         }
-        
+
+        void SendBinary(const std::string& msg) {
+            Send(msg, true);
+        }
+
     private:
         easywsclient::WebSocket::pointer m_ws;
         static VX::CriticalSection m_sendCS;
-        static std::queue<std::string> s_sendBuffer;
+        static std::queue<std::pair< std::string, bool> > s_sendBuffer;
     };
     VX::CriticalSection WsSendThread::m_sendCS;
-    std::queue<std::string> WsSendThread::s_sendBuffer;
+    std::queue< std::pair<std::string, bool> > WsSendThread::s_sendBuffer;
     
 #endif
     
@@ -322,7 +330,7 @@ public:
             g_wsclientCS.Leave();
 #endif
 #else
-            m_wssendthread->Send(body);
+            m_wssendthread->SendBinary(body);
 #endif
 
             return true;
@@ -382,7 +390,7 @@ public:
             g_wsclientCS.Leave();
 #endif
 #else
-            m_wssendthread->Send(binary);
+            m_wssendthread->SendBinary(binary);
 #endif
             delete [] buffer;
             return true;
