@@ -110,7 +110,7 @@ s.on('data', function (data) {
 			py = 100*Math.sin(rotX);
 			pz = 100*Math.cos(-rotY);
 		cmd += HiveCommand.cameraLookat('view', [px,py,pz], [0,0,0], [0,1,0], 60);
-		cmd += HiveCommand.renderCamera(1024, 1024, 'view', 'raw', true);
+		cmd += HiveCommand.renderCamera(512, 512, 'view', 'raw', true);
 		runScript(hiveCon, cmd);
 	};
 	
