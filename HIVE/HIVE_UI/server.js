@@ -446,6 +446,7 @@ captureThumbnail();
 
 function startupHRenderServer() {
 	'use strict';
+	var exitflag = false;
 	try {
 		var process = spawn(HRENDER, HRENDER_ARG);
 		process.stdout.on('data', function (data) {
@@ -457,7 +458,9 @@ function startupHRenderServer() {
 		process.on('exit', function (code) {
 			console.error('-------------------------\nhrender is terminated.\n-------------------------');
 			console.log('exit code: ' + code);
-			startupHRenderServer(); // reboot
+			if (!exitflag) {
+				startupHRenderServer(); // reboot
+			}
 		});
 		process.on('error', function (err) {
 			console.log('process error', err);
@@ -465,5 +468,11 @@ function startupHRenderServer() {
 	} catch (e) {
 		console.log('process error', e);
 	}
+	
+	function stopHRenderServer() {
+		exitflag = true;
+		process.kill();
+	}
+	module.exports.stopHRenderServer = stopHRenderServer;
 }
 startupHRenderServer();
