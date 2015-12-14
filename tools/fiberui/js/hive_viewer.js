@@ -2,6 +2,8 @@
 
 (function () {
 	"use strict";
+
+	// Hiveのビューを操作するクラス
 	var HiveViewer;
 
 	// コンストラクタ
@@ -62,20 +64,51 @@
 	};
 
 	/**
-	 * 左右のキャンバスを初期化.
+	 * キャンバスを初期化.
+	 */
+	function init_canvas(canvas, width, height) {
+		var viewer = new HiveViewer(canvas, 512, 512);
+		setTimeout((function (viewer) {
+			return function () {
+				viewer.core.render();
+			};
+		}(viewer)), 1000);
+		return viewer;
+	}
+
+	/**
+	 * エディタを初期化.
+	 */
+	function init_editor(viewer, ace_editor, editor_elem, submit_elem) {
+		submit_elem.onclick = function (evt) {
+			//console.log(ace_editor.getValue());
+			viewer.core.runScript(ace_editor.getValue());
+		};
+	}
+
+	/**
+	 * 初期化
 	 */
 	function init() {
 		var left_viewer,
-			right_viewer,
-			left_canvas = document.getElementById('left_canvas'),
-			right_canvas = document.getElementById('right_canvas');
+			right_viewer;
 
-		left_viewer = new HiveViewer(left_canvas, 512, 512);
+		// 左右のキャンバスを初期化.
+		left_viewer = init_canvas(document.getElementById('left_canvas'), 512, 512);
 		//right_viewer = new HiveViewer(right_canvas, 512, 512);
 
-		setTimeout(function () {
-			left_viewer.core.render();
-		}, 1000);
+		// 左右のエディタを初期化.
+		init_editor(
+			left_viewer,
+			ace.edit("left_editor"),
+			left_editor,
+			 document.getElementById('left_editor_submit'));
+
+		init_editor(
+			right_viewer,
+			ace.edit("right_editor"),
+			right_editor,
+			document.getElementById('right_editor_submit'));
 	}
 
 	window.hive_viewer = {};
