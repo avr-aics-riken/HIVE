@@ -5,10 +5,10 @@ var BrowserWindow = require('browser-window');
 
 require('crash-reporter').start();
 
-var mainWindow = null;
+var mainWindow = null,
+	server = require('./hserver');
 
 app.on('window-all-closed', function() {
-	if (process.platform != 'darwin')
 	    app.quit();
     });
 
@@ -19,8 +19,8 @@ app.on('ready', function() {
 	mainWindow.loadURL('file://' + __dirname + '/index.html');
 
 	mainWindow.on('closed', function() {
+		server.stopHRenderServer();
 		mainWindow = null;
 	    });
     });
 
-require('./hserver');
