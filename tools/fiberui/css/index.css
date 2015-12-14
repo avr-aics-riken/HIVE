@@ -1,0 +1,279 @@
+/* 全体 */
+* {
+	box-sizing: border-box;
+}
+
+*:not(input) {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+html, body {
+	height: 100%;
+	margin: 0px;
+}
+
+pre {
+	margin : 0px;
+}
+
+/* スクロールバー */
+body::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 9px;
+	border-radius: 9px;
+	border: 4px solid transparent;
+	background: #eee;
+	background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+	background: rgba(55, 55, 55, 1);
+	display : none;
+}
+
+::-webkit-scrollbar-button:corner-present  {
+	background: rgba(55, 55, 55, 1);
+	display : none;
+}
+
+::-webkit-scrollbar {
+	width: 14px;
+	height : 14px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgba(55, 55, 55, 1);
+}
+
+::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 9px;
+	border-radius: 14px 9px 9px 14px / 12px 12px 12px 12px;
+	border: 4px solid transparent;
+	background: #eee;
+	background-clip: content-box;
+	border-left : 6px solid transparent;
+	border-right : 2px solid transparent;
+}
+
+/* 全体を覆うdiv */
+.all_area {
+	min-width : 785px;
+	height: 100%;
+	padding-bottom : 5px; /* middle_barの高さ */
+	overflow-y: hidden;
+}
+
+/* 上側 */
+.upper_area {
+	height : 60%;
+	padding : 15px;
+	background-color : rgba(55, 55, 55, 1);
+}
+
+/* 下側 */
+.lower_area {
+	height : 40%;
+	padding-bottom : 5px; /* bottom_barの高さ */
+}
+
+/* 上部左側box */
+.upper_left_box {
+	width : 50%;
+	height: 100%;
+	float : left;
+	background-color : rgba(55, 55, 55, 1);
+	text-align: center;
+	overflow : auto;
+}
+
+/* 上部右側box */
+.upper_right_box {
+	float : left;
+	width : 50%;
+	height: 100%;
+	text-align: center;
+	padding-left : 5px; /* vertical_barの幅 */
+}
+
+/* 上部右側boxの中の左部分 */
+.upper_right_box_left {
+	float : left;
+	width : 10%;
+	height : 90%;
+	margin : auto 0;
+}
+
+/* 上部右側boxの中の下部分 */
+.upper_right_box_bottom {
+	float : left;
+	height : 10%;
+	width : 100%;
+}
+
+/* 上部右側boxの中の中央部分 */
+.upper_right_box_center {
+	width : 90%;
+	height : 90%;
+	float : left;
+	overflow : auto;
+	padding-top : 10px;
+	border: 1px solid gray;
+	border-radius : 4px;
+}
+
+/* 左上のキャンバス  */
+.left_canvas {
+	width : 512px;
+	height : 512px;
+	margin-top : 10px;
+	/*
+	background-image : url("../img/render_pointlist.jpg");
+	background-size : contain;
+	background-repeat : no-repeat;
+	*/
+}
+
+/* 右上のキャンバス */
+.right_canvas {
+	height : 512px;
+	width : 512px;
+	background-image : url("../img/render_pointlist.jpg");
+	background-size : contain;
+	background-repeat : no-repeat;
+}
+
+/* 下側box */
+.lower_box {
+	height : 50%;
+}
+
+/* エディタ全体 */
+.editor_box {
+	min-width : 400px;
+	height : 70%;
+	padding : 15px;
+	padding-bottom : 30px;
+	background-color : rgba(55, 55, 55, 1);
+}
+
+/* 左のエディタbox */
+.left_editor_box {
+	width : 50%;
+	height : 100%;
+	background-color : gray;
+	float : left;
+	border : 2px solid;
+}
+
+/* 右のエディタbox */
+.right_editor_box {
+	width : 50%;
+	height : 100%;
+	background-color : gray;
+	float : left;
+	border : 2px solid;
+}
+
+/* エディタ */
+.editor {
+	width : 100%;
+	height : 100%;
+}
+
+/* 縦長ボタン */
+.vertical_button {
+	position : relative;
+	top : 50%;
+	width : 80px;
+	height : 25px;
+	margin-bottom: 60px;
+	transform: rotate(-90deg);
+	transform-origin: 10% 0%;
+}
+
+/* 縦長ボタン */
+.horizontal_button {
+	margin-top : 8px;
+	width : 80px;
+	height : 25px;
+}
+
+/* 投稿ボタン */
+.submit_button {
+	margin-top : 3px;
+	width : 80px;
+	height : 25px;
+	float : right;
+}
+
+/* shellのbox */
+.shell_box {
+	height: 30%;
+	background-color: rgba(10, 150, 40, 1);
+}
+
+.shell_output {
+	width : 100%;
+	height : 100%;
+	padding-left : 15px;
+}
+
+.terminal {
+	height : 100%;
+	overflow : auto;
+}
+
+.terminal-cursor {
+	color: white;
+	background: #f0f0f0;
+}
+
+/* shellエディタ */
+.shell_editor {
+	width : 100%;
+	height : 30px;
+	padding-left : 15px;
+	resize: none;
+	border : none;
+	background-color : rgba(10, 150, 40, 1);
+}
+
+/* 中央のバー */
+.middle_bar {
+	width : 100%;
+	height : 5px;
+	background-color : lightgray;
+}
+.middle_bar:hover {
+	cursor : ns-resize;
+	background-color : orange;
+}
+
+/* 下部のバー */
+.bottom_bar {
+	width : 100%;
+	height : 5px;
+	background-color : lightgray;
+}
+.bottom_bar:hover {
+	cursor : ns-resize;
+	background-color : orange;
+}
+
+/* 中央縦のバー */
+.vercial_bar {
+	width : 5px;
+	height : 100%;
+	position : relative;
+	left : 50%;
+	background-color : lightgray;
+	border-radius : 4px;
+}
+.vercial_bar:hover {
+	cursor : ew-resize;
+	background-color : orange;
+}
