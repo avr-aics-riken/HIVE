@@ -127,14 +127,14 @@ body::-webkit-scrollbar-thumb {
 
 /* 左上のキャンバス  */
 .left_canvas {
-	width : 500px;
-	height : 500px;
-	margin : 10px;
+	width : 512px;
+	height : 512px;
 	margin-top : 10px;
+	/*
 	background-image : url("../img/render_pointlist.jpg");
 	background-size : contain;
 	background-repeat : no-repeat;
-	float : left;
+	*/
 }
 
 /* 右上のキャンバス */
