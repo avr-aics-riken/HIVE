@@ -2,6 +2,7 @@
 	"name": "HIVE",
 	"version": "0.1.0",
 	"private": true,
+	"main": "main.js",
 	"scripts": {
 		"start": "node server.js"
 	},
