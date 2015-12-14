@@ -19,7 +19,9 @@ app.on('ready', function() {
 	mainWindow.loadURL('file://' + __dirname + '/index.html');
 
 	mainWindow.on('closed', function() {
-		server.stopHRenderServer();
+		if (server.stopHRenderServer) {
+			server.stopHRenderServer();
+		}
 		mainWindow = null;
 	    });
     });

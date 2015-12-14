@@ -20,7 +20,9 @@ app.on('ready', function() {
 
 	mainWindow.on('closed',
 		function() {
-			server.stopHRenderServer();
+			if (server.stopHRenderServer) {
+				server.stopHRenderServer();
+			}
 			mainWindow = null;
 	    });
     });
