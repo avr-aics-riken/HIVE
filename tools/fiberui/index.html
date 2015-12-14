@@ -5,6 +5,12 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 	<link rel="stylesheet" type="text/css" href="css/index.css">
 	<script type="text/javascript" src="js/3rd/ace/ace.js"></script>
+	<script type="text/javascript" src="js/HIVE/MV.js"></script>
+	<script type="text/javascript" src="js/HIVE/HiveCommand.js"></script>
+	<script type="text/javascript" src="js/HIVE/metabinary.js"></script>
+	<script type="text/javascript" src="js/HIVE/HiveConnect.js"></script>
+	<script type="text/javascript" src="js/HIVE/HiveCore.js"></script>
+	<script type="text/javascript" src="js/hive_viewer.js"></script>
 	<script type="text/javascript" src="js/gui.js"></script>
 	<script type="text/javascript" src="js/term.js"></script>
 	<script type="text/javascript" src="js/index.js"></script>
@@ -14,7 +20,7 @@
 		<!-- 上側 -->
 		<div id="upper_area" class="upper_area">
 			<div id="upper_left_box" class="upper_left_box">
-				<canvas class="left_canvas"></canvas>
+				<img id="left_canvas" class="left_canvas"></canvas>
 			</div>
 			<div id="upper_right_box" class="upper_right_box">
 				<div class="upper_right_box_left">
@@ -22,7 +28,7 @@
 					<button class="vertical_button">Set f1</button>
 				</div>
 				<div class="upper_right_box_center">
-					<canvas class="right_canvas"></canvas>
+					<canvas id="right_canvas" class="right_canvas"></canvas>
 				</div>
 				<div class="upper_right_box_bottom">
 					<button class="horizontal_button">Set f0</button>
