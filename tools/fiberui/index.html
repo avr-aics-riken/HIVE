@@ -11,6 +11,7 @@
 	<script type="text/javascript" src="js/HIVE/metabinary.js"></script>
 	<script type="text/javascript" src="js/HIVE/HiveConnect.js"></script>
 	<script type="text/javascript" src="js/HIVE/HiveCore.js"></script>
+	<script type="text/javascript" src="js/HIVE/filedlg.js"></script>
 	<script type="text/javascript" src="js/gui.js"></script>
 	<script type="text/javascript" src="js/term.js"></script>
 	<script type="text/javascript" src="js/hive_viewer.js"></script>
@@ -28,15 +29,15 @@
 					<img id="right_canvas" class="right_canvas"></img>
 				</div>
 				<div class="upper_right_box_left">
-					<button class="vertical_button">Pressure</button>
-					<button class="vertical_button">Set f1</button>
+					<button id="pressure_button" class="vertical_button">Pressure</button>
+					<button id="setf1_button" class="vertical_button">Set f1</button>
 				</div>
 				<div class="upper_right_box_right">
 					<canvas id="color_map" class="color_map"></canvas>
 				</div>
 				<div class="upper_right_box_bottom">
-					<button class="horizontal_button">Set f0</button>
-					<button class="horizontal_button">Temperature</button>
+					<button id="setf0_button" class="horizontal_button">Set f0</button>
+					<button id="temperature_button" class="horizontal_button">Temperature</button>
 				</div>
 			</div>
 			<div id="vertical_bar" class="vertical_bar"></div>
@@ -70,13 +71,13 @@
 		</div>
 	</div>
 
-	<div class="dialog_box">
-		<div class="file_dialog">
-			<input type="text" class="file_dialog_input file_dialog_border" placeholder="file name"></input>
-			<input type="text" class="file_dialog_input file_dialog_border" placeholder="filter"></input>
+	<div id="dialog_box" class="dialog_box">
+		<div id="file_dialog" class="file_dialog">
+			<input type="text" id="file_name_input" class="file_name_input file_dialog_border" placeholder="file name"></input>
+			<input type="text" id="file_filter_input" class="file_filter_input file_dialog_border" placeholder="filter"></input>
 			<div class="file_dialog_file_list file_dialog_border"></div>
-			<div class="open_button"><span class="open_button_text">Open</span></div>
-			<div class="cancel_button"><span class="cancel_button_text">Cancel</span></div>
+			<div id="file_dialog_open_button" class="open_button"><span class="open_button_text">Open</span></div>
+			<div id="file_dialog_cancel_button" class="cancel_button"><span class="cancel_button_text">Cancel</span></div>
 		</div>
 	</div>
 </body>

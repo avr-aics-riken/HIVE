@@ -14,9 +14,11 @@
 		this.output_callback = output_callback;
 		// Hiveからのコールバック
 		this.core = new window.HiveCore(target_element, width, height, function (sceneInfo) {
+			/*
 			if (output_callback) {
 				output_callback(null, sceneInfo);
 			}
+			*/
 		});
 		this.init_mouse_event(this.core);
 		this.reduce_counter = 0;
@@ -97,6 +99,46 @@
 	}
 
 	/**
+	 * ファイルダイアログの初期化.
+	 */
+	function init_filedialog(viewer) {
+		var setf0_button = document.getElementById("setf0_button"),
+			setf1_button = document.getElementById("setf1_button"),
+			path = "/",
+	 		remote = require('remote'),
+			dialog = remote.require('dialog');
+
+		// ファイルダイアログイベントを受け取る
+		setf0_button.addEventListener("click", function (e) {
+						/*
+			var dialog,
+				dirfunc = function (path) {
+					viewer.core.getFileList(path, function (err, res) {
+						dialog.update_dir_list({list: res, path: path}, function (path) {
+							dirfunc(path);
+						});
+					});
+				};
+
+			dialog = new window.FileDialog("f0", true, document.getElementById('file_dialog'));
+			dialog.set_filter_input(document.getElementById('file_filter_input'));
+			dirfunc("/");
+			*/
+
+			document.getElementById('dialog_box').style.display = "block";
+			dialog.showOpenDialog(function (fileNames) {
+				console.log("filenames", fileNames);
+					document.getElementById('dialog_box').style.display = "none";
+			});
+		});
+		setf1_button.addEventListener("click", function (e) {
+			dialog.showOpenDialog(function (fileNames) {
+				console.log("filenames", fileNames);
+			});
+		});
+	}
+
+	/**
 	 * 初期化
 	 */
 	function init() {
@@ -110,20 +152,16 @@
 			if (err) {
 				console.error(err);
 				left_output.innerHTML = err + "\n";
+			} else if (info) {
+				left_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 			}
-			/*
-			if (info) {
-				left_output.innerHTML = left_output.innerHTML + JSON.stringify(info, null, "    ") + "\n";
-			}
-			*/
 		});
 		right_viewer = init_canvas(document.getElementById('right_canvas'), 512, 512, function (err, info) {
 			if (err) {
 				console.error(err);
 				right_output.innerHTML = err + "\n";
-			}
-			if (info) {
-				right_output.innerHTML = right_output.innerHTML + JSON.stringify(info, null, "    ") + "\n";
+			} else if (info) {
+				right_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 			}
 		});
 
@@ -139,6 +177,8 @@
 			ace.edit("right_editor"),
 			right_editor,
 			document.getElementById('right_editor_submit'));
+
+		init_filedialog(right_viewer);
 	}
 
 	window.hive_viewer = {};

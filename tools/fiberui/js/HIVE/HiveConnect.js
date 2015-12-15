@@ -3,7 +3,7 @@
 
 (function (window) {
 	'use strict';
-	
+
 	function HiveConnect() {
 		var url = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
 		this.url = url;
@@ -15,11 +15,11 @@
 		this.myid = -1;
 		this.rendererId = -1;
 	}
-	
+
 	HiveConnect.prototype.setRendererId = function (id) {
-		this.rendererId = parseInt(id);		
+		this.rendererId = parseInt(id);
 	}
-	
+
 	// public:
 	HiveConnect.prototype.masterResult = function (result) {
 		var id = 0; // TODO
@@ -46,13 +46,13 @@
 		}
 		this.ws.send(JSON.stringify({jsonrpc: "2.0", method: method, param: param, id: this.messageCount, to: this.rendererId, from: this.myid}));
 	};
-	
+
 	HiveConnect.prototype.method = function (methodname, func) {
 		this.methodFuncs[methodname] = func;
 	};
-	
+
 	//-------------------
-	
+
 	HiveConnect.prototype.reconnect = function () {
 		var ws  = new WebSocket(this.url);
 		this.ws = ws;
@@ -128,6 +128,6 @@
 			};
 		}(this)));
 	};
-	
+
 	window.HiveConnect = HiveConnect;
 }(window));
