@@ -7,21 +7,19 @@
 	var HiveViewer;
 
 	// コンストラクタ
-	HiveViewer = function (target_element, width, height) {
+	HiveViewer = function (target_element, width, height, output_callback) {
 		this.target_element = target_element;
 		target_element.width = width;
 		target_element.height = height;
-		this.core = new window.HiveCore(target_element, width, height, this.updateObjList);
+		this.output_callback = output_callback;
+		// Hiveからのコールバック
+		this.core = new window.HiveCore(target_element, width, height, function (sceneInfo) {
+			if (output_callback) {
+				output_callback(null, sceneInfo);
+			}
+		});
 		this.init_mouse_event(this.core);
 		this.reduce_counter = 0;
-	};
-
-	// Hiveからのコールバック
-	HiveViewer.prototype.updateObjList = function (sceneInfo) {
-		console.log(this);
-		if (this) {
-			//this.core.render();
-		}
 	};
 
 	/**
@@ -74,8 +72,8 @@
 	/**
 	 * キャンバスを初期化.
 	 */
-	function init_canvas(canvas, width, height) {
-		var viewer = new HiveViewer(canvas, 512, 512);
+	function init_canvas(canvas, width, height, output_callback) {
+		var viewer = new HiveViewer(canvas, 512, 512, output_callback);
 		setTimeout((function (viewer) {
 			return function () {
 				viewer.core.render();
@@ -89,8 +87,12 @@
 	 */
 	function init_editor(viewer, ace_editor, editor_elem, submit_elem) {
 		submit_elem.onclick = function (evt) {
-			console.log(ace_editor.getValue());
-			viewer.core.runScript(ace_editor.getValue());
+			viewer.core.runScript(ace_editor.getValue(), function (err, res) {
+				if (viewer.output_callback) {
+					viewer.output_callback(err, res);
+				}
+				document.getElementById('output_tab').click();
+			});
 		};
 	}
 
@@ -99,11 +101,33 @@
 	 */
 	function init() {
 		var left_viewer,
-			right_viewer;
+			right_viewer,
+			left_output = document.getElementById('left_output'),
+			right_output = document.getElementById('right_output'),
 
 		// 左右のキャンバスを初期化.
-		left_viewer = init_canvas(document.getElementById('left_canvas'), 512, 512);
-		right_viewer = init_canvas(document.getElementById('right_canvas'), 512, 512);
+		left_viewer = init_canvas(document.getElementById('left_canvas'), 512, 512, function (err, info) {
+			if (err) {
+				console.error(err);
+				left_output.innerHTML = err + "\n";
+			}
+			/*
+			if (info) {
+				left_output.innerHTML = left_output.innerHTML + JSON.stringify(info, null, "    ") + "\n";
+			}
+			*/
+		});
+		right_viewer = init_canvas(document.getElementById('right_canvas'), 512, 512, function (err, info) {
+			if (err) {
+				console.error(err);
+				right_output.innerHTML = err + "\n";
+			}
+			/*
+			if (info) {
+				right_output.innerHTML = right_output.innerHTML + JSON.stringify(info, null, "    ") + "\n";
+			}
+			*/
+		});
 
 		// 左右のエディタを初期化.
 		init_editor(

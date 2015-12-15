@@ -131,13 +131,15 @@
 			left_output.style.display = "block";
 			right_output.style.display = "block";
 			shell_output.style.display = "none";
-			shell_output.className = "shell_tab";
+			output.className = "shell_tab shell_tab_selected";
+			shell.className = "shell_tab";
 		};
 		shell.onclick = function () {
 			left_output.style.display = "none";
 			right_output.style.display = "none";
 			shell_output.style.display = "block";
-			shell_output.className = "shell_tab shell_tab_selected";
+			output.className = "shell_tab";
+			shell.className = "shell_tab shell_tab_selected";
 		};
 	}
 

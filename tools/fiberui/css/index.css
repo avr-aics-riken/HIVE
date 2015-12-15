@@ -259,6 +259,7 @@ body::-webkit-scrollbar-thumb {
 	float : left;
 	border : 2px solid;
 	display : none;
+	overflow : auto;
 }
 
 .terminal {
