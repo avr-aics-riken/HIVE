@@ -15,6 +15,19 @@
 html, body {
 	height: 100%;
 	margin: 0px;
+	font-family: "ヒラギノ角ゴ Pro W3",
+		"Hiragino Kaku Gothic Pro",
+		"メイリオ",
+		Meiryo,
+		Osaka,
+		"ＭＳ Ｐゴシック",
+		"MS PGothic",
+		sans-serif;
+}
+
+button {
+	background-color : #AAA;
+	border-color : #888;
 }
 
 pre {
@@ -53,7 +66,7 @@ body::-webkit-scrollbar-thumb {
 	-webkit-border-radius: 9px;
 	border-radius: 14px 9px 9px 14px / 12px 12px 12px 12px;
 	border: 4px solid transparent;
-	background: #eee;
+	background: gray;
 	background-clip: content-box;
 	border-left : 6px solid transparent;
 	border-right : 2px solid transparent;
@@ -95,7 +108,6 @@ body::-webkit-scrollbar-thumb {
 	float : left;
 	width : 50%;
 	height: 100%;
-	/*padding-left : 5px;*/
 	padding-left : 45px;  /* upper_right_box_leftの幅 40, vertical_barの幅 5 */
 	padding-right : 40px; /* upper_right_box_rightの幅 40 */
 	padding-bottom : 40px; /* upper_right_box_bottomの高さ 40 */
@@ -147,12 +159,11 @@ body::-webkit-scrollbar-thumb {
 }
 
 .color_map {
-	margin-top : 50px;
+	position : relative;
+	top : 50%;
+	margin-top : -128px;
 	width : 20px;
 	height : 256px;
-	/*
-	background-color : red;
-	*/
 }
 
 /* 左上のキャンバス  */
@@ -160,22 +171,12 @@ body::-webkit-scrollbar-thumb {
 	width : 512px;
 	height : 512px;
 	margin-top : 10px;
-	/*
-	background-image : url("../img/render_pointlist.jpg");
-	background-size : contain;
-	background-repeat : no-repeat;
-	*/
 }
 
 /* 右上のキャンバス */
 .right_canvas {
 	height : 512px;
 	width : 512px;
-	/*
-	background-image : url("../img/render_pointlist.jpg");
-	background-size : contain;
-	background-repeat : no-repeat;
-	*/
 }
 
 /* 下側box */
@@ -262,18 +263,19 @@ body::-webkit-scrollbar-thumb {
 }
 
 .shell_tab:active {
-	background-color : rgba(80, 190, 190, 1);
+	background-color : orange;
 }
 
 .shell_tab_selected {
-	background-color : rgba(110, 220, 220, 1);
+	background-color : darkorange;
 }
 
 /* shellのbox */
 .shell_box {
 	height: 40%;
-	padding-bottom : 20px; /* shell_tab_boxのheight */
-	background-color: rgba(10, 150, 40, 1);
+	padding-bottom : 20px;
+	background-color: rgba(30, 30, 30, 1);
+	color : white;
 }
 
 .shell_output {
@@ -285,9 +287,10 @@ body::-webkit-scrollbar-thumb {
 .script_output {
 	width : 50%;
 	height : 100%;
-	background-color : rgba(180,200,180,1);
+	background-color : rgba(30, 30, 30, 1);
 	float : left;
 	border : 2px solid;
+	border-color : #888;
 	display : none;
 	overflow : auto;
 }
@@ -316,22 +319,22 @@ body::-webkit-scrollbar-thumb {
 .middle_bar {
 	width : 100%;
 	height : 5px;
-	background-color : lightgray;
+	background-color : #555;
 }
 .middle_bar:hover {
 	cursor : ns-resize;
-	background-color : orange;
+	background-color : #A73;
 }
 
 /* 下部のバー */
 .bottom_bar {
 	width : 100%;
 	height : 5px;
-	background-color : lightgray;
+	background-color : #555;
 }
 .bottom_bar:hover {
 	cursor : ns-resize;
-	background-color : orange;
+	background-color : #A73;
 }
 
 /* 中央縦のバー */
@@ -340,10 +343,10 @@ body::-webkit-scrollbar-thumb {
 	height : 100%;
 	position : relative;
 	left : 50%;
-	background-color : lightgray;
+	background-color : #555;
 	border-radius : 4px;
 }
 .vertical_bar:hover {
 	cursor : ew-resize;
-	background-color : orange;
+	background-color : #A73;
 }

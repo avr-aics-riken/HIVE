@@ -4,6 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<link rel="stylesheet" type="text/css" href="css/dialog.css">
 	<script type="text/javascript" src="js/3rd/ace/ace.js"></script>
 	<script type="text/javascript" src="js/HIVE/MV.js"></script>
 	<script type="text/javascript" src="js/HIVE/HiveCommand.js"></script>
@@ -66,6 +67,16 @@
 				<div id="output_tab" class="shell_tab">Output</div>
 				<div id="shell_tab" class="shell_tab shell_tab_selected">Shell</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="dialog_box">
+		<div class="file_dialog">
+			<input type="text" class="file_dialog_input file_dialog_border" placeholder="file name"></input>
+			<input type="text" class="file_dialog_input file_dialog_border" placeholder="filter"></input>
+			<div class="file_dialog_file_list file_dialog_border"></div>
+			<div class="open_button"><span class="open_button_text">Open</span></div>
+			<div class="cancel_button"><span class="cancel_button_text">Cancel</span></div>
 		</div>
 	</div>
 </body>
