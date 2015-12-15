@@ -154,7 +154,7 @@ body::-webkit-scrollbar-thumb {
 /* エディタ全体 */
 .editor_box {
 	min-width : 400px;
-	height : 70%;
+	height : 60%;
 	padding : 15px;
 	padding-bottom : 30px;
 	background-color : rgba(55, 55, 55, 1);
@@ -210,9 +210,37 @@ body::-webkit-scrollbar-thumb {
 	float : right;
 }
 
+/* shellのタブのbox */
+.shell_tab_box {
+	position : fixed;
+	bottom : 0px;
+	width : 100%;
+	height : 20px;
+	background-color : rgba(55, 55, 55, 1);
+}
+
+/* shellのタブ */
+.shell_tab {
+	width : 100px;
+	height : 20px;
+	border-radius : 4px;
+	border : 2px solid;
+	background-color : rgba(220, 220, 220, 1);
+	float : right;
+}
+
+.shell_tab:active {
+	background-color : rgba(80, 190, 190, 1);
+}
+
+.shell_tab_selected {
+	background-color : rgba(110, 220, 220, 1);
+}
+
 /* shellのbox */
 .shell_box {
-	height: 30%;
+	height: 40%;
+	padding-bottom : 20px; /* shell_tab_boxのheight */
 	background-color: rgba(10, 150, 40, 1);
 }
 
@@ -220,6 +248,15 @@ body::-webkit-scrollbar-thumb {
 	width : 100%;
 	height : 100%;
 	padding-left : 15px;
+}
+
+.script_output {
+	width : 50%;
+	height : 100%;
+	background-color : rgba(180,200,180,1);
+	float : left;
+	border : 2px solid;
+	display : none;
 }
 
 .terminal {
