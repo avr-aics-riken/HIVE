@@ -118,12 +118,37 @@
 	}
 
 	/**
+	 * タブ切り替え
+	 */
+	function init_bottom_tab() {
+		var output = document.getElementById('output_tab'),
+			shell = document.getElementById('shell_tab'),
+			left_output = document.getElementById('left_output'),
+			right_output = document.getElementById('right_output'),
+			shell_output = document.getElementById('shell_output');
+
+		output.onclick = function () {
+			left_output.style.display = "block";
+			right_output.style.display = "block";
+			shell_output.style.display = "none";
+			shell_output.className = "shell_tab";
+		};
+		shell.onclick = function () {
+			left_output.style.display = "none";
+			right_output.style.display = "none";
+			shell_output.style.display = "block";
+			shell_output.className = "shell_tab shell_tab_selected";
+		};
+	}
+
+	/**
 	 * GUIの初期化.
 	 */
 	function init() {
 		init_editor();
 		init_middle_bar();
 		init_bottom_bar();
+		init_bottom_tab();
 		init_vertical_bar();
 	}
 
