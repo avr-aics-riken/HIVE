@@ -10,8 +10,11 @@
 		var right_editor = ace.edit("right_editor"),
 			left_editor = ace.edit("left_editor");
 
-		right_editor.setTheme("ace/theme/chrome");
-		left_editor.setTheme("ace/theme/chrome");
+		right_editor.setTheme("ace/theme/merbivore");
+		left_editor.setTheme("ace/theme/merbivore");
+
+		right_editor.getSession().setMode("ace/mode/lua");
+		left_editor.getSession().setMode("ace/mode/lua");
 	}
 
 	/**

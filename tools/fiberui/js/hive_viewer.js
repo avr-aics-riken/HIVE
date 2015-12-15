@@ -50,7 +50,7 @@
 				var dx = e.clientX - mouseState.x,
 					dy = e.clientY - mouseState.y;
 
-				if (self.reduce_counter % 3 === 0) {
+				//if (self.reduce_counter % 3 === 0) {
 					if (mouseState.Left) {
 						console.log("rotate");
 						core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
@@ -61,7 +61,7 @@
 						console.log("translate");
 						core.Translate(dx, dy);
 					}
-				}
+				//}
 				self.reduce_counter = self.reduce_counter + 1;
 				mouseState.x = e.clientX;
 				mouseState.y = e.clientY;
@@ -122,11 +122,9 @@
 				console.error(err);
 				right_output.innerHTML = err + "\n";
 			}
-			/*
 			if (info) {
 				right_output.innerHTML = right_output.innerHTML + JSON.stringify(info, null, "    ") + "\n";
 			}
-			*/
 		});
 
 		// 左右のエディタを初期化.
