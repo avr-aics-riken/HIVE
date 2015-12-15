@@ -490,7 +490,7 @@ function captureThumbnail() {
 		console.log('process error', e);
 	}
 }
-//captureThumbnail();
+captureThumbnail();
 
 
 var spawnProcesses = [];
