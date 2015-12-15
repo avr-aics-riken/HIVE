@@ -1,7 +1,7 @@
 /*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
-var	HRENDER = '../../build/bin/hrender',
+var	HRENDER = '../hrender',
 	HRENDER_ARG = ['hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = ['hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = './root/',
@@ -270,7 +270,7 @@ ws.on('request', function (request) {
 					id: msg_id
 				}));
 				
-				clientNode.renderproc = startupHRenderServer(['--opengl', '--client:' + connection.id, 'ws://localhost:' + port]);
+				clientNode.renderproc = startupHRenderServer(['--client:' + connection.id, 'ws://localhost:' + port]);
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
