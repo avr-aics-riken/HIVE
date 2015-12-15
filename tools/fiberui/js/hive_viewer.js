@@ -13,13 +13,14 @@
 		target_element.height = height;
 		this.core = new window.HiveCore(target_element, width, height, this.updateObjList);
 		this.init_mouse_event(this.core);
+		this.reduce_counter = 0;
 	};
 
 	// Hiveからのコールバック
 	HiveViewer.prototype.updateObjList = function (sceneInfo) {
 		console.log(this);
 		if (this) {
-			this.core.render();
+			//this.core.render();
 		}
 	};
 
@@ -45,22 +46,29 @@
 			mouseState.x = e.clientX;
 			mouseState.y = e.clientY;
 		});
-		this.target_element.addEventListener('mousemove', function (e) {
-			e.preventDefault();
-			var dx = e.clientX - mouseState.x,
-				dy = e.clientY - mouseState.y;
-			if (mouseState.Left) {
-				core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
-			}
-			if (mouseState.Right) {
-				core.Zoom(dx + dy);
-			}
-			if (mouseState.Center) {
-				core.Translate(dx, dy);
-			}
-			mouseState.x = e.clientX;
-			mouseState.y = e.clientY;
-		});
+		this.target_element.addEventListener('mousemove', (function (self) {
+			return function (e) {
+				e.preventDefault();
+				var dx = e.clientX - mouseState.x,
+					dy = e.clientY - mouseState.y;
+
+				if (self.reduce_counter % 3 === 0) {
+					if (mouseState.Left) {
+						console.log("rotate");
+						core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
+					} else if (mouseState.Right) {
+						console.log("zoom");
+						core.Zoom(dx + dy);
+					} else if (mouseState.Center) {
+						console.log("translate");
+						core.Translate(dx, dy);
+					}
+				}
+				self.reduce_counter = self.reduce_counter + 1;
+				mouseState.x = e.clientX;
+				mouseState.y = e.clientY;
+			};
+		}(this)));
 	};
 
 	/**
@@ -81,7 +89,7 @@
 	 */
 	function init_editor(viewer, ace_editor, editor_elem, submit_elem) {
 		submit_elem.onclick = function (evt) {
-			//console.log(ace_editor.getValue());
+			console.log(ace_editor.getValue());
 			viewer.core.runScript(ace_editor.getValue());
 		};
 	}
@@ -95,7 +103,7 @@
 
 		// 左右のキャンバスを初期化.
 		left_viewer = init_canvas(document.getElementById('left_canvas'), 512, 512);
-		//right_viewer = new HiveViewer(right_canvas, 512, 512);
+		right_viewer = init_canvas(document.getElementById('right_canvas'), 512, 512);
 
 		// 左右のエディタを初期化.
 		init_editor(
