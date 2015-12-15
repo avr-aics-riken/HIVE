@@ -2,8 +2,6 @@
 	hrender server for HIVE
 --]]
 
-arg = {...}
-
 hcmd = require('HiveCommand')
 
 if hcmd == nil then
@@ -17,9 +15,19 @@ else
 end
 
 local connectAddress = 'ws://localhost:8080/'
-if arg[1] and arg[1]:sub(1,5) == 'ws://' then
-	connectAddress = arg[1]
+targetClientId = -1
+
+for i, v in pairs(arg) do
+	if arg[1] and arg[1]:sub(1,5) == 'ws://' then
+		connectAddress = arg[1]
+	end
+	if v and v:sub(1,9) == '--client:' then
+		targetClientId = v:sub(10)
+	end
 end
+
+print('[Server] Client Id=' .. targetClientId)
+
 
 print('HIVE renderer START. Connect to', connectAddress);
 
@@ -68,12 +76,12 @@ end
 --]]
 
 local function sendClientError(err, id)
-	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = 'client', id = id});
+	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = targetClientId, id = id});
 	network:SendText(errtxt)
 end
 
 local function sendClientResult(ret, id)
-	local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = 'client', id = id});
+	local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = targetClientId, id = id});
 	network:SendText(retval)
 end
 
@@ -86,7 +94,7 @@ end
 local function connectHIVE()
 	local r = network:Connect(connectAddress)
 	if r then
-		sendMasterMethod('register', {mode = 'renderer'})
+		sendMasterMethod('register', {mode = 'renderer', targetid = targetClientId})
 	end
 	return r
 end
