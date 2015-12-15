@@ -49,7 +49,14 @@
 		if (!hiveCore.conn) { return; }
 		
 		hiveCore.conn.method('open', function (res) {
-			hiveCore.updateSceneInformation();
+			//hiveCore.updateSceneInformation();// not connected to renderer yet.
+		});
+
+		hiveCore.conn.method('registerRender', function(res) {
+			console.log('registerRender!!!!!', res);
+			hiveCore.conn.setRendererId(parseInt(res.id));
+			
+			hiveCore.updateSceneInformation(); // renderer query
 		});
 
 		hiveCore.conn.method('updateInfo', (function (core, infoCallback) {

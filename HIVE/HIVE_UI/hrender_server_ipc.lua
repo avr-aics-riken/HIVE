@@ -2,8 +2,6 @@
 	hrender server for HIVE
 --]]
 
-arg = {...}
-
 hcmd = require('HiveCommand')
 
 if hcmd == nil then

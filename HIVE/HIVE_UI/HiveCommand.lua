@@ -48,11 +48,11 @@ local function updateInfo()
 	local data = {
 		JSONRPC = "2.0",
 		method  = "updateInfo",
-		param   = {
+		param   = JSON.encode({
 			objectlist = objlst,
 			objecttimeline = objtimeline
-		},
-		to = "client",
+		}),
+		to = targetClientId,
 		id = 0
 	}
 	local json = JSON.encode(data)
@@ -334,7 +334,7 @@ local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
 			"height" : ]] .. h .. [[,
 		 	"canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[
 		},
-		"to": "client",
+		"to": "]] .. targetClientId .. [[",
 		"id": 0
 	}]]
 	local createtm = 0

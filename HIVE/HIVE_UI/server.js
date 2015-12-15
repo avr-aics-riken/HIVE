@@ -1,7 +1,7 @@
 /*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
-var	HRENDER = '../hrender',
+var	HRENDER = '../../build/bin/hrender',
 	HRENDER_ARG = ['hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = ['hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = './root/',
@@ -34,9 +34,7 @@ var	HRENDER = '../hrender',
 							   maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
 							   autoAcceptConnections : false}),
 	ws_connections = {},
-	id_counter = 0,
-	renderNode = null, // one renderer
-	clientNode = null; // one client
+	id_counter = 0;
 
 function sendErrorMessage(ws_node, msgstr, id) {
 	'use strict';
@@ -74,7 +72,7 @@ function getFile(dir, list) {
 		console.error("not found dir:" + dir);
 	}
 }
-function requestFileList(dir, msg_id) {
+function requestFileList(clientNode, dir, msg_id) {
 	'use strict';
 	var files = [];
 	console.log('[DEBUG] requestFileList:', dir);
@@ -86,7 +84,7 @@ function requestFileList(dir, msg_id) {
 	}));
 }
 
-function requestShaderList(msg_id) {
+function requestShaderList(clientNode, msg_id) {
 	'use strict';
 	var files = [],
 		shaderlist = [],
@@ -112,7 +110,7 @@ function requestShaderList(msg_id) {
 	}));
 }
 
-function saveScene(filepath, data, msg_id) {
+function saveScene(clientNode, filepath, data, msg_id) {
 	'use strict';
 	var jsonstr;
 	try {
@@ -146,7 +144,7 @@ function copyResourceFile(filepath) {
 	}
 }
 
-function exportScene(filepath, data, msg_id) {
+function exportScene(clientNode, filepath, data, msg_id) {
 	'use strict';
 	try {
 		fs.writeFileSync(filepath, data);
@@ -164,7 +162,7 @@ function exportScene(filepath, data, msg_id) {
 	}));
 }
 
-function loadScene(filepath, msg_id) {
+function loadScene(clientNode, filepath, msg_id) {
 	'use strict';
 	var json;
 	try {
@@ -187,7 +185,7 @@ function loadScene(filepath, msg_id) {
 	}));
 }
 
-function copyShaderFile(filepath, srcFileNames, msg_id) {
+function copyShaderFile(clientNode, filepath, srcFileNames, msg_id) {
 	'use strict';
 	var basedir = path.resolve(__dirname, '.'),
 		fileNames,
@@ -225,36 +223,67 @@ ws.on('request', function (request) {
 	console.log('[CONNECTION] Connection accepted : id = ' + id_counter + ' / ' + (new Date()));
 	// save connection with id
 	connection.id = id_counter;
-	ws_connections.id_counter = connection;
+	ws_connections[id_counter] = {id:id_counter , conn:connection};	
 	id_counter = id_counter + 1;
 	
 	/*
 		Master process methods
 	*/
-	function masterMethod(method, param, msg_id) {
+	function masterMethod(method, param, msg_id, from) {
 		console.log('[DEBUG] masterMethod:', method, param, msg_id);
+		var clientNode, json, fr_conn, wsc;
+		if (from != undefined) {
+			wsc = ws_connections[parseInt(from)];
+			if (wsc) {
+				fr_conn = wsc.conn;
+			}
+		}	
 		if (method === 'register') { // Register Renderer or Client
 			if (param.mode === 'renderer') {
 				console.log('[CONNECTION] Connected Renderer id = ' + connection.id);
 				connection.type = 'renderer';
-				renderNode = connection;
+				wsc = ws_connections[parseInt(param.targetid)];
+				if (!wsc) {
+					console.error('Unexpected to connect node. Zombie process?');
+					return;
+				}
+				clientNode = wsc.conn;
+				json = {id: connection.id};
+				clientNode.send(JSON.stringify({
+					JSONRPC: "2.0",
+					method: 'registerRender',
+					param:JSON.stringify(json),
+					id: msg_id
+				}));
+				
 			} else if (param.mode === 'client') {
 				console.log('[CONNECTION] Connected client id = ' + connection.id);
 				connection.type = 'client';
 				clientNode = connection;
+				json = {
+					ret:'registered',
+					id: connection.id
+				};
+				clientNode.send(JSON.stringify({
+					JSONRPC: "2.0",
+					result: JSON.stringify(json),
+					id: msg_id
+				}));
+				
+				clientNode.renderproc = startupHRenderServer(['--opengl', '--client:' + connection.id, 'ws://localhost:' + port]);
 			}
 		} else if (method === 'requestFileList') {
-			requestFileList(param.path, msg_id);
+			requestFileList(fr_conn, param.path, msg_id);
 		} else if (method === 'requestShaderList') {
-			requestShaderList(msg_id);
+			requestShaderList(fr_conn, msg_id);
 		} else if (method === 'saveScene') {
-			saveScene(param.path, param.data, msg_id);
+			saveScene(fr_conn, param.path, param.data, msg_id);
 		} else if (method === 'exportScene') {
-			exportScene(param.path, param.data, msg_id);
+			exportScene(fr_conn, param.path, param.data, msg_id);
 		} else if (method === 'loadScene') {
-			loadScene(param.path, msg_id);
+			loadScene(fr_conn, param.path, msg_id);
 		} else if (method === 'copyShaderFile') {
-			copyShaderFile(param.path, param.data, msg_id);
+			copyShaderFile(fr_conn, param.path, param.data, msg_id);
 		} else {
 			console.error('Error: Unknow method');
 		}
@@ -264,14 +293,24 @@ ws.on('request', function (request) {
 		Process utf8 text message
 	*/
 	function eventTextMessage(ret, utf8Data) {
+		console.log('[Log]eventTextMessage:', ret);
+		if (ret.to) {
+			var node = null;
+			if (ret.to !== 'master' && ws_connections[ret.to]) {
+				node = ws_connections[ret.to].conn;
+			}
+			eventTextMessageNode(node, ret, utf8Data);
+		} else {
+			console.error('Error: Not found "to" id !!');
+		}
+	}
+	function eventTextMessageNode(node, ret, utf8Data) {
 		var result, param;
 		if (ret.error) {
 			if (ret.to === 'master') {
 				console.error('[Error]:', ret.err);
-			} else if (clientNode && ret.to === 'client') { // for client
-				clientNode.send(utf8Data);
-			} else if (renderNode && ret.to === 'renderer') { // for renderer
-				clientNode.send(utf8Data);
+			} else {
+				node.send(utf8Data);
 			}
 		} else if (ret.result) {
 			// syntax sugar
@@ -283,10 +322,8 @@ ws.on('request', function (request) {
 
 			if (ret.to === 'master') {
 				console.error('[Result]:', result);
-			} else if (clientNode && ret.to === 'client') { // for client
-				clientNode.send(JSON.stringify(ret));
-			} else if (renderNode && ret.to === 'renderer') { // for renderer
-				clientNode.send(JSON.stringify(ret));
+			} else {
+				node.send(JSON.stringify(ret));
 			}
 		} else if (ret.method) {
 
@@ -294,22 +331,16 @@ ws.on('request', function (request) {
 			if (typeof ret.param === 'object') {
 				param = ret.param;
 			} else {
-				param = JSON.parse(ret.result);
+				param = JSON.parse(ret.param);
 			}
 
 			if (ret.to === 'master') {
-				masterMethod(ret.method, param, ret.id);
-			} else if (ret.to === 'client') { // for client
-				if (clientNode) {
-					clientNode.send(JSON.stringify(ret));
+				masterMethod(ret.method, param, ret.id, ret.from);
+			} else {
+				if (node) {
+					node.send(JSON.stringify(ret));
 				} else {
-					sendErrorMessage(renderNode, 'Not connected ClientNode', ret.id);
-				}
-			} else if (ret.to === 'renderer') { // for renderer
-				if (renderNode) {
-					renderNode.send(JSON.stringify(ret));
-				} else {
-					sendErrorMessage(clientNode, 'Not connected RenderNode', ret.id);
+					sendErrorMessage(node, 'Not connected node', ret.id);
 				}
 			}
 		}
@@ -319,21 +350,28 @@ ws.on('request', function (request) {
 		Process binary message
 	*/
 	function eventBinaryMessage(meta, binMessage) {
+		if (meta.to) {
+			var node = null;
+			if (meta.to !== 'master') {
+				node =  ws_connections[meta.to].conn;
+			}
+			eventBinaryMessageNode(node, meta, binMessage);
+		} else {
+			console.error('Error: Not found "to" id !!');
+		}
+	}
+	function eventBinaryMessageNode(node, meta, binMessage) {
 		if (meta.result) {
 			if (meta.to === 'master') {
 				console.error('[Result]:', meta);
-			} else if (clientNode && meta.to === 'client') { // for client
-				clientNode.send(binMessage);
-			} else if (renderNode && meta.to === 'renderer') { // for renderer
-				clientNode.send(binMessage);
+			} else {
+				node.send(binMessage);
 			}
 		} else if (meta.method) {
 			if (meta.to === 'master') {
-				masterMethod(meta.method, meta);
-			} else if (clientNode && meta.to === 'client') { // for client
-				clientNode.send(binMessage);
-			} else if (renderNode && meta.to === 'renderer') { // for renderer
-				renderNode.send(binMessage);
+				masterMethod(meta.method, meta.param, meta.id, meta.from);
+			} else {
+				node.send(binMessage);
 			}
 		}
 	}
@@ -345,10 +383,11 @@ ws.on('request', function (request) {
 			console.log('[DEBUG] RET=' + message.utf8Data);
 			try {
 				ret = JSON.parse(message.utf8Data);
-				eventTextMessage(ret, message.utf8Data);
 			} catch (e) {
 				console.error('[ERROR] Invalid JSON data:-->\n' + message.utf8Data + '\n', e);
+				return;
 			}
+			eventTextMessage(ret, message.utf8Data);
 		} else if (message.type === 'binary') {
 			metabin.loadMetaBinary(message.binaryData, (function (binData) {
 				return function (meta, content) {
@@ -359,15 +398,24 @@ ws.on('request', function (request) {
 		}
 	});
 	
-	connection.on('close', function () {
-		delete ws_connections[connection.id];
-		console.log('[CONNECTION] Connection closed : type = [' + connection.type + "] id = " + connection.id);
-		if (connection.type === 'renderer') {
-			renderNode = null;
-		} else if (connection.type === 'client') {
-			clientNode = null;
-		}
-	});
+	connection.on('close', function (connection) {
+		return function () {
+			console.log('[CONNECTION] Connection closed : type = [' + connection.type + "] id = " + connection.id);			
+			if (connection.type === 'client') {
+				console.log('Dissconnect client', connection.renderproc);
+				if (connection.renderproc){
+					connection.renderproc.kill();
+				}
+			} 
+			delete ws_connections[connection.id];
+			
+			/*if (connection.type === 'renderer') {
+				renderNode = null;
+			} else if (connection.type === 'client') {
+				clientNode = null;			
+			}*/
+		};
+	}(connection));
 });
 
 function captureThumbnail() {
@@ -442,13 +490,29 @@ function captureThumbnail() {
 		console.log('process error', e);
 	}
 }
-captureThumbnail();
+//captureThumbnail();
 
-function startupHRenderServer() {
+
+var spawnProcesses = [];
+
+function startupHRenderServer(optarray) {
 	'use strict';
-	var exitflag = false;
+	var process = null,
+		i,
+		arg = JSON.parse(JSON.stringify(HRENDER_ARG)); // copy
+	
+	if (optarray) {
+		for (i = 0; i < optarray.length; i = i + 1) {	
+			arg.push(optarray[i]);
+		}
+	}
+	
+	for (i = 0; i < arg.length; i = i + 1) {	
+		console.log('HRENDER ARG['+ i +']', arg[i])
+	}
+	
 	try {
-		var process = spawn(HRENDER, HRENDER_ARG);
+		process = spawn(HRENDER, arg);
 		process.stdout.on('data', function (data) {
 			console.log('stdout: ' + data);
 		});
@@ -458,9 +522,6 @@ function startupHRenderServer() {
 		process.on('exit', function (code) {
 			console.error('-------------------------\nhrender is terminated.\n-------------------------');
 			console.log('exit code: ' + code);
-			if (!exitflag) {
-				startupHRenderServer(); // reboot
-			}
 		});
 		process.on('error', function (err) {
 			console.log('process error', err);
@@ -469,10 +530,15 @@ function startupHRenderServer() {
 		console.log('process error', e);
 	}
 	
-	function stopHRenderServer() {
-		exitflag = true;
-		process.kill();
-	}
-	module.exports.stopHRenderServer = stopHRenderServer;
+	spawnProcesses.push(process);
+	return process;
 }
-startupHRenderServer();
+function stopHRenderServer() {
+	var p;
+	for (p in spawnProcesses) {
+		spawnProcesses[p].kill();
+	}
+	spawnProcesses = [];
+}
+
+module.exports.stopHRenderServer = stopHRenderServer;
