@@ -141,7 +141,44 @@
 		context.fillStyle = grad;
 		context.beginPath();
 		context.fillRect(0, 0, width, height);
-	 }
+	}
+
+	/**
+	 * ファイルダイアログをキャンセルして閉じる
+	 */
+	function cancel_file_dialog() {
+		var dialog_box = document.getElementById('dialog_box');
+		dialog_box.style.display = "none";
+	}
+
+	/**
+	 * ファイルダイアログを開く
+	 */
+	function open_file_dialog() {
+		var dialog_box = document.getElementById('dialog_box'),
+			cancel_button = document.getElementById("file_dialog_cancel_button");
+		dialog_box.style.display = "block";
+		cancel_button.onclick = function(e) {
+			cancel_file_dialog();
+		};
+	}
+
+	/**
+	 * ボタンの初期化
+	 */
+	function init_button() {
+		var setf0_button = document.getElementById("setf0_button"),
+			setf1_button = document.getElementById("setf1_button"),
+			pressure_button = document.getElementById("pressure_button"),
+			temperature_button = document.getElementById("temperature_button");
+
+		setf0_button.addEventListener("click", function (e) {
+			open_file_dialog();
+		});
+		setf1_button.addEventListener("click", function (e) {
+			open_file_dialog();
+		});
+	}
 
 	/**
 	 * タブ切り替え
@@ -153,14 +190,14 @@
 			right_output = document.getElementById('right_output'),
 			shell_output = document.getElementById('shell_output');
 
-		output.onclick = function () {
+		output.onclick = function (e) {
 			left_output.style.display = "block";
 			right_output.style.display = "block";
 			shell_output.style.display = "none";
 			output.className = "shell_tab shell_tab_selected";
 			shell.className = "shell_tab";
 		};
-		shell.onclick = function () {
+		shell.onclick = function (e) {
 			left_output.style.display = "none";
 			right_output.style.display = "none";
 			shell_output.style.display = "block";
@@ -174,6 +211,7 @@
 	 */
 	function init() {
 		init_editor();
+		init_button();
 		init_middle_bar();
 		init_bottom_bar();
 		init_bottom_tab();

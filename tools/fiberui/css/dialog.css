@@ -9,8 +9,7 @@
 	top: 0;
 	left: 0;
 	display : none;
-	background-color:#CCCCCC;
-	opacity: 1;
+	background-color: rgba(150, 150, 150, 0.8);
 	z-index:10;
 }
 
@@ -27,6 +26,7 @@
 	border-radius : 10px;
 	border : 10px solid;
 	border-color : darkred;
+	display : none;
 	/*
 	background:url("../image/button_bg_white.png");
 	background-repeat:no-repeat;
@@ -45,7 +45,12 @@
 }
 
 /* 入力ボックス */
-.file_dialog_input {
+.file_name_input {
+	margin-top : 20px;
+	width : 80%;
+	height : 25px;
+}
+.file_filter_input {
 	margin-top : 20px;
 	width : 80%;
 	height : 25px;
@@ -103,4 +108,19 @@
 	position : relative;
 	left :15px;
 	top : 10px;
+}
+
+/* ファイルダイアログ中身 */
+.file_dialog_item {
+	height : 30px;
+}
+
+.file_dialog_item:hover  {
+	background-color: gray;
+}
+
+.file_dialog_label {
+	margin : 0px;
+	padding-top : 5px;
+	padding-left : 5px;
 }
