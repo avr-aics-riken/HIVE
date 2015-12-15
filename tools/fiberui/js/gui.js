@@ -106,7 +106,7 @@
 						ratio = pos / page_width,
 						percent;
 					//console.log(pos, page_width, ratio);
-					if (ratio > 0 && ratio < 0.95) {
+					if (ratio > 0 && ratio < 0.75) {
 						percent = ratio * 100;
 						left_box.style.width = String(percent) + "%";
 						bar.style.left = String(percent) + "%";
@@ -116,6 +116,29 @@
 			}
 		});
 	}
+
+	/**
+	 * カラーマップの初期化
+	 */
+	 function init_color_map() {
+		 var color_map = document.getElementById("color_map"),
+		 	context = color_map.getContext("2d"),
+			width = 20,
+			height = 256,
+			grad;
+
+		color_map.width = width;
+		color_map.height = height;
+
+		// グラデーションを作成
+		grad  = context.createLinearGradient(0, 0, 0, height);
+		grad.addColorStop(0, 'rgb(255, 0, 0)');
+		grad.addColorStop(0.5, 'rgb(0, 255, 0)');
+		grad.addColorStop(1.0, 'rgb(0, 0, 255)');
+		context.fillStyle = grad;
+		context.beginPath();
+		context.fillRect(0, 0, width, height);
+	 }
 
 	/**
 	 * タブ切り替え
@@ -152,6 +175,7 @@
 		init_bottom_bar();
 		init_bottom_tab();
 		init_vertical_bar();
+		init_color_map();
 	}
 
 	window.gui = {};

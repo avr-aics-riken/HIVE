@@ -95,34 +95,64 @@ body::-webkit-scrollbar-thumb {
 	float : left;
 	width : 50%;
 	height: 100%;
+	/*padding-left : 5px;*/
+	padding-left : 45px;  /* upper_right_box_leftの幅 40, vertical_barの幅 5 */
+	padding-right : 40px; /* upper_right_box_rightの幅 40 */
+	padding-bottom : 40px; /* upper_right_box_bottomの高さ 40 */
 	text-align: center;
-	padding-left : 5px; /* vertical_barの幅 */
 }
 
 /* 上部右側boxの中の左部分 */
 .upper_right_box_left {
+	position : relative;
 	float : left;
-	width : 10%;
-	height : 90%;
+	left : -40px;
+	top : -100%;
+	float : left;
+	width : 40px;
+	height : 100%;
+	margin : auto 0;
+}
+
+/* 上部右側boxの中の右部分 */
+.upper_right_box_right {
+	position : relative;
+	float : right;
+	right : -40px;
+	top : -100%;
+	width : 40px;
+	height : 100%;
 	margin : auto 0;
 }
 
 /* 上部右側boxの中の下部分 */
 .upper_right_box_bottom {
+	position : relative;
 	float : left;
-	height : 10%;
+	top : -100%;
 	width : 100%;
+	height : 40px;
 }
 
 /* 上部右側boxの中の中央部分 */
 .upper_right_box_center {
-	width : 90%;
-	height : 90%;
+	width: 100%;
+    height: 100%;
 	float : left;
 	overflow : auto;
 	padding-top : 10px;
+	padding-bottom : 40px;
 	border: 1px solid gray;
 	border-radius : 4px;
+}
+
+.color_map {
+	margin-top : 50px;
+	width : 20px;
+	height : 256px;
+	/*
+	background-color : red;
+	*/
 }
 
 /* 左上のキャンバス  */
@@ -305,7 +335,7 @@ body::-webkit-scrollbar-thumb {
 }
 
 /* 中央縦のバー */
-.vercial_bar {
+.vertical_bar {
 	width : 5px;
 	height : 100%;
 	position : relative;
@@ -313,7 +343,7 @@ body::-webkit-scrollbar-thumb {
 	background-color : lightgray;
 	border-radius : 4px;
 }
-.vercial_bar:hover {
+.vertical_bar:hover {
 	cursor : ew-resize;
 	background-color : orange;
 }
