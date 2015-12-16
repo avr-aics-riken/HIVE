@@ -90,11 +90,11 @@
 				var activecam = null,
 					i;
 				if (!core.sceneInfo.objectlist) {
-					console.erorr('Not find objectlist');
+					console.error('Not find objectlist');
 					return;
 				}
 				if (!core.sceneInfo.objecttimeline) {
-					console.erorr('Not find objecttimeline');
+					console.error('Not find objecttimeline');
 					return;
 				}
 				if (Array.isArray(core.sceneInfo.objecttimeline)) { // if empty array, it is empty object.
@@ -107,7 +107,7 @@
 					core.activeCamera = 'view';
 				}
 				if (!activecam) {
-					console.erorr('Not find active camera');
+					console.error('Not find active camera');
 				} else {
 					core.viewCamera = activecam.info;
 				}
