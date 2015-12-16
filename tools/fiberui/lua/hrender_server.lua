@@ -15,22 +15,32 @@ else
 end
 
 local connectAddress = 'ws://localhost:8080/'
+local ipcAddress = nil --'ipc:///tmp/HIVE_server_ipc'
 targetClientId = -1
+network_ipc = nil
+
 
 for i, v in pairs(arg) do
-	if arg[1] and arg[1]:sub(1,5) == 'ws://' then
-		connectAddress = arg[1]
+	if v and v:sub(1,5) == 'ws://' then
+		connectAddress = v
 	end
 	if v and v:sub(1,9) == '--client:' then
 		targetClientId = v:sub(10)
 	end
+	if v and v:sub(1,6) == 'ipc://' then
+		ipcAddress = v
+	end
 end
 
 print('[Server] Client Id=' .. targetClientId)
-
-
 print('HIVE renderer START. Connect to', connectAddress);
 
+if ipcAddress then
+	print('IPC open=', ipcAddress);
+	network_ipc = require("Network").Connection()
+	local ipcr = network_ipc:Connect(ipcAddress)
+	print('IPC ret=', ipcr)
+end
 
 local Log = function() end
 -- for Debug

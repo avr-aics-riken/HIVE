@@ -7,19 +7,18 @@
 	var HiveViewer;
 
 	// コンストラクタ
-	HiveViewer = function (target_element, output_callback) {
+	HiveViewer = function (target_element, output_callback, ws, ipc) {
 		this.target_element = target_element;
 		target_element.width = target_element.clientWidth;
 		target_element.height = target_element.clientHeight;
 		this.output_callback = output_callback;
 		// Hiveからのコールバック
-		this.core = new window.HiveCore(target_element, target_element.width, target_element.height, function (sceneInfo) {
-			/*
-			if (output_callback) {
-				output_callback(null, sceneInfo);
-			}
-			*/
-		});
+		this.core = new window.HiveCore(target_element,
+			target_element.width,
+			target_element.height, function (sceneInfo) {},
+			ws,
+			 true, // opengl Mode
+			 ipc);
 		this.init_mouse_event(this.core);
 		this.reduce_counter = 0;
 	};
@@ -87,8 +86,8 @@
 	/**
 	 * キャンバスを初期化.
 	 */
-	function init_canvas(canvas, output_callback) {
-		var viewer = new HiveViewer(canvas, output_callback);
+	function init_canvas(canvas, output_callback, ws, ipc) {
+		var viewer = new HiveViewer(canvas, output_callback, ws, ipc);
 		// 初回レンダー
 		setTimeout((function (viewer) {
 			return function () {
@@ -178,7 +177,7 @@
 			} else if (info) {
 				left_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 			}
-		});
+		}, 'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_left');
 		right_viewer = init_canvas(document.getElementById('right_canvas'), function (err, info) {
 			if (err) {
 				console.error(err);
@@ -186,7 +185,7 @@
 			} else if (info) {
 				right_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 			}
-		});
+		},'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_right');
 
 		// 左右のエディタを初期化.
 		init_editor(
