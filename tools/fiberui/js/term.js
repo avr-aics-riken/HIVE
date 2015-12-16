@@ -22,7 +22,7 @@
 			screenKeys : true,
 			colors : Terminal.xtermColors,
 			bg : target_element.style.backgroundColor,
-			geometry: [80, 20],
+			geometry: [128, 20],
 		});
 
 		bash.on('data', (function (term) {
