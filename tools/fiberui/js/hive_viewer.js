@@ -7,13 +7,13 @@
 	var HiveViewer;
 
 	// コンストラクタ
-	HiveViewer = function (target_element, width, height, output_callback) {
+	HiveViewer = function (target_element, output_callback) {
 		this.target_element = target_element;
-		target_element.width = width;
-		target_element.height = height;
+		target_element.width = target_element.clientWidth;
+		target_element.height = target_element.clientHeight;
 		this.output_callback = output_callback;
 		// Hiveからのコールバック
-		this.core = new window.HiveCore(target_element, width, height, function (sceneInfo) {
+		this.core = new window.HiveCore(target_element, target_element.width, target_element.height, function (sceneInfo) {
 			/*
 			if (output_callback) {
 				output_callback(null, sceneInfo);
@@ -72,15 +72,33 @@
 	};
 
 	/**
+	 * マウスイベントの初期化.
+	 */
+	HiveViewer.prototype.resize = function () {
+		var target_element = this.target_element,
+			w = target_element.clientWidth,
+			h = target_element.clientHeight;
+		target_element.width = w;
+		target_element.height = h;
+		this.core.resize(w, h);
+		this.core.render();
+	};
+
+	/**
 	 * キャンバスを初期化.
 	 */
 	function init_canvas(canvas, width, height, output_callback) {
 		var viewer = new HiveViewer(canvas, 512, 512, output_callback);
+		// 初回レンダー
 		setTimeout((function (viewer) {
 			return function () {
 				viewer.core.render();
 			};
 		}(viewer)), 1000);
+		// リサイズイベント登録.
+		window.addEventListener('resize', function (e) {
+			viewer.resize()
+		});
 		return viewer;
 	}
 
@@ -110,7 +128,14 @@
 
 		// ファイルダイアログイベントを受け取る
 		setf0_button.addEventListener("click", function (e) {
-						/*
+			// electronのファイルダイアログ
+			document.getElementById('dialog_box').style.display = "block";
+			dialog.showOpenDialog(function (fileNames) {
+				console.log("filenames", fileNames);
+					document.getElementById('dialog_box').style.display = "none";
+			});
+
+			/* HIVE_UIのダイアログ
 			var dialog,
 				dirfunc = function (path) {
 					viewer.core.getFileList(path, function (err, res) {
@@ -124,12 +149,6 @@
 			dialog.set_filter_input(document.getElementById('file_filter_input'));
 			dirfunc("/");
 			*/
-
-			document.getElementById('dialog_box').style.display = "block";
-			dialog.showOpenDialog(function (fileNames) {
-				console.log("filenames", fileNames);
-					document.getElementById('dialog_box').style.display = "none";
-			});
 		});
 		setf1_button.addEventListener("click", function (e) {
 			dialog.showOpenDialog(function (fileNames) {
@@ -145,10 +164,10 @@
 		var left_viewer,
 			right_viewer,
 			left_output = document.getElementById('left_output'),
-			right_output = document.getElementById('right_output'),
+			right_output = document.getElementById('right_output');
 
 		// 左右のキャンバスを初期化.
-		left_viewer = init_canvas(document.getElementById('left_canvas'), 512, 512, function (err, info) {
+		left_viewer = init_canvas(document.getElementById('left_canvas'), function (err, info) {
 			if (err) {
 				console.error(err);
 				left_output.innerHTML = err + "\n";
@@ -156,7 +175,7 @@
 				left_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 			}
 		});
-		right_viewer = init_canvas(document.getElementById('right_canvas'), 512, 512, function (err, info) {
+		right_viewer = init_canvas(document.getElementById('right_canvas'), function (err, info) {
 			if (err) {
 				console.error(err);
 				right_output.innerHTML = err + "\n";
