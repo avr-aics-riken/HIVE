@@ -87,8 +87,8 @@
 	/**
 	 * キャンバスを初期化.
 	 */
-	function init_canvas(canvas, width, height, output_callback) {
-		var viewer = new HiveViewer(canvas, 512, 512, output_callback);
+	function init_canvas(canvas, output_callback) {
+		var viewer = new HiveViewer(canvas, output_callback);
 		// 初回レンダー
 		setTimeout((function (viewer) {
 			return function () {
@@ -108,6 +108,7 @@
 	function init_editor(viewer, ace_editor, editor_elem, submit_elem) {
 		submit_elem.onclick = function (evt) {
 			viewer.core.runScript(ace_editor.getValue(), function (err, res) {
+				console.log(err, res);
 				if (viewer.output_callback) {
 					viewer.output_callback(err, res);
 				}
