@@ -4,16 +4,33 @@
 (function (window) {
 	'use strict';
 	
-	function HiveConnect() {
-		var url = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
-		this.url = url;
+	function HiveConnect(opt) { //wsUrl, ipcAddress) {
+		var wsUrl, ipcAddress, openglMode;
+		
+		if (opt) {
+			if (opt.url) {
+				wsUrl = opt.url;
+			}
+			if (opt.ipc) {
+				ipcAddress = opt.ipc;				
+			}
+			if (opt.opengl) {
+				openglMode = opt.opengl;
+			}
+		}
+		if (!wsUrl) {
+			wsUrl = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
+		}
+		this.url = wsUrl;
+		this.ipcAddress = ipcAddress;
+		this.openGLMode = openglMode;
 		this.messageCount = 0;
 		this.callbacks = {};
-		this.reconnectTimeout = 2000;
-		this.reconnect();
 		this.methodFuncs = {};
 		this.myid = -1;
 		this.rendererId = -1;
+		this.reconnectTimeout = 2000;
+		this.reconnect();
 	}
 	
 	HiveConnect.prototype.setRendererId = function (id) {
@@ -62,7 +79,7 @@
 		ws.addEventListener('open', (function (self) {
 			return function (event) {
 				console.log('[NETWORK] Connected.');
-				self.masterMethod('register', {mode: 'client'}, function (err, ret) {
+				self.masterMethod('register', {mode: 'client', opengl:self.openGLMode, ipc:self.ipcAddress}, function (err, ret) {
 					console.log('Reigstered', ret);
 					self.myid = ret.id;
 				}); // Initial response

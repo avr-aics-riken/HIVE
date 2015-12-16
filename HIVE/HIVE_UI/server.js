@@ -231,7 +231,7 @@ ws.on('request', function (request) {
 	*/
 	function masterMethod(method, param, msg_id, from) {
 		console.log('[DEBUG] masterMethod:', method, param, msg_id);
-		var clientNode, json, fr_conn, wsc;
+		var clientNode, json, fr_conn, wsc, args;
 		if (from != undefined) {
 			wsc = ws_connections[parseInt(from)];
 			if (wsc) {
@@ -269,8 +269,18 @@ ws.on('request', function (request) {
 					result: JSON.stringify(json),
 					id: msg_id
 				}));
-				
-				clientNode.renderproc = startupHRenderServer(['--client:' + connection.id, 'ws://localhost:' + port]);
+				args = ['--client:' + connection.id, 'ws://localhost:' + port];
+				if (param.opengl == true) {
+					args.push('--opengl');
+				}
+				if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
+					args.push(param.ipc);
+				}
+				var a;
+				for (a in args) {
+					console.log('ARG=[' + a + '] = ' + args[a]);
+				}
+				clientNode.renderproc = startupHRenderServer(args);
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
@@ -507,10 +517,6 @@ function startupHRenderServer(optarray) {
 		}
 	}
 	
-	for (i = 0; i < arg.length; i = i + 1) {	
-		console.log('HRENDER ARG['+ i +']', arg[i])
-	}
-	
 	try {
 		process = spawn(HRENDER, arg);
 		process.stdout.on('data', function (data) {
@@ -521,7 +527,7 @@ function startupHRenderServer(optarray) {
 		});
 		process.on('exit', function (code) {
 			console.error('-------------------------\nhrender is terminated.\n-------------------------');
-			console.log('exit code: ' + code);
+			console.log('exit code: ', code);
 		});
 		process.on('error', function (err) {
 			console.log('process error', err);

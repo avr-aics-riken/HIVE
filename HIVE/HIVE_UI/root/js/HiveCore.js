@@ -45,7 +45,7 @@
 		}
 	}
 	
-	function registerMethods(hiveCore, resultElement, infoCallback) {
+	function registerMethods(hiveCore, resultElement, infoCallback, ipcAddress) {
 		if (!hiveCore.conn) { return; }
 		
 		hiveCore.conn.method('open', function (res) {
@@ -116,7 +116,7 @@
 		}(hiveCore, infoCallback)));
 		
 		hiveCore.conn.method('renderedImage', function (param, data) {
-			var w, h;
+			var w, h, cmd;
 			if (param.type === 'jpg') {
 				resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
 				if (hiveCore.websocketConn) {
@@ -129,14 +129,50 @@
 			// Refine render
 			if (!param.canceled) {
 				if (param.width <= hiveCore.screenSize[0] && param.height <= hiveCore.screenSize[1]) {
-					//console.log('REFINE RENDER!', param.width * 2, param.height * 2);
-					var w = Math.min(param.width * 2, hiveCore.screenSize[0] * 2),
-						h = Math.min(param.height * 2, hiveCore.screenSize[1] * 2),
-						cmd = HiveCommand.renderCamera(w, h, hiveCore.activeCamera, true);
+					w = Math.min(param.width * 2, hiveCore.screenSize[0] * 2);
+					h = Math.min(param.height * 2, hiveCore.screenSize[1] * 2);
+					cmd = HiveCommand.renderCamera(w, h, hiveCore.activeCamera, this.useIpc, true);
 					runScript(hiveCore.conn, cmd);
 				}
 			}
 		});
+		
+		if (ipcAddress) {
+			// Electron only
+			var nano = require('nanomsg');
+			var sc = nano.socket('pair');
+			var buffercopy = require('buffercopy');
+			var meta = require('./js/lib/metabinary'); // path from index.html
+			var ret = sc.bind(ipcAddress);
+			console.log('IPC bind = ', ret, ipcAddress);
+			
+			sc.on('data', function (data) {
+				if (!meta.loadMetaBinary(data, function(meta, data) {
+					var w, h,
+						param = meta.param;				
+					if (param.type === 'jpg') {
+						// resultElement is img.
+						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+						if (hiveCore.websocketConn) {
+							w = hiveCore.screenSize[0];
+							h = hiveCore.screenSize[1];
+							sendImageToSIP(hiveCore.websocketConn, hiveCore.chowderConnectionID, data, w, h);
+						}
+					} else if (param.type === 'raw'){
+						// resultElement is canvas.
+						//resultElement.setAttribute('width', param.width),
+						//resultElement.setAttribute('height', param.height);
+						var context = resultElement.getContext('2d');
+						var imageData = context.createImageData(param.width, param.height);
+						buffercopy.buffercopy(data, imageData.data);
+						context.putImageData(imageData, 0, 0);
+					}
+					
+				})) {
+					console.error('Not metabin foramt');
+				};
+			});
+		}
 	}
 		
 	function lerpInfo(preInfo, postInfo, time) {
@@ -230,8 +266,15 @@
 	//----------------------------------------------------------------------------------------------
 	// Contructor
 	//
-	var HiveCore = function (resultElement, width, height, infoCallback) {
-		this.conn = new HiveConnect();
+	var HiveCore = function (resultElement, width, height, infoCallback, wsurl, openglMode, ipcAddress) {
+		//var wsurl = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
+		console.log("HiveCore WSURL=", wsurl, 'host=', location.host);
+		var ogl = false;
+		if (openglMode !== undefined) {
+			ogl = openglMode;
+		}
+		console.log('HiveConnect:', {url:wsurl, ipc:ipcAddress, opengl:ogl});
+		this.conn = new HiveConnect({url:wsurl, ipc:ipcAddress, opengl:ogl});
 		this.resize(width, height);
 		this.modelCount = 0;
 		this.sceneInfo = {};
@@ -241,7 +284,8 @@
 		this.sceneInfo.objecttimeline = {};
 		this.websocketConn = null;
 		this.chowderConnectionID = 0;
-		registerMethods(this, resultElement, infoCallback);
+		this.useIpc = ipcAddress ? true : false;
+		registerMethods(this, resultElement, infoCallback, ipcAddress);
 	};
 
 	//----------------------------------------------------------------------------------------------
@@ -255,7 +299,11 @@
 		// TODO: Temp camera
 		var cmd = '';
 		cmd += HiveCommand.cameraLookat(this.activeCamera, this.viewCamera.position, this.viewCamera.target, this.viewCamera.up, this.viewCamera.fov);
-		cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera, true);
+		if (this.useIpc){
+			cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0], 10), parseInt(this.screenSize[1], 10), this.activeCamera, this.useIpc, true);
+		} else {
+			cmd += HiveCommand.renderCamera(parseInt(this.screenSize[0] / 32, 10), parseInt(this.screenSize[1] / 32, 10), this.activeCamera, this.useIpc, true);
+		}
 		runScript(this.conn, cmd);
 	};
 	
@@ -602,7 +650,7 @@
 					if (obj.type === 'CAMERA') {
 						if (hasProp(obj.info, 'outputfile') && hasProp(obj.info, 'screensize')) {
 							cmd = cmd
-								+ HiveCommand.renderCamera(parseInt(obj.info.screensize[0], 10), parseInt(obj.info.screensize[1], 10), obj.name, false) + "\n"
+								+ HiveCommand.renderCamera(parseInt(obj.info.screensize[0], 10), parseInt(obj.info.screensize[1], 10), obj.name, false, false) + "\n"
 								+ "local camera = HIVE_ObjectTable['" + obj.name + "'] \n"
 								+ "local imageBuffer = camera:GetImageBuffer() \n";
 							if (frameIndex >= 0) {

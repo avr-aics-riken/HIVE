@@ -29,9 +29,13 @@
 			src += 'hcmd.LoadSPH("' + name + '","' + filename + '","' + shader + '")';
 			return src;
 		},
-		renderCamera : function (w, h, cameraname, useReturn) {
+		renderCamera : function (w, h, cameraname, useipc, useReturn) {
 			var src = useReturn ? 'return ' : '';
-			src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '")';
+			if (useipc) {
+				src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '", "raw", true)';
+			} else {
+				src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '", "jpg", false)';				
+			}
 			return src;
 		},
 		newScene : function () {

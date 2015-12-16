@@ -64,11 +64,17 @@ public:
     
     const MetaBinary::Buffer BinaryBuffer() const
     {
+        if (!m_byteBuffer) {
+            return 0;
+        }
         return reinterpret_cast<MetaBinary::Buffer>(m_byteBuffer->GetBuffer());
     }
     
     int BinaryBufferSize() const
     {
+        if (!m_byteBuffer) {
+            return 0;
+        }
         return m_byteBuffer->GetNum();
     }
     
