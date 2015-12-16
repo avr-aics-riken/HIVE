@@ -111,6 +111,7 @@ body::-webkit-scrollbar-thumb {
 	padding-left : 45px;  /* upper_right_box_leftの幅 40, vertical_barの幅 5 */
 	padding-right : 40px; /* upper_right_box_rightの幅 40 */
 	padding-bottom : 40px; /* upper_right_box_bottomの高さ 40 */
+	padding-top : 20px;
 	text-align: center;
 }
 

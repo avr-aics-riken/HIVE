@@ -3,6 +3,10 @@
 (function () {
 	"use strict";
 
+	// ビューポートのリサイズが必要なときに投げるイベント.
+	var resize_viewport_event = document.createEvent('UIEvents');
+		resize_viewport_event.initEvent('resize_viewport', false, false);
+
 	/**
 	 * エディタの初期化.
 	 */
@@ -15,6 +19,13 @@
 
 		right_editor.getSession().setMode("ace/mode/lua");
 		left_editor.getSession().setMode("ace/mode/lua");
+	}
+
+	function resize_editor() {
+		var right_editor = ace.edit("right_editor"),
+			left_editor = ace.edit("left_editor");
+		right_editor.resize();
+		left_editor.resize();
 	}
 
 	/**
@@ -30,6 +41,12 @@
 			is_mouse_down = true;
 		});
 		window.addEventListener('mouseup', function (evt) {
+			if (is_mouse_down) {
+				// エディタのリサイズ
+				resize_editor();
+				// resizeイベントを投げる.
+				bar.dispatchEvent(resize_viewport_event);
+			}
 			is_mouse_down = false;
 		});
 		window.addEventListener('mousemove', function (evt) {
@@ -39,12 +56,15 @@
 						page_height = document.body.scrollHeight || document.documentElement.scrollHeight,
 						pos = offset + evt.clientY,
 						ratio = pos / page_height,
-						percent;
+						percent,
+						resize_event;
 					//console.log(pos, page_height, ratio);
 					if (ratio > 0.1 && ratio < 0.9) {
 						percent = ratio * 100;
 						upper_area.style.height = String(percent) + "%";
 						lower_area.style.height = String(100 - percent) + "%";
+						// resizeイベントを投げる.
+						bar.dispatchEvent(resize_viewport_event);
 					}
 				}());
 			}
@@ -65,6 +85,10 @@
 			is_mouse_down = true;
 		});
 		window.addEventListener('mouseup', function (evt) {
+			if (is_mouse_down) {
+				// エディタのリサイズ
+				resize_editor();
+			}
 			is_mouse_down = false;
 		});
 		window.addEventListener('mousemove', function (evt) {
@@ -86,7 +110,7 @@
 	}
 
 	/**
-	 * 下部のバーの初期化.
+	 * 上部のバーの初期化.
 	 * ドラッグにより左右の区画の比率を変える
 	 */
 	function init_vertical_bar() {
@@ -98,6 +122,10 @@
 			is_mouse_down = true;
 		});
 		window.addEventListener('mouseup', function (evt) {
+			if (is_mouse_down) {
+				// resizeイベントを投げる.
+				bar.dispatchEvent(resize_viewport_event);
+			}
 			is_mouse_down = false;
 		});
 		window.addEventListener('mousemove', function (evt) {
@@ -114,6 +142,8 @@
 						left_box.style.width = String(percent) + "%";
 						bar.style.left = String(percent) + "%";
 						right_box.style.width = String(100 - percent) + "%";
+						// resizeイベントを投げる.
+						bar.dispatchEvent(resize_viewport_event);
 					}
 				}());
 			}
