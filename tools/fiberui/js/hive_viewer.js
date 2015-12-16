@@ -197,7 +197,18 @@
 			right_editor,
 			document.getElementById('right_editor_submit'));
 
+		// ファイルダイアログを初期化
 		init_filedialog(right_viewer);
+
+		// バーが動いた時にビューポートをリサイズさせる
+		document.getElementById('middle_bar').addEventListener('resize_viewport', function () {
+			left_viewer.resize();
+			right_viewer.resize();
+		});
+		document.getElementById('vertical_bar').addEventListener('resize_viewport', function () {
+			left_viewer.resize();
+			right_viewer.resize();
+		});
 	}
 
 	window.hive_viewer = {};
