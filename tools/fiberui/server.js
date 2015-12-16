@@ -2,8 +2,8 @@
 /*global require, Error, process*/
 
 var	HRENDER = '../hrender',
-	HRENDER_ARG = ['./lua/hrender_server.lua'],
-	HRENDER_THUMBNAIL_ARG = ['./lua/hrender_thumbnail.lua'],
+	HRENDER_ARG = ['lua/hrender_server.lua'],
+	HRENDER_THUMBNAIL_ARG = ['lua/hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = './root/',
 	port = process.argv.length > 2 ? process.argv[2] : 8080,
 	http = require('http'),
@@ -41,7 +41,7 @@ function sendErrorMessage(ws_node, msgstr, id) {
 	if (!ws_node) {
 		return;
 	}
-	
+
 	ws_node.send(JSON.stringify({
 		JSONRPC: "2.0",
 		error: msgstr,
@@ -223,21 +223,21 @@ ws.on('request', function (request) {
 	console.log('[CONNECTION] Connection accepted : id = ' + id_counter + ' / ' + (new Date()));
 	// save connection with id
 	connection.id = id_counter;
-	ws_connections[id_counter] = {id:id_counter , conn:connection};	
+	ws_connections[id_counter] = {id:id_counter , conn:connection};
 	id_counter = id_counter + 1;
-	
+
 	/*
 		Master process methods
 	*/
 	function masterMethod(method, param, msg_id, from) {
 		console.log('[DEBUG] masterMethod:', method, param, msg_id);
-		var clientNode, json, fr_conn, wsc;
+		var clientNode, json, fr_conn, wsc, args;
 		if (from != undefined) {
 			wsc = ws_connections[parseInt(from)];
 			if (wsc) {
 				fr_conn = wsc.conn;
 			}
-		}	
+		}
 		if (method === 'register') { // Register Renderer or Client
 			if (param.mode === 'renderer') {
 				console.log('[CONNECTION] Connected Renderer id = ' + connection.id);
@@ -255,7 +255,7 @@ ws.on('request', function (request) {
 					param:JSON.stringify(json),
 					id: msg_id
 				}));
-				
+
 			} else if (param.mode === 'client') {
 				console.log('[CONNECTION] Connected client id = ' + connection.id);
 				connection.type = 'client';
@@ -269,8 +269,18 @@ ws.on('request', function (request) {
 					result: JSON.stringify(json),
 					id: msg_id
 				}));
-				
-				clientNode.renderproc = startupHRenderServer(['--client:' + connection.id, 'ws://localhost:' + port]);
+				args = ['--client:' + connection.id, 'ws://localhost:' + port];
+				if (param.opengl == true) {
+					args.push('--opengl');
+				}
+				if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
+					args.push(param.ipc);
+				}
+				var a;
+				for (a in args) {
+					console.log('ARG=[' + a + '] = ' + args[a]);
+				}
+				clientNode.renderproc = startupHRenderServer(args);
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
@@ -288,7 +298,7 @@ ws.on('request', function (request) {
 			console.error('Error: Unknow method');
 		}
 	}
-	
+
 	/*
 		Process utf8 text message
 	*/
@@ -345,7 +355,7 @@ ws.on('request', function (request) {
 			}
 		}
 	}
-	
+
 	/*
 		Process binary message
 	*/
@@ -375,7 +385,7 @@ ws.on('request', function (request) {
 			}
 		}
 	}
-	
+
 	connection.on('message', function (message) {
 		var ret;
 		//console.log('[DEBUG] message=', message);
@@ -397,22 +407,22 @@ ws.on('request', function (request) {
 			}(message.binaryData)));
 		}
 	});
-	
+
 	connection.on('close', function (connection) {
 		return function () {
-			console.log('[CONNECTION] Connection closed : type = [' + connection.type + "] id = " + connection.id);			
+			console.log('[CONNECTION] Connection closed : type = [' + connection.type + "] id = " + connection.id);
 			if (connection.type === 'client') {
 				console.log('Dissconnect client', connection.renderproc);
 				if (connection.renderproc){
 					connection.renderproc.kill();
 				}
-			} 
+			}
 			delete ws_connections[connection.id];
-			
+
 			/*if (connection.type === 'renderer') {
 				renderNode = null;
 			} else if (connection.type === 'client') {
-				clientNode = null;			
+				clientNode = null;
 			}*/
 		};
 	}(connection));
@@ -455,10 +465,10 @@ function captureThumbnail() {
 		},
 		executeFunc = function (index, fragpath, outpath, json) {
 			var process = spawn(HRENDER, [HRENDER_THUMBNAIL_ARG, fragpath, outpath, json]);
-			
+
 			console.log("fragpath:" + fragpath);
 			console.log("outpath:" + outpath);
-			
+
 			process.stdout.on('data', function (data) {
 				console.log('stdout: ' + data);
 			});
@@ -473,7 +483,7 @@ function captureThumbnail() {
 				console.log('process error', err);
 			});
 		};
-	
+
 	try {
 		files = fs.readdirSync(shaderdir);
 		// search valid frags for progress
@@ -490,7 +500,7 @@ function captureThumbnail() {
 		console.log('process error', e);
 	}
 }
-captureThumbnail();
+//captureThumbnail();
 
 
 var spawnProcesses = [];
@@ -500,17 +510,13 @@ function startupHRenderServer(optarray) {
 	var process = null,
 		i,
 		arg = JSON.parse(JSON.stringify(HRENDER_ARG)); // copy
-	
+
 	if (optarray) {
-		for (i = 0; i < optarray.length; i = i + 1) {	
+		for (i = 0; i < optarray.length; i = i + 1) {
 			arg.push(optarray[i]);
 		}
 	}
-	
-	for (i = 0; i < arg.length; i = i + 1) {	
-		console.log('HRENDER ARG['+ i +']', arg[i])
-	}
-	
+
 	try {
 		process = spawn(HRENDER, arg);
 		process.stdout.on('data', function (data) {
@@ -521,7 +527,7 @@ function startupHRenderServer(optarray) {
 		});
 		process.on('exit', function (code) {
 			console.error('-------------------------\nhrender is terminated.\n-------------------------');
-			console.log('exit code: ' + code);
+			console.log('exit code: ', code);
 		});
 		process.on('error', function (err) {
 			console.log('process error', err);
@@ -529,7 +535,7 @@ function startupHRenderServer(optarray) {
 	} catch (e) {
 		console.log('process error', e);
 	}
-	
+
 	spawnProcesses.push(process);
 	return process;
 }
