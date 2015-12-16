@@ -287,7 +287,7 @@ local function LoadPDB(name, filename, shader)
 	return 'LoadPDB:' .. tostring(ret)
 end
 local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
-	--print('RenderCamera', w, h, cameraname)
+	--print('RenderCamera', w, h, cameraname, imagemode, ipcmode)
 	local starttm = os.clock()
 	local camera = HIVE_ObjectTable[cameraname]
 	if camera == nil then return "No Camera" end
@@ -351,9 +351,12 @@ local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
 			local img = camera:GetImageBuffer()
 			HIVE_metabin:Create(json, img:GetBuffer(), img:GetSize())
 			createtm = os.clock()
+		else
+			print('[Error] Unsupported data type sendmode =>', sendmode)
 		end
+		
 		-- 	send through websocket
-		if ipcmode == true then
+		if ipcmode == true and network_ipc then
 			network_ipc:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
 		else
 			network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())

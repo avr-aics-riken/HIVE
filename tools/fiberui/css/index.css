@@ -172,13 +172,14 @@ body::-webkit-scrollbar-thumb {
 .left_canvas {
 	width : 100%;
 	height : 100%;
-	/*margin-top : 10px;*/
+	transform: scale(1.0,-1.0);
 }
 
 /* 右上のキャンバス */
 .right_canvas {
 	width : 100%;
 	height : 100%;
+	transform: scale(1.0,-1.0);
 }
 
 /* 下側box */
