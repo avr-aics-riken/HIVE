@@ -83,7 +83,7 @@ body::-webkit-scrollbar-thumb {
 /* 上側 */
 .upper_area {
 	height : 60%;
-	padding : 15px;
+	/*padding : 15px;*/
 	background-color : rgba(55, 55, 55, 1);
 }
 
@@ -100,7 +100,7 @@ body::-webkit-scrollbar-thumb {
 	float : left;
 	background-color : rgba(55, 55, 55, 1);
 	text-align: center;
-	overflow : auto;
+	/*overflow : auto;*/
 }
 
 /* 上部右側box */
@@ -151,11 +151,10 @@ body::-webkit-scrollbar-thumb {
 	width: 100%;
     height: 100%;
 	float : left;
-	overflow : auto;
+	/*overflow : auto;
 	padding-top : 10px;
-	padding-bottom : 40px;
+	padding-bottom : 40px;*/
 	border: 1px solid gray;
-	border-radius : 4px;
 }
 
 /* 上部右側boxの中のカラーマップ */
@@ -169,15 +168,15 @@ body::-webkit-scrollbar-thumb {
 
 /* 左上のキャンバス  */
 .left_canvas {
-	width : 512px;
-	height : 512px;
-	margin-top : 10px;
+	width : 100%;
+	height : 100%;
+	/*margin-top : 10px;*/
 }
 
 /* 右上のキャンバス */
 .right_canvas {
-	height : 512px;
-	width : 512px;
+	width : 100%;
+	height : 100%;
 }
 
 /* 下側box */
