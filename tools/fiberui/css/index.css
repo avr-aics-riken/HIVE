@@ -109,7 +109,7 @@ body::-webkit-scrollbar-thumb {
 	width : 50%;
 	height: 100%;
 	padding-left : 45px;  /* upper_right_box_leftの幅 40, vertical_barの幅 5 */
-	padding-right : 40px; /* upper_right_box_rightの幅 40 */
+	padding-right : 50px; /* upper_right_box_rightの幅 50 */
 	padding-bottom : 40px; /* upper_right_box_bottomの高さ 40 */
 	padding-top : 20px;
 	text-align: center;
@@ -131,9 +131,9 @@ body::-webkit-scrollbar-thumb {
 .upper_right_box_right {
 	position : relative;
 	float : right;
-	right : -40px;
+	right : -50px;
 	top : -100%;
-	width : 40px;
+	width : 50px;
 	height : 100%;
 	margin : auto 0;
 }
@@ -162,9 +162,10 @@ body::-webkit-scrollbar-thumb {
 .color_map {
 	position : relative;
 	top : 50%;
+	/*left : -5px;*/
 	margin-top : -128px;
-	width : 20px;
-	height : 256px;
+	width : 35px;
+	height : 256px; /* 256 + 10 */
 }
 
 /* 左上のキャンバス  */

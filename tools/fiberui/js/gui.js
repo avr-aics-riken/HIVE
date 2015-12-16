@@ -150,27 +150,106 @@
 		});
 	}
 
+	function draw_color_map(context, grad_param, color_steps) {
+		var grad_width = grad_param.grad_width,
+			grad_height = grad_param.grad_height,
+			width = grad_param.width,
+			height = grad_param.height,
+			padding = grad_param.padding,
+			grad,
+			i,
+			step;
+
+		context.clearRect(0, 0, width, height);
+
+		// グラデーションを作成
+		grad  = context.createLinearGradient(0, 0, 0, height);
+		for (i = 0; i < color_steps.length; i = i + 1) {
+			grad.addColorStop(color_steps[i].step, color_steps[i].color);
+		}
+		context.fillStyle = grad;
+		context.beginPath();
+		context.fillRect(0, padding, grad_width, grad_height);
+		context.closePath();
+
+		context.lineWidth = 1.0;
+		context.strokeStyle = 'gray';
+		// グラデーション操作用GUI部品作成
+		for (i = 0; i < color_steps.length; i = i + 1) {
+			step = color_steps[i].step;
+			context.beginPath();
+			context.moveTo(grad_width, step * grad_height + padding);
+			context.lineTo(grad_width + 5, step * grad_height);
+			context.lineTo(width, step * grad_height);
+			context.lineTo(width, step * grad_height + padding * 2);
+			context.lineTo(grad_width + 5, step * grad_height + padding * 2);
+			context.lineTo(grad_width, step * grad_height + padding);
+			context.closePath();
+			context.fill();
+			context.stroke();
+		}
+	}
+
 	/**
 	 * カラーマップの初期化
 	 */
 	 function init_color_map() {
 		 var color_map = document.getElementById("color_map"),
 		 	context = color_map.getContext("2d"),
-			width = 20,
-			height = 256,
-			grad;
+			width = 30, // カラーマップ全体の幅（矢印含む
+			height = 256 + 10, // カラーマップ全体の高さ（矢印含む
+			color_steps = [
+				{ step : 0, color : 'rgb(255, 0, 0)'},
+				{ step : 0.5, color : 'rgb(0, 255, 0)'},
+				{ step : 1.0, color : 'rgb(0, 0, 255)'}
+			],
+			grad_param = {
+				grad_width : 18,
+				grad_height : 256,
+				width : 35,
+				height : 256 + 10,
+				padding : 5
+			},
+			dragging_step = null,
+			i,
+			step;
 
 		color_map.width = width;
 		color_map.height = height;
+		draw_color_map(context, grad_param, color_steps);
 
-		// グラデーションを作成
-		grad  = context.createLinearGradient(0, 0, 0, height);
-		grad.addColorStop(0, 'rgb(255, 0, 0)');
-		grad.addColorStop(0.5, 'rgb(0, 255, 0)');
-		grad.addColorStop(1.0, 'rgb(0, 0, 255)');
-		context.fillStyle = grad;
-		context.beginPath();
-		context.fillRect(0, 0, width, height);
+		window.onmousedown = function (e) {
+			var rect = color_map.getBoundingClientRect(),
+				px = e.clientX - rect.left,
+				py = e.clientY - rect.top,
+				arrow = {};
+			if (e.button == 0) {
+				for (i = 0; i < color_steps.length; i = i + 1) {
+					step = color_steps[i].step;
+					arrow.x = 0;
+					arrow.y = step * grad_param.grad_height - (grad_param.padding + 2);
+					arrow.w = grad_param.width;
+					arrow.h =  (grad_param.padding + 2) * 2;
+					if (arrow.x < px && px < (arrow.x + arrow.w) &&
+						arrow.y < py && py < (Math.max(arrow.y, 0) + arrow.h)) {
+						dragging_step = color_steps[i];
+						break;
+					}
+				}
+			}
+		};
+		window.onmousemove = function (e) {
+			var rect = color_map.getBoundingClientRect(),
+				px = e.clientX - rect.left,
+				py = e.clientY - rect.top;
+			if (dragging_step) {
+				dragging_step.step = Math.min(Math.max(py / grad_param.grad_height, 0.0), 1.0);
+				draw_color_map(context, grad_param, color_steps);
+			}
+		};
+		window.addEventListener('mouseup', function () {
+			dragging_step = null;
+		});
 	}
 
 	/**
