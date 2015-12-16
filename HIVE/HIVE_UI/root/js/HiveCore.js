@@ -6,7 +6,7 @@
 
 (function (window) {
 	'use strict';
-	
+
 	//----------------------------------------------------------------------------------------------
 	// internal functions
 	//
@@ -44,10 +44,9 @@
 			connection.send(metabin);
 		}
 	}
-	
 	function registerMethods(hiveCore, resultElement, infoCallback, ipcAddress) {
 		if (!hiveCore.conn) { return; }
-		
+
 		hiveCore.conn.method('open', function (res) {
 			//hiveCore.updateSceneInformation();// not connected to renderer yet.
 		});
@@ -55,7 +54,7 @@
 		hiveCore.conn.method('registerRender', function(res) {
 			console.log('registerRender!!!!!', res);
 			hiveCore.conn.setRendererId(parseInt(res.id));
-			
+
 			hiveCore.updateSceneInformation(); // renderer query
 		});
 
@@ -72,7 +71,7 @@
 						'rgbatex'
 					];
 				core.sceneInfo = param;
-				
+
 				// change [] to {}
 				if (param.hasOwnProperty('objectlist')) {
 					for (i = 0; i < param.objectlist.length; i = i + 1) {
@@ -90,11 +89,11 @@
 				var activecam = null,
 					i;
 				if (!core.sceneInfo.objectlist) {
-					console.erorr('Not find objectlist');
+					console.error('Not find objectlist');
 					return;
 				}
 				if (!core.sceneInfo.objecttimeline) {
-					console.erorr('Not find objecttimeline');
+					console.error('Not find objecttimeline');
 					return;
 				}
 				if (Array.isArray(core.sceneInfo.objecttimeline)) { // if empty array, it is empty object.
@@ -107,14 +106,14 @@
 					core.activeCamera = 'view';
 				}
 				if (!activecam) {
-					console.erorr('Not find active camera');
+					console.error('Not find active camera');
 				} else {
 					core.viewCamera = activecam.info;
 				}
 				infoCallback(param);
 			};
 		}(hiveCore, infoCallback)));
-		
+
 		hiveCore.conn.method('renderedImage', function (param, data) {
 			var w, h, cmd;
 			if (param.type === 'jpg') {
@@ -125,7 +124,7 @@
 					sendImageToSIP(hiveCore.websocketConn, hiveCore.chowderConnectionID, data, w, h);
 				}
 			}
-			
+
 			// Refine render
 			if (!param.canceled) {
 				if (param.width <= hiveCore.screenSize[0] && param.height <= hiveCore.screenSize[1]) {
@@ -174,7 +173,7 @@
 			});
 		}
 	}
-		
+
 	function lerpInfo(preInfo, postInfo, time) {
 		var result = null,
 			i,
@@ -237,10 +236,10 @@
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	function craeteLoadModelCommand(filepath, modelName, shader) {
 		var name = modelName,
 			cmd,
@@ -294,7 +293,7 @@
 	HiveCore.prototype.resize = function (width, height) {
 		this.screenSize = [Math.floor(width), Math.floor(height)];
 	};
-	
+
 	HiveCore.prototype.render = function () {
 		// TODO: Temp camera
 		var cmd = '';
@@ -306,10 +305,10 @@
 		}
 		runScript(this.conn, cmd);
 	};
-	
+
 	HiveCore.prototype.connectToSIP = function (url, openCallback, closeCallback) {
 		var client;
-		
+
 		try {
 			client = new WebSocket(url);
 			client.onopen = (function (self, clie) {
@@ -341,14 +340,14 @@
 			this.websocketConn = null;
 		}
 	};
-	
+
 	HiveCore.prototype.closeSIP = function () {
 		if (this.websocketConn) {
 			this.websocketConn.close();
 			this.websocketConn = null;
 		}
 	};
-	
+
 	//----------------------------------------------------------------------------------------------
 	// Loader
 	//
@@ -390,7 +389,7 @@
 		var cmd = HiveCommand.updateSceneInformation();
 		runScript(this.conn, cmd);
 	};
-	
+
 	HiveCore.prototype.findObject = function (objname) {
 		var obj = null,
 			i;
@@ -404,11 +403,11 @@
 		}
 		return obj;
 	};
-	
+
 	HiveCore.prototype.getSceneData = function () {
 		return this.sceneInfo;
 	};
-	
+
 	HiveCore.prototype.getVolumeAnalyzerData = function (name, min, max, callback) {
 		var cmd = HiveCommand.getVolumeAnalyzerData(name, min, max);
 		console.log(cmd);
@@ -469,7 +468,7 @@
 		return src;
 	}
 
-	
+
 	function createSceneRenderCommandHeader() {
 		var header = "package.path = './?.lua;' .. package.path \n"
 				+ "HIVE_ObjectTable = {} -- Global: All Object List \n"
@@ -482,7 +481,7 @@
 				+ "hcmd = require('HiveCommand'); \n";
 		return header;
 	}
-	
+
 	function createUpdateTimeCommand(time, obj, timeline) {
 		var objname = obj.name,
 			objtype = obj.type,
@@ -500,7 +499,7 @@
 			g,
 			b,
 			a;
-		
+
 		if (tinfo !== undefined) {
 			m = tinfo.length;
 			for (j = 0; j < m; j = j + 1) {
@@ -539,7 +538,7 @@
 		}
 		return cmd;
 	}
-	
+
 	function createSceneCommand(sceneInfo, isExport, includeHeader, time, frameIndex) {
 		var cmd,
 			i,
@@ -559,7 +558,7 @@
 			shaderName,
 			isExportAnimation,
 			isSaveAnimationScene;
-		
+
 		if (!sceneInfo) {
 			return;
 		}
@@ -568,7 +567,7 @@
 		}
 		isExportAnimation = hasProp(sceneInfo, 'objecttimeline') && isExport;
 		isSaveAnimationScene = hasProp(sceneInfo, 'objecttimeline') && (!isExport);
-		
+
 		if (includeHeader) {
 			cmd = createSceneRenderCommandHeader();
 			cmd = cmd + '(function ()' + "\n";
@@ -577,14 +576,14 @@
 			cmd = '(function ()' + "\n";
 			cmd = cmd + HiveCommand.newScene() + "\n";
 		}
-		
+
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
 			obj = sceneInfo.objectlist[i];
 			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
 				if (obj.type === 'CAMERA') {
 					cmd = cmd + HiveCommand.createCamera(obj.name) + "\n";
 					modelCount = modelCount + 1;
-					
+
 					if (!(isExportAnimation && sceneInfo.objecttimeline[obj.name] !== undefined)) {
 						if (hasProp(obj.info, 'position') && hasProp(obj.info, 'target') && hasProp(obj.info, 'up') && hasProp(obj.info, 'fov')) {
 							cmd = cmd + HiveCommand.cameraLookat(obj.name, obj.info.position, obj.info.target, obj.info.up, obj.info.fov) + "\n";
@@ -620,7 +619,7 @@
 						}
 						cmd = cmd + craeteLoadModelCommand(obj.info.filename, obj.name, shaderName) + "\n";
 						modelCount = modelCount + 1;
-						
+
 						if (!(isExportAnimation && sceneInfo.objecttimeline[obj.name] !== undefined)) {
 							if (hasProp(obj.info, 'translate') && hasProp(obj.info, 'rotate') && hasProp(obj.info, 'scale')) {
 								cmd = cmd + HiveCommand.setModelTranslation(obj.name, obj.info.translate, obj.info.rotate, obj.info.scale) + "\n";
@@ -632,7 +631,7 @@
 				}
 			}
 		}
-		
+
 		if (isExportAnimation) {
 			for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
 				obj = sceneInfo.objectlist[i];
@@ -666,7 +665,7 @@
 				}
 			}
 		}
-		
+
 		cmd = cmd + 'end)();\n\n';
 		return { command : cmd, modelcount : modelCount };
 	}
@@ -678,7 +677,7 @@
 				return target.hasOwnProperty(prop);
 			},
 			shaderNames = [];
-			
+
 		for (i = 0; i < sceneInfo.objectlist.length; i = i + 1) {
 			obj = sceneInfo.objectlist[i];
 			if (hasProp(obj, 'type') && hasProp(obj, 'info') && hasProp(obj, 'name')) {
@@ -693,7 +692,7 @@
 		}
 		return shaderNames;
 	}
-	
+
 	//----------------------------------------------------------------------------------------------
 	// Scene operation
 	//
@@ -703,7 +702,7 @@
 		runScript(this.conn, cmd);
 		this.render();
 	};
-	
+
 	HiveCore.prototype.saveScene = function (filepath) {
 		var cmd = '',
 			jsonstr;
@@ -715,7 +714,7 @@
 			});
 		}
 	};
-	
+
 	HiveCore.prototype.exportScene = function (filepath, time) {
 		var cmd = '',
 			jsonstr,
@@ -769,18 +768,18 @@
 			}
 		}
 	};
-	
+
 	HiveCore.prototype.reloadScene = function (callback) {
 		var cmd = createSceneCommand(this.sceneInfo, false, false, null);
 		if (cmd && cmd.command) {
 			this.modelCount = cmd.modelcount;
-			
+
 			runScript(this.conn, cmd.command, function () {
 				callback();
 			});
 		}
 	};
-	
+
 	HiveCore.prototype.loadScene = function (filepath, callback) {
 		this.conn.masterMethod('loadScene', {path: filepath}, (function (core) {
 			return function (err, res, id) {
@@ -798,7 +797,7 @@
 			};
 		}(this)));
 	};
-	
+
 	HiveCore.prototype.addCamera = function (name) {
 		var cmd = '';
 		if (name) {
@@ -809,15 +808,15 @@
 		this.modelCount = this.modelCount + 1;
 		runScript(this.conn, cmd);
 	};
-	
+
 	HiveCore.prototype.deleteObject = function (name) {
 		runScript(this.conn, HiveCommand.deleteObject(name));
 	};
-	
+
 	HiveCore.prototype.storeObjectTimeline = function () {
 		runScript(this.conn, HiveCommand.storeObjectTimeline(this.sceneInfo.objecttimeline));
 	};
-	
+
 	//----------------------------------------------------------------------------------------------
 	// Model operation
 	//
@@ -830,7 +829,7 @@
 		obj.info.shader = shaderpath;
 		runScript(this.conn, HiveCommand.setModelShader(objname, shaderpath));
 	};
-	
+
 	HiveCore.prototype.setModelTranRotScale = function (objname, trans, rot, scale, redraw) {
 		var obj = this.findObject(objname),
 			redrawfunc = null;
@@ -861,7 +860,7 @@
 		}
 		runScript(this.conn, HiveCommand.setModelTranslation(objname, obj.info.translate, obj.info.rotate, obj.info.scale), redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelTranslate = function (objname, trans, redraw) {
 		var obj = this.findObject(objname),
 			redrawfunc = null;
@@ -948,7 +947,7 @@
 				obj.info.float[name] = uniforms[i].val;
 				src += HiveCommand.setModelUniformFloat(objname, name, uniforms[i].val);
 			} else if (uniforms[i].uniform === 'rgbatex') {
-				
+
 				if (uniforms[i].rgba.length === 0) {
 					// Generate RGBA
 					uniforms[i].rgba = [256];
@@ -960,7 +959,7 @@
 					}
 				}
 				obj.info.rgbatex[name] = {width: uniforms[i].width, height: uniforms[i].height, rgba: uniforms[i].rgba};
-				
+
 				if (uniforms[i].rgba.length > 0) {
 					src += HiveCommand.setModelUniformTex(objname, name, uniforms[i].width, uniforms[i].height, uniforms[i].rgba);
 				}
@@ -1040,9 +1039,9 @@
 		}
 		runScript(this.conn, src, redrawfunc);
 	};
-	
-	
-	
+
+
+
 	HiveCore.prototype.setModelVec4 = function (objname, vname, x, y, z, w, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -1066,7 +1065,7 @@
 		}
 		runScript(this.conn, src, redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelVec3 = function (objname, vname, x, y, z, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -1089,7 +1088,7 @@
 		}
 		runScript(this.conn, src, redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelVec2 = function (objname, vname, x, y, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -1111,7 +1110,7 @@
 		}
 		runScript(this.conn, src, redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelFloat = function (objname, vname, val, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -1132,7 +1131,7 @@
 		}
 		runScript(this.conn, src, redrawfunc);
 	};
-	
+
 	HiveCore.prototype.setModelTex = function (objname, vname, width, height, rgbaVal, redraw) {
 		var i,
 			obj = this.findObject(objname),
@@ -1156,7 +1155,7 @@
 		}
 		runScript(this.conn, src, redrawfunc);
 	};
-	
+
 	//----------------------------------------------------------------------------------------------
 	// Camera operation
 	//
@@ -1301,7 +1300,7 @@
 		obj.info.clearcolor[1] = green;
 		obj.info.clearcolor[2] = blue;
 		obj.info.clearcolor[3] = alpha;
-		
+
 		if (redraw) {
 			redrawfunc = (function (core) {
 				return function (err, data) {
@@ -1363,10 +1362,10 @@
 		//this.viewCamera.target = add(this.viewCamera.target, mm);
 		this.viewCamera.position = add(add(this.viewCamera.position, scale(-tx, ax)), scale(ty, ay));
 		this.viewCamera.target   = add(add(this.viewCamera.target,   scale(-tx, ax)), scale(ty, ay));
-		
+
 		this.render();
 	};
-	
+
 	//----------------------------------------------------------------------------------------------
 	// Filelist
 	//
@@ -1376,16 +1375,16 @@
 	HiveCore.prototype.getShaderList = function (callback) {
 		this.conn.masterMethod('requestShaderList', {}, callback);
 	};
-	
-	
+
+
 	//----------------------------------------------------------------------------------------------
 	// Callback
 	//
-	
+
 	//----------------------------------------------------------------------------------------------
 	// Timeline animation
 	//
-	
+
 	HiveCore.prototype.addKey = function (objname, tm) {
 		var obj = this.findObject(objname),
 			cinfo,
@@ -1395,7 +1394,7 @@
 			return;
 		}
 		console.log(obj);
-		
+
 		// copy propteies
 		cinfo = JSON.parse(JSON.stringify(obj.info));
 		tinfo = this.sceneInfo.objecttimeline[objname];
@@ -1406,17 +1405,17 @@
 		tinfo.push({info: cinfo, time: tm});
 		tinfo.sort(function (a, b) { return a.time > b.time; });
 		console.log(tinfo);
-		
+
 		// server store
 		this.storeObjectTimeline();
 	};
-	
+
 	HiveCore.prototype.deleteKey = function (objname, tm) {
 		var obj = this.findObject(objname),
 			tinfo,
 			i,
 			key;
-		
+
 		tinfo = this.sceneInfo.objecttimeline[objname];
 		if (tinfo === undefined) {
 			return;
@@ -1432,7 +1431,7 @@
 			}
 		}
 	};
-	
+
 	HiveCore.prototype.updateTime = function (tm) {
 		if (!this.sceneInfo) { return; }
 		if (!this.sceneInfo.objectlist) { return; }
@@ -1478,10 +1477,10 @@
 		}
 		this.render();
 	};
-	
+
 	HiveCore.prototype.getTimeline = function () {
 		return this.sceneInfo.objecttimeline;
 	};
-	
+
 	window.HiveCore = HiveCore;
 }(window));
