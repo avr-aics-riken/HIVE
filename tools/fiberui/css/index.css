@@ -298,7 +298,8 @@ body::-webkit-scrollbar-thumb {
 
 .terminal {
 	height : 100%;
-	overflow : auto;
+	overflow-x : hidden;
+	overflow-y : auto;
 }
 
 .terminal-cursor {
