@@ -149,7 +149,9 @@
 			}
 		});
 	}
-
+	/**
+	 * カラーマップの描画
+	 */
 	function draw_color_map(context, grad_param, color_steps) {
 		var grad_width = grad_param.grad_width,
 			grad_height = grad_param.grad_height,
@@ -160,6 +162,7 @@
 			i,
 			step;
 
+		// すべてクリア
 		context.clearRect(0, 0, width, height);
 
 		// グラデーションを作成
@@ -174,7 +177,7 @@
 
 		context.lineWidth = 1.0;
 		context.strokeStyle = 'gray';
-		// グラデーション操作用GUI部品作成
+		// グラデーション操作用カーソル描画
 		for (i = 0; i < color_steps.length; i = i + 1) {
 			step = color_steps[i].step;
 			context.beginPath();
@@ -188,6 +191,12 @@
 			context.fill();
 			context.stroke();
 		}
+	}
+
+	function enter_color_map_setting(context, grad_param, color_steps, step_index) {
+		// TODO: カラーピッカーを開く
+		color_steps.splice(step_index, 1);
+		draw_color_map(context, grad_param, color_steps);
 	}
 
 	/**
@@ -216,37 +225,52 @@
 
 		color_map.width = width;
 		color_map.height = height;
+		// 初回描画
 		draw_color_map(context, grad_param, color_steps);
 
-		window.onmousedown = function (e) {
+		color_map.addEventListener('mousedown', function (e) {
 			var rect = color_map.getBoundingClientRect(),
 				px = e.clientX - rect.left,
 				py = e.clientY - rect.top,
-				arrow = {};
-			if (e.button == 0) {
-				for (i = 0; i < color_steps.length; i = i + 1) {
-					step = color_steps[i].step;
-					arrow.x = 0;
-					arrow.y = step * grad_param.grad_height - (grad_param.padding + 2);
-					arrow.w = grad_param.width;
-					arrow.h =  (grad_param.padding + 2) * 2;
-					if (arrow.x < px && px < (arrow.x + arrow.w) &&
-						arrow.y < py && py < (Math.max(arrow.y, 0) + arrow.h)) {
+				arrow = {},
+				setting_step;
+			for (i = 0; i < color_steps.length; i = i + 1) {
+				step = color_steps[i].step;
+				arrow.x = 0;
+				arrow.y = step * grad_param.grad_height - (grad_param.padding + 2);
+				arrow.w = grad_param.width;
+				arrow.h =  (grad_param.padding + 2) * 2;
+				if (arrow.x < px && px < (arrow.x + arrow.w) &&
+					arrow.y < py && py < (Math.max(arrow.y, 0) + arrow.h)) {
+					if (e.button == 0) {
+						// 左クリック(移動開始)
 						dragging_step = color_steps[i];
-						break;
+					} else {
+						// 右クリックなど(設定画面開く)
+						setting_step = color_steps[i];
+						enter_color_map_setting(context, grad_param, color_steps, i);
+						return;
 					}
+					break;
 				}
 			}
-		};
-		window.onmousemove = function (e) {
+			// 新規追加
+			if (!dragging_step && !setting_step) {
+				var step = Math.min(Math.max(py / grad_param.grad_height, 0.0), 1.0);
+				color_steps.push({ step : step, color : "rgb(255, 255, 255)"});
+				draw_color_map(context, grad_param, color_steps);
+				dragging_step = color_steps[color_steps.length - 1];
+			}
+		});
+		window.addEventListener('mousemove', function (e) {
 			var rect = color_map.getBoundingClientRect(),
 				px = e.clientX - rect.left,
 				py = e.clientY - rect.top;
 			if (dragging_step) {
-				dragging_step.step = Math.min(Math.max(py / grad_param.grad_height, 0.0), 1.0);
+				dragging_step.step = Math.min(Math.max(py / grad_param.grad_height, 0.0), 1.0); // clamp
 				draw_color_map(context, grad_param, color_steps);
 			}
-		};
+		});
 		window.addEventListener('mouseup', function () {
 			dragging_step = null;
 		});
