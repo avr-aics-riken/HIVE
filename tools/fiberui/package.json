@@ -8,7 +8,9 @@
 	"main" : "main.js",
 	"dependencies": {
 		"websocket": "*",
-		"pty.js": "*"
+		"pty.js": "*",
+		"nanomsg": "*",
+		"buffercopy": "*"
 	},
 	"window": {
 		"toolbar": true,
