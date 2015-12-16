@@ -2,8 +2,8 @@
 /*global require, Error, process*/
 
 var	HRENDER = '../hrender',
-	HRENDER_ARG = ['hrender_server.lua'],
-	HRENDER_THUMBNAIL_ARG = ['hrender_thumbnail.lua'],
+	HRENDER_ARG = ['./lua/hrender_server.lua'],
+	HRENDER_THUMBNAIL_ARG = ['./lua/hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = './root/',
 	port = process.argv.length > 2 ? process.argv[2] : 8080,
 	http = require('http'),
