@@ -118,7 +118,7 @@ CMDINLINE void SetUniform3fv_GL(unsigned int prg, const char* name, const float*
 CMDINLINE void SetUniform4fv_GL(unsigned int prg, const char* name, const float* val) BLANKFUNC;
 CMDINLINE void SetUniformFloatArray_GL(unsigned int prg, const char* name, const float* val, int num) BLANKFUNC;
 CMDINLINE void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val) BLANKFUNC;
-CMDINLINE void SetCamera_GL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov, int w, int h, float nearVal, float farVal) BLANKFUNC;
+CMDINLINE void SetCamera_GL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov) BLANKFUNC;
 CMDINLINE void DrawElements_GL(unsigned int indexnum) BLANKFUNC;
 CMDINLINE void DrawLineElements_GL(unsigned int indexnum) BLANKFUNC;
 CMDINLINE void DrawArrays_GL(unsigned int indexnum) BLANKFUNC;

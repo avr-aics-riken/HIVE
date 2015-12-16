@@ -72,7 +72,7 @@ void BaseBuffer::SetCamera(const Camera* camera) const
     if (m_mode == RENDER_SURFACE) {
         SetCamera_SGL(m_prog, info->eye, info->tar, info->up, info->fov);
     } else {
-        SetCamera_GL(m_prog, info->eye, info->tar, info->up, info->fov, 512, 512, 0.1f, 500.0f); // TEMP value
+        SetCamera_GL(m_prog, info->eye, info->tar, info->up, info->fov);//, 512, 512, 0.1f, 500.0f); // TEMP value
     }
 }
 
