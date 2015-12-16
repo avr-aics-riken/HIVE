@@ -17,8 +17,10 @@
 #include "../Core/vxmath.h"
 
 namespace  {
-	float g_near = 10.0;
-	float g_far  = 10000.0;
+	float g_near   = 0.1;
+	float g_far    = 500.0;
+    float g_width  = 512;
+    float g_height = 512;
 }
 
 /// カレントコンテキストの取得.
@@ -74,6 +76,8 @@ void CreateBuffer_GL(int w, int h, unsigned int& framebuffer, unsigned int& colo
     g.Enable(GL_BLEND);
     g.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     g.Viewport(0, 0, w, h);
+    g_width  = w;
+    g_height = h;
 }
 
 /**
@@ -384,13 +388,11 @@ void SetUniformMatrix_GL(unsigned int prg, const char* name, const float* val)
  * @param nearVal ニア
  * @param farVal ファー
  */
-void SetCamera_GL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov, int w, int h, float nearVal, float farVal)
+void SetCamera_GL(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov)//, int w, int h, float nearVal, float farVal)
 {
-	g_near = nearVal;
-	g_far  = farVal;
 	using namespace VX::Math;
 	matrix view = LookAt(eye, lookat, up);
-	matrix proj = PerspectiveFov(fov, w/static_cast<float>(h), nearVal, farVal);
+	matrix proj = PerspectiveFov(fov, g_width/static_cast<float>(g_height), g_near, g_far);
 	VX::Graphics& g = GetCurrentGraphics();
 	const int vp = g.GetUniformLocation(prg, "view");
 	if (vp != -1)
