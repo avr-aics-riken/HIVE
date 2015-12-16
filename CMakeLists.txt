@@ -16,7 +16,7 @@ SET(HIVE_BUILD_WITH_HDMLIB OFF CACHE BOOL "Build with HDMlib support?")
 SET(HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?")
 SET(HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_BCMTOOLS option)")
 SET(HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_COMPOSITOR option)")
-SET(HIVE_BUILD_WITH_OPENGL OFF CACHE BOOL "Build with OpenGL support?(Also need to enable HIVE_BUILD_WITH_OPENGL option)")
+SET(HIVE_BUILD_WITH_OPENGL ON CACHE BOOL "Build with OpenGL support?(Also need to enable HIVE_BUILD_WITH_OPENGL option)")
 
 
 # PROJECT OUTPUT SETTING
