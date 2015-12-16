@@ -132,7 +132,7 @@
 			document.getElementById('dialog_box').style.display = "block";
 			dialog.showOpenDialog(function (fileNames) {
 				console.log("filenames", fileNames);
-					document.getElementById('dialog_box').style.display = "none";
+				document.getElementById('dialog_box').style.display = "none";
 			});
 
 			/* HIVE_UIのダイアログ
@@ -151,8 +151,11 @@
 			*/
 		});
 		setf1_button.addEventListener("click", function (e) {
+			// electronのファイルダイアログ
+			document.getElementById('dialog_box').style.display = "block";
 			dialog.showOpenDialog(function (fileNames) {
 				console.log("filenames", fileNames);
+				document.getElementById('dialog_box').style.display = "none";
 			});
 		});
 	}
