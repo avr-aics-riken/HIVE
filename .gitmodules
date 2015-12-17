@@ -29,3 +29,6 @@ url=https://github.com/avr-aics-riken/TextParser.git
 [submodule "third_party/UDMlib"]
 	path = third_party/UDMlib
 url=https://github.com/avr-aics-riken/UDMlib.git
+[submodule "third_party/nanomsg"]
+	path = third_party/nanomsg
+	url = https://github.com/nanomsg/nanomsg.git

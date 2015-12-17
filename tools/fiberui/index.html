@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<link rel="stylesheet" type="text/css" href="css/dialog.css">
+	<script type="text/javascript" src="js/3rd/ace/ace.js"></script>
+	<script type="text/javascript" src="js/HIVE/MV.js"></script>
+	<script type="text/javascript" src="js/HIVE/HiveCommand.js"></script>
+	<script type="text/javascript" src="js/HIVE/metabinary.js"></script>
+	<script type="text/javascript" src="js/HIVE/HiveConnect.js"></script>
+	<script type="text/javascript" src="js/HIVE/HiveCore.js"></script>
+	<script type="text/javascript" src="js/HIVE/filedlg.js"></script>
+	<script type="text/javascript" src="js/gui.js"></script>
+	<script type="text/javascript" src="js/term.js"></script>
+	<script type="text/javascript" src="js/hive_viewer.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<div class="all_area">
+		<!-- 上側 -->
+		<div id="upper_area" class="upper_area">
+			<div id="upper_left_box" class="upper_left_box">
+				<canvas id="left_canvas" class="left_canvas"></canvas>
+			</div>
+			<div id="upper_right_box" class="upper_right_box">
+				<div class="upper_right_box_center">
+					<canvas id="right_canvas" class="right_canvas"></canvas>
+				</div>
+				<div class="upper_right_box_left">
+					<button id="pressure_button" class="vertical_button">Pressure</button>
+					<button id="setf1_button" class="vertical_button">Set f1</button>
+				</div>
+				<div class="upper_right_box_right">
+					<canvas id="color_map" class="color_map"></canvas>
+				</div>
+				<div class="upper_right_box_bottom">
+					<button id="setf0_button" class="horizontal_button">Set f0</button>
+					<button id="temperature_button" class="horizontal_button">Temperature</button>
+				</div>
+			</div>
+			<div id="vertical_bar" class="vertical_bar"></div>
+		</div>
+
+		<!-- 中央の水平バー -->
+		<div id="middle_bar" class="middle_bar"></div>
+
+		<!-- 下側 -->
+		<div id="lower_area" class="lower_area">
+			<div id="editor_box" class="editor_box">
+				<div class="left_editor_box">
+					<pre id="left_editor" class="editor"></pre>
+					<button id="left_editor_submit" class="submit_button">Submit</button>
+				</div>
+				<div class="right_editor_box">
+					<pre id="right_editor" class="editor"></pre>
+					<button id="right_editor_submit" class="submit_button">Submit</button>
+				</div>
+			</div>
+			<div id="bottom_bar" class="bottom_bar"></div>
+			<div id="shell_box" class="shell_box">
+				<div id="shell_output" class="shell_output"></div>
+				<pre id="left_output" class="script_output"></pre>
+				<pre id="right_output" class="script_output"></pre>
+			</div>
+			<div class="shell_tab_box">
+				<div id="output_tab" class="shell_tab">Output</div>
+				<div id="shell_tab" class="shell_tab shell_tab_selected">Shell</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="dialog_box" class="dialog_box">
+		<div id="file_dialog" class="file_dialog">
+			<input type="text" id="file_name_input" class="file_name_input file_dialog_border" placeholder="file name"></input>
+			<input type="text" id="file_filter_input" class="file_filter_input file_dialog_border" placeholder="filter"></input>
+			<div class="file_dialog_file_list file_dialog_border"></div>
+			<div id="file_dialog_open_button" class="open_button"><span class="open_button_text">Open</span></div>
+			<div id="file_dialog_cancel_button" class="cancel_button"><span class="cancel_button_text">Cancel</span></div>
+		</div>
+	</div>
+</body>
+</html>

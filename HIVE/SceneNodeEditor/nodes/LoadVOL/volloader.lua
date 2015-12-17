@@ -1,6 +1,6 @@
 function LoadVOL(property)
 	local volloader
-	volloader = VOLLoader()
+	volloader = require("VolLoader")()
 	volloader:Load(property.filepath)
 	return volloader
 end

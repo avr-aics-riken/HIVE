@@ -11,10 +11,10 @@ camera:LookAt(
 	60
 )
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('prs_0000002000.sph')
 
--- local f2f = FloatsToFloat()
+-- local f2f = require("FloatsToFloat")()
 -- f2f:Create(sph:VolumeData(), 2) -- RED channel
 -- local volumedata = f2f:VolumeData()
 -- print("vol", volumedata)
@@ -23,7 +23,7 @@ sph:Load('prs_0000002000.sph')
 local volumedata = sph:VolumeData()
 print("vol:Components", sph:Component())
 
-local surfacer = VolumeToMeshData()
+local surfacer = require("VolumeToMeshData")()
 print(surfacer)
 
 local isovalue = 0.0005

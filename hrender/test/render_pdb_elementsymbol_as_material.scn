@@ -11,7 +11,7 @@ camera:LookAt(
 )
 
 
-local pdb = PDBLoader()
+local pdb = require("PdbLoader")()
 pdb:Load('frame_1.pdb', false)
 
 local n = pdb:NumAtoms()

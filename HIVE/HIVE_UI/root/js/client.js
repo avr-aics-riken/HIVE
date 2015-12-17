@@ -6,6 +6,18 @@
 
 (function (window) {
 	'use strict';
+	var isElectron = false,
+		isNode = (typeof process !== "undefined" && typeof require !== "undefined");
+	try {
+		if (isNode) {
+			if (process.type && (process.type === 'renderer' || process.type === 'browser')) {
+				isElectron = true;				
+			}
+		}
+	} catch (e) {
+		isElectron = false;
+	}
+	
 	function showFiledialog(show) {
 		
 	}
@@ -527,26 +539,49 @@
 			core.render();
 		}
 		
-		core = new HiveCore($('result'),
-							document.getElementById('window-view').clientWidth,
-							document.getElementById('window-view').clientHeight,
-							updateObjList);
-	
+		
+		var wsurl = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
+		if (isElectron) {
+			core = new HiveCore($('resultcanvas'),
+								document.getElementById('window-view').clientWidth,
+								document.getElementById('window-view').clientHeight,
+								updateObjList,
+								wsurl,
+								false, // opengl Mode
+								'ipc:///tmp/HiveUI_ipc');
+		} else {
+			core = new HiveCore($('result'),
+								document.getElementById('window-view').clientWidth,
+								document.getElementById('window-view').clientHeight,
+								updateObjList,
+								wsurl);
+		}			
 		// Initial Resize
 		// Resize Event
-		function canvasResizing() {
+		function canvasResizing(skipRendering) {
 			var w = document.getElementById('window-view').clientWidth,
 				h = document.getElementById('window-view').clientHeight,
-				rc = document.getElementById('result');
+				rc = document.getElementById('result'),
+				cs = document.getElementById('resultcanvas');
 			rc.width        = w;
 			rc.height       = h;
 			rc.style.width  = w + 'px';
 			rc.style.height = h + 'px';
+			if (cs) {
+				cs.width        = w;
+				cs.height       = h;
+				cs.style.width  = w + 'px';
+				cs.style.height = h + 'px';
+			}
 			console.log('resize:', w, h);
-			core.resize(w, h);
-			core.render();
+			if (skipRendering !== true) {
+				core.resize(w, h);
+				core.render();
+			}
 		}
+		canvasResizing(true);
 		window.addEventListener('resize', canvasResizing);
+		
 
 		// disable context menu
 		window.addEventListener('contextmenu', function (e) {

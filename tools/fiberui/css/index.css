@@ -1,0 +1,356 @@
+/* 全体 */
+* {
+	box-sizing: border-box;
+}
+
+*:not(input) {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+html, body {
+	height: 100%;
+	margin: 0px;
+	font-family: "ヒラギノ角ゴ Pro W3",
+		"Hiragino Kaku Gothic Pro",
+		"メイリオ",
+		Meiryo,
+		Osaka,
+		"ＭＳ Ｐゴシック",
+		"MS PGothic",
+		sans-serif;
+}
+
+button {
+	background-color : #AAA;
+	border-color : #888;
+}
+
+pre {
+	margin : 0px;
+}
+
+/* スクロールバー */
+body::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 9px;
+	border-radius: 9px;
+	border: 4px solid transparent;
+	background: #eee;
+	background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+	background: rgba(55, 55, 55, 1);
+	display : none;
+}
+
+::-webkit-scrollbar-button:corner-present  {
+	background: rgba(55, 55, 55, 1);
+	display : none;
+}
+
+::-webkit-scrollbar {
+	width: 14px;
+	height : 14px;
+}
+
+::-webkit-scrollbar-track {
+	background: rgba(55, 55, 55, 1);
+}
+
+::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 9px;
+	border-radius: 14px 9px 9px 14px / 12px 12px 12px 12px;
+	border: 4px solid transparent;
+	background: gray;
+	background-clip: content-box;
+	border-left : 6px solid transparent;
+	border-right : 2px solid transparent;
+}
+
+/* 全体を覆うdiv */
+.all_area {
+	min-width : 785px;
+	height: 100%;
+	padding-bottom : 5px; /* middle_barの高さ */
+	overflow-y: hidden;
+}
+
+/* 上側 */
+.upper_area {
+	height : 60%;
+	/*padding : 15px;*/
+	background-color : rgba(55, 55, 55, 1);
+}
+
+/* 下側 */
+.lower_area {
+	height : 40%;
+	padding-bottom : 5px; /* bottom_barの高さ */
+}
+
+/* 上部左側box */
+.upper_left_box {
+	width : 50%;
+	height: 100%;
+	float : left;
+	background-color : rgba(55, 55, 55, 1);
+	text-align: center;
+	/*overflow : auto;*/
+}
+
+/* 上部右側box */
+.upper_right_box {
+	float : left;
+	width : 50%;
+	height: 100%;
+	padding-left : 45px;  /* upper_right_box_leftの幅 40, vertical_barの幅 5 */
+	padding-right : 50px; /* upper_right_box_rightの幅 50 */
+	padding-bottom : 40px; /* upper_right_box_bottomの高さ 40 */
+	padding-top : 20px;
+	text-align: center;
+}
+
+/* 上部右側boxの中の左部分 */
+.upper_right_box_left {
+	position : relative;
+	float : left;
+	left : -40px;
+	top : -100%;
+	float : left;
+	width : 40px;
+	height : 100%;
+	margin : auto 0;
+}
+
+/* 上部右側boxの中の右部分 */
+.upper_right_box_right {
+	position : relative;
+	float : right;
+	right : -50px;
+	top : -100%;
+	width : 50px;
+	height : 100%;
+	margin : auto 0;
+}
+
+/* 上部右側boxの中の下部分 */
+.upper_right_box_bottom {
+	position : relative;
+	float : left;
+	top : -100%;
+	width : 100%;
+	height : 40px;
+}
+
+/* 上部右側boxの中の中央部分 */
+.upper_right_box_center {
+	width: 100%;
+    height: 100%;
+	float : left;
+	/*overflow : auto;
+	padding-top : 10px;
+	padding-bottom : 40px;*/
+	border: 1px solid gray;
+}
+
+/* 上部右側boxの中のカラーマップ */
+.color_map {
+	position : relative;
+	top : 50%;
+	/*left : -5px;*/
+	margin-top : -128px;
+	width : 35px;
+	height : 256px; /* 256 + 10 */
+}
+
+/* 左上のキャンバス  */
+.left_canvas {
+	width : 100%;
+	height : 100%;
+	transform: scale(1.0,-1.0);
+}
+
+/* 右上のキャンバス */
+.right_canvas {
+	width : 100%;
+	height : 100%;
+	transform: scale(1.0,-1.0);
+}
+
+/* 下側box */
+.lower_box {
+	height : 50%;
+}
+
+/* エディタ全体 */
+.editor_box {
+	min-width : 400px;
+	height : 60%;
+	padding-top : 15px;
+	padding-bottom : 30px;
+	background-color : rgba(55, 55, 55, 1);
+}
+
+/* 左のエディタbox */
+.left_editor_box {
+	width : 50%;
+	height : 100%;
+	background-color : gray;
+	float : left;
+	border : 2px solid;
+}
+
+/* 右のエディタbox */
+.right_editor_box {
+	width : 50%;
+	height : 100%;
+	background-color : gray;
+	float : left;
+	border : 2px solid;
+}
+
+/* エディタ */
+.editor {
+	width : 100%;
+	height : 100%;
+}
+
+/* 縦長ボタン */
+.vertical_button {
+	position : relative;
+	top : 50%;
+	width : 80px;
+	height : 25px;
+	margin-bottom: 60px;
+	transform: rotate(-90deg);
+	transform-origin: 10% 0%;
+}
+
+/* 縦長ボタン */
+.horizontal_button {
+	margin-top : 8px;
+	width : 80px;
+	height : 25px;
+}
+
+/* 投稿ボタン */
+.submit_button {
+	margin-top : 3px;
+	width : 80px;
+	height : 25px;
+	float : right;
+}
+
+/* shellのタブのbox */
+.shell_tab_box {
+	position : fixed;
+	bottom : 0px;
+	width : 100%;
+	height : 20px;
+	background-color : rgba(55, 55, 55, 1);
+}
+
+/* shellのタブ */
+.shell_tab {
+	width : 100px;
+	height : 20px;
+	border-radius : 4px;
+	border : 2px solid;
+	background-color : rgba(220, 220, 220, 1);
+	float : right;
+}
+
+.shell_tab:active {
+	background-color : orange;
+}
+
+.shell_tab_selected {
+	background-color : darkorange;
+}
+
+/* shellのbox */
+.shell_box {
+	height: 40%;
+	padding-bottom : 20px;
+	background-color: rgba(30, 30, 30, 1);
+	color : white;
+}
+
+.shell_output {
+	width : 100%;
+	height : 100%;
+	padding-left : 15px;
+}
+
+.script_output {
+	width : 50%;
+	height : 100%;
+	background-color : rgba(30, 30, 30, 1);
+	float : left;
+	border : 2px solid;
+	border-color : #888;
+	display : none;
+	overflow : auto;
+}
+
+.terminal {
+	height : 100%;
+	overflow-x : hidden;
+	overflow-y : auto;
+}
+
+.terminal-cursor {
+	color: white;
+	background: #f0f0f0;
+}
+
+/* shellエディタ */
+.shell_editor {
+	width : 100%;
+	height : 30px;
+	padding-left : 15px;
+	resize: none;
+	border : none;
+	background-color : rgba(10, 150, 40, 1);
+}
+
+/* 中央のバー */
+.middle_bar {
+	width : 100%;
+	height : 5px;
+	background-color : #555;
+}
+.middle_bar:hover {
+	cursor : ns-resize;
+	background-color : #A73;
+}
+
+/* 下部のバー */
+.bottom_bar {
+	width : 100%;
+	height : 5px;
+	background-color : #555;
+}
+.bottom_bar:hover {
+	cursor : ns-resize;
+	background-color : #A73;
+}
+
+/* 中央縦のバー */
+.vertical_bar {
+	width : 5px;
+	height : 100%;
+	position : relative;
+	left : 50%;
+	background-color : #555;
+	border-radius : 4px;
+}
+.vertical_bar:hover {
+	cursor : ew-resize;
+	background-color : #A73;
+}

@@ -1,6 +1,6 @@
 function LoadOBJ(property)
 	local objloader
-	objloader = OBJLoader()
+	objloader = require("ObjLoader")()
 	objloader:Load(property.filepath)
 	return objloader
 end
