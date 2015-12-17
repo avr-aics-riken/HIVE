@@ -21,6 +21,9 @@ void main(void)
 
 #else
 	vec3 n = vnormal;
+	if (length(n) < 0.001) {
+		n = vec3(1.0,1.0,1.0);
+	} 
 #endif
     vec3 Nn = normalize(n);
 

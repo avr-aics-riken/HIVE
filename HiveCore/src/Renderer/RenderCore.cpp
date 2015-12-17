@@ -524,9 +524,6 @@ private:
         const float clearcolor_a = clr_a;
 
         ByteBuffer* bbuf = color->ImageBuffer();
-        if (bbuf == 0) {
-            bbuf = bbuf;
-        }
         if (bbuf) {
             unsigned char* imgbuf = bbuf->GetBuffer();
             const int colorbit = 8;

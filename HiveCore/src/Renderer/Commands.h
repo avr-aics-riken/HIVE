@@ -100,6 +100,11 @@ CMDINLINE void ReleaseBuffer_GL(unsigned int framebuffer, unsigned int colorRend
 CMDINLINE void Clear_GL(float red, float green, float blue, float alpha) BLANKFUNC;
 CMDINLINE void GetColorBuffer_GL(int w, int h, unsigned char* imgbuf, int colorbit) BLANKFUNC;
 CMDINLINE void GetDepthBuffer_GL(int w, int h, float* depthbuf) BLANKFUNC;
+CMDINLINE void CreateFloatBuffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) BLANKFUNC;
+CMDINLINE void CreateUintBuffer_GL(unsigned int num, unsigned int* buffer, unsigned int& buf_id) BLANKFUNC;
+CMDINLINE void CreateVec4Buffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) BLANKFUNC;
+CMDINLINE void CreateVec3Buffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) BLANKFUNC;
+CMDINLINE void CreateVec2Buffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) BLANKFUNC;
 
 CMDINLINE void CreateVBIB_GL(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer, float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
 				   unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id, unsigned int& tex_id, unsigned int& index_id) BLANKFUNC;
@@ -128,6 +133,11 @@ CMDINLINE void DrawTetraArrays_GL(unsigned int vertexnum) BLANKFUNC;
 CMDINLINE bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg) BLANKFUNC_BOOL;
 CMDINLINE bool CreateProgramBinary_GL(const char* soname, unsigned int& prg) BLANKFUNC_BOOL;
 CMDINLINE bool DeleteProgram_GL(unsigned int prg) BLANKFUNC_BOOL;
+CMDINLINE void BindBufferFloat_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
+CMDINLINE void BindBufferUint_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
+CMDINLINE void BindBufferVec4_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
+CMDINLINE void BindBufferVec3_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
+CMDINLINE void BindBufferVec2_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
 CMDINLINE void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx) BLANKFUNC;
 CMDINLINE void BindLineVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) BLANKFUNC;
 CMDINLINE void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) BLANKFUNC;
@@ -138,7 +148,8 @@ CMDINLINE void GenTextures_GL(int n, unsigned int* tex) BLANKFUNC;
 CMDINLINE void DeleteTextures_GL(int n, unsigned int* tex) BLANKFUNC;
 CMDINLINE void BindTexture2D_GL(unsigned int tex) BLANKFUNC;
 CMDINLINE void ActiveTexture_GL(unsigned int num) BLANKFUNC;
-CMDINLINE void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata) BLANKFUNC;
+CMDINLINE void TexImage2D_GL(unsigned int width, unsigned int height, unsigned int component, const unsigned char* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT) BLANKFUNC;
+CMDINLINE void TexImage2DFloat_GL(unsigned int width, unsigned int height, unsigned int component, const float* pixeldata, bool filter, bool clampToEdgeS, bool clampToEdgeT) BLANKFUNC;
 
 
 #endif /* defined(__AnimTool__Commands__) */
