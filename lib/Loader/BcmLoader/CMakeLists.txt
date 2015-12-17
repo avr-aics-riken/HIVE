@@ -13,6 +13,7 @@ endif()
     BCM POLYmpi TPmpi
   )
 
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/lib)

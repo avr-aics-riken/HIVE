@@ -1,5 +1,6 @@
 IF(HIVE_BUILD_WITH_CDMLIB)
 
+
 SET(HIVE_BUILD_WITH_BCMTOOLS On)
 add_definitions(-DHIVE_WITH_CDMLIB)
 
@@ -29,6 +30,12 @@ add_definitions(-DHIVE_WITH_CDMLIB)
     link_directories(/opt/aics/netcdf/k/lib-static)
   ENDIF()
 
+# Necessary at least for Apple MacPorts
+find_package( ZLIB REQUIRED )
+if ( ZLIB_FOUND )
+    include_directories( ${ZLIB_INCLUDE_DIRS} )
+endif( ZLIB_FOUND )
+
 # Headers
 set(INCLUDES
 	.
@@ -50,6 +57,9 @@ set(SOURCES
 add_library(CdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(CdmLoader hiveCore)
 target_link_libraries(CdmLoader ${CDMLIB_LIBS})
+if ( ZLIB_FOUND )
+  target_link_libraries(CdmLoader ${ZLIB_LIBRARIES} )
+endif( ZLIB_FOUND )
 set_target_properties(CdmLoader PROPERTIES PREFIX "")
 
 ENDIF() # HIVE_WITH_CDMLIB
