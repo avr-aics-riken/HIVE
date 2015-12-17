@@ -228,7 +228,8 @@
 		// 初回描画
 		draw_color_map(context, grad_param, color_steps);
 
-		color_map.addEventListener('mousedown', function (e) {
+		// マウス位置にあるstepを探してインデックスを返す.
+		function pick_step (e) {
 			var rect = color_map.getBoundingClientRect(),
 				px = e.clientX - rect.left,
 				py = e.clientY - rect.top,
@@ -242,18 +243,41 @@
 				arrow.h =  (grad_param.padding + 2) * 2;
 				if (arrow.x < px && px < (arrow.x + arrow.w) &&
 					arrow.y < py && py < (Math.max(arrow.y, 0) + arrow.h)) {
-					if (e.button == 0) {
-						// 左クリック(移動開始)
-						dragging_step = color_steps[i];
-					} else {
-						// 右クリックなど(設定画面開く)
-						setting_step = color_steps[i];
-						enter_color_map_setting(context, grad_param, color_steps, i);
-						return;
-					}
-					break;
+					return i;
 				}
 			}
+			return -1;
+		}
+
+		color_map.addEventListener('dblclick', function (e) {
+			var picker = document.getElementById('colorpicker'),
+				step_index = pick_step(e);
+			picker.click();
+			picker.onchange = function (evt) {
+				color_steps[step_index].color = picker.value;
+				draw_color_map(context, grad_param, color_steps);
+			}
+		});
+
+		color_map.addEventListener('mousedown', function (e) {
+			var rect = color_map.getBoundingClientRect(),
+				px = e.clientX - rect.left,
+				py = e.clientY - rect.top,
+				setting_step,
+				step_index = pick_step(e);
+
+			if (step_index >= 0) {
+				if (e.button == 0) {
+					// 左クリック(移動開始)
+					dragging_step = color_steps[i];
+				} else {
+					// 右クリックなど(設定画面開く)
+					setting_step = color_steps[i];
+					enter_color_map_setting(context, grad_param, color_steps, i);
+					return;
+				}
+			}
+
 			// 新規追加
 			if (!dragging_step && !setting_step) {
 				var step = Math.min(Math.max(py / grad_param.grad_height, 0.0), 1.0);

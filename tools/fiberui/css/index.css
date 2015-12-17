@@ -354,3 +354,9 @@ body::-webkit-scrollbar-thumb {
 	cursor : ew-resize;
 	background-color : #A73;
 }
+
+#colorpicker {
+	position : absolute;
+	left : -1000px;
+	top : -1000px;
+}
