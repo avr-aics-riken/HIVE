@@ -19,8 +19,32 @@ namespace {
     void (* const SetUniform3fv_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniform3fv_GL, SetUniform3fv_SGL};
     void (* const SetUniform2fv_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniform2fv_GL, SetUniform2fv_SGL};
     void (* const SetUniform1f_GS[])(unsigned int prg, const char* name, float val) = {SetUniform1f_GL, SetUniform1f_SGL};
+    void (* const SetUniform1i_GS[])(unsigned int prg, const char* name, int val) = {SetUniform1i_GL, SetUniform1i_SGL};
     void (* const BindProgram_GS[])(unsigned int prg) = {BindProgram_GL, BindProgram_SGL};
     void (* const SetUniformMatrix_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniformMatrix_GL, SetUniformMatrix_SGL};
+    
+    void (* const CreateFloatBuffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateFloatBuffer_GL, CreateFloatBuffer_SGL};
+    void (* const CreateUintBuffer_GS[])(unsigned int num, unsigned int* buffer, unsigned int& buf_id) = {CreateUintBuffer_GL, CreateUintBuffer_SGL};
+    void (* const CreateVec4Buffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateVec4Buffer_GL, CreateVec4Buffer_SGL};
+    void (* const CreateVec3Buffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateVec3Buffer_GL, CreateVec3Buffer_SGL};
+    void (* const CreateVec2Buffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateVec2Buffer_GL, CreateVec2Buffer_SGL};
+    void (* const BindBufferFloat_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferFloat_GL, BindBufferFloat_SGL};
+    void (* const BindBufferUint_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferUint_GL, BindBufferUint_SGL};
+    void (* const BindBufferVec4_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec4_GL, BindBufferVec4_SGL};
+    void (* const BindBufferVec3_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec3_GL, BindBufferVec3_SGL};
+    void (* const BindBufferVec2_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec2_GL, BindBufferVec2_SGL};
+
+    void (* const BindTexture2D_GS[])(unsigned int texid) = {BindTexture2D_GL, BindTexture2D_SGL};
+    void (* const ActiveTexture_GS[])(unsigned int n) = {ActiveTexture_GL, ActiveTexture_SGL};
+    
+    void (* const TexImage2D_GS[])(unsigned int width, unsigned int height,
+                                   unsigned int component, const unsigned char* pixeldata,
+                                   bool filter, bool clampToEdgeS, bool clampToEdgeT) = {TexImage2D_GL, TexImage2D_SGL};
+ 
+    void (* const TexImage2DFloat_GS[])(unsigned int width, unsigned int height,
+                                        unsigned int component, const float* pixeldata,
+                                        bool filter, bool clampToEdgeS, bool clampToEdgeT) = {TexImage2DFloat_GL, TexImage2DFloat_SGL};
+ 
 }
 
 /// コンストラクタ
@@ -78,7 +102,7 @@ void BaseBuffer::SetCamera(const Camera* camera) const
 
 void BaseBuffer::UnbindProgram() const
 {
-    //BindProgram_SGL(0);
+    //BindProgram_GS(0);
 }
 
 /**
@@ -136,11 +160,11 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
         const BufferImageData* vt = itt->second;
         const int texid = getTextureId(vt);
         if (texid > 0) {
-            ActiveTexture_SGL(textureCount);
-            BindTexture2D_SGL(texid);
-            SetUniform1i_SGL(prg, itt->first.c_str(), textureCount);
+            ActiveTexture_GS[m_mode](textureCount);
+            BindTexture2D_GS[m_mode](texid);
+            SetUniform1i_GS[m_mode](prg, itt->first.c_str(), textureCount);
             ++textureCount;
-            ActiveTexture_SGL(0);
+            ActiveTexture_GS[m_mode](0);
         }
     }
 
@@ -159,15 +183,15 @@ void BaseBuffer::createExtraBuffers(const RenderObject* obj)
         std::string dtype(p->GetDataType());
         unsigned int bufidx = 0;
         if (dtype == "float") {
-            CreateFloatBuffer_SGL(p->GetNum(), p->Float()->GetBuffer(), bufidx);
+            CreateFloatBuffer_GS[m_mode](p->GetNum(), p->Float()->GetBuffer(), bufidx);
         } else if (dtype == "vec4") {
-            CreateVec4Buffer_SGL(p->GetNum(), p->Vec4()->GetBuffer(), bufidx);
+            CreateVec4Buffer_GS[m_mode](p->GetNum(), p->Vec4()->GetBuffer(), bufidx);
         } else if (dtype == "vec3") {
-            CreateVec3Buffer_SGL(p->GetNum(), p->Vec3()->GetBuffer(), bufidx);
+            CreateVec3Buffer_GS[m_mode](p->GetNum(), p->Vec3()->GetBuffer(), bufidx);
         } else if (dtype == "vec2") {
-            CreateVec2Buffer_SGL(p->GetNum(), p->Vec2()->GetBuffer(), bufidx);
+            CreateVec2Buffer_GS[m_mode](p->GetNum(), p->Vec2()->GetBuffer(), bufidx);
         } else if (dtype == "uint") {
-            CreateUintBuffer_SGL(p->GetNum(), p->Uint()->GetBuffer(), bufidx);
+            CreateUintBuffer_GS[m_mode](p->GetNum(), p->Uint()->GetBuffer(), bufidx);
         }
         m_extraIdx[it->first] = bufidx;
     }
@@ -195,15 +219,15 @@ void BaseBuffer::bindExtraBuffers(const RenderObject* obj) const
         const unsigned int bufidx = it->second;
         std::string dtype(p->GetDataType());
         if (dtype == "float") {
-            BindBufferFloat_SGL(prg, name.c_str(), bufidx);
+            BindBufferFloat_GS[m_mode](prg, name.c_str(), bufidx);
         } else if (dtype == "vec4") {
-            BindBufferVec4_SGL(prg, name.c_str(), bufidx);
+            BindBufferVec4_GS[m_mode](prg, name.c_str(), bufidx);
         } else if (dtype == "vec3") {
-            BindBufferVec3_SGL(prg, name.c_str(), bufidx);
+            BindBufferVec3_GS[m_mode](prg, name.c_str(), bufidx);
         } else if (dtype == "vec2") {
-            BindBufferVec2_SGL(prg, name.c_str(), bufidx);
+            BindBufferVec2_GS[m_mode](prg, name.c_str(), bufidx);
         } else if (dtype == "uint") {
-            BindBufferUint_SGL(prg, name.c_str(), bufidx);
+            BindBufferUint_GS[m_mode](prg, name.c_str(), bufidx);
         }
     }
 }
@@ -257,7 +281,7 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter, bool clam
     }
     if (buf->IsNeedUpdate()) {
         buf->updated();
-        BindTexture2D_SGL(tex);
+        BindTexture2D_GS[m_mode](tex);
         
         const BufferImageData::FORMAT fmt = buf->Format();
         
@@ -266,11 +290,11 @@ bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter, bool clam
         
         // TODO: more format
         if (fmt == BufferImageData::RGBA8) {
-            TexImage2D_SGL(buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
+            TexImage2D_GS[m_mode](buf->Width(), buf->Height(), component, buf->ImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
         } else if (fmt == BufferImageData::RGBA32F) {
-            TexImage2DFloat_SGL(buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
+            TexImage2DFloat_GS[m_mode](buf->Width(), buf->Height(), component, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
         } else if (fmt == BufferImageData::R32F) {
-            TexImage2DFloat_SGL(buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
+            TexImage2DFloat_GS[m_mode](buf->Width(), buf->Height(), 1, buf->FloatImageBuffer()->GetBuffer(), filter, clampToEdgeS, clampToEdgeT);
         } else {
             assert(0);
         }        

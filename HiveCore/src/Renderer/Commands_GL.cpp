@@ -150,6 +150,40 @@ void GetDepthBuffer_GL(int w, int h, float* depthbuf)
 
 }
 
+
+
+void CreateFloatBuffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenBuffers(1, &buf_id);
+    g.BindBuffer(GL_ARRAY_BUFFER, buf_id);
+    g.BufferData(GL_ARRAY_BUFFER, sizeof(float) * num, buffer, GL_STATIC_DRAW);
+}
+void CreateUintBuffer_GL(unsigned int num, unsigned int* buffer, unsigned int& buf_id) {
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenBuffers(1, &buf_id);
+    g.BindBuffer(GL_ARRAY_BUFFER, buf_id);
+    g.BufferData(GL_ARRAY_BUFFER, sizeof(unsigned int) * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec4Buffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenBuffers(1, &buf_id);
+    g.BindBuffer(GL_ARRAY_BUFFER, buf_id);
+    g.BufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec3Buffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenBuffers(1, &buf_id);
+    g.BindBuffer(GL_ARRAY_BUFFER, buf_id);
+    g.BufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * num, buffer, GL_STATIC_DRAW);
+}
+void CreateVec2Buffer_GL(unsigned int num, float* buffer, unsigned int& buf_id) {
+    VX::Graphics& g = GetCurrentGraphics();
+    g.GenBuffers(1, &buf_id);
+    g.BindBuffer(GL_ARRAY_BUFFER, buf_id);
+    g.BufferData(GL_ARRAY_BUFFER, sizeof(float) * 2 * num, buffer, GL_STATIC_DRAW);
+}
+
+
 /**
  * GLバッファの作成
  * @param vertexnum 頂点数
@@ -447,10 +481,8 @@ void DrawPointArrays_GL(unsigned int vertexnum)
 void DrawTetraArrays_GL(unsigned int vtxnum)
 {
     VX::Graphics& g = GetCurrentGraphics();
-    
-    // TODO!!
-    assert(0);
-    //g.DrawArrays(GL_TETRAHEDRONS_EXT, 0, vtxnum);
+    //g.DrawArrays(GL_TETRAHEDRONS_EXT, 0, vtxnum);    // TODO!!
+    g.DrawArrays(GL_QUADS, 0, vtxnum);    // TODO!!
 }
 
 
@@ -461,6 +493,7 @@ static const char* g_vertsrc = STRINGIFY(
 										 attribute vec3 position;
 										 attribute vec3 mnormal;
 										 attribute float materialID;
+                                         attribute vec2 tex;
 										 uniform mat4 proj;
 										 uniform mat4 view;
 										 uniform mat4 lsgl_World;
@@ -469,6 +502,7 @@ static const char* g_vertsrc = STRINGIFY(
 										 varying vec3 vnormal;
 										 varying vec3 eyedir;
 										 varying float matID;
+                                         varying vec2  texcoord;
 										 void main(void)
 										 {
 											 normal = normalize(lsgl_World * vec4(mnormal,0.0)).xyz;
@@ -476,6 +510,7 @@ static const char* g_vertsrc = STRINGIFY(
 											 vec4 vpos = view * lsgl_World * vec4(position,1);
 											 eyedir = normalize(vpos.xyz);
 											 matID = materialID;
+                                             texcoord = tex;
 											 gl_Position = proj * vpos;
 										 }
 										 );
@@ -746,6 +781,64 @@ bool DeleteProgram_GL(unsigned int prg)
 	return true;
 }
 
+
+void BindBufferFloat_GL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attr = g.GetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, bufidx);
+        g.VertexAttribPointer(attr, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        g.EnableVertexAttribArray(attr);
+    }
+}
+void BindBufferUint_GL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attr = g.GetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, bufidx);
+        g.VertexAttribPointer(attr, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof(unsigned int), (void*)0);
+        g.EnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec4_GL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attr = g.GetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, bufidx);
+        g.VertexAttribPointer(attr, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)0);
+        g.EnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec3_GL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attr = g.GetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, bufidx);
+        g.VertexAttribPointer(attr, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        g.EnableVertexAttribArray(attr);
+    }
+}
+void BindBufferVec2_GL(unsigned int prg, const char* attrname, unsigned int bufidx)
+{
+    assert(prg);
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attr = g.GetAttribLocation(prg, attrname);
+    if (attr != -1 && bufidx != -1) {
+        g.BindBuffer(GL_ARRAY_BUFFER, bufidx);
+        g.VertexAttribPointer(attr, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
+        g.EnableVertexAttribArray(attr);
+    }
+}
+
+
 /**
  * バッファのバインド.
  * @param prg シェーダプログラムID
@@ -761,7 +854,7 @@ void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, 
 	GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
 	GLint attrNormal = g.GetAttribLocation(prg, "mnormal");
     GLint attrPos    = g.GetAttribLocation(prg, "position");
-    GLint attrTex    = g.GetAttribLocation(prg, "texcoord");
+    GLint attrTex    = g.GetAttribLocation(prg, "tex");
     if (attrTex >= 0 && texidx > 0) {
         g.BindBuffer(GL_ARRAY_BUFFER, texidx);
         g.VertexAttribPointer(attrTex, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)0);
@@ -798,7 +891,7 @@ void BindLineVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_rad
 {
     VX::Graphics& g = GetCurrentGraphics();
     GLint attrRadius   = g.GetAttribLocation(prg, "lsgl_LineWidth"); // TODO
-    GLint attrMaterial = g.GetAttribLocation(prg, "matID");
+    GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
     GLint attrPos      = g.GetAttribLocation(prg, "position");
     
     if (attrRadius != -1 && vtx_radius > 0) {
@@ -849,7 +942,6 @@ void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radi
 	  g.VertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 	  g.EnableVertexAttribArray(attrPos);
 	}
-//	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
 
@@ -864,7 +956,7 @@ void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radi
 void BindTetraVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx)
 {
     VX::Graphics& g = GetCurrentGraphics();
-    GLint attrMaterial = g.GetAttribLocation(prg, "matID");
+    GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
     GLint attrPos      = g.GetAttribLocation(prg, "position");
     
     if (attrMaterial != -1 && vtx_material > 0) {
