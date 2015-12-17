@@ -19,12 +19,12 @@ model:Create(meshdata)
 model:SetShader('normal.frag')
 
 local analy = require("Analyzer").PolygonAnalyzer()
-analy:Execute(model)
+--[[analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
 print(analy:MinY())
 print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
-
+]]
 render {camera, model}

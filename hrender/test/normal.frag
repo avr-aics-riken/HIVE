@@ -10,6 +10,7 @@ uniform sampler2D tex0;
 uniform vec2  resolution;
 varying float matID;
 varying vec3  mnormal;
+varying vec3  normal;
 varying vec3  vnormal;
 uniform vec4  color;
 
@@ -20,7 +21,7 @@ void main(void)
 	isectinfo(p, n, dir);
 
 #else
-	vec3 n = vnormal;
+	vec3 n = normal;
 	if (length(n) < 0.001) {
 		n = vec3(1.0,1.0,1.0);
 	} 
