@@ -135,7 +135,7 @@
 				}
 			}
 		});
-		
+
 		if (ipcAddress) {
 			// Electron only
 			var nano = require('nanomsg');
@@ -144,11 +144,11 @@
 			var meta = require('./js/lib/metabinary'); // path from index.html
 			var ret = sc.bind(ipcAddress);
 			console.log('IPC bind = ', ret, ipcAddress);
-			
+
 			sc.on('data', function (data) {
 				if (!meta.loadMetaBinary(data, function(meta, data) {
 					var w, h,
-						param = meta.param;				
+						param = meta.param;
 					if (param.type === 'jpg') {
 						// resultElement is img.
 						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
@@ -166,7 +166,7 @@
 						buffercopy.buffercopy(data, imageData.data);
 						context.putImageData(imageData, 0, 0);
 					}
-					
+
 				})) {
 					console.error('Not metabin foramt');
 				};
@@ -346,6 +346,10 @@
 			this.websocketConn.close();
 			this.websocketConn = null;
 		}
+	};
+
+	HiveCore.prototype.runScript = function (src, callback) {
+		runScript(this.conn, src, callback);
 	};
 
 	//----------------------------------------------------------------------------------------------
