@@ -350,8 +350,8 @@
 
 	HiveCore.prototype.runScript = function (src, callback) {
 		runScript(this.conn, src, callback);
-	}
-	
+	};
+
 	//----------------------------------------------------------------------------------------------
 	// Loader
 	//
