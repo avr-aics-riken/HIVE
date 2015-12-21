@@ -2,7 +2,7 @@ print('load SPH and extract isosurface and render it as polygon object')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
-camera:SetFilename('image_sph_isosurf.jpg')
+camera:SetFilename('volume_to_mesh.jpg')
 
 camera:LookAt(
 	-50,80,80,

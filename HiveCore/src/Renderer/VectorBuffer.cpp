@@ -24,6 +24,7 @@ namespace {
 
     void (* const BindTetraVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) = {BindTetraVBIB_GL, BindTetraVBIB_SGL};
     void (* const DrawTetraArrays_GS[])(unsigned int vtxnum) = {DrawTetraArrays_GL, DrawTetraArrays_SGL};
+    void (* const LineWidth_GS[])(float w) = {LineWidth_GL, LineWidth_SGL};
 
 }
 
@@ -168,7 +169,7 @@ void VectorBuffer::Render() const
     bindExtraBuffers(m_model);
     
     const float w = m_model->GetLineWidth();
-    LineWidth_SGL(w);
+    LineWidth_GS[m_mode](w);
     
     BindLineVBIB_GS[m_mode](getProgram(), m_line_vtx_id, 0, 0, 0);
     DrawLineArrays_GS[m_mode](m_lines_vnum);

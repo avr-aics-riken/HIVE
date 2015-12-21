@@ -34,7 +34,7 @@ pm:SetTexture('mytex0', img) -- Bind
 
 local cam = Camera()
 cam:SetScreenSize(512, 512)
-cam:SetFilename("render_with_gentex.jpg")
+cam:SetFilename("render_with_gentex3d.jpg")
 cam:LookAt(
 	0,0,300,
 	0,0,0,
