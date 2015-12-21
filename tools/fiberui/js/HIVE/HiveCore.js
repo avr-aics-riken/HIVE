@@ -1160,6 +1160,39 @@
 		runScript(this.conn, src, redrawfunc);
 	};
 
+	HiveCore.prototype.setColorMapTex = function (texname, width, height, rgbaVal, redraw) {
+		var i,
+			src = '',
+			redrawfunc = null;
+
+		src = HiveCommand.setColorMapTex(texname, width, height, rgbaVal);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+
+	HiveCore.prototype.applyColorMapTex = function (objname, texname, uniformName, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+
+		src = HiveCommand.applyColorMapTex(objname, texname, uniformName);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+
 	//----------------------------------------------------------------------------------------------
 	// Camera operation
 	//

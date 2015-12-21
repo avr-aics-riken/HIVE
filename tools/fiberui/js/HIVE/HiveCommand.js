@@ -34,7 +34,7 @@
 			if (useipc) {
 				src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '", "raw", true)';
 			} else {
-				src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '", "jpg", false)';				
+				src += 'hcmd.RenderCamera(' + w + ',' + h + ',"' + cameraname + '", "jpg", false)';
 			}
 			return src;
 		},
@@ -154,6 +154,30 @@
 				src += rgbaVal[i] + ',';
 			}
 			src += '}';
+			src += ')\n';
+			return src;
+		},
+		setColorMapTex : function (texname, width, height, rgbaVal) {
+			console.log('setColorMapTex', texname, width, height, rgbaVal);
+			var src = 'hcmd.SetColorMapTex(',
+				i;
+			src += '"' + texname + '",';
+			src += width + ',';
+			src += height + ',';
+			src += '{';
+			for (i = 0; i < height * width * 4; i = i + 1) {
+				src += rgbaVal[i] + ',';
+			}
+			src += '}';
+			src += ')\n';
+			return src;
+		},
+		applyColorMapTex : function (objname, texname, uniformName) {
+			console.log('applyColorMapTex', objname, texname, uniformName);
+			var src = 'hcmd.ApplyColorMapTex(';
+			src += '"' + objname + '",';
+			src += '"' + texname + '",';
+			src += '"' + uniformName + '",';
 			src += ')\n';
 			return src;
 		},
