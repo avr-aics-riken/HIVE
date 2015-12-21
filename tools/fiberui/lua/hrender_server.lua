@@ -65,6 +65,7 @@ defaultCamera:SetScreenSize(256,256)
 defaultCamera:SetFilename('view.jpg')
 defaultCamera:LookAt(0,0,300, 0,0,0, 0,1,0, 60)
 HIVE_ObjectTable = {view=defaultCamera} -- Global: All Object List
+HIVE_TextureTable = {} -- Global: Texture Table
 HIVE_ObjectTimeline = {}
 HIVE_DataTable   = {} -- Global: Data List
 
@@ -121,9 +122,9 @@ local function eval(src)
 	if func == nil or err then
 		return nil, err
 	end
-	
+
 	success, ret = pcall(func)
-	
+
 	if success then
 		if ret then
 			return ret, nil

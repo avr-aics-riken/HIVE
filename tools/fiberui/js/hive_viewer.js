@@ -4,7 +4,9 @@
 	"use strict";
 
 	// Hiveのビューを操作するクラス
-	var HiveViewer;
+	var HiveViewer,
+		dummy_canvas = document.createElement("canvas"),
+		current_colormap;
 
 	// コンストラクタ
 	HiveViewer = function (target_element, output_callback, ws, ipc) {
@@ -91,6 +93,9 @@
 		// 初回レンダー
 		setTimeout((function (viewer) {
 			return function () {
+				// カラーマップのセット。
+				viewer.core.setColorMapTex("colormap_tex", 256, 1, get_colormap_rgba(current_colormap, 256, 1));
+
 				viewer.core.render();
 			};
 		}(viewer)), 1000);
@@ -106,6 +111,7 @@
 	 */
 	function init_editor(viewer, ace_editor, editor_elem, submit_elem) {
 		submit_elem.onclick = function (evt) {
+			// スクリプト実行。
 			viewer.core.runScript(ace_editor.getValue(), function (err, res) {
 				console.log(err, res);
 				if (viewer.output_callback) {
@@ -161,13 +167,40 @@
 	}
 
 	/**
+	 * カラーマップのRGBA値を配列として返す。
+	 */
+	function get_colormap_rgba(color_steps, width, height) {
+		var i,
+			grad,
+	 		context = dummy_canvas.getContext("2d");
+		dummy_canvas.width = width;
+		dummy_canvas.height = height;
+		// すべてクリア
+		context.clearRect(0, 0, width, height);
+		// グラデーションを作成
+		grad  = context.createLinearGradient(0, 0, width, 0);
+		for (i = 0; i < color_steps.length; i = i + 1) {
+			grad.addColorStop(color_steps[i].step, color_steps[i].color);
+		}
+		context.fillStyle = grad;
+		context.beginPath();
+		context.fillRect(0, 0, width, height);
+		context.closePath();
+		context.fill();
+		//console.log(context.getImageData(0, 0, width, height));
+		return context.getImageData(0, 0, width, height).data;
+	}
+
+	/**
 	 * 初期化
 	 */
-	function init() {
+	function init(initial_colormap) {
 		var left_viewer,
 			right_viewer,
 			left_output = document.getElementById('left_output'),
 			right_output = document.getElementById('right_output');
+
+		current_colormap = initial_colormap;
 
 		// 左右のキャンバスを初期化.
 		left_viewer = init_canvas(document.getElementById('left_canvas'), function (err, info) {
@@ -211,6 +244,12 @@
 		document.getElementById('vertical_bar').addEventListener('resize_viewport', function () {
 			left_viewer.resize();
 			right_viewer.resize();
+		});
+
+		// カラーマップが変更された時にカラーマップをHIVEに登録する.
+		document.getElementById('color_map').addEventListener('change_colormap', function (evt) {
+			current_colormap = JSON.parse(JSON.stringify(evt.data));
+			right_viewer.core.setColorMapTex("colormap_tex", 256, 1, get_colormap_rgba(current_colormap, 256, 1));
 		});
 	}
 
