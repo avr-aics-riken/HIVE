@@ -11,9 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef HIVE_BUILD_WITH_OPENGL
 #include "GLDevice/GLDevice.h"
 #include "GLDevice/GLDeviceExtention.h"
-
+#endif
 
 #include "RenderCore.h"
 
