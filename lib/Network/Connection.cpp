@@ -11,8 +11,10 @@
 #include "happyhttp.h"
 #include "easywsclient.hpp"
 
+#ifdef HIVE_ENABLE_NANOMSG
 #include "nn.hpp"
 #include <nanomsg/pair.h>
+#endif
 
 #include "Connection.h"
 #include <queue>
@@ -207,7 +209,9 @@ public:
         m_connection = NULL;
         delete m_ws;
         m_ws = NULL;
+#ifdef HIVE_ENABLE_NANOMSG
         delete m_nn;
+#endif
         m_nn = NULL;
     }
 
@@ -259,10 +263,12 @@ public:
             
             return true;
         } else if (m_nn) {
+#ifdef HIVE_ENABLE_NANOMSG
             const unsigned char* body = reinterpret_cast<const unsigned char*>(text.c_str());
             const int size = static_cast<int>(text.size());
             m_nn->send(body, size, 0);
             return true;
+#endif
         }
         return false;
     }
@@ -297,10 +303,12 @@ public:
 
             return true;
         } else if (m_nn) {
+#ifdef HIVE_ENABLE_NANOMSG
             const unsigned char* body = reinterpret_cast<const unsigned char*>(json.c_str());
             const int size = static_cast<int>(json.size());
             m_nn->send(body, size, 0);
             return true;
+#endif
         }
         return false;
     }
@@ -335,8 +343,10 @@ public:
 
             return true;
         } else if (m_nn) {
+#ifdef HIVE_ENABLE_NANOMSG
             m_nn->send(binary, size, 0);///NN_DONTWAIT);
             return true;
+#endif
         }
         return false;
     }
@@ -395,9 +405,11 @@ public:
             delete [] buffer;
             return true;
         } else if (m_nn) {
+#ifdef HIVE_ENABLE_NANOMSG
             m_nn->send(buffer, fsize, 0);
             delete [] buffer;
             return true;
+#endif
         }
         return false;
     }
@@ -460,10 +472,12 @@ public:
             return msg;
 #endif
         } else if (m_nn) {
+#ifdef HIVE_ENABLE_NANOMSG
             static const int size = 16*1024;
             static char cbuf[size];
             m_nn->recv(cbuf, size, 0);
             return cbuf;
+#endif
         }
         return "";
     }
@@ -566,15 +580,23 @@ private:
     }
     
     bool connectNN(const std::string& url) {
+#ifdef HIVE_ENABLE_NANOMSG
         m_nn = new nn::socket(AF_SP, NN_PAIR);
         if (m_nn->connect(url.c_str()) < 0)
             return false;
         return true;
+#else
+        return false;
+#endif
     }
 
     easywsclient::WebSocket::pointer m_ws;
     happyhttp::Connection* m_connection;
+#ifdef HIVE_ENABLE_NANOMSG
     nn::socket* m_nn;
+#else
+    void* m_nn;
+#endif
     std::string m_recvBuf;
     int m_timeout;
 #ifndef SINGLE_THREAD_RECV
