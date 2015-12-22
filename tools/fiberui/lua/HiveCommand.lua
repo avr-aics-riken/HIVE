@@ -72,7 +72,7 @@ local function ClearObjects()
 	print('MEMORY=', collectgarbage('count') .. '[KB]')
 	return 'ClearObject'
 end
-	
+
 local function CreateCamera(name)
 	local camera = Camera()
 	camera:SetScreenSize(512, 512)
@@ -209,6 +209,22 @@ local function SetModelUniformTex(name, vname, width, height, rgba)
 	return 'SetModelUniformTex:' .. name
 end
 
+local function SetColorMapTex(texname, width, height, rgba)
+	local gentex = GenTexture()
+	gentex:Create2D(rgba, 1, width, height);
+	HIVE_TextureTable[texname] = gentex;
+	return 'SetColorMapTex:' .. texname
+end
+
+local function ApplyColorMapTex(name, texname, uniformName)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	local texture = HIVE_TextureTable[texname]
+	if texture == nil then return 'Not found Texture:' .. texname end
+
+	model:SetTexture(uniformName, texture:ImageData())
+	return 'ApplyColorMapTex:' .. name
+end
 
 local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
@@ -218,7 +234,7 @@ local function DeleteObject(name)
 	HIVE_DataTable[name] = nil
 	updateInfo();
 end
-	
+
 local function LoadSPH(name, filename, shader)
 	local sph = require("SphLoader")()
 	local ret = sph:Load(filename)
@@ -315,7 +331,7 @@ local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
 	camera:SetScreenSize(oldscreensize[1], oldscreensize[2])
 	camera:SetFilename(oldfilename)
 
-	local rendertm = os.clock()	
+	local rendertm = os.clock()
 	--print('Render Ret = ', r)
 
 	-- make metabin
@@ -354,7 +370,7 @@ local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
 		else
 			print('[Error] Unsupported data type sendmode =>', sendmode)
 		end
-		
+
 		-- 	send through websocket
 		if ipcmode == true and network_ipc then
 			network_ipc:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
@@ -365,7 +381,7 @@ local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
 	local sendtm = os.clock()
 	--print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 
-	
+
 	collectgarbage('collect') -- NEED for GC
 	return {objectnum=tostring(r), width=w, height=h}
 end
@@ -385,6 +401,8 @@ return {
 	SetModelUniformVec2 = SetModelUniformVec2,
 	SetModelUniformFloat = SetModelUniformFloat,
 	SetModelUniformTex = SetModelUniformTex,
+	SetColorMapTex = SetColorMapTex,
+	ApplyColorMapTex = ApplyColorMapTex,
 	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,

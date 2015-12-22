@@ -263,6 +263,7 @@ body::-webkit-scrollbar-thumb {
 	border : 2px solid;
 	background-color : rgba(220, 220, 220, 1);
 	float : right;
+	font-size : 12px;
 }
 
 .shell_tab:active {
@@ -359,4 +360,10 @@ body::-webkit-scrollbar-thumb {
 	position : absolute;
 	left : -1000px;
 	top : -1000px;
+}
+
+#svg {
+	background-color: rgba(255,255,255,0.0);
+	position : relative;
+	top : -100%;
 }

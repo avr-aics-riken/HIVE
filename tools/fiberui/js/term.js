@@ -22,18 +22,24 @@
 			screenKeys : true,
 			colors : Terminal.xtermColors,
 			bg : target_element.style.backgroundColor,
-			geometry: [128, 20],
+			geometry: [128, 20]
 		});
 
 		bash.on('data', (function (term) {
 			return function (data) {
 				var elem = target_element.getElementsByClassName('terminal')[0],
-					div_height = term.geometry[1];
+					div_height = term.geometry[1],
+					rect,
+					top,
+					offset_top;
 				term.write(data);
 				// カーソル行が見た上画面一番下あたりに来るように、スクロール量を調整する.
 				// term.y はterminalカーソルの行数.
-				if ((term.y + 1) * div_height > elem.getBoundingClientRect().height) {
-					elem.scrollTop = (term.y + 1) * div_height - elem.getBoundingClientRect().height;
+				top = elem.children[term.y].getBoundingClientRect().top;
+				offset_top = elem.children[term.y].offsetTop;
+				rect = elem.getBoundingClientRect();
+				if ((top + div_height) > rect.bottom) {
+					elem.scrollTop = offset_top - rect.bottom +  rect.height;
 				}
 			};
 		}(term)));

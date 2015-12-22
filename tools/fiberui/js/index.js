@@ -7,11 +7,17 @@
 	 * すべてのjsファイルの初期化.
 	 */
 	function init() {
-		gui.init();
+		var initial_colormap = [
+			{ step : 0, color : 'rgb(255, 0, 0)'},
+			{ step : 0.5, color : 'rgb(0, 255, 0)'},
+			{ step : 1.0, color : 'rgb(0, 0, 255)'}
+		];
+
+		gui.init(initial_colormap);
 		term.init(document.getElementById('shell_output'));
 
 		// hiveを表示
-		hive_viewer.init();
+		hive_viewer.init(initial_colormap);
 	}
 	window.onload = init;
 
