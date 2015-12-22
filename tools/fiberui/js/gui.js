@@ -219,9 +219,9 @@
 	/**
 	 * カラーマップの初期化
 	 */
-	 function init_color_map(initial_colormap) {
-		 var color_map = document.getElementById("color_map"),
-		 	context = color_map.getContext("2d"),
+	function init_color_map(initial_colormap) {
+		var color_map = document.getElementById("color_map"),
+			context = color_map.getContext("2d"),
 			width = 30, // カラーマップ全体の幅（矢印含む
 			height = 256 + 10, // カラーマップ全体の高さ（矢印含む
 			color_steps = initial_colormap,
@@ -242,7 +242,7 @@
 		draw_color_map(context, grad_param, color_steps);
 
 		// マウス位置にあるstepを探してインデックスを返す.
-		function pick_step (e) {
+		function pick_step(e) {
 			var rect = color_map.getBoundingClientRect(),
 				px = e.clientX - rect.left,
 				py = e.clientY - rect.top,
@@ -271,7 +271,7 @@
 				color_steps[step_index].color = picker.value;
 				draw_color_map(context, grad_param, color_steps);
 				send_colormap_change_event(color_steps);
-			}
+			};
 		});
 
 		color_map.addEventListener('mousedown', function (e) {
@@ -282,7 +282,7 @@
 				step_index = pick_step(e);
 
 			if (step_index >= 0) {
-				if (e.button == 0) {
+				if (e.button === 0) {
 					// 左クリック(移動開始)
 					dragging_step = color_steps[i];
 				} else {
@@ -337,7 +337,7 @@
 		var dialog_box = document.getElementById('dialog_box'),
 			cancel_button = document.getElementById("file_dialog_cancel_button");
 		dialog_box.style.display = "block";
-		cancel_button.onclick = function(e) {
+		cancel_button.onclick = function (e) {
 			cancel_file_dialog();
 		};
 	}
