@@ -1,0 +1,23 @@
+
+local camera = HIVE_ObjectTable["view"];
+camera:LookAt(
+	0,10,30,
+	0,3,0,
+	0,1,0,
+	60
+)
+hcmd.UpdateSceneInformation()
+
+local hcmd = require('HiveCommand');
+local camera = HIVE_ObjectTable["view"];
+
+local obj = require("ObjLoader")()
+obj:Load('../test/bunny.obj')
+local model = LineModel()
+model:SetLineWidth(0.25)
+local linedata = obj:LineData()
+model:Create(linedata)
+model:SetShader('../test/white.frag')
+HIVE_ObjectTable["bunny"] = model
+
+hcmd.RenderCamera(512,512,"view","raw",true);
