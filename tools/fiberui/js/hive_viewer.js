@@ -53,18 +53,16 @@
 				var dx = e.clientX - mouseState.x,
 					dy = e.clientY - mouseState.y;
 
-				//if (self.reduce_counter % 3 === 0) {
-					if (mouseState.Left) {
-						console.log("rotate");
-						core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
-					} else if (mouseState.Right) {
-						console.log("zoom");
-						core.Zoom(dx + dy);
-					} else if (mouseState.Center) {
-						console.log("translate");
-						core.Translate(dx, dy);
-					}
-				//}
+				if (mouseState.Left) {
+					console.log("rotate");
+					core.Rotate(dy * -0.5, dx * -0.5); // Swizzle axis
+				} else if (mouseState.Right) {
+					console.log("zoom");
+					core.Zoom(dx + dy);
+				} else if (mouseState.Center) {
+					console.log("translate");
+					core.Translate(dx, dy);
+				}
 				self.reduce_counter = self.reduce_counter + 1;
 				mouseState.x = e.clientX;
 				mouseState.y = e.clientY;
@@ -101,7 +99,7 @@
 		}(viewer)), 1000);
 		// リサイズイベント登録.
 		window.addEventListener('resize', function (e) {
-			viewer.resize()
+			viewer.resize();
 		});
 		return viewer;
 	}
@@ -129,7 +127,7 @@
 		var setf0_button = document.getElementById("setf0_button"),
 			setf1_button = document.getElementById("setf1_button"),
 			path = "/",
-	 		remote = require('remote'),
+			remote = require('remote'),
 			dialog = remote.require('dialog');
 
 		// ファイルダイアログイベントを受け取る
@@ -172,7 +170,7 @@
 	function get_colormap_rgba(color_steps, width, height) {
 		var i,
 			grad,
-	 		context = dummy_canvas.getContext("2d");
+			context = dummy_canvas.getContext("2d");
 		dummy_canvas.width = width;
 		dummy_canvas.height = height;
 		// すべてクリア
@@ -197,6 +195,8 @@
 	function init(initial_colormap) {
 		var left_viewer,
 			right_viewer,
+			left_editor,
+			right_editor,
 			left_output = document.getElementById('left_output'),
 			right_output = document.getElementById('right_output');
 
@@ -213,7 +213,10 @@
 				} else if (info) {
 					left_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 				}
-			}, 'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_left');
+			},
+			'ws://localhost:8080',
+			'ipc:///tmp/HiveUI_ipc_left'
+		);
 		right_viewer = init_canvas(
 			document.getElementById('right_canvas'),
 			document.getElementById('svg'),
@@ -224,20 +227,25 @@
 				} else if (info) {
 					right_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
 				}
-			},'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_right');
+			},
+			'ws://localhost:8080',
+			'ipc:///tmp/HiveUI_ipc_right'
+		);
 
 		// 左右のエディタを初期化.
 		init_editor(
 			left_viewer,
 			ace.edit("left_editor"),
 			left_editor,
-			 document.getElementById('left_editor_submit'));
+			document.getElementById('left_editor_submit')
+		);
 
 		init_editor(
 			right_viewer,
 			ace.edit("right_editor"),
 			right_editor,
-			document.getElementById('right_editor_submit'));
+			document.getElementById('right_editor_submit')
+		);
 
 		// ファイルダイアログを初期化
 		init_filedialog(right_viewer);
