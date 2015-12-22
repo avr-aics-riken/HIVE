@@ -1,0 +1,45 @@
+print('render_pointlist')
+
+local camera = HIVE_ObjectTable["view"];
+camera:LookAt(
+	530,530,530,
+	0,0,0,
+	0,1,0,
+	60
+)
+hcmd.UpdateSceneInformation()
+
+--Gen Point List
+local ptable = {}
+local maxnum = 256000
+local size   = 400
+
+local rx = 0;
+local ry = 0;
+local rz = 0;
+
+for j = 1, maxnum do
+	local x = (( math.random() * 2.0) - 1.0);
+	local y = (( math.random() * 2.0) - 1.0);
+	local z = (( math.random() * 2.0) - 1.0);
+	local l = 1.0 / math.sqrt(x * x + y * y + z * z)
+	x = x * l;
+	y = y * l;
+	z = z * l;
+	table.insert(ptable, x * size + math.sin(y * 25.0) * size * 0.1);
+	table.insert(ptable, y * size - math.cos(z * 24.0) * size * 0.1);
+	table.insert(ptable, z * size - math.sin(x * 27.0) * size * 0.1);
+end
+
+--Create Point List
+local gen   = PrimitiveGenerator()
+local pl    = gen:PointList(ptable, maxnum, 3.5)
+local model = PointModel()
+
+
+--Create Model Data
+model:Create(pl)
+model:SetShader('../test/normal.frag')
+HIVE_ObjectTable["pointlist"] = model
+
+hcmd.RenderCamera(512,512,"view","raw",true);
