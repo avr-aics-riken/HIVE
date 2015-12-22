@@ -1,13 +1,13 @@
 /*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
-var	HRENDER = '../hrender',
-	HRENDER_ARG = ['lua/hrender_server.lua'],
-	HRENDER_THUMBNAIL_ARG = ['lua/hrender_thumbnail.lua'],
-	HTTP_ROOT_DIR = './root/',
+var	HRENDER = __dirname + '/../hrender',
+	HRENDER_ARG = [__dirname +'/lua/hrender_server.lua'],
+	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
+	HTTP_ROOT_DIR = __dirname + '/root/',
+	metabin = require(__dirname + '/lib/metabinary'),
 	port = process.argv.length > 2 ? process.argv[2] : 8080,
 	http = require('http'),
-	metabin = require('./lib/metabinary'),
 	path = require('path'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
