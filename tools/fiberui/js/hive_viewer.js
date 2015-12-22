@@ -9,7 +9,7 @@
 		current_colormap;
 
 	// コンストラクタ
-	HiveViewer = function (target_element, output_callback, ws, ipc) {
+	HiveViewer = function (target_element, event_element, output_callback, ws, ipc) {
 		this.target_element = target_element;
 		target_element.width = target_element.clientWidth;
 		target_element.height = target_element.clientHeight;
@@ -21,17 +21,17 @@
 			ws,
 			 true, // opengl Mode
 			 ipc);
-		this.init_mouse_event(this.core);
+		this.init_mouse_event(this.core, event_element);
 		this.reduce_counter = 0;
 	};
 
 	/**
 	 * マウスイベントの初期化.
 	 */
-	HiveViewer.prototype.init_mouse_event = function (core) {
+	HiveViewer.prototype.init_mouse_event = function (core, event_element) {
 		var mouseState = {"Left": false, "Center": false, "Right": false, "x": 0, "y": 0 };
 
-		this.target_element.addEventListener('mousedown', function (e) {
+		event_element.addEventListener('mousedown', function (e) {
 			e.preventDefault();
 			if (e.button === 0) { mouseState.Left   = true; }
 			if (e.button === 2) { mouseState.Right  = true; }
@@ -47,7 +47,7 @@
 			mouseState.x = e.clientX;
 			mouseState.y = e.clientY;
 		});
-		this.target_element.addEventListener('mousemove', (function (self) {
+		event_element.addEventListener('mousemove', (function (self) {
 			return function (e) {
 				e.preventDefault();
 				var dx = e.clientX - mouseState.x,
@@ -73,7 +73,7 @@
 	};
 
 	/**
-	 * マウスイベントの初期化.
+	 * リサイズ.
 	 */
 	HiveViewer.prototype.resize = function () {
 		var target_element = this.target_element,
@@ -88,8 +88,8 @@
 	/**
 	 * キャンバスを初期化.
 	 */
-	function init_canvas(canvas, output_callback, ws, ipc) {
-		var viewer = new HiveViewer(canvas, output_callback, ws, ipc);
+	function init_canvas(canvas, top_element, output_callback, ws, ipc) {
+		var viewer = new HiveViewer(canvas, top_element, output_callback, ws, ipc);
 		// 初回レンダー
 		setTimeout((function (viewer) {
 			return function () {
@@ -203,22 +203,28 @@
 		current_colormap = initial_colormap;
 
 		// 左右のキャンバスを初期化.
-		left_viewer = init_canvas(document.getElementById('left_canvas'), function (err, info) {
-			if (err) {
-				console.error(err);
-				left_output.innerHTML = err + "\n";
-			} else if (info) {
-				left_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
-			}
-		}, 'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_left');
-		right_viewer = init_canvas(document.getElementById('right_canvas'), function (err, info) {
-			if (err) {
-				console.error(err);
-				right_output.innerHTML = err + "\n";
-			} else if (info) {
-				right_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
-			}
-		},'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_right');
+		left_viewer = init_canvas(
+			document.getElementById('left_canvas'),
+			document.getElementById('left_canvas'),
+			function (err, info) {
+				if (err) {
+					console.error(err);
+					left_output.innerHTML = err + "\n";
+				} else if (info) {
+					left_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
+				}
+			}, 'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_left');
+		right_viewer = init_canvas(
+			document.getElementById('right_canvas'),
+			document.getElementById('svg'),
+			function (err, info) {
+				if (err) {
+					console.error(err);
+					right_output.innerHTML = err + "\n";
+				} else if (info) {
+					right_output.innerHTML = JSON.stringify(info, null, "    ") + "\n";
+				}
+			},'ws://localhost:8080', 'ipc:///tmp/HiveUI_ipc_right');
 
 		// 左右のエディタを初期化.
 		init_editor(
