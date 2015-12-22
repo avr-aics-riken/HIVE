@@ -198,7 +198,10 @@
 			left_editor,
 			right_editor,
 			left_output = document.getElementById('left_output'),
-			right_output = document.getElementById('right_output');
+			right_output = document.getElementById('right_output'),
+			rndnumLeft = Math.floor(Math.random()*10000),
+			rndnumRight = Math.floor(Math.random()*10000);
+
 
 		current_colormap = initial_colormap;
 
@@ -215,7 +218,7 @@
 				}
 			},
 			'ws://localhost:8080',
-			'ipc:///tmp/HiveUI_ipc_left'
+			'ipc:///tmp/HiveUI_ipc_left' + rndnumLeft
 		);
 		right_viewer = init_canvas(
 			document.getElementById('right_canvas'),
@@ -229,7 +232,7 @@
 				}
 			},
 			'ws://localhost:8080',
-			'ipc:///tmp/HiveUI_ipc_right'
+			'ipc:///tmp/HiveUI_ipc_right' + rndnumRight
 		);
 
 		// 左右のエディタを初期化.
