@@ -1370,11 +1370,18 @@
 	HiveCore.prototype.Rotate = function (rotx, roty) {
 		var eyedir = subtract(this.viewCamera.position, this.viewCamera.target),
 			v = vec4(eyedir[0], eyedir[1], eyedir[2], 0.0),
-			rx = rotate(roty, vec3(0, 1, 0)),
-			ry = rotate(rotx, vec3(1, 0, 0));
+			az = normalize(subtract(this.viewCamera.position, this.viewCamera.target)),
+			ax = normalize(cross(vec3(0, 1, 0), az)),
+			ay = normalize(cross(az, ax)),
+			rx = rotate(roty, ay),
+			ry = rotate(rotx, ax),
+			pos;
 		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
-		this.viewCamera.position = add(this.viewCamera.target, v);
+		pos = add(this.viewCamera.target, v);
+		if (Math.abs(dot(normalize(subtract(this.viewCamera.target, pos)), vec3(0, 1, 0))) < 0.99) {
+			this.viewCamera.position = pos;
+		}
 		this.render();
 	};
 	HiveCore.prototype.Zoom = function (zoom) {
