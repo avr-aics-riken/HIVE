@@ -19,3 +19,5 @@ local isosurface = surfacer:MeshData()
 model:Create(isosurface)
 model:SetShader('../test/normal.frag')
 HIVE_ObjectTable["iso"] = model;
+
+hcmd.RenderCamera(512,512,"view","raw",true);

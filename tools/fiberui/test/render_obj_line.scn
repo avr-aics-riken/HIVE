@@ -9,7 +9,6 @@ camera:LookAt(
 hcmd.UpdateSceneInformation()
 
 local hcmd = require('HiveCommand');
-local camera = HIVE_ObjectTable["view"];
 
 local obj = require("ObjLoader")()
 obj:Load('../test/bunny.obj')
