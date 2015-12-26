@@ -39,7 +39,7 @@ function build_netcdf {
 	rm -rf hdf5-1.8.10-patch1/
 	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
 	cd hdf5-1.8.10-patch1
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
 	cd ${topdir}
 
 	cd third_party/
@@ -47,7 +47,7 @@ function build_netcdf {
 	tar -zxvf netcdf-c-netcdf-4.2.1.1.tar.gz
 	cd netcdf-c-netcdf-4.2.1.1/
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-shared --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-dap --with-curl-config=/invalid --without-szlib --disable-shared --prefix=${installdir} && make && make install
 	cd ${topdir}
 
 }
