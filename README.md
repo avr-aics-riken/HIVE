@@ -87,6 +87,7 @@ Use `CXX` and `CC` flag to specify custom compiler. e.g.:
     HIVE_BUILD_WITH_OPENMP OFF CACHE BOOL "Build with OpenMP support?"
     HIVE_BUILD_SCREEN_PARALLEL OFF CACHE BOOL "Build with screen parallel support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     HIVE_BUILD_WITH_CDMLIB OFF CACHE BOOL "Build with CDMlib support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    (You may need manually add `sz` to NETCDF_LIBS in hrender/CMakeList.txt, depending on your system)
     HIVE_BUILD_WITH_PDMLIB OFF CACHE BOOL "Build with PDMlib support?"
     HIVE_BUILD_WITH_HDMLIB OFF CACHE BOOL "Build with HDMlib support?"
     HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?"
