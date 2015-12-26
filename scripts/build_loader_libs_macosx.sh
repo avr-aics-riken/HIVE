@@ -47,7 +47,7 @@ function build_netcdf {
 	tar -zxvf netcdf-c-netcdf-4.2.1.1.tar.gz
 	cd netcdf-c-netcdf-4.2.1.1/
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-dap --with-curl-config=/invalid --without-szlib --disable-shared --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-dap --with-curl-config=/invalid --disable-shared --prefix=${installdir} && make && make install
 	cd ${topdir}
 
 }
