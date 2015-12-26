@@ -3,8 +3,7 @@
  * CDMデータローダー
  */
 //
-// TODO: - timestep support
-//       - support various volume data type
+// TODO: - support various volume data type
 //
 
 #ifndef HIVE_WITH_CDMLIB
@@ -261,6 +260,21 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex)
         return false;
     }
 
+    if ((DFI_IN->GetArrayShape() == CDM::E_CDM_NIJK) ||
+        (DFI_IN->GetArrayShape() == CDM::E_CDM_IJKN)) {
+        // ok 
+    } else {
+        printf("[CdmLoader] Unsupported array shape.\n");
+        return false;
+    }
+
+    bool interleaved = false; // data is stored such like [XXXX...YYYY...ZZZZ]
+    if ((DFI_IN->GetArrayShape() == CDM::E_CDM_NIJK)) {
+      interleaved = true; // data is stored such like [XYZYXZXYZ...]
+    } else { // must be CDM::E_CDM_IJKN
+      interleaved = false;
+    }
+
     // Check data type
     // @todo { Support more data type. }
     //if( (DFI_IN->GetDataType() == CDM::E_CDM_UINT8) ||
@@ -328,15 +342,24 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex)
     m_volume.Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables, isNonUniform); // @fixme
     float* dst = m_volume.Buffer()->GetBuffer();
 
+    //printf("virtualCells = %d\n", virtualCells);
+
     size_t sx = GVoxel[0] + virtualCells;
     size_t sy = GVoxel[1] + virtualCells;
     for (size_t z = 0; z < GVoxel[2]; z++) {
         for (size_t y = 0; y < GVoxel[1]; y++) {
             for (size_t x = 0; x < GVoxel[0]; x++) {
                 for (size_t c = 0; c < numVariables; c++) {
-                    size_t srcIdx = (z + virtualCells/2) * sy * sx + (y + virtualCells/2) * sx + (x + virtualCells/2);
+                    size_t srcIdx = 0;
+                    if (interleaved) {
+                      // size_t srcIdx =  (z + virtualCells/2) * sy * sx + (y + virtualCells/2) * sx + (x + virtualCells/2);
+                      // float val = d_v[numVariables * srcIdx + c];
+                      srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables, GVoxel[0], GVoxel[1], GVoxel[2], virtualCells);
+                    } else {
+                      srcIdx = _CDM_IDX_IJKN(x, y, z, c, GVoxel[0], GVoxel[1], GVoxel[2], virtualCells);
+                    }
                     size_t dstIdx = z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
-                    float val = d_v[numVariables * srcIdx + c];
+                    float val = d_v[srcIdx];
                     dst[numVariables * dstIdx + c] = val;
                 }
             }
