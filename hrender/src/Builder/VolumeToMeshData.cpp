@@ -10,6 +10,10 @@
 #include <cstring>
 #include <algorithm>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 namespace {
 
 /*
@@ -443,9 +447,10 @@ public:
   typedef std::map<index_pair, size_t> map_type;
 
 public:
+  // Parallelizable in Z direction. -1 = nVoxels[2]
   CreateMarchingCubes(const T density[], const int nVoxels[],
-                      int components)
-      : density_(density), nVoxels_(nVoxels), components_(components) {
+                      int components, int zStart=0, int zEnd=-1)
+      : density_(density), nVoxels_(nVoxels), components_(components), zStart_(zStart), zEnd_(zEnd) {
     ;
   }
   void run(T thresoluld) {
@@ -454,12 +459,16 @@ public:
     int D = nVoxels_[2];
 
     vertices.clear();
+    normals.clear();
     indices.clear();
-    vertices.reserve(3 * W * H * D);
-    normals.reserve(3 * W * H * D);
-    indices.reserve(3 * W * H * D);
+    //vertices.reserve(3 * W * H * D);
+    //normals.reserve(3 * W * H * D);
+    //indices.reserve(3 * W * H * D);
 
-    for (int k = 0; k < D - 1; k++) {
+    int zs = (zStart_ < 0) ? 0 : ((zStart_ > D) ? D : zStart_);
+    int ze = (zEnd_ == -1) ? D : ((zEnd_ > D) ? D : zEnd_);
+
+    for (int k = zs; k < ze - 1; k++) {
       for (int j = 0; j < H - 1; j++) {
         for (int i = 0; i < W - 1; i++) {
           process_cell(i, j, k, thresoluld);
@@ -671,6 +680,8 @@ private:
   const int *nVoxels_;
   std::map<index_pair, size_t> edge2vertex_;
   int components_;
+  int zStart_;
+  int zEnd_;
 
 public:
   std::vector<float> vertices;
@@ -689,11 +700,49 @@ public:
     : density_(density), nVoxels_(nVoxels), components_(components) {
   }
   void generate(T thresoluld) {
+#ifdef _OPENMP
+      int nThreads = omp_get_max_threads();
+      if (nVoxels_[2] < nThreads) {
+        nThreads = nVoxels_[2];
+      }
+      std::vector<std::vector<float> > local_vertices(nThreads);
+      std::vector<std::vector<std::size_t> > local_indices(nThreads);
+      int zDiv = nVoxels_[2] / nThreads;
+
+      vertices_.clear();
+      indices_.clear();
+
+      // Parallel MC construction in z direction.
+      #pragma omp parallel for
+      for (int i = 0; i < nThreads; i++) {
+          int zStart = i * zDiv;
+          int zEnd = (i + 1) * zDiv;
+          if (i == nThreads-1) zEnd = nVoxels_[2];
+          if (zEnd > nVoxels_[2]) zEnd = nVoxels_[2]; 
+          CreateMarchingCubes<T> cmc(density_, nVoxels_, components_, zStart, zEnd);
+          cmc.run(thresoluld);
+          local_vertices[i].swap(cmc.vertices);
+          local_indices[i].swap(cmc.indices);
+      }
+
+      // Join
+      for (int i = 0; i < nThreads; i++) {
+        // add vertex offset. 
+        size_t voffset = vertices_.size() / 3;
+
+        vertices_.insert(vertices_.end(), local_vertices[i].begin(), local_vertices[i].end());
+        for (size_t j = 0; j < local_indices[i].size(); j++) {
+            indices_.push_back(local_indices[i][j] + voffset);
+        }
+      }
+      
+#else
       CreateMarchingCubes<T> cmc(density_, nVoxels_, components_);
       cmc.run(thresoluld);
       vertices_.swap(cmc.vertices);
       //normals_.swap(cmc.normals);
       indices_.swap(cmc.indices);
+#endif
 
       //printf("v: %d\n", vertices_.size());
       //printf("n: %d\n", normals_.size());
@@ -844,7 +893,7 @@ int VolumeToMeshData::IsoSurface() {
     for (size_t i = 0; i < numIndices; i++) {
         idxDst[i] = static_cast<unsigned int>(indices[i]);
     }
-    printf("[VolumeToMeshData] numVertices = %d\n", numVertices);
+    printf("[VolumeToMeshData] numVertices = %d\n", (int)numVertices);
 
     return numVertices;
 }
