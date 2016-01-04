@@ -132,6 +132,7 @@ private:
 		}
 		freadEx(&len, 4, 1, fp, enableswap);
 		
+		fclose(fp);
 		return grid;
 	}
 	
