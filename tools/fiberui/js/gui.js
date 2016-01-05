@@ -4,8 +4,12 @@
 	"use strict";
 
 	// ビューポートのリサイズが必要なときに投げるイベント.
-	var resize_viewport_event = document.createEvent('UIEvents');
-		resize_viewport_event.initEvent('resize_viewport', false, false);
+	var resize_viewport_event = document.createEvent('UIEvents'),
+	// カラーマップ変更時に投げるイベント.
+		colormap_change_event = document.createEvent('UIEvents');
+
+	resize_viewport_event.initEvent('resize_viewport', false, false);
+	colormap_change_event.initEvent('change_colormap', false, false);
 
 	/**
 	 * エディタの初期化.
@@ -149,6 +153,16 @@
 			}
 		});
 	}
+
+	/**
+	 * カラーマップが変更された時にイベントを送る.
+	 */
+	function send_colormap_change_event(color_steps) {
+		var color_map = document.getElementById("color_map");
+		colormap_change_event.data = color_steps;
+		color_map.dispatchEvent(colormap_change_event);
+	}
+
 	/**
 	 * カラーマップの描画
 	 */
@@ -193,25 +207,24 @@
 		}
 	}
 
-	function enter_color_map_setting(context, grad_param, color_steps, step_index) {
-		// TODO: カラーピッカーを開く
+	/**
+	 * カラーマップのステップの削除.
+	 */
+	function delete_color_map_step(context, grad_param, color_steps, step_index) {
 		color_steps.splice(step_index, 1);
 		draw_color_map(context, grad_param, color_steps);
+		send_colormap_change_event(color_steps);
 	}
 
 	/**
 	 * カラーマップの初期化
 	 */
-	 function init_color_map() {
-		 var color_map = document.getElementById("color_map"),
-		 	context = color_map.getContext("2d"),
+	function init_color_map(initial_colormap) {
+		var color_map = document.getElementById("color_map"),
+			context = color_map.getContext("2d"),
 			width = 30, // カラーマップ全体の幅（矢印含む
 			height = 256 + 10, // カラーマップ全体の高さ（矢印含む
-			color_steps = [
-				{ step : 0, color : 'rgb(255, 0, 0)'},
-				{ step : 0.5, color : 'rgb(0, 255, 0)'},
-				{ step : 1.0, color : 'rgb(0, 0, 255)'}
-			],
+			color_steps = initial_colormap,
 			grad_param = {
 				grad_width : 18,
 				grad_height : 256,
@@ -229,7 +242,7 @@
 		draw_color_map(context, grad_param, color_steps);
 
 		// マウス位置にあるstepを探してインデックスを返す.
-		function pick_step (e) {
+		function pick_step(e) {
 			var rect = color_map.getBoundingClientRect(),
 				px = e.clientX - rect.left,
 				py = e.clientY - rect.top,
@@ -249,6 +262,7 @@
 			return -1;
 		}
 
+		// ダブルクリック(色の設定).
 		color_map.addEventListener('dblclick', function (e) {
 			var picker = document.getElementById('colorpicker'),
 				step_index = pick_step(e);
@@ -256,34 +270,36 @@
 			picker.onchange = function (evt) {
 				color_steps[step_index].color = picker.value;
 				draw_color_map(context, grad_param, color_steps);
-			}
+				send_colormap_change_event(color_steps);
+			};
 		});
 
 		color_map.addEventListener('mousedown', function (e) {
 			var rect = color_map.getBoundingClientRect(),
 				px = e.clientX - rect.left,
 				py = e.clientY - rect.top,
-				setting_step,
+				deleting_step,
 				step_index = pick_step(e);
 
 			if (step_index >= 0) {
-				if (e.button == 0) {
+				if (e.button === 0) {
 					// 左クリック(移動開始)
 					dragging_step = color_steps[i];
 				} else {
-					// 右クリックなど(設定画面開く)
-					setting_step = color_steps[i];
-					enter_color_map_setting(context, grad_param, color_steps, i);
+					// 右クリックなど(削除)
+					deleting_step = color_steps[i];
+					delete_color_map_step(context, grad_param, color_steps, i);
 					return;
 				}
 			}
 
 			// 新規追加
-			if (!dragging_step && !setting_step) {
+			if (!dragging_step && !deleting_step) {
 				var step = Math.min(Math.max(py / grad_param.grad_height, 0.0), 1.0);
 				color_steps.push({ step : step, color : "rgb(255, 255, 255)"});
 				draw_color_map(context, grad_param, color_steps);
 				dragging_step = color_steps[color_steps.length - 1];
+				send_colormap_change_event(color_steps);
 			}
 		});
 		window.addEventListener('mousemove', function (e) {
@@ -296,8 +312,14 @@
 			}
 		});
 		window.addEventListener('mouseup', function () {
-			dragging_step = null;
+			if (dragging_step) {
+				dragging_step = null;
+				send_colormap_change_event(color_steps);
+			}
 		});
+
+		// 初回に1回イベントを投げる。
+		send_colormap_change_event(color_steps);
 	}
 
 	/**
@@ -315,7 +337,7 @@
 		var dialog_box = document.getElementById('dialog_box'),
 			cancel_button = document.getElementById("file_dialog_cancel_button");
 		dialog_box.style.display = "block";
-		cancel_button.onclick = function(e) {
+		cancel_button.onclick = function (e) {
 			cancel_file_dialog();
 		};
 	}
@@ -366,14 +388,14 @@
 	/**
 	 * GUIの初期化.
 	 */
-	function init() {
+	function init(initial_colormap) {
 		init_editor();
 		init_button();
 		init_middle_bar();
 		init_bottom_bar();
 		init_bottom_tab();
 		init_vertical_bar();
-		init_color_map();
+		init_color_map(initial_colormap);
 	}
 
 	window.gui = {};

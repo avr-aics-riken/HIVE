@@ -135,7 +135,7 @@
 				}
 			}
 		});
-		
+
 		if (ipcAddress) {
 			// Electron only
 			var nano = require('nanomsg');
@@ -144,11 +144,11 @@
 			var meta = require('./js/lib/metabinary'); // path from index.html
 			var ret = sc.bind(ipcAddress);
 			console.log('IPC bind = ', ret, ipcAddress);
-			
+
 			sc.on('data', function (data) {
 				if (!meta.loadMetaBinary(data, function(meta, data) {
 					var w, h,
-						param = meta.param;				
+						param = meta.param;
 					if (param.type === 'jpg') {
 						// resultElement is img.
 						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
@@ -166,7 +166,7 @@
 						buffercopy.buffercopy(data, imageData.data);
 						context.putImageData(imageData, 0, 0);
 					}
-					
+
 				})) {
 					console.error('Not metabin foramt');
 				};
@@ -346,6 +346,10 @@
 			this.websocketConn.close();
 			this.websocketConn = null;
 		}
+	};
+
+	HiveCore.prototype.runScript = function (src, callback) {
+		runScript(this.conn, src, callback);
 	};
 
 	//----------------------------------------------------------------------------------------------
@@ -1146,6 +1150,39 @@
 											 obj.info.rgbatex[vname].width,
 											 obj.info.rgbatex[vname].height,
 											 obj.info.rgbatex[vname].rgba);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+
+	HiveCore.prototype.setColorMapTex = function (texname, width, height, rgbaVal, redraw) {
+		var i,
+			src = '',
+			redrawfunc = null;
+
+		src = HiveCommand.setColorMapTex(texname, width, height, rgbaVal);
+		if (redraw) {
+			redrawfunc = (function (core) {
+				return function (err, data) {
+					return core.render();
+				};
+			}(this));
+		}
+		runScript(this.conn, src, redrawfunc);
+	};
+
+	HiveCore.prototype.applyColorMapTex = function (objname, texname, uniformName, redraw) {
+		var i,
+			obj = this.findObject(objname),
+			src = '',
+			redrawfunc = null;
+
+		src = HiveCommand.applyColorMapTex(objname, texname, uniformName);
 		if (redraw) {
 			redrawfunc = (function (core) {
 				return function (err, data) {
