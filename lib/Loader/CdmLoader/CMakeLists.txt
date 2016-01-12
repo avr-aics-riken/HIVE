@@ -11,6 +11,12 @@ add_definitions(-DHIVE_WITH_CDMLIB)
     CdmLoader.cpp
   )
 
+  IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+    SET(NETCDF_LIBS netcdf hdf5_hl hdf5 sz)
+  ELSE()
+    SET(NETCDF_LIBS netcdf hdf5_hl hdf5)
+  ENDIF()
+
   SET(CDMLIB_LIBS
     CDM TPmpi
   )
@@ -40,5 +46,10 @@ add_library(CdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
 target_link_libraries(CdmLoader hiveCore)
 target_link_libraries(CdmLoader ${CDMLIB_LIBS})
 set_target_properties(CdmLoader PROPERTIES PREFIX "")
+
+IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+  include_directories(/opt/aics/netcdf/k/include)
+  link_directories(/opt/aics/netcdf/k/lib-static)
+ENDIF()
 
 ENDIF() # HIVE_WITH_CDMLIB

@@ -63,6 +63,28 @@ function build_tp {
 	cd ${topdir}
 }
 
+function build_netcdf {
+	cd third_party/
+
+	rm -rf hdf5-1.8.10-patch1/
+	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
+	cd hdf5-1.8.10-patch1
+	# disable SZIP(but this may not work)
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
+	cd ${topdir}
+
+	cd third_party/
+	rm -rf netcdf-c-netcdf-4.2.1.1/
+	tar -zxvf netcdf-c-netcdf-4.2.1.1.tar.gz
+	cd netcdf-c-netcdf-4.2.1.1/
+	autoreconf -ivf
+        # disable curl
+	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-dap --with-curl-config=/invalid --disable-shared --prefix=${installdir} && make && make install
+	cd ${topdir}
+
+}
+
+
 function build_cdmlib {
 	#
 	# CDMlib
@@ -77,7 +99,7 @@ function build_cdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-nc=${installdir} --with-MPI=yes && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -234,6 +256,7 @@ function build_nanomsg {
 
 
 clean_install_dir
+build_netcdf
 build_tp
 build_cdmlib
 build_polylib
