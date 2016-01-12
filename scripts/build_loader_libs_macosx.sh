@@ -33,6 +33,25 @@ function build_tp {
 	cd ${topdir}
 }
 
+function build_netcdf {
+	cd third_party/
+
+	rm -rf hdf5-1.8.10-patch1/
+	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
+	cd hdf5-1.8.10-patch1
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
+	cd ${topdir}
+
+	cd third_party/
+	rm -rf netcdf-c-netcdf-4.2.1.1/
+	tar -zxvf netcdf-c-netcdf-4.2.1.1.tar.gz
+	cd netcdf-c-netcdf-4.2.1.1/
+	autoreconf -ivf
+	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-dap --with-curl-config=/invalid --disable-shared --prefix=${installdir} && make && make install
+	cd ${topdir}
+
+}
+
 function build_cdmlib {
 	#
 	# CDMlib
@@ -49,7 +68,8 @@ function build_cdmlib {
 	mkdir -p BUILD_DIR
 	cd BUILD_DIR
 
-	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-MPI=yes && make && make install
+	# Assume NetCDF4 and HDF5 are installed with homebrew 
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-nc=${installdir} --with-MPI=yes && make && make install
 	cd ${topdir}
 }
 
@@ -204,6 +224,7 @@ function build_nanomsg {
 
 clean_install_dir
 build_tp
+build_netcdf
 build_cdmlib
 build_polylib
 build_bcmtools

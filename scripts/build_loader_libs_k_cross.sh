@@ -49,7 +49,7 @@ function build_cdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -I/opt/aics/netcdf/k/include" LDFLAGS="-L/opt/aics/netcdf/k/lib-static" LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lsz -lz" F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes --with-nc && make && make install
 	cd ${topdir}
 }
 
