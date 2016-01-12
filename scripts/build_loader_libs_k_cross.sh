@@ -211,4 +211,4 @@ build_hdmlib
 build_pdmlib
 build_udmlib
 build_compositor
-build_nanomsg
+# build_nanomsg
