@@ -238,6 +238,17 @@ function build_compositor {
 	cd ${topdir}
 }
 
+function build_pmlib {
+
+	cd third_party/PMlib
+
+	autoreconf -ivf
+	cd BUILD_DIR
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/PMlib && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
+}
+
 
 clean_install_dir
 build_netcdf
@@ -249,3 +260,4 @@ build_hdmlib
 build_pdmlib
 build_udmlib
 build_compositor
+build_pmlib
