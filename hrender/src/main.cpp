@@ -19,9 +19,11 @@
 #include "SceneScript/SceneScript.h"
 
 #include "Core/Path.h"
+#include "Core/sleep.h"
 
-#include "../../lib/Network/Connection.h"
-#include "rapidjson/document.h"
+
+//#include "../../lib/Network/Connection.h"
+//#include "rapidjson/document.h"
 
 #ifdef _WIN32
 	#define strncasecmp(x,y,z) _strnicmp(x,y,z)
@@ -30,27 +32,6 @@
 		#define _CRTDBG_MAP_ALLOC
 		#include <crtdbg.h>
 	#endif
-
-    #include <windows.h>
-
-    namespace {
-        void h_sleep (int milliseconds) {
-            Sleep (milliseconds);
-        }
-    }
-#else
-
-    #include <time.h>
-
-    namespace {
-        void h_sleep (int milliseconds)
-        {
-            struct timespec ts;
-            ts.tv_sec = milliseconds / 1000;
-            ts.tv_nsec = milliseconds % 1000 * 1000000;
-            nanosleep (&ts, NULL);
-        }
-    }
 
 #endif
 
@@ -64,7 +45,7 @@ void renderScene(const char* scenefile, const std::vector<std::string>& scenearg
     std::string scenepath(scenefile);
     std::string scenefullfile = convertFullpath(scenepath);
     changeFileDir(scenefullfile);
-    
+
     SceneScript script;
     if (!script.ExecuteFile(scenefullfile.c_str(), sceneargs)) {
         fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
@@ -74,14 +55,21 @@ void renderScene(const char* scenefile, const std::vector<std::string>& scenearg
 std::string makeErrorResponse(const std::string& err, const std::string& id)
 {
     std::stringstream ss;
-    ss << "{\"jsonrpc\":\"2.0\", \"error\":\"" << err << "\", \"id\":\"" << id << "\"}";
+    ss << "{\"jsonrpc\":\"2.0\", \"error\":\"" << err << "\", \"id\":\"" << id << "\", \"to\":\"client\"}";
     return ss.str();
 }
 
 std::string makeResultResponse(const std::string& result, const std::string& id)
 {
     std::stringstream ss;
-    ss << "{\"jsonrpc\":\"2.0\", \"result\":\"" << result << "\", \"id\":\"" << id << "\"}";
+    ss << "{\"jsonrpc\":\"2.0\", \"result\":\"" << result << "\", \"id\":\"" << id << "\", \"to\":\"client\"}";
+    return ss.str();
+}
+
+std::string makeMasterRegistMethod(const std::string& method, const std::string& targetid)
+{
+    std::stringstream ss;
+    ss << "{\"jsonrpc\":\"2.0\", \"method\":\"" << method << "\", \"param\":{\"mode\":\"renderer\", \"targetid\":\"" << targetid << "\"}, \"to\":\"master\"}";
     return ss.str();
 }
 
@@ -89,10 +77,22 @@ std::string makeResultResponse(const std::string& result, const std::string& id)
 /**
  * server mode関数
  */
-void serverMode(const std::string& url, const std::vector<std::string>& sceneargs)
+/*void serverMode(const std::string& url, const std::vector<std::string>& sceneargs)
 {
     fprintf(stdout, "start up server mode!! connect to > %s\n", url.c_str());
 
+    std::string clientId = "";
+    for (size_t i = 0; i < sceneargs.size(); ++i) {
+        if (sceneargs[i].substr(0,9) == "--client:") {
+            clientId = sceneargs[i].substr(9);
+        }
+    }
+    
+    if (clientId == "") {
+        fprintf(stderr, "[Error] not found clientId, --client:XXX\n");
+        return;
+    }
+    
     Connection con;
     
     std::stringstream ss;
@@ -100,7 +100,7 @@ void serverMode(const std::string& url, const std::vector<std::string>& scenearg
     if (!r) {
         int retryCnt = 5;
         while (!r && retryCnt > 0) {
-            h_sleep(1000);
+            os_sleep(1000);
             r = con.Connect(url.c_str());
             retryCnt--;
         }
@@ -110,38 +110,50 @@ void serverMode(const std::string& url, const std::vector<std::string>& scenearg
         }
     }
     
+    //register
+    std::string reg = makeMasterRegistMethod("register", clientId);
+    con.SendText(reg);
+    
     std::string scenepath("./dummy.scn");
     std::string scenefullfile = convertFullpath(scenepath);
     changeFileDir(scenefullfile);
     SceneScript script;
     
     script.Begin(sceneargs);
+    script.Command("hcmd = require('HiveCommand')");
     while (1) {
         std::string scenecmd = "";
         std::string json = con.Recv();
         if (json != "") {
-
+            printf(json.c_str());
             rapidjson::Document doc;
             if (doc.Parse<0>(json.c_str()).HasParseError()) {
                 fprintf(stderr, "[Error] json parse error.\n");
             }
             
             std::string jsonrpc = doc["jsonrpc"].GetString();
-            std::string id      = doc["id"].GetString();
+            std::string id;
+            if (doc.HasMember("id")) {
+                std::stringstream s;
+                s << doc["id"].GetInt();
+                id = s.str();
+            }
             std::string method  = doc["method"].GetString();
             if (jsonrpc != "2.0") {
                 const std::string err = "Invalid jsonrpc json.";
                 con.SendText(makeErrorResponse(err, id));
             } else {
-                if (method == "Command") {
-                    rapidjson::Value& v = doc["param"];
-                    scenecmd = v.GetString();
-                    if (!script.Command(scenecmd.c_str())) {
-                        const std::string err = "Failed scene command.";
-                        fprintf(stderr, "[Error] %s > %s\n", err.c_str(), scenecmd.c_str());
-                        con.SendText(makeErrorResponse(err, id));
-                    } else {
-                        con.SendText(makeResultResponse("done.", id));
+                if (method == "runscript") {
+                    if (doc.HasMember("param")){
+                        scenecmd = doc["param"]["script"].GetString();
+
+                        if (!script.Command(scenecmd.c_str())) {
+                            const std::string err = "Failed scene command.";
+                            fprintf(stderr, "[Error] %s > %s\n", err.c_str(), scenecmd.c_str());
+                            con.SendText(makeErrorResponse(err, id));
+                        } else {
+                            //con.SendText(makeResultResponse("done.", id));
+                        }
                     }
                 } else {
                     const std::string err = "Unkown method.";
@@ -149,13 +161,13 @@ void serverMode(const std::string& url, const std::vector<std::string>& scenearg
                 }
             }
         } else {
-            h_sleep(5);
+            os_sleep(5);
             const std::string status = con.GetState();
             
             // reconnect
             if (status == "CLOSED" || status == "NOT_CONNECTED") {
                 while (!r) {
-                    h_sleep(1000);
+                    os_sleep(1000);
                     r = con.Connect(url.c_str());
                 }
                 if (!r) {
@@ -167,7 +179,7 @@ void serverMode(const std::string& url, const std::vector<std::string>& scenearg
     }
     script.End();
 }
-
+*/
 
 
 /**
@@ -211,7 +223,7 @@ int main(int argc, char* argv[])
             serverUrl = std::string(argv[i]);
             serverUrl = serverUrl.substr(9);
         }
-        if (i > 1 && na < 2048) {
+        if (i >= 1 && na < 2048) {
             sceneargs.push_back(argv[i]);
         }
     }
@@ -227,11 +239,15 @@ int main(int argc, char* argv[])
         return 0;
     }
     
+    /*
+    // now disable servermode
     if (serverUrl != "") {
         serverMode(serverUrl, sceneargs);
     } else {
         renderScene(scenefile, sceneargs);
-    }
+    }*/
+    
+    renderScene(scenefile, sceneargs);
     
     printf("Exit hrender.\n");
     

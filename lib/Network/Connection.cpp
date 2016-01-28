@@ -24,6 +24,8 @@
 #include "CriticalSection.h"
 #endif
 
+#include "Core/sleep.h"
+
 namespace {
     
 #ifdef SINGLE_THREAD_RECV
@@ -58,6 +60,7 @@ namespace {
             m_ws->poll();
             m_ws->dispatch(recvCallback);
             g_wsclientCS.Leave();
+            os_sleep(1);
             
             return false; // retry
         }
@@ -124,8 +127,9 @@ namespace {
                 }
                 m_ws->poll();
                 g_wsclientCS.Leave();
+            } else {
+                os_sleep(1);
             }
-            
             return false; // retry
         }
         void Send(const std::string& msg, bool binary = false) {
