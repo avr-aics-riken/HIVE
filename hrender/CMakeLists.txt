@@ -152,8 +152,10 @@ ENDIF()
 add_executable (hrender ${HRENDER_SOURCES})
 
 # HIVE Core
+
 link_directories(${PROJECT_SOURCE_DIR}/../bin)
 target_link_libraries(hrender hiveCore)
+target_link_libraries(hrender Network)
 
 
 #

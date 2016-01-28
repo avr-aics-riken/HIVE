@@ -473,7 +473,7 @@ public:
 #endif
         } else if (m_nn) {
 #ifdef HIVE_ENABLE_NANOMSG
-            static const int size = 16*1024;
+            static const int size = 16*1024; // TODO: more big buffer
             static char cbuf[size];
             m_nn->recv(cbuf, size, 0);
             return cbuf;
