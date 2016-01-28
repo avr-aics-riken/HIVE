@@ -5,7 +5,7 @@
 #ifndef _CONNECTION_H_
 #define _CONNECTION_H_
 
-#include "../Core/Ref.h"
+#include "Core/Ref.h"
 
 /**
  * コネクションインタフェース
@@ -40,8 +40,7 @@ class Connection : public RefCount, public ConnectionIF
 private:
     ConnectionIF* m_imp;
     
-protected:
-    // Script Access Only
+public:
     Connection();
     ~Connection();
     

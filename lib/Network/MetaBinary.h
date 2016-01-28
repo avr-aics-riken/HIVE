@@ -5,7 +5,7 @@
 #ifndef _METABINARY_H_
 #define _METABINARY_H_
 
-#include "../Core/Ref.h"
+#include "Core/Ref.h"
 
 /**
  * メタバイナリ

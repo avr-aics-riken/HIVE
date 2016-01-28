@@ -297,7 +297,41 @@ void registerArg(lua_State* L, const std::vector<std::string>& sceneargs)
 }
 
 
-bool SceneScript::ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs)
+class SceneScript::Impl {
+public:
+    bool Execute(const char* luascript, const std::vector<std::string>& sceneargs);
+    bool ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs);
+    
+    void Begin(const std::vector<std::string>& sceneargs);
+    bool Command(const char* scenecommand);
+    void End();
+    
+private:
+    lua_State* m_L;
+    
+};
+
+SceneScript::SceneScript() { m_imp = new Impl(); }
+SceneScript::~SceneScript(){ delete m_imp; }
+bool SceneScript::ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs) {
+    return m_imp->ExecuteFile(scenefile, sceneargs);
+}
+bool SceneScript::Execute(const char* luascript, const std::vector<std::string>& sceneargs) {
+    return m_imp->Execute(luascript, sceneargs);
+}
+void SceneScript::Begin(const std::vector<std::string>& sceneargs) {
+    m_imp->Begin(sceneargs);
+}
+void SceneScript::End() {
+    m_imp->End();
+}
+bool SceneScript::Command(const char* sceneCommand) {
+    return m_imp->Command(sceneCommand);
+}
+
+
+
+bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs)
 {
     
     printf("Execute Scene file:%s\n", scenefile);
@@ -321,29 +355,47 @@ bool SceneScript::ExecuteFile(const char* scenefile, const std::vector<std::stri
     return r;
 }
 
-bool SceneScript::Execute(const char* luascript, const std::vector<std::string>& sceneargs)
+bool SceneScript::Impl::Execute(const char* luascript, const std::vector<std::string>& sceneargs)
+{
+    Begin(sceneargs);
+    bool r = Command(luascript);
+    End();
+    
+    return r;
+}
+
+void SceneScript::Impl::Begin(const std::vector<std::string>& sceneargs)
 {
     for (size_t i = 0; i < sceneargs.size(); ++i) {
         if (sceneargs[i] == "--opengl") {
             RenderCore::GetInstance(RENDER_OPENGL); // Switch OpenGL mode
         }
     }
-    lua_State* L = createLua();
-    registerFuncs(L);
+    m_L = createLua();
+    registerFuncs(m_L);
     
     // Reference path bin dir
     std::string includeBinDir = std::string("package.cpath=\"") + getBinaryDir() + std::string("?.\" .. dllExtension() .. \";\"..package.cpath");
     //printf("HH=%s",includeBinDir.c_str());
-    doLua(L, includeBinDir.c_str());
-
+    doLua(m_L, includeBinDir.c_str());
+    
     if (!sceneargs.empty()) {
-        registerArg(L, sceneargs);
+        registerArg(m_L, sceneargs);
     }
-    doLua(L, luascript);
-    closeLua(L);
-    
-    
-    RenderCore::Finalize();
-    
-    return true;
 }
+
+bool SceneScript::Impl::Command(const char* sceneCommand)
+{
+    return doLua(m_L, sceneCommand);
+}
+
+void SceneScript::Impl::End()
+{
+    closeLua(m_L);
+    m_L = 0;
+
+    RenderCore::Finalize();
+}
+
+
+
