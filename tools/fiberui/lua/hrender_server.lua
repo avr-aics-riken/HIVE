@@ -69,10 +69,6 @@ HIVE_TextureTable = {} -- Global: Texture Table
 HIVE_ObjectTimeline = {}
 HIVE_DataTable   = {} -- Global: Data List
 
-local function mysleep(sec)
-	local start = os.time()
-	while os.time() - start < sec do end
-end
 
 --[[
 local function sendMasterError(err)
@@ -199,10 +195,11 @@ function mainloop()
 				renderMethod(data.method, data.param, data.id)
 			end
 		else
+			sleep(1)
 			r = network:GetState()
 			-- Reconnection
 			if r == "CLOSED" or r == "NOT_CONNECTED" then
-				mysleep(1)
+				sleep(1000)
 				r = connectHIVE();
 				if r then
 					Log('[Connection] Reconnected')

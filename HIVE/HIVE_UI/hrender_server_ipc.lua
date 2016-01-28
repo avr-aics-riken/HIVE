@@ -58,11 +58,6 @@ HIVE_ObjectTable = {view=defaultCamera} -- Global: All Object List
 HIVE_ObjectTimeline = {}
 HIVE_DataTable   = {} -- Global: Data List
 
-local function mysleep(sec)
-	local start = os.time()
-	while os.time() - start < sec do end
-end
-
 --[[
 local function sendMasterError(err)
 	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = 'master'});
@@ -191,10 +186,11 @@ function mainloop()
 				renderMethod(data.method, data.param, data.id)
 			end
 		else
+			sleep(1)
 			r = network:GetState()
 			-- Reconnection
 			if r == "CLOSED" or r == "NOT_CONNECTED" then
-				mysleep(1)
+				sleep(1000)
 				r = connectHIVE();
 				if r then
 					Log('[Connection] Reconnected')

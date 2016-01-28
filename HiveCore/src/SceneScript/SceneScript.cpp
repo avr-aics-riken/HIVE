@@ -9,6 +9,7 @@
 
 #include "LuaUtil.h"
 #include "Path.h"
+#include "sleep.h"
 
 #include <vector>
 
@@ -158,6 +159,16 @@ int endian(lua_State* L)
 }
 
 
+int h_sleep(lua_State* L)
+{
+    int t = lua_tointeger(L, 1);
+    os_sleep(t);
+    return 0;
+}
+
+
+
+
 // ------------------------
 /*int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
 {
@@ -277,6 +288,7 @@ void registerFuncs(lua_State* L)
     SetFunction(L, "platform", platform);
     SetFunction(L, "dllExtension", dllExtension);
     SetFunction(L, "endian", endian);
+    SetFunction(L, "sleep", h_sleep);
     
     SetFunction(L, "screenParallelRendering", screenParallelRendering);
 
