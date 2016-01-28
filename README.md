@@ -154,7 +154,7 @@ Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
   * [x] double precision voxel type(scalar and vector)
     * Convert to float precision for internal representation
   * [x] non-uniform spacing 
-  * [ ] NetCDF4 format support
+  * [x] NetCDF4 format support
 
 * PDMlib
   * [x] particle data
