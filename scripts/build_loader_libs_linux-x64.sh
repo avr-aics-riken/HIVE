@@ -251,6 +251,18 @@ function build_nanomsg {
 
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/nanomsg && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
+}
+
+function build_pmlib {
+
+	cd third_party/PMlib
+
+	autoreconf -ivf
+	cd BUILD_DIR
+	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/PMlib && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -265,4 +277,5 @@ build_hdmlib
 build_pdmlib
 build_udmlib
 build_compositor
+build_pmlib
 build_nanomsg
