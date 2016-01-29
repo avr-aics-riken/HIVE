@@ -15,16 +15,20 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 ## git clone
 
     $ git clone https://github.com/avr-aics-riken/HIVE.git
+    $ cd HIVE
     $ git submodule update --init
+
+In the later, `$HIVE` is used for the directory where you cloned HIVE git repository.
 	
 ## Setup
 
-Build third party libraries.
+Firstly, HIVE needs to build third party libraries.
 
 ### K/FX10
 
-Download fpzip, Zoltan and cgnslib and put files into `third_party/`, then
+Download fpzip, Zoltan and cgnslib and put files into `$HIVE/third_party/`, then
 
+    $ cd $HIVE
     $ ./scripts/build_loader_libs_k_cross.sh
 
 ### Linux
@@ -33,11 +37,13 @@ Download fpzip, Zoltan and cgnslib and put files into `third_party/`, then
 
 Assume cmake2.8 and hdf5 has been installed somewhere.
 
+    $ cd $HIVE
     $ CMAKE_BIN=/path/to/cmake28 ./scripts/build_loader_libs_linux-x64.sh
 
 #### Ubuntu 14.04
 
     $ sudo apt-get install libhdf5-dev
+    $ cd $HIVE
     $ ./scripts/build_loader_libs_linux-x64.sh
 
 ### MacOSX
@@ -53,16 +59,23 @@ Assume homebrew is installed.
     $ brew install openmpi
     $ export OMPI_CC=gcc-4.8
     $ export OMPI_CXX=g++-4.8
+    $ cd $HIVE
     $ ./scripts/build_loader_libs_macosx.sh
 
 
 ## How to build HIVE
 
-    $ cd HIVE
+This is a manual step to build HIVE. Plese see the later section when you want to use predefined cmake build script.
+
+    $ cd $HIVE
     $ mkdir build
     $ cd build
+
+    # Build with minimum dependency
     $ cmake ../
-    # Enable OpenMP build(optional)
+    $ make
+
+    # Or enable OpenMP build(optional)
     $ cmake ../ -DHIVE_BUILD_WITH_OPENMP=On
     # You may run cmake twice to tell OPENMP flag to SURFACE module correctly.
     # (This looks like a problem of cmake...)
@@ -98,37 +111,64 @@ Use `CXX` and `CC` flag to specify custom compiler. e.g.:
 
 Optionally edit `./scripts/cmake_k_cross.sh`, then
 
+    $ cd $HIVE 
+    $ mkdir build
     $ ./scripts/cmake_k_cross.sh
     $ cd build
     $ make
 
-### MacOSX OpenMP build with GCC
+### Linux
 
-Download gcc from HPC on MacOSX <http://hpc.sourceforge.net>
+#### Intel Compiler
 
-    $ cd HIVE
+Optionally edit `./scripts/cmake_linux-x64-all-icc.sh`, then
+
+    $ cd $HIVE 
     $ mkdir build
-    $ ../scripts/cmake_macosx_omp.sh
+    $ ./scripts/cmake_linux-x64-all-icc.sh
+    $ cd build
+    $ make
+
+#### GCC
+
+Optionally edit `./scripts/cmake_linux-x64-all.sh`, then
+
+    $ cd $HIVE 
+    $ mkdir build
+    $ ./scripts/cmake_linux-x64-all.sh
+    $ cd build
+    $ make
+
+### MacOSX OpenMP + MPI build
+
+    $ cd $HIVE
+    $ mkdir build
+    $ ./scripts/cmake_macosx_mpi.sh
+    $ cd build
     $ make
     
-### Setup HIVE
+### Setup node.js for HIVE UI
 
-    $ cd build/bin/HIVE
+    $ cd $HIVE
+    $ cd build/bin/HIVE_UI
     $ npm install
     
-### Run HIVE
+### Run HIVE UI
 
-    $ cd build/bin/HIVE
+    $ cd $HIVE
+    $ cd build/bin/HIVE_UI
     $ node server.js
     
 
 ### Setup SceneNodeEditor
 
+    $ cd $HIVE
     $ cd build/bin/SceneNodeEditor
     $ npm install
     
 ### Run SceneNodeEditor
 
+    $ cd $HIVE
     $ cd build/bin/SceneNodeEditor
     $ node server.js
 
