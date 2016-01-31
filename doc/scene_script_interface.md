@@ -251,11 +251,15 @@ RenderObjectは共通のインターフェースを持つ
         boolean SetFilename(filename)
     
 
+画像には tga, jpg, png, exr, hdr フォーマットを指定できる.
+
 - 結果デプス画像のファイルパスの設定.
   * filename ファイルパス
 
         boolean SetDepthFilename(filename)
     
+
+デプス画像は OpenEXR フォーマットのみサポートする(.exr 拡張子)
 
 - 視線の設定.
   * eye_x 視点ベクトルx
