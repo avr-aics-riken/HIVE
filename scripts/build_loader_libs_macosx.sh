@@ -36,11 +36,12 @@ function build_tp {
 function build_netcdf {
 	cd third_party/
 
-	rm -rf hdf5-1.8.10-patch1/
-	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
-	cd hdf5-1.8.10-patch1
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
-	cd ${topdir}
+        # HDF5-1.8.10-patch1 failed to compile on MacOSX. Use `brew install hdf5` instead
+	#rm -rf hdf5-1.8.10-patch1/
+	#tar -jxvf hdf5-1.8.10-patch1.tar.bz2
+	#cd hdf5-1.8.10-patch1
+	#CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
+	#cd ${topdir}
 
 	cd third_party/
 	rm -rf netcdf-c-netcdf-4.2.1.1/
