@@ -34,9 +34,9 @@ function build_tp {
 }
 
 function build_netcdf {
-	cd third_party/
 
         # HDF5-1.8.10-patch1 failed to compile on MacOSX. Use `brew install hdf5` instead
+	#cd third_party/
 	#rm -rf hdf5-1.8.10-patch1/
 	#tar -jxvf hdf5-1.8.10-patch1.tar.bz2
 	#cd hdf5-1.8.10-patch1
