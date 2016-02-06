@@ -158,7 +158,8 @@ function build_pdmlib {
 	rm -rf PDMlib_build
 	mkdir PDMlib_build
 	cd PDMlib_build/
-	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
+        # Don't build converter tools.
+	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -Dbuild_h5part_converter=no -Dbuild_fv_converter=no -Dbuild_vtk_converter=no -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
 	cd ${topdir}
 }
 
