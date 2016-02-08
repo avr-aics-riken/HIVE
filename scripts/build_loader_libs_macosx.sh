@@ -34,13 +34,14 @@ function build_tp {
 }
 
 function build_netcdf {
-	cd third_party/
 
-	rm -rf hdf5-1.8.10-patch1/
-	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
-	cd hdf5-1.8.10-patch1
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
-	cd ${topdir}
+        # HDF5-1.8.10-patch1 failed to compile on MacOSX. Use `brew install hdf5` instead
+	#cd third_party/
+	#rm -rf hdf5-1.8.10-patch1/
+	#tar -jxvf hdf5-1.8.10-patch1.tar.bz2
+	#cd hdf5-1.8.10-patch1
+	#CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
+	#cd ${topdir}
 
 	cd third_party/
 	rm -rf netcdf-c-netcdf-4.2.1.1/
@@ -157,7 +158,8 @@ function build_pdmlib {
 	rm -rf PDMlib_build
 	mkdir PDMlib_build
 	cd PDMlib_build/
-	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
+        # Don't build converter tools.
+	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -Dbuild_h5part_converter=no -Dbuild_fv_converter=no -Dbuild_vtk_converter=no -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
 	cd ${topdir}
 }
 
