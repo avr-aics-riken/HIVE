@@ -1,0 +1,16 @@
+language: cpp
+os:
+  - linux
+  - osx
+
+compiler: gcc
+sudo: required
+before_install:
+  - ./scripts/travis_setup.sh
+  - git submodule update --init
+
+install:
+  - CXX=mpicxx CC=mpicc cmake -H. -DLUA_USE_READLINE=Off -DLUA_USE_CURSES=Off -DHIVE_BUILD_WITH_MPI=On -DHIVE_BUILD_WITH_OPENMP=On -DBUILD_SHARED_LIBS=Off -DCMAKE_BUILD_TYPE=Release -Bbuild
+
+script:
+  - make -C build VERBOSE=1
