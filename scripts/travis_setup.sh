@@ -3,9 +3,9 @@
 if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
 
 	brew update
-	brew outdated gcc48 || brew install gcc48
-	brew outdated openmpi || brew install openmpi
-	brew outdated hdf5 || brew install hdf5
+	brew upgrade gcc48 
+	brew install openmpi
+	brew install homebrew/science/hdf5
 
 else	# guess linux
 
