@@ -3,9 +3,9 @@
 if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
 
 	brew update
-	# gcc 4.8.3 is already installed in Travis.
-	# brew install gcc48
-	brew install openmpi
+	brew outdated gcc48 || brew install gcc48
+	brew outdated openmpi || brew install openmpi
+	brew outdated hdf5 || brew install hdf5
 
 else	# guess linux
 
