@@ -9,6 +9,6 @@ export default class View extends React.Component {
 	}
 
 	render () {
-		return (<Node></Node>);
+		return (<Node ></Node>);
 	}
 }
