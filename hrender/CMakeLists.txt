@@ -145,6 +145,10 @@ IF(HIVE_BUILD_WITH_COMPOSITOR)
   ENDIF()
   add_definitions(-DHIVE_WITH_COMPOSITOR)
 ENDIF()
+
+IF(HIVE_BUILD_WITH_PMLIB)
+  add_definitions(-DHIVE_WITH_PMLIB)
+ENDIF()
 # --------------------------------------
 
 # --------------------------------------

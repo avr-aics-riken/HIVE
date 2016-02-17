@@ -19,6 +19,10 @@
 
 #include "../Core/Path.h"
 
+#ifdef HIVE_BUILD_WITH_PMLIB
+#include "PerfMonitor.h"
+#endif
+
 #ifdef _WIN32
 	#define strncasecmp(x,y,z) _strnicmp(x,y,z)
 
