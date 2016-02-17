@@ -1,6 +1,7 @@
 /*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
+//var	HRENDER = __dirname + '/../../build/bin/hrender', -- for debug
 var	HRENDER = __dirname + '/../hrender',
 	HRENDER_ARG = [__dirname +'/lua/hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
@@ -18,6 +19,13 @@ var	HRENDER = __dirname + '/../hrender',
 		if (req.url === '/') {
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
+        } else if (req.url === '/nodelist.json') { // temp
+            makeNodeList((function (res) {
+                return function (err, nodelist) {
+                    file = JSON.stringify(nodelist);
+                    res.end(file);
+                };
+            }(res)));
 		} else {
 			try {
 				fname = req.url.substr(1, req.url.length); // remove '/'
@@ -35,6 +43,61 @@ var	HRENDER = __dirname + '/../hrender',
 							   autoAcceptConnections : false}),
 	ws_connections = {},
 	id_counter = 0;
+    
+    
+//-----------------------------------------------------
+
+function makeNodeList(callback) {
+	"use strict";
+	var nodeDir = './nodedata';
+	fs.readdir(nodeDir, function (err, files) {
+		var infofile,
+			nodeDirPath,
+			fileCounter,
+			customFuncLua,
+			nodelist = [],
+			i;
+		if (err) {
+			return;
+		}
+
+		fileCounter = 0;
+		function finishLoad() {
+			fileCounter = fileCounter - 1;
+			if (fileCounter === 0) {
+				callback(null, nodelist);
+			}
+		}
+		function loadFunc(nodeDirPath) {
+			return function (err, data) {
+				try {
+					var json = JSON.parse(data);
+					if (json.customfuncfile !== undefined) {
+						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
+						json.customfunc = customFuncLua;
+					}
+					nodelist.push(json);
+				} catch (e) {
+					console.log('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
+				}
+				finishLoad();
+			};
+		}
+		for (i in files) {
+			if (files.hasOwnProperty(i)) {
+				if (files[i].substr(0, 1) !== '.') {
+					nodeDirPath = nodeDir + "/" + files[i];
+					infofile = nodeDirPath + "/info.json";
+					console.log(infofile);
+					fileCounter = fileCounter + 1;
+					fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
+				}
+			}
+		}
+	});
+}
+
+//---------------
 
 function sendErrorMessage(ws_node, msgstr, id) {
 	'use strict';
