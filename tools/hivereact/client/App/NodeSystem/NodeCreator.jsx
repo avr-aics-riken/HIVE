@@ -19,19 +19,56 @@ function getData(url, callback) {
 
 export default class NodeCreator {
     
-    constructor() {
-        
+    constructor(callback) {
+        this.initCallback = callback;
         this.nodeList = [];
         getData("http://localhost:8080/nodelist.json", (err, data) => {
             //console.log('DATA=', data);
             const jsondata = JSON.parse(data);
             console.log('nodedata=', jsondata);
             this.nodeList = jsondata;
+            var n;
+            for (n = 0; n < this.nodeList.length; ++n) {
+                var uiFunc = this.nodeList[n].uiFunc;
+                if (uiFunc) {
+                    this.nodeList[n].uiComponent = eval(uiFunc);
+                    //console.log(this.nodeList[n].uiComponent); // react class (same level with import uiComponent from XXX)
+                }
+            }
+            if (this.initCallback) {
+                this.initCallback(this);
+            }
         });
     }
+
+    // find node by name    
+    findNodeByName(name) {
+        var n;
+        for (n = 0; n < this.nodeList.length; ++n) {
+            if (this.nodeList[n].name === name) {
+                break;
+            } 
+        }
+        if (n === this.nodeList.length) {
+            return undefined;
+        }
+        return this.nodeList[n];
+    }
+
+    // Temp    
+    GetUIComponent(nodeName) {
+        const node = this.findNodeByName(nodeName);
+        if (node) {
+            return node.uiComponent;
+        } else {
+            return null;
+        }
+    }
     
-    Create(nodename) {
-        return {};    
+    // Temp
+    GetNodeInfo(nodeName) {
+        const node = this.findNodeByName(nodeName);
+        return node;
     }
     
     

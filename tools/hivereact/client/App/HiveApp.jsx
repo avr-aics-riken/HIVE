@@ -18,7 +18,11 @@ export default class HiveApp extends React.Component {
 		this.hive.connect('ws://localhost:8080', '', true);
 		this.init();
         
-        this.nodesystem = new NodeSystem();
+        this.nodesystem = new NodeSystem((nodesystem) => { // initilized.
+            // test         
+            console.log('CreateCamera[ui] = ', nodesystem.GetUIComponent('CreateCamera'));
+            console.log('CreateCamera[info] = ', nodesystem.GetNodeInfo('CreateCamera'));
+        });
 	}
 
 	init() {
