@@ -20,3 +20,5 @@ third_party/PDMlib_build
 third_party/Zoltan_build
 third_party/Zoltan_v3.81
 tools/HiveConnectTest/node_modules
+tools/fiberui/node_modules
+tools/hivereact/node_modules
