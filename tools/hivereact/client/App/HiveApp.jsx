@@ -17,9 +17,9 @@ export default class HiveApp extends React.Component {
 		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
 		this.hive.connect('ws://localhost:8080', '', true);
 		this.init();
-        
+
         this.nodesystem = new NodeSystem((nodesystem) => { // initilized.
-            // test         
+            // test
             console.log('CreateCamera[ui] = ', nodesystem.GetUIComponent('CreateCamera'));
             console.log('CreateCamera[info] = ', nodesystem.GetNodeInfo('CreateCamera'));
         });
@@ -33,13 +33,15 @@ export default class HiveApp extends React.Component {
 				console.error(err);
 			}
 		});
+		// 仮
+		this.nodes = [{ name : "hogehoge", pos : { x : 100, y : 200 } }, { name : "piyo", pos : { x : 300, y : 600 } }];
 	}
 
 	render () {
 		return (
 			<div>
 				<div>
-					<Node.View store={this.store} action={this.action} />
+					<Node.View store={this.store} action={this.action} nodes={this.nodes} />
 				</div>
 				<div className='panel' style={{height:512}}>
 					<ViewerPanel store={this.store} action={this.action} />
