@@ -9,21 +9,16 @@ export default class HiveApp extends React.Component {
 		this.hivestore = new HiveStore();
 		this.hiveaction = new HiveAction(this.hivestore.getDispatchToken());
 		this.core = new HiveCore(this.hivestore);
+		this.hivestore.initEmitter(this.core);
 		//this.core.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
 		this.core.connect('ws://localhost:8080', '', true);
+		this.init();
 	}
 
 	init() {
 		this.hivestore.on(HiveStore.NODE_CHANGED, function (err, data) {
 			if (!err) {
 				this.core.changeNode(data);
-			} else {
-				console.error(err);
-			}
-		});
-		this.core.on(HiveCore.NODE_CHANGED, function (err, data) {
-			if (!err) {
-				this.hivestore.changeNode(data);
 			} else {
 				console.error(err);
 			}
