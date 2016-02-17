@@ -33,6 +33,7 @@
 		"test": "export ENVIRONMENT=DEV &&  electron .",
 		"mac" : "../electron/Electron.app/Contents/MacOS/Electron .",
 		"webpack" : ".\\node_modules\\.bin\\webpack",
+		"watch" : ".\\node_modules\\.bin\\webpack --watch",
 		"release" : ".\\node_modules\\.bin\\webpack && node release.js"
 	}
 }
