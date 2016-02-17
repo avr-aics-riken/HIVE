@@ -22,8 +22,8 @@ export default class Node extends React.Component {
 		return {
 			node : {
 				position : "absolute",
-				left : String(this.state.pos.x),
-				top : String(this.state.pos.y),
+				left : String(this.state.pos[0]),
+				top : String(this.state.pos[1]),
 				width : "200px",
 				height : "100px",
 				backgroundColor : "red",
@@ -60,7 +60,7 @@ export default class Node extends React.Component {
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-			this.setState({ pos : { x : this.offsetLeft + mv.x, y : this.offsetTop + mv.y }})
+			this.setState({ pos : [this.offsetLeft + mv.x, this.offsetTop + mv.y] })
 		}
 	}
 

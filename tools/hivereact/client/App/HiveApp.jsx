@@ -34,7 +34,7 @@ export default class HiveApp extends React.Component {
 			}
 		});
 		// 仮
-		this.nodes = [{ name : "hogehoge", pos : { x : 100, y : 200 } }, { name : "piyo", pos : { x : 300, y : 600 } }];
+		this.nodes = [{ name : "hogehoge", pos : [100, 200] }, { name : "piyo", pos : [300, 600] }];
 	}
 
 	render () {
