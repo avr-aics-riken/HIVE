@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import Dispatcher from "./HiveDispatcher.jsx"
+import HiveCore from "./HiveCore.jsx"
 
 export default class HiveStore extends EventEmitter {
 	constructor() {
@@ -8,6 +9,19 @@ export default class HiveStore extends EventEmitter {
 		this.dispatchToken = Dispatcher.register(() => {
 			console.log("action registered");
 			return this.actionHandler;
+		});
+	}
+
+	initEmitter(core) {
+		core.on(HiveCore.NODE_CHANGED, (err, data) => {
+			if (!err) {
+				this.changeNode(data);
+			} else {
+				console.error(err);
+			}
+		});
+		core.on(HiveCore.IMAGE_RECIEVED, (err, param, data) => {
+			this.emit(HiveStore.IMAGE_RECIEVED, err, param, data);
 		});
 	}
 
@@ -38,3 +52,4 @@ export default class HiveStore extends EventEmitter {
 	}
 }
 HiveStore.NODE_CHANGED = "node_changed";
+HiveStore.IMAGE_RECIEVED = "image_revieved";
