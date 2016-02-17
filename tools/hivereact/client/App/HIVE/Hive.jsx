@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import NodeSerializer from "./NodeSerializer.jsx"
-import HiveConnect from "../HIVE/HiveConnect.js"
+import HiveConnect from "./HiveConnect.js"
 
 /**
  * デフォルトコールバック
@@ -23,7 +23,7 @@ function runScriptInternal(conn, src, callback) {
 	conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 }
 
-export default class HiveCore extends EventEmitter {
+export default class Hive extends EventEmitter {
 	constructor() {
 		super();
 		this.conn = null;
@@ -54,7 +54,7 @@ export default class HiveCore extends EventEmitter {
 		this.conn.method('renderedImage', (param, data) => {
 			// 画像を受け取る ws version
 			console.log("renderImage recieved", param, data);
-			this.emit(HiveCore.IMAGE_RECIEVED, null, param, data);
+			this.emit(Hive.IMAGE_RECIEVED, null, param, data);
 			/*
 				var w, h, cmd;
 				if (param.type === 'jpg') {
@@ -112,5 +112,5 @@ export default class HiveCore extends EventEmitter {
 		console.log("change node at HiveCore");
 	}
 }
-HiveCore.NODE_CHANGED = "core_node_changed";
-HiveCore.IMAGE_RECIEVED = "core_image_revieved";
+Hive.NODE_CHANGED = "core_node_changed";
+Hive.IMAGE_RECIEVED = "core_image_revieved";
