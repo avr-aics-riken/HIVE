@@ -14,7 +14,6 @@ export default class Node extends React.Component {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
-		this.tick = this.tick.bind(this);
 	}
 
 	styles() {
@@ -31,19 +30,14 @@ export default class Node extends React.Component {
 		}
 	}
 
-	tick() {
-	}
-
 	componentDidMount() {
 		window.addEventListener('mousemove', this.onMouseMove);
 		window.addEventListener('mouseup', this.onMouseUp);
-		this.interval = setInterval(this.tick, 1);
 	}
 
 	componentWillUnmount() {
 		window.removeListener('mousemove', this.onMouseMove);
 		window.removeListener('mouseup', this.onMouseUp);
-		clearInterval(this.interval);
 	}
 
 	onMouseDown(ev) {
@@ -61,7 +55,9 @@ export default class Node extends React.Component {
 
 	onMouseMove(ev) {
 		if (this.isLeftDown) {
-			var mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
+			// マウスダウン位置からの差分移動量.
+			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
+			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
 			this.setState({ pos : { x : this.offsetLeft + mv.x, y : this.offsetTop + mv.y }})
 		}
 	}
