@@ -4,6 +4,8 @@ import Hive from './HIVE'
 import { ViewerPanel } from "./UI/ViewerPanel"
 import Node from "./UI/Node"
 
+import NodeSystem from "./NodeSystem"
+
 export default class HiveApp extends React.Component {
 	constructor (props) {
 		super(props);
@@ -15,6 +17,8 @@ export default class HiveApp extends React.Component {
 		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
 		this.hive.connect('ws://localhost:8080', '', true);
 		this.init();
+        
+        this.nodesystem = new NodeSystem();
 	}
 
 	init() {

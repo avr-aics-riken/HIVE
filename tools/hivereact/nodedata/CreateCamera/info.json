@@ -1,0 +1,21 @@
+{
+	"name": "CreateCamera",
+	"funcname": "CreateCamera",
+	"info":"カメラをつくるためのノード",
+	"pos": [100, 100],
+	"varname": "instCreateCamera",
+	"customfuncfile":"createcamera.lua",
+	"input": [
+		{"name": "position", "type": "vec3", "value": [ 0,0,300]},
+		{"name": "target", "type": "vec3", "value": [ 0,0,0]},
+		{"name": "up", "type": "vec3", "value": [ 0,1,0]},
+		{"name": "fov", "type": "float", "value": 60},
+		{"name": "screensize", "type": "vec2", "value": [512,512]},
+		{"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
+		{"name": "color_file", "type": "string", "value": "output.jpg"},
+		{"name": "depth_file", "type": "string", "value": ""}
+	],
+	"output": [
+		{"name": "camera", "type": "RenderObject"}
+	]
+}
