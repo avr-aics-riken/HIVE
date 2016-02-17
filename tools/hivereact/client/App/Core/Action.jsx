@@ -1,4 +1,4 @@
-import Dispatcher from "./HiveDispatcher.jsx";
+import Dispatcher from "./Dispatcher.jsx";
 
 export default class HiveAction {
 	constructor(id) {

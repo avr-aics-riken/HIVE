@@ -1,22 +1,23 @@
 import React from 'react'
-import { HiveStore, HiveAction, HiveCore } from "./HiveReact"
+import Core from './Core'
+import Hive from './HIVE'
 import ViewerNode from "./ViewerNode"
 
 export default class HiveApp extends React.Component {
 	constructor (props) {
 		super(props);
 		var randomid = Math.floor(Math.random() * 10000);
-		this.hivestore = new HiveStore();
-		this.hiveaction = new HiveAction(this.hivestore.getDispatchToken());
-		this.core = new HiveCore(this.hivestore);
-		this.hivestore.initEmitter(this.core);
-		//this.core.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
-		this.core.connect('ws://localhost:8080', '', true);
+		this.store = new Core.Store();
+		this.action = new Core.Action(this.store.getDispatchToken());
+		this.hive = new Hive(this.store);
+		this.store.initEmitter(this.hive);
+		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
+		this.hive.connect('ws://localhost:8080', '', true);
 		this.init();
 	}
 
 	init() {
-		this.hivestore.on(HiveStore.NODE_CHANGED, function (err, data) {
+		this.store.on(Core.Store.NODE_CHANGED, function (err, data) {
 			if (!err) {
 				this.core.changeNode(data);
 			} else {
@@ -29,7 +30,7 @@ export default class HiveApp extends React.Component {
 		return (
 			<div>
 				<div className='panel' style={{height:512}}>
-					<ViewerNode.ViewerPanel hivestore={this.hivestore} hiveaction={this.hiveaction} />
+					<ViewerNode.ViewerPanel store={this.store} action={this.action} />
 				</div>
 			</div>
 		);

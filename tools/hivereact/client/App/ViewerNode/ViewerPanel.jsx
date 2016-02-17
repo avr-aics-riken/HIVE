@@ -1,14 +1,14 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { HiveStore, HiveAction } from "../HiveReact"
+import Core from "../Core"
 import buffercopy from "buffercopy"
 
 export default class ViewerPanel extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.store = props.hivestore;
-		this.action = props.hiveaction;
+		this.store = props.store;
+		this.action = props.action;
 
 		this.state = {
 			//image : this.store.getImage()
@@ -18,7 +18,7 @@ export default class ViewerPanel extends React.Component {
 		this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
 
-		this.store.on(HiveStore.IMAGE_RECIEVED, (err, param, data) => {
+		this.store.on(Core.Store.IMAGE_RECIEVED, (err, param, data) => {
 			var buffer;
 			console.log(param);
 

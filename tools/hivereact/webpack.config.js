@@ -5,6 +5,7 @@ var ExternalsPlugin = webpack.ExternalsPlugin
 
 module.exports = {
     entry: './client/app.jsx',
+    devtool: 'source-map',
     output: {path: __dirname, filename: 'client/bundle.js'},
     module: {
         loaders: [
