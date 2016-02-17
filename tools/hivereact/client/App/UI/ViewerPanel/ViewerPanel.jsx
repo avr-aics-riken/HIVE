@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import Core from "../Core"
+import Core from "../../Core"
 import buffercopy from "buffercopy"
 
 export default class ViewerPanel extends React.Component {
