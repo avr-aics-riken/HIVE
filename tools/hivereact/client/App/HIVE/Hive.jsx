@@ -1,5 +1,4 @@
 import EventEmitter from 'eventemitter3'
-import NodeSerializer from "./NodeSerializer.jsx"
 import HiveConnect from "./HiveConnect.js"
 
 /**
@@ -27,7 +26,6 @@ export default class Hive extends EventEmitter {
 	constructor() {
 		super();
 		this.conn = null;
-		this.serializer = new NodeSerializer();
 	}
 
 	connect(wsurl, ipcAddress, ogl) {
