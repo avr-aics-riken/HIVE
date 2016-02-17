@@ -55,6 +55,7 @@ function makeNodeList(callback) {
 			nodeDirPath,
 			fileCounter,
 			customFuncLua,
+            uiFunc,
 			nodelist = [],
 			i;
 		if (err) {
@@ -75,6 +76,8 @@ function makeNodeList(callback) {
 					if (json.customfuncfile !== undefined) {
 						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
 						json.customfunc = customFuncLua;
+						uiFunc = fs.readFileSync(nodeDirPath + "/" + json.uifile, 'utf8');
+						json.uiFunc = uiFunc;                        
 					}
 					nodelist.push(json);
 				} catch (e) {
