@@ -25,31 +25,11 @@ module.exports = {
 	plugins: [
 		new webpack.NoErrorsPlugin(),
 		new webpack.ExternalsPlugin('commonjs', [
-        'buffercopy',
-        'nanomsg',
-        'electron',
-		'app',
-		'auto-updater',
-		'browser-window',
-		'content-tracing',
-		'dialog',
-		'global-shortcut',
-		'ipc',
-        'ipcRenderer',
-        'ipcMain',
-		'menu',
-		'menu-item',
-		'power-monitor',
-		'protocol',
-		'tray',
-		'remote',
-		'web-frame',
-		'clipboard',
-		'crash-reporter',
-		'screen',
-		'shell'
-		]),
-		new NodeTargetPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+			'buffercopy',
+			'nanomsg'
+		])
+	],
+	externals: [
+		'electron'
 	]
 }

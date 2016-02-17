@@ -1,7 +1,8 @@
 import React from 'react'
 import Core from './Core'
 import Hive from './HIVE'
-import ViewerNode from "./ViewerNode"
+import { ViewerPanel } from "./UI/ViewerPanel"
+import Node from "./UI/Node"
 
 export default class HiveApp extends React.Component {
 	constructor (props) {
@@ -9,7 +10,7 @@ export default class HiveApp extends React.Component {
 		var randomid = Math.floor(Math.random() * 10000);
 		this.store = new Core.Store();
 		this.action = new Core.Action(this.store.getDispatchToken());
-		this.hive = new Hive(this.store);
+		this.hive = new Hive();
 		this.store.initEmitter(this.hive);
 		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
 		this.hive.connect('ws://localhost:8080', '', true);
@@ -29,8 +30,11 @@ export default class HiveApp extends React.Component {
 	render () {
 		return (
 			<div>
+				<div>
+					<Node.View store={this.store} action={this.action} />
+				</div>
 				<div className='panel' style={{height:512}}>
-					<ViewerNode.ViewerPanel store={this.store} action={this.action} />
+					<ViewerPanel store={this.store} action={this.action} />
 				</div>
 			</div>
 		);
