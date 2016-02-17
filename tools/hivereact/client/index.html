@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+	<link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.orange-pink.min.css">
+	<script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+	<script src="./App/lib/metabinary.js"></script>
+</head>
+<body id="body">
+	<script>
+	window.onload = function() {
+		var bundlePath = './bundle.js';
+		if (typeof process !== 'undefined' && process.env.ENVIRONMENT
+			&& process.env.ENVIRONMENT.substring(0, 3) === 'DEV') {
+				require('babel/register')({
+					compact: false
+				});
+				require("./app.jsx")
+		} else {
+			console.log("RELEASE MODE");
+			var elem = document.createElement('script');
+			elem.src = bundlePath;
+			document.body.appendChild(elem);
+		}
+	}
+	</script>
+</div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+{
+	"name": "HiveReact",
+	"main": "main.js",
+	"version" : "1.0.0",
+	"dependencies": {
+		"websocket": "*",
+		"nanomsg": "*",
+		"buffercopy": "*"
+	},
+	"devDependencies": {
+		"babel": "^5.8.35",
+		"babel-loader": "^5.0.0",
+		"webpack": "^1.12.11",
+		"webpack-dev-server": "^1.14.1",
+		"flux": "*",
+		"react": "*",
+		"react-dom": "*",
+		"superagent": "^1.7.1",
+		"eventemitter3" : "*",
+		"electron-packager" : "*"
+	},
+	"window": {
+		"toolbar": true,
+		"resizable": false,
+		"fullscreen": false,
+		"width": 1280,
+		"height": 800
+	},
+		"scripts": {
+		"debug": "node --debug client/js/main.js",
+		"install": "node install.js",
+		"start": "..\\electron\\electron .",
+		"test": "export ENVIRONMENT=DEV &&  electron .",
+		"mac" : "../electron/Electron.app/Contents/MacOS/Electron .",
+		"webpack" : ".\\node_modules\\.bin\\webpack",
+		"release" : ".\\node_modules\\.bin\\webpack && node release.js"
+	}
+}
