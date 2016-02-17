@@ -27,6 +27,7 @@ export default class HiveCore extends EventEmitter {
 	constructor() {
 		super();
 		this.conn = null;
+		this.serializer = new NodeSerializer();
 	}
 
 	connect(wsurl, ipcAddress, ogl) {
@@ -50,10 +51,10 @@ export default class HiveCore extends EventEmitter {
 			console.log('updateInfo');
 		}));
 
-		this.conn.method('renderedImage', function (param, data) {
+		this.conn.method('renderedImage', (param, data) => {
 			// 画像を受け取る ws version
 			console.log("renderImage recieved", param, data);
-			//this.emit(HiveCore.IMAGE_RECIEVED, param, data);
+			this.emit(HiveCore.IMAGE_RECIEVED, null, param, data);
 			/*
 				var w, h, cmd;
 				if (param.type === 'jpg') {
@@ -88,17 +89,19 @@ export default class HiveCore extends EventEmitter {
 			(function ()
 			hcmd.NewScene()
 			hcmd.CreateCamera("view")
-			hcmd.CameraLookat("view",-72.64638509916728,23.40208319164952,171.44292740397938,0,0,0,0,1,0,60)
+			hcmd.CameraLookat("view",-72.0,23.0,171.0,0,0,0,0,1,0,60)
 			hcmd.CameraClearColor("view",0,0,0,1)
-			hcmd.CameraScreenSize("view",256,256)
+			hcmd.CameraScreenSize("view",512,512)
 			hcmd.CameraOutputFilename("view","view.jpg")
-			hcmd.LoadOBJ("bunny_obj0","/home/khatta/bunny.obj","normal.frag")
+			local obj = "/home/khatta/work/source/HIVE/hrender/test/bunny.obj"
+			local frag = "/home/khatta/work/source/HIVE/hrender/test/normal.frag"
+			hcmd.LoadOBJ("bunny_obj0",obj,frag)
 			hcmd.SetModelTranslation("bunny_obj0",0,0,0,0,0,0,1,1,1)
-			hcmd.SetModelShader("bunny_obj0","normal.frag")
+			hcmd.SetModelShader("bunny_obj0",frag)
 			clearCache()
 
 			hcmd.SetModelUniformFloat("bunny_obj0","power",1)
-			hcmd.RenderCamera(256, 256, "view", "jpg", false)
+			hcmd.RenderCamera(512, 512, "view", "jpg", false)
 			end)();
 			`, function (err, data) {
 				console.log("runScript end");
