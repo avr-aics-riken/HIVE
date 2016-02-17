@@ -7,13 +7,15 @@ export default class Node extends React.Component {
 		this.isLeftDown = false;
 		this.mousePos = { x : 0, y : 0};
 		this.state = {
-			pos : { x : 300, y : 600 }
+			pos : this.props.node.pos
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
+		this.inputs = [];
+		this.outputs = [];
 	}
 
 	styles() {
@@ -67,6 +69,6 @@ export default class Node extends React.Component {
 		return (<div style={styles.node}
 					ref="node"
 					onMouseDown={this.onMouseDown.bind(this)}
-			>hogehoge</div>);
+			>{this.props.node.name}</div>);
 	}
 }
