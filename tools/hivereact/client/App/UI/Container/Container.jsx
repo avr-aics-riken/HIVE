@@ -9,6 +9,8 @@ export default class Container extends React.Component {
         this.store = props.store;
         this.action = props.action;
 
+        this.options = props.options;
+
         // this.componentDidUpdate = this.componentDidUpdate.bind(this);
         // this.componentDidMount = this.componentDidMount.bind(this);
 
@@ -30,32 +32,48 @@ export default class Container extends React.Component {
     //
     styles() {
         return {
-            container : {
-                backgroundColor: "#333",
+            normal: {
+                backgroundColor: this.props.options.bc,
                 margin : "0px",
                 padding : "0px",
-                width : "50%",
-                height: "100px",
+                minWidth : "300px",
+                minHeight: "200px",
+                overflow: "hidden",
+                boxShadow : "0px 0px 3px 0px white inset"
+            },
+            scalable: {
+                backgroundColor: this.props.options.bc,
+                margin : "0px",
+                padding : "0px",
+                minWidth : "300px",
+                minHeight: "200px",
+                overflow: "hidden",
                 boxShadow : "0px 0px 3px 0px white inset"
             }
         }
     }
 
     generator(component, key) {
+        var res = null;
         if(component && component.ui){
-            // var r = React.createFactory(component.ui)({name: component.info.name, key: key});
-            var r = React.createFactory(component.ui);
-            return r({name: component.info.name, key: key});
-            // return r;
-            // return React.createFactory(component.ui)({name: component.info.name, key: key});
+            switch(this.props.options.type){
+                default :
+                    res = React.createFactory(component.ui)({name: component.info.name, key: key});
+                break
+            }
+            return (
+                <PanelContainer component={res} key={key} />
+            );
         }
     }
 
     render() {
         var styles = this.styles();
         return (
-            <div style={styles.container}>
-                <PanelContainer component={this.props.components.map((value, key)=>{return this.generator(value, key);})} />
+            <div className={this.props.options.type} style={styles[this.props.options.type]}>
+                {this.props.components.map((value, key)=>{
+                    return this.generator(value, key);
+                })}
             </div>
         );
     }
