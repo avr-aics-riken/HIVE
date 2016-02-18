@@ -17,7 +17,6 @@ export default class HiveApp extends React.Component {
 		this.store.initEmitter(this.hive);
 		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
 		this.hive.connect('ws://localhost:8080', '', true);
-		this.init();
 
         this.state = {
             nodes : this.store.getNodes(),
@@ -32,23 +31,6 @@ export default class HiveApp extends React.Component {
         });
     }
 
-    init() {
-        this.store.on(Core.Store.NODE_CHANGED, function (err, data) {
-            if (!err) {
-                this.setState({
-					nodes : [].concat(this.store.getNodes())
-				});
-            } else {
-                console.error(err);
-            }
-        });
-		this.store.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
-			this.setState({
-				nodes : [].concat(this.store.getNodes())
-			});
-		});
-    }
-
     render() {
         var options = [
             {type: 'normal', bc: '#333'},
@@ -57,7 +39,7 @@ export default class HiveApp extends React.Component {
         return (
             <div>
                 <div>
-                    <Node.View store={this.store} action={this.action} nodes={this.state.nodes} />
+                    <Node.View store={this.store} action={this.action} nodeSystem={this.nodesystem} />
                 </div>
                 <div>
                     <Panel.View store={this.store} action={this.action} options={options[0]} />

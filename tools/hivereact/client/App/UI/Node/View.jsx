@@ -1,5 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import Core from '../../Core'
 
 import Node from "./Node.jsx"
 
@@ -9,13 +10,60 @@ import Node from "./Node.jsx"
 export default class View extends React.Component {
 	constructor(props) {
 		super(props);
-		this.nodeList = this.props.nodeList;
+		this.nodeList = this.props.store.getNodes();
+
+		this.state = {
+			nodes : this.props.store.getNodes()
+		};
+		this.props.store.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
+			this.setState({
+				nodes : [].concat(this.props.store.getNodes())
+			});
+		});
 	}
 
+	styles() {
+		return {
+			button : {
+				positoin : "absolute",
+				width : "100px",
+				height : "20px",
+				left : "50px",
+				bottom : "50px",
+				backgroundColor : "blue",
+				color : "white"
+			}
+		}
+	}
+
+	addButtonClick() {
+		var node = this.props.nodeSystem.GetNodeInfo('CreatePolygonModel');
+		node.varname = node.varname + String(this.state.nodes.length);
+		this.props.action.addNode(node);
+	}
+
+	/// 追加ボタン(仮)
+	addButton() {
+		const styles = this.styles.bind(this)();
+		return (<div style={styles.button}
+					onClick={this.addButtonClick.bind(this)}
+				>
+					Add Node
+				</div>);
+		}
+
 	render () {
-		let nodeList = (this.props.nodes.map( (nodeData, key) => {
-			return (<Node node={nodeData} store={this.props.store} action={this.props.action} key={nodeData.varname + key}></Node>);
+	console.log(this.state.nodes.length);
+		let nodeList = (this.state.nodes.map( (nodeData, key) => {
+			return (<Node node={nodeData}
+			 			store={this.props.store}
+						action={this.props.action}
+			 			nodeSystem={this.props.nodeSystem}
+						key={nodeData.varname + key}></Node>);
 		} ));
-		return (<div>{nodeList}</div>);
+		return (<div>
+					{nodeList}
+					{this.addButton.bind(this)()}
+				</div>);
 	}
 }
