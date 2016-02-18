@@ -11,6 +11,8 @@ export default class View extends React.Component {
 
         this.options = props.options;
 
+        this.generator = this.generator.bind(this);
+
         // this.componentDidUpdate = this.componentDidUpdate.bind(this);
         // this.componentDidMount = this.componentDidMount.bind(this);
 
@@ -58,7 +60,7 @@ export default class View extends React.Component {
         if(component && component.ui){
             switch(this.props.options.type){
                 default :
-                    res = React.createFactory(component.ui)({name: component.info.name, key: key});
+                    res = React.createFactory(component.ui)({store: this.store, action: this.action, name: component.info.name, key: key});
                 break
             }
             return (
