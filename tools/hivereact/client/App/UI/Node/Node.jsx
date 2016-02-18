@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import NodeInOut from "./NodeInOut.jsx"
+import Core from '../../Core'
 
 /**
  * ノード.
@@ -10,9 +11,27 @@ export default class Node extends React.Component {
 		super(props);
 		this.isLeftDown = false;
 		this.mousePos = { x : 0, y : 0};
+
 		this.state = {
+			node : null,
 			closeHover : false
 		};
+		let nodes = this.props.store.getNodes();
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			if (nodes[i].varname === this.props.node.varname) {
+				this.state.node = nodes[i];
+				break;
+			}
+		}
+
+		this.props.store.on(Core.Store.NODE_CHANGED, (err, data) => {
+			if (data.varname === this.props.node.varname) {
+				this.setState({
+					node : data
+				});
+			}
+		});
+
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
@@ -85,7 +104,6 @@ export default class Node extends React.Component {
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-
 			let node = this.props.node;
 			node.pos = [this.offsetLeft + mv.x, this.offsetTop + mv.y];
 			this.props.action.changeNode(node);
@@ -104,8 +122,8 @@ export default class Node extends React.Component {
 
 	/// タイトル.
 	titleElem() {
-		const styles = this.styles();
-		return <div style={styles.title}>{this.props.node.name}</div>
+		const style = this.styles.bind();
+		return <div style={style.title}>{this.props.node.name}</div>
 	}
 
 	/// 入力端子.
@@ -126,19 +144,19 @@ export default class Node extends React.Component {
 
 	/// 閉じるボタン
 	closeElem() {
-		const styles = this.styles();
-		return (<div style={styles.closeButton}
+		const style = this.styles();
+		return (<div style={style.closeButton}
 					onClick={this.onCloseClick.bind(this)}
 					onMouseEnter={this.onCloseHover.bind(this)}
 					onMouseLeave={this.onCloseHover.bind(this)}
 				>
-					<div style={styles.closeText}>x</div>
+					<div style={style.closeText}>x</div>
 				</div>)
 	}
 
 	render () {
-		const styles = this.styles();
-		return (<div style={styles.node}
+		const style = this.styles();
+		return (<div style={style.node}
 					ref="node"
 					onMouseDown={this.onMouseDown.bind(this)}
 				>
