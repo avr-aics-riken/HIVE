@@ -5,11 +5,12 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 //var	HRENDER = __dirname + '/../hrender',
 	HRENDER_ARG = [__dirname +'/lua/hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
-	HTTP_ROOT_DIR = __dirname + '/root/',
+	HTTP_ROOT_DIR = __dirname + '/client/',
 	metabin = require(__dirname + '/lib/metabinary'),
 	port = process.argv.length > 2 ? process.argv[2] : 8080,
 	http = require('http'),
 	path = require('path'),
+    babel = require('babel-core'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
 	seserver = http.createServer(function (req, res) {
@@ -44,7 +45,6 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 	ws_connections = {},
 	id_counter = 0;
     
-    
 //-----------------------------------------------------
 
 function makeNodeList(callback) {
@@ -76,12 +76,12 @@ function makeNodeList(callback) {
 					if (json.customfuncfile !== undefined) {
 						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
 						json.customfunc = customFuncLua;
-						uiFunc = fs.readFileSync(nodeDirPath + "/" + json.uifile, 'utf8');
+                        uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
 						json.uiFunc = uiFunc;                        
 					}
 					nodelist.push(json);
 				} catch (e) {
-					console.log('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
+					console.error('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
 				}
 				finishLoad();
 			};
@@ -91,7 +91,7 @@ function makeNodeList(callback) {
 				if (files[i].substr(0, 1) !== '.') {
 					nodeDirPath = nodeDir + "/" + files[i];
 					infofile = nodeDirPath + "/info.json";
-					console.log(infofile);
+					//console.log(infofile);
 					fileCounter = fileCounter + 1;
 					fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
 				}
@@ -296,7 +296,7 @@ ws.on('request', function (request) {
 		Master process methods
 	*/
 	function masterMethod(method, param, msg_id, from) {
-		console.log('[DEBUG] masterMethod:', method, param, msg_id);
+		//console.log('[DEBUG] masterMethod:', method, param, msg_id);
 		var clientNode, json, fr_conn, wsc, args;
 		if (from != undefined) {
 			wsc = ws_connections[parseInt(from)];
@@ -369,7 +369,7 @@ ws.on('request', function (request) {
 		Process utf8 text message
 	*/
 	function eventTextMessage(ret, utf8Data) {
-		console.log('[Log]eventTextMessage:', ret);
+		//console.log('[Log]eventTextMessage:', ret);
 		if (ret.to) {
 			var node = null;
 			if (ret.to !== 'master' && ws_connections[ret.to]) {
@@ -456,7 +456,7 @@ ws.on('request', function (request) {
 		var ret;
 		//console.log('[DEBUG] message=', message);
 		if (message.type === 'utf8') {
-			console.log('[DEBUG] RET=' + message.utf8Data);
+			//console.log('[DEBUG] RET=' + message.utf8Data);
 			try {
 				ret = JSON.parse(message.utf8Data);
 			} catch (e) {

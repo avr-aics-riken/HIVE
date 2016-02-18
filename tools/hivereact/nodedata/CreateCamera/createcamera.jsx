@@ -1,8 +1,8 @@
 
 console.log('!!createcamera.jsx!!');
 
-//import React from 'react'
-var React = require('react');
+import React from 'react'
+//var React = require('react');
 
 class CreateCamera extends React.Component {
     constructor(props) {
@@ -13,7 +13,8 @@ class CreateCamera extends React.Component {
     render(){
         // return (<div>test</div>);
         return (
-            React.createElement('div', {}, 'test create element')
+            //React.createElement('div', {}, 'test create element')
+            <div>hoge</div>
         );
     }
 }
