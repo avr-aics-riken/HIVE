@@ -11,7 +11,6 @@ export default class Node extends React.Component {
 		this.isLeftDown = false;
 		this.mousePos = { x : 0, y : 0};
 		this.state = {
-			pos : this.props.node.pos,
 			closeHover : false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
@@ -26,8 +25,8 @@ export default class Node extends React.Component {
 		return {
 			node : {
 				position : "absolute",
-				left : String(this.state.pos[0]),
-				top : String(this.state.pos[1]),
+				left : String(this.props.node.pos[0]),
+				top : String(this.props.node.pos[1]),
 				width : "200px",
 				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10),
 				backgroundColor : "rgb(66, 69, 66)",
@@ -86,7 +85,10 @@ export default class Node extends React.Component {
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-			this.setState({ pos : [this.offsetLeft + mv.x, this.offsetTop + mv.y] })
+
+			let node = this.props.node;
+			node.pos = [this.offsetLeft + mv.x, this.offsetTop + mv.y];
+			this.props.action.changeNode(node);
 		}
 	}
 

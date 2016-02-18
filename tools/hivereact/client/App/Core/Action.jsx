@@ -30,6 +30,17 @@ export default class HiveAction {
 		});
 	}
 
+	/**
+	 * ノードを変更する
+	 */
+	changeNode(nodeInfo) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "changeNode",
+			nodeInfo : nodeInfo
+		});
+	}
+
     addComponent(data) {
         this.dispatcher.dispatch({
             id: this.id,
