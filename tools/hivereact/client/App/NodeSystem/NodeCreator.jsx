@@ -16,10 +16,10 @@ function getData(url, callback) {
     xhr.send();
 }
 
-
 export default class NodeCreator {
     
     constructor(callback) {
+
         this.initCallback = callback;
         this.nodeList = [];
         getData("http://localhost:8080/nodelist.json", (err, data) => {
@@ -31,10 +31,10 @@ export default class NodeCreator {
             for (n = 0; n < this.nodeList.length; ++n) {
                 var uiFunc = this.nodeList[n].uiFunc;
                 if (uiFunc) {
-                    console.log('before eval');
+                    //console.log('before eval', uiFunc.length);
                     this.nodeList[n].uiComponent = eval(uiFunc);
                     //console.log(this.nodeList[n].uiComponent); // react class (same level with import uiComponent from XXX)
-                    console.log('after eval');
+                    //console.log('after eval');
                 }
             }
             if (this.initCallback) {
