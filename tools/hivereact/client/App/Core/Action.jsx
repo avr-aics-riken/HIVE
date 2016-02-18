@@ -5,4 +5,28 @@ export default class HiveAction {
 		this.dispatcher = Dispatcher;
 		this.id = id;
 	}
+
+	/**
+	 * ノードを追加する
+	 * @param nodeInfo ノード情報
+	 */
+	addNode(nodeInfo) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "addNode",
+			nodeInfo : nodeInfo
+		});
+	}
+
+	/**
+	 * ノードを削除する
+	 * @param varname ノード変数名
+	 */
+	deleteNode(varname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "deleteNode",
+			varname : varname
+		});
+	}
 }

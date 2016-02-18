@@ -38,8 +38,8 @@ export default class Node extends React.Component {
 	}
 
 	componentWillUnmount() {
-		window.removeListener('mousemove', this.onMouseMove);
-		window.removeListener('mouseup', this.onMouseUp);
+		window.removeEventListener('mousemove', this.onMouseMove);
+		window.removeEventListener('mouseup', this.onMouseUp);
 	}
 
 	onMouseDown(ev) {
