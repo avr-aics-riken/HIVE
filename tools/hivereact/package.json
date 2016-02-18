@@ -30,7 +30,7 @@
 		"debug": "node --debug client/js/main.js",
 		"install": "node install.js",
 		"start": "..\\electron\\electron .",
-		"test": "export ENVIRONMENT=DEV &&  electron .",
+		"test": "export ENVIRONMENT=DEV && /Applications/Electron.app/Contents/MacOS/Electron .",
 		"mac" : "../electron/Electron.app/Contents/MacOS/Electron .",
 		"webpack" : ".\\node_modules\\.bin\\webpack",
 		"watch" : ".\\node_modules\\.bin\\webpack --watch",

@@ -29,4 +29,12 @@ export default class HiveAction {
 			varname : varname
 		});
 	}
+
+    addComponent(data) {
+        this.dispatcher.dispatch({
+            id: this.id,
+            actionType: 'addComponent',
+            data: data
+        });
+    }
 }

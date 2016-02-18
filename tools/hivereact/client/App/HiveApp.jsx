@@ -1,6 +1,7 @@
 import React from 'react'
 import Core from './Core'
 import Hive from './HIVE'
+import { Container } from "./UI/Container"
 import { ViewerPanel } from "./UI/ViewerPanel"
 import Node from "./UI/Node"
 
@@ -18,7 +19,10 @@ export default class HiveApp extends React.Component {
 		this.hive.connect('ws://localhost:8080', '', true);
 		this.init();
 
-		this.state = { nodes : this.store.getNodes() };
+        this.state = {
+            nodes : this.store.getNodes(),
+            components: this.store.getComponents()
+        };
 
 		this.store.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
 			this.setState({
@@ -26,35 +30,48 @@ export default class HiveApp extends React.Component {
 			});
 		});
 
+        // [s]
+        this.store.on(Core.Store.ADD_COMPONENT, function(data){
+            this.setState({components: this.store.getComponents()});
+        }.bind(this));
+
         this.nodesystem = new NodeSystem((nodesystem) => { // initilized.
-            // test
             console.log('CreateCamera[ui] = ', nodesystem.GetUIComponent('CreateCamera'));
             console.log('CreateCamera[info] = ', nodesystem.GetNodeInfo('CreateCamera'));
-			this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
-			this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
+            this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
+            this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
+            var components = [];
+            components.push({
+                ui: nodesystem.GetUIComponent('CreateCamera'),
+                info: nodesystem.GetNodeInfo('CreateCamera')
+            });
+            for(let i in components){
+                this.action.addComponent(components[i]);
+            }
         });
-	}
+    }
 
-	init() {
-		this.store.on(Core.Store.NODE_CHANGED, function (err, data) {
-			if (!err) {
-				this.core.changeNode(data);
-			} else {
-				console.error(err);
-			}
-		});
-	}
+    init() {
+        this.store.on(Core.Store.NODE_CHANGED, function (err, data) {
+            if (!err) {
+                this.core.changeNode(data);
+            } else {
+                console.error(err);
+            }
+        });
+    }
 
-	render () {
-		return (
-			<div>
-				<div>
-					<Node.View store={this.store} action={this.action} nodes={this.state.nodes} />
-				</div>
-				<div className='panel' style={{height:512}}>
-					<ViewerPanel store={this.store} action={this.action} />
-				</div>
-			</div>
-		);
-	}
+    render() {
+        return (
+            <div>
+                <div>
+                    <Node.View store={this.store} action={this.action} nodes={this.state.nodes} />
+                </div>
+                <div className='panel' style={{height:512}}>
+                    <ViewerPanel store={this.store} action={this.action} />
+                </div>
+                <Container store={this.store} action={this.action} components={this.state.components} />
+            </div>
+        );
+    }
 }
