@@ -1,6 +1,36 @@
 import React from "react"
 import ReactDOM from "react-dom"
 
+function colorFunction(type) {
+	if (type === "string") {
+		return "#14a271";
+	} else if (type === "float") {
+		return "#139aa5";
+	} else if (type === "vec4") {
+		return "#1b6ad6";
+	} else if (type === "vec3") {
+		return "#566f9f";
+	} else if (type === "vec2") {
+		return "#8222a7";
+	} else if (type === "RenderObject") {
+		return "#ad3b78";
+	} else if (type === "Uniform") {
+		return "#b19e14";
+	} else if (type === "BufferMeshData") {
+		return "#be1656";
+	} else if (type === "BufferPointData") {
+		return "#e023e0";
+	} else if (type === "BufferLineData") {
+		return "#20cae0";
+	} else if (type === "BufferVolumeData") {
+		return "#17d042";
+	} else if (type === "Any") {
+		return "#ef8815";
+	} else { // Object
+		return "#c12417";
+	}
+}
+
 export default class Node extends React.Component {
 	constructor(props) {
 		super(props);
@@ -33,6 +63,25 @@ export default class Node extends React.Component {
 			title : {
 				color : "rgb(239, 136, 21)",
 				fontSize : "16px"
+			}
+		}
+	}
+
+	inoutStyle(inout, key) {
+		return {
+			input : {
+				position : "absolute",
+				left : String(-15 / 2),
+				top : String(18 * (key + 1) + 10),
+				width : "100px",
+				height : "20px"
+			},
+			output : {
+				position : "absolute",
+				right : String(-15 / 2),
+				top : String(18 * (key + 1) + 10),
+				width : "100px",
+				height : "20px"
 			},
 			inhole : {
 				position : "absolute",
@@ -41,7 +90,7 @@ export default class Node extends React.Component {
 				height : "15px",
 				marginTop : "3px",
 				borderRadius : "15px",
-				backgroundColor : "red"
+				backgroundColor : colorFunction(inout.type)
 			},
 			outhole : {
 				position : "absolute",
@@ -50,7 +99,7 @@ export default class Node extends React.Component {
 				height : "15px",
 				marginTop : "3px",
 				borderRadius : "15px",
-				backgroundColor : "red"
+				backgroundColor : colorFunction(inout.type)
 			},
 			inholeText : {
 				position : "absolute",
@@ -67,25 +116,6 @@ export default class Node extends React.Component {
 				marginRight : "4px",
 				color : "white",
 				fontSize : "14px"
-			}
-		}
-	}
-
-	inoutStyle(key) {
-		return {
-			input : {
-				position : "absolute",
-				left : String(-15 / 2),
-				top : String(18 * (key + 1) + 10),
-				width : "100px",
-				height : "20px"
-			},
-			output : {
-				position : "absolute",
-				right : String(-15 / 2),
-				top : String(18 * (key + 1) + 10),
-				width : "100px",
-				height : "20px"
 			}
 		}
 	}
@@ -122,28 +152,33 @@ export default class Node extends React.Component {
 		}
 	}
 
+	/// 入力端子.
 	inputElem() {
 		const styles = this.styles();
 		let inputs = this.props.node.input.map( (inputData, key) => {
-			return (<div style={this.inoutStyle(key).input} key={key}>
-						<div style={styles.inhole} />
-						<div style={styles.inholeText}>{inputData.name}</div>
+			const inoutStyle = this.inoutStyle(inputData, key);
+			return (<div style={inoutStyle.input} key={key}>
+						<div style={inoutStyle.inhole} />
+						<div style={inoutStyle.inholeText}>{inputData.name}</div>
 					</div>)
 		});
 		return (<div>{inputs}</div>);
 	}
 
+	/// 出力端子.
 	outputElem() {
 		const styles = this.styles();
 		let outputs = this.props.node.output.map( (outputData, key) => {
-			return (<div style={this.inoutStyle(key).output} key={key}>
-						<div style={styles.outhole} />
-						<div style={styles.outholeText}>{outputData.name}</div>
+			const inoutStyle = this.inoutStyle(outputData, key);
+			return (<div style={inoutStyle.output} key={key}>
+						<div style={inoutStyle.outhole} />
+						<div style={inoutStyle.outholeText}>{outputData.name}</div>
 					</div>)
 		});
 		return (<div>{outputs}</div>);
 	}
 
+	/// タイトル.
 	titleElem() {
 		const styles = this.styles();
 		return <div style={styles.title}>{this.props.node.name}</div>
