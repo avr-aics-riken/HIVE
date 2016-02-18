@@ -1,43 +1,18 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import NodeInOut from "./NodeInOut.jsx"
 
-function colorFunction(type) {
-	if (type === "string") {
-		return "#14a271";
-	} else if (type === "float") {
-		return "#139aa5";
-	} else if (type === "vec4") {
-		return "#1b6ad6";
-	} else if (type === "vec3") {
-		return "#566f9f";
-	} else if (type === "vec2") {
-		return "#8222a7";
-	} else if (type === "RenderObject") {
-		return "#ad3b78";
-	} else if (type === "Uniform") {
-		return "#b19e14";
-	} else if (type === "BufferMeshData") {
-		return "#be1656";
-	} else if (type === "BufferPointData") {
-		return "#e023e0";
-	} else if (type === "BufferLineData") {
-		return "#20cae0";
-	} else if (type === "BufferVolumeData") {
-		return "#17d042";
-	} else if (type === "Any") {
-		return "#ef8815";
-	} else { // Object
-		return "#c12417";
-	}
-}
-
+/**
+ * ノード.
+ */
 export default class Node extends React.Component {
 	constructor(props) {
 		super(props);
 		this.isLeftDown = false;
 		this.mousePos = { x : 0, y : 0};
 		this.state = {
-			pos : this.props.node.pos
+			pos : this.props.node.pos,
+			closeHover : false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
@@ -45,7 +20,6 @@ export default class Node extends React.Component {
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.styles = this.styles.bind(this);
-		this.inoutStyle = this.inoutStyle.bind(this);
 	}
 
 	styles() {
@@ -58,64 +32,28 @@ export default class Node extends React.Component {
 				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
+				opacity : "0.8",
 				padding : "5px"
 			},
 			title : {
 				color : "rgb(239, 136, 21)",
 				fontSize : "16px"
-			}
-		}
-	}
-
-	inoutStyle(inout, key) {
-		return {
-			input : {
-				position : "absolute",
-				left : String(-15 / 2),
-				top : String(18 * (key + 1) + 10),
-				width : "100px",
-				height : "20px"
 			},
-			output : {
-				position : "absolute",
-				right : String(-15 / 2),
-				top : String(18 * (key + 1) + 10),
-				width : "100px",
-				height : "20px"
-			},
-			inhole : {
-				position : "absolute",
-				left : "0px",
-				width : "15px",
-				height : "15px",
-				marginTop : "3px",
-				borderRadius : "15px",
-				backgroundColor : colorFunction(inout.type)
-			},
-			outhole : {
+			closeButton : {
 				position : "absolute",
 				right : "0px",
-				width : "15px",
-				height : "15px",
-				marginTop : "3px",
-				borderRadius : "15px",
-				backgroundColor : colorFunction(inout.type)
-			},
-			inholeText : {
-				position : "absolute",
 				top : "0px",
-				left : "15px", // holeのサイズ
-				marginLeft : "4px",
-				color : "white",
-				fontSize : "14px"
+				margin : "5px",
+				width: "15px",
+				height: "15px",
+				backgroundColor : "#ea4412",
+				textAlign : "center",
+				borderRadius : "5px",
+				border : this.state.closeHover ? "solid 1px" : "none"
 			},
-			outholeText : {
-				position : "absolute",
-				top : "0px",
-				right : "15px", // holeのサイズ
-				marginRight : "4px",
-				color : "white",
-				fontSize : "14px"
+			closeText : {
+				lineHeight : "12px",
+				cursor : "pointer"
 			}
 		}
 	}
@@ -152,36 +90,48 @@ export default class Node extends React.Component {
 		}
 	}
 
-	/// 入力端子.
-	inputElem() {
-		const styles = this.styles();
-		let inputs = this.props.node.input.map( (inputData, key) => {
-			const inoutStyle = this.inoutStyle(inputData, key);
-			return (<div style={inoutStyle.input} key={key}>
-						<div style={inoutStyle.inhole} />
-						<div style={inoutStyle.inholeText}>{inputData.name}</div>
-					</div>)
-		});
-		return (<div>{inputs}</div>);
+	/// 閉じるボタンが押された.
+	onCloseClick(ev) {
+		this.props.action.deleteNode(this.props.node.varname);
 	}
 
-	/// 出力端子.
-	outputElem() {
-		const styles = this.styles();
-		let outputs = this.props.node.output.map( (outputData, key) => {
-			const inoutStyle = this.inoutStyle(outputData, key);
-			return (<div style={inoutStyle.output} key={key}>
-						<div style={inoutStyle.outhole} />
-						<div style={inoutStyle.outholeText}>{outputData.name}</div>
-					</div>)
-		});
-		return (<div>{outputs}</div>);
+	/// 閉じるボタンにマウスホバーされた
+	onCloseHover(ev) {
+		this.setState({ closeHover : !this.state.closeHover })
 	}
 
 	/// タイトル.
 	titleElem() {
 		const styles = this.styles();
 		return <div style={styles.title}>{this.props.node.name}</div>
+	}
+
+	/// 入力端子.
+	inputElem() {
+		let inputs = this.props.node.input.map( (inputData, key) => {
+			return (<NodeInOut isInput={true} data={inputData} key={key} index={key} />)
+		});
+		return (<div>{inputs}</div>);
+	}
+
+	/// 出力端子.
+	outputElem() {
+		let outputs = this.props.node.output.map( (outputData, key) => {
+			return (<NodeInOut isInput={false} data={outputData} key={key} index={key} />)
+		});
+		return (<div>{outputs}</div>);
+	}
+
+	/// 閉じるボタン
+	closeElem() {
+		const styles = this.styles();
+		return (<div style={styles.closeButton}
+					onClick={this.onCloseClick.bind(this)}
+					onMouseEnter={this.onCloseHover.bind(this)}
+					onMouseLeave={this.onCloseHover.bind(this)}
+				>
+					<div style={styles.closeText}>x</div>
+				</div>)
 	}
 
 	render () {
@@ -193,6 +143,7 @@ export default class Node extends React.Component {
 					{this.titleElem.bind(this)()}
 					{this.inputElem.bind(this)()}
 					{this.outputElem.bind(this)()}
+					{this.closeElem.bind(this)()}
 				</div>);
 	}
 }
