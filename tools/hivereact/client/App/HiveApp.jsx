@@ -18,10 +18,20 @@ export default class HiveApp extends React.Component {
 		this.hive.connect('ws://localhost:8080', '', true);
 		this.init();
 
+		this.state = { nodes : this.store.getNodes() };
+
+		this.store.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
+			this.setState({
+				nodes : JSON.parse(JSON.stringify(this.store.getNodes()))
+			});
+		});
+
         this.nodesystem = new NodeSystem((nodesystem) => { // initilized.
             // test
             console.log('CreateCamera[ui] = ', nodesystem.GetUIComponent('CreateCamera'));
             console.log('CreateCamera[info] = ', nodesystem.GetNodeInfo('CreateCamera'));
+			this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
+			this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
         });
 	}
 
@@ -33,15 +43,13 @@ export default class HiveApp extends React.Component {
 				console.error(err);
 			}
 		});
-		// 仮
-		this.nodes = [{ name : "hogehoge", pos : [100, 200] }, { name : "piyo", pos : [300, 600] }];
 	}
 
 	render () {
 		return (
 			<div>
 				<div>
-					<Node.View store={this.store} action={this.action} nodes={this.nodes} />
+					<Node.View store={this.store} action={this.action} nodes={this.state.nodes} />
 				</div>
 				<div className='panel' style={{height:512}}>
 					<ViewerPanel store={this.store} action={this.action} />
