@@ -9,6 +9,13 @@ class CreateCamera extends React.Component {
         super(props);
         console.log("CAMERA CONSTRUCTOR!");
     }
+
+    render(){
+        // return (<div>test</div>);
+        return (
+            React.createElement('div', {}, 'test create element')
+        );
+    }
 }
 
 module.exports = CreateCamera;
