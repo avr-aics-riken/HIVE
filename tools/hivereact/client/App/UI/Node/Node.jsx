@@ -111,7 +111,7 @@ export default class Node extends React.Component {
 	/// 入力端子.
 	inputElem() {
 		let inputs = this.props.node.input.map( (inputData, key) => {
-			return (<NodeInOut isInput={true} data={inputData} key={key} index={key} />)
+			return (<NodeInOut isInput={true} data={inputData} key={inputData.name + key} index={key} />)
 		});
 		return (<div>{inputs}</div>);
 	}
@@ -119,7 +119,7 @@ export default class Node extends React.Component {
 	/// 出力端子.
 	outputElem() {
 		let outputs = this.props.node.output.map( (outputData, key) => {
-			return (<NodeInOut isInput={false} data={outputData} key={key} index={key} />)
+			return (<NodeInOut isInput={false} data={outputData} key={outputData.name + key} index={key} />)
 		});
 		return (<div>{outputs}</div>);
 	}
