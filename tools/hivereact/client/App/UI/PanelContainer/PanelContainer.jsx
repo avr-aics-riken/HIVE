@@ -27,8 +27,8 @@ export default class PanelContainer extends React.Component {
                 backgroundColor: "#666",
                 margin : "0px",
                 padding : "0px",
-                width : "50px",
-                height: "50px",
+                minWidth : "100px",
+                minHeight: "100px",
                 display: "inline-block",
                 boxShadow : "0px 0px 3px 0px skyblue inset"
             }
