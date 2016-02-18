@@ -57,6 +57,7 @@ export default class NodeInOut extends React.Component {
 				height : "20px"
 			},
 			inhole : {
+				cursor : "pointer",
 				position : "absolute",
 				left : "0px",
 				width : "15px",
@@ -66,6 +67,7 @@ export default class NodeInOut extends React.Component {
 				backgroundColor : colorFunction(this.props.data.type)
 			},
 			outhole : {
+				cursor : "pointer",
 				position : "absolute",
 				right : "0px",
 				width : "15px",
@@ -91,6 +93,17 @@ export default class NodeInOut extends React.Component {
 				fontSize : "14px"
 			}
 		}
+	}
+
+	onMouseDown(ev) {
+	}
+
+	onMouseMove(ev) {
+
+	}
+
+	onMouseUp(ev) {
+
 	}
 
 	content() {
