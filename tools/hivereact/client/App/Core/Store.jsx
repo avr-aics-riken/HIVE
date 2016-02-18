@@ -17,6 +17,7 @@ export default class Store extends EventEmitter {
 
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
+		this.changeNode = this.changeNode.bind(this);
         this.actionHandler = this.actionHandler.bind(this);
         this.addComponent = this.addComponent.bind(this);
 	}
@@ -57,9 +58,6 @@ export default class Store extends EventEmitter {
 	 * @private
 	 */
 	actionHandler(payload) {
-        // [s]
-        this.addComponent(payload.data);
-
 		if (payload && this.hasOwnProperty(payload.actionType)) {
 			if (payload.hasOwnProperty("id") && payload.id === this.dispatchToken) {
 				(() => {
@@ -115,9 +113,11 @@ export default class Store extends EventEmitter {
      * [s]
      * コンポーネントの追加
 	 */
-    addComponent(data) {
-        this.components.push(data);
-        this.emit(Store.ADD_COMPONENT);
+    addComponent(payload) {
+ 		if (payload.hasOwnProperty('data')) {
+	        this.components.push(payload.data);
+	        this.emit(Store.ADD_COMPONENT);
+		}
     }
 }
 Store.NODE_CHANGED = "node_changed";

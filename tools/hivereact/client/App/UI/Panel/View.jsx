@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import Container from "./Container.jsx"
+import Core from '../../Core'
 
 export default class View extends React.Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class View extends React.Component {
         // });
 
         // [s]
-        this.store.on(this.store.ADD_COMPONENT, function(data){
+        this.props.store.on(Core.Store.ADD_COMPONENT, function(data){
             this.setState({components: [].concat(this.store.getComponents())});
         }.bind(this));
     }

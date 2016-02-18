@@ -37,9 +37,14 @@ export default class View extends React.Component {
 	}
 
 	addButtonClick() {
-		var node = this.props.nodeSystem.GetNodeInfo('CreatePolygonModel');
-		node.varname = node.varname + String(this.state.nodes.length);
+		var node = this.props.nodeSystem.GetNodeInfo('CreateCamera');
+		node.varname = node.varname + "_" + String(this.state.nodes.length);
+		node.pos = [ 200, 200 ];
 		this.props.action.addNode(node);
+
+		//this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
+		//this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
+		this.props.action.addComponent(node.uiComponent);//nodesystem.GetUIComponent('CreateCamera'));
 	}
 
 	/// 追加ボタン(仮)
@@ -53,7 +58,6 @@ export default class View extends React.Component {
 		}
 
 	render () {
-	console.log(this.state.nodes.length);
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
 			return (<Node node={nodeData}
 			 			store={this.props.store}
