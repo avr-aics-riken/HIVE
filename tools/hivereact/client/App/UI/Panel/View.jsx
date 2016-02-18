@@ -1,6 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import Container from "./Container"
+import Container from "./Container.jsx"
 
 export default class View extends React.Component {
     constructor(props) {
@@ -13,6 +13,10 @@ export default class View extends React.Component {
 
         this.generator = this.generator.bind(this);
 
+        this.state = {
+            components: [].concat(this.store.getComponents())
+        };
+
         // this.componentDidUpdate = this.componentDidUpdate.bind(this);
         // this.componentDidMount = this.componentDidMount.bind(this);
 
@@ -21,6 +25,10 @@ export default class View extends React.Component {
         // 	});
         // });
 
+        // [s]
+        this.store.on(this.store.ADD_COMPONENT, function(data){
+            this.setState({components: [].concat(this.store.getComponents())});
+        }.bind(this));
     }
 
     // componentDidUpdate() {
@@ -57,26 +65,26 @@ export default class View extends React.Component {
 
     generator(component, key) {
         var res = null;
-        if(component && component.ui){
-            switch(this.props.options.type){
-                default :
-                    res = React.createFactory(component.ui)({store: this.store, action: this.action, name: component.info.name, key: key});
-                break
-            }
-            return (
-                <Container component={res} key={key} />
-            );
+        switch(this.props.options.type){
+            default :
+                res = React.createFactory(component)({store: this.store, action: this.action, key: key});
+            break
         }
+        return (
+            <Container component={res} key={key} />
+        );
     }
 
     render() {
+        console.log(this.state.components);
         var styles = this.styles();
-        return (
+        var a = (
             <div className={this.props.options.type} style={styles[this.props.options.type]}>
-                {this.props.components.map((value, key)=>{
+                {this.state.components.map((value, key)=>{
                     return this.generator(value, key);
                 })}
             </div>
         );
+        return a;
     }
 }
