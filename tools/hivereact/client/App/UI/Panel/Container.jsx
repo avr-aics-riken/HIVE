@@ -1,7 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 
-export default class PanelContainer extends React.Component {
+export default class Container extends React.Component {
     constructor(props) {
         super(props);
 
@@ -23,7 +23,7 @@ export default class PanelContainer extends React.Component {
     //
     styles() {
         return {
-            panelcontainer : {
+            container : {
                 backgroundColor: "#666",
                 margin : "0px",
                 padding : "0px",
@@ -38,7 +38,7 @@ export default class PanelContainer extends React.Component {
     render() {
         var styles = this.styles();
         return (
-            <div style={styles.panelcontainer}>
+            <div style={styles.container}>
                 {this.props.component}
             </div>
         );
