@@ -22,3 +22,5 @@ third_party/Zoltan_v3.81
 tools/HiveConnectTest/node_modules
 tools/fiberui/node_modules
 tools/hivereact/node_modules
+tools/hivereact/client/bundle.js
+tools/hivereact/client/bundle.js.map

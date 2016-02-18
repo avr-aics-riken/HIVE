@@ -1,5 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import { PanelContainer } from "../PanelContainer"
 
 export default class Container extends React.Component {
     constructor(props) {
@@ -44,7 +45,6 @@ export default class Container extends React.Component {
         if(component && component.ui){
             // var r = React.createFactory(component.ui)({name: component.info.name, key: key});
             var r = React.createFactory(component.ui);
-            console.log(r({name: component.info.name, key: key}));
             return r({name: component.info.name, key: key});
             // return r;
             // return React.createFactory(component.ui)({name: component.info.name, key: key});
@@ -55,7 +55,7 @@ export default class Container extends React.Component {
         var styles = this.styles();
         return (
             <div style={styles.container}>
-                <span>{this.props.components.map((value, key)=>{return this.generator(value, key);})}</span>
+                <PanelContainer component={this.props.components.map((value, key)=>{return this.generator(value, key);})} />
             </div>
         );
     }
