@@ -1,8 +1,8 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import { PanelContainer } from "../PanelContainer"
+import Container from "./Container"
 
-export default class Container extends React.Component {
+export default class View extends React.Component {
     constructor(props) {
         super(props);
 
@@ -62,7 +62,7 @@ export default class Container extends React.Component {
                 break
             }
             return (
-                <PanelContainer component={res} key={key} />
+                <Container component={res} key={key} />
             );
         }
     }

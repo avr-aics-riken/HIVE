@@ -1,9 +1,9 @@
 import React from 'react'
 import Core from './Core'
 import Hive from './HIVE'
-import { Container } from "./UI/Container"
-import { ViewerPanel } from "./UI/ViewerPanel"
 import Node from "./UI/Node"
+import Panel from "./UI/Panel"
+import { ViewerPanel } from "./UI/Panel/ViewerPanel"
 
 import NodeSystem from "./NodeSystem"
 
@@ -26,7 +26,7 @@ export default class HiveApp extends React.Component {
 
         // [s]
         this.store.on(Core.Store.ADD_COMPONENT, function(data){
-            this.setState({components: this.store.getComponents()});
+            this.setState({components: [].concat(this.store.getComponents())});
         }.bind(this));
 
         this.nodesystem = new NodeSystem((nodesystem) => { // initilized.
@@ -35,6 +35,10 @@ export default class HiveApp extends React.Component {
             this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
             this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
             var components = [];
+            // components.push({
+            //     ui: (<ViewerPanel style={{height: 512}} />),
+            //     info: nodesystem.GetNodeInfo('CreatePolygonModel')
+            // });
             components.push({
                 ui: nodesystem.GetUIComponent('CreateCamera'),
                 info: nodesystem.GetNodeInfo('CreateCamera')
@@ -72,11 +76,9 @@ export default class HiveApp extends React.Component {
                 <div>
                     <Node.View store={this.store} action={this.action} nodes={this.state.nodes} />
                 </div>
-                <div className='panel' style={{height:512}}>
-                    <ViewerPanel store={this.store} action={this.action} />
+                <div>
+                    <Panel.View store={this.store} action={this.action} options={options[0]} components={this.state.components} />
                 </div>
-                <Container store={this.store} action={this.action} options={options[0]} components={this.state.components} />
-                <Container store={this.store} action={this.action} options={options[1]} components={this.state.components} />
             </div>
         );
     }
