@@ -98,6 +98,19 @@ export default class Store extends EventEmitter {
  		}
 	 }
 
+ 	/**
+ 	 * ノード変更.
+ 	 */
+ 	changeNode(payload) {
+ 		if (payload.hasOwnProperty('nodeInfo')) {
+ 			for (let i = 0; i < this.nodes.length; i = i + 1) {
+				if (this.nodes[i].varname === payload.nodeInfo.varname) {
+					this.emit(Store.NODE_CHANGED, null, this.nodes[i], i);
+				}
+			}
+ 		}
+ 	}
+
 	/**
      * [s]
      * コンポーネントの追加
