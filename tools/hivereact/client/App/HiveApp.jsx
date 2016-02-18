@@ -24,28 +24,11 @@ export default class HiveApp extends React.Component {
             components: this.store.getComponents()
         };
 
-        // [s]
-        this.store.on(Core.Store.ADD_COMPONENT, function(data){
-            this.setState({components: [].concat(this.store.getComponents())});
-        }.bind(this));
-
         this.nodesystem = new NodeSystem((nodesystem) => { // initilized.
             // console.log('CreateCamera[ui] = ', nodesystem.GetUIComponent('CreateCamera'));
             // console.log('CreateCamera[info] = ', nodesystem.GetNodeInfo('CreateCamera'));
             this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
             this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
-            var components = [];
-            components.push({
-                ui: ViewerPanel,
-                info: nodesystem.GetNodeInfo('CreatePolygonModel')
-            });
-            components.push({
-                ui: nodesystem.GetUIComponent('CreateCamera'),
-                info: nodesystem.GetNodeInfo('CreateCamera')
-            });
-            for(let i in components){
-                this.action.addComponent(components[i]);
-            }
         });
     }
 
@@ -77,7 +60,7 @@ export default class HiveApp extends React.Component {
                     <Node.View store={this.store} action={this.action} nodes={this.state.nodes} />
                 </div>
                 <div>
-                    <Panel.View store={this.store} action={this.action} options={options[0]} components={this.state.components} />
+                    <Panel.View store={this.store} action={this.action} options={options[0]} />
                 </div>
             </div>
         );
