@@ -11,7 +11,8 @@ export default class Node extends React.Component {
 		this.isLeftDown = false;
 		this.mousePos = { x : 0, y : 0};
 		this.state = {
-			pos : this.props.node.pos
+			pos : this.props.node.pos,
+			closeHover : false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
@@ -31,11 +32,28 @@ export default class Node extends React.Component {
 				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
+				opacity : "0.8",
 				padding : "5px"
 			},
 			title : {
 				color : "rgb(239, 136, 21)",
 				fontSize : "16px"
+			},
+			closeButton : {
+				position : "absolute",
+				right : "0px",
+				top : "0px",
+				margin : "5px",
+				width: "15px",
+				height: "15px",
+				backgroundColor : "#ea4412",
+				textAlign : "center",
+				borderRadius : "5px",
+				border : this.state.closeHover ? "solid 1px" : "none"
+			},
+			closeText : {
+				lineHeight : "12px",
+				cursor : "pointer"
 			}
 		}
 	}
@@ -72,6 +90,16 @@ export default class Node extends React.Component {
 		}
 	}
 
+	/// 閉じるボタンが押された.
+	onCloseClick(ev) {
+		this.props.action.deleteNode(this.props.node.varname);
+	}
+
+	/// 閉じるボタンにマウスホバーされた
+	onCloseHover(ev) {
+		this.setState({ closeHover : !this.state.closeHover })
+	}
+
 	/// タイトル.
 	titleElem() {
 		const styles = this.styles();
@@ -94,6 +122,18 @@ export default class Node extends React.Component {
 		return (<div>{outputs}</div>);
 	}
 
+	/// 閉じるボタン
+	closeElem() {
+		const styles = this.styles();
+		return (<div style={styles.closeButton}
+					onClick={this.onCloseClick.bind(this)}
+					onMouseEnter={this.onCloseHover.bind(this)}
+					onMouseLeave={this.onCloseHover.bind(this)}
+				>
+					<div style={styles.closeText}>x</div>
+				</div>)
+	}
+
 	render () {
 		const styles = this.styles();
 		return (<div style={styles.node}
@@ -103,6 +143,7 @@ export default class Node extends React.Component {
 					{this.titleElem.bind(this)()}
 					{this.inputElem.bind(this)()}
 					{this.outputElem.bind(this)()}
+					{this.closeElem.bind(this)()}
 				</div>);
 	}
 }
