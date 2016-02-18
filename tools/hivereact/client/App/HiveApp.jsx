@@ -35,10 +35,10 @@ export default class HiveApp extends React.Component {
             this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
             this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
             var components = [];
-            // components.push({
-            //     ui: (<ViewerPanel style={{height: 512}} />),
-            //     info: nodesystem.GetNodeInfo('CreatePolygonModel')
-            // });
+            components.push({
+                ui: ViewerPanel,
+                info: nodesystem.GetNodeInfo('CreatePolygonModel')
+            });
             components.push({
                 ui: nodesystem.GetUIComponent('CreateCamera'),
                 info: nodesystem.GetNodeInfo('CreateCamera')
