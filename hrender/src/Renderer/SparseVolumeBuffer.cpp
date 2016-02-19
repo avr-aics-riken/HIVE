@@ -97,7 +97,7 @@ bool SparseVolumeBuffer::CreateSparseTexture3D(const BufferSparseVolumeData* vol
 	for (size_t i = 0; i < volume->VolumeBlocks().size(); i++) {
 		const BufferSparseVolumeData::VolumeBlock& block = volume->VolumeBlocks()[i];
 
-    	SparseTexImage3DPointer_SGL(block.offset[0], block.offset[1], block.offset[2], block.volume->Width(), block.volume->Height(), block.volume->Depth(), volume->Component(), block.volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+    	SparseTexImage3DPointer_SGL(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.volume->Width(), block.volume->Height(), block.volume->Depth(), volume->Component(), block.volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
 	}
     m_voldim[0] = volume->Width();
     m_voldim[1] = volume->Height();

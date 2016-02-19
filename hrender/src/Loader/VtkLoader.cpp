@@ -506,6 +506,7 @@ bool VTKLoader::Load(const char* filename, const char* searchpath, const char* f
 
         // Prepare volume data.
         {
+            // @todo { lod }
             m_volume->Create(globalDim[0], globalDim[1], globalDim[2], m_dataArrayInfoList[fieldIdx].numberOfComponents);
             m_origin[0] = origin[0];
             m_origin[1] = origin[1];

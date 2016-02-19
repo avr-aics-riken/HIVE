@@ -17,7 +17,7 @@
 class BufferSparseVolumeData::Impl
 {
 private:
-    int m_dim[3];
+    int m_dim[3];       ///< Cell dim(actial volume size)
     int m_components;
     std::vector<VolumeBlock> m_volumeBlocks;
 
@@ -90,6 +90,7 @@ public:
 		m_dim[0] = inst->Width();
 		m_dim[1] = inst->Height();
 		m_dim[2] = inst->Depth();
+
 		m_components = inst->Component();
 
 		m_volumeBlocks = inst->VolumeBlocks();
@@ -110,24 +111,31 @@ public:
 		m_dim[1] = h;
 		m_dim[2] = d;
 		m_components = component;
-
     }
     
     /**
      * BufferSparseVolumeDataへのBufferVolumeDataの追加
-     * @param offset_x SparseBlockオフセットX
-     * @param offset_y SparseBlockオフセットY
-     * @param offset_z SparseBlockオフセットZ
+     * @param level    LoD level
+     * @param offset_x SparseBlockオフセットX(World coordinate)
+     * @param offset_y SparseBlockオフセットY(World coordiante)
+     * @param offset_z SparseBlockオフセットZ(World coordiante)
+     * @param extent_x SparseBlock Extent X(World coordinate)
+     * @param extent_y SparseBlock Extent Y(World coordinate)
+     * @param extent_z SparseBlock Extent Z(World coordinate)
      * @param vol      対象のBufferVolumeData
      */
-    void AddVolume(int offset_x, int offset_y, int offset_z,
-                                           BufferVolumeData* vol)
+    void AddVolume(int level, int offset_x, int offset_y, int offset_z,
+                   int extent_x, int extent_y, int extent_z, BufferVolumeData* vol)
     {
 		{
             VolumeBlock block;
+            block.level = level;
             block.offset[0] = offset_x;
             block.offset[1] = offset_y;
             block.offset[2] = offset_z;
+            block.extent[0] = extent_x;
+            block.extent[1] = extent_y;
+            block.extent[2] = extent_z;
 			block.volume = vol; // pointer reference
 
 			m_volumeBlocks.push_back(block);
@@ -304,15 +312,19 @@ void BufferSparseVolumeData::Create(int w, int h, int d, int component)
 
 /**
  * BufferSparseVolumeDataへのBufferVolumeDataの追加
+ * @param level    LoD level
  * @param offset_x SparseBlockオフセットX
  * @param offset_y SparseBlockオフセットY
  * @param offset_z SparseBlockオフセットZ
+ * @param extent_x Extent in X 
+ * @param extent_y Extent in Y
+ * @param extent_z Extent in Z
  * @param vol      対象のBufferVolumeData
  */
-void BufferSparseVolumeData::AddVolume(int offset_x, int offset_y, int offset_z,
-               BufferVolumeData* vol)
+void BufferSparseVolumeData::AddVolume(int level, int offset_x, int offset_y, int offset_z,
+               int extent_x, int extent_y, int extent_z, BufferVolumeData* vol)
 {
-    m_imp->AddVolume(offset_x, offset_y, offset_z, vol);
+    m_imp->AddVolume(level, offset_x, offset_y, offset_z, extent_x, extent_y, extent_z, vol);
 }
 
 /// メンバクリア
