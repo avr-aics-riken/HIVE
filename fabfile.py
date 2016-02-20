@@ -94,6 +94,11 @@ def build_hive():
         run('rm -rf HIVE-master')
         run('tar -zxvf HIVE-master.tar.gz')
 
+    # put deplibs
+    put('third_party/fpzip-1.0.1.tar.gz', remote_build_dir + '/HIVE-master/third_party/fpzip-1.0.1.tar.gz')
+    put('third_party/cgnslib_3.2.1.tar.gz', remote_build_dir + '/HIVE-master/third_party/cgnslib_3.2.1.tar.gz')
+    put('third_party/zoltan_distrib_v3.81.tar.gz', remote_build_dir + '/HIVE-master/third_party/zoltan_distrib_v3.81.tar.gz')
+
     # build loader libs.
     loader_build_script = ""
     if host_type == 'k_cross':
@@ -115,6 +120,9 @@ def build_hive():
 
     if cxx_compiler is not None:
         loader_build_script = "CXX=" + cxx_compiler + ' ' + loader_build_script
+
+    #run('module load PrgEnv-intel')
+    #run('module load impi411')
 
     with cd(remote_build_dir + '/HIVE-master'):
         run(loader_build_script)
@@ -138,3 +146,13 @@ def build_hive():
     #with cd(remote_build_dir + '/HIVE-master'):
     #    run(setup_script)
     #    run('make -C build')
+
+# Dependency: (None)
+@task
+def deploy_vsp():
+    puts(green('Putting HIVE to vsp'))
+    env.hosts = ['vsp']
+
+    local('./scripts/git-archive-all.sh --prefix HIVE-master/ deploy/HIVE-master.tar') # --format tar.gz doesn't work well.
+    local('gzip -f deploy/HIVE-master.tar')
+    put('deploy/HIVE-master.tar.gz', '/media/dali/data1/share/HIVE/release/HIVE-master.tar.gz')

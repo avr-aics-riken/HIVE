@@ -2,6 +2,8 @@
 
 HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" and is built on SURFACE.
 
+[![Build Status](https://travis-ci.org/avr-aics-riken/HIVE.svg?branch=master)](https://travis-ci.org/avr-aics-riken/HIVE)
+
 ## Requirements
 
 * cmake 2.8 or later
@@ -11,6 +13,7 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 * cgnslib 3.2.1(Required when you build HIVE with UDMlib support)
 * netcdf4 4.2.1.1(Required when you build HIVE with CDMlib support)
 * HDF5 1.8.10 patch1(Required when you buil HIVE with CDMlib support)
+  * Use brew install hdf5 for MacOSX.
 
 ## git clone
 
@@ -48,7 +51,7 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
 
 ### MacOSX
 
-MacOSX requires gcc-4.8 and openmpi.
+MacOSX requires gcc-4.8 and openmpi, also requres homebrew supplied HDF5(gcc4.8 failed to compile HDF5 1.8.10 patch1).
 (gcc-5 is not supported due to New ABI problem)
 
 #### Setup
@@ -57,6 +60,7 @@ Assume homebrew is installed.
 
     $ brew install gcc48
     $ brew install openmpi
+    $ brew install hdf5
     $ export OMPI_CC=gcc-4.8
     $ export OMPI_CXX=g++-4.8
     $ cd $HIVE
