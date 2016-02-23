@@ -25,7 +25,6 @@ export default class Node extends React.Component {
 		}
 
 		this.nodeChanged = this.nodeChanged.bind(this);
-		this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged(), { varname : this.props.node.varname });
 
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
@@ -35,14 +34,11 @@ export default class Node extends React.Component {
 		this.styles = this.styles.bind(this);
 	}
 
-	nodeChanged() {
-		return (err, data) => {
-		//console.log("nodeChanged", this.props.node.varname);
-			if (data.varname === this.props.node.varname) {
-				this.setState({
-					node : data
-				});
-			}
+	nodeChanged(err, data) {
+		if (data.varname === this.props.node.varname) {
+			this.setState({
+				node : data
+			});
 		}
 	}
 
@@ -85,13 +81,13 @@ export default class Node extends React.Component {
 	componentDidMount() {
 		window.addEventListener('mousemove', this.onMouseMove);
 		window.addEventListener('mouseup', this.onMouseUp);
+		this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
 	}
 
 	componentWillUnmount() {
 		window.removeEventListener('mousemove', this.onMouseMove);
 		window.removeEventListener('mouseup', this.onMouseUp);
-		console.log("morevelistener");
-		this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged());
+		this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
 	}
 
 	onMouseDown(ev) {

@@ -71,7 +71,6 @@ export default class View extends React.Component {
     }
 
     render() {
-        console.log(this.state.components);
         var styles = this.styles();
         var a = (
             <div className={this.props.options.type} style={styles[this.props.options.type]}>
