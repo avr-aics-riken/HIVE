@@ -31,6 +31,21 @@ export default class Container extends React.Component {
                 minHeight: "100px",
                 display: "inline-block",
                 boxShadow : "0px 0px 3px 0px skyblue inset"
+            },
+            panelTitleBar: {
+                backgroundColor: "silver",
+                color: "#333",
+                fontSize: "8pt",
+                margin : "0px",
+                padding : "2px 5px",
+                minHeight: "10px"
+            },
+            panelCloseButton: {
+                backgroundColor: "red",
+                color: "white"
+            },
+            panelScale: {
+                backgroundColor: "green"
             }
         }
     }
@@ -39,7 +54,13 @@ export default class Container extends React.Component {
         var styles = this.styles();
         return (
             <div style={styles.container}>
+                <div style={styles.panelTitleBar}>
+                    <p>{this.props.title}</p>
+                    <div style={styles.panelCloseButton}>x</div>
+                </div>
                 {this.props.component}
+                <div style={styles.panelScale}>
+                </div>
             </div>
         );
     }

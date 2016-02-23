@@ -21,12 +21,6 @@ export default class View extends React.Component {
         // this.componentDidUpdate = this.componentDidUpdate.bind(this);
         // this.componentDidMount = this.componentDidMount.bind(this);
 
-        // this.store.on(Core.Store.IMAGE_RECIEVED, (err, param, data) => {
-        // 	this.setState({
-        // 	});
-        // });
-
-        // [s]
         this.props.store.on(Core.Store.ADD_COMPONENT, function(data){
             this.setState({components: [].concat(this.store.getComponents())});
         }.bind(this));
@@ -72,7 +66,7 @@ export default class View extends React.Component {
             break
         }
         return (
-            <Container component={res} key={key} />
+            <Container component={res} key={key} title="test title" />
         );
     }
 
