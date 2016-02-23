@@ -17,7 +17,8 @@
 		"react-dom": "*",
 		"superagent": "^1.7.1",
 		"eventemitter3" : "*",
-		"electron-packager" : "*"
+		"electron-packager" : "*",
+		"react-split-pane" : "*"
 	},
 	"window": {
 		"toolbar": true,
@@ -31,6 +32,7 @@
 		"install": "node install.js",
 		"start": "..\\electron\\electron .",
 		"test": "export ENVIRONMENT=DEV && /Applications/Electron.app/Contents/MacOS/Electron .",
+		"linux": "export ENVIRONMENT=DEV && electron .",
 		"mac" : "../electron/Electron.app/Contents/MacOS/Electron .",
 		"webpack" : ".\\node_modules\\.bin\\webpack",
 		"watch" : ".\\node_modules\\.bin\\webpack --watch",

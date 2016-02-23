@@ -4,6 +4,7 @@ import Hive from './HIVE'
 import Node from "./UI/Node"
 import Panel from "./UI/Panel"
 import { ViewerPanel } from "./UI/Panel/ViewerPanel"
+import SplitPane from 'react-split-pane';
 
 import NodeSystem from "./NodeSystem"
 
@@ -29,14 +30,14 @@ export default class HiveApp extends React.Component {
             {type: 'normal', bc: '#333'}
         ];
         return (
-            <div>
+            <SplitPane split="vertical" minSize="50">
                 <div>
                     <Node.View store={this.store} action={this.action} nodeSystem={this.nodesystem} />
                 </div>
                 <div>
                     <Panel.View store={this.store} action={this.action} options={options[0]} />
                 </div>
-            </div>
+            </SplitPane>
         );
     }
 }
