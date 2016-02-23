@@ -21,6 +21,7 @@ export default class Container extends React.Component {
             }
         }
 
+        this.nodeChanged = this.nodeChanged.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
         this.onMouseMove = this.onMouseMove.bind(this);
@@ -28,16 +29,24 @@ export default class Container extends React.Component {
         this.onMouseDown = this.onMouseDown.bind(this);
     }
 
+    nodeChanged(err, data) {
+        if (data.varname === this.props.node.varname) {
+            this.setState({
+                node : data
+            });
+        }
+    }
+
     componentDidMount() {
         window.addEventListener('mousemove', this.onMouseMove);
         window.addEventListener('mouseup', this.onMouseUp);
-        this.props.store.on(Core.Store.COMPONENT_CHANGED, this.componentChanged);
+        this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
         window.removeEventListener('mousemove', this.onMouseMove);
         window.removeEventListener('mouseup', this.onMouseUp);
-        this.props.store.removeListener(Core.Store.COMPONENT_CHANGED, this.componentChanged);
+        this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
@@ -54,8 +63,8 @@ export default class Container extends React.Component {
     }
 
     onMouseMove(ev) {
-        if(this.isLeftDown){
-            let mv = {x : ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
+        if (this.isLeftDown) {
+            let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
             this.setState({position: {x: this.offsetLeft + mv.x, y: this.offsetTop + mv.y}});
         }
     }
@@ -79,8 +88,8 @@ export default class Container extends React.Component {
                 minWidth : "100px",
                 minHeight: "100px",
                 position: "absolute",
-                top: "10px",
-                right: "10px",
+                top: this.state.position.y,
+                left: this.state.position.x,
                 boxShadow : "0px 0px 3px 0px skyblue inset"
             },
             panelTitleBar: {
@@ -120,13 +129,18 @@ export default class Container extends React.Component {
 
     render() {
         var styles = this.styles();
+        var res = React.createFactory(this.props.node.uiComponent)({
+            store: this.store,
+            action: this.action,
+            node: this.props.node
+        });
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
-                    {this.props.title}
+                    {this.props.node.varname}
                     <div style={styles.panelCloseButton}>x</div>
                 </div>
-                {this.props.component}
+                <div>{res}</div>
                 <div style={styles.panelScale}>
                 </div>
             </div>
