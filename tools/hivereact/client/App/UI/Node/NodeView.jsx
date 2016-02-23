@@ -40,9 +40,26 @@ export default class NodePlugView extends React.Component {
 			node = JSON.parse(JSON.stringify(srcNode));
 
 		node.uiComponent = srcNode.uiComponent;
-		node.varname = node.varname + "_" + String(this.state.nodes.length);
+
+		// create unique varname
+		for (let i = 0; true; i = i + 1) {
+			let foundSameName = false;
+			let name = node.varname + "_" + String(i);
+			for (let i = 0; i < this.state.nodes.length; i = i + 1) {
+				if (this.state.nodes[i].varname === name) {
+					foundSameName = true;
+					break;
+				}
+			}
+			if (!foundSameName) {
+				node.varname = name;
+				break;
+			}
+		}
 		node.pos = [ 200, 200 ];
 		this.props.action.addNode(node);
+
+		console.log("Add Node:", node.varname);
 
 		//this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
 		//this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
