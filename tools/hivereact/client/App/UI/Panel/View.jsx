@@ -31,10 +31,9 @@ export default class View extends React.Component {
                 backgroundColor: "#333",
                 margin : "0px",
                 padding : "0px",
-                minWidth : "300px",
-                minHeight: "200px",
-                overflow: "hidden",
-                boxShadow : "0px 0px 3px 0px white inset"
+                width : "100%",
+                height: "100%",
+                overflow: "hidden"
             }
         }
     }

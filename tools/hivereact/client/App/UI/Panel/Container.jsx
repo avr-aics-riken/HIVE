@@ -10,7 +10,8 @@ export default class Container extends React.Component {
         this.action = props.action;
         this.state = {
             node: null,
-            position: {x: 0, y: 0}
+            position: {x: 0, y: 0},
+            size: {w: 100, h: 100}
         };
         this.node = props.node;
         let nodes = this.props.store.getNodes();
@@ -20,6 +21,8 @@ export default class Container extends React.Component {
                 break;
             }
         }
+        this.isLeftDown = false;
+        this.isScaleLeftDown = false;
 
         this.nodeChanged = this.nodeChanged.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -27,6 +30,9 @@ export default class Container extends React.Component {
         this.onMouseMove = this.onMouseMove.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
+        this.onScaleMove = this.onScaleMove.bind(this);
+        this.onScaleUp = this.onScaleUp.bind(this);
+        this.onScaleDown = this.onScaleDown.bind(this);
     }
 
     nodeChanged(err, data) {
@@ -40,19 +46,23 @@ export default class Container extends React.Component {
     componentDidMount() {
         window.addEventListener('mousemove', this.onMouseMove);
         window.addEventListener('mouseup', this.onMouseUp);
-        this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
+        window.addEventListener('mousemove', this.onScaleMove);
+        window.addEventListener('mouseup', this.onScaleUp);
+        // this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
         window.removeEventListener('mousemove', this.onMouseMove);
         window.removeEventListener('mouseup', this.onMouseUp);
-        this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
+        window.removeEventListener('mousemove', this.onScaleMove);
+        window.removeEventListener('mouseup', this.onScaleUp);
+        // this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
         if(ev.button === 0){
             this.isLeftDown = true;
-            this.mousePos = {x: ev.clientX, y: ev.clientY};
+            this.mousePos = {x: this.state.position.x - ev.clientX, y: this.state.position.y - ev.clientY};
             this.offsetLeft = ev.currentTarget.offsetLeft;
             this.offsetTop = ev.currentTarget.offsetTop;
         }
@@ -64,8 +74,28 @@ export default class Container extends React.Component {
 
     onMouseMove(ev) {
         if (this.isLeftDown) {
-            let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
+            let mv = { x : this.mousePos.x + ev.clientX, y : this.mousePos.y + ev.clientY};
             this.setState({position: {x: this.offsetLeft + mv.x, y: this.offsetTop + mv.y}});
+        }
+    }
+
+    onScaleDown(ev) {
+        if(ev.button === 0){
+            this.isScaleLeftDown = true;
+            this.scalePos = {x: ev.clientX, y: ev.clientY};
+            this.offsetScaleLeft = ev.currentTarget.offsetLeft;
+            this.offsetScaleTop = ev.currentTarget.offsetTop;
+        }
+    }
+
+    onScaleUp(ev) {
+        this.isScaleLeftDown = false;
+    }
+
+    onScaleMove(ev) {
+        if (this.isScaleLeftDown) {
+            let mv = {x: ev.clientX - this.scalePos.x, y: ev.clientY - this.scalePos.y};
+            this.setState({size: {w: Math.max(this.offsetScaleLeft + mv.x, 100), h: Math.max(this.offsetScaleTop + mv.y, 100)}});
         }
     }
 
@@ -85,8 +115,8 @@ export default class Container extends React.Component {
                 backgroundColor: "#666",
                 margin : "0px",
                 padding : "0px",
-                minWidth : "100px",
-                minHeight: "100px",
+                minWidth : this.state.size.w + "px",
+                minHeight: this.state.size.h + "px",
                 position: "absolute",
                 top: this.state.position.y,
                 left: this.state.position.x,
@@ -141,7 +171,7 @@ export default class Container extends React.Component {
                     <div style={styles.panelCloseButton}>x</div>
                 </div>
                 <div>{res}</div>
-                <div style={styles.panelScale}>
+                <div style={styles.panelScale} onMouseDown={this.onScaleDown.bind(this)}>
                 </div>
             </div>
         );
