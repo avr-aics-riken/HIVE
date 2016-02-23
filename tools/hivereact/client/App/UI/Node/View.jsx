@@ -42,8 +42,15 @@ export default class View extends React.Component {
 	}
 
 	addButtonClick() {
-		let srcNode = this.props.nodeSystem.GetNodeInfo('CreateCamera'),
-			node = JSON.parse(JSON.stringify(srcNode));
+		let nodeName = 'RenderView' // 'CreateCamera'
+		let srcNode = this.props.nodeSystem.GetNodeInfo(nodeName);
+
+		console.log('srcNode=', srcNode);
+		if (srcNode === undefined) {
+			console.error('Not found the node:', nodeName)
+			return;
+		}
+		let node = JSON.parse(JSON.stringify(srcNode));
 
 		node.uiComponent = srcNode.uiComponent;
 		node.varname = node.varname + "_" + String(this.state.nodes.length);
