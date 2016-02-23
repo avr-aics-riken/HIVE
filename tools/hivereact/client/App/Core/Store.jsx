@@ -12,10 +12,15 @@ export default class Store extends EventEmitter {
 		// 全てのノード
 		this.nodes = [];
 
+		// 全てのプラグ
+		this.plugs = [];
+
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
 		this.changeNode = this.changeNode.bind(this);
-        this.actionHandler = this.actionHandler.bind(this);
+		this.actionHandler = this.actionHandler.bind(this);
+		this.addPlug = this.addPlug.bind(this);
+		this.deletePlug = this.deletePlug.bind(this);
 	}
 
 	initEmitter(core) {
@@ -43,6 +48,13 @@ export default class Store extends EventEmitter {
 	 */
 	getNodes() {
 		return this.nodes;
+	}
+
+	/**
+	 * 全てのプラグリストを返す
+	 */
+	getPlugs() {
+		return this.plugs;
 	}
 
 	/**
@@ -76,19 +88,19 @@ export default class Store extends EventEmitter {
 	/**
 	 * ノード削除
 	 */
-	 deleteNode(payload) {
- 		if (payload.hasOwnProperty('varname')) {
- 			for (let i = 0; i < this.nodes.length; i = i + 1) {
+	deleteNode(payload) {
+		if (payload.hasOwnProperty('varname')) {
+			for (let i = 0; i < this.nodes.length; i = i + 1) {
 				if (this.nodes[i].varname === payload.varname) {
 					this.nodes.splice(i, 1);
 		 			this.emit(Store.NODE_COUNT_CHANGED, null, this.nodes.length);
 					break;
 				}
 			}
- 		}
-	 }
+		}
+	}
 
- 	/**
+	/**
  	 * ノード変更.
  	 */
  	changeNode(payload) {
@@ -101,8 +113,35 @@ export default class Store extends EventEmitter {
  		}
  	}
 
+	/**
+	 * プラグを追加
+	 */
+	addPlug(payload) {
+		if (payload.hasOwnProperty('plugInfo')) {
+			this.plugs.push(payload.plugInfo);
+			this.emit(Store.PLUG_COUNT_CHANGED, null, this.plugs.length);
+		}
+	}
+
+	/**
+	 * プラグ削除
+	 */
+	deletePlug(payload) {
+		if (payload.hasOwnProperty('plugInfo')) {
+			for (let i = 0; i < this.plugs.length; i = i + 1) {
+				if (this.plugs[i].output.node === payload.output.node &&
+					this.plugs[i].input.node === payload.input.node) {
+					this.plugs.splice(i, 1);
+					this.emit(Store.PLUG_COUNT_CHANGED, null, this.plugs.length);
+					break;
+				}
+			}
+		}
+	}
 }
 
 Store.NODE_CHANGED = "node_changed";
+Store.PLUG_CHANGED = "plug_changed";
 Store.NODE_COUNT_CHANGED = "node_count_changed";
+Store.PLUG_COUNT_CHANGED = "plug_count_changed";
 Store.IMAGE_RECIEVED = "image_revieved";

@@ -6,7 +6,7 @@ import Node from './Node.jsx'
 /**
  * ノード(プラグ除く）を全て内包するビュー.
  */
-export default class NodePlugView extends React.Component {
+export default class NodeView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.nodeList = this.props.store.getNodes();
@@ -53,8 +53,21 @@ export default class NodePlugView extends React.Component {
 				break;
 			}
 		}
+
 		node.pos = [ 200, 200 ];
 		this.props.action.addNode(node);
+
+		// create plug test
+		console.log("this.state.nodes.length", this.state.nodes.length );
+		if (this.props.store.getNodes().length > 1) {
+			this.props.action.addPlug({ output : {
+				nodeVarname : this.state.nodes[0].varname,
+				name : this.state.nodes[0].output[0].name
+			}, input : {
+				nodeVarname : node.varname,
+				name : node.input[0].name
+			}});
+		}
 
 		console.log("Add Node:", node.varname);
 

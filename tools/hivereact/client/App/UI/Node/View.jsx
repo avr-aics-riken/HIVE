@@ -6,6 +6,7 @@ import NodeView from "./NodeView.jsx"
 import NodePlugView from "./NodePlugView.jsx"
 import Store from "./Store.jsx"
 import Action from "./Action.jsx"
+var Dispatcher = require("flux").Dispatcher;
 
 /**
  * 全てのノードを内包するビュー.
@@ -13,8 +14,9 @@ import Action from "./Action.jsx"
 export default class View extends React.Component {
 	constructor(props) {
 		super(props);
-		this.nodeStore = new Store();
-		this.nodeAction = new Action(this.nodeStore.getDispatchToken());
+		var dispatcher =  new Dispatcher();
+		this.nodeStore = new Store(dispatcher, this.props.store);
+		this.nodeAction = new Action(dispatcher, this.nodeStore.getDispatchToken());
 	}
 
 	render () {

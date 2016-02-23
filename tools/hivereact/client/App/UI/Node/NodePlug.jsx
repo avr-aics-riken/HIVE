@@ -7,11 +7,28 @@ import ReactDOM from "react-dom"
 export default class NodePlug extends React.Component {
 	constructor(props) {
 		super(props);
-		this.styles = this.styles.bind(this);
 	}
 
-	content() {
-		const style = this.styles(this.props.index);
-		return <path></path>
+	stroke() {
+		let inpos = this.props.plug.input.pos;
+		let outpos = this.props.plug.output.pos;
+		let midx = (Number(inpos[0]) + Number(outpos[0])) * 0.5;
+
+		let str = "M"
+			+ String(inpos[0]) + " "
+			+ String(inpos[1]) + " "
+			+ "C" + " "
+			+ String(midx) + ","
+			+ String(inpos[1]) + " "
+			+ String(midx) + ","
+			+ String(outpos[1]) + " "
+			+ String(outpos[0]) + " "
+			+ String(outpos[1]);
+		return str;
+	}
+
+	render() {
+	//console.log("POS", this.props.plug)
+		return <path d={this.stroke.bind(this)()} stroke="white" fill="transparent"></path>
 	}
 }
