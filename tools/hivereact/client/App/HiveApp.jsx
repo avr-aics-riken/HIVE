@@ -26,16 +26,13 @@ export default class HiveApp extends React.Component {
     }
 
     render() {
-        var options = [
-            {type: 'normal', bc: '#333'}
-        ];
         return (
             <SplitPane split="vertical" minSize="50">
                 <div style={{position:"absolute",width:"100%",height:"100%"}}>
                     <Node.View store={this.store} action={this.action} nodeSystem={this.nodesystem} />
                 </div>
                 <div>
-                    <Panel.View store={this.store} action={this.action} options={options[0]} />
+                    <Panel.View store={this.store} action={this.action} />
                 </div>
             </SplitPane>
         );

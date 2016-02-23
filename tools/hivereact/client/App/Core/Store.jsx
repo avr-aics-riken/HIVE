@@ -12,14 +12,10 @@ export default class Store extends EventEmitter {
 		// 全てのノード
 		this.nodes = [];
 
-        // [s] コンポーネント
-        this.components = [];
-
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
 		this.changeNode = this.changeNode.bind(this);
         this.actionHandler = this.actionHandler.bind(this);
-        this.addComponent = this.addComponent.bind(this);
 	}
 
 	initEmitter(core) {
@@ -41,10 +37,6 @@ export default class Store extends EventEmitter {
 	getDispatchToken() {
 		return this.dispatchToken;
 	}
-
-    getComponents(){
-        return this.components;
-    }
 
 	/**
 	 * 全てのノードリストを返す
@@ -109,18 +101,8 @@ export default class Store extends EventEmitter {
  		}
  	}
 
-	/**
-     * [s]
-     * コンポーネントの追加
-	 */
-    addComponent(payload) {
- 		if (payload.hasOwnProperty('data')) {
-	        this.components.push(payload.data);
-	        this.emit(Store.ADD_COMPONENT);
-		}
-    }
 }
+
 Store.NODE_CHANGED = "node_changed";
 Store.NODE_COUNT_CHANGED = "node_count_changed";
 Store.IMAGE_RECIEVED = "image_revieved";
-Store.ADD_COMPONENT = "add_component";
