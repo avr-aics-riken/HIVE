@@ -26,13 +26,14 @@ export default class NodeSystem extends EventEmitter {
     
     initEmitter(store) {
         store.on(Store.NODE_CHANGED, (err, data) => {
-            console.log('NS catched:NODE_CHANGED', err, data);
+            //console.log('NS catched:NODE_CHANGED', err, data);
             let node = data;
             //let nodes = store.getNodes();
             
             // set to instance
 
             //console.log('NODES=', nodes, 'PLUGS=', plugs);
+            console.log('CHANGENODE->', node);
             let script = "print('NODE CHANGED!!')";//this.nodeSerializer.writeNode(nodes); // generate
             
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);            
