@@ -157,7 +157,6 @@ export default class Node extends React.Component {
 	render () {
 		const style = this.styles();
 		return (<div style={style.node}
-					ref="node"
 					onMouseDown={this.onMouseDown.bind(this)}
 				>
 					{this.titleElem.bind(this)()}

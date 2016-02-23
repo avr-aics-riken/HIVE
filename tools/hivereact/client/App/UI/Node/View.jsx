@@ -37,7 +37,10 @@ export default class View extends React.Component {
 	}
 
 	addButtonClick() {
-		var node = this.props.nodeSystem.GetNodeInfo('CreateCamera');
+		let srcNode = this.props.nodeSystem.GetNodeInfo('CreateCamera'),
+			node = JSON.parse(JSON.stringify(srcNode));
+
+		node.uiComponent = srcNode.uiComponent;
 		node.varname = node.varname + "_" + String(this.state.nodes.length);
 		node.pos = [ 200, 200 ];
 		this.props.action.addNode(node);
