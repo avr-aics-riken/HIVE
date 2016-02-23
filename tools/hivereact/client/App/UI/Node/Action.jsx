@@ -10,10 +10,11 @@ export default class Action {
 	/**
 	 * プラグ位置を変更する.
 	 */
-	changePlugPosition(inpos, outpos) {
+	changePlugPosition(plugID, inpos, outpos) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "changePlugPosition",
+			plugID : plugID,
 			inpos : inpos,
 			outpos : outpos
 		});

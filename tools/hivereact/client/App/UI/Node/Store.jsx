@@ -5,6 +5,8 @@ export default class Store extends EventEmitter {
 	constructor() {
 		super();
 		this.dispatchToken = Dispatcher.register(this.actionHandler.bind(this));
+
+		this.plugPositions = [];
 	}
 
 	/**
