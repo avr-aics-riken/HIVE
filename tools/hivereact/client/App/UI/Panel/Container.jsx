@@ -9,9 +9,7 @@ export default class Container extends React.Component {
         this.store = props.store;
         this.action = props.action;
         this.state = {
-            node: null,
-            position: {x: 0, y: 0},
-            size: {w: 100, h: 100}
+            node: null
         };
         this.node = props.node;
         let nodes = this.props.store.getNodes();
@@ -33,7 +31,27 @@ export default class Container extends React.Component {
         this.onScaleMove = this.onScaleMove.bind(this);
         this.onScaleUp = this.onScaleUp.bind(this);
         this.onScaleDown = this.onScaleDown.bind(this);
+
+        this.props.store.on(Core.Store.NODE_CHANGED, function(err, data){
+            let nodes = this.props.store.getNodes();
+            for(let i = 0; i < nodes.length; ++i){
+                if(nodes[i].varname === this.props.node.varname){
+                    this.setState({node: nodes[i]});
+                    break;
+                }
+            }
+        }.bind(this));
+        this.props.store.on(Core.Store.NODE_COUNT_CHANGED, function(err, data){
+            let nodes = this.props.store.getNodes();
+            for(let i = 0; i < nodes.length; ++i){
+                if(nodes[i].varname === this.props.node.varname){
+                    this.setState({node: nodes[i]});
+                    break;
+                }
+            }
+        }.bind(this));
     }
+
 
     nodeChanged(err, data) {
         if (data.varname === this.props.node.varname) {
@@ -62,7 +80,7 @@ export default class Container extends React.Component {
     onMouseDown(ev) {
         if(ev.button === 0){
             this.isLeftDown = true;
-            this.mousePos = {x: this.state.position.x - ev.clientX, y: this.state.position.y - ev.clientY};
+            this.mousePos = {x: ev.clientX - this.props.node.panel.pos[0], y: ev.clientY - this.props.node.panel.pos[1]};
             this.offsetLeft = ev.currentTarget.offsetLeft;
             this.offsetTop = ev.currentTarget.offsetTop;
         }
@@ -74,8 +92,12 @@ export default class Container extends React.Component {
 
     onMouseMove(ev) {
         if (this.isLeftDown) {
-            let mv = { x : this.mousePos.x + ev.clientX, y : this.mousePos.y + ev.clientY};
-            this.setState({position: {x: this.offsetLeft + mv.x, y: this.offsetTop + mv.y}});
+            let node = this.props.node;
+            let mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
+            node.panel.pos[0] = this.offsetLeft + mv.x;
+            node.panel.pos[1] = this.offsetTop + mv.y;
+            this.props.action.changeNode(node);
+            console.log(node.panel.pos);
         }
     }
 
@@ -115,11 +137,11 @@ export default class Container extends React.Component {
                 backgroundColor: "#666",
                 margin : "0px",
                 padding : "0px",
-                minWidth : this.state.size.w + "px",
-                minHeight: this.state.size.h + "px",
+                minWidth : this.props.node.panel.size[0] + "px",
+                minHeight: this.props.node.panel.size[1] + "px",
                 position: "absolute",
-                top: this.state.position.y,
-                left: this.state.position.x,
+                top:  this.props.node.panel.pos[1] + "px",
+                left: this.props.node.panel.pos[0] + "px",
                 boxShadow : "0px 0px 3px 0px skyblue inset"
             },
             panelTitleBar: {
