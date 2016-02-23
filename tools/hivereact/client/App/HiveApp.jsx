@@ -26,8 +26,7 @@ export default class HiveApp extends React.Component {
 
     render() {
         var options = [
-            {type: 'normal', bc: '#333'},
-            {type: 'scalable', bc: '#611'}
+            {type: 'normal', bc: '#333'}
         ];
         return (
             <div>
