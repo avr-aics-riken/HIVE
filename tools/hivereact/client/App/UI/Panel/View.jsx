@@ -9,45 +9,26 @@ export default class View extends React.Component {
 
         this.store = props.store;
         this.action = props.action;
-
-        this.options = props.options;
-
-        this.generator = this.generator.bind(this);
-
         this.state = {
-            components: [].concat(this.store.getComponents())
+            nodes: [].concat(this.store.getNodes()),
+            position: {x: 0, y: 0}
         };
 
-        // this.componentDidUpdate = this.componentDidUpdate.bind(this);
-        // this.componentDidMount = this.componentDidMount.bind(this);
+        this.styles = this.styles.bind(this);
+        this.generator = this.generator.bind(this);
 
-        this.props.store.on(Core.Store.ADD_COMPONENT, function(data){
-            this.setState({components: [].concat(this.store.getComponents())});
+        this.props.store.on(Core.Store.NODE_CHANGED, function(err, data){
+            this.setState({nodes: [].concat(this.store.getNodes())});
+        }.bind(this));
+        this.props.store.on(Core.Store.NODE_COUNT_CHANGED, function(err, data){
+            this.setState({nodes: [].concat(this.store.getNodes())});
         }.bind(this));
     }
 
-    // componentDidUpdate() {
-    // }
-    //
-    // componentDidMount() {
-    // }
-    //
-    // componentWillUnmount() {
-    // }
-    //
     styles() {
         return {
-            normal: {
-                backgroundColor: this.props.options.bc,
-                margin : "0px",
-                padding : "0px",
-                minWidth : "300px",
-                minHeight: "200px",
-                overflow: "hidden",
-                boxShadow : "0px 0px 3px 0px white inset"
-            },
-            scalable: {
-                backgroundColor: this.props.options.bc,
+            container: {
+                backgroundColor: "#333",
                 margin : "0px",
                 padding : "0px",
                 minWidth : "300px",
@@ -58,23 +39,25 @@ export default class View extends React.Component {
         }
     }
 
-    generator(component, key) {
-        var res = null;
-        switch(this.props.options.type){
-            default :
-                res = React.createFactory(component)({store: this.store, action: this.action, key: key});
-            break
-        }
+    generator(node, key) {
+        var styles = this.styles();
+        var res = React.createFactory(node.uiComponent.data)({node: node, store: this.store, action: this.action, key: key});
         return (
-            <Container component={res} key={key} title="test title" />
+            <Container
+                store={this.store}
+                action={this.action}
+                node={node}
+                key={key}
+                pos={this.pos}
+            />
         );
     }
 
     render() {
         var styles = this.styles();
         var a = (
-            <div className={this.props.options.type} style={styles[this.props.options.type]}>
-                {this.state.components.map((value, key)=>{
+            <div style={styles.container}>
+                {this.state.nodes.map((value, key)=>{
                     return this.generator(value, key);
                 })}
             </div>
