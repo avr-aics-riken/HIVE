@@ -97,7 +97,6 @@ export default class Container extends React.Component {
             node.panel.pos[0] = this.offsetLeft + mv.x;
             node.panel.pos[1] = this.offsetTop + mv.y;
             this.props.action.changeNode(node);
-            console.log(node.panel.pos);
         }
     }
 
