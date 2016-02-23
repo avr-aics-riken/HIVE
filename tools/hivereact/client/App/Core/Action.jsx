@@ -41,11 +41,4 @@ export default class HiveAction {
 		});
 	}
 
-    addComponent(data) {
-        this.dispatcher.dispatch({
-            id: this.id,
-            actionType: 'addComponent',
-            data: data
-        });
-    }
 }
