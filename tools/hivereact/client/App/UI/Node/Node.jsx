@@ -81,7 +81,7 @@ export default class Node extends React.Component {
 	componentDidMount() {
 		window.addEventListener('mousemove', this.onMouseMove);
 		window.addEventListener('mouseup', this.onMouseUp);
-			this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
+		this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
 	}
 
 	componentWillUnmount() {
