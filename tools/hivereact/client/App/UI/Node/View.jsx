@@ -32,6 +32,11 @@ export default class View extends React.Component {
 				bottom : "50px",
 				backgroundColor : "blue",
 				color : "white"
+			},
+			background : {
+				positoin : "absolute",
+				width : "100%",
+				height : "100%",
 			}
 		}
 	}
@@ -61,16 +66,23 @@ export default class View extends React.Component {
 		}
 
 	render () {
+		const styles = this.styles.bind(this)();
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
 			return (<Node node={nodeData}
 			 			store={this.props.store}
 						action={this.props.action}
 			 			nodeSystem={this.props.nodeSystem}
-						key={nodeData.varname + key}></Node>);
+						key={nodeData.varname + key}
+					></Node>);
 		} ));
-		return (<div>
-					{nodeList}
-					{this.addButton.bind(this)()}
+		return (<div style={styles.background}>
+					<div>
+						{nodeList}
+						{this.addButton.bind(this)()}
+					</div>
+					<svg width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg' ref='svg'>
+						<circle cx="150" cy="150" r="50" fill="yellow"/>
+					</svg>
 				</div>);
 	}
 }
