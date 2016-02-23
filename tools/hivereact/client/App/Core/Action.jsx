@@ -41,4 +41,27 @@ export default class HiveAction {
 		});
 	}
 
+	/**
+	 * プラグを追加する
+	 * @param plugInfo プラグ情報
+	 */
+	addPlug(plugInfo) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "addPlug",
+			plugInfo : plugInfo
+		});
+	}
+
+	/**
+	 * プラグを削除する
+	 * @param plugInfo プラグ情報
+	 */
+	deletePlug(varname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "deletePlug",
+			plugInfo : plugInfo
+		});
+	}
 }
