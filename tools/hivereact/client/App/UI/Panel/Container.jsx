@@ -76,7 +76,6 @@ export default class Container extends React.Component {
         if (this.isLeftDown) {
             let mv = { x : this.mousePos.x + ev.clientX, y : this.mousePos.y + ev.clientY};
             this.setState({position: {x: this.offsetLeft + mv.x, y: this.offsetTop + mv.y}});
-            console.log(mv, this.state.position);
         }
     }
 
