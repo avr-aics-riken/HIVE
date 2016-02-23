@@ -63,7 +63,7 @@ export default class NodePlugView extends React.Component {
 
 		//this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
 		//this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
-		this.props.action.addComponent(node.uiComponent);//nodesystem.GetUIComponent('CreateCamera'));
+		// this.props.action.addComponent(node.uiComponent);//nodesystem.GetUIComponent('CreateCamera'));
 	}
 
 	/// 追加ボタン(仮)

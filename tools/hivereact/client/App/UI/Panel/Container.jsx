@@ -1,5 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import Core from '../../Core'
 
 export default class Container extends React.Component {
     constructor(props) {
@@ -7,18 +8,66 @@ export default class Container extends React.Component {
 
         this.store = props.store;
         this.action = props.action;
+        this.state = {
+            node: null,
+            position: {x: 0, y: 0}
+        };
+        this.node = props.node;
+        let nodes = this.props.store.getNodes();
+        for(let i = 0; i < nodes.length; ++i){
+            if(nodes[i].varname === this.props.node.varname){
+                this.state.node = nodes[i];
+                break;
+            }
+        }
 
-        // this.componentDidUpdate = this.componentDidUpdate.bind(this);
-        // this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
+        this.onMouseMove = this.onMouseMove.bind(this);
+        this.onMouseUp = this.onMouseUp.bind(this);
+        this.onMouseDown = this.onMouseDown.bind(this);
     }
 
-    // componentDidUpdate() {
+    componentDidMount() {
+        window.addEventListener('mousemove', this.onMouseMove);
+        window.addEventListener('mouseup', this.onMouseUp);
+        this.props.store.on(Core.Store.COMPONENT_CHANGED, this.componentChanged);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('mousemove', this.onMouseMove);
+        window.removeEventListener('mouseup', this.onMouseUp);
+        this.props.store.removeListener(Core.Store.COMPONENT_CHANGED, this.componentChanged);
+    }
+
+    onMouseDown(ev) {
+        if(ev.button === 0){
+            this.isLeftDown = true;
+            this.mousePos = {x: ev.clientX, y: ev.clientY};
+            this.offsetLeft = ev.currentTarget.offsetLeft;
+            this.offsetTop = ev.currentTarget.offsetTop;
+        }
+    }
+
+    onMouseUp(ev) {
+        this.isLeftDown = false;
+    }
+
+    onMouseMove(ev) {
+        if(this.isLeftDown){
+            let mv = {x : ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
+            this.setState({position: {x: this.offsetLeft + mv.x, y: this.offsetTop + mv.y}});
+        }
+    }
+
+    // /// 閉じるボタンが押された.
+    // onCloseClick(ev) {
+    //     this.props.action.deleteNode(this.props.node.varname);
     // }
     //
-    // componentDidMount() {
-    // }
-    //
-    // componentWillUnmount() {
+    // /// 閉じるボタンにマウスホバーされた
+    // onCloseHover(ev) {
+    //     this.setState({ closeHover : !this.state.closeHover })
     // }
     //
     styles() {
@@ -73,7 +122,7 @@ export default class Container extends React.Component {
         var styles = this.styles();
         return (
             <div style={styles.container}>
-                <div style={styles.panelTitleBar}>
+                <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
                     {this.props.title}
                     <div style={styles.panelCloseButton}>x</div>
                 </div>
