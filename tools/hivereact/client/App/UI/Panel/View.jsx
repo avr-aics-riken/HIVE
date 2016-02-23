@@ -41,14 +41,12 @@ export default class View extends React.Component {
 
     generator(node, key) {
         var styles = this.styles();
-        var res = React.createFactory(node.uiComponent.data)({node: node, store: this.store, action: this.action, key: key});
         return (
             <Container
                 store={this.store}
                 action={this.action}
                 node={node}
                 key={key}
-                pos={this.pos}
             />
         );
     }
