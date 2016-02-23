@@ -29,23 +29,42 @@ export default class Container extends React.Component {
                 padding : "0px",
                 minWidth : "100px",
                 minHeight: "100px",
-                display: "inline-block",
+                position: "absolute",
+                top: "10px",
+                right: "10px",
                 boxShadow : "0px 0px 3px 0px skyblue inset"
             },
             panelTitleBar: {
                 backgroundColor: "silver",
                 color: "#333",
                 fontSize: "8pt",
+                lineHeight: "24px",
+                minHeight: "24px",
                 margin : "0px",
-                padding : "2px 5px",
-                minHeight: "10px"
+                padding : "0px 5px"
             },
             panelCloseButton: {
-                backgroundColor: "red",
-                color: "white"
+                backgroundColor : "#ea4412",
+                borderRadius : "5px",
+                color: "white",
+                fontWeight: "bold",
+                lineHeight: "15px",
+                textAlign : "center",
+                margin : "4px",
+                width: "15px",
+                height: "15px",
+                position : "absolute",
+                top : "0px",
+                right : "0px"
             },
             panelScale: {
-                backgroundColor: "green"
+                backgroundColor: "orange",
+                position: "absolute",
+                bottom: "0px",
+                right: "0px",
+                width: "15px",
+                height: "15px",
+                overflow: "hidden"
             }
         }
     }
@@ -55,7 +74,7 @@ export default class Container extends React.Component {
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar}>
-                    <p>{this.props.title}</p>
+                    {this.props.title}
                     <div style={styles.panelCloseButton}>x</div>
                 </div>
                 {this.props.component}
