@@ -1,10 +1,12 @@
 import NodeCreator from './NodeCreator.jsx'
+import NodeSerializer from './NodeSerializer.jsx'
 import Store from '../Core/Store.jsx'
 
 export default class NodeSystem {
     
     constructor(callback) {
         this.nodeCreator = new NodeCreator();
+        this.nodeSerializer = new NodeSerializer();
     }
     
     // Temp
