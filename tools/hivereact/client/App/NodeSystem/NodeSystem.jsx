@@ -1,12 +1,14 @@
 import NodeCreator from './NodeCreator.jsx'
 import NodeSerializer from './NodeSerializer.jsx'
+import EventEmitter from 'eventemitter3'
 import Store from '../Core/Store.jsx'
 
-export default class NodeSystem {
+export default class NodeSystem extends EventEmitter {
     
     constructor(callback) {
-        this.nodeCreator = new NodeCreator();
+        super();
         this.nodeSerializer = new NodeSerializer();
+        this.nodeCreator = new NodeCreator(callback);
     }
     
     // Temp
@@ -23,17 +25,32 @@ export default class NodeSystem {
     }
     
     initEmitter(store) {
-        store.on(Store.NODE_CHANGED, () => {
-            console.log('NS catched:NODE_CHANGED');    
+        store.on(Store.NODE_CHANGED, (err, data) => {
+            console.log('NS catched:NODE_CHANGED', err, data);
+            let node = data;
+            //let nodes = store.getNodes();
+            
+            // set to instance
+
+            //console.log('NODES=', nodes, 'PLUGS=', plugs);
+            let script = "print('NODE CHANGED!!')";//this.nodeSerializer.writeNode(nodes); // generate
+            
+            this.emit(NodeSystem.SCRIPT_SERIALIZED, script);            
         });
-        store.on(Store.NODE_COUNT_CHANGED, () => {
-            console.log('NS catched:NODE_COUNT_CHANGED');    
+        store.on(Store.PLUG_CHANGED, (err, data) => {
+            
+            let nodes = store.getNodes();
+            let plugs = store.getPlugs();
+            
+            let script = "print('PLUG CHANGED!!')";//this.nodeSerializer.WriteAll(nodes, plugs); // generate
+            this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
-        store.on(Store.IMAGE_RECIEVED, () => {
-            console.log('NS catched:IMAGE_RECIEVED');            
-        });
-        store.on(Store.ADD_COMPONENT, () => {
-            console.log('NS catched:ADD_COMPONENT');
+        
+        store.on(Store.NODE_COUNT_CHANGED, (err, data) => {
+            console.log('NS catched:NODE_COUNT_CHANGED', err, data);
+            
+            // create new / delete instance    
         });
     }
 }
+NodeSystem.SCRIPT_SERIALIZED = "nodesystem_script_serialized";

@@ -23,6 +23,9 @@ export default class HiveApp extends React.Component {
             // initilized.
         });
         this.nodesystem.initEmitter(this.store);
+        this.nodesystem.on(NodeSystem.SCRIPT_SERIALIZED, (script) => {
+            this.hive.runScript(script);
+        });
     }
 
     render() {

@@ -72,6 +72,12 @@ export default class Hive extends EventEmitter {
 		});
 	}
 
+    runScript(script) {
+        runScriptInternal(this.conn, script, function (err, data) {
+			console.log("runScript end:", err, data);
+        });
+    }
+    
 	testRender() {
 		runScriptInternal(this.conn,
 			`
