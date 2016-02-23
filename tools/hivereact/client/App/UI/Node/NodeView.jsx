@@ -36,8 +36,9 @@ export default class NodeView extends React.Component {
 	}
 
 	addButtonClick() {
+        let nodes = this.props.store.getNodes();
 		let node = this.props.nodeSystem.CreateNodeInstance('CreateCamera');
-		
+
 		// create unique varname
 		for (let i = 0; true; i = i + 1) {
 			let foundSameName = false;
@@ -53,8 +54,23 @@ export default class NodeView extends React.Component {
 				break;
 			}
 		}
-
 		node.pos = [ 200, 200 ];
+
+        // insert position
+        let x, y;
+        x = node.panel.pos[0];
+        y = node.panel.pos[1];
+        for(let i in nodes){
+            let panel = nodes[i].panel;
+            while(true){
+                let f = true;
+                if(Math.abs(x - panel.pos[0]) < 50){x += 50; f = false;}
+                if(Math.abs(y - panel.pos[1]) < 50){y += 50; f = false;}
+                if(f){break;}
+            }
+        }
+        node.panel.pos = [x, y];
+
 		this.props.action.addNode(node);
 
 		// create plug test
