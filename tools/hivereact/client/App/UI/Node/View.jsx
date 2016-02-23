@@ -25,11 +25,11 @@ export default class View extends React.Component {
 	styles() {
 		return {
 			button : {
-				positoin : "absolute",
+				position : "absolute",
 				width : "100px",
 				height : "20px",
-				left : "50px",
-				bottom : "50px",
+				left : "0px",
+				top : "0px",
 				backgroundColor : "blue",
 				color : "white"
 			},
