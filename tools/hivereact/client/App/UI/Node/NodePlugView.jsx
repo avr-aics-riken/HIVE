@@ -21,7 +21,7 @@ export default class NodePlugView extends React.Component {
 	}
 
 	createPlug(nodeData, key) {
-		return (<circle cx={String(150 * key)} cy="150" r="50" fill="yellow"/>)
+		return (<circle key={String(nodeData.varname + key)} cx={String(150 * key)} cy="150" r="50" fill="yellow"/>)
 	}
 
 	render() {
