@@ -31,7 +31,7 @@ export default class HiveApp extends React.Component {
         ];
         return (
             <SplitPane split="vertical" minSize="50">
-                <div>
+                <div style={{position:"absolute",width:"100%",height:"100%"}}>
                     <Node.View store={this.store} action={this.action} nodeSystem={this.nodesystem} />
                 </div>
                 <div>
