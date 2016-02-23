@@ -36,11 +36,8 @@ export default class NodePlugView extends React.Component {
 	}
 
 	addButtonClick() {
-		let srcNode = this.props.nodeSystem.GetNodeInfo('CreateCamera'),
-			node = JSON.parse(JSON.stringify(srcNode));
-
-		node.uiComponent = srcNode.uiComponent;
-
+		let node = this.props.nodeSystem.CreateNodeInstance('CreateCamera');
+		
 		// create unique varname
 		for (let i = 0; true; i = i + 1) {
 			let foundSameName = false;
@@ -61,9 +58,6 @@ export default class NodePlugView extends React.Component {
 
 		console.log("Add Node:", node.varname);
 
-		//this.action.addNode(nodesystem.GetNodeInfo('CreateCamera'));
-		//this.action.addNode(nodesystem.GetNodeInfo('CreatePolygonModel'));
-		// this.props.action.addComponent(node.uiComponent);//nodesystem.GetUIComponent('CreateCamera'));
 	}
 
 	/// 追加ボタン(仮)

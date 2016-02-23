@@ -10,8 +10,16 @@ export default class NodeSystem {
     }
     
     // Temp
-    GetNodeInfo(nodeName) {
-        return this.nodeCreator.GetNodeInfo(nodeName);
+    CreateNodeInstance(nodeName) {
+        let srcNode = this.nodeCreator.GetNodeInfo(nodeName);
+        if (srcNode === undefined) {
+            console.error('Not found node template.');
+            return;
+        }
+        
+        let node = JSON.parse(JSON.stringify(srcNode)); // copy
+        node.uiComponent = srcNode.uiComponent; // restore reference
+        return node;
     }
     
     initEmitter(store) {
