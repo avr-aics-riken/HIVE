@@ -63,7 +63,7 @@ export default class Menu extends React.Component {
                 margin: "0px",
                 padding: "0px",
                 width: "100%",
-                height: "100px",
+                minHeight: "50px",
                 position: "absolute",
                 bottom: "0px",
                 left: "0px"
@@ -153,7 +153,7 @@ export default class Menu extends React.Component {
             },
             {
                 item: this.clearButton.bind(this),
-                title: 'block3 title (clear button)',
+                title: 'all clear',
                 script: function(eve){
                     if(confirm('really?')){
                         let nodes = this.props.store.getNodes();
