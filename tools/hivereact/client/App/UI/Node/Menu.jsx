@@ -3,7 +3,7 @@ import ReactDOM from "react-dom"
 import Core from '../../Core'
 import Store from './Store.jsx'
 
-export default class Node extends React.Component {
+export default class Menu extends React.Component {
     constructor(props) {
         super(props);
 
@@ -83,9 +83,9 @@ export default class Node extends React.Component {
         }
     }
 
-    button(value){
+    button(value, script){
         return (
-            <div><input type="button" value={value} /></div>
+            <div><input type="button" value={value} onClick={script} /></div>
         );
     }
 
@@ -101,7 +101,7 @@ export default class Node extends React.Component {
         return (
             <div style={style.block} key={key}>
                 <span style={style.blockTitle}>{value.title}</span>
-                {value.item("test button")}
+                {value.item("test button", value.script)}
             </div>
         );
     }
@@ -113,7 +113,15 @@ export default class Node extends React.Component {
         let bl = [
             {
                 title: 'block1 title',
-                item: this.button.bind(this)
+                item: this.button.bind(this),
+                script: function(){
+                    var data = {
+                        nodes: this.props.store.getNodes(),
+                        plugs: this.props.store.getPlugs()
+                    };
+                    var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
+                    saveAs(blob, "save.json");
+                }.bind(this)
             },
             {
                 title: 'block2 title',
