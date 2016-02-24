@@ -10,8 +10,7 @@ export default class View extends React.Component {
         this.store = props.store;
         this.action = props.action;
         this.state = {
-            nodes: [].concat(this.store.getNodes()),
-            position: {x: 0, y: 0}
+            nodes: [].concat(this.store.getNodes())
         };
 
         this.styles = this.styles.bind(this);
