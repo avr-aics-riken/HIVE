@@ -12,7 +12,8 @@ export default class NodePlugView extends React.Component {
 		super(props);
 
 		this.state = {
-			plugPositions : this.props.nodeStore.getPlugPositions()
+			plugPositions : this.props.nodeStore.getPlugPositions(),
+			temporaryPlug : null
 		};
 
 		this.props.store.on(Core.Store.NODE_CHANGED, (err, data) => {
@@ -33,13 +34,40 @@ export default class NodePlugView extends React.Component {
 			}
 		});
 
+		this.props.nodeStore.on(Store.PLUG_DRAGGING, (err, isInput, index, inpos, outpos) => {
+			//console.log( inpos, outpos);
+			this.setState({
+				temporaryPlug : {
+					input : {
+						pos : [outpos.x, outpos.y]
+					},
+					output : {
+						pos : [inpos.x, inpos.y]
+					}
+				}
+			});
+		});
+
+		this.props.nodeStore.on(Store.PLUG_DRAG_END, (err, isInput, index, inpos, outpos) => {
+			this.setState({
+				temporaryPlug : null
+			});
+		});
+
 		this.props.nodeStore.on(Store.PLUG_POSITION_CHANGED, (err, data) => {
 			this.setState({plugPositions : [].concat(data) });
 		});
+		this.temporaryPlug = this.temporaryPlug.bind(this);
 	}
 
 	createPlug(plugPos, key) {
 		return (<NodePlug plug={plugPos} key={String(key)} />)
+	}
+
+	temporaryPlug() {
+		if (this.state.temporaryPlug) {
+			return (<NodePlug plug={this.state.temporaryPlug} key={"temporaryplug"}  />);
+		}
 	}
 
 	render() {
@@ -49,6 +77,7 @@ export default class NodePlugView extends React.Component {
 		return (
 				<svg width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'>
 					{plugList}
+					{this.temporaryPlug()}
 				</svg>
 		);
 	}

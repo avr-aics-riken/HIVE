@@ -1,5 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import Store from './Store.jsx'
 
 function colorFunction(type) {
 	if (type === "string") {
@@ -38,6 +39,38 @@ export default class NodeInOut extends React.Component {
 	constructor(props) {
 		super(props);
 		this.styles = this.styles.bind(this);
+
+		this.state = {
+			// ドラッグ中の場合はドラッグ中の端子のインデックスが値に入る
+			draggingInput : -1,
+			draggingOutput : -1
+		};
+		this.pos = {
+			x : 0,
+			y : 0
+		};
+		this.offsetLeft = 0;
+		this.offsetTop = 0;
+		this.position = this.position.bind(this);
+		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onPlugDragging = this.onPlugDragging.bind(this);
+	}
+
+	position(isInput, key) {
+		let nodeRect = this.props.nodeRect;
+		if (isInput) {
+			return {
+				x : nodeRect.x - (15 / 2.0),
+				y : nodeRect.y + 18 * (key + 1) + 10 + 3,
+			}
+		} else {
+			return {
+				x : nodeRect.x + nodeRect.w - (15 / 2.0),
+				y : nodeRect.y + 18 * (key + 1) + 10 + 3
+			}
+		}
 	}
 
 	styles(key) {
@@ -64,7 +97,8 @@ export default class NodeInOut extends React.Component {
 				height : "15px",
 				marginTop : "3px",
 				borderRadius : "15px",
-				backgroundColor : colorFunction(this.props.data.type)
+				backgroundColor : colorFunction(this.props.data.type),
+				border : (key === this.state.draggingInput) ? "solid 1px" : "none"
 			},
 			outhole : {
 				cursor : "pointer",
@@ -74,7 +108,8 @@ export default class NodeInOut extends React.Component {
 				height : "15px",
 				marginTop : "3px",
 				borderRadius : "15px",
-				backgroundColor : colorFunction(this.props.data.type)
+				backgroundColor : colorFunction(this.props.data.type),
+				border : (key === this.state.draggingOutput) ? "solid 1px" : "none"
 			},
 			inholeText : {
 				position : "absolute",
@@ -95,16 +130,112 @@ export default class NodeInOut extends React.Component {
 		}
 	}
 
-	onMouseDown(ev) {
-		console.log("hogehoge", ev);
+	// プラグをドラッグするActionを発行.
+	onMouseDown(isInput, key) {
+		return (ev) => {
+			let nodeRect = this.props.nodeRect;
+			let position = this.position(isInput, key);
+			//console.log(ev.clientX, position.x);
+			if (position.x < ev.clientX && ev.clientX < (position.x + 15)) {
+				if (position.y < ev.clientY && ev.clientY < (position.y + 15)) {
+					this.pos = {
+						x : ev.clientX,
+						y : ev.clientY
+					}
+					if (isInput) {
+						this.props.nodeAction.dragPlug(isInput, key, position, {
+							x : ev.clientX,
+							y : ev.clientY
+						});
+					} else {
+						this.props.nodeAction.dragPlug(isInput, key, {
+							x : ev.clientX,
+							y : ev.clientY
+						}, position);
+					}
+				}
+			}
+			ev.preventDefault();
+			ev.stopPropagation();
+		};
 	}
 
+	// プラグをドラッグするActionを発行.
 	onMouseMove(ev) {
-
+		if (this.state.draggingInput >= 0) {
+			let position = this.position(true, this.state.draggingInput);
+			position.x = position.x + (15 / 2.0);
+			position.y = position.y + (15 / 2.0);
+			this.props.nodeAction.dragPlug(true, this.props.index, {
+				x : position.x + (ev.clientX - this.pos.x),
+				y : position.y + (ev.clientY - this.pos.y)
+			}, position);
+			ev.preventDefault();
+			ev.stopPropagation();
+		} else if (this.state.draggingOutput >= 0) {
+			let position = this.position(false, this.state.draggingOutput);
+			position.x = position.x + (15 / 2.0);
+			position.y = position.y + (15 / 2.0);
+			this.props.nodeAction.dragPlug(false, this.props.index, position, {
+				x : position.x + (ev.clientX - this.pos.x),
+				y : position.y + (ev.clientY - this.pos.y)
+			});
+			ev.preventDefault();
+			ev.stopPropagation();
+		}
 	}
 
 	onMouseUp(ev) {
+		if (this.state.draggingInput >= 0 || this.state.draggingOutput >= 0) {
+			this.setState({
+				draggingInput : -1,
+				draggingOutput : -1
+			});
+			let position;
+			if (this.state.draggingInput >= 0) {
+				position = this.position(true, this.state.draggingInput);
+				position.x = position.x + (15 / 2.0);
+				position.y = position.y + (15 / 2.0);
+				this.props.nodeAction.endDragPlug(false, this.props.index, position, {
+					x : position.x + (ev.clientX - this.pos.x),
+					y : position.y + (ev.clientY - this.pos.y)
+				});
+			} else {
+				position = this.position(false, this.state.draggingOutput);
+				position.x = position.x + (15 / 2.0);
+				position.y = position.y + (15 / 2.0);
+				this.props.nodeAction.endDragPlug(false, this.props.index, position, {
+					x : position.x + (ev.clientX - this.pos.x),
+					y : position.y + (ev.clientY - this.pos.y)
+				});
+			}
+		}
+	}
 
+	onPlugDragging(err, isInput, key, inpos, outpos) {
+		if (this.props.isInput === isInput && key === this.props.index) {
+			if (isInput) {
+				this.setState({
+					draggingInput : key
+				});
+			} else {
+				this.setState({
+					draggingOutput : key
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		window.addEventListener('mousemove', this.onMouseMove);
+		window.addEventListener('mouseup', this.onMouseUp);
+		this.props.nodeStore.on(Store.PLUG_DRAGGING, this.onPlugDragging);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('mousemove', this.onMouseMove);
+		window.removeEventListener('mouseup', this.onMouseUp);
+		this.props.nodeStore.removeListener(Store.PLUG_DRAGGING, this.onPlugDragging);
 	}
 
 	content() {
@@ -113,7 +244,7 @@ export default class NodeInOut extends React.Component {
 			// 入力端子.
 			return (<div style={style.input}>
 						<div style={style.inhole}
-							onMouseDown={this.onMouseDown.bind(this)}
+							onMouseDown={this.onMouseDown.bind(this)(true, this.props.index)}
 						/>
 						<div style={style.inholeText}>{this.props.data.name}</div>
 					</div>);
@@ -121,7 +252,7 @@ export default class NodeInOut extends React.Component {
 			// 出力端子.
 			return (<div style={style.output}>
 						<div style={style.outhole}
-							onMouseDown={this.onMouseDown.bind(this)}
+							onMouseDown={this.onMouseDown.bind(this)(false, this.props.index)}
 						/>
 						<div style={style.outholeText}>{this.props.data.name}</div>
 					</div>);

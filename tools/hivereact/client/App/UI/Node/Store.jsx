@@ -6,11 +6,20 @@ export default class Store extends EventEmitter {
 		super();
 		this.dispatchToken = dispathcer.register(this.actionHandler.bind(this));
 
-		// プラグ情報のリスト
+		// 以下の形式のプラグ情報のリスト
+		// {
+		//   input : {
+		//      pos : [x, y],
+		//      nodeVarname : varname,
+		//      name : name
+		//   },
+		//   output : {
+		//      pos : [x, y],
+		//      nodeVarname : varname,
+		//      name : name
+		//   },
+		// }
 		this.plugPositions = [];
-
-		// ノードのオフセット情報
-		this.nodeOffsets = [];
 
 		coreStore.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
@@ -51,6 +60,8 @@ export default class Store extends EventEmitter {
 		this.changePlugPosition = this.changePlugPosition.bind(this);
 		//this.registerNodeOffset = this.registerNodeOffset.bind(this);
 		this.moveNode = this.moveNode.bind(this);
+		this.dragPlug = this.dragPlug.bind(this);
+		this.endDragPlug = this.endDragPlug.bind(this);
 	}
 
 	/**
@@ -85,23 +96,6 @@ export default class Store extends EventEmitter {
 	 */
 	getPlugPositions() {
 		return this.plugPositions;
-	}
-
-	/**
-	 * ノードオフセットリストを返す.
-	 */
-	getNodeOffset(nodeVarname) {
-		if (this.nodeOffsets.hasOwnProperty(nodeVarname)) {
-			return this.nodeOffsets[nodeVarname];
-		}
-		if (this.nodeMap.hasOwnProperty(nodeVarname)) {
-			let node = this.nodeMap[nodeVarname];
-			return {
-				offsetLeft : node.pos[0],
-				offsetTop : node.pos[1]
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -151,13 +145,22 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * ノード位置を登録する
+	 * プラグのドラッグを開始する.
 	 */
-	 /*
-	registerNodeOffset(payload) {
-		this.nodeOffsets[payload.nodeVarname] = payload.offset;
+	dragPlug(payload) {
+		if (payload.hasOwnProperty('isInput')) {
+			this.emit(Store.PLUG_DRAGGING, null, payload.isInput, payload.key, payload.inputPos, payload.outputPos);
+		}
 	}
-	*/
+
+	/**
+	 * プラグのドラッグを終了する.
+	 */
+	endDragPlug(payload) {
+		if (payload.hasOwnProperty('isInput')) {
+			this.emit(Store.PLUG_DRAG_END, null, payload.isInput, payload.key, payload.inputPos, payload.outputPos);
+		}
+	}
 
 	/**
 	 * ノードを移動させる.
@@ -167,4 +170,6 @@ export default class Store extends EventEmitter {
 	}
 }
 Store.PLUG_POSITION_CHANGED = "plug_position_changed";
+Store.PLUG_DRAGGING = "plug_dragging";
+Store.PLUG_DRAG_END = "plug_drag_end";
 Store.NODE_MOVED = "node_moved";

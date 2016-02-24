@@ -39,6 +39,7 @@ export default class Node extends React.Component {
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onKeyUp = this.onKeyUp.bind(this);
 		this.styles = this.styles.bind(this);
+		this.nodeRect = this.nodeRect.bind(this);
 	}
 
 	nodeChanged(err, data) {
@@ -65,6 +66,15 @@ export default class Node extends React.Component {
 				this.props.action.changeNode(this.props.node);
 			}, 0);
 		}
+	}
+
+	nodeRect() {
+		return {
+			x : this.state.node.pos[0],
+			y : this.state.node.pos[1],
+			w : 200,
+			h : (Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10
+		};
 	}
 
 	styles() {
@@ -139,13 +149,6 @@ export default class Node extends React.Component {
 			this.offsetLeft = ev.currentTarget.offsetLeft;
 			this.offsetTop = ev.currentTarget.offsetTop;
 
-			/*
-			this.props.nodeAction.registerNodeOffset(this.state.node.varname, {
-				offsetLeft : ev.currentTarget.offsetLeft,
-				offsetTop : ev.currentTarget.offsetTop
-			});
-			*/
-
 			if (!this.isCtrlDown) {
 				this.props.action.unSelectNode([], this.props.node.varname);
 			}
@@ -157,12 +160,6 @@ export default class Node extends React.Component {
 		this.isLeftDown = false;
 		this.offsetLeft = this.state.node.pos[0];
 		this.offsetTop = this.state.node.pos[1];
-		/*
-		this.props.nodeAction.registerNodeOffset(this.state.node.varname, {
-			offsetLeft : this.state.node.pos[0],
-			offsetTop : this.state.node.pos[1]
-		});
-		*/
 	}
 
 	onMouseMove(ev) {
@@ -193,7 +190,13 @@ export default class Node extends React.Component {
 	/// 入力端子.
 	inputElem() {
 		let inputs = this.props.node.input.map( (inputData, key) => {
-			return (<NodeInOut isInput={true} data={inputData} key={inputData.name + key} index={key} />)
+			return (<NodeInOut
+						nodeStore={this.props.nodeStore}
+						nodeAction={this.props.nodeAction}
+						nodeRect={this.nodeRect(key)}
+						isInput={true} data={inputData}
+						key={inputData.name + key}
+						index={key} />)
 		});
 		return (<div>{inputs}</div>);
 	}
@@ -201,7 +204,14 @@ export default class Node extends React.Component {
 	/// 出力端子.
 	outputElem() {
 		let outputs = this.props.node.output.map( (outputData, key) => {
-			return (<NodeInOut isInput={false} data={outputData} key={outputData.name + key} index={key} />)
+			return (<NodeInOut
+						nodeStore={this.props.nodeStore}
+						nodeAction={this.props.nodeAction}
+			 			nodeRect={this.nodeRect(key)}
+						isInput={false}
+						data={outputData}
+						key={outputData.name + key}
+						index={key} />)
 		});
 		return (<div>{outputs}</div>);
 	}
