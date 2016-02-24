@@ -12,14 +12,15 @@ RenderView.new = function ()
         up = {0,1,0},
         fov = 60,
         clearcolor = {0,0,0,1},
-        filename = "output.jpg",
+        color_file = "output.jpg",
         depth_file = "",
         RenderObject = {}
     }
-    
+    setmetatable(this, {__index=RenderView})
+    return this
 end
 
-function RenderView:set(propname, value)
+function RenderView:Set(propname, value)
     self.property[propname] = value
     self.updated = true;
 end
@@ -47,8 +48,10 @@ function RenderView:Do()
     
     --arg.RenderObject[#arg.RenderObject + 1] = cam;
     local temp = {unpack(property.RenderObject)}
-    temp[#temp + 1] = cam;
+    temp[#temp + 1] = self.cam;
 
+    print('unpack=', unpack)
+    print('num=', #temp)
     render(temp)   
 end
 

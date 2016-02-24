@@ -42,7 +42,7 @@ export default class Hive extends EventEmitter {
 				console.log('RET=', ret);
 			});
 
-			this.testRender();
+			//this.testRender();
 		});
 
 		this.conn.method('updateInfo', (function (core, infoCallback) {
