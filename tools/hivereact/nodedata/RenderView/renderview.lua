@@ -52,7 +52,32 @@ function RenderView:Do()
 
     print('unpack=', unpack)
     print('num=', #temp)
-    render(temp)   
+    render(temp)
+    
+    -- image save
+    local imageBuffer = HIVE_ImageSaver:SaveMemory(1, self.cam:GetImageBuffer())
+    local imageBufferSize = HIVE_ImageSaver:MemorySize()
+
+    -- create metabinary
+    local w = property.screensize[1]
+    local h = property.screensize[2]
+    local json = [[{
+            "JSONRPC" : "2.0",
+            "method" : "renderedImage",            
+            "to" : ]] .. targetClientId ..[[,
+            "param" : {
+                "type" : "jpg",
+                "width" : "]] .. w .. [[",
+                "height" : "]] .. w .. [[",
+                "canceled": false
+            },
+            "id":0
+    }]]
+    HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+    print('JSON=', json, 'size=', imageBufferSize)
+    -- send        
+    network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+			   
 end
 
 --[[
