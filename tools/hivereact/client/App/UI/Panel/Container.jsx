@@ -107,6 +107,7 @@ export default class Container extends React.Component {
             this.scalePos = {x: ev.clientX, y: ev.clientY};
             this.offsetScaleLeft = ev.currentTarget.offsetLeft;
             this.offsetScaleTop = ev.currentTarget.offsetTop;
+            this.forwardIndex(this.props.node);
         }
     }
 
@@ -173,7 +174,8 @@ export default class Container extends React.Component {
                 lineHeight: "24px",
                 minHeight: "24px",
                 margin : "0px",
-                padding : "0px 5px"
+                padding : "0px 5px",
+                cursor: "move"
             },
             panelCloseButton: {
                 backgroundColor : "#ea4412",
@@ -196,7 +198,8 @@ export default class Container extends React.Component {
                 right: "0px",
                 width: "15px",
                 height: "15px",
-                overflow: "hidden"
+                overflow: "hidden",
+                cursor: "se-resize"
             }
         }
     }
