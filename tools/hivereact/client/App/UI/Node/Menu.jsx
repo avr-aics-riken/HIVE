@@ -54,6 +54,22 @@ export default class Menu extends React.Component {
         }, 2);
     }
 
+    allClearNode(){
+        if(confirm('really?')){
+            let nodes = this.props.store.getNodes();
+            let plugs = this.props.store.getPlugs();
+            // for(let i = plugs.length - 1; i >= 0; --i){
+            //     this.props.action.deletePlug(plugs[i]);
+            // }
+            for(let i = nodes.length - 1; i >= 0; --i){
+                this.props.action.deleteNode(nodes[i].varname);
+            }
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     styles() {
         return {
             menuArea: {
@@ -131,11 +147,21 @@ export default class Menu extends React.Component {
                 title: 'import',
                 script: function(eve){
                     if(eve.currentTarget.files && eve.currentTarget.files.length > 0){
-                        var reader = new FileReader();
-                        reader.onload = function(){
-                            console.log(JSON.parse(reader.result));
-                        };
-                        reader.readAsText(eve.currentTarget.files[0]);
+                        if(this.allClearNode.bind(this)()){
+                            var reader = new FileReader();
+                            reader.onload = function(){
+                                let data = (JSON.parse(reader.result));
+                                if(data.nodes && data.nodes.length > 0){
+                                    for(let i in data.nodes){
+                                        data.nodes[i].uiComponent = eval('(' + data.nodes[i].uiComponent + ')');
+                                        this.props.action.addNode(data.nodes[i]);
+                                    }
+                                }else{
+                                    console.log('import failed: data.length === 0');
+                                }
+                            }.bind(this);
+                            reader.readAsText(eve.currentTarget.files[0]);
+                        }
                     }
                 }.bind(this)
             },
@@ -154,18 +180,7 @@ export default class Menu extends React.Component {
             {
                 item: this.clearButton.bind(this),
                 title: 'all clear',
-                script: function(eve){
-                    if(confirm('really?')){
-                        let nodes = this.props.store.getNodes();
-                        let plugs = this.props.store.getPlugs();
-                        // for(let i = plugs.length - 1; i >= 0; --i){
-                        //     this.props.action.deletePlug(plugs[i]);
-                        // }
-                        for(let i = nodes.length - 1; i >= 0; --i){
-                            this.props.action.deleteNode(nodes[i].varname);
-                        }
-                    }
-                }.bind(this)
+                script: this.allClearNode.bind(this)
             }
         ];
         return (
