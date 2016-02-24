@@ -37,17 +37,15 @@ export default class Action {
 
 	/**
 	 * プラグのドラッグを開始する
-	 * @param isInput 入力端子ならtrue
-	 * @param data
+	 * @param id 端子id
 	 * @param inputPos 入力端子側のプラグ位置
 	 * @param outputPos 出力端子側のプラグ位置
 	 */
-	dragPlug(isInput, key, inputPos, outputPos) {
+	dragPlug(plugID, inputPos, outputPos) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "dragPlug",
-			isInput : isInput,
-			key : key,
+			plugID : plugID,
 			inputPos : inputPos,
 			outputPos : outputPos
 		});
@@ -56,12 +54,11 @@ export default class Action {
 	/**
 	 * プラグのドラッグを終了する
 	 */
-	endDragPlug(isInput, key, inputPos, outputPos) {
+	endDragPlug(plugID, inputPos, outputPos) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "endDragPlug",
-			isInput : isInput,
-			key : key,
+			plugID : plugID,
 			inputPos : inputPos,
 			outputPos : outputPos
 		});

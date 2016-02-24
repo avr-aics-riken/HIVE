@@ -148,8 +148,8 @@ export default class Store extends EventEmitter {
 	 * プラグのドラッグを開始する.
 	 */
 	dragPlug(payload) {
-		if (payload.hasOwnProperty('isInput')) {
-			this.emit(Store.PLUG_DRAGGING, null, payload.isInput, payload.key, payload.inputPos, payload.outputPos);
+		if (payload.hasOwnProperty('plugID')) {
+			this.emit(Store.PLUG_DRAGGING, null, payload.plugID, payload.inputPos, payload.outputPos);
 		}
 	}
 
@@ -157,8 +157,8 @@ export default class Store extends EventEmitter {
 	 * プラグのドラッグを終了する.
 	 */
 	endDragPlug(payload) {
-		if (payload.hasOwnProperty('isInput')) {
-			this.emit(Store.PLUG_DRAG_END, null, payload.isInput, payload.key, payload.inputPos, payload.outputPos);
+		if (payload.hasOwnProperty('plugID')) {
+			this.emit(Store.PLUG_DRAG_END, null, payload.plugID, payload.inputPos, payload.outputPos);
 		}
 	}
 
