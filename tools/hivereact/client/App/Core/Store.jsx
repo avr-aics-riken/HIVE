@@ -21,6 +21,7 @@ export default class Store extends EventEmitter {
 		this.actionHandler = this.actionHandler.bind(this);
 		this.addPlug = this.addPlug.bind(this);
 		this.deletePlug = this.deletePlug.bind(this);
+        this.hiddenPanel = this.hiddenPanel.bind(this);
 	}
 
 	initEmitter(core) {
@@ -146,6 +147,24 @@ export default class Store extends EventEmitter {
 			}
 		}
 	}
+
+    /**
+     * パネル非表示
+     */
+    hiddenPanel(payload) {
+        if (payload.hasOwnProperty('varname')) {
+            for (let i = 0; i < this.nodes.length; i = i + 1) {
+                if (this.nodes[i].varname === payload.varname) {
+                    let node = this.nodes[i];
+                    // node.panel.visible = false;
+                    node.panel.visible = !node.panel.visible; // temp
+                    this.emit(Store.NODE_CHANGED, null, node, i);
+                    break;
+                }
+            }
+        }
+    }
+
 }
 
 Store.NODE_CHANGED = "node_changed";
@@ -157,3 +176,4 @@ Store.NODE_ADDED = "node_added";
 Store.NODE_DELETED = "node_deleted";
 Store.PLUG_ADDED = "plug_added";
 Store.PLUG_DELETED = "plug_deleted";
+

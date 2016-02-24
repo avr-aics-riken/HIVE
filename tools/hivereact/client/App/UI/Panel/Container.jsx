@@ -9,7 +9,8 @@ export default class Container extends React.Component {
         this.store = props.store;
         this.action = props.action;
         this.state = {
-            node: null
+            node: null,
+            closeHover: false
         };
         this.node = props.node;
         let nodes = this.props.store.getNodes();
@@ -51,7 +52,6 @@ export default class Container extends React.Component {
             }
         }.bind(this));
     }
-
 
     nodeChanged(err, data) {
         if (data.varname === this.props.node.varname) {
@@ -125,6 +125,16 @@ export default class Container extends React.Component {
         }
     }
 
+    // 閉じるボタンが押された.
+    onCloseClick(ev) {
+        this.props.action.hiddenPanel(this.props.node.varname);
+    }
+
+    // 閉じるボタンにマウスホバーされた
+    onCloseHover(ev) {
+        this.setState({ closeHover : !this.state.closeHover })
+    }
+
     // index を最前面に持ってくる
     // target === ターゲットノード
     forwardIndex(target){
@@ -143,16 +153,6 @@ export default class Container extends React.Component {
         }
     }
 
-    // /// 閉じるボタンが押された.
-    // onCloseClick(ev) {
-    //     this.props.action.deleteNode(this.props.node.varname);
-    // }
-    //
-    // /// 閉じるボタンにマウスホバーされた
-    // onCloseHover(ev) {
-    //     this.setState({ closeHover : !this.state.closeHover })
-    // }
-    //
     styles() {
         return {
             container : {
@@ -165,7 +165,8 @@ export default class Container extends React.Component {
                 top:  this.props.node.panel.pos[1] + "px",
                 left: this.props.node.panel.pos[0] + "px",
                 boxShadow: "0px 0px 3px 0px skyblue inset",
-                zIndex: this.props.node.panel.zindex
+                zIndex: this.props.node.panel.zindex,
+                opacity: this.props.node.panel.visible ? "1.0" : "0.25"
             },
             panelTitleBar: {
                 backgroundColor: "silver",
@@ -173,12 +174,13 @@ export default class Container extends React.Component {
                 fontSize: "8pt",
                 lineHeight: "24px",
                 minHeight: "24px",
-                margin : "0px",
-                padding : "0px 5px",
+                margin: "0px",
+                padding: "0px 5px",
                 cursor: "move"
             },
             panelCloseButton: {
                 backgroundColor : "#ea4412",
+                border: this.state.closeHover ? "solid 1px white" : "none",
                 borderRadius : "5px",
                 color: "white",
                 fontWeight: "bold",
@@ -188,8 +190,9 @@ export default class Container extends React.Component {
                 width: "15px",
                 height: "15px",
                 position : "absolute",
-                top : "0px",
-                right : "0px"
+                top: "0px",
+                right: "0px",
+                cursor: "pointer"
             },
             panelScale: {
                 backgroundColor: "orange",
@@ -205,6 +208,7 @@ export default class Container extends React.Component {
     }
 
     render() {
+        // if(!this.props.node.panel.visible){return;}
         var styles = this.styles();
         var res = React.createFactory(this.props.node.uiComponent)({
             store: this.store,
@@ -215,7 +219,12 @@ export default class Container extends React.Component {
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
                     {this.props.node.varname}
-                    <div style={styles.panelCloseButton}>x</div>
+                    <div
+                        style={styles.panelCloseButton}
+                        onClick={this.onCloseClick.bind(this)}
+                        onMouseEnter={this.onCloseHover.bind(this)}
+                        onMouseLeave={this.onCloseHover.bind(this)}
+                    >x</div>
                 </div>
                 <div>{res}</div>
                 <div style={styles.panelScale} onMouseDown={this.onScaleDown.bind(this)}>
