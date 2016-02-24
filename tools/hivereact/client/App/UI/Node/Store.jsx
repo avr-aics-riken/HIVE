@@ -21,6 +21,13 @@ export default class Store extends EventEmitter {
 		// }
 		this.plugPositions = [];
 
+		// 以下の形式の選択中の端子情報リスト
+		// 端子は2つ以上選択できず、2つ選択されたときは接続されたものとみなす
+		// {
+		//   nodeVarname : nodevarname,
+		//   data : 端子データ,
+		//   isInput : 入力端子ならtrue
+		// }
 		this.selectedHoles = [];
 
 		coreStore.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
