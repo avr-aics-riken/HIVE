@@ -52,6 +52,7 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onScaleUp);
         this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
         this.props.store.on(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
+        this.props.store.on(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
@@ -61,6 +62,7 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onScaleUp);
         this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
         this.props.store.removeListener(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
+        this.props.store.removeListener(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
@@ -143,6 +145,7 @@ export default class Container extends React.Component {
         return {
             container : {
                 backgroundColor: "#666",
+                border: this.props.node.select ? "1px solid orange" : "none",
                 margin : "0px",
                 padding : "0px",
                 minWidth : this.props.node.panel.size[0] + "px",
