@@ -13,7 +13,7 @@ export default class Container extends React.Component {
             closeHover: false
         };
         this.node = props.node;
-        let nodes = this.props.store.getNodes();
+        let nodes = this.store.getNodes();
         for(let i = 0; i < nodes.length; ++i){
             if(nodes[i].varname === this.props.node.varname){
                 this.state.node = nodes[i];
@@ -36,7 +36,7 @@ export default class Container extends React.Component {
     }
 
     nodeChanged(err, data) {
-        let nodes = this.props.store.getNodes();
+        let nodes = this.store.getNodes();
         for(let i = 0; i < nodes.length; ++i){
             if(nodes[i].varname === this.props.node.varname){
                 this.setState({node: nodes[i]});
@@ -50,9 +50,9 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousemove', this.onScaleMove);
         window.addEventListener('mouseup', this.onScaleUp);
-        this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
-        this.props.store.on(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
-        this.props.store.on(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
+        this.store.on(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
@@ -60,9 +60,9 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onMouseUp);
         window.removeEventListener('mousemove', this.onScaleMove);
         window.removeEventListener('mouseup', this.onScaleUp);
-        this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
-        this.props.store.removeListener(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
-        this.props.store.removeListener(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
@@ -85,7 +85,7 @@ export default class Container extends React.Component {
             let mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
             node.panel.pos[0] = this.offsetLeft + mv.x;
             node.panel.pos[1] = this.offsetTop + mv.y;
-            this.props.action.changeNode(node);
+            this.action.changeNode(node);
         }
     }
 
@@ -109,13 +109,13 @@ export default class Container extends React.Component {
             let mv = {x: ev.clientX - this.scalePos.x, y: ev.clientY - this.scalePos.y};
             node.panel.size[0] = Math.max(this.offsetScaleLeft + mv.x, 100);
             node.panel.size[1] = Math.max(this.offsetScaleTop + mv.y, 100);
-            this.props.action.changeNode(node);
+            this.action.changeNode(node);
         }
     }
 
     // 閉じるボタンが押された.
     onCloseClick(ev) {
-        this.props.action.hiddenPanel(this.props.node.varname);
+        this.action.hiddenPanel(this.props.node.varname);
     }
 
     // 閉じるボタンにマウスホバーされた
@@ -129,16 +129,27 @@ export default class Container extends React.Component {
         let nodes = this.store.getNodes();
         let len = nodes.length;
         let targetIndex = target.panel.zindex;
+        let varnamelist = [];
+        let unvarnamelist = [];
         for(let i in nodes){
             if(nodes[i].varname === target.varname){
                 nodes[i].panel.zindex = len;
+                nodes[i].select = true;
             }else{
                 if(nodes[i].panel.zindex > targetIndex){
                     --nodes[i].panel.zindex;
                 }
+                nodes[i].select = false;
             }
-            this.props.action.changeNode(nodes[i]);
+            this.action.changeNode(nodes[i]);
+            if(nodes[i].select){
+                varnamelist.push(nodes[i].varname);
+            }else{
+                unvarnamelist.push(nodes[i].varname);
+            }
         }
+        this.action.unSelectNode([], varnamelist);
+        this.action.selectNode(varnamelist);
     }
 
     styles() {
