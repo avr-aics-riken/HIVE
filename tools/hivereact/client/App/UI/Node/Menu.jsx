@@ -45,6 +45,15 @@ export default class Menu extends React.Component {
     //     this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
     // }
 
+    functionReplacer(data){
+        return JSON.stringify(data, function(key, val){
+            if(typeof val === "function"){
+                return val.toString();
+            }
+            return val;
+        }, 2);
+    }
+
     styles() {
         return {
             menuArea: {
@@ -83,15 +92,21 @@ export default class Menu extends React.Component {
         }
     }
 
-    button(value, script){
+    saveButton(value, script){
         return (
             <div><input type="button" value={value} onClick={script} /></div>
         );
     }
 
-    filer(name){
+    loadButton(value, script){
         return (
-            <div><input type="file" name={name} /></div>
+            <div><input type="file" name={value} onChange={script} /></div>
+        );
+    }
+
+    clearButton(value, script){
+        return (
+            <div><input type="button" value={value} onClick={script} /></div>
         );
     }
 
@@ -101,31 +116,47 @@ export default class Menu extends React.Component {
         return (
             <div style={style.block} key={key}>
                 <span style={style.blockTitle}>{value.title}</span>
-                {value.item("test button", value.script)}
+                {value.item(value.title, value.script)}
             </div>
         );
     }
 
-    // bl という配列の中で定義した配列のとおりにコントロールを
-    // 格納するブロックが生成される感じ（仮）
+    // bl という配列の中で定義した配列のとおりに
+    // ブロックが生成される感じ（仮）
     render(){
         const style = this.styles();
         let bl = [
             {
-                title: 'block1 title',
-                item: this.button.bind(this),
+                item: this.loadButton.bind(this),
+                title: 'import',
+                script: function(eve){
+                    if(eve.currentTarget.files && eve.currentTarget.files.length > 0){
+                        var reader = new FileReader();
+                        reader.onload = function(){
+                            console.log(JSON.parse(reader.result));
+                        };
+                        reader.readAsText(eve.currentTarget.files[0]);
+                    }
+                }.bind(this)
+            },
+            {
+                item: this.saveButton.bind(this),
+                title: 'export',
                 script: function(){
                     var data = {
                         nodes: this.props.store.getNodes(),
                         plugs: this.props.store.getPlugs()
                     };
-                    var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
+                    var blob = new Blob([this.functionReplacer.bind(this)(data)], {type: "text/plain;charset=utf-8"});
                     saveAs(blob, "save.json");
                 }.bind(this)
             },
             {
-                title: 'block2 title',
-                item: this.filer.bind(this)
+                item: this.clearButton.bind(this),
+                title: 'block3 title (clear button)',
+                script: function(eve){
+
+                }.bind(this)
             }
         ];
         return (
