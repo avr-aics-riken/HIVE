@@ -1,4 +1,58 @@
 
+RenderView = {}
+
+RenderView.new = function ()
+    local this = {}
+    this.cam = Camera()
+    this.updated = false
+    this.property = {
+        screensize = {512, 512},
+        position = {0,0,300},
+        target = {0,0,0},
+        up = {0,1,0},
+        fov = 60,
+        clearcolor = {0,0,0,1},
+        filename = "output.jpg",
+        depth_file = "",
+        RenderObject = {}
+    }
+    
+end
+
+function RenderView:set(propname, value)
+    self.property[propname] = value
+    self.updated = true;
+end
+
+function RenderView:Do()
+    if not self.updated then
+        return
+    end
+    
+    self.update = false
+    
+    local property = self.property    
+    self.cam:SetScreenSize(property.screensize[1], property.screensize[2])
+    self.cam:SetFilename(property.color_file)
+    if property.depth_file ~= nil then
+        self.cam:SetDepthFilename(property.depth_file)
+    end
+    self.cam:ClearColor(property.clearcolor[1],property.clearcolor[2],property.clearcolor[3],property.clearcolor[4])
+    self.cam:LookAt(
+        property.position[1], property.position[2], property.position[3],
+        property.target[1], property.target[2], property.target[3],
+        property.up[1], property.up[2], property.up[3],
+        property.fov
+    )
+    
+    --arg.RenderObject[#arg.RenderObject + 1] = cam;
+    local temp = {unpack(property.RenderObject)}
+    temp[#temp + 1] = cam;
+
+    render(temp)   
+end
+
+--[[
 function RenderView(arg)
 	local cam;	
 	print('create camera',
@@ -22,3 +76,4 @@ function RenderView(arg)
  
 	render(arg.RenderObject)
 end
+--]]

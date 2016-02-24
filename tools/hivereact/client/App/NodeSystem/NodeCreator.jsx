@@ -58,21 +58,26 @@ export default class NodeCreator {
     }
 
     // Temp    
-    GetUIComponent(nodeName) {
+    /*GetUIComponent(nodeName) {
         const node = this.findNodeByName(nodeName);
         if (node) {
             return node.uiComponent;
         } else {
             return null;
         }
-    }
-    
-    // Temp
+    }*/
+        
     GetNodeInfo(nodeName) {
         const node = this.findNodeByName(nodeName);
         return node;
     }
     
-    
+    GetNodeNameList() {
+        var nlist = [];
+        for (n = 0; n < this.nodeList.length; ++n) {
+            nlist.push(this.nodeList[i].name);
+        }
+        return nlist;
+    }
     
 }
