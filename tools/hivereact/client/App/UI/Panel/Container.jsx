@@ -115,8 +115,11 @@ export default class Container extends React.Component {
 
     onScaleMove(ev) {
         if (this.isScaleLeftDown) {
+            let node = this.props.node;
             let mv = {x: ev.clientX - this.scalePos.x, y: ev.clientY - this.scalePos.y};
-            this.setState({size: {w: Math.max(this.offsetScaleLeft + mv.x, 100), h: Math.max(this.offsetScaleTop + mv.y, 100)}});
+            node.panel.size[0] = Math.max(this.offsetScaleLeft + mv.x, 100);
+            node.panel.size[1] = Math.max(this.offsetScaleTop + mv.y, 100);
+            this.props.action.changeNode(node);
         }
     }
 
