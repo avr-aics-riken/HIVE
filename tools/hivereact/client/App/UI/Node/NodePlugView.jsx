@@ -58,10 +58,12 @@ export default class NodePlugView extends React.Component {
 
 		this.props.nodeStore.on(Store.PLUG_HOLE_SELECTED, (err, data) => {
 			if (data.length >= 2) {
-				if (data[0].isInput !== data[1].isInput) {
+				if (data[0].isInput !== data[1].isInput &&
+					data[0].data.type === data[1].data.type) {
+					console.log("プラグが接続された", data);
+					
 					let input = data[0].isInput ? data[0] : data[1];
 					let output = data[0].isInput ? data[1] : data[0];
-					console.log("プラグが接続された", data);
 					setTimeout(() => {
 						this.props.action.addPlug({
 							output : {
