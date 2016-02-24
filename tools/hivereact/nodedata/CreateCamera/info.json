@@ -6,6 +6,7 @@
 	"varname": "instCreateCamera",
 	"customfuncfile":"createcamera.lua",
     "uifile":"createcamera.jsx",
+	"select":false,
 	"input": [
 		{"name": "position", "type": "vec3", "value": [ 0,0,300]},
 		{"name": "target", "type": "vec3", "value": [ 0,0,0]},
