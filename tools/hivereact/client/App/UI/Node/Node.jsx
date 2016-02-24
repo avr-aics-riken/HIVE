@@ -84,7 +84,7 @@ export default class Node extends React.Component {
 				left : String(this.props.node.pos[0]),
 				top : String(this.props.node.pos[1]),
 				width : "200px",
-				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10),
+				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 20),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",

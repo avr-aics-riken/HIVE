@@ -37,16 +37,18 @@ export default class NodePlugView extends React.Component {
 			this.setState({
 				temporaryPlug : {
 					input : {
-						pos : [parseInt(outpos.x, 10), parseInt(outpos.y, 10)]
+						pos : [inpos.x, inpos.y]
 					},
 					output : {
-						pos : [parseInt(inpos.x, 10), parseInt(inpos.y, 10)]
+						pos : [outpos.x, outpos.y]
 					}
 				}
 			});
 		});
 
 		this.props.nodeStore.on(Store.PLUG_DRAG_END, (err, id, inpos, outpos) => {
+			//let plug = this.props.nodeStore.get(id);
+
 			this.setState({
 				temporaryPlug : null
 			});
