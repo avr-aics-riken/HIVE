@@ -64,4 +64,25 @@ export default class Action {
 		});
 	}
 
+	/**
+	 * プラグ端子を選択する
+	 */
+	selectPlugHole(plugID) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "selectPlugHole",
+			plugID : plugID
+		});
+	}
+
+	/**
+	 * プラグ端子の選択を解除する
+	 */
+	unSelectPlugHoles(payload) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "unSelectPlugHoles"
+		});
+	}
+
 }

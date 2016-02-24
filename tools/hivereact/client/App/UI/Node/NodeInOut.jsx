@@ -54,6 +54,8 @@ export default class NodeInOut extends React.Component {
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onPlugDragging = this.onPlugDragging.bind(this);
+		this.intersectHole = this.intersectHole.bind(this);
+		this.plugInfo = this.plugInfo.bind(this);
 	}
 
 	position() {
@@ -135,33 +137,42 @@ export default class NodeInOut extends React.Component {
 		}
 	}
 
-	// プラグをドラッグするActionを発行.
-	onMouseDown(ev) {
-		let isInput = this.props.isInput;
-		let index = this.props.index;
-		let id = this.props.id;
+	intersectHole(ev) {
 		let position = this.position();
 		if (position.x < ev.clientX && ev.clientX < (position.x + 15)) {
 			if (position.y < ev.clientY && ev.clientY < (position.y + 15)) {
-				this.pos = {
-					x : ev.clientX,
-					y : ev.clientY
-				}
-				if (isInput) {
-					this.props.nodeAction.dragPlug(id, position, {
-						x : ev.clientX,
-						y : ev.clientY
-					});
-				} else {
-					this.props.nodeAction.dragPlug(id, {
-						x : ev.clientX,
-						y : ev.clientY
-					}, position);
-				}
+				return true;
 			}
 		}
-		ev.preventDefault();
-		ev.stopPropagation();
+		return false;
+	}
+
+	// プラグをドラッグするActionを発行.
+	onMouseDown(ev) {
+		if (this.intersectHole(ev)) {
+			let id = this.props.id;
+			let position = this.position();
+			this.pos = {
+				x : ev.clientX,
+				y : ev.clientY
+			}
+			if (this.props.isInput) {
+				this.props.nodeAction.dragPlug(id, {
+					x : ev.clientX,
+					y : ev.clientY
+				}, position);
+			} else {
+				this.props.nodeAction.dragPlug(id, position, {
+					x : ev.clientX,
+					y : ev.clientY
+				});
+			}
+			this.props.nodeAction.unSelectPlugHoles();
+			this.props.nodeAction.selectPlugHole(this.plugInfo());
+
+			ev.preventDefault();
+			ev.stopPropagation();
+		}
 	}
 
 	// プラグをドラッグするActionを発行.
@@ -169,18 +180,26 @@ export default class NodeInOut extends React.Component {
 		if (this.state.isDragging) {
 			let center = this.holeCenterPosition();
 			if (this.props.isInput) {
-				this.props.nodeAction.dragPlug(this.props.id, {
-					x : center.x + (ev.clientX - this.pos.x),
-					y : center.y + (ev.clientY - this.pos.y)
-				}, center);
-			} else {
 				this.props.nodeAction.dragPlug(this.props.id, center, {
 					x : center.x + (ev.clientX - this.pos.x),
 					y : center.y + (ev.clientY - this.pos.y)
 				});
+			} else {
+				this.props.nodeAction.dragPlug(this.props.id, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				}, center);
 			}
 			ev.preventDefault();
 			ev.stopPropagation();
+		}
+	}
+
+	plugInfo() {
+		return {
+			nodeVarname : this.props.nodeVarname,
+			data : this.props.data,
+			isInput : this.props.isInput
 		}
 	}
 
@@ -190,10 +209,21 @@ export default class NodeInOut extends React.Component {
 				isDragging :false
 			});
 			let center = this.holeCenterPosition();
-			this.props.nodeAction.endDragPlug(this.props.id, center, {
-				x : center.x + (ev.clientX - this.pos.x),
-				y : center.y + (ev.clientY - this.pos.y)
-			});
+			if (this.props.isInput) {
+				this.props.nodeAction.endDragPlug(this.props.id, center, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				});
+			} else {
+				this.props.nodeAction.endDragPlug(this.props.id, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				}, center);
+			}
+		} else {
+			if (this.intersectHole(ev)) {
+				this.props.nodeAction.selectPlugHole(this.plugInfo());
+			}
 		}
 	}
 

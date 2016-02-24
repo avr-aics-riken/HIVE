@@ -188,10 +188,10 @@ export default class Store extends EventEmitter {
 				}
 			} else {
 				for (let i = 0; i < this.nodes.length; i = i + 1) {
-					if (this.nodes[i].select) {
+					// if (this.nodes[i].select) {
 						this.nodes[i].select = false;
 						this.emit(Store.NODE_SELECTE_CHANGED, null, this.nodes[i], i);
-					}
+					// }
 				}
 			}
 		}
