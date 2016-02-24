@@ -21,6 +21,8 @@ export default class Store extends EventEmitter {
 		// }
 		this.plugPositions = [];
 
+		this.selectedHoles = [];
+
 		coreStore.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
@@ -62,6 +64,8 @@ export default class Store extends EventEmitter {
 		this.moveNode = this.moveNode.bind(this);
 		this.dragPlug = this.dragPlug.bind(this);
 		this.endDragPlug = this.endDragPlug.bind(this);
+		this.selectPlugHole = this.selectPlugHole.bind(this);
+		this.unSelectPlugHoles = this.unSelectPlugHoles.bind(this);
 	}
 
 	/**
@@ -96,6 +100,13 @@ export default class Store extends EventEmitter {
 	 */
 	getPlugPositions() {
 		return this.plugPositions;
+	}
+
+	/**
+	 * 選択中の端子リストを返す
+	 */
+	getSelectedPlugHoles() {
+		return this.selectedHoles;
 	}
 
 	/**
@@ -163,6 +174,23 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
+	 * プラグ端子を選択する
+	 */
+	selectPlugHole(payload) {
+		if (payload.hasOwnProperty('plugID')) {
+			this.selectedHoles.push(payload.plugID);
+			this.emit(Store.PLUG_HOLE_SELECTED, null, this.selectedHoles);
+		}
+	}
+
+	/**
+	 * プラグ端子の選択を解除する
+	 */
+	unSelectPlugHoles(payload) {
+		this.selectedHoles = [];
+	}
+
+	/**
 	 * ノードを移動させる.
 	 */
 	moveNode(payload) {
@@ -172,4 +200,5 @@ export default class Store extends EventEmitter {
 Store.PLUG_POSITION_CHANGED = "plug_position_changed";
 Store.PLUG_DRAGGING = "plug_dragging";
 Store.PLUG_DRAG_END = "plug_drag_end";
+Store.PLUG_HOLE_SELECTED = "plug_hole_selected";
 Store.NODE_MOVED = "node_moved";
