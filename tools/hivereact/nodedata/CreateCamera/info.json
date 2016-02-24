@@ -18,5 +18,9 @@
 	],
 	"output": [
 		{"name": "camera", "type": "RenderObject"}
-	]
+	],
+    "panel": {
+        "pos": [100, 100],
+        "size": [100, 100]
+    }
 }

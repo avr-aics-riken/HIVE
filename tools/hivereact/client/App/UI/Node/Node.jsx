@@ -2,6 +2,7 @@ import React from "react"
 import ReactDOM from "react-dom"
 import NodeInOut from "./NodeInOut.jsx"
 import Core from '../../Core'
+import Store from './Store.jsx'
 
 /**
  * ノード.
@@ -10,11 +11,13 @@ export default class Node extends React.Component {
 	constructor(props) {
 		super(props);
 		this.isLeftDown = false;
+		this.isCtrlDown = false;
 		this.mousePos = { x : 0, y : 0};
 
 		this.state = {
 			node : null,
-			closeHover : false
+			closeHover : false,
+			selected : this.props.nodeStore.isSelected(this.props.node)
 		};
 		let nodes = this.props.store.getNodes();
 		for (let i = 0; i < nodes.length; i = i + 1) {
@@ -25,12 +28,16 @@ export default class Node extends React.Component {
 		}
 
 		this.nodeChanged = this.nodeChanged.bind(this);
+		this.selectChanged = this.selectChanged.bind(this);
+		this.moveNode = this.moveNode.bind(this);
 
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onKeyDown = this.onKeyDown.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
 		this.styles = this.styles.bind(this);
 	}
 
@@ -39,6 +46,25 @@ export default class Node extends React.Component {
 			this.setState({
 				node : data
 			});
+		}
+	}
+
+	selectChanged(err, data) {
+		let isSelected = data.hasOwnProperty(this.props.node.varname);
+		if (this.state.selected !== isSelected) {
+			this.setState(
+				{ selected : isSelected }
+			);
+		}
+	}
+
+	moveNode(err, data) {
+		if (this.state.selected) {
+			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
+			this.props.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
+			setTimeout(() => {
+				this.props.action.changeNode(this.props.node);
+			}, 1);
 		}
 	}
 
@@ -53,7 +79,8 @@ export default class Node extends React.Component {
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",
-				padding : "5px"
+				padding : "5px",
+				border : this.state.selected ? "solid 1px orange" : "none"
 			},
 			title : {
 				color : "rgb(239, 136, 21)",
@@ -81,13 +108,29 @@ export default class Node extends React.Component {
 	componentDidMount() {
 		window.addEventListener('mousemove', this.onMouseMove);
 		window.addEventListener('mouseup', this.onMouseUp);
+		window.addEventListener('keydown', this.onKeyDown);
+		window.addEventListener('keyup', this.onKeyUp);
 		this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
+		this.props.nodeStore.on(Store.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 	}
 
 	componentWillUnmount() {
 		window.removeEventListener('mousemove', this.onMouseMove);
 		window.removeEventListener('mouseup', this.onMouseUp);
+		window.removeEventListener('keydown', this.onKeyDown);
+		window.removeEventListener('keyup', this.onKeyUp);
 		this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
+		this.props.nodeStore.removeListener(Store.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
+	}
+
+	onKeyDown(ev) {
+		this.isCtrlDown = ev.ctrlKey;
+	}
+
+	onKeyUp(ev) {
+		this.isCtrlDown = ev.ctrlKey;
 	}
 
 	onMouseDown(ev) {
@@ -96,21 +139,26 @@ export default class Node extends React.Component {
 			this.mousePos = { x : ev.clientX, y : ev.clientY };
 			this.offsetLeft = ev.currentTarget.offsetLeft;
 			this.offsetTop = ev.currentTarget.offsetTop;
+
+			if (!this.isCtrlDown) {
+				this.props.nodeAction.unSelectNode(null, this.props.node);
+			}
+			this.props.nodeAction.selectNode(this.props.node);
 		}
 	}
 
 	onMouseUp(ev) {
 		this.isLeftDown = false;
+		this.offsetLeft = this.state.node.pos[0];
+		this.offsetTop = this.state.node.pos[1];
 	}
 
 	onMouseMove(ev) {
 		if (this.isLeftDown) {
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
-			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-			let node = this.props.node;
-			node.pos = [this.offsetLeft + mv.x, this.offsetTop + mv.y];
-			this.props.action.changeNode(node);
+
+			this.props.nodeAction.moveNode(mv);
 		}
 	}
 

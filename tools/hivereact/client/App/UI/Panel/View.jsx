@@ -39,7 +39,9 @@ export default class View extends React.Component {
     }
 
     generator(node, key) {
-        var styles = this.styles();
+        let nodes = [].concat(this.store.getNodes());
+        for(let i in nodes){
+        }
         return (
             <Container
                 store={this.store}
