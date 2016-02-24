@@ -51,8 +51,13 @@
 		
 		version = binary.slice(headerStr.length, headerStr.length + 4).readUInt32LE(0);
 		metaSize = binary.slice(headerStr.length + 4, headerStr.length + 8).readUInt32LE(0);
-		metaData = JSON.parse(binary.slice(headerStr.length + 8, headerStr.length + 8 + metaSize).toString('ascii'));
-
+        var json = binary.slice(headerStr.length + 8, headerStr.length + 8 + metaSize).toString('ascii');
+        try {
+		  metaData = JSON.parse(json);
+        }catch (e) {
+          console.error('Metabin ParseError:', e);
+          return false;
+        }
 		//console.log(metaData);
 
 		content = binary.slice(headerStr.length + 8 + metaSize);

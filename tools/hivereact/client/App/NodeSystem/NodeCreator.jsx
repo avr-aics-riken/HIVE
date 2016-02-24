@@ -23,7 +23,6 @@ export default class NodeCreator {
         this.initCallback = callback;
         this.nodeList = [];
         getData("http://localhost:8080/nodelist.json", (err, data) => {
-            console.log('DATA=', data);
             const jsondata = JSON.parse(data);
             console.log('nodedata=', jsondata);
             this.nodeList = jsondata;
