@@ -30,8 +30,8 @@ app.on('ready', function () {
 
 	// BrowserWindowの作成
 	mainWindow = new BrowserWindow({
-		"frame": true,
-		"titleBarStyle": "hidden",
+		"frame": true/*,
+		"titleBarStyle": "hidden",*/
 	});
 
 	mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html') + '?url=' + encodedURL);
