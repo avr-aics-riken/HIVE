@@ -80,6 +80,9 @@ export default class Store extends EventEmitter {
 	 */
 	addNode(payload) {
 		if (payload.hasOwnProperty('nodeInfo')) {
+            if(payload.nodeInfo.panel.zindex === 0){
+                payload.nodeInfo.panel.zindex = this.nodes.length + 1;
+            }
 			this.nodes.push(payload.nodeInfo);
 			this.emit(Store.NODE_COUNT_CHANGED, null, this.nodes.length);
 			this.emit(Store.NODE_ADDED, null, payload.nodeInfo);

@@ -83,6 +83,7 @@ export default class Container extends React.Component {
             this.mousePos = {x: ev.clientX - this.props.node.panel.pos[0], y: ev.clientY - this.props.node.panel.pos[1]};
             this.offsetLeft = ev.currentTarget.offsetLeft;
             this.offsetTop = ev.currentTarget.offsetTop;
+            this.forwardIndex(this.props.node);
         }
     }
 
@@ -123,6 +124,24 @@ export default class Container extends React.Component {
         }
     }
 
+    // index を最前面に持ってくる
+    // target === ターゲットノード
+    forwardIndex(target){
+        let nodes = this.store.getNodes();
+        let len = nodes.length;
+        let targetIndex = target.panel.zindex;
+        for(let i in nodes){
+            if(nodes[i].varname === target.varname){
+                nodes[i].panel.zindex = len;
+            }else{
+                if(nodes[i].panel.zindex > targetIndex){
+                    --nodes[i].panel.zindex;
+                }
+            }
+            this.props.action.changeNode(nodes[i]);
+        }
+    }
+
     // /// 閉じるボタンが押された.
     // onCloseClick(ev) {
     //     this.props.action.deleteNode(this.props.node.varname);
@@ -144,7 +163,8 @@ export default class Container extends React.Component {
                 position: "absolute",
                 top:  this.props.node.panel.pos[1] + "px",
                 left: this.props.node.panel.pos[0] + "px",
-                boxShadow : "0px 0px 3px 0px skyblue inset"
+                boxShadow: "0px 0px 3px 0px skyblue inset",
+                zIndex: this.props.node.panel.zindex
             },
             panelTitleBar: {
                 backgroundColor: "silver",
