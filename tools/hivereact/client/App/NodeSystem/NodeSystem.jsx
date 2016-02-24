@@ -39,18 +39,39 @@ export default class NodeSystem extends EventEmitter {
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);            
         });
         store.on(Store.PLUG_CHANGED, (err, data) => {
-            
-            let nodes = store.getNodes();
-            let plugs = store.getPlugs();
-            
-            let script = "print('PLUG CHANGED!!')";//this.nodeSerializer.WriteAll(nodes, plugs); // generate
-            this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
+            // not need now.            
         });
-        
         store.on(Store.NODE_COUNT_CHANGED, (err, data) => {
             console.log('NS catched:NODE_COUNT_CHANGED', err, data);
+            // not need now.           
+        });
+        
+        /*store.on(Store.NODE_INPUT_CHANGED, (err, data) => {
+            // TODO
+        });*/
+        
+        store.on(Store.NODE_ADDED, (err, data) => {
+            // create new / delete instance
+            console.log('NS catched:NODE_ADDED', err, data);
+
+            let node = data;            
+            this.nodeSerializer.newNode(node);
+        });
+        store.on(Store.NODE_DELETED, (err, data) => {
+            console.log('NS catched:NODE_DELETED', err, data);
             
-            // create new / delete instance    
+            let node = data;            
+            this.nodeSerializer.deleteNode(node);
+        });
+        store.on(Store.PLUG_ADDED, (err, data) => {
+            console.log('NS catched:PLUG_ADDED', err, data);
+        
+            // TODO
+        });
+        store.on(Store.PLUG_DELETED, (err, data) => {
+            console.log('NS catched:PLUG_DELETED', err, data);
+        
+            // TODO
         });
     }
 }
