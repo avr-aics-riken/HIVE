@@ -64,4 +64,17 @@ export default class HiveAction {
 			plugInfo : plugInfo
 		});
 	}
+
+	/**
+	 * パネルを非表示にする
+	 * @param varname ノード変数名
+	 */
+	hiddenPanel(varname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "hiddenPanel",
+			varname : varname
+		});
+	}
+
 }

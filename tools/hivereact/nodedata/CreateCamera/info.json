@@ -20,6 +20,7 @@
 		{"name": "camera", "type": "RenderObject"}
 	],
     "panel": {
+        "visible": true,
         "pos": [100, 100],
         "size": [100, 100],
         "zindex": 0
