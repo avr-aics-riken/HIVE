@@ -9,11 +9,8 @@ export default class Store extends EventEmitter {
 		// プラグ情報のリスト
 		this.plugPositions = [];
 
-		// ノード情報のリスト
-		this.nodes = [];
-
-		// 選択中のノード. キー: varname, 値：node
-		this.selectNodes = {};
+		// ノードのオフセット情報
+		this.nodeOffsets = [];
 
 		coreStore.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
@@ -50,26 +47,9 @@ export default class Store extends EventEmitter {
 			this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions);
 		});
 
-		coreStore.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
-			this.nodes = [].concat(coreStore.getNodes());
-			let names = {};
-			for (let i = 0; i < this.nodes.length; i = i + 1) {
-				names[this.nodes[i].varname] = 1;
-			}
-			for (let i in this.selectNodes) {
-				if (this.selectNodes.hasOwnProperty(i)) {
-					if (!names.hasOwnProperty(i)) {
-						delete this.selectNodes[i];
-					}
-				}
-			}
-		});
-
 		this.getPlugPositions = this.getPlugPositions.bind(this);
 		this.changePlugPosition = this.changePlugPosition.bind(this);
-		this.selectNode = this.selectNode.bind(this);
-		this.unSelectNode = this.unSelectNode.bind(this);
-		this.getSelectedNodes = this.getSelectedNodes.bind(this);
+		//this.registerNodeOffset = this.registerNodeOffset.bind(this);
 		this.moveNode = this.moveNode.bind(this);
 	}
 
@@ -101,27 +81,27 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * ノードが選択されているかどうか返す.
-	 */
-	isSelected(node) {
-		if (this.selectNodes.hasOwnProperty(node.varname)) {
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * 選択中のノード一覧を返す.
-	 */
-	getSelectedNodes() {
-		return this.selectNodes;
-	}
-
-	/**
 	 * plug位置リストを返す.
 	 */
 	getPlugPositions() {
 		return this.plugPositions;
+	}
+
+	/**
+	 * ノードオフセットリストを返す.
+	 */
+	getNodeOffset(nodeVarname) {
+		if (this.nodeOffsets.hasOwnProperty(nodeVarname)) {
+			return this.nodeOffsets[nodeVarname];
+		}
+		if (this.nodeMap.hasOwnProperty(nodeVarname)) {
+			let node = this.nodeMap[nodeVarname];
+			return {
+				offsetLeft : node.pos[0],
+				offsetTop : node.pos[1]
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -171,31 +151,13 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * ノードを選択する
+	 * ノード位置を登録する
 	 */
-	selectNode(payload) {
-		if (payload.hasOwnProperty('node')) {
-			this.selectNodes[payload.node.varname] = payload.node;
-			this.emit(Store.NODE_SELECTE_CHANGED, null, this.selectNodes);
-		}
+	 /*
+	registerNodeOffset(payload) {
+		this.nodeOffsets[payload.nodeVarname] = payload.offset;
 	}
-
-	/**
-	 * ノードを選択する
-	 */
-	unSelectNode(payload) {
-		if (payload.hasOwnProperty('node')) {
-			if (this.selectNodes.hasOwnProperty(payload.node)) {
-				delete this.selectNodes[payload.node];
-			} else {
-				this.selectNodes = {};
-				if (payload.hasOwnProperty('excludeNode') && payload.excludeNode) {
-					this.selectNodes[payload.excludeNode.varname] = payload.excludeNode;
-				}
-			}
-			this.emit(Store.NODE_SELECTE_CHANGED, null, this.selectNodes);
-		}
-	}
+	*/
 
 	/**
 	 * ノードを移動させる.
@@ -205,5 +167,4 @@ export default class Store extends EventEmitter {
 	}
 }
 Store.PLUG_POSITION_CHANGED = "plug_position_changed";
-Store.NODE_SELECTE_CHANGED = "node_selected";
 Store.NODE_MOVED = "node_moved";

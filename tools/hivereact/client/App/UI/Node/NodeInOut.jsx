@@ -96,6 +96,7 @@ export default class NodeInOut extends React.Component {
 	}
 
 	onMouseDown(ev) {
+		console.log("hogehoge", ev);
 	}
 
 	onMouseMove(ev) {
@@ -111,13 +112,17 @@ export default class NodeInOut extends React.Component {
 		if (this.props.isInput) {
 			// 入力端子.
 			return (<div style={style.input}>
-						<div style={style.inhole} />
+						<div style={style.inhole}
+							onMouseDown={this.onMouseDown.bind(this)}
+						/>
 						<div style={style.inholeText}>{this.props.data.name}</div>
 					</div>);
 		} else {
 			// 出力端子.
 			return (<div style={style.output}>
-						<div style={style.outhole} />
+						<div style={style.outhole}
+							onMouseDown={this.onMouseDown.bind(this)}
+						/>
 						<div style={style.outholeText}>{this.props.data.name}</div>
 					</div>);
 		}
