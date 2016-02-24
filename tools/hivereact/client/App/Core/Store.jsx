@@ -82,6 +82,7 @@ export default class Store extends EventEmitter {
 		if (payload.hasOwnProperty('nodeInfo')) {
 			this.nodes.push(payload.nodeInfo);
 			this.emit(Store.NODE_COUNT_CHANGED, null, this.nodes.length);
+			this.emit(Store.NODE_ADDED, null, payload.nodeInfo);
 		}
 	}
 
@@ -92,8 +93,10 @@ export default class Store extends EventEmitter {
 		if (payload.hasOwnProperty('varname')) {
 			for (let i = 0; i < this.nodes.length; i = i + 1) {
 				if (this.nodes[i].varname === payload.varname) {
+					let node = this.nodes[i];
 					this.nodes.splice(i, 1);
 		 			this.emit(Store.NODE_COUNT_CHANGED, null, this.nodes.length);
+					this.emit(Store.NODE_DELETED, null, node);
 					break;
 				}
 			}
@@ -131,8 +134,10 @@ export default class Store extends EventEmitter {
 			for (let i = 0; i < this.plugs.length; i = i + 1) {
 				if (this.plugs[i].output.node === payload.output.node &&
 					this.plugs[i].input.node === payload.input.node) {
+					let plug = this.plugs[i];
 					this.plugs.splice(i, 1);
 					this.emit(Store.PLUG_COUNT_CHANGED, null, this.plugs.length);
+					this.emit(Store.PLUG_DELETED, null, plug);
 					break;
 				}
 			}
@@ -145,3 +150,7 @@ Store.PLUG_CHANGED = "plug_changed";
 Store.NODE_COUNT_CHANGED = "node_count_changed";
 Store.PLUG_COUNT_CHANGED = "plug_count_changed";
 Store.IMAGE_RECIEVED = "image_revieved";
+Store.NODE_ADDED = "node_added";
+Store.NODE_DELETED = "node_deleted";
+Store.PLUG_ADDED = "plug_added";
+Store.PLUG_DELETED = "plug_deleted";
