@@ -17,7 +17,8 @@ export default class Node extends React.Component {
 		this.state = {
 			node : null,
 			closeHover : false,
-			isSelected : this.props.node.select
+			isSelected : this.props.node.select,
+			zIndex : 0
 		};
 		let nodes = this.props.store.getNodes();
 		for (let i = 0; i < nodes.length; i = i + 1) {
@@ -52,9 +53,17 @@ export default class Node extends React.Component {
 
 	selectChanged(err, data) {
 		if (data.varname === this.props.node.varname) {
-			this.setState({
-				isSelected : data.select
-			});
+			if (data.select) {
+				this.setState({
+					isSelected : data.select,
+					zIndex : 1
+				});
+			} else {
+				this.setState({
+					isSelected : data.select,
+					zIndex : 0
+				});
+			}
 		}
 	}
 
@@ -89,7 +98,8 @@ export default class Node extends React.Component {
 				color : "white",
 				opacity : "0.8",
 				padding : "5px",
-				border : this.state.isSelected ? "solid 1px orange" : "none"
+				border : this.state.isSelected ? "solid 1px orange" : "none",
+				zIndex : this.state.zIndex
 			},
 			title : {
 				color : "rgb(239, 136, 21)",
