@@ -5,7 +5,8 @@
 	"pos": [100, 100],
 	"varname": "instTeapotGen",
 	"customfuncfile":"generator.lua",
-    "uifile":"generator.jsx",    
+    "uifile":"generator.jsx",
+	"select":false,
 	"input": [
 		{"name": "size", "type": "float", "value": [1.0]}
 	],
