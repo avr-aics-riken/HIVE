@@ -22,4 +22,41 @@ export default class Action {
 			pos : pos
 		});
 	}
+
+	/**
+	 * ノードを選択する
+	 */
+	selectNode(node) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "selectNode",
+			node : node
+		});
+	}
+
+	/**
+	 * ノードの選択を解除する
+	 * @parma node 対象のノード。全てのノードを対象にする場合はnullを入れる.
+	 * @param excludeNode 対象外ノード
+	 */
+	unSelectNode(node, excludeNode) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "unSelectNode",
+			node : node,
+			excludeNode : excludeNode
+		});
+	}
+
+	/**
+	 * ノードを移動させる
+	 * @param mv 移動量 { x : x移動量, y : y移動量 }
+	 */
+	moveNode(mv) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "moveNode",
+			mv : mv
+		});
+	}
 }
