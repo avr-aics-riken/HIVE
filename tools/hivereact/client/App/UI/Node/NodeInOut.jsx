@@ -148,15 +148,15 @@ export default class NodeInOut extends React.Component {
 					y : ev.clientY
 				}
 				if (isInput) {
-					this.props.nodeAction.dragPlug(id, position, {
-						x : ev.clientX,
-						y : ev.clientY
-					});
-				} else {
 					this.props.nodeAction.dragPlug(id, {
 						x : ev.clientX,
 						y : ev.clientY
 					}, position);
+				} else {
+					this.props.nodeAction.dragPlug(id, position, {
+						x : ev.clientX,
+						y : ev.clientY
+					});
 				}
 			}
 		}
@@ -169,15 +169,15 @@ export default class NodeInOut extends React.Component {
 		if (this.state.isDragging) {
 			let center = this.holeCenterPosition();
 			if (this.props.isInput) {
-				this.props.nodeAction.dragPlug(this.props.id, {
-					x : center.x + (ev.clientX - this.pos.x),
-					y : center.y + (ev.clientY - this.pos.y)
-				}, center);
-			} else {
 				this.props.nodeAction.dragPlug(this.props.id, center, {
 					x : center.x + (ev.clientX - this.pos.x),
 					y : center.y + (ev.clientY - this.pos.y)
 				});
+			} else {
+				this.props.nodeAction.dragPlug(this.props.id, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				}, center);
 			}
 			ev.preventDefault();
 			ev.stopPropagation();
@@ -190,10 +190,17 @@ export default class NodeInOut extends React.Component {
 				isDragging :false
 			});
 			let center = this.holeCenterPosition();
-			this.props.nodeAction.endDragPlug(this.props.id, center, {
-				x : center.x + (ev.clientX - this.pos.x),
-				y : center.y + (ev.clientY - this.pos.y)
-			});
+			if (this.props.isInput) {
+				this.props.nodeAction.endDragPlug(this.props.id, center, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				});
+			} else {
+				this.props.nodeAction.endDragPlug(this.props.id, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				}, center);
+			}
 		}
 	}
 
