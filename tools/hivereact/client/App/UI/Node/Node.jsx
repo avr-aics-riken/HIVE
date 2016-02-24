@@ -84,7 +84,7 @@ export default class Node extends React.Component {
 				left : String(this.props.node.pos[0]),
 				top : String(this.props.node.pos[1]),
 				width : "200px",
-				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10),
+				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 20),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",
@@ -194,6 +194,7 @@ export default class Node extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						nodeRect={this.nodeRect(index)}
+						nodeVarname={this.props.node.varname}
 						isInput={true} data={inputData}
 						key={this.props.node.varname + "_" + inputData.name + "_" + index}
 						id={this.props.node.varname + "_" + inputData.name + "_" + index}
@@ -209,6 +210,7 @@ export default class Node extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 			 			nodeRect={this.nodeRect(index)}
+						nodeVarname={this.props.node.varname}
 						isInput={false}
 						data={outputData}
 						key={this.props.node.varname + "_" + outputData.name + "_" + index}

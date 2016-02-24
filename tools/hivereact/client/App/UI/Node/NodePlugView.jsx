@@ -37,10 +37,10 @@ export default class NodePlugView extends React.Component {
 			this.setState({
 				temporaryPlug : {
 					input : {
-						pos : [parseInt(outpos.x, 10), parseInt(outpos.y, 10)]
+						pos : [inpos.x, inpos.y]
 					},
 					output : {
-						pos : [parseInt(inpos.x, 10), parseInt(inpos.y, 10)]
+						pos : [outpos.x, outpos.y]
 					}
 				}
 			});
@@ -55,6 +55,32 @@ export default class NodePlugView extends React.Component {
 		this.props.nodeStore.on(Store.PLUG_POSITION_CHANGED, (err, data) => {
 			this.setState({plugPositions : [].concat(data) });
 		});
+
+		this.props.nodeStore.on(Store.PLUG_HOLE_SELECTED, (err, data) => {
+			if (data.length >= 2) {
+				if (data[0].isInput !== data[1].isInput) {
+					let input = data[0].isInput ? data[0] : data[1];
+					let output = data[0].isInput ? data[1] : data[0];
+					console.log("プラグが接続された", data);
+					setTimeout(() => {
+						this.props.action.addPlug({
+							output : {
+								nodeVarname : output.nodeVarname,
+								name : output.data.name
+							},
+							input : {
+								nodeVarname : input.nodeVarname,
+								name : input.data.name
+							}
+						})
+					}, 0);
+				}
+				setTimeout(() => {
+					this.props.nodeAction.unSelectPlugHoles();
+				}, 0);
+			}
+		});
+
 		this.temporaryPlug = this.temporaryPlug.bind(this);
 	}
 
