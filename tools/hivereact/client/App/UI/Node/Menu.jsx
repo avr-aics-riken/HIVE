@@ -155,7 +155,16 @@ export default class Menu extends React.Component {
                 item: this.clearButton.bind(this),
                 title: 'block3 title (clear button)',
                 script: function(eve){
-
+                    if(confirm('really?')){
+                        let nodes = this.props.store.getNodes();
+                        let plugs = this.props.store.getPlugs();
+                        // for(let i = plugs.length - 1; i >= 0; --i){
+                        //     this.props.action.deletePlug(plugs[i]);
+                        // }
+                        for(let i = nodes.length - 1; i >= 0; --i){
+                            this.props.action.deleteNode(nodes[i].varname);
+                        }
+                    }
                 }.bind(this)
             }
         ];
