@@ -33,31 +33,15 @@ export default class Container extends React.Component {
         this.onScaleUp = this.onScaleUp.bind(this);
         this.onScaleDown = this.onScaleDown.bind(this);
 
-        this.props.store.on(Core.Store.NODE_CHANGED, function(err, data){
-            let nodes = this.props.store.getNodes();
-            for(let i = 0; i < nodes.length; ++i){
-                if(nodes[i].varname === this.props.node.varname){
-                    this.setState({node: nodes[i]});
-                    break;
-                }
-            }
-        }.bind(this));
-        this.props.store.on(Core.Store.NODE_COUNT_CHANGED, function(err, data){
-            let nodes = this.props.store.getNodes();
-            for(let i = 0; i < nodes.length; ++i){
-                if(nodes[i].varname === this.props.node.varname){
-                    this.setState({node: nodes[i]});
-                    break;
-                }
-            }
-        }.bind(this));
     }
 
     nodeChanged(err, data) {
-        if (data.varname === this.props.node.varname) {
-            this.setState({
-                node : data
-            });
+        let nodes = this.props.store.getNodes();
+        for(let i = 0; i < nodes.length; ++i){
+            if(nodes[i].varname === this.props.node.varname){
+                this.setState({node: nodes[i]});
+                break;
+            }
         }
     }
 
@@ -66,7 +50,8 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousemove', this.onScaleMove);
         window.addEventListener('mouseup', this.onScaleUp);
-        // this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
+        this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
+        this.props.store.on(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
@@ -74,7 +59,8 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onMouseUp);
         window.removeEventListener('mousemove', this.onScaleMove);
         window.removeEventListener('mouseup', this.onScaleUp);
-        // this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
+        this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
+        this.props.store.removeListener(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
