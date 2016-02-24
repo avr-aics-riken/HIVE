@@ -7,4 +7,12 @@ export default class NodeSerializer {
 	serialize() {
 		return "";
 	}
+    
+    newNode(nodeinfo) {
+        
+    }
+    
+    deleteNode(nodeinfo) {
+        
+    }
 }
