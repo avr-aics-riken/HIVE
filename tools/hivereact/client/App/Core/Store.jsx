@@ -114,7 +114,15 @@ export default class Store extends EventEmitter {
  		if (payload.hasOwnProperty('nodeInfo')) {
  			for (let i = 0; i < this.nodes.length; i = i + 1) {
 				if (this.nodes[i].varname === payload.nodeInfo.varname) {
+					let preInputs = JSON.stringify(this.nodes[i].input);
+					let postInputs = JSON.stringify(payload.nodeInfo.input);
+					let uiComponent = this.nodes[i].uiComponent;
+					this.nodes[i] = JSON.parse(JSON.stringify(payload.nodeInfo));
+					this.nodes[i].uiComponent = uiComponent;
 					this.emit(Store.NODE_CHANGED, null, this.nodes[i], i);
+					if (preInputs !== postInputs) {
+						this.emit(Store.NODE_INPUT_CHANGED, null, this.nodes[i], i);
+					}
 				}
 			}
  		}
@@ -168,6 +176,7 @@ export default class Store extends EventEmitter {
 }
 
 Store.NODE_CHANGED = "node_changed";
+Store.NODE_INPUT_CHANGED = "node_input_changed";
 Store.PLUG_CHANGED = "plug_changed";
 Store.NODE_COUNT_CHANGED = "node_count_changed";
 Store.PLUG_COUNT_CHANGED = "plug_count_changed";
