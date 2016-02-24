@@ -113,6 +113,16 @@ export default class Store extends EventEmitter {
 				this.nodes.splice(n.index, 1);
 				this.emit(Store.NODE_COUNT_CHANGED, null, this.nodes.length);
 				this.emit(Store.NODE_DELETED, null, n.node);
+
+				// 関連するプラグを削除.
+				for (let i = 0; i < this.plugs.length; i = i + 1) {
+					let plug = this.plugs[i];
+					if (plug.input.nodeVarname === payload.varname) {
+						this.deletePlug({ plugInfo : plug });
+					} else if (plug.output.nodeVarname === payload.varname) {
+						this.deletePlug({ plugInfo : plug });
+					}
+				}
 			}
 		}
 	}
@@ -213,8 +223,8 @@ export default class Store extends EventEmitter {
 	deletePlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
 			for (let i = 0; i < this.plugs.length; i = i + 1) {
-				if (this.plugs[i].output.node === payload.output.node &&
-					this.plugs[i].input.node === payload.input.node) {
+				if (this.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
+					this.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname) {
 					let plug = this.plugs[i];
 					this.plugs.splice(i, 1);
 					this.emit(Store.PLUG_COUNT_CHANGED, null, this.plugs.length);
