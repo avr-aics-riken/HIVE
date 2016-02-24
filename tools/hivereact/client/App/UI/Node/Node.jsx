@@ -189,29 +189,31 @@ export default class Node extends React.Component {
 
 	/// 入力端子.
 	inputElem() {
-		let inputs = this.props.node.input.map( (inputData, key) => {
+		let inputs = this.props.node.input.map( (inputData, index) => {
 			return (<NodeInOut
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
-						nodeRect={this.nodeRect(key)}
+						nodeRect={this.nodeRect(index)}
 						isInput={true} data={inputData}
-						key={inputData.name + key}
-						index={key} />)
+						key={this.props.node.varname + "_" + inputData.name + "_" + index}
+						id={this.props.node.varname + "_" + inputData.name + "_" + index}
+						index={index} />)
 		});
 		return (<div>{inputs}</div>);
 	}
 
 	/// 出力端子.
 	outputElem() {
-		let outputs = this.props.node.output.map( (outputData, key) => {
+		let outputs = this.props.node.output.map( (outputData, index) => {
 			return (<NodeInOut
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
-			 			nodeRect={this.nodeRect(key)}
+			 			nodeRect={this.nodeRect(index)}
 						isInput={false}
 						data={outputData}
-						key={outputData.name + key}
-						index={key} />)
+						key={this.props.node.varname + "_" + outputData.name + "_" + index}
+						id={this.props.node.varname + "_" + outputData.name + "_" + index}
+						index={index} />)
 		});
 		return (<div>{outputs}</div>);
 	}

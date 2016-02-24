@@ -41,51 +41,56 @@ export default class NodeInOut extends React.Component {
 		this.styles = this.styles.bind(this);
 
 		this.state = {
-			// ドラッグ中の場合はドラッグ中の端子のインデックスが値に入る
-			draggingInput : -1,
-			draggingOutput : -1
+			isDragging : false
 		};
 		this.pos = {
 			x : 0,
 			y : 0
 		};
-		this.offsetLeft = 0;
-		this.offsetTop = 0;
+
 		this.position = this.position.bind(this);
+		this.holeCenterPosition = this.holeCenterPosition.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onPlugDragging = this.onPlugDragging.bind(this);
 	}
 
-	position(isInput, key) {
+	position() {
 		let nodeRect = this.props.nodeRect;
-		if (isInput) {
+		if (this.props.isInput) {
 			return {
 				x : nodeRect.x - (15 / 2.0),
-				y : nodeRect.y + 18 * (key + 1) + 10 + 3,
+				y : nodeRect.y + 18 * (this.props.index + 1) + 10 + 3,
 			}
 		} else {
 			return {
 				x : nodeRect.x + nodeRect.w - (15 / 2.0),
-				y : nodeRect.y + 18 * (key + 1) + 10 + 3
+				y : nodeRect.y + 18 * (this.props.index + 1) + 10 + 3
 			}
 		}
 	}
 
-	styles(key) {
+	holeCenterPosition() {
+		let position = this.position();
+		position.x = position.x + (15 / 2.0);
+		position.y = position.y + (15 / 2.0);
+		return position;
+	}
+
+	styles() {
 		return {
 			input : {
 				position : "absolute",
 				left : String(-15 / 2),
-				top : String(18 * (key + 1) + 10),
+				top : String(18 * (this.props.index + 1) + 10),
 				width : "100px",
 				height : "20px"
 			},
 			output : {
 				position : "absolute",
 				right : String(-15 / 2),
-				top : String(18 * (key + 1) + 10),
+				top : String(18 * (this.props.index + 1) + 10),
 				width : "100px",
 				height : "20px"
 			},
@@ -98,7 +103,7 @@ export default class NodeInOut extends React.Component {
 				marginTop : "3px",
 				borderRadius : "15px",
 				backgroundColor : colorFunction(this.props.data.type),
-				border : (key === this.state.draggingInput) ? "solid 1px" : "none"
+				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
 			outhole : {
 				cursor : "pointer",
@@ -109,7 +114,7 @@ export default class NodeInOut extends React.Component {
 				marginTop : "3px",
 				borderRadius : "15px",
 				backgroundColor : colorFunction(this.props.data.type),
-				border : (key === this.state.draggingOutput) ? "solid 1px" : "none"
+				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
 			inholeText : {
 				position : "absolute",
@@ -131,98 +136,72 @@ export default class NodeInOut extends React.Component {
 	}
 
 	// プラグをドラッグするActionを発行.
-	onMouseDown(isInput, key) {
-		return (ev) => {
-			let nodeRect = this.props.nodeRect;
-			let position = this.position(isInput, key);
-			//console.log(ev.clientX, position.x);
-			if (position.x < ev.clientX && ev.clientX < (position.x + 15)) {
-				if (position.y < ev.clientY && ev.clientY < (position.y + 15)) {
-					this.pos = {
+	onMouseDown(ev) {
+		let isInput = this.props.isInput;
+		let index = this.props.index;
+		let id = this.props.id;
+		let position = this.position();
+		if (position.x < ev.clientX && ev.clientX < (position.x + 15)) {
+			if (position.y < ev.clientY && ev.clientY < (position.y + 15)) {
+				this.pos = {
+					x : ev.clientX,
+					y : ev.clientY
+				}
+				if (isInput) {
+					this.props.nodeAction.dragPlug(id, position, {
 						x : ev.clientX,
 						y : ev.clientY
-					}
-					if (isInput) {
-						this.props.nodeAction.dragPlug(isInput, key, position, {
-							x : ev.clientX,
-							y : ev.clientY
-						});
-					} else {
-						this.props.nodeAction.dragPlug(isInput, key, {
-							x : ev.clientX,
-							y : ev.clientY
-						}, position);
-					}
+					});
+				} else {
+					this.props.nodeAction.dragPlug(id, {
+						x : ev.clientX,
+						y : ev.clientY
+					}, position);
 				}
 			}
-			ev.preventDefault();
-			ev.stopPropagation();
-		};
+		}
+		ev.preventDefault();
+		ev.stopPropagation();
 	}
 
 	// プラグをドラッグするActionを発行.
 	onMouseMove(ev) {
-		if (this.state.draggingInput >= 0) {
-			let position = this.position(true, this.state.draggingInput);
-			position.x = position.x + (15 / 2.0);
-			position.y = position.y + (15 / 2.0);
-			this.props.nodeAction.dragPlug(true, this.props.index, {
-				x : position.x + (ev.clientX - this.pos.x),
-				y : position.y + (ev.clientY - this.pos.y)
-			}, position);
-			ev.preventDefault();
-			ev.stopPropagation();
-		} else if (this.state.draggingOutput >= 0) {
-			let position = this.position(false, this.state.draggingOutput);
-			position.x = position.x + (15 / 2.0);
-			position.y = position.y + (15 / 2.0);
-			this.props.nodeAction.dragPlug(false, this.props.index, position, {
-				x : position.x + (ev.clientX - this.pos.x),
-				y : position.y + (ev.clientY - this.pos.y)
-			});
+		if (this.state.isDragging) {
+			let center = this.holeCenterPosition();
+			if (this.props.isInput) {
+				this.props.nodeAction.dragPlug(this.props.id, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				}, center);
+			} else {
+				this.props.nodeAction.dragPlug(this.props.id, center, {
+					x : center.x + (ev.clientX - this.pos.x),
+					y : center.y + (ev.clientY - this.pos.y)
+				});
+			}
 			ev.preventDefault();
 			ev.stopPropagation();
 		}
 	}
 
 	onMouseUp(ev) {
-		if (this.state.draggingInput >= 0 || this.state.draggingOutput >= 0) {
+		if (this.state.isDragging) {
 			this.setState({
-				draggingInput : -1,
-				draggingOutput : -1
+				isDragging :false
 			});
-			let position;
-			if (this.state.draggingInput >= 0) {
-				position = this.position(true, this.state.draggingInput);
-				position.x = position.x + (15 / 2.0);
-				position.y = position.y + (15 / 2.0);
-				this.props.nodeAction.endDragPlug(false, this.props.index, position, {
-					x : position.x + (ev.clientX - this.pos.x),
-					y : position.y + (ev.clientY - this.pos.y)
-				});
-			} else {
-				position = this.position(false, this.state.draggingOutput);
-				position.x = position.x + (15 / 2.0);
-				position.y = position.y + (15 / 2.0);
-				this.props.nodeAction.endDragPlug(false, this.props.index, position, {
-					x : position.x + (ev.clientX - this.pos.x),
-					y : position.y + (ev.clientY - this.pos.y)
-				});
-			}
+			let center = this.holeCenterPosition();
+			this.props.nodeAction.endDragPlug(this.props.id, center, {
+				x : center.x + (ev.clientX - this.pos.x),
+				y : center.y + (ev.clientY - this.pos.y)
+			});
 		}
 	}
 
-	onPlugDragging(err, isInput, key, inpos, outpos) {
-		if (this.props.isInput === isInput && key === this.props.index) {
-			if (isInput) {
-				this.setState({
-					draggingInput : key
-				});
-			} else {
-				this.setState({
-					draggingOutput : key
-				});
-			}
+	onPlugDragging(err, id, inpos, outpos) {
+		if (id === this.props.id) {
+			this.setState({
+				isDragging : true
+			});
 		}
 	}
 
@@ -244,7 +223,7 @@ export default class NodeInOut extends React.Component {
 			// 入力端子.
 			return (<div style={style.input}>
 						<div style={style.inhole}
-							onMouseDown={this.onMouseDown.bind(this)(true, this.props.index)}
+							onMouseDown={this.onMouseDown.bind(this)}
 						/>
 						<div style={style.inholeText}>{this.props.data.name}</div>
 					</div>);
@@ -252,7 +231,7 @@ export default class NodeInOut extends React.Component {
 			// 出力端子.
 			return (<div style={style.output}>
 						<div style={style.outhole}
-							onMouseDown={this.onMouseDown.bind(this)(false, this.props.index)}
+							onMouseDown={this.onMouseDown.bind(this)}
 						/>
 						<div style={style.outholeText}>{this.props.data.name}</div>
 					</div>);

@@ -26,7 +26,6 @@ export default class NodePlugView extends React.Component {
 					this.props.nodeAction.changePlugPosition(plug.input.nodeVarname, true, plug.input.name, inpos);
 				} else {
 					let outpos = this.props.nodeStore.calcPlugPosition(false, plug, data);
-					//console.log("outpos", outpos);
 					if (outpos) {
 						this.props.nodeAction.changePlugPosition(plug.output.nodeVarname, false, plug.output.name, outpos);
 					}
@@ -34,21 +33,20 @@ export default class NodePlugView extends React.Component {
 			}
 		});
 
-		this.props.nodeStore.on(Store.PLUG_DRAGGING, (err, isInput, index, inpos, outpos) => {
-			//console.log( inpos, outpos);
+		this.props.nodeStore.on(Store.PLUG_DRAGGING, (err, id, inpos, outpos) => {
 			this.setState({
 				temporaryPlug : {
 					input : {
-						pos : [outpos.x, outpos.y]
+						pos : [parseInt(outpos.x, 10), parseInt(outpos.y, 10)]
 					},
 					output : {
-						pos : [inpos.x, inpos.y]
+						pos : [parseInt(inpos.x, 10), parseInt(inpos.y, 10)]
 					}
 				}
 			});
 		});
 
-		this.props.nodeStore.on(Store.PLUG_DRAG_END, (err, isInput, index, inpos, outpos) => {
+		this.props.nodeStore.on(Store.PLUG_DRAG_END, (err, id, inpos, outpos) => {
 			this.setState({
 				temporaryPlug : null
 			});
