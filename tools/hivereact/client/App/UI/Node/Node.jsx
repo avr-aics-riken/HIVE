@@ -17,7 +17,7 @@ export default class Node extends React.Component {
 		this.state = {
 			node : null,
 			closeHover : false,
-			selected : this.props.nodeStore.isSelected(this.props.node)
+			isSelected : this.props.node.select
 		};
 		let nodes = this.props.store.getNodes();
 		for (let i = 0; i < nodes.length; i = i + 1) {
@@ -44,27 +44,26 @@ export default class Node extends React.Component {
 	nodeChanged(err, data) {
 		if (data.varname === this.props.node.varname) {
 			this.setState({
-				node : data
+				node : this.props.node
 			});
 		}
 	}
 
 	selectChanged(err, data) {
-		let isSelected = data.hasOwnProperty(this.props.node.varname);
-		if (this.state.selected !== isSelected) {
-			this.setState(
-				{ selected : isSelected }
-			);
+		if (data.varname === this.props.node.varname) {
+			this.setState({
+				isSelected : data.select
+			});
 		}
 	}
 
 	moveNode(err, data) {
-		if (this.state.selected) {
+		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
 			this.props.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
 			setTimeout(() => {
 				this.props.action.changeNode(this.props.node);
-			}, 1);
+			}, 0);
 		}
 	}
 
@@ -80,7 +79,7 @@ export default class Node extends React.Component {
 				color : "white",
 				opacity : "0.8",
 				padding : "5px",
-				border : this.state.selected ? "solid 1px orange" : "none"
+				border : this.state.isSelected ? "solid 1px orange" : "none"
 			},
 			title : {
 				color : "rgb(239, 136, 21)",
@@ -111,7 +110,7 @@ export default class Node extends React.Component {
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
 		this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
-		this.props.nodeStore.on(Store.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.on(Core.Store.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 	}
 
@@ -121,7 +120,7 @@ export default class Node extends React.Component {
 		window.removeEventListener('keydown', this.onKeyDown);
 		window.removeEventListener('keyup', this.onKeyUp);
 		this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
-		this.props.nodeStore.removeListener(Store.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.removeListener(Core.Store.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
 	}
 
@@ -140,10 +139,17 @@ export default class Node extends React.Component {
 			this.offsetLeft = ev.currentTarget.offsetLeft;
 			this.offsetTop = ev.currentTarget.offsetTop;
 
+			/*
+			this.props.nodeAction.registerNodeOffset(this.state.node.varname, {
+				offsetLeft : ev.currentTarget.offsetLeft,
+				offsetTop : ev.currentTarget.offsetTop
+			});
+			*/
+
 			if (!this.isCtrlDown) {
-				this.props.nodeAction.unSelectNode(null, this.props.node);
+				this.props.action.unSelectNode([], this.props.node.varname);
 			}
-			this.props.nodeAction.selectNode(this.props.node);
+			this.props.action.selectNode([this.props.node.varname]);
 		}
 	}
 
@@ -151,6 +157,12 @@ export default class Node extends React.Component {
 		this.isLeftDown = false;
 		this.offsetLeft = this.state.node.pos[0];
 		this.offsetTop = this.state.node.pos[1];
+		/*
+		this.props.nodeAction.registerNodeOffset(this.state.node.varname, {
+			offsetLeft : this.state.node.pos[0],
+			offsetTop : this.state.node.pos[1]
+		});
+		*/
 	}
 
 	onMouseMove(ev) {

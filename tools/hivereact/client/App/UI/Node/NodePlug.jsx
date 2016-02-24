@@ -28,7 +28,6 @@ export default class NodePlug extends React.Component {
 	}
 
 	render() {
-	//console.log("POS", this.props.plug)
 		return <path d={this.stroke.bind(this)()} stroke="white" fill="transparent"></path>
 	}
 }

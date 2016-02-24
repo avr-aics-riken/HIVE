@@ -42,6 +42,17 @@ export default class HiveAction {
 	}
 
 	/**
+	 * ノードを複数変更する
+	 */
+	changeNodes(nodeInfoList) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "changeNodes",
+			nodeInfoList : nodeInfoList
+		});
+	}
+
+	/**
 	 * プラグを追加する
 	 * @param plugInfo プラグ情報
 	 */
@@ -77,4 +88,28 @@ export default class HiveAction {
 		});
 	}
 
+	/**
+	 * ノードを選択する
+	 */
+	selectNode(nodeVarnameList) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "selectNode",
+			nodeVarnameList : nodeVarnameList
+		});
+	}
+
+	/**
+	 * ノードの選択を解除する
+	 * @parma nodeVarnameList 対象のノードvarnameリスト。全てのノードを対象にする場合は空リストを入れる.
+	 * @param excludeVarname 対象外ノード
+	 */
+	unSelectNode(nodeVarnameList, excludeVarname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "unSelectNode",
+			nodeVarnameList : nodeVarnameList,
+			excludeVarname : excludeVarname
+		});
+	}
 }
