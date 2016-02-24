@@ -36,16 +36,35 @@ export default class Action {
 	}
 
 	/**
-	 * ノード位置を登録する
+	 * プラグのドラッグを開始する
+	 * @param isInput 入力端子ならtrue
+	 * @param data
+	 * @param inputPos 入力端子側のプラグ位置
+	 * @param outputPos 出力端子側のプラグ位置
 	 */
-	 /*
-	registerNodeOffset(nodeVarname, offset) {
+	dragPlug(isInput, key, inputPos, outputPos) {
 		this.dispatcher.dispatch({
 			id :this.id,
-			actionType: "registerNodeOffset",
-			nodeVarname : nodeVarname,
-			offset : offset
+			actionType: "dragPlug",
+			isInput : isInput,
+			key : key,
+			inputPos : inputPos,
+			outputPos : outputPos
 		});
 	}
-	*/
+
+	/**
+	 * プラグのドラッグを終了する
+	 */
+	endDragPlug(isInput, key, inputPos, outputPos) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "endDragPlug",
+			isInput : isInput,
+			key : key,
+			inputPos : inputPos,
+			outputPos : outputPos
+		});
+	}
+
 }
