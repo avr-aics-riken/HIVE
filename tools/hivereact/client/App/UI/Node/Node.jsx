@@ -194,6 +194,7 @@ export default class Node extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						nodeRect={this.nodeRect(index)}
+						nodeVarname={this.props.node.varname}
 						isInput={true} data={inputData}
 						key={this.props.node.varname + "_" + inputData.name + "_" + index}
 						id={this.props.node.varname + "_" + inputData.name + "_" + index}
@@ -209,6 +210,7 @@ export default class Node extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 			 			nodeRect={this.nodeRect(index)}
+						nodeVarname={this.props.node.varname}
 						isInput={false}
 						data={outputData}
 						key={this.props.node.varname + "_" + outputData.name + "_" + index}
