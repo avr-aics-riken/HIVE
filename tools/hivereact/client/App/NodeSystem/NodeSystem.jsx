@@ -24,6 +24,10 @@ export default class NodeSystem extends EventEmitter {
         return node;
     }
     
+    GetNodeList() {
+        return this.nodeCreator.GetNodeNameList();    
+    }
+    
     initEmitter(store) {
         store.on(Store.NODE_CHANGED, (err, data) => {
             //console.log('NS catched:NODE_CHANGED', err, data);
