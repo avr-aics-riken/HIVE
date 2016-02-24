@@ -24,13 +24,17 @@ export default class NodeSystem extends EventEmitter {
         return node;
     }
     
-    GetNodeList() {
+    GetNodeNameList() {
         return this.nodeCreator.GetNodeNameList();    
     }
     
+    
     initEmitter(store) {
         store.on(Store.NODE_CHANGED, (err, data) => {
-            //console.log('NS catched:NODE_CHANGED', err, data);
+            
+        });
+        store.on(Store.NODE_INPUT_CHANGED, (err, data) => {
+            //console.log('NS catched:NODE_INPUT_CHANGED', err, data);
             let node = data;
             //let nodes = store.getNodes();
             
@@ -38,7 +42,30 @@ export default class NodeSystem extends EventEmitter {
 
             //console.log('NODES=', nodes, 'PLUGS=', plugs);
             console.log('CHANGENODE->', node);
-            let script = "print('NODE CHANGED!!')";//this.nodeSerializer.writeNode(nodes); // generate
+            let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";//this.nodeSerializer.writeNode(nodes); // generate
+            
+            
+            const inputs = node.input;
+            let i;
+           
+            for (i = 0; i < inputs.length; ++i) {
+                let v = inputs[i];
+                if (v.type === 'vec4') {
+                    script += this.nodeSerializer.setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
+                } else if (v.type === 'vec3') {
+                    script += this.nodeSerializer.setPropertyVal3(node, v.name, v.value[0], v.value[1], v.value[2]);
+                } else if(v.type === 'vec2') {
+                    script += this.nodeSerializer.setPropertyVal2(node, v.name, v.value[0], v.value[1]);
+                } else if(v.type === 'float') {
+                    script += this.nodeSerializer.setPropertyVal(node, v.name, v.value);
+                } else if(v.type === 'string') {
+                    script += this.nodeSerializer.setPropertyString(node, v.name, v.value);
+                } else {
+                    // TODO: ex. RenderObject
+                    //script += this.setPropertyVal(node, v.name, v.value);
+                }
+            }
+            script += this.nodeSerializer.doNode(node); 
             
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);            
         });
@@ -58,14 +85,16 @@ export default class NodeSystem extends EventEmitter {
             // create new / delete instance
             console.log('NS catched:NODE_ADDED', err, data);
 
-            let node = data;            
-            this.nodeSerializer.newNode(node);
+            const node = data;            
+            const script = this.nodeSerializer.newNode(node);
+            this.emit(NodeSystem.SCRIPT_SERIALIZED, script); 
         });
         store.on(Store.NODE_DELETED, (err, data) => {
             console.log('NS catched:NODE_DELETED', err, data);
             
             let node = data;            
-            this.nodeSerializer.deleteNode(node);
+            const script = this.nodeSerializer.deleteNode(node);
+            this.emit(NodeSystem.SCRIPT_SERIALIZED, script); 
         });
         store.on(Store.PLUG_ADDED, (err, data) => {
             console.log('NS catched:PLUG_ADDED', err, data);
