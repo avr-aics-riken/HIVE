@@ -25,14 +25,12 @@ export default class View extends React.Component {
 					<NodeView
 						store={this.props.store}
 						action={this.props.action}
-						nodeSystem={this.props.nodeSystem}
 						nodeStore={this.nodeStore}
 						nodeAction={this.nodeAction}
 					/>
 					<NodePlugView
 						store={this.props.store}
 						action={this.props.action}
-						nodeSystem={this.props.nodeSystem}
 						nodeStore={this.nodeStore}
 						nodeAction={this.nodeAction}
 					/>

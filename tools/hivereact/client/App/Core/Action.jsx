@@ -13,11 +13,11 @@ function uuid() {
     return uuid;
 }
 
-export default class HiveAction {
+export default class Action {
 	constructor(id, nodeSystem) {
 		this.dispatcher = Dispatcher;
 		this.id = id;
-        this.nodeSystem = nodeSystem;        
+        this.nodeSystem = nodeSystem;
 	}
 
 	/**
@@ -31,20 +31,21 @@ export default class HiveAction {
 			nodeInfo : nodeInfo
 		});
 	}
-    
+
     /**
 	 * ノードを追加する
 	 * @param nodeInfo ノード情報
 	 */
 	addNodeByName(nodeName) {
+/*
         let node = this.nodeSystem.CreateNodeInstance(nodeName);
         if (!node) {
             return false;
         }
-        
+
 		// create unique varname
 		node.varname += name + uuid();
-        /*for (let i = 0; true; i = i + 1) {
+        for (let i = 0; true; i = i + 1) {
 			let foundSameName = false;
 			let name = node.varname + "_" + String(i);
 			for (let i = 0; i < this.state.nodes.length; i = i + 1) {
@@ -57,12 +58,12 @@ export default class HiveAction {
 				node.varname = name;
 				break;
 			}
-		}*/
-        
+		}
+
 		node.pos = [ 200, 200 ];
 
         // insert position
-        /*let x, y;
+        let x, y;
         x = node.panel.pos[0];
         y = node.panel.pos[1];
         for (let i in nodes) {
@@ -80,11 +81,9 @@ export default class HiveAction {
                 }
             }
         }
-        node.panel.pos = [x, y];*/
-
-		this.addNode(node);
-        
-        return true;
+        node.panel.pos = [x, y];
+*/
+		this.addNode({name : nodeName});
 	}
 
 	/**

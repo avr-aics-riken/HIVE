@@ -30,7 +30,7 @@ export default class MenuNodeCreate extends React.Component {
 
     // ここにある nodeNames にセットされた名前がサジェストされる
     getSuggestions(value) {
-        var nodeNameList = this.props.nodeSystem.GetNodeNameList();
+        var nodeNameList = this.props.store.getNodeNameList();
         var nodeNames = [];
         if(nodeNameList){
             for(let i in nodeNameList){
@@ -119,5 +119,3 @@ export default class MenuNodeCreate extends React.Component {
         );
     }
 }
-
-
