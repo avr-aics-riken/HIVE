@@ -15,12 +15,22 @@ export default class MenuNodeCreate extends React.Component {
 
         this.styles = this.styles.bind(this);
 
+        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged.bind(this));
+        this.nodeChanged = this.nodeChanged.bind(this);
+
         // auto suggest
         this.onChange = this.onChange.bind(this);
         this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
         this.getSuggestions = this.getSuggestions.bind(this);
         this.getSuggestionValue = this.getSuggestionValue.bind(this);
         this.renderSuggestion = this.renderSuggestion.bind(this);
+    }
+
+    nodeChanged(err, data){
+        this.setState({
+            value: '',
+            suggestions: this.getSuggestions.bind(this)('')
+        });
     }
 
     // インプットボックスの change と自身のステートの更新はここ
@@ -32,11 +42,17 @@ export default class MenuNodeCreate extends React.Component {
     getSuggestions(value) {
         var nodeNameList = this.props.store.getNodeNameList();
         var nodeNames = [];
+        var flg = false;
         if(nodeNameList){
             for(let i in nodeNameList){
                 nodeNames.push({name: nodeNameList[i]});
+                if(nodeNameList[i] === value){flg = true;}
             }
         }
+
+        // add node action
+        if(flg){this.props.action.addNodeByName(value);}
+
         if(nodeNames.length === 0){return [];}
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
@@ -45,7 +61,9 @@ export default class MenuNodeCreate extends React.Component {
         );
     }
     onSuggestionsUpdateRequested({value}){this.setState({suggestions: this.getSuggestions(value)});}
-    getSuggestionValue(suggestion){return suggestion.name;}
+    getSuggestionValue(suggestion){
+        return suggestion.name;
+    }
     renderSuggestion(suggestion){return (<span>{suggestion.name}</span>);}
 
     styles() {
@@ -68,7 +86,7 @@ export default class MenuNodeCreate extends React.Component {
                 input: {
                     backgroundColor: "black",
                     border: "none",
-                    color: "whitesmoke",
+                    color: "silver",
                     width: "100%",
                     margin: "0px",
                     padding: "8px 0px"
@@ -81,17 +99,19 @@ export default class MenuNodeCreate extends React.Component {
                     position: "absolute"
                 },
                 suggestion: {
-                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    backgroundColor: "rgba(16, 16, 16, 0.8)",
                     borderLeft: "1px solid gray",
                     borderRight: "1px solid gray",
                     borderBottom: "1px solid gray",
+                    color: "white",
                     fontSize: "large",
                     margin: "0px",
                     padding: "5px",
                     overflow: "hidden"
                 },
                 suggestionFocused: {
-                    backgroundColor: "rgba(64, 64, 64, 0.5)"
+                    backgroundColor: "rgba(16, 16, 16, 0.9)",
+                    color: "red"
                 }
             }
         }
@@ -114,7 +134,8 @@ export default class MenuNodeCreate extends React.Component {
                     onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
                     getSuggestionValue={this.getSuggestionValue}
                     renderSuggestion={this.renderSuggestion}
-                    inputProps={inputProps} />
+                    inputProps={inputProps}
+                />
             </div>
         );
     }
