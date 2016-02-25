@@ -129,8 +129,8 @@ export default class Node extends React.Component {
 		window.addEventListener('mouseup', this.onMouseUp);
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
-		this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
-		this.props.store.on(Core.Store.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
+		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 	}
 
@@ -139,8 +139,8 @@ export default class Node extends React.Component {
 		window.removeEventListener('mouseup', this.onMouseUp);
 		window.removeEventListener('keydown', this.onKeyDown);
 		window.removeEventListener('keyup', this.onKeyUp);
-		this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
-		this.props.store.removeListener(Core.Store.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
+		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
 	}
 

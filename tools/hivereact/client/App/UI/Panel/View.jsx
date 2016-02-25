@@ -16,10 +16,10 @@ export default class View extends React.Component {
         this.styles = this.styles.bind(this);
         this.generator = this.generator.bind(this);
 
-        this.props.store.on(Core.Store.NODE_CHANGED, function(err, data){
+        this.props.store.on(Core.Constants.NODE_CHANGED, function(err, data){
             this.setState({nodes: [].concat(this.store.getNodes())});
         }.bind(this));
-        this.props.store.on(Core.Store.NODE_COUNT_CHANGED, function(err, data){
+        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, function(err, data){
             this.setState({nodes: [].concat(this.store.getNodes())});
         }.bind(this));
     }
