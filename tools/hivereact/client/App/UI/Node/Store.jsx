@@ -73,6 +73,7 @@ export default class Store extends EventEmitter {
 		this.endDragPlug = this.endDragPlug.bind(this);
 		this.selectPlugHole = this.selectPlugHole.bind(this);
 		this.unSelectPlugHoles = this.unSelectPlugHoles.bind(this);
+		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
 	}
 
 	/**
@@ -142,7 +143,6 @@ export default class Store extends EventEmitter {
 	 * @private
 	 */
 	changePlugPosition(payload) {
-	//console.log("changePlugPosition");
 		for (let i = 0; i < this.plugPositions.length; i = i + 1) {
 			if (payload.isInput) {
 				if (this.plugPositions[i].input.nodeVarname === payload.nodeVarname &&
@@ -166,8 +166,8 @@ export default class Store extends EventEmitter {
 	 * プラグのドラッグを開始する.
 	 */
 	dragPlug(payload) {
-		if (payload.hasOwnProperty('plugID')) {
-			this.emit(Store.PLUG_DRAGGING, null, payload.plugID, payload.inputPos, payload.outputPos);
+		if (payload.hasOwnProperty('plugInfo')) {
+			this.emit(Store.PLUG_DRAGGING, null, payload.plugInfo, payload.inputPos, payload.outputPos);
 		}
 	}
 
@@ -175,8 +175,8 @@ export default class Store extends EventEmitter {
 	 * プラグのドラッグを終了する.
 	 */
 	endDragPlug(payload) {
-		if (payload.hasOwnProperty('plugID')) {
-			this.emit(Store.PLUG_DRAG_END, null, payload.plugID, payload.inputPos, payload.outputPos);
+		if (payload.hasOwnProperty('plugInfo')) {
+			this.emit(Store.PLUG_DRAG_END, null, payload.plugInfo, payload.inputPos, payload.outputPos);
 		}
 	}
 
@@ -184,8 +184,8 @@ export default class Store extends EventEmitter {
 	 * プラグ端子を選択する
 	 */
 	selectPlugHole(payload) {
-		if (payload.hasOwnProperty('plugID')) {
-			this.selectedHoles.push(payload.plugID);
+		if (payload.hasOwnProperty('plugInfo')) {
+			this.selectedHoles.push(payload.plugInfo);
 			this.emit(Store.PLUG_HOLE_SELECTED, null, this.selectedHoles);
 		}
 	}
@@ -195,6 +195,31 @@ export default class Store extends EventEmitter {
 	 */
 	unSelectPlugHoles(payload) {
 		this.selectedHoles = [];
+	}
+
+	/**
+	 * プラグ端子の接続を解除
+	 */
+	disconnectPlugHole(payload) {
+		if (payload.hasOwnProperty('plugInfo')) {
+			for (let i = 0; i < this.plugPositions.length; i = i + 1) {
+				if (payload.plugInfo.isInput) {
+					if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
+						this.plugPositions[i].input.name === payload.plugInfo.data.name) {
+
+						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+						break;
+					}
+				} else {
+					if (this.plugPositions[i].output.nodeVarname === payload.plugInfo.nodeVarname &&
+						this.plugPositions[i].output.name === payload.plugInfo.data.name) {
+
+						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -208,4 +233,5 @@ Store.PLUG_POSITION_CHANGED = "plug_position_changed";
 Store.PLUG_DRAGGING = "plug_dragging";
 Store.PLUG_DRAG_END = "plug_drag_end";
 Store.PLUG_HOLE_SELECTED = "plug_hole_selected";
+Store.PLUG_HOLE_DISCONNECTED = "plug_hole_disconnected";
 Store.NODE_MOVED = "node_moved";

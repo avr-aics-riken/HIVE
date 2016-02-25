@@ -41,11 +41,11 @@ export default class Action {
 	 * @param inputPos 入力端子側のプラグ位置
 	 * @param outputPos 出力端子側のプラグ位置
 	 */
-	dragPlug(plugID, inputPos, outputPos) {
+	dragPlug(plugInfo, inputPos, outputPos) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "dragPlug",
-			plugID : plugID,
+			plugInfo : plugInfo,
 			inputPos : inputPos,
 			outputPos : outputPos
 		});
@@ -54,11 +54,11 @@ export default class Action {
 	/**
 	 * プラグのドラッグを終了する
 	 */
-	endDragPlug(plugID, inputPos, outputPos) {
+	endDragPlug(plugInfo, inputPos, outputPos) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "endDragPlug",
-			plugID : plugID,
+			plugInfo : plugInfo,
 			inputPos : inputPos,
 			outputPos : outputPos
 		});
@@ -67,21 +67,32 @@ export default class Action {
 	/**
 	 * プラグ端子を選択する
 	 */
-	selectPlugHole(plugID) {
+	selectPlugHole(plugInfo) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "selectPlugHole",
-			plugID : plugID
+			plugInfo : plugInfo
 		});
 	}
 
 	/**
 	 * プラグ端子の選択を解除する
 	 */
-	unSelectPlugHoles(payload) {
+	unSelectPlugHoles() {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "unSelectPlugHoles"
+		});
+	}
+
+	/**
+	 * プラグ端子の接続を解除
+	 */
+	disconnectPlugHole(plugInfo) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "disconnectPlugHole",
+			plugInfo : plugInfo
 		});
 	}
 

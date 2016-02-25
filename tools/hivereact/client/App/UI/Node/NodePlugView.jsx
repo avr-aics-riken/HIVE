@@ -83,6 +83,21 @@ export default class NodePlugView extends React.Component {
 			}
 		});
 
+		this.props.nodeStore.on(Store.PLUG_HOLE_DISCONNECTED, (err, data) => {
+			setTimeout(() => {
+				this.props.action.deletePlug({
+					output : {
+						nodeVarname : data.output.nodeVarname,
+						name : data.output.name
+					},
+					input : {
+						nodeVarname : data.input.nodeVarname,
+						name : data.input.name
+					}
+				});
+			}, 0);
+		});
+
 		this.temporaryPlug = this.temporaryPlug.bind(this);
 	}
 

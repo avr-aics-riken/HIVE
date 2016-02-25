@@ -137,7 +137,7 @@ export default class HiveAction {
 	 * プラグを削除する
 	 * @param plugInfo プラグ情報
 	 */
-	deletePlug(varname) {
+	deletePlug(plugInfo) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "deletePlug",

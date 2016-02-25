@@ -53,6 +53,7 @@ export default class NodeInOut extends React.Component {
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onClick = this.onClick.bind(this);
 		this.onPlugDragging = this.onPlugDragging.bind(this);
 		this.intersectHole = this.intersectHole.bind(this);
 		this.plugInfo = this.plugInfo.bind(this);
@@ -175,6 +176,12 @@ export default class NodeInOut extends React.Component {
 		}
 	}
 
+	onClick(ev) {
+		if (this.props.isInput) {
+			this.props.nodeAction.disconnectPlugHole(this.plugInfo());
+		}
+	}
+
 	// プラグをドラッグするActionを発行.
 	onMouseMove(ev) {
 		if (this.state.isDragging) {
@@ -254,6 +261,7 @@ export default class NodeInOut extends React.Component {
 			return (<div style={style.input}>
 						<div style={style.inhole}
 							onMouseDown={this.onMouseDown.bind(this)}
+							onClick={this.onClick.bind(this)}
 						/>
 						<div style={style.inholeText}>{this.props.data.name}</div>
 					</div>);
@@ -262,6 +270,7 @@ export default class NodeInOut extends React.Component {
 			return (<div style={style.output}>
 						<div style={style.outhole}
 							onMouseDown={this.onMouseDown.bind(this)}
+							onClick={this.onClick.bind(this)}
 						/>
 						<div style={style.outholeText}>{this.props.data.name}</div>
 					</div>);
