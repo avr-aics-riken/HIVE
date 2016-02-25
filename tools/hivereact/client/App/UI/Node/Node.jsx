@@ -18,7 +18,8 @@ export default class Node extends React.Component {
 			node : null,
 			closeHover : false,
 			isSelected : this.props.node.select,
-			zIndex : 0
+			zIndex : 0,
+			isMinimum : true
 		};
 		let nodes = this.props.store.getNodes();
 		for (let i = 0; i < nodes.length; i = i + 1) {
