@@ -185,6 +185,7 @@ export default class NodeInOut extends React.Component {
 	// プラグをドラッグするActionを発行.
 	onMouseMove(ev) {
 		if (this.state.isDragging) {
+			if (this.props.nodeAction.dispathcer.isDispatching()) { return; }
 			let center = this.holeCenterPosition();
 			if (this.props.isInput) {
 				this.props.nodeAction.dragPlug(this.props.id, center, {
