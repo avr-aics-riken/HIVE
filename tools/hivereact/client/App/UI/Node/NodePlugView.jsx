@@ -16,7 +16,7 @@ export default class NodePlugView extends React.Component {
 			temporaryPlug : null
 		};
 
-		this.props.store.on(Core.Store.NODE_CHANGED, (err, data) => {
+		this.props.store.on(Core.Constants.NODE_CHANGED, (err, data) => {
 			let plugs = this.state.plugPositions;
 
 			for (let i = 0, size = plugs.length; i < size; i = i + 1) {
