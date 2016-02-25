@@ -14,20 +14,14 @@ export default class Node extends React.Component {
 		this.isCtrlDown = false;
 		this.mousePos = { x : 0, y : 0};
 
+		let node = this.props.store.getNode(this.props.nodeVarname).node;
 		this.state = {
-			node : null,
+			node : node,
 			closeHover : false,
-			isSelected : this.props.node.select,
+			isSelected : node.select,
 			zIndex : 0,
 			isMinimum : true
 		};
-		let nodes = this.props.store.getNodes();
-		for (let i = 0; i < nodes.length; i = i + 1) {
-			if (nodes[i].varname === this.props.node.varname) {
-				this.state.node = nodes[i];
-				break;
-			}
-		}
 
 		this.nodeChanged = this.nodeChanged.bind(this);
 		this.selectChanged = this.selectChanged.bind(this);
@@ -45,15 +39,15 @@ export default class Node extends React.Component {
 	}
 
 	nodeChanged(err, data) {
-		if (data.varname === this.props.node.varname) {
+		if (data.varname === this.props.nodeVarname) {
 			this.setState({
-				node : this.props.node
+				node : data
 			});
 		}
 	}
 
 	selectChanged(err, data) {
-		if (data.varname === this.props.node.varname) {
+		if (data.varname === this.props.nodeVarname) {
 			if (data.select) {
 				this.setState({
 					isSelected : data.select,
@@ -71,9 +65,9 @@ export default class Node extends React.Component {
 	moveNode(err, data) {
 		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-			this.props.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
+			this.state.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
 			setTimeout(() => {
-				this.props.action.changeNode(this.props.node);
+				this.props.action.changeNode(this.state.node);
 			}, 0);
 		}
 	}
@@ -83,7 +77,7 @@ export default class Node extends React.Component {
 			x : this.state.node.pos[0],
 			y : this.state.node.pos[1],
 			w : 200,
-			h : (Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 10
+			h : (Math.max(this.state.node.input.length, this.state.node.output.length) + 1) * 18 + 10
 		};
 	}
 
@@ -91,10 +85,10 @@ export default class Node extends React.Component {
 		return {
 			node : {
 				position : "absolute",
-				left : String(this.props.node.pos[0]),
-				top : String(this.props.node.pos[1]),
+				left : String(this.state.node.pos[0]),
+				top : String(this.state.node.pos[1]),
 				width : "200px",
-				height : String((Math.max(this.props.node.input.length, this.props.node.output.length) + 1) * 18 + 20),
+				height : String((Math.max(this.state.node.input.length, this.state.node.output.length) + 1) * 18 + 20),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",
@@ -161,9 +155,9 @@ export default class Node extends React.Component {
 			this.offsetTop = ev.currentTarget.offsetTop;
 
 			if (!this.isCtrlDown) {
-				this.props.action.unSelectNode([], this.props.node.varname);
+				this.props.action.unSelectNode([], this.props.nodeVarname);
 			}
-			this.props.action.selectNode([this.props.node.varname]);
+			this.props.action.selectNode([this.props.nodeVarname]);
 		}
 	}
 
@@ -184,7 +178,7 @@ export default class Node extends React.Component {
 
 	/// 閉じるボタンが押された.
 	onCloseClick(ev) {
-		this.props.action.deleteNode(this.props.node.varname);
+		this.props.action.deleteNode(this.props.nodeVarname);
 	}
 
 	/// 閉じるボタンにマウスホバーされた
@@ -195,20 +189,20 @@ export default class Node extends React.Component {
 	/// タイトル.
 	titleElem() {
 		const style = this.styles.bind();
-		return <div style={style.title}>{this.props.node.name}</div>
+		return <div style={style.title}>{this.state.node.name}</div>
 	}
 
 	/// 入力端子.
 	inputElem() {
-		let inputs = this.props.node.input.map( (inputData, index) => {
+		let inputs = this.state.node.input.map( (inputData, index) => {
 			return (<NodeInOut
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						nodeRect={this.nodeRect(index)}
-						nodeVarname={this.props.node.varname}
+						nodeVarname={this.props.nodeVarname}
 						isInput={true} data={inputData}
-						key={this.props.node.varname + "_" + inputData.name + "_" + index}
-						id={this.props.node.varname + "_" + inputData.name + "_" + index}
+						key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
+						id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
 						index={index} />)
 		});
 		return (<div>{inputs}</div>);
@@ -216,16 +210,16 @@ export default class Node extends React.Component {
 
 	/// 出力端子.
 	outputElem() {
-		let outputs = this.props.node.output.map( (outputData, index) => {
+		let outputs = this.state.node.output.map( (outputData, index) => {
 			return (<NodeInOut
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 			 			nodeRect={this.nodeRect(index)}
-						nodeVarname={this.props.node.varname}
+						nodeVarname={this.props.nodeVarname}
 						isInput={false}
 						data={outputData}
-						key={this.props.node.varname + "_" + outputData.name + "_" + index}
-						id={this.props.node.varname + "_" + outputData.name + "_" + index}
+						key={this.props.nodeVarname + "_" + outputData.name + "_" + index}
+						id={this.props.nodeVarname + "_" + outputData.name + "_" + index}
 						index={index} />)
 		});
 		return (<div>{outputs}</div>);
