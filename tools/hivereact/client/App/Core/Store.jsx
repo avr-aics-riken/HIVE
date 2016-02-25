@@ -1,7 +1,7 @@
 import EventEmitter from 'eventemitter3'
 import Dispatcher from "./Dispatcher.jsx"
 import Hive from "../HIVE"
-import ActionExecuter from "./ActionExecuter.jsx"
+import ActionExecuter from "./ActionExecutor.jsx"
 import NodeSystem from "../NodeSystem"
 import Constants from "./Constants.jsx"
 
@@ -9,14 +9,15 @@ export default class Store extends EventEmitter {
 	constructor() {
 		super();
 
-		this.data = {
-          // 全てのノード        
-		  nodes : [],
+
+		// 全てのノード
+        //this.data = {
+		  this.nodes = [];
 
 		  // 全てのプラグ
-		  plugs : []
-        }
-         
+		  this.plugs = [];
+        //}
+        
 		this.actionExecuter = new ActionExecuter(this, this.data);
 		this.dispatchToken = Dispatcher.register(this.actionHandler.bind(this));
 
