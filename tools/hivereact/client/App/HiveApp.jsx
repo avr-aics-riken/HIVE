@@ -42,7 +42,7 @@ export default class HiveApp extends React.Component {
                         <Panel.View store={this.store} action={this.action} />
                     </div>
                 </SplitPane>
-                <Menu.View store={this.store} action={this.action} />
+                <Menu.View store={this.store} action={this.action} nodeSystem={this.nodesystem} />
             </div>
         );
     }

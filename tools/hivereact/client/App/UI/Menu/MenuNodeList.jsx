@@ -7,7 +7,8 @@ export default class MenuNodeList extends React.Component {
         super(props);
 
         this.state = {
-            nodes : null,
+            nodes: null,
+            nodeList: null
         };
 
         this.styles = this.styles.bind(this);
@@ -22,7 +23,27 @@ export default class MenuNodeList extends React.Component {
                 width: "100%",
                 height: "300px",
                 boxShadow: "0px 0px 1px 0px white inset"
+            },
+            list: {
+                lineHeight: "30px",
+                width: "100%",
+                height: "30px",
+                boxShadow: "0px 0px 1px 0px white inset"
             }
+        }
+    }
+
+    generator(value){
+        const style = this.styles();
+        let nodeNameList = this.props.nodeSystem.GetNodeNameList();
+        if(nodeNameList && nodeNameList.length > 0){
+            this.setState({nodeList: nodeNameList});
+            return nodeNameList.map(list);
+        }
+        function list(val, key){
+            return (
+                <div style={style.list} key={key}>{this.state.nodeList[key]}</div>
+            );
         }
     }
 
@@ -30,6 +51,7 @@ export default class MenuNodeList extends React.Component {
         const style = this.styles();
         return (
             <div style={style.block}>
+                {this.generator.bind(this)()}
             </div>
         );
     }

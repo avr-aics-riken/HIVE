@@ -12,18 +12,21 @@ export default class Menu extends React.Component {
             nodes : null,
         };
 
+        this.store = this.props.store;
+        this.action = this.props.action;
+        this.nodesystem = this.props.nodeSystem;
         this.styles = this.styles.bind(this);
     }
 
-    functionReplacer(data){
-        return JSON.stringify(data, function(key, val){
-            if(typeof val === "function"){
-                return val.toString();
-            }
-            return val;
-        }, 2);
-    }
-
+    // functionReplacer(data){
+    //     return JSON.stringify(data, function(key, val){
+    //         if(typeof val === "function"){
+    //             return val.toString();
+    //         }
+    //         return val;
+    //     }, 2);
+    // }
+    //
     allClearNode(){
         if(confirm('really?')){
             let nodes = this.props.store.getNodes();
@@ -156,7 +159,8 @@ export default class Menu extends React.Component {
                         nodes: this.props.store.getNodes(),
                         plugs: this.props.store.getPlugs()
                     };
-                    var blob = new Blob([this.functionReplacer.bind(this)(data)], {type: "text/plain;charset=utf-8"});
+                    // var blob = new Blob([this.functionReplacer.bind(this)(data)], {type: "text/plain;charset=utf-8"});
+                    var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
                     saveAs(blob, "save.json");
                 }.bind(this)
             },
@@ -172,8 +176,8 @@ export default class Menu extends React.Component {
                     <div style={style.header}>
                         <div style={style.headerCaption}>Node Create</div>
                     </div>
-                    <MenuNodeCreate store={this.props.store} action={this.props.action} />
-                    <MenuNodeList store={this.props.store} action={this.props.action} />
+                    <MenuNodeCreate store={this.props.store} action={this.props.action} nodeSystem={this.nodesystem} />
+                    <MenuNodeList store={this.props.store} action={this.props.action} nodeSystem={this.nodesystem} />
                 </div>
                 <div>
                     <div style={style.header}>

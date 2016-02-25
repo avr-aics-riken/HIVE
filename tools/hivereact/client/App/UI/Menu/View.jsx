@@ -9,7 +9,7 @@ export default class View extends React.Component {
 
     render(){
         return (
-            <Menu store={this.props.store} action={this.props.action} />
+            <Menu store={this.props.store} action={this.props.action} nodeSystem={this.props.nodeSystem} />
         );
     }
 }
