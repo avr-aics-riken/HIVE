@@ -1,10 +1,13 @@
-//import Store from "./Store.jsx";
 import Constants from "./Constants.jsx"
 
 export default class ActionExecuter {
-	constructor(store, data) {
-		this.store = store;
-
+	constructor(store) {
+        
+        //
+        // !!! don't have any data. !!!
+        //
+        
+        // only Functions		
 		this.addNode = this.addNode.bind(store);
 		this.deleteNode = this.deleteNode.bind(store);
 		this.changeNode = this.changeNode.bind(store);
@@ -28,13 +31,13 @@ export default class ActionExecuter {
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
 				if (payload.nodeInfo.panel.zindex === 0) {
-					payload.nodeInfo.panel.zindex = this.nodes.length + 1;
+					payload.nodeInfo.panel.zindex = this.data.nodes.length + 1;
 				}
 			}
 			if (node) {
-				this.nodes.push(node);
+				this.data.nodes.push(node);
 			}
-			this.emit(Constants.NODE_COUNT_CHANGED, null, this.nodes.length);
+			this.emit(Constants.NODE_COUNT_CHANGED, null, this.data.nodes.length);
 			this.emit(Constants.NODE_ADDED, null, payload.nodeInfo);
 		}
 	}
@@ -46,7 +49,7 @@ export default class ActionExecuter {
 		if (payload.hasOwnProperty('varname')) {
 			let n = this.getNode(payload.varname);
 			if (n) {
-				this.nodes.splice(n.index, 1);
+				this.data.nodes.splice(n.index, 1);
 				this.emit(Constants.NODE_COUNT_CHANGED, null, this.nodes.length);
 				this.emit(Constants.NODE_DELETED, null, n.node);
 
@@ -68,21 +71,21 @@ export default class ActionExecuter {
  	 */
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
- 			for (let i = 0; i < this.nodes.length; i = i + 1) {
-				if (this.nodes[i].varname === payload.nodeInfo.varname) {
-					let preInputs = JSON.stringify(this.nodes[i].input);
+ 			for (let i = 0; i < this.data.nodes.length; i = i + 1) {
+				if (this.data.nodes[i].varname === payload.nodeInfo.varname) {
+					let preInputs = JSON.stringify(this.data.nodes[i].input);
 					let postInputs = JSON.stringify(payload.nodeInfo.input);
-					let preSelect = this.nodes[i].select;
+					let preSelect = this.data.nodes[i].select;
 					let postSelect = payload.nodeInfo.select;
-					let uiComponent = this.nodes[i].uiComponent;
-					this.nodes[i] = JSON.parse(JSON.stringify(payload.nodeInfo));
-					this.nodes[i].uiComponent = uiComponent;
-					this.emit(Constants.NODE_CHANGED, null, this.nodes[i], i);
+					let uiComponent = this.data.nodes[i].uiComponent;
+					this.data.nodes[i] = JSON.parse(JSON.stringify(payload.nodeInfo));
+					this.data.nodes[i].uiComponent = uiComponent;
+					this.emit(Constants.NODE_CHANGED, null, this.data.nodes[i], i);
 					if (preInputs !== postInputs) {
-						this.emit(Constants.NODE_INPUT_CHANGED, null, this.nodes[i], i);
+						this.emit(Constants.NODE_INPUT_CHANGED, null, this.data.nodes[i], i);
 					}
 					if (preSelect !== postSelect) {
-						this.emit(Constants.NODE_SELECTE_CHANGED, null, this.nodes[i], i);
+						this.emit(Constants.NODE_SELECTE_CHANGED, null, this.data.nodes[i], i);
 					}
 				}
 			}
@@ -133,10 +136,10 @@ export default class ActionExecuter {
 					}
 				}
 			} else {
-				for (let i = 0; i < this.nodes.length; i = i + 1) {
-					// if (this.nodes[i].select) {
-						this.nodes[i].select = false;
-						this.emit(Constants.NODE_SELECTE_CHANGED, null, this.nodes[i], i);
+				for (let i = 0; i < this.data.nodes.length; i = i + 1) {
+					// if (this.data.nodes[i].select) {
+						this.data.nodes[i].select = false;
+						this.emit(Constants.NODE_SELECTE_CHANGED, null, this.data.nodes[i], i);
 					// }
 				}
 			}
@@ -149,16 +152,16 @@ export default class ActionExecuter {
 	addPlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
 			for (let i = 0; i < this.plugs.length; i = i + 1) {
-				if (this.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
-					this.plugs[i].output.name === payload.plugInfo.output.name &&
-					this.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
-					this.plugs[i].input.name === payload.plugInfo.input.name) {
+				if (this.data.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
+					this.data.plugs[i].output.name === payload.plugInfo.output.name &&
+					this.data.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
+					this.data.plugs[i].input.name === payload.plugInfo.input.name) {
 					// 同じプラグが既にあった.
 					return;
 				}
 			}
-			this.plugs.push(payload.plugInfo);
-			this.emit(Constants.PLUG_COUNT_CHANGED, null, this.plugs.length);
+			this.data.plugs.push(payload.plugInfo);
+			this.emit(Constants.PLUG_COUNT_CHANGED, null, this.data.plugs.length);
 		}
 	}
 
@@ -168,11 +171,11 @@ export default class ActionExecuter {
 	deletePlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
 			for (let i = 0; i < this.plugs.length; i = i + 1) {
-				if (this.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
-					this.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname) {
+				if (this.data.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
+					this.data.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname) {
 					let plug = this.plugs[i];
-					this.plugs.splice(i, 1);
-					this.emit(Constants.PLUG_COUNT_CHANGED, null, this.plugs.length);
+					this.data.plugs.splice(i, 1);
+					this.emit(Constants.PLUG_COUNT_CHANGED, null, this.data.plugs.length);
 					this.emit(Constants.PLUG_DELETED, null, plug);
 					break;
 				}
