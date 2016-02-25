@@ -20,7 +20,6 @@ export default class NodeView extends React.Component {
 				nodes : [].concat(this.props.store.getNodes())
 			});
 		});
-		//this.moveNode = this.moveNode.bind(this);
 	}
 
 	styles() {
@@ -37,34 +36,6 @@ export default class NodeView extends React.Component {
 		}
 	}
 
-	/*
-	/// 選択中のすべてのノードを動かす.
-	moveNode(err, data) {
-		let selectedNodes = [];
-		for (let i = 0, size = this.props.store.getNodes().length; i < size; i = i + 1) {
-			let node = this.props.store.getNodes()[i];
-			if (node.select) {
-				// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-				let offset = this.props.nodeStore.getNodeOffset(node.varname);
-				if (offset) {
-					node.pos = [offset.offsetLeft + data.x, offset.offsetTop + data.y];
-					selectedNodes.push(node);
-				}
-			}
-		}
-		console.log("changeNodes", selectedNodes);
-		this.props.action.changeNodes(selectedNodes);
-	}
-
-	componentDidMount() {
-		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
-	}
-
-	componentWillUnmount() {
-		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
-	}
-	*/
-
     // TO BE DELETED
 	addButtonClick() {
         let nodes = this.props.store.getNodes();
@@ -75,7 +46,7 @@ export default class NodeView extends React.Component {
 			this.props.action.addNodeByName('RenderView');
 		}
         return;
-        
+
         // TO BE DELETED
         /*let nodes = this.props.store.getNodes();
 		let node;
@@ -119,22 +90,6 @@ export default class NodeView extends React.Component {
 
 		this.props.action.addNode(node);
 */
-		// create plug test
-		/*
-		console.log("this.state.nodes.length", this.state.nodes.length );
-		if (this.props.store.getNodes().length > 1) {
-			this.props.action.addPlug({ output : {
-				nodeVarname : this.state.nodes[0].varname,
-				name : this.state.nodes[0].output[0].name
-			}, input : {
-				nodeVarname : node.varname,
-				name : node.input[2].name
-			}});
-		}
-		*/
-
-		//console.log("Add Node:", node.varname);
-
 	}
 
     // TO BE DELETED
