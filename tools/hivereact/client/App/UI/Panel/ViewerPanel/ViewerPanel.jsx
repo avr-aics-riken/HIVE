@@ -18,7 +18,7 @@ export default class ViewerPanel extends React.Component {
 		this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
 
-		this.store.on(Core.Store.IMAGE_RECIEVED, (err, param, data) => {
+		this.store.on(Core.Constants.IMAGE_RECIEVED, (err, param, data) => {
 			var buffer;
 			console.log(param);
 

@@ -15,7 +15,7 @@ export default class NodeView extends React.Component {
 		this.state = {
 			nodes : this.props.store.getNodes()
 		};
-		this.props.store.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
+		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.setState({
 				nodes : [].concat(this.props.store.getNodes())
 			});

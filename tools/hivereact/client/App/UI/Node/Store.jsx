@@ -30,7 +30,7 @@ export default class Store extends EventEmitter {
 		// }
 		this.selectedHoles = [];
 
-		coreStore.on(Core.Store.NODE_COUNT_CHANGED, (err, data) => {
+		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
 				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
@@ -39,7 +39,7 @@ export default class Store extends EventEmitter {
 
 		this.calcPlugPosition = this.calcPlugPosition.bind(this);
 
-		coreStore.on(Core.Store.PLUG_COUNT_CHANGED, (err, data) => {
+		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
 			console.log("PLUG COUNT CHANGED");
 			let plugs = coreStore.getPlugs();
 			console.log("PLUGS", plugs);

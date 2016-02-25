@@ -1,7 +1,7 @@
 import NodeCreator from './NodeCreator.jsx'
 import NodeSerializer from './NodeSerializer.jsx'
 import EventEmitter from 'eventemitter3'
-import Store from '../Core/Store.jsx'
+import Constants from '../Core/Constants.jsx'
 
 export default class NodeSystem extends EventEmitter {
 
@@ -30,10 +30,10 @@ export default class NodeSystem extends EventEmitter {
 
 
     initEmitter(store) {
-        store.on(Store.NODE_CHANGED, (err, data) => {
+        store.on(Constants.NODE_CHANGED, (err, data) => {
 
         });
-        store.on(Store.NODE_INPUT_CHANGED, (err, data) => {
+        store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
             //console.log('NS catched:NODE_INPUT_CHANGED', err, data);
             let node = data;
             //let nodes = store.getNodes();
@@ -69,19 +69,19 @@ export default class NodeSystem extends EventEmitter {
 
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
-        store.on(Store.PLUG_CHANGED, (err, data) => {
+        store.on(Constants.PLUG_CHANGED, (err, data) => {
             // not need now.
         });
-        store.on(Store.NODE_COUNT_CHANGED, (err, data) => {
+        store.on(Constants.NODE_COUNT_CHANGED, (err, data) => {
             console.log('NS catched:NODE_COUNT_CHANGED', err, data);
             // not need now.
         });
 
-        /*store.on(Store.NODE_INPUT_CHANGED, (err, data) => {
+        /*store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
             // TODO
         });*/
 
-        store.on(Store.NODE_ADDED, (err, data) => {
+        store.on(Constants.NODE_ADDED, (err, data) => {
             // create new / delete instance
             console.log('NS catched:NODE_ADDED', err, data);
 
@@ -89,19 +89,19 @@ export default class NodeSystem extends EventEmitter {
             const script = this.nodeSerializer.newNode(node);
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
-        store.on(Store.NODE_DELETED, (err, data) => {
+        store.on(Constants.NODE_DELETED, (err, data) => {
             console.log('NS catched:NODE_DELETED', err, data);
 
             let node = data;
             const script = this.nodeSerializer.deleteNode(node);
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
-        store.on(Store.PLUG_ADDED, (err, data) => {
+        store.on(Constants.PLUG_ADDED, (err, data) => {
             console.log('NS catched:PLUG_ADDED', err, data);
 
             // TODO
         });
-        store.on(Store.PLUG_DELETED, (err, data) => {
+        store.on(Constants.PLUG_DELETED, (err, data) => {
             console.log('NS catched:PLUG_DELETED', err, data);
 
             // TODO

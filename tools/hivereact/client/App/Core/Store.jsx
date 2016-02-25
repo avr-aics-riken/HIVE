@@ -3,19 +3,25 @@ import Dispatcher from "./Dispatcher.jsx"
 import Hive from "../HIVE"
 import ActionExecuter from "./ActionExecuter.jsx"
 import NodeSystem from "../NodeSystem"
+import Constants from "./Constants.jsx"
 
 export default class Store extends EventEmitter {
 	constructor() {
 		super();
 
-		this.actionExecuter = new ActionExecuter(this);
+		this.data = {
+          // 全てのノード        
+		  nodes : [],
+
+		  // 全てのプラグ
+		  plugs : []
+        }
+         
+		this.actionExecuter = new ActionExecuter(this, this.data);
 		this.dispatchToken = Dispatcher.register(this.actionHandler.bind(this));
 
-		// 全てのノード
-		this.nodes = [];
-
-		// 全てのプラグ
-		this.plugs = [];
+        
+        
 
 		this.initHive = this.initHive.bind(this);
 		this.getNodes = this.getNodes.bind(this);
@@ -32,7 +38,7 @@ export default class Store extends EventEmitter {
 		this.nodeSystem = new NodeSystem((nodeSystem) => {
 			// initilized.
 			this.hive.on(Hive.IMAGE_RECIEVED, (err, param, data) => {
-				this.emit(Store.IMAGE_RECIEVED, err, param, data);
+				this.emit(Constants.IMAGE_RECIEVED, err, param, data);
 			});
 			this.nodeSystem.on(NodeSystem.SCRIPT_SERIALIZED, (script) => {
 				//console.warn('SCRIPT>', script);
@@ -40,7 +46,7 @@ export default class Store extends EventEmitter {
 			});
 			//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
 			this.hive.connect('ws://localhost:8080', '', true);
-			this.emit(Store.INITIALIZED, null);
+			this.emit(Constants.INITIALIZED, null);
 		});
 		this.nodeSystem.initEmitter(this);
 	}
@@ -100,16 +106,3 @@ export default class Store extends EventEmitter {
 		}
 	}
 }
-
-Store.INITIALIZED = "initialized";
-Store.NODE_CHANGED = "node_changed";
-Store.NODE_INPUT_CHANGED = "node_input_changed";
-Store.PLUG_CHANGED = "plug_changed";
-Store.NODE_COUNT_CHANGED = "node_count_changed";
-Store.PLUG_COUNT_CHANGED = "plug_count_changed";
-Store.IMAGE_RECIEVED = "image_revieved";
-Store.NODE_ADDED = "node_added";
-Store.NODE_DELETED = "node_deleted";
-Store.NODE_SELECTE_CHANGED = "node_selected";
-Store.PLUG_ADDED = "plug_added";
-Store.PLUG_DELETED = "plug_deleted";

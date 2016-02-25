@@ -50,9 +50,9 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousemove', this.onScaleMove);
         window.addEventListener('mouseup', this.onScaleUp);
-        this.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
-        this.store.on(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
-        this.store.on(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
@@ -60,9 +60,9 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onMouseUp);
         window.removeEventListener('mousemove', this.onScaleMove);
         window.removeEventListener('mouseup', this.onScaleUp);
-        this.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
-        this.store.removeListener(Core.Store.NODE_COUNT_CHANGED, this.nodeChanged);
-        this.store.removeListener(Core.Store.NODE_SELECTE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
