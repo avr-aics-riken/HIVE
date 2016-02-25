@@ -2,9 +2,9 @@ import EventEmitter from 'eventemitter3'
 import Core from '../../Core'
 
 export default class Store extends EventEmitter {
-	constructor(dispathcer, coreStore) {
+	constructor(dispatcher, coreStore) {
 		super();
-		this.dispatchToken = dispathcer.register(this.actionHandler.bind(this));
+		this.dispatchToken = dispatcher.register(this.actionHandler.bind(this));
 
 		// 以下の形式のプラグ情報のリスト
 		// {
