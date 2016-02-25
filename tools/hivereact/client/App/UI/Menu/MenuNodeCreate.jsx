@@ -15,6 +15,7 @@ export default class MenuNodeCreate extends React.Component {
 
         this.styles = this.styles.bind(this);
 
+        // auto suggest
         this.onChange = this.onChange.bind(this);
         this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
         this.getSuggestions = this.getSuggestions.bind(this);
@@ -23,20 +24,20 @@ export default class MenuNodeCreate extends React.Component {
     }
 
     // インプットボックスの change と自身のステートの更新はここ
-    onChange(event, {newValue}){
+    onChange(eve, {newValue}){
         this.setState({value: newValue});
     }
 
     // ここにある nodeNames にセットされた名前がサジェストされる
     getSuggestions(value) {
-        var nodeNames = [
-            {name: 'kioku'},
-            {name: 'kioku_kioku'},
-            {name: 'kioku_kioku_kioku'},
-            {name: 'uimac'},
-            {name: 'uimac_uimac'},
-            {name: 'uimac_uimac_uimac'}
-        ];
+        var nodeNameList = this.props.nodeSystem.GetNodeNameList();
+        var nodeNames = [];
+        if(nodeNameList){
+            for(let i in nodeNameList){
+                nodeNames.push({name: nodeNameList[i]});
+            }
+        }
+        if(nodeNames.length === 0){return [];}
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
         return inputLength === 0 ? [] : nodeNames.filter(nodename =>

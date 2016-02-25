@@ -73,8 +73,8 @@ export default class NodeCreator {
     
     GetNodeNameList() {
         var nlist = [];
-        for (n = 0; n < this.nodeList.length; ++n) {
-            nlist.push(this.nodeList[i].name);
+        for (let n = 0; n < this.nodeList.length; ++n) {
+            nlist.push(this.nodeList[n].name);
         }
         return nlist;
     }
