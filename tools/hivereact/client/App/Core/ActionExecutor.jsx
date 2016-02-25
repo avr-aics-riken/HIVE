@@ -45,7 +45,7 @@ export default class ActionExecuter {
 			}
 		}
 	}
-    
+
 	/**
 	 * ノード追加
 	 */
@@ -56,7 +56,6 @@ export default class ActionExecuter {
 				node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
 				node.varname = node.name + uuid();
 				node.pos = [ 200, 200 ];
-				console.log("aaa", node);
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
 				if (payload.nodeInfo.panel.zindex === 0) {

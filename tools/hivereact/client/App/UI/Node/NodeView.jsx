@@ -106,7 +106,7 @@ export default class NodeView extends React.Component {
 	render() {
 		const styles = this.styles.bind(this)();
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
-			return (<Node node={nodeData}
+			return (<Node nodeVarname={nodeData.varname}
 			 			store={this.props.store}
 						action={this.props.action}
 						nodeStore={this.props.nodeStore}
