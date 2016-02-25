@@ -111,7 +111,6 @@ export default class NodeView extends React.Component {
 						action={this.props.action}
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
-			 			nodeSystem={this.props.nodeSystem}
 						key={nodeData.varname + key}
 					></Node>);
 		} ));

@@ -35,7 +35,7 @@ export default class MenuNodeList extends React.Component {
 
     generator(value){
         const style = this.styles();
-        let nodeNameList = this.props.nodeSystem.GetNodeNameList();
+        let nodeNameList = this.props.store.getNodeNameList();
         if(nodeNameList && nodeNameList.length > 0){
             this.setState({nodeList: nodeNameList});
             return nodeNameList.map(list);
