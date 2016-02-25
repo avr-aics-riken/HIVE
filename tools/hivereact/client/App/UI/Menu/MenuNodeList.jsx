@@ -8,10 +8,13 @@ export default class MenuNodeList extends React.Component {
 
         this.state = {
             nodes: null,
-            nodeList: null
+            nodeList: this.props.store.getNodeNameList()
         };
 
         this.styles = this.styles.bind(this);
+        this.props.store.on(Core.Constants.INITIALIZED, ()=>{
+            this.setState({nodeList: this.props.store.getNodeNameList()});
+        }.bind(this));
     }
 
     styles() {
@@ -33,25 +36,18 @@ export default class MenuNodeList extends React.Component {
         }
     }
 
-    generator(value){
+    generator(value, key){
         const style = this.styles();
-        let nodeNameList = this.props.store.getNodeNameList();
-        if(nodeNameList && nodeNameList.length > 0){
-            this.setState({nodeList: nodeNameList});
-            return nodeNameList.map(list);
-        }
-        function list(val, key){
-            return (
-                <div style={style.list} key={key}>{this.state.nodeList[key]}</div>
-            );
-        }
+        return (
+            <div style={style.list} key={key}>{value}</div>
+        );
     }
 
     render(){
         const style = this.styles();
         return (
             <div style={style.block}>
-                {this.generator.bind(this)()}
+                {this.state.nodeList.map(this.generator.bind(this))}
             </div>
         );
     }
