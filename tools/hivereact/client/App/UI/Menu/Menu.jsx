@@ -1,9 +1,8 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import Core from '../../Core'
-import Store from './Store.jsx'
 import MenuNodeCreate from './MenuNodeCreate.jsx'
-import SplitPane from 'react-split-pane';
+import MenuNodeList from './MenuNodeList.jsx'
 
 export default class Menu extends React.Component {
     constructor(props) {
@@ -13,39 +12,8 @@ export default class Menu extends React.Component {
             nodes : null,
         };
 
-        // this.nodeChanged = this.nodeChanged.bind(this);
-        // this.selectChanged = this.selectChanged.bind(this);
-        // this.moveNode = this.moveNode.bind(this);
-        //
-        // this.componentDidMount = this.componentDidMount.bind(this);
-        // this.componentWillUnmount = this.componentWillUnmount.bind(this);
-        // this.onMouseMove = this.onMouseMove.bind(this);
-        // this.onMouseUp = this.onMouseUp.bind(this);
-        // this.onMouseDown = this.onMouseDown.bind(this);
-        // this.onKeyDown = this.onKeyDown.bind(this);
-        // this.onKeyUp = this.onKeyUp.bind(this);
         this.styles = this.styles.bind(this);
     }
-
-    // componentDidMount() {
-    //     window.addEventListener('mousemove', this.onMouseMove);
-    //     window.addEventListener('mouseup', this.onMouseUp);
-    //     window.addEventListener('keydown', this.onKeyDown);
-    //     window.addEventListener('keyup', this.onKeyUp);
-    //     this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
-    //     this.props.nodeStore.on(Store.NODE_SELECTE_CHANGED, this.selectChanged);
-    //     this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
-    // }
-    //
-    // componentWillUnmount() {
-    //     window.removeEventListener('mousemove', this.onMouseMove);
-    //     window.removeEventListener('mouseup', this.onMouseUp);
-    //     window.removeEventListener('keydown', this.onKeyDown);
-    //     window.removeEventListener('keyup', this.onKeyUp);
-    //     this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
-    //     this.props.nodeStore.removeListener(Store.NODE_SELECTE_CHANGED, this.selectChanged);
-    //     this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
-    // }
 
     functionReplacer(data){
         return JSON.stringify(data, function(key, val){
@@ -75,16 +43,31 @@ export default class Menu extends React.Component {
     styles() {
         return {
             menuArea: {
-                backgroundColor: "#222",
+                backgroundColor: "maroon",
                 color: "#eee",
-                fontSize: "9pt",
+                fontSize: "10pt",
+                margin: "0px",
+                padding: "0px",
+                width: "100px",
+                height: "100%",
+                position: "fixed",
+                top: "0px",
+                left: "0px",
+                zIndex: "9999",
+                overflow: "auto" // temp
+            },
+            header: {
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                textAlign: "30px",
                 margin: "0px",
                 padding: "0px",
                 width: "100%",
-                minHeight: "250px",
-                position: "absolute",
-                bottom: "0px",
-                left: "0px"
+                minHeight: "30px",
+                boxShadow: "0px 0px 1px 0px white inset"
+            },
+            headerCaption: {
+                fontWeight: "bold",
+                padding: "5px 10px"
             },
             block: {
                 textAlign: "right",
@@ -106,10 +89,6 @@ export default class Menu extends React.Component {
                 display: "inline-block",
                 float: "left",
                 boxShadow: "0px -1px 1px 1px #666 inset"
-            },
-            column: {
-                width: "100%",
-                height: "100%"
             }
         }
     }
@@ -143,8 +122,6 @@ export default class Menu extends React.Component {
         );
     }
 
-    // bl という配列の中で定義した配列のとおりに
-    // ブロックが生成される感じ（仮）
     render(){
         const style = this.styles();
         let bl = [
@@ -191,14 +168,19 @@ export default class Menu extends React.Component {
         ];
         return (
             <div style={style.menuArea}>
-                <SplitPane split="vertical" minSize="50">
-                    <div style={style.column}>
-                        <MenuNodeCreate />
+                <div>
+                    <div style={style.header}>
+                        <div style={style.headerCaption}>Node Create</div>
                     </div>
-                    <div style={style.column}>
-                        {bl.map(this.block.bind(this))}
+                    <MenuNodeCreate store={this.props.store} action={this.props.action} />
+                    <MenuNodeList store={this.props.store} action={this.props.action} />
+                </div>
+                <div>
+                    <div style={style.header}>
+                        <div style={style.headerCaption}>Others</div>
                     </div>
-                </SplitPane>
+                    {bl.map(this.block.bind(this))}
+                </div>
             </div>
         );
     }

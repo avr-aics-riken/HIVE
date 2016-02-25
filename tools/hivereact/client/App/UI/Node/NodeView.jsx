@@ -29,7 +29,7 @@ export default class NodeView extends React.Component {
 				position : "absolute",
 				width : "100px",
 				height : "20px",
-				left : "0px",
+				right : "0px",
 				top : "0px",
 				backgroundColor : "blue",
 				color : "white"
