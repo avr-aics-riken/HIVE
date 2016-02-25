@@ -11,21 +11,23 @@ import NodeSystem from "./NodeSystem"
 export default class HiveApp extends React.Component {
 	constructor (props) {
 		super(props);
-		var randomid = Math.floor(Math.random() * 10000);
-		this.store = new Core.Store();
-		this.action = new Core.Action(this.store.getDispatchToken());
-		this.hive = new Hive();
-		this.store.initEmitter(this.hive);
-		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
-		this.hive.connect('ws://localhost:8080', '', true);
-
+        
+        var randomid = Math.floor(Math.random() * 10000);
+		this.store = new Core.Store();		
         this.nodesystem = new NodeSystem((nodesystem) => {
             // initilized.
         });
         this.nodesystem.initEmitter(this.store);
         this.nodesystem.on(NodeSystem.SCRIPT_SERIALIZED, (script) => {
+            //console.warn('SCRIPT>', script);        
             this.hive.runScript(script);
         });
+        
+		this.action = new Core.Action(this.store.getDispatchToken(), this.nodesystem);
+		this.hive = new Hive();
+		this.store.initEmitter(this.hive);
+		//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
+		this.hive.connect('ws://localhost:8080', '', true);
     }
 
     render() {

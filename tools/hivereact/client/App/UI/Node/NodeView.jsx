@@ -65,8 +65,19 @@ export default class NodeView extends React.Component {
 	}
 	*/
 
+    // TO BE DELETED
 	addButtonClick() {
         let nodes = this.props.store.getNodes();
+		let node;
+		if (nodes.length === 0) {
+			this.props.action.addNodeByName('CreateCamera');
+		} else if (nodes.length == 1) {
+			this.props.action.addNodeByName('RenderView');
+		}
+        return;
+        
+        // TO BE DELETED
+        /*let nodes = this.props.store.getNodes();
 		let node;
 		if (nodes.length === 0) {
 			node = this.props.nodeSystem.CreateNodeInstance('CreateCamera');
@@ -107,7 +118,7 @@ export default class NodeView extends React.Component {
         node.panel.pos = [x, y];
 
 		this.props.action.addNode(node);
-
+*/
 		// create plug test
 		/*
 		console.log("this.state.nodes.length", this.state.nodes.length );
@@ -122,10 +133,11 @@ export default class NodeView extends React.Component {
 		}
 		*/
 
-		console.log("Add Node:", node.varname);
+		//console.log("Add Node:", node.varname);
 
 	}
 
+    // TO BE DELETED
 	/// 追加ボタン(仮)
 	addButton() {
 		const styles = this.styles.bind(this)();
