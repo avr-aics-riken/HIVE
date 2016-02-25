@@ -2,6 +2,8 @@ import React from "react"
 import ReactDOM from "react-dom"
 import Core from '../../Core'
 import Store from './Store.jsx'
+import MenuNodeCreate from './MenuNodeCreate.jsx'
+import SplitPane from 'react-split-pane';
 
 export default class Menu extends React.Component {
     constructor(props) {
@@ -79,7 +81,7 @@ export default class Menu extends React.Component {
                 margin: "0px",
                 padding: "0px",
                 width: "100%",
-                minHeight: "50px",
+                minHeight: "250px",
                 position: "absolute",
                 bottom: "0px",
                 left: "0px"
@@ -98,12 +100,16 @@ export default class Menu extends React.Component {
                 color: "whitesmoke",
                 fontSize: "x-small",
                 lineHeight: "15px",
-                margin: "0px",
+                margin: "-1px 0px 0px",
                 padding: "0px 12px 0px 5px",
                 height: "15px",
                 display: "inline-block",
                 float: "left",
                 boxShadow: "0px -1px 1px 1px #666 inset"
+            },
+            column: {
+                width: "100%",
+                height: "100%"
             }
         }
     }
@@ -185,7 +191,14 @@ export default class Menu extends React.Component {
         ];
         return (
             <div style={style.menuArea}>
-                {bl.map(this.block.bind(this))}
+                <SplitPane split="vertical" minSize="50">
+                    <div style={style.column}>
+                        <MenuNodeCreate />
+                    </div>
+                    <div style={style.column}>
+                        {bl.map(this.block.bind(this))}
+                    </div>
+                </SplitPane>
             </div>
         );
     }

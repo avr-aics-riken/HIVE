@@ -18,7 +18,8 @@
 		"superagent": "^1.7.1",
 		"eventemitter3" : "*",
 		"electron-packager" : "*",
-		"react-split-pane" : "*"
+		"react-split-pane" : "*",
+		"react-autosuggest" : "*"
 	},
 	"window": {
 		"toolbar": true,
