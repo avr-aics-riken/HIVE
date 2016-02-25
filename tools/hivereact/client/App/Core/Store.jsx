@@ -42,7 +42,7 @@ export default class Store extends EventEmitter {
 			this.emit(Constants.IMAGE_RECIEVED, err, param, data);
 		});
 		this.nodeSystem.on(NodeSystem.SCRIPT_SERIALIZED, (script) => {
-			console.warn('SCRIPT>', script);
+			//console.warn('SCRIPT>', script);
 			this.hive.runScript(script);
 		});
 		this.nodeSystem.initEmitter(this);
