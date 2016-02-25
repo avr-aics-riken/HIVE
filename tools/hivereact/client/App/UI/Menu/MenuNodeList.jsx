@@ -25,7 +25,8 @@ export default class MenuNodeList extends React.Component {
                 padding: "0px",
                 width: "100%",
                 height: "300px",
-                boxShadow: "0px 0px 1px 0px white inset"
+                boxShadow: "0px 0px 1px 0px white inset",
+                overflow: "auto"
             },
             list: {
                 lineHeight: "30px",
