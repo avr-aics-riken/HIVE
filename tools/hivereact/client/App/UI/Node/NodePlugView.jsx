@@ -61,7 +61,7 @@ export default class NodePlugView extends React.Component {
 				if (data[0].isInput !== data[1].isInput &&
 					data[0].data.type === data[1].data.type) {
 					console.log("プラグが接続された", data);
-					
+
 					let input = data[0].isInput ? data[0] : data[1];
 					let output = data[0].isInput ? data[1] : data[0];
 					setTimeout(() => {
@@ -96,12 +96,19 @@ export default class NodePlugView extends React.Component {
 		}
 	}
 
+	onMouseDown() {
+		this.props.nodeAction.unSelectPlugHoles();
+		this.props.action.unSelectNode([], null);
+	}
+
 	render() {
 		let plugList = (this.state.plugPositions.map( (plugPos, key) => {
 			return this.createPlug.bind(this)(plugPos, key);
 		} ));
 		return (
-				<svg width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'>
+				<svg width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'
+					onMouseDown={this.onMouseDown.bind(this)}
+				>
 					{plugList}
 					{this.temporaryPlug()}
 				</svg>
