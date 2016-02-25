@@ -1,6 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import Core from '../../Core'
+import MenuStore from './MenuStore.jsx'
 import MenuNodeCreate from './MenuNodeCreate.jsx'
 import MenuNodeList from './MenuNodeList.jsx'
 
@@ -9,13 +10,17 @@ export default class Menu extends React.Component {
         super(props);
 
         this.state = {
-            nodes : null,
+            nodes: null,
+            visible: true
         };
 
         this.store = this.props.store;
         this.action = this.props.action;
-        this.nodesystem = this.props.nodeSystem;
+        this.menuStore = this.props.menuStore;
+        this.menuAction = this.props.menuAction;
         this.styles = this.styles.bind(this);
+        this.onClick = this.onClick.bind(this);
+        this.props.menuStore.on(MenuStore.TOGGLE_MENU, this.toggleMenu.bind(this));
     }
 
     // functionReplacer(data){
@@ -43,6 +48,15 @@ export default class Menu extends React.Component {
         }
     }
 
+    onClick(eve){
+        this.props.menuAction.toggleMenu(!this.props.menuStore.visibility);
+    }
+
+    toggleMenu(){
+        let f = this.menuStore.getVisible();
+        this.setState({visible: f});
+    }
+
     styles() {
         return {
             menuArea: {
@@ -51,12 +65,13 @@ export default class Menu extends React.Component {
                 fontSize: "10pt",
                 margin: "0px",
                 padding: "0px",
-                width: "100px",
+                width: "300px",
                 height: "100%",
                 position: "fixed",
                 top: "0px",
-                left: "0px",
+                left: this.state.visible ? "0px" : "-300px",
                 zIndex: "9999",
+                transition: "left 1.0 ease",
                 overflow: "auto" // temp
             },
             header: {
@@ -92,6 +107,21 @@ export default class Menu extends React.Component {
                 display: "inline-block",
                 float: "left",
                 boxShadow: "0px -1px 1px 1px #666 inset"
+            },
+            tagtip: {
+                backgroundColor: "red",
+                color: "#400",
+                fontSize: "10pt",
+                margin: "0px",
+                padding: "0px",
+                width: "50px",
+                height: "20px",
+                position: "fixed",
+                top: "15px",
+                left: this.state.visible ? "-15px" : "-315px",
+                transform: "rotate(90deg) translateY(-300px)",
+                transition: "left 1.0s ease",
+                cursor: "pointer"
             }
         }
     }
@@ -185,7 +215,11 @@ export default class Menu extends React.Component {
                     </div>
                     {bl.map(this.block.bind(this))}
                 </div>
+                <div style={style.tagtip}>menu</div>
             </div>
         );
     }
 }
+
+                // <div style={style.tagtip} onClick={this.toggleMenu.bind(this)}>menu</div>
+
