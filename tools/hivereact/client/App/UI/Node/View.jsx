@@ -6,7 +6,6 @@ import NodeView from "./NodeView.jsx"
 import NodePlugView from "./NodePlugView.jsx"
 import Store from "./Store.jsx"
 import Action from "./Action.jsx"
-import Menu from "./Menu.jsx"
 
 var Dispatcher = require("flux").Dispatcher;
 
@@ -37,10 +36,6 @@ export default class View extends React.Component {
 						nodeStore={this.nodeStore}
 						nodeAction={this.nodeAction}
 					/>
-                    <Menu
-                        store={this.props.store}
-                        action={this.props.action}
-                    />
 				</div>);
 	}
 }

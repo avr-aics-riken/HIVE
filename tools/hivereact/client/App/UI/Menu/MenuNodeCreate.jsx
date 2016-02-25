@@ -1,8 +1,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
-import Core from '../../Core'
-import Store from './Store.jsx'
 import Autosuggest from 'react-autosuggest';
+import Core from '../../Core'
 
 export default class MenuNodeCreate extends React.Component {
     constructor(props) {
@@ -14,17 +13,6 @@ export default class MenuNodeCreate extends React.Component {
             suggestions: this.getSuggestions('')
         };
 
-        // this.nodeChanged = this.nodeChanged.bind(this);
-        // this.selectChanged = this.selectChanged.bind(this);
-        // this.moveNode = this.moveNode.bind(this);
-        //
-        // this.componentDidMount = this.componentDidMount.bind(this);
-        // this.componentWillUnmount = this.componentWillUnmount.bind(this);
-        // this.onMouseMove = this.onMouseMove.bind(this);
-        // this.onMouseUp = this.onMouseUp.bind(this);
-        // this.onMouseDown = this.onMouseDown.bind(this);
-        // this.onKeyDown = this.onKeyDown.bind(this);
-        // this.onKeyUp = this.onKeyUp.bind(this);
         this.styles = this.styles.bind(this);
 
         this.onChange = this.onChange.bind(this);
@@ -34,38 +22,12 @@ export default class MenuNodeCreate extends React.Component {
         this.renderSuggestion = this.renderSuggestion.bind(this);
     }
 
-    // componentDidMount() {
-    //     window.addEventListener('mousemove', this.onMouseMove);
-    //     window.addEventListener('mouseup', this.onMouseUp);
-    //     window.addEventListener('keydown', this.onKeyDown);
-    //     window.addEventListener('keyup', this.onKeyUp);
-    //     this.props.store.on(Core.Store.NODE_CHANGED, this.nodeChanged);
-    //     this.props.nodeStore.on(Store.NODE_SELECTE_CHANGED, this.selectChanged);
-    //     this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
-    // }
-    //
-    // componentWillUnmount() {
-    //     window.removeEventListener('mousemove', this.onMouseMove);
-    //     window.removeEventListener('mouseup', this.onMouseUp);
-    //     window.removeEventListener('keydown', this.onKeyDown);
-    //     window.removeEventListener('keyup', this.onKeyUp);
-    //     this.props.store.removeListener(Core.Store.NODE_CHANGED, this.nodeChanged);
-    //     this.props.nodeStore.removeListener(Store.NODE_SELECTE_CHANGED, this.selectChanged);
-    //     this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
-    // }
-
-    onChange(event, { newValue }) {
-        this.setState({
-            value: newValue
-        });
+    // インプットボックスの change と自身のステートの更新はここ
+    onChange(event, {newValue}){
+        this.setState({value: newValue});
     }
 
-    onSuggestionsUpdateRequested({ value }) {
-        this.setState({
-            suggestions: this.getSuggestions(value)
-        });
-    }
-
+    // ここにある nodeNames にセットされた名前がサジェストされる
     getSuggestions(value) {
         var nodeNames = [
             {name: 'kioku'},
@@ -77,37 +39,22 @@ export default class MenuNodeCreate extends React.Component {
         ];
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
-
         return inputLength === 0 ? [] : nodeNames.filter(nodename =>
              nodename.name.toLowerCase().slice(0, inputLength) === inputValue
         );
     }
-
-    getSuggestionValue(suggestion) { // when suggestion selected, this function tells
-        return suggestion.name;                 // what should be the value of the input
-    }
-
-    renderSuggestion(suggestion) {
-        return (
-            <span>{suggestion.name}</span>
-        );
-    }
+    onSuggestionsUpdateRequested({value}){this.setState({suggestions: this.getSuggestions(value)});}
+    getSuggestionValue(suggestion){return suggestion.name;}
+    renderSuggestion(suggestion){return (<span>{suggestion.name}</span>);}
 
     styles() {
         return {
             block: {
-                backgroundColor: "#222",
-                color: "#eee",
-                fontSize: "9pt",
                 margin: "0px",
                 padding: "0px",
-                width: "100%",
-                minHeight: "250px",
-                position: "absolute",
-                bottom: "0px",
-                left: "0px"
+                width: "100%"
             },
-            theme: {
+            suggestTheme: {
                 // container:                   'react-autosuggest__container',
                 // containerOpen:               'react-autosuggest__container--open',
                 // input:                       'react-autosuggest__input',
@@ -119,35 +66,41 @@ export default class MenuNodeCreate extends React.Component {
                 // sectionSuggestionsContainer: 'react-autosuggest__section-suggestions-container'
                 input: {
                     backgroundColor: "black",
+                    border: "none",
                     color: "whitesmoke",
                     width: "100%",
                     margin: "0px",
-                    padding: "3px 0px"
+                    padding: "8px 0px"
                 },
                 suggestionsContainer: {
                     listStyle: "none",
                     margin: "0px",
                     padding: "0px",
                     width: "100%",
+                    position: "absolute"
                 },
                 suggestion: {
-                    borderLeft: "1px solid silver",
-                    borderRight: "1px solid silver",
-                    borderBottom: "1px solid silver",
+                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    borderLeft: "1px solid gray",
+                    borderRight: "1px solid gray",
+                    borderBottom: "1px solid gray",
                     fontSize: "large",
                     margin: "0px",
                     padding: "5px",
+                    overflow: "hidden"
                 },
                 suggestionFocused: {
-                    backgroundColor: "#666"
+                    backgroundColor: "rgba(64, 64, 64, 0.5)"
                 }
             }
         }
     }
 
+    // 以下 placeholder に与えた文字列がインプットボックスの
+    // なかに初期値として見えている文字列
     render(){
         const style = this.styles();
-        const { value, suggestions } = this.state;
+        const {value, suggestions} = this.state;
         const inputProps = {
             placeholder: 'Type a Node name.',
             value,
@@ -155,7 +108,7 @@ export default class MenuNodeCreate extends React.Component {
         };
         return (
             <div style={style.block}>
-                <Autosuggest theme={style.theme}
+                <Autosuggest theme={style.suggestTheme}
                     suggestions={suggestions}
                     onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
                     getSuggestionValue={this.getSuggestionValue}
