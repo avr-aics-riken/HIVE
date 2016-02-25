@@ -9,20 +9,16 @@ export default class Store extends EventEmitter {
 	constructor() {
 		super();
 
-
-		// 全てのノード
-        //this.data = {
-		  this.nodes = [];
+		this.data = {
+		  // 全てのノード
+          nodes : [],
 
 		  // 全てのプラグ
-		  this.plugs = [];
-        //}
+		  plugs : []
+        }
         
-		this.actionExecuter = new ActionExecuter(this, this.data);
+		this.actionExecuter = new ActionExecuter(this);
 		this.dispatchToken = Dispatcher.register(this.actionHandler.bind(this));
-
-        
-        
 
 		this.initHive = this.initHive.bind(this);
 		this.getNodes = this.getNodes.bind(this);
@@ -63,23 +59,23 @@ export default class Store extends EventEmitter {
 	 * 全てのノードリストを返す
 	 */
 	getNodes() {
-		return this.nodes;
+		return this.data.nodes;
 	}
 
 	/**
 	 * 全てのプラグリストを返す
 	 */
 	getPlugs() {
-		return this.plugs;
+		return this.data.plugs;
 	}
 
 	/**
 	 * 特定のnodeとそのindexを返す.
 	 */
 	getNode(varname) {
-		for (let i = 0; i < this.nodes.length; i = i + 1) {
-			if (this.nodes[i].varname === varname) {
-				return { node : this.nodes[i], index : i }
+		for (let i = 0; i < this.data.nodes.length; i = i + 1) {
+			if (this.data.nodes[i].varname === varname) {
+				return { node : this.data.nodes[i], index : i }
 			}
 		}
 		return null;
