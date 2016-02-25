@@ -1,7 +1,6 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import Core from '../../Core'
-import MenuStore from './MenuStore.jsx'
 import MenuNodeCreate from './MenuNodeCreate.jsx'
 import MenuNodeList from './MenuNodeList.jsx'
 
@@ -11,16 +10,13 @@ export default class Menu extends React.Component {
 
         this.state = {
             nodes: null,
-            visible: true
+            visible: false
         };
 
         this.store = this.props.store;
         this.action = this.props.action;
-        this.menuStore = this.props.menuStore;
-        this.menuAction = this.props.menuAction;
+        this.nodesystem = this.props.nodeSystem;
         this.styles = this.styles.bind(this);
-        this.onClick = this.onClick.bind(this);
-        this.props.menuStore.on(MenuStore.TOGGLE_MENU, this.toggleMenu.bind(this));
     }
 
     // functionReplacer(data){
@@ -48,13 +44,11 @@ export default class Menu extends React.Component {
         }
     }
 
-    onClick(eve){
-        this.props.menuAction.toggleMenu(!this.props.menuStore.visibility);
-    }
-
     toggleMenu(){
-        let f = this.menuStore.getVisible();
-        this.setState({visible: f});
+        let f = !this.state.visible;
+        ((flg)=>{
+            this.setState({visible: flg});
+        })(f)
     }
 
     styles() {
@@ -215,11 +209,8 @@ export default class Menu extends React.Component {
                     </div>
                     {bl.map(this.block.bind(this))}
                 </div>
-                <div style={style.tagtip}>menu</div>
+                <div style={style.tagtip} onClick={this.toggleMenu.bind(this)}>menu</div>
             </div>
         );
     }
 }
-
-                // <div style={style.tagtip} onClick={this.toggleMenu.bind(this)}>menu</div>
-
