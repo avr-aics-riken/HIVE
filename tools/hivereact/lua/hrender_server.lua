@@ -52,6 +52,7 @@ JSON = require('dkjson')
 -- Global Weboket Connection
 network = require("Network").Connection()
 network:SetTimeout(100)
+HIVE_network = network
 
 -- Global Jpeg Saver
 HIVE_ImageSaver = ImageSaver()
