@@ -67,7 +67,12 @@ export default class NodeView extends React.Component {
 
 	addButtonClick() {
         let nodes = this.props.store.getNodes();
-		let node = this.props.nodeSystem.CreateNodeInstance('CreateCamera');
+		let node;
+		if (nodes.length === 0) {
+			node = this.props.nodeSystem.CreateNodeInstance('CreateCamera');
+		} else if (nodes.length == 1) {
+			node = this.props.nodeSystem.CreateNodeInstance('RenderView');
+		}
 
 		// create unique varname
 		for (let i = 0; true; i = i + 1) {
@@ -104,6 +109,7 @@ export default class NodeView extends React.Component {
 		this.props.action.addNode(node);
 
 		// create plug test
+		/*
 		console.log("this.state.nodes.length", this.state.nodes.length );
 		if (this.props.store.getNodes().length > 1) {
 			this.props.action.addPlug({ output : {
@@ -114,6 +120,7 @@ export default class NodeView extends React.Component {
 				name : node.input[2].name
 			}});
 		}
+		*/
 
 		console.log("Add Node:", node.varname);
 
