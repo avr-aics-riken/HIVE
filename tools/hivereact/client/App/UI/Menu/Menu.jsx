@@ -11,7 +11,7 @@ export default class Menu extends React.Component {
 
         this.state = {
             nodes: null,
-            visible: true
+            visible: this.props.menuStore.getVisible()
         };
 
         this.store = this.props.store;
@@ -49,7 +49,8 @@ export default class Menu extends React.Component {
     }
 
     onClick(eve){
-        this.props.menuAction.toggleMenu(!this.props.menuStore.visibility);
+        let f = this.menuStore.getVisible();
+        this.props.menuAction.toggleMenu(!f);
     }
 
     toggleMenu(){
@@ -71,7 +72,7 @@ export default class Menu extends React.Component {
                 top: "0px",
                 left: this.state.visible ? "0px" : "-300px",
                 zIndex: "9999",
-                transition: "left 1.0 ease",
+                transition: "left 0.5s ease-out",
                 overflow: "auto" // temp
             },
             header: {
@@ -112,15 +113,16 @@ export default class Menu extends React.Component {
                 backgroundColor: "red",
                 color: "#400",
                 fontSize: "10pt",
+                fontWeight: "bold",
                 margin: "0px",
-                padding: "0px",
+                padding: "0px 5px",
                 width: "50px",
                 height: "20px",
                 position: "fixed",
                 top: "15px",
                 left: this.state.visible ? "-15px" : "-315px",
                 transform: "rotate(90deg) translateY(-300px)",
-                transition: "left 1.0s ease",
+                transition: "left 0.5s ease-out",
                 cursor: "pointer"
             }
         }
@@ -215,11 +217,11 @@ export default class Menu extends React.Component {
                     </div>
                     {bl.map(this.block.bind(this))}
                 </div>
-                <div style={style.tagtip}>menu</div>
+                <div style={style.tagtip} onClick={this.onClick.bind(this)}>menu</div>
             </div>
         );
     }
 }
 
-                // <div style={style.tagtip} onClick={this.toggleMenu.bind(this)}>menu</div>
+                // <div style={style.tagtip}>menu</div>
 

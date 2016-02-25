@@ -6,7 +6,7 @@ export default class MenuStore extends EventEmitter {
         super();
         this.dispatchToken = dispathcer.register(this.actionHandler.bind(this));
 
-        this.visibility = false;
+        this.visibility = true;
 
         // coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
         // 	this.nodeMap = {};
@@ -29,10 +29,11 @@ export default class MenuStore extends EventEmitter {
         }
     }
     toggleMenu(payload){
-        this.emit(MenuStore.TOGGLE_MENU, null, payload.visibility);
+        this.visibility = payload.visibility;
+        this.emit(MenuStore.TOGGLE_MENU, null, this.visibility);
     }
     getVisible(){
-        return this.getVisible;
+        return this.visibility;
     }
     getDispatchToken() {
         return this.dispatchToken;
