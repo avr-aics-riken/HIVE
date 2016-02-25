@@ -23,11 +23,15 @@ export default class NodePlugView extends React.Component {
 				let plug = plugs[i];
 				let inpos = this.props.nodeStore.calcPlugPosition(true, plug, data);
 				if (inpos) {
-					this.props.nodeAction.changePlugPosition(plug.input.nodeVarname, true, plug.input.name, inpos);
+					setTimeout(() => {
+						this.props.nodeAction.changePlugPosition(plug.input.nodeVarname, true, plug.input.name, inpos);
+					}, 0);
 				} else {
 					let outpos = this.props.nodeStore.calcPlugPosition(false, plug, data);
 					if (outpos) {
-						this.props.nodeAction.changePlugPosition(plug.output.nodeVarname, false, plug.output.name, outpos);
+						setTimeout(() => {
+							this.props.nodeAction.changePlugPosition(plug.output.nodeVarname, false, plug.output.name, outpos);
+						}, 0);
 					}
 				}
 			}

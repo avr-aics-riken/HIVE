@@ -15,9 +15,9 @@ var Dispatcher = require("flux").Dispatcher;
 export default class View extends React.Component {
 	constructor(props) {
 		super(props);
-		var dispatcher =  new Dispatcher();
-		this.nodeStore = new Store(dispatcher, this.props.store);
-		this.nodeAction = new Action(dispatcher, this.nodeStore.getDispatchToken());
+		//var dispatcher =  new Dispatcher();
+		this.nodeStore = new Store(this.props.action.dispatcher, this.props.store);
+		this.nodeAction = new Action(this.props.action.dispatcher, this.nodeStore.getDispatchToken());
 	}
 
 	render () {
