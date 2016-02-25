@@ -212,6 +212,15 @@ export default class Store extends EventEmitter {
 	 */
 	addPlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
+			for (let i = 0; i < this.plugs.length; i = i + 1) {
+				if (this.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
+					this.plugs[i].output.name === payload.plugInfo.output.name &&
+					this.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
+					this.plugs[i].input.name === payload.plugInfo.input.name) {
+					// 同じプラグが既にあった.
+					return;
+				}
+			}
 			this.plugs.push(payload.plugInfo);
 			this.emit(Store.PLUG_COUNT_CHANGED, null, this.plugs.length);
 		}
