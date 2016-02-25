@@ -32,6 +32,20 @@ export default class ActionExecuter {
 		this.unSelectNode = this.unSelectNode.bind(this);
 	}
 
+    /**
+	 * アクションハンドラ
+	 * @private
+	 */
+	actionHandler(payload) {
+		if (payload && this.hasOwnProperty(payload.actionType)) {
+			if (payload.hasOwnProperty("id") && payload.id === this.store.getDispatchToken()) {
+				(() => {
+					this[payload.actionType].bind(this)(payload);
+				}());
+			}
+		}
+	}
+    
 	/**
 	 * ノード追加
 	 */

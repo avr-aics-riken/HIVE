@@ -9,6 +9,7 @@ export default class Store extends EventEmitter {
 	constructor() {
 		super();
 
+        // private:
 		this.data = {
 		  // 全てのノード
           nodes : [],
@@ -18,8 +19,8 @@ export default class Store extends EventEmitter {
         }
 
 		this.actionExecuter = new ActionExecuter(this);
-		this.dispatchToken = Dispatcher.register(this.actionHandler.bind(this));
-
+        this.dispatchToken = Dispatcher.register(this.actionExecuter.actionHandler.bind(this.actionExecuter));
+        
 		this.initHive = this.initHive.bind(this);
 		this.getNodes = this.getNodes.bind(this);
 		this.getNode = this.getNode.bind(this);
@@ -28,14 +29,13 @@ export default class Store extends EventEmitter {
 
 		this.initHive();
 	}
-
+    
+    // private:
 	initHive() {
-		let randomid = Math.floor(Math.random() * 10000);
 		this.hive = new Hive();
 		this.nodeSystem = new NodeSystem((nodeSystem) => {
 			// initilized.
-			//this.hive.connect('', 'ipc:///tmp/HiveUI_ipc_' + randomid, true);
-			this.hive.connect('ws://localhost:8080', '', true);
+            this.hive.connect('ws://localhost:8080', '', true);
 			this.emit(Constants.INITIALIZED, null);
 		});
 		this.hive.on(Hive.IMAGE_RECIEVED, (err, param, data) => {
@@ -89,17 +89,4 @@ export default class Store extends EventEmitter {
 		return namelist;
 	}
 
-	/**
-	 * アクションハンドラ
-	 * @private
-	 */
-	actionHandler(payload) {
-		if (payload && this.actionExecuter.hasOwnProperty(payload.actionType)) {
-			if (payload.hasOwnProperty("id") && payload.id === this.dispatchToken) {
-				(() => {
-					this.actionExecuter[payload.actionType].bind(this)(payload);
-				}());
-			}
-		}
-	}
 }
