@@ -54,8 +54,14 @@ export default class ActionExecuter {
 			let node = null;
 			if (payload.nodeInfo.hasOwnProperty('name')) {
 				node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
+			}
+			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
+				node.varname = payload.nodeInfo.varname;
+			} else {
 				node.varname = node.name + uuid();
-				node.pos = [ 200, 200 ];
+			}
+			if (payload.nodeInfo.hasOwnProperty('pos')) {
+				node.pos = payload.nodeInfo.pos;
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
 				if (payload.nodeInfo.panel.zindex === 0) {

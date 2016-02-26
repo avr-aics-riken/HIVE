@@ -4,6 +4,7 @@ import Core from '../../Core'
 
 import NodeView from "./NodeView.jsx"
 import NodePlugView from "./NodePlugView.jsx"
+import Property from "./Property"
 import Store from "./Store.jsx"
 import Action from "./Action.jsx"
 
@@ -33,6 +34,10 @@ export default class View extends React.Component {
 						action={this.props.action}
 						nodeStore={this.nodeStore}
 						nodeAction={this.nodeAction}
+					/>
+					<Property.View
+						store={this.props.store}
+						action={this.props.action}
 					/>
 				</div>);
 	}

@@ -22,14 +22,14 @@ export default class NodeView extends React.Component {
 		});
 	}
 
-	styles() {
+	styles(id) {
 		return {
 			button : {
 				position : "absolute",
 				width : "100px",
 				height : "20px",
-				right : "0px",
-				top : "0px",
+				right : "50%",
+				top : String(id * 20) + "px",
 				backgroundColor : "blue",
 				color : "white"
 			}
@@ -37,67 +37,74 @@ export default class NodeView extends React.Component {
 	}
 
     // TO BE DELETED
-	addButtonClick() {
-        let nodes = this.props.store.getNodes();
-		let node;
-		if (nodes.length === 0) {
-			this.props.action.addNodeByName('CreateCamera');
-		} else if (nodes.length == 1) {
-			this.props.action.addNodeByName('RenderView');
-		}
-        return;
+	addButtonClick(id) {
+		return () => {
+			let ncount = this.props.store.getNodes().length;
+			if (id === 0) {
+				let camera = this.props.store.nodeSystem.CreateNodeInstance('CreateCamera');
+				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
+				camera.varname = "testcamera_" + String(ncount);
+				camera.pos = [100,200];
+				renderview.varname = "testrenderview_" + String(ncount);
+				renderview.pos = [350,200];
 
-        // TO BE DELETED
-        /*let nodes = this.props.store.getNodes();
-		let node;
-		if (nodes.length === 0) {
-			node = this.props.nodeSystem.CreateNodeInstance('CreateCamera');
-		} else if (nodes.length == 1) {
-			node = this.props.nodeSystem.CreateNodeInstance('RenderView');
-		}
-
-		// create unique varname
-		for (let i = 0; true; i = i + 1) {
-			let foundSameName = false;
-			let name = node.varname + "_" + String(i);
-			for (let i = 0; i < this.state.nodes.length; i = i + 1) {
-				if (this.state.nodes[i].varname === name) {
-					foundSameName = true;
-					break;
-				}
+				this.props.action.addNode(camera);
+				this.props.action.addNode(renderview);
+				this.props.action.addPlug({
+					output : {
+						nodeVarname : camera.varname,
+						name : camera.output[0].name
+					},
+					input : {
+						nodeVarname : renderview.varname,
+						name : renderview.input[8].name
+					}
+				});
 			}
-			if (!foundSameName) {
-				node.varname = name;
-				break;
+			if (id === 1) {
+				let model = this.props.store.nodeSystem.CreateNodeInstance('CreatePolygonModel');
+				let teapot = this.props.store.nodeSystem.CreateNodeInstance('TeapotGenerator');
+				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
+				teapot.varname = "testteapot_" + String(ncount);
+				teapot.pos = [100,200];
+				model.varname = "testpolygonmodel_" + String(ncount);
+				model.pos = [350,200];
+				renderview.varname = "testrenderview_" + String(ncount);
+				renderview.pos = [550,400];
+
+				this.props.action.addNode(teapot);
+				this.props.action.addNode(model);
+				this.props.action.addNode(renderview);
+				this.props.action.addPlug({
+					output : {
+						nodeVarname : teapot.varname,
+						name : teapot.output[0].name
+					},
+					input : {
+						nodeVarname : model.varname,
+						name : model.input[0].name
+					}
+				});
+				this.props.action.addPlug({
+					output : {
+						nodeVarname : model.varname,
+						name : model.output[0].name
+					},
+					input : {
+						nodeVarname : renderview.varname,
+						name : renderview.input[8].name
+					}
+				});
 			}
 		}
-		node.pos = [ 200, 200 ];
-
-        // insert position
-        let x, y;
-        x = node.panel.pos[0];
-        y = node.panel.pos[1];
-        for(let i in nodes){
-            let panel = nodes[i].panel;
-            while(true){
-                let f = true;
-                if(Math.abs(x - panel.pos[0]) < 50){x += 50; f = false;}
-                if(Math.abs(y - panel.pos[1]) < 50){y += 50; f = false;}
-                if(f){break;}
-            }
-        }
-        node.panel.pos = [x, y];
-
-		this.props.action.addNode(node);
-*/
 	}
 
     // TO BE DELETED
 	/// 追加ボタン(仮)
-	addButton() {
-		const styles = this.styles.bind(this)();
+	addButton(id) {
+		const styles = this.styles.bind(this)(id);
 		return (<div style={styles.button}
-					onClick={this.addButtonClick.bind(this)}
+					onClick={this.addButtonClick.bind(this)(id)}
 				>
 					Add Node
 				</div>);
@@ -117,7 +124,8 @@ export default class NodeView extends React.Component {
 		return (
 				<div>
 					{nodeList}
-					{this.addButton.bind(this)()}
+					{this.addButton.bind(this)(0)}
+					{this.addButton.bind(this)(1)}
 				</div>
 				);
 	}

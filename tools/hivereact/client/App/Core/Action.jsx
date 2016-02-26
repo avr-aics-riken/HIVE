@@ -21,8 +21,9 @@ export default class Action {
     /**
 	 * ノードを追加する
 	 * @param nodeInfo ノード情報
+	 * @param varname 特定のvarnameで作成する場合文字列を入れる。通常はnullを入れる。
 	 */
-	addNodeByName(nodeName) {
+	addNodeByName(nodeName, varname) {
 /*
         let node = this.nodeSystem.CreateNodeInstance(nodeName);
         if (!node) {
@@ -69,7 +70,11 @@ export default class Action {
         }
         node.panel.pos = [x, y];
 */
-		this.addNode({name : nodeName});
+		if (varname) {
+			this.addNode({name : nodeName, varname : varname});
+		} else {
+			this.addNode({name : nodeName});
+		}
 	}
 
 	/**
@@ -109,6 +114,17 @@ export default class Action {
 	/**
 	 * プラグを追加する
 	 * @param plugInfo プラグ情報
+	 * プラグ情報は以下の形式
+	 * {
+	 *    output : {
+	 *        nodeVarname : ノード変数名
+	 *        name : プラグ名
+	 *    }
+	 *    input : {
+	 *        nodeVarname : ノード変数名
+	 *        name : プラグ名
+	 *    }
+	 * }
 	 */
 	addPlug(plugInfo) {
 		this.dispatcher.dispatch({
