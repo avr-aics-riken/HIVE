@@ -72,11 +72,11 @@ export default class Menu extends React.Component {
                 top: "0px",
                 left: this.state.visible ? "0px" : "-300px",
                 zIndex: "9999",
-                transition: "left 0.5s ease-out",
+                transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 overflow: "auto" // temp
             },
             header: {
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
+                backgroundColor: "#200",
                 textAlign: "30px",
                 margin: "0px",
                 padding: "0px",
@@ -85,8 +85,10 @@ export default class Menu extends React.Component {
                 boxShadow: "0px 0px 1px 0px white inset"
             },
             headerCaption: {
+                color: "lightpink",
                 fontWeight: "bold",
-                padding: "5px 10px"
+                padding: "5px 10px",
+                textShadow: "0px 0px 2px deeppink"
             },
             block: {
                 textAlign: "right",
@@ -122,7 +124,7 @@ export default class Menu extends React.Component {
                 top: "15px",
                 left: this.state.visible ? "-15px" : "-315px",
                 transform: "rotate(90deg) translateY(-300px)",
-                transition: "left 0.5s ease-out",
+                transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 cursor: "pointer"
             }
         }
@@ -208,8 +210,18 @@ export default class Menu extends React.Component {
                     <div style={style.header}>
                         <div style={style.headerCaption}>Node Create</div>
                     </div>
-                    <MenuNodeCreate store={this.props.store} action={this.props.action} nodeSystem={this.nodesystem} />
-                    <MenuNodeList store={this.props.store} action={this.props.action} nodeSystem={this.nodesystem} />
+                    <MenuNodeCreate
+                        store={this.props.store}
+                        action={this.props.action}
+                        menuStore={this.props.menuStore}
+                        menuAction={this.props.menuAction}
+                    />
+                    <MenuNodeList
+                        store={this.props.store}
+                        action={this.props.action}
+                        menuStore={this.props.menuStore}
+                        menuAction={this.props.menuAction}
+                    />
                 </div>
                 <div>
                     <div style={style.header}>

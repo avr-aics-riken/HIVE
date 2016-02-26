@@ -17,6 +17,11 @@ export default class MenuNodeList extends React.Component {
         }.bind(this));
     }
 
+    onDoubleClick(eve){
+        var e = eve.currentTarget;
+        this.props.action.addNodeByName(e.value);
+    }
+
     styles() {
         return {
             block: {
@@ -25,6 +30,18 @@ export default class MenuNodeList extends React.Component {
                 padding: "0px",
                 width: "100%",
                 height: "300px",
+                boxShadow: "0px 0px 1px 0px white inset",
+                overflow: "auto"
+            },
+            select: {
+                backgroundColor: "rgba(0, 0, 0, 0.25)",
+                border: "none",
+                color: "whitesmoke",
+                fontSize: "large",
+                margin: "0px",
+                padding: "0px",
+                width: "100%",
+                minHeight: "100%",
                 boxShadow: "0px 0px 1px 0px white inset",
                 overflow: "auto"
             },
@@ -40,7 +57,7 @@ export default class MenuNodeList extends React.Component {
     generator(value, key){
         const style = this.styles();
         return (
-            <div style={style.list} key={key}>{value}</div>
+            <option style={style.list} key={key} value={value} onDoubleClick={this.onDoubleClick.bind(this)}>{value}</option>
         );
     }
 
@@ -48,7 +65,9 @@ export default class MenuNodeList extends React.Component {
         const style = this.styles();
         return (
             <div style={style.block}>
-                {this.state.nodeList.map(this.generator.bind(this))}
+                <select style={style.select} size={this.state.nodeList.length}>
+                    {this.state.nodeList.map(this.generator.bind(this))}
+                </select>
             </div>
         );
     }
