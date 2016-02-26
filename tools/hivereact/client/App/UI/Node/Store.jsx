@@ -66,7 +66,6 @@ export default class Store extends EventEmitter {
 					this.plugPositions.push(plugPosition);
 				}
 			}
-			this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions);
 		});
 
 		this.getPlugPositions = this.getPlugPositions.bind(this);
@@ -153,14 +152,14 @@ export default class Store extends EventEmitter {
 					this.plugPositions[i].input.name === payload.name) {
 
 					this.plugPositions[i].input.pos = JSON.parse(JSON.stringify(payload.pos));
-					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions);
+					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions[i]);
 				}
 			} else {
 				if (this.plugPositions[i].output.nodeVarname === payload.nodeVarname &&
 					this.plugPositions[i].output.name === payload.name) {
 
 					this.plugPositions[i].output.pos = JSON.parse(JSON.stringify(payload.pos));
-					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions);
+					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions[i]);
 				}
 			}
 		}
