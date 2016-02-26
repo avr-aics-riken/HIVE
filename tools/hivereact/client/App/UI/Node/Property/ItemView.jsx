@@ -32,14 +32,12 @@ export default class ItemView extends React.Component {
 	}
 
 	nodeChanged(err, data) {
-	/*
 		if (data.varname === this.props.initialNodeData.varname) {
-			this.setState(
+			this.setState({
 				name : data.name,
 				input : [].concat(data.input)
-			);
+			});
 		}
-		*/
 	}
 
 	componentDidMount() {
