@@ -44,14 +44,26 @@ function RenderView:Do()
     local temp
     --temp = {unpack(property.RenderObject)}
     temp = {property.RenderObject} ---   now temporary: 1 renderobject only
-    temp[#temp + 1] = self.cam;
+    if (#temp > 0) then
+        temp[#temp + 1] = {self.cam};
+    end
 
-    print('unpack=', unpack)
-    print('num=', #temp)
+--[[
+    local targetcam
+    if property.RenderObject then
+        temp = {property.RenderObject}
+        targetcam = property.RenderObject
+    else
+        temp = {self.cam}
+        targetcam = self.cam
+    end
+--]]
+    --print('unpack=', unpack)
+    --print('num=', #temp)
     render(temp)
     
     -- image save
-    local imageBuffer = HIVE_ImageSaver:SaveMemory(1, self.cam:GetImageBuffer())
+    local imageBuffer = HIVE_ImageSaver:SaveMemory(1, targetcam:GetImageBuffer())
     local imageBufferSize = HIVE_ImageSaver:MemorySize()
 
     -- create metabinary

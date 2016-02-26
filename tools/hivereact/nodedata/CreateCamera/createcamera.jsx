@@ -25,8 +25,14 @@ class CreateCamera extends React.Component {
         let st = this.state.text.slice(0);
         st[i] = text;
         this.setState({text:st});
-        this.node.input[0].value[i] = parseFloat(text);
-        this.action.changeNode(this.node);
+        
+        const inputs = JSON.parse(JSON.stringify(this.node.input)); 
+        inputs[0].value[i] = parseFloat(text);
+        const varname = this.node.varname;
+        this.action.changeNode({
+            varname: varname,
+            input: inputs
+        });
     }
     
     render(){

@@ -76,6 +76,7 @@ export default class NodeSystem extends EventEmitter {
         }
         
         // override all
+        //console.log('AAAAA', plugs);
         for (i = 0; i < plugs.length; ++i) {
             const p = plugs[i];
             const outnode = ng.hasOwnProperty(p.output.nodeVarname) ? ng[p.output.nodeVarname] : null;
@@ -110,9 +111,9 @@ export default class NodeSystem extends EventEmitter {
             nd.needexecute |= inputUpdate;
             if (nd.needexecute) {
                 script += this.nodeSerializer.updateNodeInput(nd.node);
-                /*for (p = 0; p < nd.inPlugs.length; ++p) {
-                    script += this.nodeSerializer.updateConnectedNodeInput(nd.inPlugs[p]);
-                }*/               
+//                for (p = 0; p < nd.inPlugs.length; ++p) {
+//                    script += this.nodeSerializer.updateConnectedNodeInput(nd.inPlugs[p]);
+//                }              
                 script += this.nodeSerializer.doNode(nd.node);
                 nd.needexecute = false;
                 nd.executed = true;
@@ -202,12 +203,18 @@ export default class NodeSystem extends EventEmitter {
         store.on(Constants.PLUG_ADDED, (err, data) => {
             console.log('NS catched:PLUG_ADDED', err, data);
 
+            const plug = data;
+            this.nodeGraph[plug.input.nodeVarname].needexecute = true;
+            
             const script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.PLUG_DELETED, (err, data) => {
             console.log('NS catched:PLUG_DELETED', err, data);
 
+            const plug = data;
+            this.nodeGraph[plug.input.nodeVarname].needexecute = true;
+            
             const script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
