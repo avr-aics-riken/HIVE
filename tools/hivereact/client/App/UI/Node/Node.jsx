@@ -67,7 +67,6 @@ export default class Node extends React.Component {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
 			this.state.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
 			setTimeout(() => {
-				if (this.props.nodeAction.dispatcher.isDispatching()) { return; }
 				this.props.action.changeNode(this.state.node);
 			}, 0);
 		}

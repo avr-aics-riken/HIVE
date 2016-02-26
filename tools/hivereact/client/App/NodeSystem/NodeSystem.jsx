@@ -7,11 +7,11 @@ import Constants from '../Core/Constants.jsx'
 function visit(node, nodelist) {
     let i;
     if (node.visited === false) {
-        node.visited = true;        
+        node.visited = true;
         for (i = 0; i <node.outputs.length; ++i) {
             visit(node.outputs[i], nodelist);
         }
-        nodelist.unshift(node.node); // push to front        
+        nodelist.unshift(node.node); // push to front
     }
 }
 
@@ -21,20 +21,20 @@ function topologicalSort(nodeGraph) {
     for (i in nodeGraph) {
         if (nodeGraph.hasOwnProperty(i)) {
             if (nodeGraph[i].visited === false) {
-                visit(nodeGraph[i], nodelist);       
-            } 
+                visit(nodeGraph[i], nodelist);
+            }
         }
     }
-    
+
     //console.log('SORTED:', nodelist);
     return nodelist;
 }
 
 function updateGraph(data) {
-    
+
     const nodes = data.nodes;
     const plugs = data.plugs;
-    
+
     let nodecache = {};
     let i;
     for (i = 0; i < nodes.length; ++i) {
@@ -45,10 +45,12 @@ function updateGraph(data) {
     for (i = 0; i < plugs.length; ++i) {
         //console.log(plugs[i]);
         const p = plugs[i];
-        const outnode = nodecache[p.output.nodeVarname];
-        const inpnode = nodecache[p.input.nodeVarname];
-        inpnode.inputs.push(outnode);
-        outnode.outputs.push(inpnode);
+        const outnode = nodecache.hasOwnProperty(p.output.nodeVarname) ? nodecache[p.output.nodeVarname] : null;
+        const inpnode = nodecache.hasOwnProperty(p.input.nodeVarname) ? nodecache[p.input.nodeVarname] : null;
+		if (outnode && inpnode) {
+	        inpnode.inputs.push(outnode);
+	        outnode.outputs.push(inpnode);
+		}
     }
     return nodecache;
 }
@@ -93,21 +95,21 @@ export default class NodeSystem extends EventEmitter {
 
 
     initEmitter(store) {
-        
+
         store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
             console.log('NS catched:NODE_INPUT_CHANGED', err, data);
             let node = data;
-            
+
             // set to instance
             //console.log('CHANGENODE->', node);
             let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";
-            
+
             script += this.nodeSerializer.updateNodeInput(node);
             script += this.doNodes();
-            
+
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
-        
+
         /*
         store.on(Constants.NODE_CHANGED, (err, data) => {
             // not need now.
@@ -130,7 +132,7 @@ export default class NodeSystem extends EventEmitter {
 
             const node = data;
             let script = this.nodeSerializer.newNode(node);
-            script += this.doNodes();            
+            script += this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.NODE_DELETED, (err, data) => {
@@ -144,13 +146,13 @@ export default class NodeSystem extends EventEmitter {
         store.on(Constants.PLUG_ADDED, (err, data) => {
             console.log('NS catched:PLUG_ADDED', err, data);
 
-            const script = this.doNodes();            
+            const script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.PLUG_DELETED, (err, data) => {
             console.log('NS catched:PLUG_DELETED', err, data);
 
-            const script = this.doNodes();            
+            const script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
     }
