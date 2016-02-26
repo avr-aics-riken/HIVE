@@ -1,8 +1,9 @@
 
 RenderView = {}
 
-RenderView.new = function ()
+RenderView.new = function (varname)
     local this = {}
+    this.varname = varname
     this.cam = Camera()
     this.updated = false
     this.property = {
@@ -26,11 +27,12 @@ function RenderView:Set(propname, value)
 end
 
 function RenderView:Do()
-    if not self.updated then
+    --[[if not self.updated then
         return
     end
     
     self.update = false
+    --]]
     
     local property = self.property    
     self.cam:SetScreenSize(property.screensize[1], property.screensize[2])
@@ -68,8 +70,9 @@ function RenderView:Do()
             "param" : {
                 "type" : "jpg",
                 "width" : "]] .. w .. [[",
-                "height" : "]] .. w .. [[",
-                "canceled": false
+                "height" : "]] .. h .. [[",
+                "canceled": false,
+                "varname": "]] .. self.varname .. [["
             },
             "id":0
     }]]

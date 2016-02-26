@@ -25,11 +25,12 @@ function CreateCamera:Set(propname, value)
 end
 
 function CreateCamera:Do()
-    if not self.updated then
+    --[[if not self.updated then
         return
     end
     
     self.update = false
+    --]]
     
     local property = self.property    
     self.cam:SetScreenSize(property.screensize[1], property.screensize[2])

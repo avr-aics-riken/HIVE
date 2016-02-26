@@ -5,11 +5,13 @@ class RenderView extends React.Component {
 	constructor(props) {
         super(props);
         console.log('RenderView Constructor:', props);
-		
+	   
         this.node = props.node;
         this.action = props.action;
         this.store = props.store;
-
+        
+        this.varname = this.node.varname;
+        
         this.state = {
             text: ''            
         }
@@ -20,8 +22,9 @@ class RenderView extends React.Component {
         const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.on(Store_IMAGE_RECIEVED, (err, param, data) => {
 			var buffer;
-			console.log(param);
-
+            if (param.varname !== this.node.varname) {
+                return;
+            }
 			if (param.type === 'jpg') {
 				buffer = new Blob([data]);
 			} else {
@@ -58,7 +61,7 @@ class RenderView extends React.Component {
 			} else {
 		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
-                let imgElem = document.getElementById('aascreen');                
+                let imgElem = document.getElementById('aascreen-' + this.varname);                
                 imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"})
                 console.log(imgElem);
 			}
@@ -131,7 +134,7 @@ class RenderView extends React.Component {
                     defaultValue={this.node.input[5].value[2]}/>
                 </div>
                 
-               <img id="aascreen" style={styles.image} src="" ></img>
+               <img id={"aascreen-" + this.varname} style={styles.image} src="" ></img>
                 
             </div>
         );
