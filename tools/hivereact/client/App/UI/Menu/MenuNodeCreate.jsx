@@ -135,6 +135,7 @@ export default class MenuNodeCreate extends React.Component {
                     getSuggestionValue={this.getSuggestionValue}
                     renderSuggestion={this.renderSuggestion}
                     inputProps={inputProps}
+                    ref="suggest"
                 />
             </div>
         );
