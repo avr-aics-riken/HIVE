@@ -72,5 +72,12 @@ export default class NodeSerializer {
             }
         }
         return script;
+    }
+    
+    updateConnectedNodeInput(plug) {
+        let script = '';
+        script += plug.input.nodeVarname + ":Set('" + plug.input.name + "'," + plug.output.nodeVarname + ":" + plug.output.name + "())\n";
+        //console.error('updateConnectedNodeInput', script);
+        return script; 
     }    
 }
