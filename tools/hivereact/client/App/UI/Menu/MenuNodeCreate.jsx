@@ -99,18 +99,18 @@ export default class MenuNodeCreate extends React.Component {
                     position: "absolute"
                 },
                 suggestion: {
-                    backgroundColor: "rgba(16, 16, 16, 0.8)",
+                    backgroundColor: "rgba(16, 16, 16, 0.9)",
                     borderLeft: "1px solid gray",
                     borderRight: "1px solid gray",
                     borderBottom: "1px solid gray",
                     color: "white",
-                    fontSize: "large",
+                    fontSize: "small",
                     margin: "0px",
                     padding: "5px",
                     overflow: "hidden"
                 },
                 suggestionFocused: {
-                    backgroundColor: "rgba(16, 16, 16, 0.9)",
+                    backgroundColor: "rgba(16, 16, 16, 1.0)",
                     color: "red"
                 }
             }

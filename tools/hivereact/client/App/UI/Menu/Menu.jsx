@@ -61,22 +61,22 @@ export default class Menu extends React.Component {
     styles() {
         return {
             menuArea: {
-                backgroundColor: "maroon",
+                backgroundColor: "rgba(96, 16, 8, 0.5)",
                 color: "#eee",
                 fontSize: "10pt",
                 margin: "0px",
                 padding: "0px",
-                width: "300px",
+                width: "200px",
                 height: "100%",
                 position: "fixed",
                 top: "0px",
-                left: this.state.visible ? "0px" : "-300px",
+                left: this.state.visible ? "0px" : "-200px",
                 zIndex: "9999",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 overflow: "auto" // temp
             },
             header: {
-                backgroundColor: "#200",
+                backgroundColor: "rgba(200, 200, 200, 0.7)",
                 textAlign: "30px",
                 margin: "0px",
                 padding: "0px",
@@ -85,10 +85,19 @@ export default class Menu extends React.Component {
                 boxShadow: "0px 0px 1px 0px white inset"
             },
             headerCaption: {
-                color: "white",
+                color: "#333",
                 fontWeight: "bold",
                 padding: "5px 10px",
-                textShadow: "0px 0px 3px crimson"
+                textShadow: "0px 0px 1px #fab",
+                boxShadow: "-1px -1px 0px 1px #666 inset"
+            },
+            container: {
+                margin: "0px",
+                padding: "0px",
+                width: "200px",
+                position: "relative",
+                // left: this.state.visible ? "0px" : "-200px",
+                // transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)"
             },
             block: {
                 textAlign: "right",
@@ -111,6 +120,10 @@ export default class Menu extends React.Component {
                 float: "left",
                 boxShadow: "0px -1px 1px 1px #666 inset"
             },
+            paragraph: {
+                width: "100%",
+                display: "inline-block"
+            },
             tagtip: {
                 backgroundColor: "crimson",
                 color: "#400",
@@ -122,8 +135,8 @@ export default class Menu extends React.Component {
                 height: "22px",
                 position: "fixed",
                 top: "15px",
-                left: this.state.visible ? "-19px" : "-319px",
-                transform: "rotate(90deg) translateY(-300px)",
+                left: this.state.visible ? "-19px" : "-219px",
+                transform: "rotate(90deg) translateY(-200px)",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 cursor: "pointer"
             }
@@ -131,20 +144,23 @@ export default class Menu extends React.Component {
     }
 
     saveButton(value, script){
+        const style = this.styles();
         return (
-            <div><input type="button" value={value} onClick={script} /></div>
+            <div style={style.paragraph}><input type="button" value={value} onClick={script} /></div>
         );
     }
 
     loadButton(value, script){
+        const style = this.styles();
         return (
-            <div><input type="file" name={value} onChange={script} /></div>
+            <div style={style.paragraph}><input type="file" name={value} onChange={script} /></div>
         );
     }
 
     clearButton(value, script){
+        const style = this.styles();
         return (
-            <div><input type="button" value={value} onClick={script} /></div>
+            <div style={style.paragraph}><input type="button" value={value} onClick={script} /></div>
         );
     }
 
@@ -211,7 +227,7 @@ export default class Menu extends React.Component {
         ];
         return (
             <div style={style.menuArea}>
-                <div>
+                <div style={style.container}>
                     <div style={style.header}>
                         <div style={style.headerCaption}>Node Create</div>
                     </div>
@@ -228,7 +244,7 @@ export default class Menu extends React.Component {
                         menuAction={this.props.menuAction}
                     />
                 </div>
-                <div>
+                <div style={style.container}>
                     <div style={style.header}>
                         <div style={style.headerCaption}>Others</div>
                     </div>
