@@ -16,7 +16,6 @@ export default class View extends React.Component {
 		this.state = {
 			nodes : this.props.store.getNodes()
 		};
-		this.nodeChanged = this.nodeChanged.bind(this);
 		this.nodeCountChanged = this.nodeCountChanged.bind(this);
 		this.selectChanged = this.selectChanged.bind(this);
 	}
@@ -30,18 +29,13 @@ export default class View extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeCountChanged);
 	}
 
 	componentWillUnmount() {
-		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeCountChanged);
-	}
-
-	nodeChanged(err, data) {
 	}
 
 	selectChanged(err, data) {
@@ -77,6 +71,7 @@ export default class View extends React.Component {
 				return (<ItemView initialNodeData={nodeData}
 							key={nodeData.varname + '_' + key}
 							id={nodeData.varname + '_' + key}
+							store={this.props.store}
 						></ItemView>)
 			}
 		} ));

@@ -55,7 +55,6 @@ export default class NodeInOut extends React.Component {
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onClick = this.onClick.bind(this);
 		this.onPlugDragging = this.onPlugDragging.bind(this);
-		this.intersectHole = this.intersectHole.bind(this);
 		this.plugInfo = this.plugInfo.bind(this);
 	}
 
@@ -138,42 +137,29 @@ export default class NodeInOut extends React.Component {
 		}
 	}
 
-	intersectHole(ev) {
-		let position = this.position();
-		if (position.x < ev.clientX && ev.clientX < (position.x + 15)) {
-			if (position.y < ev.clientY && ev.clientY < (position.y + 15)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	// プラグをドラッグするActionを発行.
 	onMouseDown(ev) {
-		if (this.intersectHole(ev)) {
-			let id = this.props.id;
-			let position = this.position();
-			this.pos = {
+		let id = this.props.id;
+		this.pos = {
+			x : ev.clientX,
+			y : ev.clientY
+		}
+		if (this.props.isInput) {
+			this.props.nodeAction.dragPlug(id, {
 				x : ev.clientX,
 				y : ev.clientY
-			}
-			if (this.props.isInput) {
-				this.props.nodeAction.dragPlug(id, {
-					x : ev.clientX,
-					y : ev.clientY
-				}, position);
-			} else {
-				this.props.nodeAction.dragPlug(id, position, {
-					x : ev.clientX,
-					y : ev.clientY
-				});
-			}
-			this.props.nodeAction.unSelectPlugHoles();
-			this.props.nodeAction.selectPlugHole(this.plugInfo());
-
-			ev.preventDefault();
-			ev.stopPropagation();
+			}, this.pos);
+		} else {
+			this.props.nodeAction.dragPlug(id, this.pos, {
+				x : ev.clientX,
+				y : ev.clientY
+			});
 		}
+		this.props.nodeAction.unSelectPlugHoles();
+		this.props.nodeAction.selectPlugHole(this.plugInfo());
+
+		ev.preventDefault();
+		ev.stopPropagation();
 	}
 
 	onClick(ev) {
@@ -198,6 +184,7 @@ export default class NodeInOut extends React.Component {
 					y : center.y + (ev.clientY - this.pos.y)
 				}, center);
 			}
+			console.log("onMouseMove")
 			ev.preventDefault();
 			ev.stopPropagation();
 		}
@@ -228,10 +215,12 @@ export default class NodeInOut extends React.Component {
 					y : center.y + (ev.clientY - this.pos.y)
 				}, center);
 			}
-		} else {
-			if (this.intersectHole(ev)) {
-				this.props.nodeAction.selectPlugHole(this.plugInfo());
-			}
+		}
+	}
+
+	onMouseUp2(ev) {
+		if (!this.state.isDragging) {
+			this.props.nodeAction.selectPlugHole(this.plugInfo());
 		}
 	}
 
@@ -262,6 +251,7 @@ export default class NodeInOut extends React.Component {
 			return (<div style={style.input}>
 						<div style={style.inhole}
 							onMouseDown={this.onMouseDown.bind(this)}
+							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
 						/>
 						<div style={style.inholeText}>{this.props.data.name}</div>
@@ -271,6 +261,7 @@ export default class NodeInOut extends React.Component {
 			return (<div style={style.output}>
 						<div style={style.outhole}
 							onMouseDown={this.onMouseDown.bind(this)}
+							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
 						/>
 						<div style={style.outholeText}>{this.props.data.name}</div>
