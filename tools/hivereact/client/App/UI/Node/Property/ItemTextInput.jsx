@@ -3,9 +3,9 @@ import ReactDOM from "react-dom"
 import Core from '../../../Core'
 
 /**
- * ノードプロパティアイテム(Text)ビュー.
+ * ノードプロパティアイテム(TextInput)ビュー.
  */
-export default class ItemText extends React.Component {
+export default class ItemTextInput extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -18,12 +18,12 @@ export default class ItemText extends React.Component {
 		return {
 			view : {
 				width : "250px",
-				backgroundColor : this.props.isHeader ? "#868686" : "#aeaeae",
+				backgroundColor : "#aeaeae",
 				color : "black",
 				display : "table-row"
 			},
 			key : {
-				backgroundColor : this.props.isHeader ? "#868686" : "#ccc",
+				backgroundColor : "#ccc",
 				width : "85px",
 				display: "table-cell"
 			},
@@ -34,15 +34,29 @@ export default class ItemText extends React.Component {
 		}
 	}
 
+	componentDidMount() {
+		let input = ReactDOM.findDOMNode(this.refs.text);
+		input.value = this.props.initialParam.value;
+	}
+
+	onKeyUp(ev) {
+		console.log(ev.target.value);
+		this.setState({
+			text : ev.target.value
+		});
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.state.param.name}
 					</div>
-					<div style={styles.value}>
-						{this.state.param.hasOwnProperty('value') ? this.state.param.value : "(Object)"}
-					</div>
+					<input style={styles.value}
+						type="text"
+						ref="text"
+						onKeyUp={this.onKeyUp.bind(this)}
+					></input>
 				</div>);
 	}
 }
