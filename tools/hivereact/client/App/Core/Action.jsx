@@ -1,10 +1,9 @@
 import Dispatcher from "./Dispatcher.jsx";
 
 export default class Action {
-	constructor(id, nodeSystem) {
+	constructor(id) {
 		this.dispatcher = Dispatcher;
 		this.id = id;
-        this.nodeSystem = nodeSystem;
 	}
 
 	/**
