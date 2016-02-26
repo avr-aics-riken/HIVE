@@ -46,21 +46,25 @@ export default class Store extends EventEmitter {
 			this.plugPositions = [];
 			for (let i = 0; i < plugs.length; i = i + 1) {
 				let plug = plugs[i];
-				let inNode = this.nodeMap[plug.input.nodeVarname];
-				let outNode = this.nodeMap[plug.output.nodeVarname];
-				let plugPosition = {
-					input : {
-						nodeVarname : plug.input.nodeVarname,
-						name : plug.input.name,
-						pos : this.calcPlugPosition(true, plug, inNode)
-					},
-					output : {
-						nodeVarname : plug.output.nodeVarname,
-						name : plug.output.name,
-						pos : this.calcPlugPosition(false, plug, outNode)
-					}
-				};
-				this.plugPositions.push(plugPosition);
+				let inVarname = plug.input.nodeVarname;
+				let outVarname = plug.output.nodeVarname;
+				if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
+					let inNode = this.nodeMap[plug.input.nodeVarname];
+					let outNode = this.nodeMap[plug.output.nodeVarname];
+					let plugPosition = {
+						input : {
+							nodeVarname : plug.input.nodeVarname,
+							name : plug.input.name,
+							pos : this.calcPlugPosition(true, plug, inNode)
+						},
+						output : {
+							nodeVarname : plug.output.nodeVarname,
+							name : plug.output.name,
+							pos : this.calcPlugPosition(false, plug, outNode)
+						}
+					};
+					this.plugPositions.push(plugPosition);
+				}
 			}
 			this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions);
 		});

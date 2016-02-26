@@ -17,7 +17,6 @@ export default class ItemView extends React.Component {
 		return {
 			view : {
 				width : "200px",
-				height : "100%",
 				backgroundColor : "rgb(80, 80, 80)",
 				color : "white"
 			}
