@@ -5,10 +5,11 @@ import Constants from '../Core/Constants.jsx'
 
 export default class NodeSystem extends EventEmitter {
 
-    constructor(callback) {
+    constructor(nodePlugData, callback) {
         super();
         this.nodeSerializer = new NodeSerializer();
         this.nodeCreator = new NodeCreator(callback);
+        this.data = nodePlugData;
     }
 
     // Temp
