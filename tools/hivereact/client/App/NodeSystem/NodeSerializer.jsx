@@ -49,9 +49,13 @@ export default class NodeSerializer {
         const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "," + z + "," + a + "})\n"
         return setsrc;
     }
+    clearConnect(nodeinfo) {
+        const clrsrc = nodeinfo.varname + ":ClearConnect()\n"
+        return clrsrc;
+    }
     
     updateNodeInput(node) {
-        let script = '';
+        let script = this.clearConnect(node);
         const inputs = node.input;
         let i;
         for (i = 0; i < inputs.length; ++i) {

@@ -16,6 +16,10 @@ function TeapotGenerator:Set(propname, value)
     self.updated = true;
 end
 
+function TeapotGenerator:ClearConnect()
+    
+end
+
 function TeapotGenerator:Do()
     local size = tonumber(self.property.size)
     if size == nil then
