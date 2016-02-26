@@ -11,11 +11,23 @@ function visit(node, nodelist) {
         for (i = 0; i <node.outputs.length; ++i) {
             visit(node.outputs[i], nodelist);
         }
-        nodelist.unshift(node.node); // push to front
+        nodelist.unshift(node); // push to front
     }
 }
 
-function topologicalSort(nodeGraph) {
+function initFrags(nodeGraph) {
+    let i;
+    
+    // init flag
+    for (i in nodeGraph) {
+        if (nodeGraph.hasOwnProperty(i)) {
+            nodeGraph[i].visited  = false;
+            nodeGraph[i].executed = false;
+        }
+    }    
+}
+
+function topologicalSort(nodeGraph) {    
     let nodelist = [];
     let i;
     for (i in nodeGraph) {
@@ -30,32 +42,6 @@ function topologicalSort(nodeGraph) {
     return nodelist;
 }
 
-function updateGraph(data) {
-
-    const nodes = data.nodes;
-    const plugs = data.plugs;
-
-    let nodecache = {};
-    let i;
-    for (i = 0; i < nodes.length; ++i) {
-        const n = nodes[i];
-        const nc = {node: n, inputs:[], outputs:[], visited: false};
-        nodecache[n.varname] = nc;
-    }
-    for (i = 0; i < plugs.length; ++i) {
-        //console.log(plugs[i]);
-        const p = plugs[i];
-        const outnode = nodecache.hasOwnProperty(p.output.nodeVarname) ? nodecache[p.output.nodeVarname] : null;
-        const inpnode = nodecache.hasOwnProperty(p.input.nodeVarname) ? nodecache[p.input.nodeVarname] : null;
-		if (outnode && inpnode) {
-	        inpnode.inputs.push(outnode);
-	        outnode.outputs.push(inpnode);
-		}
-    }
-    return nodecache;
-}
-
-
 export default class NodeSystem extends EventEmitter {
 
     constructor(nodePlugData, callback) {
@@ -66,15 +52,74 @@ export default class NodeSystem extends EventEmitter {
         this.nodeGraph = {};
         this.nodeQueue = [];
     }
+    
+    
+    updateGraph() {
+        const data  = this.data;
+        const nodes = data.nodes;
+        const plugs = data.plugs;
 
-    doNodes() {
-        this.nodeGraph = updateGraph(this.data);
-        this.nodeQueue = topologicalSort(this.nodeGraph);
+        let ng = this.nodeGraph;
+        let i;
+        for (i = 0; i < nodes.length; ++i) {
+            const n = nodes[i];
+            if (!ng.hasOwnProperty(n.varname)) {
+                const nc = {node: n, inputs:[], outputs:[], needexecute: true, created: false};
+                ng[n.varname] = nc;
+            } else {
+                // temporary clear
+                ng[n.varname].inputs  = [];
+                ng[n.varname].outputs = [];
+            }
+            
+        }
+        
+        // override all
+        for (i = 0; i < plugs.length; ++i) {
+            const p = plugs[i];
+            const outnode = ng.hasOwnProperty(p.output.nodeVarname) ? ng[p.output.nodeVarname] : null;
+            const inpnode = ng.hasOwnProperty(p.input.nodeVarname) ? ng[p.input.nodeVarname] : null;
+            if (outnode && inpnode) {
+                inpnode.inputs.push(outnode);
+                outnode.outputs.push(inpnode);
+            }
+        }        
+    }
+    
+    executeNode() {
         let script = '';
-        this.nodeQueue.forEach((node) => {
-            script += this.nodeSerializer.doNode(node);
+        this.nodeQueue.forEach((nd) => {
+            let inputUpdate = false;
+            let i
+            
+            // new node?
+            if (nd.created === false) {
+                script += this.nodeSerializer.newNode(nd.node);                
+            }
+            
+            // child executed check
+            for (i = 0; i < nd.inputs.length; ++i) {
+                if (nd.inputs[i].executed) {
+                    inputUpdate = true;
+                }
+            }
+            
+            nd.needexecute |= inputUpdate;
+            if (nd.needexecute) {
+                script += this.nodeSerializer.updateNodeInput(nd.node);                
+                script += this.nodeSerializer.doNode(nd.node);
+                nd.needexecute = false;
+                nd.executed = true;
+            }
         });
         return script;
+    }
+
+    doNodes() {
+        this.updateGraph();
+        initFrags(this.nodeGraph);        
+        this.nodeQueue = topologicalSort(this.nodeGraph);
+        return this.executeNode();
     }
 
     CreateNodeInstance(nodeName) {
@@ -102,11 +147,14 @@ export default class NodeSystem extends EventEmitter {
 
             // set to instance
             //console.log('CHANGENODE->', node);
-            let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";
+            //let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";
 
-            script += this.nodeSerializer.updateNodeInput(node);
-            script += this.doNodes();
-
+            //script += this.nodeSerializer.updateNodeInput(node);
+            //script += this.doNodes();
+            
+            this.nodeGraph[node.varname].needexecute = true;
+            
+            let script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
 
@@ -131,16 +179,18 @@ export default class NodeSystem extends EventEmitter {
             console.log('NS catched:NODE_ADDED', err, data);
 
             const node = data;
-            let script = this.nodeSerializer.newNode(node);
-            script += this.doNodes();
+            //let script = this.nodeSerializer.newNode(node);
+            //script += this.doNodes();
+            let script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.NODE_DELETED, (err, data) => {
             console.log('NS catched:NODE_DELETED', err, data);
 
             let node = data;
-            let script = this.nodeSerializer.deleteNode(node);
-            script += this.doNodes();
+            //let script = this.nodeSerializer.deleteNode(node);
+            //script += this.doNodes();
+            let script = this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.PLUG_ADDED, (err, data) => {
