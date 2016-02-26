@@ -11,7 +11,6 @@ export default class ItemVec extends React.Component {
 		this.state = {
 			values : this.props.initialParam.value
 		};
-		this.inputChanged = this.inputChanged.bind(this);
 	}
 
 	styles() {
@@ -33,27 +32,6 @@ export default class ItemVec extends React.Component {
 		}
 	}
 
-	inputChanged(err, data) {
-		if (data.varname === this.props.varname) {
-			for (let i = 0; i < data.input.length; i = i + 1) {
-				if (data.input[i].name === this.props.initialParam.name) {
-					this.setState({
-						values : [].concat(data.input[i].value)
-					});
-					break;
-				}
-			}
-		}
-	}
-
-	componentDidMount() {
-		this.props.store.on(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
-	}
-
-	componentWillUnmount() {
-		this.props.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
-	}
-
 	onChange(index) {
 		return (ev) => {
 			let values = this.props.initialParam.value;
@@ -72,7 +50,7 @@ export default class ItemVec extends React.Component {
 						type="text"
 						ref="text"
 						onChange={this.onChange.bind(this)(key)}
-						defaultValue={val}
+						defaultValue={this.state.values[key]}
 						value={this.state.values[key]}
 						key={key}
 					></input>);

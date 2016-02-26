@@ -17,6 +17,7 @@ export default class ItemView extends React.Component {
 			name : this.props.initialNodeData.name,
 			input : this.props.initialNodeData.input
 		};
+		this.inputChanged = this.inputChanged.bind(this);
 	}
 
 	styles() {
@@ -28,6 +29,26 @@ export default class ItemView extends React.Component {
 				display : "table"
 			}
 		}
+	}
+
+	inputChanged(err, data) {
+		if (data.varname === this.props.initialNodeData.varname) {
+			var myin = JSON.stringify(this.state.input);
+			var datain = JSON.stringify(data.input);
+			if (myin !== datain) {
+				this.setState({
+					input : [].concat(data.input)
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		this.props.store.on(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
+	}
+
+	componentWillUnmount() {
+		this.props.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
 	}
 
 	changeFunc(name, value) {
@@ -49,7 +70,7 @@ export default class ItemView extends React.Component {
 
 	contents() {
 		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
-			let id = String(this.props.id + "_in_" + key);
+			let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
 			if (Array.isArray(hole.array)) {
 				return (<ItemArray
 							varname={this.props.initialNodeData.varname}
