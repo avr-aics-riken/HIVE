@@ -50,5 +50,27 @@ export default class NodeSerializer {
         return setsrc;
     }
     
-    
+    updateNodeInput(node) {
+        let script = '';
+        const inputs = node.input;
+        let i;
+        for (i = 0; i < inputs.length; ++i) {
+            let v = inputs[i];
+            if (v.type === 'vec4') {
+                script += this.setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
+            } else if (v.type === 'vec3') {
+                script += this.setPropertyVal3(node, v.name, v.value[0], v.value[1], v.value[2]);
+            } else if(v.type === 'vec2') {
+                script += this.setPropertyVal2(node, v.name, v.value[0], v.value[1]);
+            } else if(v.type === 'float') {
+                script += this.setPropertyVal(node, v.name, v.value);
+            } else if(v.type === 'string') {
+                script += this.setPropertyString(node, v.name, v.value);
+            } else {
+                // TODO: ex. RenderObject
+                //script += this.setPropertyVal(node, v.name, v.value);
+            }
+        }
+        return script;
+    }    
 }

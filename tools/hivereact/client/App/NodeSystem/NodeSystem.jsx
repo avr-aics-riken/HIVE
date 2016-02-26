@@ -3,6 +3,57 @@ import NodeSerializer from './NodeSerializer.jsx'
 import EventEmitter from 'eventemitter3'
 import Constants from '../Core/Constants.jsx'
 
+
+function visit(node, nodelist) {
+    let i;
+    if (node.visited === false) {
+        node.visited = true;        
+        for (i = 0; i <node.outputs.length; ++i) {
+            visit(node.outputs[i], nodelist);
+        }
+        nodelist.unshift(node.node); // push to front        
+    }
+}
+
+function topologicalSort(nodeGraph) {
+    let nodelist = [];
+    let i;
+    for (i in nodeGraph) {
+        if (nodeGraph.hasOwnProperty(i)) {
+            if (nodeGraph[i].visited === false) {
+                visit(nodeGraph[i], nodelist);       
+            } 
+        }
+    }
+    
+    //console.log('SORTED:', nodelist);
+    return nodelist;
+}
+
+function updateGraph(data) {
+    
+    const nodes = data.nodes;
+    const plugs = data.plugs;
+    
+    let nodecache = {};
+    let i;
+    for (i = 0; i < nodes.length; ++i) {
+        const n = nodes[i];
+        const nc = {node: n, inputs:[], outputs:[], visited: false};
+        nodecache[n.varname] = nc;
+    }
+    for (i = 0; i < plugs.length; ++i) {
+        //console.log(plugs[i]);
+        const p = plugs[i];
+        const outnode = nodecache[p.output.nodeVarname];
+        const inpnode = nodecache[p.input.nodeVarname];
+        inpnode.inputs.push(outnode);
+        outnode.outputs.push(inpnode);
+    }
+    return nodecache;
+}
+
+
 export default class NodeSystem extends EventEmitter {
 
     constructor(nodePlugData, callback) {
@@ -10,9 +61,20 @@ export default class NodeSystem extends EventEmitter {
         this.nodeSerializer = new NodeSerializer();
         this.nodeCreator = new NodeCreator(callback);
         this.data = nodePlugData;
+        this.nodeGraph = {};
+        this.nodeQueue = [];
     }
 
-    // Temp
+    doNodes() {
+        this.nodeGraph = updateGraph(this.data);
+        this.nodeQueue = topologicalSort(this.nodeGraph);
+        let script = '';
+        this.nodeQueue.forEach((node) => {
+            script += this.nodeSerializer.doNode(node);
+        });
+        return script;
+    }
+
     CreateNodeInstance(nodeName) {
         let srcNode = this.nodeCreator.GetNodeInfo(nodeName);
         if (srcNode === undefined) {
@@ -31,44 +93,24 @@ export default class NodeSystem extends EventEmitter {
 
 
     initEmitter(store) {
-        store.on(Constants.NODE_CHANGED, (err, data) => {
-
-        });
+        
         store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
-            //console.log('NS catched:NODE_INPUT_CHANGED', err, data);
+            console.log('NS catched:NODE_INPUT_CHANGED', err, data);
             let node = data;
-            //let nodes = store.getNodes();
-
+            
             // set to instance
-
-            //console.log('NODES=', nodes, 'PLUGS=', plugs);
-            console.log('CHANGENODE->', node);
-            let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";//this.nodeSerializer.writeNode(nodes); // generate
-
-
-            const inputs = node.input;
-            let i;
-
-            for (i = 0; i < inputs.length; ++i) {
-                let v = inputs[i];
-                if (v.type === 'vec4') {
-                    script += this.nodeSerializer.setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
-                } else if (v.type === 'vec3') {
-                    script += this.nodeSerializer.setPropertyVal3(node, v.name, v.value[0], v.value[1], v.value[2]);
-                } else if(v.type === 'vec2') {
-                    script += this.nodeSerializer.setPropertyVal2(node, v.name, v.value[0], v.value[1]);
-                } else if(v.type === 'float') {
-                    script += this.nodeSerializer.setPropertyVal(node, v.name, v.value);
-                } else if(v.type === 'string') {
-                    script += this.nodeSerializer.setPropertyString(node, v.name, v.value);
-                } else {
-                    // TODO: ex. RenderObject
-                    //script += this.setPropertyVal(node, v.name, v.value);
-                }
-            }
-            script += this.nodeSerializer.doNode(node);
-
+            //console.log('CHANGENODE->', node);
+            let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";
+            
+            script += this.nodeSerializer.updateNodeInput(node);
+            script += this.doNodes();
+            
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
+        });
+        
+        /*
+        store.on(Constants.NODE_CHANGED, (err, data) => {
+            // not need now.
         });
         store.on(Constants.PLUG_CHANGED, (err, data) => {
             // not need now.
@@ -77,35 +119,39 @@ export default class NodeSystem extends EventEmitter {
             console.log('NS catched:NODE_COUNT_CHANGED', err, data);
             // not need now.
         });
-
-        /*store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
+        store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
             // TODO
-        });*/
+        });
+        */
 
         store.on(Constants.NODE_ADDED, (err, data) => {
             // create new / delete instance
             console.log('NS catched:NODE_ADDED', err, data);
 
             const node = data;
-            const script = this.nodeSerializer.newNode(node);
+            let script = this.nodeSerializer.newNode(node);
+            script += this.doNodes();            
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.NODE_DELETED, (err, data) => {
             console.log('NS catched:NODE_DELETED', err, data);
 
             let node = data;
-            const script = this.nodeSerializer.deleteNode(node);
+            let script = this.nodeSerializer.deleteNode(node);
+            script += this.doNodes();
             this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.PLUG_ADDED, (err, data) => {
             console.log('NS catched:PLUG_ADDED', err, data);
 
-            // TODO
+            const script = this.doNodes();            
+            this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
         store.on(Constants.PLUG_DELETED, (err, data) => {
             console.log('NS catched:PLUG_DELETED', err, data);
 
-            // TODO
+            const script = this.doNodes();            
+            this.emit(NodeSystem.SCRIPT_SERIALIZED, script);
         });
     }
 }
