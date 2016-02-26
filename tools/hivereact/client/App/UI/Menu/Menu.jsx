@@ -55,7 +55,7 @@ export default class Menu extends React.Component {
     }
 
     toggleMenu(){
-        if(this.layoutType === 1){return;}
+        if(this.layoutType === 1 || this.layoutType === 3){return;}
         let f = this.menuStore.getVisible();
         this.setState({visible: f});
     }
@@ -70,11 +70,12 @@ export default class Menu extends React.Component {
                 padding: "0px",
                 width: "200px",
                 height: "100%",
-                position: "fixed",
+                position: this.layoutType !== 2 ? "fixed" : "static",
                 top: "0px",
                 left: this.state.visible ? "0px" : "-200px",
                 zIndex: "9999",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
+                float: "left",
                 overflow: "auto" // temp
             },
             header: {
