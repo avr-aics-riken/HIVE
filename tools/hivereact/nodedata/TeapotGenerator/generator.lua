@@ -3,8 +3,7 @@ TeapotGenerator = {}
 
 TeapotGenerator.new = function ()
     local this = {}
-    this.gen = PrimitiveGenerator()
-    this.updated = false
+    this.gen = PrimitiveGenerator()    
     this.property = {
         size = 1
     }
@@ -18,13 +17,6 @@ function TeapotGenerator:Set(propname, value)
 end
 
 function TeapotGenerator:Do()
-    --[[if not self.updated then
-        return
-    end
-    self.update = false
-    --]]
-    
-    -- validate
     local size = tonumber(self.property.size)
     if size == nil then
        self.property.size = 1     
@@ -35,16 +27,3 @@ function TeapotGenerator:MeshData()
     local size = self.property.size    
     return self.gen:Teapot(size);
 end
-
---[[
-function TeapotGenerator(property)
-	local size = property.size
-
-	return {
-		MeshData = function ()
-			local gen  = PrimitiveGenerator()
-			return gen:Teapot(size)
-		end
-	}
-end
---]]
