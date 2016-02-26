@@ -1,9 +1,9 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../Core'
-import MenuStore from './MenuStore.jsx'
-import MenuNodeCreate from './MenuNodeCreate.jsx'
-import MenuNodeList from './MenuNodeList.jsx'
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../Core';
+import MenuStore from './MenuStore.jsx';
+import MenuNodeCreate from './MenuNodeCreate.jsx';
+import MenuNodeList from './MenuNodeList.jsx';
 
 export default class Menu extends React.Component {
     constructor(props) {
@@ -16,6 +16,7 @@ export default class Menu extends React.Component {
 
         this.store = this.props.store;
         this.action = this.props.action;
+        this.layoutType = this.props.layoutType;
         this.menuStore = this.props.menuStore;
         this.menuAction = this.props.menuAction;
         this.styles = this.styles.bind(this);
@@ -54,6 +55,7 @@ export default class Menu extends React.Component {
     }
 
     toggleMenu(){
+        if(this.layoutType === 1){return;}
         let f = this.menuStore.getVisible();
         this.setState({visible: f});
     }
@@ -105,7 +107,8 @@ export default class Menu extends React.Component {
                 padding: "2px 0px",
                 width: "100%",
                 minHeight: "20px",
-                boxShadow: "0px 0px 1px 0px white inset"
+                boxShadow: "0px 0px 1px 0px white inset",
+                overflow: "hidden"
             },
             blockTitle: {
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -140,7 +143,7 @@ export default class Menu extends React.Component {
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 cursor: "pointer"
             }
-        }
+        };
     }
 
     saveButton(value, script){
