@@ -46,11 +46,13 @@ export default class MenuNodeList extends React.Component {
                 overflow: "auto"
             },
             list: {
-                lineHeight: "36px",
-                padding: "5px 10px",
+                fontSize: "small",
+                lineHeight: "24px",
+                padding: "1px 5px",
                 width: "100%",
-                height: "36px",
-                boxShadow: "0px 0px 1px 0px white inset"
+                height: "20px",
+                boxShadow: "0px 0px 1px 0px white inset",
+                cursor: "pointer"
             }
         }
     }
