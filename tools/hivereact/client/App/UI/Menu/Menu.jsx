@@ -85,10 +85,10 @@ export default class Menu extends React.Component {
                 boxShadow: "0px 0px 1px 0px white inset"
             },
             headerCaption: {
-                color: "lightpink",
+                color: "white",
                 fontWeight: "bold",
                 padding: "5px 10px",
-                textShadow: "0px 0px 2px deeppink"
+                textShadow: "0px 0px 3px crimson"
             },
             block: {
                 textAlign: "right",
