@@ -17,7 +17,6 @@ export default class ItemView extends React.Component {
 			name : this.props.initialNodeData.name,
 			input : this.props.initialNodeData.input
 		};
-		this.nodeChanged = this.nodeChanged.bind(this);
 	}
 
 	styles() {
@@ -31,47 +30,43 @@ export default class ItemView extends React.Component {
 		}
 	}
 
-	nodeChanged(err, data) {
-		if (data.varname === this.props.initialNodeData.varname) {
-			this.setState({
-				name : data.name,
-				input : [].concat(data.input)
-			});
-		}
-	}
-
-	componentDidMount() {
-		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
-	}
-
-	componentWillUnmount() {
-		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
-	}
-
 	changeFunc(name, value) {
-		console.log("changefunccalled");
-		for (let i = 0; i < this.state.input.length; i = i + 1) {
-			if (this.state.input[i].name === name) {
-				this.state.input[i].value = value;
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		let inputs = JSON.parse(JSON.stringify(node.input));
+		for (let i = 0; i < inputs.length; i = i + 1) {
+			if (inputs[i].name === name) {
+				inputs[i].value = value;
+				console.log("CHANGENODE",
+					this.props.initialNodeData.varname,
+					inputs);
 				this.props.action.changeNode({
 					varname : this.props.initialNodeData.varname,
-					input : this.state.input
+					input : inputs
 				});
 			}
 		}
 	}
 
 	contents() {
-		let inputs = this.state.input.map( (hole, key) => {
+		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
 			let id = String(this.props.id + "_in_" + key);
 			if (Array.isArray(hole.array)) {
-				return (<ItemArray initialParam={hole} key={id} id={id} />);
+				return (<ItemArray
+							varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+							initialParam={hole} key={id} id={id} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
-				return (<ItemVec initialParam={hole} key={id} id={id}  changeFunc={this.changeFunc.bind(this)} />);
+				return (<ItemVec
+							varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+							initialParam={hole} key={id} id={id}  changeFunc={this.changeFunc.bind(this)} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)} />);
+				return (<ItemTextInput
+							varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)} />);
 			} else {
-				return (<ItemText initialParam={hole} key={id} id={id} />);
+				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} />);
 			}
 		});
 		return (
