@@ -34,11 +34,11 @@ export default class ItemVec extends React.Component {
 
 	onChange(index) {
 		return (ev) => {
-			let values = this.props.initialParam.value;
-			values[index] = Number(ev.target.value);
-			this.props.changeFunc(this.props.initialParam.name, values);
+			let val = Number(ev.target.value);
+			this.state.values[index] = val;
+			this.props.changeVecFunc(this.props.initialParam.name, index, val);
 			this.setState({
-				values : [].concat(values)
+				values : [].concat(this.state.values)
 			});
 		}
 	}

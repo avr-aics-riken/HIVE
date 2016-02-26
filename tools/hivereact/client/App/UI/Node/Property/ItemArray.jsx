@@ -11,6 +11,9 @@ import ItemTextInput from './ItemTextInput.jsx'
 export default class ItemArray extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			value : String(this.props.initialParam.array.length)
+		};
 	}
 	styles() {
 		return {
@@ -32,11 +35,14 @@ export default class ItemArray extends React.Component {
 		}
 	}
 
-	/*
-	changeFunc(name, value) {
-		this.props.changeFunc(this.props.initialParam.name, )
+	onChange() {
+		return (ev) => {
+			this.props.changeLengthFunc(this.props.initialParam.name, ev.target.value);
+			this.setState({
+				value : ev.target.value
+			});
+		}
 	}
-	*/
 
 	createArrayContents() {
 		let contents = this.props.initialParam.array.map( (hole, key) => {
@@ -60,7 +66,10 @@ export default class ItemArray extends React.Component {
 							{this.props.initialParam.name}
 						</div>
 						<input style={styles.value}
-							defaultValue={this.props.initialParam.array.length}>
+							defaultValue={this.state.value}
+							value={this.state.value}
+							onChange={this.onChange.bind(this)()}
+						>
 						</input>
 					</div>
 					{this.createArrayContents.bind(this)()}

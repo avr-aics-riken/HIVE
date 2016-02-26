@@ -234,6 +234,7 @@ export default class ActionExecuter {
 			}
 			this.store.data.plugs.push(payload.plugInfo);
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
+			this.store.emit(Constants.PLUG_ADDED, null, payload.plugInfo);
 		}
 	}
 

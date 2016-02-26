@@ -15,7 +15,7 @@ export default class ItemView extends React.Component {
 
 		this.state = {
 			name : this.props.initialNodeData.name,
-			input : this.props.initialNodeData.input
+			input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
 		};
 		this.inputChanged = this.inputChanged.bind(this);
 	}
@@ -53,13 +53,44 @@ export default class ItemView extends React.Component {
 
 	changeFunc(name, value) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = JSON.parse(JSON.stringify(node.input));
+		let inputs = this.state.input;
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
 				inputs[i].value = value;
-				console.log("CHANGENODE",
-					this.props.initialNodeData.varname,
-					inputs);
+				this.props.action.changeNode({
+					varname : this.props.initialNodeData.varname,
+					input : inputs
+				});
+			}
+		}
+	}
+
+	changeVecFunc(name, index, value) {
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		let inputs = this.state.input;
+		for (let i = 0; i < inputs.length; i = i + 1) {
+			if (inputs[i].name === name) {
+				inputs[i].value[index] = value;
+				console.log("UPDATE", inputs)
+				this.props.action.changeNode({
+					varname : this.props.initialNodeData.varname,
+					input : inputs
+				});
+			}
+		}
+	}
+
+	changeLengthFunc(name, length) {
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		let inputs = JSON.parse(JSON.stringify(this.state.input));
+		for (let i = 0; i < inputs.length; i = i + 1) {
+			if (inputs[i].name === name) {
+				for (let k = inputs[i].array.length; k < length; k = k + 1) {
+					inputs[i].array.push(
+						{"name": name + String(k),  "type": inputs[i].type }
+					);
+				}
+				inputs[i].array.length = length;
 				this.props.action.changeNode({
 					varname : this.props.initialNodeData.varname,
 					input : inputs
@@ -75,12 +106,13 @@ export default class ItemView extends React.Component {
 				return (<ItemArray
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
+							changeLengthFunc={this.changeLengthFunc.bind(this)}
 							initialParam={hole} key={id} id={id} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id}  changeFunc={this.changeFunc.bind(this)} />);
+							initialParam={hole} key={id} id={id}  changeVecFunc={this.changeVecFunc.bind(this)} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
 				return (<ItemTextInput
 							varname={this.props.initialNodeData.varname}

@@ -10,7 +10,7 @@ export default class ItemTextInput extends React.Component {
 		super(props);
 		this.state = {
 			value : this.props.initialParam.value
-		}
+		};
 	}
 
 	styles() {
