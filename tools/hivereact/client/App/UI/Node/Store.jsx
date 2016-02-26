@@ -102,7 +102,7 @@ export default class Store extends EventEmitter {
 			if (plug.output.nodeVarname === node.varname) {
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.pos[0] + 200 + 10, node.pos[1] + (k + 1) * 18 + 20];
+						return [node.pos[0] + 200, node.pos[1] + (k + 1) * 18 + 20];
 					}
 				}
 			}
