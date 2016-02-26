@@ -10,8 +10,6 @@ import Store from './Store.jsx'
 export default class NodeView extends React.Component {
 	constructor(props) {
 		super(props);
-		this.nodeList = this.props.store.getNodes();
-
 		this.state = {
 			nodes : this.props.store.getNodes()
 		};

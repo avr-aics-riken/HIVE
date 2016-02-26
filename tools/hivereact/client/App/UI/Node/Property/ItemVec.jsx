@@ -24,6 +24,7 @@ export default class ItemVec extends React.Component {
 
 	render () {
 		const styles = this.styles.bind(this)();
-		return (<div style={styles.view}></div>);
+		return (<div style={styles.view}>
+				</div>);
 	}
 }
