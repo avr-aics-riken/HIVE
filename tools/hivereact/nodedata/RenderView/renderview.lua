@@ -48,8 +48,10 @@ function RenderView:Do()
         temp[#temp + 1] = {self.cam};
     end
 
---[[
     local targetcam
+    targetcam = self.cam
+    temp = {self.cam}
+--[[
     if property.RenderObject then
         temp = {property.RenderObject}
         targetcam = property.RenderObject
