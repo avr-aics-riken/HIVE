@@ -41,7 +41,7 @@ export default class Node extends React.Component {
 	nodeChanged(err, data) {
 		if (data.varname === this.props.nodeVarname) {
 			this.setState({
-				node : data
+				node : Object.assign({}, data)
 			});
 		}
 	}
@@ -67,7 +67,10 @@ export default class Node extends React.Component {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
 			this.state.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
 			setTimeout(() => {
-				this.props.action.changeNode(this.state.node);
+				this.props.action.changeNode({
+					varname : this.state.node.varname,
+					pos : this.state.node.pos
+				});
 			}, 0);
 		}
 	}

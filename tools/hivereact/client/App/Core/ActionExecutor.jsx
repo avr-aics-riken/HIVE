@@ -124,18 +124,28 @@ export default class ActionExecuter {
  		if (payload.hasOwnProperty('nodeInfo')) {
  			for (let i = 0; i < this.store.data.nodes.length; i = i + 1) {
 				if (this.store.data.nodes[i].varname === payload.nodeInfo.varname) {
-					let preInputs = JSON.stringify(this.store.data.nodes[i].input);
-					let postInputs = JSON.stringify(payload.nodeInfo.input);
-					let preSelect = this.store.data.nodes[i].select;
-					let postSelect = payload.nodeInfo.select;
-					let uiComponent = this.store.data.nodes[i].uiComponent;
-					this.store.data.nodes[i] = JSON.parse(JSON.stringify(payload.nodeInfo));
-					this.store.data.nodes[i].uiComponent = uiComponent;
+					let dstNode = this.store.data.nodes[i];
+					let srcNode =  payload.nodeInfo;
+
+					let hasInput = srcNode.hasOwnProperty('input');
+					let preInputs = JSON.stringify(dstNode.input);
+					let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
+
+					let hasSelect = srcNode.hasOwnProperty('select');
+					let preSelect = dstNode.select;
+					let postSelect = hasSelect ? payload.nodeInfo.select : null;
+
+					for (let info in payload.nodeInfo) {
+						if (info !== "uiComponent" && this.store.data.nodes[i].hasOwnProperty(info)) {
+							this.store.data.nodes[i][info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
+						}
+					}
+
 					this.store.emit(Constants.NODE_CHANGED, null, this.store.data.nodes[i], i);
-					if (preInputs !== postInputs) {
+					if (hasInput && preInputs !== postInputs) {
 						this.store.emit(Constants.NODE_INPUT_CHANGED, null, this.store.data.nodes[i], i);
 					}
-					if (preSelect !== postSelect) {
+					if (hasSelect && preSelect !== postSelect) {
 						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.data.nodes[i], i);
 					}
 				}
