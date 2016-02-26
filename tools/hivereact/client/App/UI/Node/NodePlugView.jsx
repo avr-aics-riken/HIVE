@@ -16,11 +16,18 @@ export default class NodePlugView extends React.Component {
 			temporaryPlug : null
 		};
 
+		this.props.store.on(Core.Constants.PLUG_COUNT_CHANGED, (err) => {
+			this.setState({
+				plugPositions : [].concat(this.props.nodeStore.getPlugPositions())
+			});
+		});
+
 		this.props.store.on(Core.Constants.NODE_CHANGED, (err, data) => {
 			let plugs = this.state.plugPositions;
-
 			for (let i = 0, size = plugs.length; i < size; i = i + 1) {
 				let plug = plugs[i];
+
+				// ここ遅いので後で何とかする
 				let inpos = this.props.nodeStore.calcPlugPosition(true, plug, data);
 				if (inpos) {
 					setTimeout(() => {
@@ -56,10 +63,16 @@ export default class NodePlugView extends React.Component {
 			});
 		});
 
+/*
 		this.props.nodeStore.on(Store.PLUG_POSITION_CHANGED, (err, data) => {
-			this.setState({plugPositions : [].concat(data) });
-		});
+			if (this.state.temporaryPlug &&
+				data.input.nodeVarname === this.state.temporaryPlug.input.nodeVarname &&
+				data.output.nodeVarname === this.state.temporaryPlug.output.nodeVarname) {
 
+				this.setState({temporaryPlug : data  });
+			}
+		});
+*/
 		this.props.nodeStore.on(Store.PLUG_HOLE_SELECTED, (err, data) => {
 			if (data.length >= 2) {
 				if (data[0].isInput !== data[1].isInput &&
@@ -106,12 +119,15 @@ export default class NodePlugView extends React.Component {
 	}
 
 	createPlug(plugPos, key) {
-		return (<NodePlug plug={plugPos} key={String(key)} />)
+		return (<NodePlug nodeStore={this.props.nodeStore} plug={plugPos}
+		 		key={String(plugPos.input.varname + '_' + plugPos.output.varname + '_' + key)}
+					isTemporary={false}  />)
 	}
 
 	temporaryPlug() {
 		if (this.state.temporaryPlug) {
-			return (<NodePlug plug={this.state.temporaryPlug} key={"temporaryplug"}  />);
+			return (<NodePlug nodeStore={this.props.nodeStore} plug={this.state.temporaryPlug}
+					isTemporary={true} />);
 		}
 	}
 
