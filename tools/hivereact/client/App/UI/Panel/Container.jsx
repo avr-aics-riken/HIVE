@@ -9,17 +9,9 @@ export default class Container extends React.Component {
         this.store = props.store;
         this.action = props.action;
         this.state = {
-            node: null,
+            node: this.props.node,
             closeHover: false
         };
-        this.node = props.node;
-        let nodes = this.store.getNodes();
-        for(let i = 0; i < nodes.length; ++i){
-            if(nodes[i].varname === this.props.node.varname){
-                this.state.node = nodes[i];
-                break;
-            }
-        }
         this.isLeftDown = false;
         this.isScaleLeftDown = false;
 
@@ -36,12 +28,8 @@ export default class Container extends React.Component {
     }
 
     nodeChanged(err, data) {
-        let nodes = this.store.getNodes();
-        for(let i = 0; i < nodes.length; ++i){
-            if(nodes[i].varname === this.props.node.varname){
-                this.setState({node: nodes[i]});
-                break;
-            }
+        if(data.varname === this.state.node.varname){
+            this.setState({node: data});
         }
     }
 
@@ -51,7 +39,6 @@ export default class Container extends React.Component {
         window.addEventListener('mousemove', this.onScaleMove);
         window.addEventListener('mouseup', this.onScaleUp);
         this.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
-        this.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged);
         this.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
@@ -61,17 +48,16 @@ export default class Container extends React.Component {
         window.removeEventListener('mousemove', this.onScaleMove);
         window.removeEventListener('mouseup', this.onScaleUp);
         this.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
-        this.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged);
         this.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
         if(ev.button === 0){
             this.isLeftDown = true;
-            this.mousePos = {x: ev.clientX - this.props.node.panel.pos[0], y: ev.clientY - this.props.node.panel.pos[1]};
+            this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
             this.offsetLeft = ev.currentTarget.offsetLeft;
             this.offsetTop = ev.currentTarget.offsetTop;
-            this.forwardIndex(this.props.node);
+            this.forwardIndex(this.state.node);
         }
     }
 
@@ -81,7 +67,7 @@ export default class Container extends React.Component {
 
     onMouseMove(ev) {
         if (this.isLeftDown) {
-            let node = this.props.node;
+            let node = this.state.node;
             let mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
             node.panel.pos[0] = this.offsetLeft + mv.x;
             node.panel.pos[1] = this.offsetTop + mv.y;
@@ -95,7 +81,7 @@ export default class Container extends React.Component {
             this.scalePos = {x: ev.clientX, y: ev.clientY};
             this.offsetScaleLeft = ev.currentTarget.offsetLeft;
             this.offsetScaleTop = ev.currentTarget.offsetTop;
-            this.forwardIndex(this.props.node);
+            this.forwardIndex(this.state.node);
         }
     }
 
@@ -105,7 +91,7 @@ export default class Container extends React.Component {
 
     onScaleMove(ev) {
         if (this.isScaleLeftDown) {
-            let node = this.props.node;
+            let node = this.state.node;
             let mv = {x: ev.clientX - this.scalePos.x, y: ev.clientY - this.scalePos.y};
             node.panel.size[0] = Math.max(this.offsetScaleLeft + mv.x, 100);
             node.panel.size[1] = Math.max(this.offsetScaleTop + mv.y, 100);
@@ -115,7 +101,7 @@ export default class Container extends React.Component {
 
     // 閉じるボタンが押された.
     onCloseClick(ev) {
-        this.action.hiddenPanel(this.props.node.varname);
+        this.action.hiddenPanel(this.state.node.varname);
     }
 
     // 閉じるボタンにマウスホバーされた
@@ -156,17 +142,17 @@ export default class Container extends React.Component {
         return {
             container : {
                 backgroundColor: "#666",
-                border: this.props.node.select ? "1px solid orange" : "none",
+                border: this.state.node.select ? "1px solid orange" : "0px solid orange",
                 margin : "0px",
                 padding : "0px",
-                minWidth : this.props.node.panel.size[0] + "px",
-                minHeight: this.props.node.panel.size[1] + "px",
+                minWidth : this.state.node.panel.size[0] + "px",
+                minHeight: this.state.node.panel.size[1] + "px",
                 position: "absolute",
-                top:  this.props.node.panel.pos[1] + "px",
-                left: this.props.node.panel.pos[0] + "px",
+                top:  this.state.node.panel.pos[1] + "px",
+                left: this.state.node.panel.pos[0] + "px",
                 boxShadow: "0px 0px 3px 0px skyblue inset",
-                zIndex: this.props.node.panel.zindex,
-                opacity: this.props.node.panel.visible ? "1.0" : "0.25"
+                zIndex: this.state.node.panel.zindex,
+                opacity: this.state.node.panel.visible ? "1.0" : "0.25"
             },
             panelTitleBar: {
                 backgroundColor: "silver",
@@ -208,13 +194,13 @@ export default class Container extends React.Component {
     }
 
     render() {
-        // if(!this.props.node.panel.visible){return;}
+        // if(!this.state.node.panel.visible){return;}
         var node, res, styles = this.styles();
-        node = this.props.node;
+        node = this.state.node;
         if(!node.uiComponent){
             node.uiComponent = eval(node.uiFunc);
         }
-        res = React.createFactory(this.props.node.uiComponent)({
+        res = React.createFactory(this.state.node.uiComponent)({
             store: this.store,
             action: this.action,
             node: node
@@ -222,7 +208,7 @@ export default class Container extends React.Component {
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
-                    {this.props.node.varname}
+                    {this.state.node.varname}
                     <div
                         style={styles.panelCloseButton}
                         onClick={this.onCloseClick.bind(this)}
