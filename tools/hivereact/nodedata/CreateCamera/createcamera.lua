@@ -18,6 +18,10 @@ CreateCamera.new = function ()
     return this
 end
 
+function CreateCamera:ClearConnect()
+    
+end
+
 function CreateCamera:Set(propname, value)
     self.property[propname] = value
     self.updated = true;

@@ -20,6 +20,10 @@ RenderView.new = function (varname)
     return this
 end
 
+function RenderView:ClearConnect()
+    self.property.RenderObject = nil
+end
+
 function RenderView:Set(propname, value)
     self.property[propname] = value
     self.updated = true;
@@ -42,15 +46,14 @@ function RenderView:Do()
     
     --arg.RenderObject[#arg.RenderObject + 1] = cam;
     local temp
-    --temp = {unpack(property.RenderObject)}
-    temp = {property.RenderObject} ---   now temporary: 1 renderobject only
-    if (#temp > 0) then
-        temp[#temp + 1] = {self.cam};
-    end
 
+-- For Object
     local targetcam
     targetcam = self.cam
-    temp = {self.cam}
+    temp = {self.cam, property.RenderObject}
+    
+    
+-- For Camera    
 --[[
     if property.RenderObject then
         temp = {property.RenderObject}
@@ -60,6 +63,7 @@ function RenderView:Do()
         targetcam = self.cam
     end
 --]]
+
     --print('unpack=', unpack)
     --print('num=', #temp)
     render(temp)

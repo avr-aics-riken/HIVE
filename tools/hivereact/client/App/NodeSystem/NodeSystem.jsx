@@ -98,6 +98,7 @@ export default class NodeSystem extends EventEmitter {
             
             // new node?
             if (nd.created === false) {
+                nd.created = true;
                 script += this.nodeSerializer.newNode(nd.node);                
             }
             
@@ -111,9 +112,9 @@ export default class NodeSystem extends EventEmitter {
             nd.needexecute |= inputUpdate;
             if (nd.needexecute) {
                 script += this.nodeSerializer.updateNodeInput(nd.node);
-//                for (p = 0; p < nd.inPlugs.length; ++p) {
-//                    script += this.nodeSerializer.updateConnectedNodeInput(nd.inPlugs[p]);
-//                }              
+                for (p = 0; p < nd.inPlugs.length; ++p) {
+                    script += this.nodeSerializer.updateConnectedNodeInput(nd.inPlugs[p]);
+                }              
                 script += this.nodeSerializer.doNode(nd.node);
                 nd.needexecute = false;
                 nd.executed = true;

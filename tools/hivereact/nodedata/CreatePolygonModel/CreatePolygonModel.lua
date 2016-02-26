@@ -19,6 +19,11 @@ CreatePolygonModel.new = function ()
     return this
 end
 
+function CreatePolygonModel:ClearConnect()
+    
+end
+
+
 function CreatePolygonModel:Set(propname, value)
     self.property[propname] = value
     self.updated = true;
@@ -27,7 +32,7 @@ end
 function CreatePolygonModel:Do()
     local pm = PolygonModel();
     local property = self.property
-    self.model = pm
+    self.pmodel = pm
 	pm:Create(property.mesh);
 	pm:SetTranslate(property.translate[1], property.translate[2], property.translate[3])
 	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])
@@ -60,5 +65,5 @@ function CreatePolygonModel:Do()
 end
 
 function CreatePolygonModel:model()
-    return self.model;
+    return self.pmodel;
 end
