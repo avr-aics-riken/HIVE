@@ -46,7 +46,7 @@ export default class ItemVec extends React.Component {
 						ref="text"
 						onKeyUp={this.onKeyUp.bind(this)(key)}
 						defaultValue={val}
-						key={key}
+						key={key + String(Math.floor(Math.random() * 1000))}
 					></input>);
 		});
 		return values;
