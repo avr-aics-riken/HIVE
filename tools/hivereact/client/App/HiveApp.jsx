@@ -12,7 +12,7 @@ export default class HiveApp extends React.Component {
 		super(props);
 
 		this.store = new Core.Store();
-		this.action = new Core.Action(this.store.getDispatchToken(), this.nodesystem);
+		this.action = new Core.Action(this.store.getDispatchToken());
     }
 
 	menu() {
