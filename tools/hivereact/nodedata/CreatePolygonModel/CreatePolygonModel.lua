@@ -26,14 +26,15 @@ function CreatePolygonModel:Set(propname, value)
 end
 
 function CreatePolygonModel:Do()
-    if not self.updated then
+    --[[if not self.updated then
         return
     end
     self.update = false
-    
+    --]]
     
     local pm = PolygonModel();
-    this.model = pm
+    local property = self.property
+    self.model = pm
 	pm:Create(property.mesh);
 	pm:SetTranslate(property.translate[1], property.translate[2], property.translate[3])
 	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])

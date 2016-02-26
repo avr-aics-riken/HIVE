@@ -10,7 +10,7 @@ export default class NodeSerializer {
     
     newNode(nodeinfo) {
         const definistion = nodeinfo.customfunc + '\n';
-        const newInstance = nodeinfo.varname + " = " + nodeinfo.funcname + ".new()\n";
+        const newInstance = nodeinfo.varname + " = " + nodeinfo.funcname + ".new('" + nodeinfo.varname + "')\n";
         const com = 'print("newinstace!>' + nodeinfo.varname + ' = ",' + nodeinfo.varname + ')\n'
         const src = definistion + newInstance + com;
         return src;                

@@ -37,12 +37,6 @@ export default class Hive extends EventEmitter {
 			var rendererId = res.id;
 			console.log('rendererId = ', rendererId);
 			this.conn.setRendererId(parseInt(res.id)); // これは必要！TODO
-
-			runScriptInternal(this.conn, "print('!!!!hogehoge!!!!'); return 'hoge'", function (err, ret) {
-				console.log('RET=', ret);
-			});
-
-			//this.testRender();
 		});
 
 		this.conn.method('updateInfo', (function (core, infoCallback) {

@@ -18,10 +18,11 @@ function TeapotGenerator:Set(propname, value)
 end
 
 function TeapotGenerator:Do()
-    if not self.updated then
+    --[[if not self.updated then
         return
     end
     self.update = false
+    --]]
     
     -- validate
     local size = tonumber(self.property.size)
