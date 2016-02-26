@@ -141,6 +141,18 @@ export default class Action {
 			varname : varname
 		});
 	}
+    
+   /**
+	 * パネルを表示にする
+	 * @param varname ノード変数名
+	 */
+	showPanel(varname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "showPanel",
+			varname : varname
+		});
+	}
 
 	/**
 	 * ノードを選択する
