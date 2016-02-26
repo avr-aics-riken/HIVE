@@ -64,12 +64,13 @@ export default class NodeSystem extends EventEmitter {
         for (i = 0; i < nodes.length; ++i) {
             const n = nodes[i];
             if (!ng.hasOwnProperty(n.varname)) {
-                const nc = {node: n, inputs:[], outputs:[], needexecute: true, created: false};
+                const nc = {node: n, inputs:[], outputs:[], inPlugs:[], needexecute: true, created: false};
                 ng[n.varname] = nc;
             } else {
                 // temporary clear
                 ng[n.varname].inputs  = [];
                 ng[n.varname].outputs = [];
+                ng[n.varname].inPlugs = [];
             }
             
         }
@@ -81,6 +82,7 @@ export default class NodeSystem extends EventEmitter {
             const inpnode = ng.hasOwnProperty(p.input.nodeVarname) ? ng[p.input.nodeVarname] : null;
             if (outnode && inpnode) {
                 inpnode.inputs.push(outnode);
+                inpnode.inPlugs.push(p);
                 outnode.outputs.push(inpnode);
             }
         }        
@@ -91,6 +93,7 @@ export default class NodeSystem extends EventEmitter {
         this.nodeQueue.forEach((nd) => {
             let inputUpdate = false;
             let i
+            let p
             
             // new node?
             if (nd.created === false) {
@@ -99,14 +102,17 @@ export default class NodeSystem extends EventEmitter {
             
             // child executed check
             for (i = 0; i < nd.inputs.length; ++i) {
-                if (nd.inputs[i].executed) {
+                if (nd.inputs.hasOwnProperty(i) && nd.inputs[i].executed) {
                     inputUpdate = true;
                 }
             }
             
             nd.needexecute |= inputUpdate;
             if (nd.needexecute) {
-                script += this.nodeSerializer.updateNodeInput(nd.node);                
+                script += this.nodeSerializer.updateNodeInput(nd.node);
+                /*for (p = 0; p < nd.inPlugs.length; ++p) {
+                    script += this.nodeSerializer.updateConnectedNodeInput(nd.inPlugs[p]);
+                }*/               
                 script += this.nodeSerializer.doNode(nd.node);
                 nd.needexecute = false;
                 nd.executed = true;

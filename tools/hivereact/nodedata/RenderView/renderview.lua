@@ -14,7 +14,7 @@ RenderView.new = function (varname)
         clearcolor = {0,0,0,1},
         color_file = "output.jpg",
         depth_file = "",
-        RenderObject = {}
+        RenderObject = nil --{}
     }
     setmetatable(this, {__index=RenderView})
     return this
@@ -41,7 +41,9 @@ function RenderView:Do()
     )
     
     --arg.RenderObject[#arg.RenderObject + 1] = cam;
-    local temp = {unpack(property.RenderObject)}
+    local temp
+    --temp = {unpack(property.RenderObject)}
+    temp = {property.RenderObject} ---   now temporary: 1 renderobject only
     temp[#temp + 1] = self.cam;
 
     print('unpack=', unpack)
