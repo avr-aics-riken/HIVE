@@ -52,8 +52,8 @@ export default class Store extends EventEmitter {
 				let inVarname = plug.input.nodeVarname;
 				let outVarname = plug.output.nodeVarname;
 				if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
-					let inNode = this.nodeMap[plug.input.nodeVarname];
-					let outNode = this.nodeMap[plug.output.nodeVarname];
+					let inNode = this.nodeMap[inVarname];
+					let outNode = this.nodeMap[outVarname];
 					let plugPosition = {
 						input : {
 							nodeVarname : plug.input.nodeVarname,

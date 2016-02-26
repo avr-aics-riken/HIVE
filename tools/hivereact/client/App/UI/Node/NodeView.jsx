@@ -37,7 +37,7 @@ export default class NodeView extends React.Component {
     // TO BE DELETED
 	addButtonClick(id) {
 		return () => {
-			let ncount = this.props.store.getNodes().length;
+			let ncount = Math.floor(Math.random() * 100000) + this.props.store.getNodes().length;
 			if (id === 0) {
 				let camera = this.props.store.nodeSystem.CreateNodeInstance('CreateCamera');
 				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
@@ -111,6 +111,7 @@ export default class NodeView extends React.Component {
 	render() {
 		const styles = this.styles.bind(this)();
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
+		console.log(nodeData.varname + key);
 			return (<Node nodeVarname={nodeData.varname}
 			 			store={this.props.store}
 						action={this.props.action}

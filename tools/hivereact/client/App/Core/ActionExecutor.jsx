@@ -239,7 +239,6 @@ export default class ActionExecuter {
 					this.store.data.plugs.splice(i, 1);
 					this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
 					this.store.emit(Constants.PLUG_DELETED, null, plug);
-					break;
 				}
 			}
 		}
