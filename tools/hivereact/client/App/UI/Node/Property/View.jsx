@@ -3,9 +3,7 @@ import ReactDOM from "react-dom"
 import Core from '../../../Core'
 import Node from '../Node.jsx'
 import Store from '../Store.jsx'
-import ItemText from './ItemText.jsx'
-import ItemVec from './ItemVec.jsx'
-import ItemArray from './ItemArray.jsx'
+import ItemView from './ItemView.jsx'
 
 /**
  * ノードプロパティビュー.
@@ -15,7 +13,7 @@ export default class View extends React.Component {
 		super(props);
 
 		this.state = {
-			nodes : {}
+			nodes : []
 		};
 
 		this.nodeChanged = this.nodeChanged.bind(this);
@@ -54,12 +52,17 @@ export default class View extends React.Component {
 		}
 	}
 
+	contents() {
+		let nodes = this.state.nodes;
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
+		let itemViewList = (this.state.nodes.map( (nodeData, key) => {
+			return (<ItemView nodeVarname={nodeData.varname}></ItemView>);
+		} ));
 		return (<div style={styles.view}>
-			<ItemText />
-			<ItemVec />
-			<ItemArray />
+			{itemViewList}
 		</div>);
 	}
 }

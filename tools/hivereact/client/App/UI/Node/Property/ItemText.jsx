@@ -22,8 +22,16 @@ export default class ItemText extends React.Component {
 		}
 	}
 
+	onKeyUp(ev) {
+		console.log(ev.target.value);
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
-		return (<div style={styles.view}></div>);
+		return (<div style={styles.view}>
+					<input type="text"
+						onKeyUp={this.onKeyUp.bind(this)}
+					></input>
+				</div>);
 	}
 }
