@@ -25,6 +25,7 @@ export default class ActionExecuter {
 		this.deleteNode = this.deleteNode.bind(this);
 		this.changeNode = this.changeNode.bind(this);
 		this.changeNodes = this.changeNodes.bind(this);
+		this.importNode = this.importNode.bind(this);
 		this.addPlug = this.addPlug.bind(this);
 		this.deletePlug = this.deletePlug.bind(this);
 		this.hiddenPanel = this.hiddenPanel.bind(this);
@@ -177,6 +178,17 @@ export default class ActionExecuter {
 					// }
 				}
 			}
+		}
+	}
+
+	/**
+	 * ノードインポート
+	 */
+	importNode(payload) {
+		if (payload.hasOwnProperty('nodeInfo')) {
+            this.store.data.nodes.push(payload.nodeInfo);
+			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
+			this.store.emit(Constants.NODE_ADDED, null, payload.nodeInfo);
 		}
 	}
 

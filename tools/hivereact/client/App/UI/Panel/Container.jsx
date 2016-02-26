@@ -209,11 +209,15 @@ export default class Container extends React.Component {
 
     render() {
         // if(!this.props.node.panel.visible){return;}
-        var styles = this.styles();
-        var res = React.createFactory(this.props.node.uiComponent)({
+        var node, res, styles = this.styles();
+        node = this.props.node;
+        if(!node.uiComponent){
+            node.uiComponent = eval(node.uiFunc);
+        }
+        res = React.createFactory(this.props.node.uiComponent)({
             store: this.store,
             action: this.action,
-            node: this.props.node
+            node: node
         });
         return (
             <div style={styles.container}>
