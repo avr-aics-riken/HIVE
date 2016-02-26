@@ -112,6 +112,18 @@ export default class Action {
 	}
 
 	/**
+	 * ノードをインポートする
+	 * @param nodeInfo ノード情報
+	 */
+	importNode(nodeInfo) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "importNode",
+			nodeInfo : nodeInfo
+		});
+	}
+
+	/**
 	 * プラグを追加する
 	 * @param plugInfo プラグ情報
 	 * プラグ情報は以下の形式

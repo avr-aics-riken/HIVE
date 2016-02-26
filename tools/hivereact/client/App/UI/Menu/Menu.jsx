@@ -36,9 +36,9 @@ export default class Menu extends React.Component {
         if(confirm('really?')){
             let nodes = this.props.store.getNodes();
             let plugs = this.props.store.getPlugs();
-            // for(let i = plugs.length - 1; i >= 0; --i){
-            //     this.props.action.deletePlug(plugs[i]);
-            // }
+            for(let i = plugs.length - 1; i >= 0; --i){
+                this.props.action.deletePlug(plugs[i]);
+            }
             for(let i = nodes.length - 1; i >= 0; --i){
                 this.props.action.deleteNode(nodes[i].varname);
             }
@@ -112,17 +112,17 @@ export default class Menu extends React.Component {
                 boxShadow: "0px -1px 1px 1px #666 inset"
             },
             tagtip: {
-                backgroundColor: "red",
+                backgroundColor: "crimson",
                 color: "#400",
-                fontSize: "10pt",
+                fontSize: "11pt",
                 fontWeight: "bold",
                 margin: "0px",
-                padding: "0px 5px",
-                width: "50px",
-                height: "20px",
+                padding: "0px 10px",
+                width: "60px",
+                height: "22px",
                 position: "fixed",
                 top: "15px",
-                left: this.state.visible ? "-15px" : "-315px",
+                left: this.state.visible ? "-19px" : "-319px",
                 transform: "rotate(90deg) translateY(-300px)",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 cursor: "pointer"
@@ -173,11 +173,17 @@ export default class Menu extends React.Component {
                                 let data = (JSON.parse(reader.result));
                                 if(data.nodes && data.nodes.length > 0){
                                     for(let i in data.nodes){
-                                        data.nodes[i].uiComponent = eval('(' + data.nodes[i].uiComponent + ')');
-                                        this.props.action.addNode(data.nodes[i]);
+                                        this.props.action.importNode(data.nodes[i]);
                                     }
                                 }else{
-                                    console.log('import failed: data.length === 0');
+                                    console.log('import failed: nodes.length === 0');
+                                }
+                                if(data.plugs && data.plugs.length > 0){
+                                    for(let i in data.plugs){
+                                        // this.props.action.addNode(data.nodes[i]);
+                                    }
+                                }else{
+                                    console.log('import failed: plugs.length === 0');
                                 }
                             }.bind(this);
                             reader.readAsText(eve.currentTarget.files[0]);
@@ -193,8 +199,7 @@ export default class Menu extends React.Component {
                         nodes: this.props.store.getNodes(),
                         plugs: this.props.store.getPlugs()
                     };
-                    // var blob = new Blob([this.functionReplacer.bind(this)(data)], {type: "text/plain;charset=utf-8"});
-                    var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
+                    var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
                     saveAs(blob, "save.json");
                 }.bind(this)
             },
@@ -234,6 +239,4 @@ export default class Menu extends React.Component {
         );
     }
 }
-
-                // <div style={style.tagtip}>menu</div>
 
