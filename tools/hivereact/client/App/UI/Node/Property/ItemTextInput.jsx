@@ -8,10 +8,6 @@ import Core from '../../../Core'
 export default class ItemTextInput extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			param : this.props.initialParam,
-			text : this.props.initialParam.value
-		}
 	}
 
 	styles() {
@@ -41,16 +37,14 @@ export default class ItemTextInput extends React.Component {
 
 	onKeyUp(ev) {
 		console.log(ev.target.value);
-		this.setState({
-			text : ev.target.value
-		});
+		this.props.changeFunc(this.props.initialParam.name, ev.target.value);
 	}
 
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						{this.state.param.name}
+						{this.props.initialParam.name}
 					</div>
 					<input style={styles.value}
 						type="text"
