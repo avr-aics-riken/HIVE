@@ -6,16 +6,13 @@ import NodeSystem from "../NodeSystem"
 import Constants from "./Constants.jsx"
 
 export default class Store extends EventEmitter {
-	constructor() {
-		super();
+    constructor() {
+        super();
 
         // private:
-		this.data = {
-		  // 全てのノード
-          nodes : [],
-
-		  // 全てのプラグ
-		  plugs : []
+        this.data = {
+            nodes : [], // 全てのノード
+            plugs : []  // 全てのプラグ
         }
 
 		this.actionExecuter = new ActionExecuter(this);
@@ -27,13 +24,13 @@ export default class Store extends EventEmitter {
 		this.getNodeNameList = this.getNodeNameList.bind(this);
 		this.getDispatchToken = this.getDispatchToken.bind(this);
 
-		this.initHive();
+		this.initHive(this.data);
 	}
     
     // private:
-	initHive() {
+	initHive(nodePlugData) {
 		this.hive = new Hive();
-		this.nodeSystem = new NodeSystem((nodeSystem) => {
+		this.nodeSystem = new NodeSystem(nodePlugData, (nodeSystem) => {
 			// initilized.
             this.hive.connect('ws://localhost:8080', '', true);
 			this.emit(Constants.INITIALIZED, null);
