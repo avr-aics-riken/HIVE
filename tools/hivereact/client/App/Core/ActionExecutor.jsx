@@ -69,6 +69,22 @@ export default class ActionExecuter {
 					payload.nodeInfo.panel.zindex = this.store.data.nodes.length + 1;
 				}
 			}
+			if(node){
+				let nl = this.store.getNodes();
+				positionGetter(node, nl);
+				function positionGetter(target, nodeList){
+					for(let i = 0, j = nl.length; i < j; ++i){
+						if(Math.abs(nl[i].panel.pos[0] - target.panel.pos[0]) < 50 ||
+						   Math.abs(nl[i].panel.pos[1] - target.panel.pos[1]) < 50){
+							target.panel.pos[0] += 50;
+							target.panel.pos[1] += 50;
+							positionGetter(target, nodeList);
+							break;
+						}
+					}
+					target.panel.zindex = nodeList.length + 1;
+				}
+			}
 			if (node) {
 				this.store.data.nodes.push(node);
 			}
