@@ -6,7 +6,7 @@ export default class MenuStore extends EventEmitter {
         super();
         this.dispatchToken = dispathcer.register(this.actionHandler.bind(this));
 
-        this.visibility = true;
+        this.visibility = false;
 
         // coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
         // 	this.nodeMap = {};
