@@ -8,10 +8,6 @@ import Core from '../../../Core'
 export default class ItemText extends React.Component {
 	constructor(props) {
 		super(props);
-		this.state = {
-			param : this.props.initialParam,
-			text : this.props.initialParam.value
-		}
 	}
 
 	styles() {
@@ -38,10 +34,10 @@ export default class ItemText extends React.Component {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						{this.state.param.name}
+						{this.props.initialParam.name}
 					</div>
 					<div style={styles.value}>
-						{this.state.param.hasOwnProperty('value') ? this.state.param.value : "(Object)"}
+						{this.props.initialParam.hasOwnProperty('value') ? this.props.initialParam.value : "(Object)"}
 					</div>
 				</div>);
 	}

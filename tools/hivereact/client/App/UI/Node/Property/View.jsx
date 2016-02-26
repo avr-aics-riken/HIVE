@@ -72,6 +72,7 @@ export default class View extends React.Component {
 							key={nodeData.varname + '_' + key}
 							id={nodeData.varname + '_' + key}
 							store={this.props.store}
+							action={this.props.action}
 						></ItemView>)
 			}
 		} ));

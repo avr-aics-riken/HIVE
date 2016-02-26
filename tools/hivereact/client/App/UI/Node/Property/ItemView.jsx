@@ -48,15 +48,28 @@ export default class ItemView extends React.Component {
 		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
 	}
 
+	changeFunc(name, value) {
+		console.log("changefunccalled");
+		for (let i = 0; i < this.state.input.length; i = i + 1) {
+			if (this.state.input[i].name === name) {
+				this.state.input[i].value = value;
+				this.props.action.changeNode({
+					varname : this.props.initialNodeData.varname,
+					input : this.state.input
+				});
+			}
+		}
+	}
+
 	contents() {
 		let inputs = this.state.input.map( (hole, key) => {
 			let id = String(this.props.id + "_in_" + key);
 			if (Array.isArray(hole.array)) {
 				return (<ItemArray initialParam={hole} key={id} id={id} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
-				return (<ItemVec initialParam={hole} key={id} id={id}/>);
+				return (<ItemVec initialParam={hole} key={id} id={id}  changeFunc={this.changeFunc.bind(this)} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput initialParam={hole} key={id} id={id} />);
+				return (<ItemTextInput initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)} />);
 			} else {
 				return (<ItemText initialParam={hole} key={id} id={id} />);
 			}
