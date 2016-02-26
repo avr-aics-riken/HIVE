@@ -15,9 +15,9 @@ export default class ItemView extends React.Component {
 
 		this.state = {
 			name : this.props.initialNodeData.name,
-			input : this.props.initialNodeData.input,
-			output : this.props.initialNodeData.output
+			input : this.props.initialNodeData.input
 		};
+		this.nodeChanged = this.nodeChanged.bind(this);
 	}
 
 	styles() {
@@ -31,6 +31,23 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	nodeChanged(err, data) {
+		if (data.varname === this.props.initialNodeData.varname) {
+			this.setState({
+				name : data.name,
+				input : [].concat(data.input)
+			});
+		}
+	}
+
+	componentDidMount() {
+		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
+	}
+
+	componentWillUnmount() {
+		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
+	}
+
 	contents() {
 		let inputs = this.state.input.map( (hole, key) => {
 			let id = String(this.props.id + "_in_" + key);
@@ -38,18 +55,6 @@ export default class ItemView extends React.Component {
 				return (<ItemArray initialParam={hole} key={id} id={id} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec initialParam={hole} key={id} id={id}/>);
-			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput initialParam={hole} key={id} id={id} />);
-			} else {
-				return (<ItemText initialParam={hole} key={id} id={id} />);
-			}
-		});
-		let outputs = this.state.output.map( (hole, key) => {
-			let id = String(this.props.id + "_out_" + key);
-			if (Array.isArray(hole.array)) {
-				return (<ItemArray initialParam={hole} key={id} id={id} />);
-			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
-				return (<ItemVec initialParam={hole} key={id} id={id} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
 				return (<ItemTextInput initialParam={hole} key={id} id={id} />);
 			} else {
