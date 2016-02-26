@@ -99,8 +99,13 @@ class RenderView extends React.Component {
     onChange(i, event) {
         let text = event.target.value;
         this.setState({text});
-        this.node.input[5].value[i] = parseFloat(text);        
-        this.action.changeNode(this.node);
+        const inputs = JSON.parse(JSON.stringify(this.node.input)); 
+        inputs[5].value[i] = parseFloat(text);
+        const varname = this.node.varname;
+        this.action.changeNode({
+            varname: varname,
+            input: inputs
+        });
     }
     
     content() {
