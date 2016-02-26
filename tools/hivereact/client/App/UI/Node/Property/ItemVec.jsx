@@ -8,6 +8,9 @@ import Core from '../../../Core'
 export default class ItemVec extends React.Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			values : this.props.initialParam.value
+		};
 	}
 
 	styles() {
@@ -29,12 +32,14 @@ export default class ItemVec extends React.Component {
 		}
 	}
 
-	onKeyUp(index) {
+	onChange(index) {
 		return (ev) => {
 			let values = this.props.initialParam.value;
 			values[index] = Number(ev.target.value);
-				console.log(values);
 			this.props.changeFunc(this.props.initialParam.name, values);
+			this.setState({
+				values : [].concat(values)
+			});
 		}
 	}
 
@@ -44,9 +49,10 @@ export default class ItemVec extends React.Component {
 			return (<input style={styles.value}
 						type="text"
 						ref="text"
-						onKeyUp={this.onKeyUp.bind(this)(key)}
-						defaultValue={val}
-						key={key + String(Math.floor(Math.random() * 1000))}
+						onChange={this.onChange.bind(this)(key)}
+						defaultValue={this.state.values[key]}
+						value={this.state.values[key]}
+						key={key}
 					></input>);
 		});
 		return values;
