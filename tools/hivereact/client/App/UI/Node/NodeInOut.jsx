@@ -184,7 +184,6 @@ export default class NodeInOut extends React.Component {
 					y : center.y + (ev.clientY - this.pos.y)
 				}, center);
 			}
-			console.log("onMouseMove")
 			ev.preventDefault();
 			ev.stopPropagation();
 		}
