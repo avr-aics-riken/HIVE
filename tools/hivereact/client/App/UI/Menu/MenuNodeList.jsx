@@ -1,6 +1,6 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../Core'
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../Core';
 
 export default class MenuNodeList extends React.Component {
     constructor(props) {

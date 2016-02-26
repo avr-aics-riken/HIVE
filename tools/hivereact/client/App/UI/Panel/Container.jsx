@@ -1,6 +1,6 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../Core'
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../Core';
 
 export default class Container extends React.Component {
     constructor(props) {
@@ -106,7 +106,7 @@ export default class Container extends React.Component {
 
     // 閉じるボタンにマウスホバーされた
     onCloseHover(ev) {
-        this.setState({ closeHover : !this.state.closeHover })
+        this.setState({ closeHover : !this.state.closeHover });
     }
 
     // index を最前面に持ってくる
@@ -190,7 +190,7 @@ export default class Container extends React.Component {
                 overflow: "hidden",
                 cursor: "se-resize"
             }
-        }
+        };
     }
 
     render() {

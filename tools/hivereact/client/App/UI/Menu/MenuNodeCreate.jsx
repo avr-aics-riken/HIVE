@@ -1,7 +1,7 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Autosuggest from 'react-autosuggest';
-import Core from '../../Core'
+import React from "react";
+import ReactDOM from "react-dom";
+import Autosuggest from 'react-autosuggest';;
+import Core from '../../Core';
 
 export default class MenuNodeCreate extends React.Component {
     constructor(props) {
@@ -114,7 +114,7 @@ export default class MenuNodeCreate extends React.Component {
                     color: "red"
                 }
             }
-        }
+        };
     }
 
     // 以下 placeholder に与えた文字列がインプットボックスの

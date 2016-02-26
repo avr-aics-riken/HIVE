@@ -1,12 +1,12 @@
-import EventEmitter from 'eventemitter3'
-import Core from '../../Core'
+import EventEmitter from 'eventemitter3';
+import Core from '../../Core';
 
 export default class MenuStore extends EventEmitter {
-    constructor(dispathcer, coreStore) {
+    constructor(dispathcer, coreStore, layoutType) {
         super();
         this.dispatchToken = dispathcer.register(this.actionHandler.bind(this));
 
-        this.visibility = false;
+        this.visibility = layoutType === 1 ? true : false;
 
         // coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
         // 	this.nodeMap = {};

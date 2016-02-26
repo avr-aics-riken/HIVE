@@ -1,7 +1,7 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Container from "./Container.jsx"
-import Core from '../../Core'
+import React from "react";
+import ReactDOM from "react-dom";
+import Container from "./Container.jsx";
+import Core from '../../Core';
 
 export default class View extends React.Component {
     constructor(props) {
@@ -16,11 +16,6 @@ export default class View extends React.Component {
         this.styles = this.styles.bind(this);
         this.generator = this.generator.bind(this);
 
-		/*
-        this.props.store.on(Core.Constants.NODE_CHANGED, function(err, data){
-            this.setState({nodes: [].concat(this.store.getNodes())});
-        }.bind(this));
-		*/
         this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, function(err, data){
             this.setState({nodes: [].concat(this.store.getNodes())});
         }.bind(this));
@@ -52,7 +47,7 @@ export default class View extends React.Component {
                 float: "left",
                 boxShadow: "0px 0px 1px 0px white inset"
             }
-        }
+        };
     }
 
     menuButton(value, key){
