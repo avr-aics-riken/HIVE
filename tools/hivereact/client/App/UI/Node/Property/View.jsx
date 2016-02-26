@@ -22,9 +22,11 @@ export default class View extends React.Component {
 	}
 
 	nodeCountChanged(err, data) {
-		this.setState({
-			nodes : [].concat(this.props.store.getNodes())
-		});
+		if (!err) {
+			this.setState({
+				nodes : [].concat(this.props.store.getNodes())
+			});
+		}
 	}
 
 	componentDidMount() {
@@ -44,6 +46,9 @@ export default class View extends React.Component {
 
 	selectChanged(err, data) {
 		if (!err) {
+			this.setState({
+				nodes : [].concat(this.props.store.getNodes())
+			})
 		}
 	}
 
@@ -51,7 +56,7 @@ export default class View extends React.Component {
 		return {
 			view : {
 				position : "absolute",
-				width : "200px",
+				width : "250px",
 				height : "100%",
 				right : "0px",
 				top : "0px",
@@ -68,7 +73,12 @@ export default class View extends React.Component {
 	render () {
 		const styles = this.styles.bind(this)();
 		let itemViewList = (this.state.nodes.map( (nodeData, key) => {
-			return (<ItemView initialNodeData={nodeData} key={nodeData.varname + '_' + key}></ItemView>);
+			if (nodeData.select) {
+				return (<ItemView initialNodeData={nodeData}
+							key={nodeData.varname + '_' + key}
+							id={nodeData.varname + '_' + key}
+						></ItemView>)
+			}
 		} ));
 		return (<div style={styles.view}>
 			{itemViewList}
