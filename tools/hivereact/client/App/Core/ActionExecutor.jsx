@@ -101,8 +101,6 @@ export default class ActionExecuter {
 			let n = this.store.getNode(payload.varname);
 			if (n) {
 				this.store.data.nodes.splice(n.index, 1);
-				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
-				this.store.emit(Constants.NODE_DELETED, null, n.node);
 
 				// 関連するプラグを削除.
 				for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
@@ -113,6 +111,8 @@ export default class ActionExecuter {
 						this.deletePlug({ plugInfo : plug });
 					}
 				}
+				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
+				this.store.emit(Constants.NODE_DELETED, null, n.node);
 			}
 		}
 	}

@@ -16,7 +16,7 @@ export default class NodePlugView extends React.Component {
 			temporaryPlug : null
 		};
 
-		this.props.store.on(Core.Constants.PLUG_COUNT_CHANGED, (err) => {
+		this.props.nodeStore.on(Store.PLUG_COUNT_CHANGED, (err) => {
 			this.setState({
 				plugPositions : [].concat(this.props.nodeStore.getPlugPositions())
 			});
@@ -120,7 +120,8 @@ export default class NodePlugView extends React.Component {
 
 	createPlug(plugPos, key) {
 		return (<NodePlug nodeStore={this.props.nodeStore} plug={plugPos}
-		 		key={String(plugPos.input.varname + '_' + plugPos.output.varname + '_' + key)}
+		 		key={plugPos.input.nodeVarname + '_' + plugPos.output.nodeVarname + '_' +
+					plugPos.input.name + '_' + plugPos.output.name + '_' + String(key)}
 					isTemporary={false}  />)
 	}
 

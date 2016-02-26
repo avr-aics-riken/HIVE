@@ -40,10 +40,13 @@ export default class Store extends EventEmitter {
 		this.calcPlugPosition = this.calcPlugPosition.bind(this);
 
 		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
-			console.log("PLUG COUNT CHANGED");
 			let plugs = coreStore.getPlugs();
-			console.log("PLUGS", plugs);
 			this.plugPositions = [];
+
+			this.nodeMap = {};
+			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
+				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
+			}
 			for (let i = 0; i < plugs.length; i = i + 1) {
 				let plug = plugs[i];
 				let inVarname = plug.input.nodeVarname;
@@ -66,6 +69,7 @@ export default class Store extends EventEmitter {
 					this.plugPositions.push(plugPosition);
 				}
 			}
+			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPositions);
 		});
 
 		this.getPlugPositions = this.getPlugPositions.bind(this);
@@ -232,6 +236,7 @@ export default class Store extends EventEmitter {
 		this.emit(Store.NODE_MOVED, null, payload.mv);
 	}
 }
+Store.PLUG_COUNT_CHANGED = "plug_count_changed";
 Store.PLUG_POSITION_CHANGED = "plug_position_changed";
 Store.PLUG_DRAGGING = "plug_dragging";
 Store.PLUG_DRAG_END = "plug_drag_end";
