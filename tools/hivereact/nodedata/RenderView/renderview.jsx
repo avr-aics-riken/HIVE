@@ -5,17 +5,17 @@ class RenderView extends React.Component {
 	constructor(props) {
         super(props);
         console.log('RenderView Constructor:', props);
-	   
+
         this.node = props.node;
         this.action = props.action;
         this.store = props.store;
-        
+
         this.varname = this.node.varname;
-        
+
         this.state = {
-            text: ''            
+            text: ''
         }
-        
+
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
 
@@ -36,12 +36,12 @@ class RenderView extends React.Component {
 			});
 		});
 	}
-    
+
     hasIPCAddress() {
 		return (this.props.ipc_address && this.props.ipc_address !== "");
 	}
 	componentDidUpdate() {
-		// キャンバスの更新.        
+		// キャンバスの更新.
 		if (this.state.image) {
 			if (this.hasIPCAddress()) {
 				/*let canvas = ReactDOM.findDOMNode(this.refs.canvas);
@@ -61,7 +61,7 @@ class RenderView extends React.Component {
 			} else {
 		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
-                let imgElem = document.getElementById('aascreen-' + this.varname);                
+                let imgElem = document.getElementById('aascreen-' + this.varname);
                 imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"})
                 console.log(imgElem);
 			}
@@ -95,11 +95,11 @@ class RenderView extends React.Component {
 			}
 		}
 	}
-    
+
     onChange(i, event) {
         let text = event.target.value;
         this.setState({text});
-        const inputs = JSON.parse(JSON.stringify(this.node.input)); 
+        const inputs = JSON.parse(JSON.stringify(this.node.input));
         inputs[5].value[i] = parseFloat(text);
         const varname = this.node.varname;
         this.action.changeNode({
@@ -107,7 +107,7 @@ class RenderView extends React.Component {
             input: inputs
         });
     }
-    
+
     content() {
 		const styles = this.styles();
 		if (this.props.ipc_address && this.props.ipc_address !== "") {
@@ -117,30 +117,33 @@ class RenderView extends React.Component {
 		}
 	}
 
-    
+
     render(){
-        
+
         const styles = this.styles();
         return (
             <div>
                 <div>
                 <p>R:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
                     onChange = {this.onChange.bind(this,0)}
+					value={this.node.input[5].value[0]}
                     defaultValue={this.node.input[5].value[0]}/>
                 </div>
                 <div>
                 <p>G:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
                     onChange = {this.onChange.bind(this,1)}
+					value={this.node.input[5].value[1]}
                     defaultValue={this.node.input[5].value[1]}/>
                 </div>
                 <div>
                 <p>B:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
                     onChange = {this.onChange.bind(this,2)}
+					value={this.node.input[5].value[2]}
                     defaultValue={this.node.input[5].value[2]}/>
                 </div>
-                
+
                <img id={"aascreen-" + this.varname} style={styles.image} src="" ></img>
-                
+
             </div>
         );
     }
