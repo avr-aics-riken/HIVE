@@ -7,6 +7,7 @@ import NodePlugView from "./NodePlugView.jsx"
 import Property from "./Property"
 import Store from "./Store.jsx"
 import Action from "./Action.jsx"
+import NodeListCreate from "./NodeListCreate.jsx"
 
 var Dispatcher = require("flux").Dispatcher;
 
@@ -36,6 +37,10 @@ export default class View extends React.Component {
 						nodeAction={this.nodeAction}
 					/>
 					<Property.View
+						store={this.props.store}
+						action={this.props.action}
+					/>
+					<NodeListCreate
 						store={this.props.store}
 						action={this.props.action}
 					/>
