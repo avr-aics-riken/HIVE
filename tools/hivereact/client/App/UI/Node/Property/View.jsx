@@ -46,6 +46,14 @@ export default class View extends React.Component {
 		}
 	}
 
+	isVisible() {
+		let nodes = this.state.nodes;
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			if ( nodes[i].select) { console.log("ISVISBLE"); return true; }
+		}
+		return false;
+	}
+
 	styles() {
 		return {
 			view : {
@@ -54,14 +62,11 @@ export default class View extends React.Component {
 				height : "100%",
 				right : "0px",
 				top : "0px",
-				backgroundColor : "rgb(80, 80, 80)",
-				color : "white"
+				backgroundColor : "rgba(80, 80, 80, 0.2)",
+				color : "white",
+				display : (this.isVisible.bind(this)()) ? "block" : "none"
 			}
 		}
-	}
-
-	contents() {
-		let nodes = this.state.nodes;
 	}
 
 	render () {
