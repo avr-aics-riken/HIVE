@@ -24,6 +24,10 @@ export default class MenuNodeCreate extends React.Component {
         this.getSuggestions = this.getSuggestions.bind(this);
         this.getSuggestionValue = this.getSuggestionValue.bind(this);
         this.renderSuggestion = this.renderSuggestion.bind(this);
+
+        if(this.props.focusFunction){
+            this.props.focusFunction(this);
+        }
     }
 
     nodeChanged(err, data){
