@@ -133,7 +133,7 @@ export default class NodeSystem extends EventEmitter {
     CreateNodeInstance(nodeName) {
         let srcNode = this.nodeCreator.GetNodeInfo(nodeName);
         if (srcNode === undefined) {
-            console.error('Not found node template.');
+            console.error('Not found node template >', nodeName);
             return;
         }
 

@@ -4,6 +4,7 @@ import Core from '../../Core'
 import Node from './Node.jsx'
 import Store from './Store.jsx'
 import NodeListCreate from "./NodeListCreate.jsx";
+import NodePlugView from "./NodePlugView.jsx";
 
 /**
  * ノード(プラグ除く）を全て内包するビュー.
@@ -28,6 +29,7 @@ export default class NodeView extends React.Component {
 			});
 		});
 
+		this.isRightDown = false;
         this.listVisiblity = false;
         this.focusTarget = null;
 
@@ -127,22 +129,39 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseDown(ev) {
-		//console.log("mousedown ", ev);
+		if (ev.button === 2) {
+			this.isRightDown = true;
+			this.pos = {
+				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
+				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
+			};
+		}
 	}
 
-	onWheel(ev) {
-		let zoom = this.props.nodeStore.getZoom();
-		if (ev.deltaY > 0) {
-			if (zoom >= 0.5) {
-				zoom = zoom - 0.05;
-				this.props.nodeAction.changeZoom(zoom);
+	onMouseMove(ev) {
+		if (this.isRightDown) {
+			let px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
+			let py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
+			let invzoom = 1.0 / this.state.zoom;
+			let mx = (px - this.pos.x) * invzoom;
+			let my = (py - this.pos.y) * invzoom;
+
+			let nodes = this.props.store.getNodes();
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				this.props.action.changeNode({
+					varname : nodes[i].varname,
+					pos : [nodes[i].pos[0] + mx, nodes[i].pos[1] + my]
+				});
 			}
-		} else {
-			if (zoom <= 2.0) {
-				zoom = zoom + 0.05;
-				this.props.nodeAction.changeZoom(zoom);
-			}
+			this.pos = {
+				x : px,
+				y : py
+			};
 		}
+	}
+
+	onMouseUp(ev) {
+		this.isRightDown = false;
 	}
 
     // この関数をフォーカスしたい子要素に渡して呼んでもらう
@@ -214,13 +233,13 @@ export default class NodeView extends React.Component {
 
 
     componentDidMount(){
-        //var e = this.refs.plugView.refs.svg;
-        //e.addEventListener('dblclick', this.dblClickEvent.bind(this), true);
         window.addEventListener('keydown', this.keyDownEvent.bind(this));
+		window.addEventListener('mouseup', this.onMouseUp.bind(this));
     }
 
     componentWillUnmount(){
         window.removeEventListener('keydown', this.keyDownEvent.bind(this));
+		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
     }
 
 
@@ -240,19 +259,28 @@ export default class NodeView extends React.Component {
 		} ));
 		return (
 				<div
-					onMouseDown={this.onMouseDown.bind(this)}
 					onDoubleClick={this.dblClickEvent.bind(this)}
-					onWheel={this.onWheel.bind(this)}
+					onMouseDown={this.onMouseDown.bind(this)}
+					onMouseMove={this.onMouseMove.bind(this)}
 					style={{
 						zoom: String(this.state.zoom),
 						position : "absolute",
 						width: "100%",
 						height : "100%",
-					}}>
+					}}
+				>
 					{nodeList}
 					{this.addButton.bind(this)(0)}
 					{this.addButton.bind(this)(1)}
                     {this.generator.bind(this)()}
+
+					<NodePlugView
+						style={{zIndex:"1"}}
+						store={this.props.store}
+						action={this.props.action}
+						nodeStore={this.props.nodeStore}
+						nodeAction={this.props.nodeAction}
+					/>
 				</div>
 				);
 	}
