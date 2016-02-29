@@ -142,7 +142,8 @@ export default class Menu extends React.Component {
                 left: this.state.visible ? "-19px" : "-219px",
                 transform: "rotate(90deg) translateY(-200px)",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
-                cursor: "pointer"
+                cursor: "pointer",
+                display: "none"
             }
         };
     }
