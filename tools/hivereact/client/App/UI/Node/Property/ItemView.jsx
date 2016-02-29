@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import Core from '../../../Core'
 import ItemText from './ItemText.jsx'
 import ItemVec from './ItemVec.jsx'
+import ItemCheckbox from './ItemCheckbox.jsx'
 import ItemArray from './ItemArray.jsx'
 import ItemTextInput from './ItemTextInput.jsx'
 
@@ -15,9 +16,11 @@ export default class ItemView extends React.Component {
 
 		this.state = {
 			name : this.props.initialNodeData.name,
+			isShowPanel : this.props.initialNodeData.panel.visible,
 			input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
 		};
 		this.inputChanged = this.inputChanged.bind(this);
+		this.panelVisibleChanged = this.panelVisibleChanged.bind(this);
 	}
 
 	styles() {
@@ -43,12 +46,24 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	panelVisibleChanged(err, data) {
+		if (data.varname === this.props.initialNodeData.varname) {
+			if (this.state.isShowPanel !== data.panel.visible) {
+				this.setState( {
+					isShowPanel : data.panel.visible
+				});
+			}
+		}
+	}
+
 	componentDidMount() {
 		this.props.store.on(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
+		this.props.store.on(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
 	}
 
 	componentWillUnmount() {
 		this.props.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
+		this.props.store.removeListener(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
 	}
 
 	changeFunc(name, value) {
@@ -99,6 +114,17 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	changeCheckboxFunc(itemName, value) {
+		if (itemName === "show panel") {
+			let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+			node.panel.visible = value;
+			this.props.action.changePanelVisible(
+				this.props.initialNodeData.varname,
+				value
+			);
+		}
+	}
+
 	contents() {
 		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
 			let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
@@ -132,6 +158,14 @@ export default class ItemView extends React.Component {
 					}}
 					key={String(this.props.id + "_title")}
 					id={String(this.props.id + "_title")} />
+				<ItemCheckbox
+					initialParam={{
+						name : "show panel",
+						value : this.state.isShowPanel
+					}}
+					changeCheckboxFunc={this.changeCheckboxFunc.bind(this)}
+					key={String(this.props.id + "_panel")}
+					id={String(this.props.id + "_panel")} />
 				{inputs}
 			</div>
 		);

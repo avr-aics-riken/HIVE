@@ -1,6 +1,6 @@
 
 
-module.exports = { 
+module.exports = {
     INITIALIZED : "initialized",
     NODE_CHANGED : "node_changed",
     NODE_INPUT_CHANGED : "node_input_changed",
@@ -13,4 +13,5 @@ module.exports = {
     NODE_SELECTE_CHANGED : "node_selected",
     PLUG_ADDED : "plug_added",
     PLUG_DELETED : "plug_deleted",
+	PANEL_VISIBLE_CHANGED : "panel_visible_changed"
 }
