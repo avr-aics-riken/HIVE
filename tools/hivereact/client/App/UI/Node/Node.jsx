@@ -19,7 +19,7 @@ export default class Node extends React.Component {
 			node : node,
 			closeHover : false,
 			isSelected : node.select,
-			zIndex : 0,
+			zIndex : 1,
 			isMinimum : true
 		};
 
@@ -51,12 +51,12 @@ export default class Node extends React.Component {
 			if (data.select) {
 				this.setState({
 					isSelected : data.select,
-					zIndex : 1
+					zIndex : 2
 				});
 			} else {
 				this.setState({
 					isSelected : data.select,
-					zIndex : 0
+					zIndex : 1
 				});
 			}
 		}
