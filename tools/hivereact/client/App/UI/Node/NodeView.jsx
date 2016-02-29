@@ -4,6 +4,7 @@ import Core from '../../Core'
 import Node from './Node.jsx'
 import Store from './Store.jsx'
 import NodeListCreate from "./NodeListCreate.jsx";
+import NodePlugView from "./NodePlugView.jsx";
 
 /**
  * ノード(プラグ除く）を全て内包するビュー.
@@ -130,21 +131,6 @@ export default class NodeView extends React.Component {
 		//console.log("mousedown ", ev);
 	}
 
-	onWheel(ev) {
-		let zoom = this.props.nodeStore.getZoom();
-		if (ev.deltaY > 0) {
-			if (zoom >= 0.5) {
-				zoom = zoom - 0.05;
-				this.props.nodeAction.changeZoom(zoom);
-			}
-		} else {
-			if (zoom <= 2.0) {
-				zoom = zoom + 0.05;
-				this.props.nodeAction.changeZoom(zoom);
-			}
-		}
-	}
-
     // この関数をフォーカスしたい子要素に渡して呼んでもらう
     setFocusTarget(element){
         this.focusTarget = element;
@@ -214,8 +200,6 @@ export default class NodeView extends React.Component {
 
 
     componentDidMount(){
-        //var e = this.refs.plugView.refs.svg;
-        //e.addEventListener('dblclick', this.dblClickEvent.bind(this), true);
         window.addEventListener('keydown', this.keyDownEvent.bind(this));
     }
 
@@ -240,19 +224,27 @@ export default class NodeView extends React.Component {
 		} ));
 		return (
 				<div
-					onMouseDown={this.onMouseDown.bind(this)}
 					onDoubleClick={this.dblClickEvent.bind(this)}
-					onWheel={this.onWheel.bind(this)}
+					onMouseDown={this.onMouseDown.bind(this)}
 					style={{
 						zoom: String(this.state.zoom),
 						position : "absolute",
 						width: "100%",
 						height : "100%",
-					}}>
+					}}
+				>
 					{nodeList}
 					{this.addButton.bind(this)(0)}
 					{this.addButton.bind(this)(1)}
                     {this.generator.bind(this)()}
+
+					<NodePlugView
+						style={{zIndex:"1"}}
+						store={this.props.store}
+						action={this.props.action}
+						nodeStore={this.props.nodeStore}
+						nodeAction={this.props.nodeAction}
+					/>
 				</div>
 				);
 	}
