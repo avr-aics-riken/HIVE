@@ -4,29 +4,30 @@ import Hive from './HIVE';
 import Node from "./UI/Node";
 import Panel from "./UI/Panel";
 import Menu from "./UI/Menu";
+import MenuTop from "./UI/Menu/MenuTop.jsx";
 import { ViewerPanel } from "./UI/Panel/ViewerPanel";
 import SplitPane from 'react-split-pane';
 
 export default class HiveApp extends React.Component {
-	constructor (props) {
-		super(props);
+    constructor (props) {
+        super(props);
 
-		this.store = new Core.Store();
-		this.action = new Core.Action(this.store.getDispatchToken());
+        this.store = new Core.Store();
+        this.action = new Core.Action(this.store.getDispatchToken());
 
         this.layoutType = 2;
     }
 
-	menu() {
-		return this.state.isInitialized ? (<Menu.View store={this.store} action={this.action} />) : (<div />);
-	}
+    menu() {
+        return this.state.isInitialized ? (<Menu.View store={this.store} action={this.action} />) : (<div />);
+    }
 
     render() {
         switch(this.layoutType){
             case 2:
                 return (
                     <SplitPane split="horizontal" minSize="30" defaultSize="30">
-                        <div style={{lineHeight :"30px", width: "100%", height: "50px"}}>menu area</div>
+                        <MenuTop store={this.store} action={this.action}/>
                         <SplitPane split="horizontal" defaultSize={window.innerHeight*0.8}>
                             <SplitPane split="vertical" minSize="200" defaultSize="200">
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
