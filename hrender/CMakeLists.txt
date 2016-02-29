@@ -205,6 +205,7 @@ set(SOURCES
 	src/Buffer/BufferPointData.cpp
 	src/Buffer/BufferVectorData.cpp
 	src/Buffer/BufferTetraData.cpp
+	src/Buffer/BufferSolidData.cpp
 	src/Buffer/BufferImageData.cpp
 	src/Buffer/BufferExtraData.cpp
 	src/Builder/FloatsToFloat.cpp
@@ -246,6 +247,7 @@ set(SOURCES
 	src/RenderObject/LineModel.cpp
 	src/RenderObject/PointModel.cpp
 	src/RenderObject/TetraModel.cpp
+	src/RenderObject/SolidModel.cpp
 	src/RenderObject/VectorModel.cpp
 	src/Renderer/BaseBuffer.cpp
 	src/Renderer/Commands_GL.cpp
@@ -256,6 +258,7 @@ set(SOURCES
 	src/Renderer/LineBuffer.cpp
 	src/Renderer/PointBuffer.cpp
 	src/Renderer/TetraBuffer.cpp
+	src/Renderer/SolidBuffer.cpp
 	src/Renderer/VectorBuffer.cpp
 	src/Renderer/RenderCore.cpp
 	src/SceneScript/SceneScript.cpp

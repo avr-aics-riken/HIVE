@@ -187,9 +187,9 @@ Optionally edit `./scripts/cmake_linux-x64-all.sh`, then
   * [x] triangle element
   * [ ] quad element
   * [x] tetra element
-  * [ ] pyramid element
-  * [ ] pentahedron element
-  * [x] hexahedron element(converted to triangle)
+  * [x] pyramid element
+  * [x] prism element
+  * [x] hexahedron element
   * [x] custom attributes
     * float and vec3 type
 
