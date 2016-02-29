@@ -110,8 +110,15 @@ export default class MenuTop extends React.Component {
             openAnimation: 'slide-up'
         });
 
+        let style = {
+            width: "100%",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            zIndex: "99999"
+        };
         return (
-            <div style={{width:"100%"}}>{horizontalMenu}</div>
+            <div style={style}>{horizontalMenu}</div>
         );
     }
 }

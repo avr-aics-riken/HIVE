@@ -26,3 +26,12 @@ html, body {
 	background-color: rgb(31, 31, 31);
 	z-index: 1000;
 }
+
+.Pane.vertical {
+    margin-top: 40px;
+    /* padding-top: 40px; */
+}
+
+.Pane.vertical .Pane.vertical {
+    margin-top: 0px;
+}
