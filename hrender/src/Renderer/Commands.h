@@ -47,6 +47,7 @@ void DrawArrays_SGL(unsigned int vtxnum);
 void DrawPointArrays_SGL(unsigned int vertexnum);
 void DrawLineArrays_SGL(unsigned int vertexnum);
 void DrawTetraArrays_SGL(unsigned int vertexnum);
+void DrawSolidArrays_SGL(int solidType, unsigned int vertexnum);
 void SampleCoverage_SGL(float a, bool invert);
 void PixelStep_SGL(int n);
 void SetShaderCompiler_SGL(const char* path, const char* opt);
@@ -62,6 +63,7 @@ void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
 void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material);
 void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx);
 void BindTetraVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx);
+void BindSolidVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx);
 void LineWidth_SGL(float w);
 
 void GenTextures_SGL(int n, unsigned int* tex);
@@ -116,6 +118,7 @@ CMDINLINE void DrawElements_GL(unsigned int indexnum) BLANKFUNC;
 CMDINLINE void DrawArrays_GL(unsigned int indexnum) BLANKFUNC;
 CMDINLINE void DrawPointArrays_GL(unsigned int vertexnum) BLANKFUNC;
 CMDINLINE void DrawTetraArrays_GL(unsigned int vertexnum) BLANKFUNC;
+CMDINLINE void DrawSolidArrays_GL(int solidType, unsigned int vertexnum) BLANKFUNC;
 CMDINLINE bool CreateProgramSrc_GL(const char* srcname, unsigned int& prg, bool usePointShader) BLANKFUNC_BOOL;
 CMDINLINE bool CreateProgramBinary_GL(const char* soname, unsigned int& prg) BLANKFUNC_BOOL;
 CMDINLINE bool DeleteProgram_GL(unsigned int prg) BLANKFUNC_BOOL;

@@ -484,6 +484,20 @@ void DrawTetraArrays_SGL(unsigned int vtxnum)
     sgl.glDrawArrays(GL_TETRAHEDRONS_EXT, 0, vtxnum);
 }
 
+/// Solid の描画.
+/// @param vtxnum 頂点数.
+void DrawSolidArrays_SGL(int solidType, unsigned int vtxnum)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+		if (solidType == 5) {
+			sgl.glDrawArrays(GL_PYRAMIDS_EXT, 0, vtxnum);
+		} else if (solidType == 6) {
+			sgl.glDrawArrays(GL_PRISMS_EXT, 0, vtxnum);
+		} else if (solidType == 8) {
+			sgl.glDrawArrays(GL_HEXAHEDRONS_EXT, 0, vtxnum);
+		}
+}
+
 /**
  * 遮蔽率の指定.
  * @param a 遮蔽率.
@@ -866,6 +880,34 @@ void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_ra
  * @param indexidx インデックスバッファID
  */
 void BindTetraVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx)
+{
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+    GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    
+    if (attrMaterial != -1 && vtx_material > 0) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtx_material);
+        sgl.glVertexAttribPointer(attrMaterial, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+        sgl.glEnableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glBindBuffer(GL_ARRAY_BUFFER, vtxidx);
+        sgl.glVertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
+        sgl.glEnableVertexAttribArray(attrPos);
+    }
+    
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+}
+
+/**
+ * Solid バッファのバインド
+ * @param prg シェーダプログラムID
+ * @param vtxidx 頂点インデックスバッファID
+ * @param vtx_radius 半径バッファID
+ * @param vtx_material マテリアルバッファID
+ * @param indexidx インデックスバッファID
+ */
+void BindSolidVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx)
 {
     static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
     GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");

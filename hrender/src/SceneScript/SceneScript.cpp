@@ -21,6 +21,7 @@
 #include "LineModel_Lua.h"
 #include "VectorModel_Lua.h"
 #include "TetraModel_Lua.h"
+#include "SolidModel_Lua.h"
 #include "Camera_Lua.h"
 #include "Connection_Lua.h"
 #include "MetaBinary_Lua.h"
@@ -38,6 +39,7 @@
 #include "ImageSaver_Lua.h"
 #include "VtkLoader_Lua.h"
 #include "BufferTetraData_Lua.h"
+#include "BufferSolidData_Lua.h"
 #include "BufferVectorData_Lua.h"
 #include "PrimitiveGenerator_Lua.h"
 #include "MeshAttribToVolume_Lua.h"
@@ -78,6 +80,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, LineModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, VectorModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, TetraModel_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, SolidModel_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Camera_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, MetaBinary_Lua);
@@ -132,6 +135,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "LineModel",           LUA_SCRIPTCLASS_NEW_FUNCTION(LineModel_Lua));
     SetFunction(L, "VectorModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VectorModel_Lua));
     SetFunction(L, "TetraModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(TetraModel_Lua));
+    SetFunction(L, "SolidModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(SolidModel_Lua));
     SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
     SetFunction(L, "Connection",          LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
     SetFunction(L, "MetaBinary",          LUA_SCRIPTCLASS_NEW_FUNCTION(MetaBinary_Lua));
@@ -142,6 +146,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
     SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
     SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
+    SetFunction(L, "SolidData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSolidData_Lua));
     SetFunction(L, "VectorData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVectorData_Lua));
     SetFunction(L, "OBJLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     SetFunction(L, "STLLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
