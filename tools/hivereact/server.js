@@ -45,7 +45,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 							   autoAcceptConnections : false}),
 	ws_connections = {},
 	id_counter = 0;
-    
+
 //-----------------------------------------------------
 
 function makeNodeList(callback) {
@@ -80,7 +80,7 @@ function makeNodeList(callback) {
 						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
 						json.customfunc = customFuncLua;
                         uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
-						json.uiFunc = uiFunc;                        
+						json.uiFunc = uiFunc;
 					}
 					nodelist.push(json);
 				} catch (e) {
@@ -375,7 +375,7 @@ ws.on('request', function (request) {
 	*/
 	function eventTextMessage(ret, utf8Data) {
 		//console.log('[Log]eventTextMessage:', ret);
-		if (ret.to) {
+		if (ret.to !== null && ret.to !== undefined) {
 			var node = null;
 			if (ret.to !== 'master' && ws_connections[ret.to]) {
 				node = ws_connections[ret.to].conn;
@@ -431,7 +431,7 @@ ws.on('request', function (request) {
 		Process binary message
 	*/
 	function eventBinaryMessage(meta, binMessage) {
-		if (meta.to) {
+		if (meta.to !== null && meta.to !== undefined) {
 			var node = null;
 			if (meta.to !== 'master') {
 				node =  ws_connections[meta.to].conn;
