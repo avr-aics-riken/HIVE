@@ -159,26 +159,16 @@ export default class Action {
 	}
 
 	/**
-	 * パネルを非表示にする
+	 * パネルの表示状態を切り替える
 	 * @param varname ノード変数名
+	 * @param isVisible
 	 */
-	hiddenPanel(varname) {
+	changePanelVisible(varname, isVisible) {
 		this.dispatcher.dispatch({
 			id :this.id,
-			actionType: "hiddenPanel",
-			varname : varname
-		});
-	}
-    
-   /**
-	 * パネルを表示にする
-	 * @param varname ノード変数名
-	 */
-	showPanel(varname) {
-		this.dispatcher.dispatch({
-			id :this.id,
-			actionType: "showPanel",
-			varname : varname
+			actionType: "changePanelVisible",
+			varname : varname,
+			visible : isVisible
 		});
 	}
 

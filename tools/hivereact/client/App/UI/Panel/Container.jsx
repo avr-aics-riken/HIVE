@@ -101,7 +101,7 @@ export default class Container extends React.Component {
 
     // 閉じるボタンが押された.
     onCloseClick(ev) {
-        this.action.hiddenPanel(this.state.node.varname);
+        this.action.changePanelVisible(this.state.node.varname, false);
     }
 
     // 閉じるボタンにマウスホバーされた

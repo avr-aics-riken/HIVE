@@ -28,7 +28,7 @@ export default class ActionExecuter {
 		this.importNode = this.importNode.bind(this);
 		this.addPlug = this.addPlug.bind(this);
 		this.deletePlug = this.deletePlug.bind(this);
-		this.hiddenPanel = this.hiddenPanel.bind(this);
+		this.changePanelVisible = this.changePanelVisible.bind(this);
 		this.selectNode = this.selectNode.bind(this);
 		this.unSelectNode = this.unSelectNode.bind(this);
 	}
@@ -135,6 +135,10 @@ export default class ActionExecuter {
 					let preSelect = dstNode.select;
 					let postSelect = hasSelect ? payload.nodeInfo.select : null;
 
+					let hasPanel = srcNode.hasOwnProperty('panel');
+					let prePanelVisible = dstNode.panel.visible;
+					let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
+
 					for (let info in payload.nodeInfo) {
 						if (info !== "uiComponent" && this.store.data.nodes[i].hasOwnProperty(info)) {
 							this.store.data.nodes[i][info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
@@ -147,6 +151,9 @@ export default class ActionExecuter {
 					}
 					if (hasSelect && preSelect !== postSelect) {
 						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.data.nodes[i], i);
+					}
+					if (hasPanel && prePanelVisible !== postPanelVisible) {
+						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, this.store.data.nodes[i], i);
 					}
 				}
 			}
@@ -256,17 +263,17 @@ export default class ActionExecuter {
 	}
 
 	/**
-	 * パネル非表示
+	 * パネルの表示状態を切り替える
 	 */
-	hiddenPanel(payload) {
+	changePanelVisible(payload) {
 		if (payload.hasOwnProperty('varname')) {
 			let n = this.store.getNode(payload.varname);
 			if (n) {
 				let node = n.node;
 				let index = n.index;
-				// node.panel.visible = false;
-				node.panel.visible = !node.panel.visible; // temp
+				node.panel.visible = payload.visible;
 				this.store.emit(Constants.NODE_CHANGED, null, node, index);
+				this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, node, index);
 			}
         }
     }
