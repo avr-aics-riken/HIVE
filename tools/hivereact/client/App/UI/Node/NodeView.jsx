@@ -124,6 +124,7 @@ export default class NodeView extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						key={nodeData.varname + key}
+						isSimple={this.state.zoom > 0.6 ? false : true}
 					></Node>);
 		} ));
 		return (
