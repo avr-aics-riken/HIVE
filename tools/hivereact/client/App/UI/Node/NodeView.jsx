@@ -11,11 +11,17 @@ export default class NodeView extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			nodes : this.props.store.getNodes()
+			nodes : this.props.store.getNodes(),
+			zoom : this.props.nodeStore.getZoom()
 		};
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.setState({
 				nodes : [].concat(this.props.store.getNodes())
+			});
+		});
+		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
+			this.setState({
+				zoom : zoom
 			});
 		});
 	}
@@ -106,7 +112,7 @@ export default class NodeView extends React.Component {
 				>
 					Add Node
 				</div>);
-		}
+	}
 
 	render() {
 		const styles = this.styles.bind(this)();
@@ -121,7 +127,8 @@ export default class NodeView extends React.Component {
 					></Node>);
 		} ));
 		return (
-				<div>
+				<div
+					style={{zoom: String(this.state.zoom) }}>
 					{nodeList}
 					{this.addButton.bind(this)(0)}
 					{this.addButton.bind(this)(1)}
