@@ -16,14 +16,15 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 	seserver = http.createServer(function (req, res) {
 		'use strict';
 		console.log('REQ>', req.url);
-		var file, fname;
+		var file, fname, jsondata;
 		if (req.url === '/') {
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
         } else if (req.url === '/nodelist.json') { // temp
             makeNodeList((function (res) {
                 return function (err, nodelist) {
-                    file = JSON.stringify(nodelist);
+                    jsondata = {error: err, data:nodelist};
+                    file = JSON.stringify(jsondata);
                     res.end(file);
                 };
             }(res)));
@@ -54,6 +55,7 @@ function makeNodeList(callback) {
 		var infofile,
 			nodeDirPath,
 			fileCounter,
+            readError,
 			customFuncLua,
             uiFunc,
 			nodelist = [],
@@ -63,10 +65,11 @@ function makeNodeList(callback) {
 		}
 
 		fileCounter = 0;
+        readError = '';
 		function finishLoad() {
 			fileCounter = fileCounter - 1;
 			if (fileCounter === 0) {
-				callback(null, nodelist);
+				callback((readError.length === 0 ? null : readError), nodelist);
 			}
 		}
 		function loadFunc(nodeDirPath) {
@@ -81,7 +84,9 @@ function makeNodeList(callback) {
 					}
 					nodelist.push(json);
 				} catch (e) {
-					console.error('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
+                    var errmsg = '[Error] Failed Load:' + nodeDirPath + "/info.json";
+					console.error(errmsg, e);
+                    readError += errmsg + '\n' + e.toString() + '\n';
 				}
 				finishLoad();
 			};
