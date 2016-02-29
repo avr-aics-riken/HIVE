@@ -114,6 +114,19 @@ export default class Store extends EventEmitter {
 		return null;
 	}
 
+	calcSimplePlugPosition(plug) {
+		let pos = [[0,0], [0,0]];
+		if (this.nodeMap.hasOwnProperty(plug.input.nodeVarname)) {
+			let node = this.nodeMap[plug.input.nodeVarname];
+			pos[0] = [node.pos[0], node.pos[1] + 18 + 20];
+		}
+		if (this.nodeMap.hasOwnProperty(plug.output.nodeVarname)) {
+			let node = this.nodeMap[plug.output.nodeVarname];
+			pos[1] = [node.pos[0] + 200, node.pos[1] + 18 + 20];
+		}
+		return pos;
+	}
+
 	/**
 	 * plug位置リストを返す.
 	 */

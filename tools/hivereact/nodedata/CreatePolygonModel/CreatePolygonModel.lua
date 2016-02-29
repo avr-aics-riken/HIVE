@@ -1,9 +1,8 @@
-
-
 CreatePolygonModel = {}
+setmetatable(CreatePolygonModel, {__index = BaseComponent})
 
-CreatePolygonModel.new = function ()
-    local this = {}
+CreatePolygonModel.new = function (varname)
+    local this = BaseComponent.new(varname)
     this.property = {
         mesh = nil,
         translate = {0,0,0},
@@ -19,21 +18,13 @@ CreatePolygonModel.new = function ()
     return this
 end
 
-function CreatePolygonModel:ClearConnect()
-    
-end
-
-
-function CreatePolygonModel:Set(propname, value)
-    self.property[propname] = value
-    self.updated = true;
-end
-
 function CreatePolygonModel:Do()
     local pm = PolygonModel();
     local property = self.property
     self.pmodel = pm
-	pm:Create(property.mesh);
+    if self.connection.mesh then
+	   pm:Create(self.connection.mesh)
+    end
 	pm:SetTranslate(property.translate[1], property.translate[2], property.translate[3])
 	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])
 	pm:SetScale(property.scale[1], property.scale[2], property.scale[3])

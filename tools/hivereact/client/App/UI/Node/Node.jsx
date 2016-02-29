@@ -65,7 +65,8 @@ export default class Node extends React.Component {
 	moveNode(err, data) {
 		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-			this.state.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
+			let invzoom = 1.0 / this.props.nodeStore.getZoom();
+			this.state.node.pos = [this.offsetLeft + data.x * invzoom, this.offsetTop + data.y * invzoom];
 			setTimeout(() => {
 				this.props.action.changeNode({
 					varname : this.state.node.varname,
@@ -91,7 +92,9 @@ export default class Node extends React.Component {
 				left : String(this.state.node.pos[0]),
 				top : String(this.state.node.pos[1]),
 				width : "200px",
-				height : String((Math.max(this.state.node.input.length, this.state.node.output.length) + 1) * 18 + 20),
+				height :
+					this.props.isSimple ? "50" :
+						String((Math.max(this.state.node.input.length, this.state.node.output.length) + 1) * 18 + 20),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",
@@ -100,8 +103,9 @@ export default class Node extends React.Component {
 				zIndex : this.state.zIndex
 			},
 			title : {
-				color : "rgb(239, 136, 21)",
-				fontSize : "16px"
+				color : "white", //"rgb(239, 136, 21)",
+				fontSize : "16px",
+				zoom : this.props.isSimple ? "1.5" : "1.0"
 			},
 			closeButton : {
 				position : "absolute",
@@ -191,12 +195,15 @@ export default class Node extends React.Component {
 
 	/// タイトル.
 	titleElem() {
-		const style = this.styles.bind();
+		const style = this.styles();
 		return <div style={style.title}>{this.state.node.name}</div>
 	}
 
 	/// 入力端子.
 	inputElem() {
+		if (this.props.isSimple) {
+			return <div/>;
+		}
 		let inputs = this.state.node.input.map( (inputData, index) => {
 			return (<NodeInOut
 						nodeStore={this.props.nodeStore}
@@ -213,6 +220,9 @@ export default class Node extends React.Component {
 
 	/// 出力端子.
 	outputElem() {
+		if (this.props.isSimple) {
+			return <div/>;
+		}
 		let outputs = this.state.node.output.map( (outputData, index) => {
 			return (<NodeInOut
 						nodeStore={this.props.nodeStore}

@@ -1,9 +1,9 @@
 
 RenderView = {}
+setmetatable(RenderView, {__index = BaseComponent})
 
 RenderView.new = function (varname)
-    local this = {}
-    this.varname = varname
+    local this = BaseComponent.new(varname)
     this.cam = Camera()    
     this.property = {
         screensize = {512, 512},
@@ -14,19 +14,9 @@ RenderView.new = function (varname)
         clearcolor = {0,0,0,1},
         color_file = "output.jpg",
         depth_file = "",
-        RenderObject = nil --{}
     }
     setmetatable(this, {__index=RenderView})
     return this
-end
-
-function RenderView:ClearConnect()
-    self.property.RenderObject = nil
-end
-
-function RenderView:Set(propname, value)
-    self.property[propname] = value
-    self.updated = true;
 end
 
 function RenderView:Do()
@@ -44,28 +34,24 @@ function RenderView:Do()
         property.fov
     )
     
-    --arg.RenderObject[#arg.RenderObject + 1] = cam;
-    local temp
-
--- For Object
+    local temp = {}
     local targetcam
-    targetcam = self.cam
-    temp = {self.cam, property.RenderObject}
-    
-    
--- For Camera    
---[[
-    if property.RenderObject then
-        temp = {property.RenderObject}
-        targetcam = property.RenderObject
-    else
-        temp = {self.cam}
-        targetcam = self.cam
+-- For Object
+    if self.connection.RenderObject then
+        temp[#temp + 1] = self.connection.RenderObject
     end
---]]
+        
+-- For Camera
+    if self.connection.Camera then
+        temp[#temp + 1] = self.connection.Camera
+        targetcam = self.connection.Camera
+        print('!!!connection CAMERA!!!!')
+    else
+        temp[#temp + 1] = self.cam
+        targetcam = self.cam
+        print('!!!internal CAMERA!!!!')        
+    end
 
-    --print('unpack=', unpack)
-    --print('num=', #temp)
     render(temp)
     
     -- image save

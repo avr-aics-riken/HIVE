@@ -80,7 +80,7 @@ export default class NodeSerializer {
     
     updateConnectedNodeInput(plug) {
         let script = '';
-        script += plug.input.nodeVarname + ":Set('" + plug.input.name + "'," + plug.output.nodeVarname + ":" + plug.output.name + "())\n";
+        script += plug.input.nodeVarname + ":Connect('" + plug.input.name + "'," + plug.output.nodeVarname + ":" + plug.output.name + "())\n";
         //console.error('updateConnectedNodeInput', script);
         return script; 
     }    
