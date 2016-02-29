@@ -35,3 +35,10 @@ html, body {
 .Pane.vertical .Pane.vertical {
     margin-top: 0px;
 }
+
+.Pane.horizontal {
+    height: 20%;
+}
+
+
+
