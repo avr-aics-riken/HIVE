@@ -96,7 +96,7 @@ export default class NodeView extends React.Component {
 					},
 					input : {
 						nodeVarname : renderview.varname,
-						name : renderview.input[8].name
+						name : renderview.input[9].name
 					}
 				});
 			}
@@ -116,20 +116,23 @@ export default class NodeView extends React.Component {
 
 	render() {
 		const styles = this.styles.bind(this)();
+		let isSimple = this.state.zoom <= 0.6;
+		let invzoom = (1.0 / this.state.zoom);
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
-		console.log(nodeData.varname + key);
 			return (<Node nodeVarname={nodeData.varname}
 			 			store={this.props.store}
 						action={this.props.action}
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						key={nodeData.varname + key}
-						isSimple={this.state.zoom > 0.6 ? false : true}
+						isSimple={isSimple}
 					></Node>);
 		} ));
 		return (
 				<div
-					style={{zoom: String(this.state.zoom) }}>
+					style={{
+						zoom: String(this.state.zoom)
+					}}>
 					{nodeList}
 					{this.addButton.bind(this)(0)}
 					{this.addButton.bind(this)(1)}
