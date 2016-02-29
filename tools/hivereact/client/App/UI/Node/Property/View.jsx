@@ -49,7 +49,7 @@ export default class View extends React.Component {
 	isVisible() {
 		let nodes = this.state.nodes;
 		for (let i = 0; i < nodes.length; i = i + 1) {
-			if ( nodes[i].select) { console.log("ISVISBLE"); return true; }
+			if ( nodes[i].select) { return true; }
 		}
 		return false;
 	}

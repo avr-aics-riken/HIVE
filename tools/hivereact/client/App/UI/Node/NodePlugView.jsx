@@ -13,12 +13,19 @@ export default class NodePlugView extends React.Component {
 
 		this.state = {
 			plugPositions : this.props.nodeStore.getPlugPositions(),
-			temporaryPlug : null
+			temporaryPlug : null,
+			zoom : this.props.nodeStore.getZoom()
 		};
 
 		this.props.nodeStore.on(Store.PLUG_COUNT_CHANGED, (err) => {
 			this.setState({
 				plugPositions : [].concat(this.props.nodeStore.getPlugPositions())
+			});
+		});
+
+		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
+			this.setState({
+				zoom : zoom
 			});
 		});
 
@@ -119,10 +126,12 @@ export default class NodePlugView extends React.Component {
 	}
 
 	createPlug(plugPos, key) {
-		return (<NodePlug nodeStore={this.props.nodeStore} plug={plugPos}
-		 		key={plugPos.input.nodeVarname + '_' + plugPos.output.nodeVarname + '_' +
-					plugPos.input.name + '_' + plugPos.output.name + '_' + String(key)}
-					isTemporary={false}  />)
+		return (<NodePlug nodeStore={this.props.nodeStore}
+					plug={plugPos}
+		 			key={plugPos.input.nodeVarname + '_' + plugPos.output.nodeVarname + '_' +
+						plugPos.input.name + '_' + plugPos.output.name + '_' + String(key)}
+					isSimple={this.state.zoom > 0.6 ? false : true}
+					isTemporary={false}  />);
 	}
 
 	temporaryPlug() {
@@ -137,14 +146,32 @@ export default class NodePlugView extends React.Component {
 		this.props.action.unSelectNode([], null);
 	}
 
+	onWheel(ev) {
+		let zoom = this.props.nodeStore.getZoom();
+		if (ev.deltaY > 0) {
+			if (zoom >= 0.5) {
+				zoom = zoom - 0.05;
+				this.props.nodeAction.changeZoom(zoom);
+			}
+		} else {
+			if (zoom <= 2.0) {
+				zoom = zoom + 0.05;
+				this.props.nodeAction.changeZoom(zoom);
+			}
+		}
+	}
+
 	render() {
 		let plugList = (this.state.plugPositions.map( (plugPos, key) => {
 			return this.createPlug.bind(this)(plugPos, key);
 		} ));
 		return (
-				<svg width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'
+				<svg
+					style={{zoom: String(this.state.zoom) }}
+					width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'
 					onMouseDown={this.onMouseDown.bind(this)}
-                    ref="svg"
+					onWheel={this.onWheel.bind(this)}
+					ref="svg"
 				>
 					{plugList}
 					{this.temporaryPlug()}

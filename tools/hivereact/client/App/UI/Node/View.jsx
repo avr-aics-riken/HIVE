@@ -1,13 +1,13 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../Core'
-
-import NodeView from "./NodeView.jsx"
-import NodePlugView from "./NodePlugView.jsx"
-import Property from "./Property"
-import Store from "./Store.jsx"
-import Action from "./Action.jsx"
-import NodeListCreate from "./NodeListCreate.jsx"
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../Core';
+;
+import NodeView from "./NodeView.jsx";
+import NodePlugView from "./NodePlugView.jsx";
+import Property from "./Property";
+import Store from "./Store.jsx";
+import Action from "./Action.jsx";
+import NodeListCreate from "./NodeListCreate.jsx";
 
 var Dispatcher = require("flux").Dispatcher;
 
@@ -18,44 +18,68 @@ export default class View extends React.Component {
 	constructor(props) {
         super(props);
 
+        this.store = this.props.store;
+        this.action = this.props.action;
         this.state = {
-            visible: false
+            listVisible: false,
+            listPos: []
         };
         this.listVisiblity = false;
+        this.focusTarget = null;
 
 		//var dispatcher =  new Dispatcher();
 		this.nodeStore = new Store(this.props.action.dispatcher, this.props.store);
 		this.nodeAction = new Action(this.props.action.dispatcher, this.nodeStore.getDispatchToken());
+        this.setFocusTarget = this.setFocusTarget.bind(this);
         this.dblClickEvent = this.dblClickEvent.bind(this);
         this.keyDownEvent = this.keyDownEvent.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.generator = this.generator.bind(this);
     }
 
+    // この関数をフォーカスしたい子要素に渡して呼んでもらう
+    setFocusTarget(element){
+        this.focusTarget = element;
+    }
+
+    // 現状は NodeView 内にある SVG Element から呼ばれる
     dblClickEvent(eve){
         this.listVisiblity = !this.listVisiblity;
-        this.setState({visible: this.listVisiblity});
+        this.setState({
+            listVisible: this.listVisiblity,
+            listPos: [eve.layerX, eve.layerY]
+        });
         if(this.listVisiblity){
             setTimeout((()=>{
-                var e = ReactDOM.findDOMNode(this.refs.creator.refs.creator.refs.suggest.input);
+                var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
                 e.focus();
-            }).bind(this), 100);
+            }).bind(this), 50);
         }
     }
 
+    // キーダウンイベントのターゲットは Window
     keyDownEvent(eve){
         switch(eve.keyCode){
             case 27:
                 this.listVisiblity = false;
-                this.setState({visible: false});
+                this.setState({listVisible: false});
                 break;
             case 32:
-                this.listVisiblity = true;
-                this.setState({visible: true});
+                this.setState({
+                    listVisible: true
+                });
                 setTimeout((()=>{
-                    var e = ReactDOM.findDOMNode(this.refs.creator.refs.creator.refs.suggest.input);
+                    let el, x, y, w, h;
+                    el = ReactDOM.findDOMNode(this.focusTarget);
+                    el = el.parentNode.parentNode; // temp
+                    w = el.clientWidth;
+                    h = el.clientHeight;
+                    x = w / 2 - 100; // temp
+                    y = h / 2 - 150; // temp
+                    this.setState({listPos: [x, y]});
+                    var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
                     e.focus();
-                }).bind(this), 100);
+                }).bind(this), 50);
                 break;
             default:
                 break;
@@ -73,17 +97,20 @@ export default class View extends React.Component {
     }
 
     generator(){
-        if(this.state.visible){
+        if(this.state.listVisible){
             return (
                 <NodeListCreate
                     store={this.props.store}
                     action={this.props.action}
-                    visibility={this.state.visible}
+                    visibility={this.state.listVisible}
+                    position={this.state.listPos}
+                    focusFunction={this.setFocusTarget.bind(this)}
                     ref="creator"
                 />
             );
         }
     }
+
 
 	render () {
 		return (<div style={{position:"absolute",width:"100%",height:"100%",overflow:"hidden"}}>
@@ -101,12 +128,10 @@ export default class View extends React.Component {
 						nodeAction={this.nodeAction}
                         ref="plugView"
 					/>
-					<div>
 					<Property.View
 						store={this.props.store}
 						action={this.props.action}
 					/>
-					</div>
                     {this.generator.bind(this)()}
 				</div>);
 	}

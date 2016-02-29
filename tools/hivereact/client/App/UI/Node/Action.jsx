@@ -96,4 +96,14 @@ export default class Action {
 		});
 	}
 
+	/**
+	 * ズーム値を変更.
+	 */
+	changeZoom(zoom) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "changeZoom",
+			zoom: zoom
+		});
+	}
 }
