@@ -25,6 +25,7 @@ export default class ActionExecuter {
 		this.deleteNode = this.deleteNode.bind(this);
 		this.changeNode = this.changeNode.bind(this);
 		this.changeNodes = this.changeNodes.bind(this);
+		this.changeNodeInput = this.changeNodeInput.bind(this);
 		this.importNode = this.importNode.bind(this);
 		this.addPlug = this.addPlug.bind(this);
 		this.deletePlug = this.deletePlug.bind(this);
@@ -159,6 +160,36 @@ export default class ActionExecuter {
 			}
  		}
  	}
+
+	/**
+	 * ノードの入力を変更する
+	 */
+	changeNodeInput(payload) {
+		if (payload.hasOwnProperty('varname') && payload.hasOwnProperty('inputName')
+			&& payload.hasOwnProperty('value') && payload.hasOwnProperty('index')) {
+			let n = this.store.getNode(payload.varname);
+			if (n) {
+				let node = n.node;
+				for (let i = 0; i < node.input.length; i = i + 1) {
+					if (node.input[i].name === payload.inputName) {
+						let copy = JSON.parse(JSON.stringify(node.input));
+						if (payload.index !== null && payload.index !== undefined) {
+							copy[i].value[payload.index] = payload.value;
+						} else {
+							copy[i].value = payload.value;
+						}
+						this.changeNode({
+							nodeInfo : {
+								varname : payload.varname,
+								input : copy
+							}
+						})
+						return;
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * ノードを複数変更する
