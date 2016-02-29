@@ -85,6 +85,7 @@ export default class View extends React.Component {
         }
     }
 
+
 	render () {
 		return (<div style={{position:"absolute",width:"100%",height:"100%",overflow:"hidden"}}>
 					<NodeView
@@ -101,12 +102,10 @@ export default class View extends React.Component {
 						nodeAction={this.nodeAction}
                         ref="plugView"
 					/>
-					<div>
 					<Property.View
 						store={this.props.store}
 						action={this.props.action}
 					/>
-					</div>
                     {this.generator.bind(this)()}
 				</div>);
 	}

@@ -30,6 +30,9 @@ export default class Store extends EventEmitter {
 		// }
 		this.selectedHoles = [];
 
+		// ビューのズーム
+		this.zoom = 1.0;
+
 		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
@@ -81,6 +84,7 @@ export default class Store extends EventEmitter {
 		this.selectPlugHole = this.selectPlugHole.bind(this);
 		this.unSelectPlugHoles = this.unSelectPlugHoles.bind(this);
 		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
+		this.changeZoom = this.changeZoom.bind(this);
 	}
 
 	/**
@@ -122,6 +126,13 @@ export default class Store extends EventEmitter {
 	 */
 	getSelectedPlugHoles() {
 		return this.selectedHoles;
+	}
+
+	/**
+	 * ズーム値を返す.
+	 */
+	getZoom() {
+		return this.zoom;
 	}
 
 	/**
@@ -235,6 +246,16 @@ export default class Store extends EventEmitter {
 	moveNode(payload) {
 		this.emit(Store.NODE_MOVED, null, payload.mv);
 	}
+
+	/**
+	 * ズーム値を変更.
+	 */
+	changeZoom(payload) {
+		if (payload.hasOwnProperty('zoom')) {
+			this.zoom = payload.zoom;
+			this.emit(Store.ZOOM_CHANGED, null, this.zoom);
+		}
+	}
 }
 Store.PLUG_COUNT_CHANGED = "plug_count_changed";
 Store.PLUG_POSITION_CHANGED = "plug_position_changed";
@@ -243,3 +264,4 @@ Store.PLUG_DRAG_END = "plug_drag_end";
 Store.PLUG_HOLE_SELECTED = "plug_hole_selected";
 Store.PLUG_HOLE_DISCONNECTED = "plug_hole_disconnected";
 Store.NODE_MOVED = "node_moved";
+Store.ZOOM_CHANGED = "zoom_changed";
