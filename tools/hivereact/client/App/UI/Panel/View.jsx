@@ -15,10 +15,22 @@ export default class View extends React.Component {
 
         this.styles = this.styles.bind(this);
         this.generator = this.generator.bind(this);
+        this.nodeCountChanged = this.nodeCountChanged.bind(this);
 
-        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, function(err, data){
-            this.setState({nodes: [].concat(this.store.getNodes())});
-        }.bind(this));
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
+    }
+
+    componentDidMount(){
+        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeCountChanged.bind(this));
+    }
+
+    componentWillUnmount(){
+        this.props.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeCountChanged.bind(this));
+    }
+
+    nodeCountChanged(err, data){
+        this.setState({nodes: [].concat(this.store.getNodes())});
     }
 
     styles() {

@@ -15,7 +15,6 @@ export default class MenuNodeCreate extends React.Component {
 
         this.styles = this.styles.bind(this);
 
-        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged.bind(this));
         this.nodeChanged = this.nodeChanged.bind(this);
 
         // auto suggest
@@ -25,9 +24,21 @@ export default class MenuNodeCreate extends React.Component {
         this.getSuggestionValue = this.getSuggestionValue.bind(this);
         this.renderSuggestion = this.renderSuggestion.bind(this);
 
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
+
+        // 親に自分飛ばしてるところ
         if(this.props.focusFunction){
             this.props.focusFunction(this);
         }
+    }
+
+    componentDidMount(){
+        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged.bind(this));
+    }
+
+    componentWillUnmount(){
+        this.props.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged.bind(this));
     }
 
     nodeChanged(err, data){
