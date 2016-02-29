@@ -17,6 +17,7 @@
 		{"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
 		{"name": "color_file", "type": "string", "value": "output.jpg"},
 		{"name": "depth_file", "type": "string", "value": ""},
+        {"name": "Camera",  "type": "RenderObject"},
 		{"name": "RenderObject",  "type": "RenderObject", "array": [
 			{"name": "RenderObject0",  "type": "RenderObject"},
 			{"name": "RenderObject1",  "type": "RenderObject"},
