@@ -65,7 +65,8 @@ export default class Node extends React.Component {
 	moveNode(err, data) {
 		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
-			this.state.node.pos = [this.offsetLeft + data.x, this.offsetTop + data.y];
+			let invzoom = 1.0 / this.props.nodeStore.getZoom();
+			this.state.node.pos = [this.offsetLeft + data.x * invzoom, this.offsetTop + data.y * invzoom];
 			setTimeout(() => {
 				this.props.action.changeNode({
 					varname : this.state.node.varname,
