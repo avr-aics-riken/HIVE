@@ -75,8 +75,8 @@ export default class NodeInOut extends React.Component {
 
 	holeCenterPosition() {
 		let position = this.position();
-		position.x = position.x + (15 / 2.0);
-		position.y = position.y + (15 / 2.0);
+		position.x = (position.x + (15 / 2.0));
+		position.y = (position.y + (15 / 2.0));
 		return position;
 	}
 
@@ -173,15 +173,16 @@ export default class NodeInOut extends React.Component {
 		if (this.state.isDragging) {
 			if (this.props.nodeAction.dispatcher.isDispatching()) { return; }
 			let center = this.holeCenterPosition();
+			let zoom = 1.0 / this.props.nodeStore.getZoom();
 			if (this.props.isInput) {
 				this.props.nodeAction.dragPlug(this.props.id, center, {
-					x : center.x + (ev.clientX - this.pos.x),
-					y : center.y + (ev.clientY - this.pos.y)
+					x : center.x + (ev.clientX - this.pos.x) * zoom,
+					y : center.y + (ev.clientY - this.pos.y) * zoom
 				});
 			} else {
 				this.props.nodeAction.dragPlug(this.props.id, {
-					x : center.x + (ev.clientX - this.pos.x),
-					y : center.y + (ev.clientY - this.pos.y)
+					x : center.x + (ev.clientX - this.pos.x) * zoom,
+					y : center.y + (ev.clientY - this.pos.y) * zoom
 				}, center);
 			}
 			ev.preventDefault();

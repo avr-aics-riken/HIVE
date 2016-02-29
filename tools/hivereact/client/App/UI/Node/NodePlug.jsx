@@ -53,8 +53,16 @@ export default class NodePlug extends React.Component {
 	}
 
 	stroke() {
-		let inpos = this.state.inpos;
-		let outpos = this.state.outpos;
+		let inpos;
+		let outpos;
+		if (this.props.isSimple) {
+			let simplePos = this.props.nodeStore.calcSimplePlugPosition(this.props.plug);
+			inpos = simplePos[0];
+			outpos = simplePos[1];
+		} else {
+			inpos = this.state.inpos;
+			outpos = this.state.outpos;
+		}
 		let midx = (Number(inpos[0]) + Number(outpos[0])) * 0.5;
 
 		let str = "M"

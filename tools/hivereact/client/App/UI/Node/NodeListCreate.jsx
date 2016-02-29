@@ -10,9 +10,15 @@ export default class NodeListCreate extends React.Component {
 
         this.store = this.props.store;
         this.action = this.props.action;
+        this.left = 200;
+        this.top = 200;
+
+        if(this.props.position && this.props.position.length > 0){
+            this.left = this.props.position[0];
+            this.top = this.props.position[1];
+        }
+
         this.styles = this.styles.bind(this);
-        // this.onClick = this.onClick.bind(this);
-        // this.onKeyDown = this.onKeyDown.bind(this);
     }
 
     styles() {
@@ -26,8 +32,8 @@ export default class NodeListCreate extends React.Component {
                 width: "200px",
                 height: "200px",
                 position: "absolute",
-                bottom: "200px",
-                left: "200px",
+                top: this.top + "px",
+                left: this.left + "px",
                 zIndex: "9999",
                 float: "left"
             }
@@ -41,6 +47,7 @@ export default class NodeListCreate extends React.Component {
                 <MenuNodeCreate
                     store={this.props.store}
                     action={this.props.action}
+                    focusFunction={this.props.focusFunction}
                     ref="creator"
                 />
                 <MenuNodeList
