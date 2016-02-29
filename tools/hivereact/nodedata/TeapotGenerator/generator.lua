@@ -1,5 +1,6 @@
 
 TeapotGenerator = {}
+setmetatable(TeapotGenerator, {__index = BaseComponent})
 
 TeapotGenerator.new = function ()
     local this = {}
@@ -9,15 +10,6 @@ TeapotGenerator.new = function ()
     }
     setmetatable(this, {__index=TeapotGenerator})
     return this
-end
-
-function TeapotGenerator:Set(propname, value)
-    self.property[propname] = value
-    self.updated = true;
-end
-
-function TeapotGenerator:ClearConnect()
-    
 end
 
 function TeapotGenerator:Do()

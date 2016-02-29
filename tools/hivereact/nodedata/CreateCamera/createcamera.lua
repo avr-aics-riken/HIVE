@@ -1,8 +1,9 @@
 
 CreateCamera = {}
+setmetatable(CreateCamera, {__index = BaseComponent})
 
-CreateCamera.new = function ()
-    local this = {}
+CreateCamera.new = function (varname)
+    local this = BaseComponent.new(varname)
     this.cam = Camera()
     this.property = {
         screensize = {512, 512},
@@ -16,15 +17,6 @@ CreateCamera.new = function ()
     }
     setmetatable(this, {__index=CreateCamera})
     return this
-end
-
-function CreateCamera:ClearConnect()
-    
-end
-
-function CreateCamera:Set(propname, value)
-    self.property[propname] = value
-    self.updated = true;
 end
 
 function CreateCamera:Do()

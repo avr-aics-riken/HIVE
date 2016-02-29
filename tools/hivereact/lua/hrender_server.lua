@@ -2,7 +2,8 @@
 	hrender server for HIVE
 --]]
 
-hcmd = require('HiveCommand')
+--[[hcmd = require('HiveCommand')
+
 
 if hcmd == nil then
 	print('[Error] Not found HiveCommand.lua')
@@ -13,6 +14,9 @@ else
 	end
 	print('---------------------')
 end
+--]]
+
+BaseComponent = require('BaseComponent')
 
 local connectAddress = 'ws://localhost:8080/'
 local ipcAddress = nil --'ipc:///tmp/HIVE_server_ipc'
@@ -205,8 +209,8 @@ function mainloop()
 				if r then
 					Log('[Connection] Reconnected')
 					-- For debug force reload
-					package.loaded['HiveCommand'] = nil
-					hcmd = require('HiveCommand')
+					--package.loaded['HiveCommand'] = nil
+					--hcmd = require('HiveCommand')
 				end
 			end
 		end
