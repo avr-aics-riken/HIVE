@@ -4,10 +4,11 @@
   padding-left: 0;
   list-style: none;
   z-index: 99999;
-  border: 1px solid #d9d9d9;
-  box-shadow: 0 0 4px #d9d9d9;
+  border: 1px solid #333;
+  box-shadow: 0 0 4px #333;
   /* border-radius: 3px; */
-  color: #666;
+  /* color: #666; */
+  color: #ddd;
 }
 .rc-menu-hidden {
   display: none;
@@ -20,21 +21,26 @@
   color: #999;
   line-height: 1.5;
   padding: 8px 10px;
-  border-bottom: 1px solid #dedede;
+  /* border-bottom: 1px solid #dedede; */
+  border-bottom: 1px solid #111;
 }
 .rc-menu-inline > .rc-menu-item-active,
 .rc-menu-submenu-inline.rc-menu-submenu-active,
 .rc-menu-submenu-inline.rc-menu-submenu-active > .rc-menu-submenu-title:hover {
-  background-color: #fff;
+  /* background-color: #fff; */
+  background-color: #666;
 }
 .rc-menu-inline > .rc-menu-item-active:hover,
 .rc-menu-item-active,
 .rc-menu-submenu-active,
 .rc-menu-submenu-inline.rc-menu-submenu-active > .rc-menu-submenu-title:hover {
-  background-color: #eaf8fe;
+  /* background-color: #eaf8fe; */
+  background-color: #111;
+  color: crimson;
 }
 .rc-menu-item-selected {
-  background-color: #eaf8fe;
+  /* background-color: #eaf8fe; */
+  background-color: #111;
 }
 .rc-menu > li.rc-menu-submenu {
   padding: 0;
@@ -74,13 +80,15 @@
   overflow: hidden;
   padding: 0;
   line-height: 0;
-  background-color: #e5e5e5;
+  /* background-color: #e5e5e5; */
+  background-color: #666;
 }
 .rc-menu-submenu {
   position: relative;
 }
 .rc-menu-submenu > .rc-menu {
-  background-color: #fff;
+  /* background-color: #fff; */
+  background-color: #111;
 }
 .rc-menu .rc-menu-submenu-title .anticon,
 .rc-menu .rc-menu-item .anticon {
@@ -90,10 +98,12 @@
   top: -1px;
 }
 .rc-menu-horizontal {
-  background-color: #F3F5F7;
+  /* background-color: #F3F5F7; */
+  background-color: #111;
   border: none;
   border-bottom: 1px solid transparent;
-  border-bottom: 1px solid #d9d9d9;
+  /* border-bottom: 1px solid #d9d9d9; */
+  border-bottom: 1px solid #666;
   box-shadow: none;
   margin: 0px;
 }
@@ -103,7 +113,7 @@
   margin: 3px 0px 0px 0px;
   padding: 5px 20px;
   min-width: 100px;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #555;
 }
 .rc-menu-horizontal > .rc-menu-submenu,
 .rc-menu-horizontal > .rc-menu-item {
@@ -112,9 +122,12 @@
 }
 .rc-menu-horizontal > .rc-menu-submenu-active,
 .rc-menu-horizontal > .rc-menu-item-active {
-  border-bottom: 2px solid #2db7f5;
-  background-color: #F3F5F7;
-  color: #2baee9;
+  /* border-bottom: 2px solid #2db7f5; */
+  /* background-color: #F3F5F7;        */
+  border-bottom: 2px solid crimson;
+  background-color: #311;
+  /* color: #2baee9; */
+  color: crimson;
 }
 .rc-menu-horizontal:after {
   content: "\20";

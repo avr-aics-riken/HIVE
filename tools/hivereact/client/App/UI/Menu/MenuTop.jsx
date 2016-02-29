@@ -76,7 +76,7 @@ export default class MenuTop extends React.Component {
     render(){
         // ここでメニュー操作時の動作を定義
         // info のなかの key を見て分岐したりする
-        function handleSelect(info) {
+        function handleClick(info) {
             let key = parseInt(info.key, 10);
             switch(key){
                 case 1:
@@ -89,11 +89,12 @@ export default class MenuTop extends React.Component {
                     // allClearNode();
                     break;
             }
+            console.log(info);
         }
 
         // ここでメニューの構造定義
         const horizontalMenu = React.cloneElement((
-            <RcMenu onSelect={handleSelect}>
+            <RcMenu onClick={handleClick}>
                 <SubMenu title={<span>file</span>} key="0">
                     <MenuItem key="1">load</MenuItem>
                     <MenuItem key="2">save</MenuItem>
@@ -107,7 +108,9 @@ export default class MenuTop extends React.Component {
             </RcMenu>
         ), {
             mode: 'horizontal',
-            openAnimation: 'slide-up'
+            openAnimation: 'slide-up',
+            openSubMenuOnMouseEnter: false,
+            closeSubMenuOnMouseLeave: true
         });
 
         let style = {
