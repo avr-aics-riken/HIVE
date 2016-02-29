@@ -3,6 +3,8 @@ import ReactDOM from "react-dom"
 import Core from '../../Core'
 import Node from './Node.jsx'
 import Store from './Store.jsx'
+import NodeListCreate from "./NodeListCreate.jsx";
+import NodePlugView from "./NodePlugView.jsx";
 
 /**
  * ノード(プラグ除く）を全て内包するビュー.
@@ -21,9 +23,20 @@ export default class NodeView extends React.Component {
 		});
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
 			this.setState({
-				zoom : zoom
+				zoom : zoom,
+				listVisible: false,
+				listPos: []
 			});
 		});
+
+        this.listVisiblity = false;
+        this.focusTarget = null;
+
+        this.setFocusTarget = this.setFocusTarget.bind(this);
+        this.dblClickEvent = this.dblClickEvent.bind(this);
+        this.keyDownEvent = this.keyDownEvent.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.generator = this.generator.bind(this);
 	}
 
 	styles(id) {
@@ -114,6 +127,87 @@ export default class NodeView extends React.Component {
 				</div>);
 	}
 
+	onMouseDown(ev) {
+		//console.log("mousedown ", ev);
+	}
+
+    // この関数をフォーカスしたい子要素に渡して呼んでもらう
+    setFocusTarget(element){
+        this.focusTarget = element;
+    }
+
+    // 現状は NodeView 内にある SVG Element から呼ばれる
+    dblClickEvent(eve){
+		let x = eve.clientX - eve.currentTarget.getBoundingClientRect().left;
+		let y = eve.clientY - eve.currentTarget.getBoundingClientRect().top;
+        this.listVisiblity = !this.listVisiblity;
+        this.setState({
+            listVisible: this.listVisiblity,
+			listPos: [x, y]
+            //listPos: [eve.layerX, eve.layerY]
+        });
+        if(this.listVisiblity){
+            setTimeout((()=>{
+                var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
+                e.focus();
+            }).bind(this), 50);
+        }
+    }
+
+    // キーダウンイベントのターゲットは Window
+    keyDownEvent(eve){
+        switch(eve.keyCode){
+            case 27:
+                this.listVisiblity = false;
+                this.setState({listVisible: false});
+                break;
+            case 32:
+                this.setState({
+                    listVisible: true
+                });
+                setTimeout((()=>{
+                    let el, x, y, w, h;
+                    el = ReactDOM.findDOMNode(this.focusTarget);
+                    el = el.parentNode.parentNode; // temp
+                    w = el.clientWidth;
+                    h = el.clientHeight;
+                    x = w / 2 - 100; // temp
+                    y = h / 2 - 150; // temp
+                    this.setState({listPos: [x, y]});
+                    var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
+                    e.focus();
+                }).bind(this), 50);
+                break;
+            default:
+                break;
+        }
+    }
+
+	generator(){
+		if (this.state.listVisible){
+			return (
+				<NodeListCreate
+					store={this.props.store}
+					action={this.props.action}
+					visibility={this.state.listVisible}
+					position={this.state.listPos}
+					focusFunction={this.setFocusTarget.bind(this)}
+					ref="creator"
+				/>
+			);
+		}
+	}
+
+
+    componentDidMount(){
+        window.addEventListener('keydown', this.keyDownEvent.bind(this));
+    }
+
+    componentWillUnmount(){
+        window.removeEventListener('keydown', this.keyDownEvent.bind(this));
+    }
+
+
 	render() {
 		const styles = this.styles.bind(this)();
 		let isSimple = this.state.zoom <= 0.6;
@@ -130,12 +224,27 @@ export default class NodeView extends React.Component {
 		} ));
 		return (
 				<div
+					onDoubleClick={this.dblClickEvent.bind(this)}
+					onMouseDown={this.onMouseDown.bind(this)}
 					style={{
-						zoom: String(this.state.zoom)
-					}}>
+						zoom: String(this.state.zoom),
+						position : "absolute",
+						width: "100%",
+						height : "100%",
+					}}
+				>
 					{nodeList}
 					{this.addButton.bind(this)(0)}
 					{this.addButton.bind(this)(1)}
+                    {this.generator.bind(this)()}
+
+					<NodePlugView
+						style={{zIndex:"1"}}
+						store={this.props.store}
+						action={this.props.action}
+						nodeStore={this.props.nodeStore}
+						nodeAction={this.props.nodeAction}
+					/>
 				</div>
 				);
 	}
