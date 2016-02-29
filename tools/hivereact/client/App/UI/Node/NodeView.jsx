@@ -29,6 +29,7 @@ export default class NodeView extends React.Component {
 			});
 		});
 
+		this.isRightDown = false;
         this.listVisiblity = false;
         this.focusTarget = null;
 
@@ -128,7 +129,39 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseDown(ev) {
-		//console.log("mousedown ", ev);
+		if (ev.button === 2) {
+			this.isRightDown = true;
+			this.pos = {
+				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
+				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
+			};
+		}
+	}
+
+	onMouseMove(ev) {
+		if (this.isRightDown) {
+			let px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
+			let py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
+			let invzoom = 1.0 / this.state.zoom;
+			let mx = (px - this.pos.x) * invzoom;
+			let my = (py - this.pos.y) * invzoom;
+
+			let nodes = this.props.store.getNodes();
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				this.props.action.changeNode({
+					varname : nodes[i].varname,
+					pos : [nodes[i].pos[0] + mx, nodes[i].pos[1] + my]
+				});
+			}
+			this.pos = {
+				x : px,
+				y : py
+			};
+		}
+	}
+
+	onMouseUp(ev) {
+		this.isRightDown = false;
 	}
 
     // この関数をフォーカスしたい子要素に渡して呼んでもらう
@@ -201,10 +234,12 @@ export default class NodeView extends React.Component {
 
     componentDidMount(){
         window.addEventListener('keydown', this.keyDownEvent.bind(this));
+		window.addEventListener('mouseup', this.onMouseUp.bind(this));
     }
 
     componentWillUnmount(){
         window.removeEventListener('keydown', this.keyDownEvent.bind(this));
+		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
     }
 
 
@@ -226,6 +261,7 @@ export default class NodeView extends React.Component {
 				<div
 					onDoubleClick={this.dblClickEvent.bind(this)}
 					onMouseDown={this.onMouseDown.bind(this)}
+					onMouseMove={this.onMouseMove.bind(this)}
 					style={{
 						zoom: String(this.state.zoom),
 						position : "absolute",
