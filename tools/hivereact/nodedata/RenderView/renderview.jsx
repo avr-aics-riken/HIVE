@@ -9,17 +9,21 @@ class RenderView extends React.Component {
         this.node = props.node;
         this.action = props.action;
         this.store = props.store;
-
+        
         this.varname = this.node.varname;
+        
+        // Mouse
+        this.mouseState = 0;
+        this.oldmx = 0;
+        this.oldmy = 0;
 
-        this.state = {
-            text: ''
-        }
-
+        // View
+       
+        
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
 
-        const Store_IMAGE_RECIEVED = "image_revieved";
+        const Store_IMAGE_RECIEVED = "image_revieved";        
 		this.store.on(Store_IMAGE_RECIEVED, (err, param, data) => {
 			var buffer;
             if (param.varname !== this.node.varname) {
@@ -61,22 +65,74 @@ class RenderView extends React.Component {
 			} else {
 		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
-                let imgElem = document.getElementById('aascreen-' + this.varname);
+                let imgElem = document.getElementById(this.getCanvasName());
                 imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"})
-                console.log(imgElem);
+                //console.log(imgElem);
 			}
 		}
 	}
+    
+    viewRot(rx, ry, rz) {
+        
+        let newval = this.node.input[0].value.concat();
+        newval[0] += rx;
+        newval[1] += ry;
+        newval[2] += rz;
+        
+        const varname = this.node.varname;
+        const inputs = JSON.parse(JSON.stringify(this.node.input));
+        //console.log(this.node.input[0]);
+        inputs[0].value = newval;
+        this.action.changeNode({
+            varname: varname,
+            input: inputs
+        });
+    }
+    
+    viewTrans(tx, ty, tz) {
+        
+    }
+    viewZoom(zoom) {
+        
+    }
+
+    onImgMouseDown(event) {        
+        event.preventDefault();
+        this.mouseState = 1;
+        this.oldmx = event.clientX;
+        this.oldmy = event.clientY;
+    }
+    onImgMouseMove(event) {
+        if (this.mouseState > 0) {
+            event.preventDefault();
+            
+            const dx = event.clientX - this.oldmx;
+            const dy = event.clientY - this.oldmy;            
+            //console.log('mmove', dx, dy);
+            
+            this.viewRot(dy, dx, 0.0);
+            
+            this.oldmx = event.clientX;
+            this.oldmy = event.clientY;            
+        }    
+    }
+    onImgMouseUp(event) {
+        this.mouseState = 0;
+    }
 
 	componentDidMount() {
+        let imgElem = document.getElementById(this.getCanvasName());
+        imgElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
 		// canvas.tabIndex = 1000;
-		// window.addEventListener('mouseup', this.onMouseUp);
-		// window.addEventListener('mousemove', this.onMouseMove, true);
+		window.addEventListener('mouseup', this.onImgMouseUp.bind(this));
+		window.addEventListener('mousemove', this.onImgMouseMove.bind(this), true);
 	}
 
 	componentWillUnmount() {
-		// window.removeEventListener('mouseup', this.onMouseUp);
-		// window.removeEventListener('mousemove', this.onMouseMove, true);
+        let imgElem = document.getElementById(this.getCanvasName());
+        imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this));		
+		window.removeEventListener('mouseup', this.onImgMouseUp.bind(this));
+		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
 	}
 
     styles() {
@@ -96,7 +152,7 @@ class RenderView extends React.Component {
 		}
 	}
 
-    onChange(i, event) {
+    /*onChange(i, event) {
         let text = event.target.value;
         this.setState({text});
         const inputs = JSON.parse(JSON.stringify(this.node.input));
@@ -106,7 +162,7 @@ class RenderView extends React.Component {
             varname: varname,
             input: inputs
         });
-    }
+    }*/
 
     content() {
 		const styles = this.styles();
@@ -117,11 +173,19 @@ class RenderView extends React.Component {
 		}
 	}
 
+    getCanvasName() {
+        return "aascreen-" + this.varname;
+    }
 
     render(){
 
         const styles = this.styles();
         return (
+            <div>
+               <img id={this.getCanvasName()} style={styles.image} src="" ></img>
+            </div>
+        );
+        /*return (
             <div>
                 <div>
                 <p>R:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
@@ -145,7 +209,7 @@ class RenderView extends React.Component {
                <img id={"aascreen-" + this.varname} style={styles.image} src="" ></img>
 
             </div>
-        );
+        );*/
     }
 }
 
