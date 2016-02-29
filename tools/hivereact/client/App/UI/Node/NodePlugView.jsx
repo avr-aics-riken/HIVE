@@ -126,10 +126,12 @@ export default class NodePlugView extends React.Component {
 	}
 
 	createPlug(plugPos, key) {
-		return (<NodePlug nodeStore={this.props.nodeStore} plug={plugPos}
-		 		key={plugPos.input.nodeVarname + '_' + plugPos.output.nodeVarname + '_' +
-					plugPos.input.name + '_' + plugPos.output.name + '_' + String(key)}
-					isTemporary={false}  />)
+		return (<NodePlug nodeStore={this.props.nodeStore}
+					plug={plugPos}
+		 			key={plugPos.input.nodeVarname + '_' + plugPos.output.nodeVarname + '_' +
+						plugPos.input.name + '_' + plugPos.output.name + '_' + String(key)}
+					isSimple={this.state.zoom > 0.6 ? false : true}
+					isTemporary={false}  />);
 	}
 
 	temporaryPlug() {
@@ -169,7 +171,7 @@ export default class NodePlugView extends React.Component {
 					width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'
 					onMouseDown={this.onMouseDown.bind(this)}
 					onWheel={this.onWheel.bind(this)}
-                    ref="svg"
+					ref="svg"
 				>
 					{plugList}
 					{this.temporaryPlug()}
