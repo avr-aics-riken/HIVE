@@ -250,11 +250,17 @@ export default class Node extends React.Component {
 				</div>)
 	}
 
+	onDoubleClick(ev) {
+		ev.preventDefault();
+		ev.stopPropagation();
+	}
+
 	render () {
 		const style = this.styles();
 		return (<div ref="node"
 					style={style.node}
 					onMouseDown={this.onMouseDown.bind(this)}
+					onDoubleClick={this.onDoubleClick.bind(this)}
 				>
 					{this.titleElem.bind(this)()}
 					{this.inputElem.bind(this)()}

@@ -16,14 +16,15 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 	seserver = http.createServer(function (req, res) {
 		'use strict';
 		console.log('REQ>', req.url);
-		var file, fname;
+		var file, fname, jsondata;
 		if (req.url === '/') {
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
         } else if (req.url === '/nodelist.json') { // temp
             makeNodeList((function (res) {
                 return function (err, nodelist) {
-                    file = JSON.stringify(nodelist);
+                    jsondata = {error: err, data:nodelist};
+                    file = JSON.stringify(jsondata);
                     res.end(file);
                 };
             }(res)));
@@ -44,7 +45,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 							   autoAcceptConnections : false}),
 	ws_connections = {},
 	id_counter = 0;
-    
+
 //-----------------------------------------------------
 
 function makeNodeList(callback) {
@@ -54,6 +55,7 @@ function makeNodeList(callback) {
 		var infofile,
 			nodeDirPath,
 			fileCounter,
+            readError,
 			customFuncLua,
             uiFunc,
 			nodelist = [],
@@ -63,10 +65,11 @@ function makeNodeList(callback) {
 		}
 
 		fileCounter = 0;
+        readError = '';
 		function finishLoad() {
 			fileCounter = fileCounter - 1;
 			if (fileCounter === 0) {
-				callback(null, nodelist);
+				callback((readError.length === 0 ? null : readError), nodelist);
 			}
 		}
 		function loadFunc(nodeDirPath) {
@@ -77,11 +80,13 @@ function makeNodeList(callback) {
 						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
 						json.customfunc = customFuncLua;
                         uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
-						json.uiFunc = uiFunc;                        
+						json.uiFunc = uiFunc;
 					}
 					nodelist.push(json);
 				} catch (e) {
-					console.error('[Error] Failed Load:' + nodeDirPath + "/info.json", e);
+                    var errmsg = '[Error] Failed Load:' + nodeDirPath + "/info.json";
+					console.error(errmsg, e);
+                    readError += errmsg + '\n' + e.toString() + '\n';
 				}
 				finishLoad();
 			};
@@ -370,7 +375,7 @@ ws.on('request', function (request) {
 	*/
 	function eventTextMessage(ret, utf8Data) {
 		//console.log('[Log]eventTextMessage:', ret);
-		if (ret.to) {
+		if (ret.to !== null && ret.to !== undefined) {
 			var node = null;
 			if (ret.to !== 'master' && ws_connections[ret.to]) {
 				node = ws_connections[ret.to].conn;
@@ -426,7 +431,7 @@ ws.on('request', function (request) {
 		Process binary message
 	*/
 	function eventBinaryMessage(meta, binMessage) {
-		if (meta.to) {
+		if (meta.to !== null && meta.to !== undefined) {
 			var node = null;
 			if (meta.to !== 'master') {
 				node =  ws_connections[meta.to].conn;
