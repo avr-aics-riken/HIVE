@@ -5,7 +5,9 @@ function getData(url, callback) {
         if (this.readyState == 4) { // DONE
             if (this.status == 200) { // OK
                 if (callback) {
-                    callback(null, this.response);
+                    const jsondata = JSON.parse(this.response);
+                    const errmsg = jsondata.error;
+                    callback(errmsg, jsondata.data);
                 }
             } else {
                 console.log("status = " + this.status);
@@ -22,9 +24,10 @@ export default class NodeCreator {
 
         this.initCallback = callback;
         this.nodeList = [];
-        getData("http://localhost:8080/nodelist.json", (err, data) => {
-            const jsondata = JSON.parse(data);
-            console.log('nodedata=', jsondata);
+        getData("http://localhost:8080/nodelist.json", (err, jsondata) => {
+            if (err) {
+                console.error(err);
+            }
             this.nodeList = jsondata;
             var n;
             for (n = 0; n < this.nodeList.length; ++n) {
