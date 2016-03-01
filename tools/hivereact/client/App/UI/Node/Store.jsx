@@ -98,7 +98,7 @@ export default class Store extends EventEmitter {
 	 * @param node プラグが接続されているノード
 	 */
 	calcPlugPosition(isInput, plug, node) {
-		let isClosed = node.close;
+		let isClosed = node.node.close;
 		const holeSize = isClosed ? 10 : 15;
 		if (isInput) {
 			if (plug.input.nodeVarname === node.varname) {
@@ -108,7 +108,7 @@ export default class Store extends EventEmitter {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
 							if (inputArray[n].name === plug.input.name) {
-								return [node.pos[0], node.pos[1] + (count + 1) * (holeSize + 3) + 20];
+								return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 20];
 							}
 							if (isClosed) {
 								if (this.isConnected(node.varname, inputArray[n].name)) {
@@ -120,7 +120,7 @@ export default class Store extends EventEmitter {
 						}
 					} else {
 						if (node.input[k].name === plug.input.name) {
-							return [node.pos[0], node.pos[1] + (count + 1) * (holeSize + 3) + 20];
+							return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 20];
 						}
 						if (isClosed) {
 							if (this.isConnected(node.varname, node.input[k].name)) {
@@ -136,7 +136,7 @@ export default class Store extends EventEmitter {
 			if (plug.output.nodeVarname === node.varname) {
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.pos[0] + 200, node.pos[1] + (k + 1) * (holeSize + 3) + 20];
+						return [node.node.pos[0] + 200, node.node.pos[1] + (k + 1) * (holeSize + 3) + 20];
 					}
 				}
 			}
@@ -148,11 +148,11 @@ export default class Store extends EventEmitter {
 		let pos = [[0,0], [0,0]];
 		if (this.nodeMap.hasOwnProperty(plug.input.nodeVarname)) {
 			let node = this.nodeMap[plug.input.nodeVarname];
-			pos[0] = [node.pos[0], node.pos[1] + 18 + 20];
+			pos[0] = [node.node.pos[0], node.node.pos[1] + 18 + 20];
 		}
 		if (this.nodeMap.hasOwnProperty(plug.output.nodeVarname)) {
 			let node = this.nodeMap[plug.output.nodeVarname];
-			pos[1] = [node.pos[0] + 200, node.pos[1] + 18 + 20];
+			pos[1] = [node.node.pos[0] + 200, node.node.pos[1] + 18 + 20];
 		}
 		return pos;
 	}
