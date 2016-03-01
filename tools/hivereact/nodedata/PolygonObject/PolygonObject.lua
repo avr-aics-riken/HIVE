@@ -30,29 +30,31 @@ function PolygonObject:Do()
 	pm:SetScale(property.scale[1], property.scale[2], property.scale[3])
 	pm:SetShader(property.shadername)
 
-	local uniforms = property.Uniform
-	for i,v in pairs(uniforms) do
-		if v.type == 'vec4' then
-			print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
-			pm:SetVec4(v.name, v.value[1], v.value[2], v.value[3], v.value[4])
-		end
-		if v.type == 'vec3' then
-			print('vec3[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], ')')
-			pm:SetVec3(v.name, v.value[1], v.value[2], v.value[3])
-		end
-		if v.type == 'vec2' then
-			print('vec2[' .. v.name .. '] = (', v.value[1], v.value[2], ')')
-			pm:SetVec2(v.name, v.value[1], v.value[2])
-		end
-		if v.type == 'float' then
-			print('float[' .. v.name .. '] = (', v.value, ')')
-			pm:SetFloat(v.name, v.value)
-		end
-		if v.type == 'texture' then
-			print('texture[' .. v.name .. '] = (', v.value, ')')
-			pm:SetTexture(v.name, v.value)
-		end
-	end
+	local uniforms = self.connection.Uniform
+    if uniforms ~= nil then    
+        for i,v in pairs(uniforms) do
+            if v.type == 'vec4' then
+                print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
+                pm:SetVec4(v.name, v.value[1], v.value[2], v.value[3], v.value[4])
+            end
+            if v.type == 'vec3' then
+                print('vec3[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], ')')
+                pm:SetVec3(v.name, v.value[1], v.value[2], v.value[3])
+            end
+            if v.type == 'vec2' then
+                print('vec2[' .. v.name .. '] = (', v.value[1], v.value[2], ')')
+                pm:SetVec2(v.name, v.value[1], v.value[2])
+            end
+            if v.type == 'float' then
+                print('float[' .. v.name .. '] = (', v.value, ')')
+                pm:SetFloat(v.name, v.value)
+            end
+            if v.type == 'texture' then
+                print('texture[' .. v.name .. '] = (', v.value, ')')
+                pm:SetTexture(v.name, v.value)
+            end
+        end
+    end
 end
 
 function PolygonObject:model()
