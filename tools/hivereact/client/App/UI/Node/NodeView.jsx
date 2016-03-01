@@ -21,6 +21,7 @@ export default class NodeView extends React.Component {
 				nodes : [].concat(this.props.store.getNodes())
 			});
 		});
+		
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
 			this.setState({
 				zoom : zoom,
@@ -264,6 +265,7 @@ export default class NodeView extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						key={nodeData.varname + key}
+						id={nodeData.varname + key}
 						isSimple={isSimple}
 					></Node>);
 		} ));
