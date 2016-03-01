@@ -200,11 +200,15 @@ export default class Container extends React.Component {
         if(!node.uiComponent){
             node.uiComponent = eval(node.uiFunc);
         }
-        res = React.createFactory(this.state.node.uiComponent)({
-            store: this.store,
-            action: this.action,
-            node: node
-        });
+        if (node.uiComponent === undefined) {
+            res = "";
+        } else {
+            res = React.createFactory(this.state.node.uiComponent)({
+                store: this.store,
+                action: this.action,
+                node: node
+            });
+        }
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>

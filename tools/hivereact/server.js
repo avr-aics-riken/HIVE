@@ -79,9 +79,14 @@ function makeNodeList(callback) {
 					if (json.customfuncfile !== undefined) {
 						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
 						json.customfunc = customFuncLua;
+                    }
+                    if (json.uifile !== undefined) {
                         uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
 						json.uiFunc = uiFunc;
-					}
+					} else {
+                        json.uiFunc = '';
+                        json.visible = false; 
+                    }
 					nodelist.push(json);
 				} catch (e) {
                     var errmsg = '[Error] Failed Load:' + nodeDirPath + "/info.json";

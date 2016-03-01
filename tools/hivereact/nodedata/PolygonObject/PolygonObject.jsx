@@ -1,6 +1,6 @@
 import React from 'react'
 
-class CreatePolygonModel extends React.Component {
+class PolygonObject extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -9,4 +9,4 @@ class CreatePolygonModel extends React.Component {
     }
 }
 
-module.exports = CreatePolygonModel;
+module.exports = PolygonObject;
