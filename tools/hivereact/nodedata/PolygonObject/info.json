@@ -1,11 +1,11 @@
 {
-	"name": "CreatePolygonModel",
-	"funcname": "CreatePolygonModel",
+	"name": "PolygonObject",
+	"funcname": "PolygonObject",
 	"info":"メッシュデータを表示させるためのノード",
 	"pos": [450, 300],
 	"varname": "instPolygonModel",
-	"customfuncfile": "CreatePolygonModel.lua",
-    "uifile":"CreatePolygonModel.jsx",
+	"customfuncfile": "PolygonObject.lua",
+    "uifile":"PolygonObject.jsx",
 	"select":false,
 	"close" : false,
 	"input": [

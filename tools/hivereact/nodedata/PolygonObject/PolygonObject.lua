@@ -1,7 +1,7 @@
-CreatePolygonModel = {}
-setmetatable(CreatePolygonModel, {__index = BaseComponent})
+PolygonObject = {}
+setmetatable(PolygonObject, {__index = BaseComponent})
 
-CreatePolygonModel.new = function (varname)
+PolygonObject.new = function (varname)
     local this = BaseComponent.new(varname)
     this.property = {
         mesh = nil,
@@ -14,11 +14,11 @@ CreatePolygonModel.new = function (varname)
         }
     }
 
-    setmetatable(this, {__index=CreatePolygonModel})
+    setmetatable(this, {__index=PolygonObject})
     return this
 end
 
-function CreatePolygonModel:Do()
+function PolygonObject:Do()
     local pm = PolygonModel();
     local property = self.property
     self.pmodel = pm
@@ -55,6 +55,6 @@ function CreatePolygonModel:Do()
 	end
 end
 
-function CreatePolygonModel:model()
+function PolygonObject:model()
     return self.pmodel;
 end

@@ -80,7 +80,7 @@ export default class NodeView extends React.Component {
 				});
 			}
 			if (id === 1) {
-				let model = this.props.store.nodeSystem.CreateNodeInstance('CreatePolygonModel');
+				let model = this.props.store.nodeSystem.CreateNodeInstance('PolygonObject');
 				let teapot = this.props.store.nodeSystem.CreateNodeInstance('TeapotGenerator');
 				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
 				teapot.varname = "testteapot_" + String(ncount);

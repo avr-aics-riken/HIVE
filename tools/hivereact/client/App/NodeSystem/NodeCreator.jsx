@@ -30,15 +30,15 @@ export default class NodeCreator {
             }
             this.nodeList = jsondata;
             var n;
-            for (n = 0; n < this.nodeList.length; ++n) {
+            /*for (n = 0; n < this.nodeList.length; ++n) {
                 var uiFunc = this.nodeList[n].uiFunc;
-                if (uiFunc) {
+                if (uiFunc !== '') {                    
                     //console.log('before eval', uiFunc.length);
                     this.nodeList[n].uiComponent = eval(uiFunc);
                     //console.log(this.nodeList[n].uiComponent); // react class (same level with import uiComponent from XXX)
                     //console.log('after eval');
                 }
-            }
+            }*/
             if (this.initCallback) {
                 this.initCallback(this);
             }
