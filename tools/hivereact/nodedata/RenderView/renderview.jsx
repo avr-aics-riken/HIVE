@@ -44,7 +44,6 @@ class RenderView extends React.Component {
 		return (this.props.ipc_address && this.props.ipc_address !== "");
 	}
 	componentDidUpdate() {
-	console.log("componentDidUpdate");
 		// キャンバスの更新.
 		if (this.state && this.state.image) {
 			if (this.hasIPCAddress()) {
