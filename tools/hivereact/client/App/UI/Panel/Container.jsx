@@ -79,8 +79,8 @@ export default class Container extends React.Component {
         if(ev.button === 0){
             this.isScaleLeftDown = true;
             this.scalePos = {x: ev.clientX, y: ev.clientY};
-            this.offsetScaleLeft = ev.currentTarget.offsetLeft;
-            this.offsetScaleTop = ev.currentTarget.offsetTop;
+            this.offsetScaleLeft = Math.max(ev.currentTarget.offsetLeft + ev.currentTarget.offsetWidth, 100);
+            this.offsetScaleTop  = Math.max(ev.currentTarget.offsetTop + ev.currentTarget.offsetHeight, 100);
             this.forwardIndex(this.state.node);
         }
     }
