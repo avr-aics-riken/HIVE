@@ -2,22 +2,12 @@
 	"name": "TeapotGenerator",
 	"funcname": "TeapotGenerator",
 	"info":"Teapotを生成するためのノード",
-	"pos": [100, 100],
-	"varname": "instTeapotGen",
 	"customfuncfile":"generator.lua",
     "uifile":"generator.jsx",
-	"select":false,
-	"close" : false,
 	"input": [
 		{"name": "size", "type": "float", "value": [1.0]}
 	],
 	"output": [
 		{"name": "MeshData",  "type": "BufferMeshData"}
-	],
-    "panel": {
-        "visible": true,
-        "pos": [100, 100],
-        "size": [100, 100],
-        "zindex": 0
-    }
+	]
 }
