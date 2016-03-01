@@ -34,6 +34,7 @@ app.on('ready', function () {
 		"titleBarStyle": "hidden",*/
 	});
 
+    mainWindow.setAutoHideMenuBar(true);
 	mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html') + '?url=' + encodedURL);
 
 	mainWindow.on('close', function () {
