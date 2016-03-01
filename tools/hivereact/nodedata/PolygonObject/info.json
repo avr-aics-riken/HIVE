@@ -1,9 +1,9 @@
 {
-	"name": "CreatePolygonModel",
-	"funcname": "CreatePolygonModel",
+	"name": "PolygonObject",
+	"funcname": "PolygonObject",
 	"info":"メッシュデータを表示させるためのノード",
-	"customfuncfile": "CreatePolygonModel.lua",
-    "uifile":"CreatePolygonModel.jsx",
+	"customfuncfile": "PolygonObject.lua",
+    "uifile":"PolygonObject.jsx",
 	"input": [
 		{"name": "mesh", "type": "BufferMeshData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
