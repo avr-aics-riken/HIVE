@@ -110,7 +110,7 @@ export default class NodeView extends React.Component {
 					},
 					input : {
 						nodeVarname : renderview.varname,
-						name : renderview.input[9].name
+						name : renderview.input[9].array[0].name
 					}
 				});
 			}

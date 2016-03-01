@@ -85,6 +85,20 @@ export default class Node extends React.Component {
 		};
 	}
 
+	// 入力端子の数を返す
+	getInputCounts() {
+		let count = 0;
+		for (let i = 0; i < this.state.node.input.length; i = i + 1) {
+			let input = this.state.node.input[i];
+			if (Array.isArray(input.array)) {
+				count = count + input.array.length;
+			} else {
+				count = count + 1;
+			}
+		}
+		return count;
+	}
+
 	styles() {
 		return {
 			node : {
@@ -94,7 +108,7 @@ export default class Node extends React.Component {
 				width : "200px",
 				height :
 					this.props.isSimple ? "50" :
-						String((Math.max(this.state.node.input.length, this.state.node.output.length) + 1) * 18 + 20),
+						String((Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * 18 + 20),
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",
@@ -204,16 +218,34 @@ export default class Node extends React.Component {
 		if (this.props.isSimple) {
 			return <div/>;
 		}
+		let inoutIndex = -1;
 		let inputs = this.state.node.input.map( (inputData, index) => {
-			return (<NodeInOut
-						nodeStore={this.props.nodeStore}
-						nodeAction={this.props.nodeAction}
-						nodeRect={this.nodeRect(index)}
-						nodeVarname={this.props.nodeVarname}
-						isInput={true} data={inputData}
-						key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
-						id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
-						index={index} />)
+			if (Array.isArray(inputData.array)) {
+				let arrayInputs = inputData.array.map((data, dataIndex) => {
+					inoutIndex = inoutIndex + 1;
+					return (<NodeInOut
+								nodeStore={this.props.nodeStore}
+								nodeAction={this.props.nodeAction}
+								nodeRect={this.nodeRect(index)}
+								nodeVarname={this.props.nodeVarname}
+								isInput={true} data={data}
+								key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+								id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+								index={inoutIndex} />);
+				});
+				return arrayInputs;
+			} else {
+				inoutIndex = inoutIndex + 1;
+				return (<NodeInOut
+							nodeStore={this.props.nodeStore}
+							nodeAction={this.props.nodeAction}
+							nodeRect={this.nodeRect(index)}
+							nodeVarname={this.props.nodeVarname}
+							isInput={true} data={inputData}
+							key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
+							id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
+							index={inoutIndex} />);
+			}
 		});
 		return (<div>{inputs}</div>);
 	}
