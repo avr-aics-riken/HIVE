@@ -71,6 +71,10 @@ export default class ActionExecuter {
 				node[key] = JSON.parse(JSON.stringify(initialData[key]));
 			}
 		}
+		if (node.uiFunc === "") {
+			// UI無し
+			delete node.panel.visible;
+		}
 	}
 
 	/**

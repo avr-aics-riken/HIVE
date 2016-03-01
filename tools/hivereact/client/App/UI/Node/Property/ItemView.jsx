@@ -14,11 +14,19 @@ export default class ItemView extends React.Component {
 	constructor(props) {
 		super(props);
 
-		this.state = {
-			name : this.props.initialNodeData.name,
-			isShowPanel : this.props.initialNodeData.panel.visible,
-			input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
-		};
+		if (this.props.initialNodeData.panel.hasOwnProperty('visible')) {
+			this.state = {
+				name : this.props.initialNodeData.name,
+				isShowPanel : this.props.initialNodeData.panel.visible,
+				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
+			};
+		} else {
+			this.state = {
+				name : this.props.initialNodeData.name,
+				isShowPanel : null,
+				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
+			};
+		}
 		this.inputChanged = this.inputChanged.bind(this);
 		this.panelVisibleChanged = this.panelVisibleChanged.bind(this);
 	}
@@ -127,6 +135,19 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	panelCheckbox() {
+		if (this.state.isShowPanel !== null) {
+			return (<ItemCheckbox
+				initialParam={{
+					name : "show panel",
+					value : this.state.isShowPanel
+				}}
+				changeCheckboxFunc={this.changeCheckboxFunc.bind(this)}
+				key={String(this.props.id + "_panel")}
+				id={String(this.props.id + "_panel")} />);
+		}
+	}
+
 	contents() {
 		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
 			let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
@@ -160,14 +181,8 @@ export default class ItemView extends React.Component {
 					}}
 					key={String(this.props.id + "_title")}
 					id={String(this.props.id + "_title")} />
-				<ItemCheckbox
-					initialParam={{
-						name : "show panel",
-						value : this.state.isShowPanel
-					}}
-					changeCheckboxFunc={this.changeCheckboxFunc.bind(this)}
-					key={String(this.props.id + "_panel")}
-					id={String(this.props.id + "_panel")} />
+
+				{this.panelCheckbox.bind(this)()}
 				{inputs}
 			</div>
 		);
