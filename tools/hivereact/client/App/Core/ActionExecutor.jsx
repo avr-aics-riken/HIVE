@@ -279,13 +279,31 @@ export default class ActionExecuter {
 	 */
 	deletePlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
+			let info = payload.plugInfo;
 			for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
-				if (this.store.data.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
-					this.store.data.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname) {
-					let plug = this.store.data.plugs[i];
-					this.store.data.plugs.splice(i, 1);
-					this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
-					this.store.emit(Constants.PLUG_DELETED, null, plug);
+				let input = this.store.data.plugs[i].input;
+				let output = this.store.data.plugs[i].output;
+				if (output.nodeVarname === info.output.nodeVarname &&
+					input.nodeVarname === info.input.nodeVarname &&
+					output.name === info.output.name) {
+
+					if (Array.isArray(input.array)) {
+						for (let k = 0; k < input.array.length; k = k + 1) {
+							if (input.array[k].name === info.input.name) {
+								let plug = this.store.data.plugs[i];
+								this.store.data.plugs.splice(i, 1);
+								this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
+								this.store.emit(Constants.PLUG_DELETED, null, plug);
+								return;
+							}
+						}
+					} else if (input.name === info.input.name) {
+						let plug = this.store.data.plugs[i];
+						this.store.data.plugs.splice(i, 1);
+						this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
+						this.store.emit(Constants.PLUG_DELETED, null, plug);
+						return;
+					}
 				}
 			}
 		}
