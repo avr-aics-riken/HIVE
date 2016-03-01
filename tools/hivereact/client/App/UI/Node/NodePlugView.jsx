@@ -63,16 +63,6 @@ export default class NodePlugView extends React.Component {
 			});
 		});
 
-/*
-		this.props.nodeStore.on(Store.PLUG_POSITION_CHANGED, (err, data) => {
-			if (this.state.temporaryPlug &&
-				data.input.nodeVarname === this.state.temporaryPlug.input.nodeVarname &&
-				data.output.nodeVarname === this.state.temporaryPlug.output.nodeVarname) {
-
-				this.setState({temporaryPlug : data  });
-			}
-		});
-*/
 		this.props.nodeStore.on(Store.PLUG_HOLE_SELECTED, (err, data) => {
 			if (data.length >= 2) {
 				if (data[0].isInput !== data[1].isInput &&
@@ -147,7 +137,6 @@ export default class NodePlugView extends React.Component {
 				<svg
 					width="100%" height="100%" version='1.1' xmlns='http://www.w3.org/2000/svg'
 					onMouseDown={this.onMouseDown.bind(this)}
-					ref="svg"
 				>
 					{plugList}
 					{this.temporaryPlug()}
