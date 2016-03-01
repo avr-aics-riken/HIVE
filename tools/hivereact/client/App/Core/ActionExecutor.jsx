@@ -13,6 +13,22 @@ function uuid() {
     return uuid;
 }
 
+const initialData = {
+	"varname": "invalid",
+	"select" : false,
+	"pos": [100, 100],
+	"close" : false,
+	"node" : {
+		"zindex": 0
+	},
+	"panel": {
+		"visible": true,
+		"size": [100, 100],
+        "pos": [100, 100],
+		"zindex": 0
+	}
+};
+
 export default class ActionExecuter {
 	constructor(store) {
 		this.store = store;
@@ -48,6 +64,15 @@ export default class ActionExecuter {
 		}
 	}
 
+	assignInitialNodeValue(node) {
+		console.log("eee", node);
+		for (let key in initialData) {
+			if (!node.hasOwnProperty(key)) {
+				node[key] = JSON.parse(JSON.stringify(initialData[key]));
+			}
+		}
+	}
+
 	/**
 	 * ノード追加
 	 */
@@ -71,6 +96,7 @@ export default class ActionExecuter {
 				}
 			}
 			if(node){
+				this.assignInitialNodeValue(node);
 				let nl = this.store.getNodes();
 				positionGetter(node, nl);
 				function positionGetter(target, nodeList){
@@ -85,8 +111,6 @@ export default class ActionExecuter {
 					}
 					target.panel.zindex = nodeList.length + 1;
 				}
-			}
-			if (node) {
 				this.store.data.nodes.push(node);
 			}
 			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
