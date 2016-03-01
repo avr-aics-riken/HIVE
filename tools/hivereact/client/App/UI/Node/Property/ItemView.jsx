@@ -81,7 +81,7 @@ export default class ItemView extends React.Component {
 			if (inputs[i].name === name) {
 				for (let k = inputs[i].array.length; k < length; k = k + 1) {
 					inputs[i].array.push(
-						{"name": name + String(k),  "type": inputs[i].type }
+						{"name": name + "[" + String(k) + "]",  "type": inputs[i].type }
 					);
 				}
 				inputs[i].array.length = length;

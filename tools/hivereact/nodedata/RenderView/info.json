@@ -19,9 +19,9 @@
 		{"name": "depth_file", "type": "string", "value": ""},
         {"name": "Camera",  "type": "RenderObject"},
 		{"name": "RenderObject",  "type": "RenderObject", "array": [
-			{"name": "RenderObject0",  "type": "RenderObject"},
-			{"name": "RenderObject1",  "type": "RenderObject"},
-			{"name": "RenderObject2",  "type": "RenderObject"}
+			{"name": "RenderObject[0]",  "type": "RenderObject"},
+			{"name": "RenderObject[1]",  "type": "RenderObject"},
+			{"name": "RenderObject[2]",  "type": "RenderObject"}
 		]}
 	],
 	"output": [
