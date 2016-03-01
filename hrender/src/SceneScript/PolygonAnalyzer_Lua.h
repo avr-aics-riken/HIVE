@@ -10,6 +10,11 @@
 #include "Analyzer.h"
 #include "PolygonAnalyzer.h"
 #include "PolygonModel_Lua.h"
+
+#ifdef HIVE_WITH_PMLIB
+#include "../Core/Perf.h"
+#endif
+
 /**
  * PolygonAnalyzer Luaラッパー
  */
@@ -43,7 +48,13 @@ public:
     }
 
     bool Execute(PolygonModel_Lua *model) {
+#ifdef HIVE_WITH_PMLIB
+        GetPM().start(HIVE_PERF_LABEL_ANALYZER_POLYGON);
+#endif
         PolygonAnalyzer::Execute(model);
+#ifdef HIVE_WITH_PMLIB
+        GetPM().stop(HIVE_PERF_LABEL_ANALYZER_POLYGON);
+#endif
         return true;
     }
 

@@ -195,6 +195,7 @@ link_directories(${LIBS})
 set(SOURCES
 	src/Core/main.cpp
 	src/Core/Path.cpp
+	src/Core/Perf.cpp
 	src/Analyzer/PolygonAnalyzer.cpp
 	src/Analyzer/VolumeAnalyzer.cpp
 	src/Buffer/Buffer.cpp
@@ -367,6 +368,15 @@ IF(HIVE_BUILD_WITH_COMPOSITOR)
   
 ENDIF()
 
+IF(HIVE_BUILD_WITH_PMLIB)
+  SET(PMLIB_LIBS
+    PMmpi
+  )
+
+  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PMlib/include)
+  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/PMlib/lib)
+ENDIF()
+
 IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
@@ -383,6 +393,7 @@ target_link_libraries(hrender ${UDMLIB_LIBS})
 target_link_libraries(hrender ${PDMLIB_LIBS})
 target_link_libraries(hrender ${BCMTOOLS_LIBS})
 target_link_libraries(hrender ${COMPOSITOR_LIBS})
+target_link_libraries(hrender ${PMLIB_LIBS})
 
 
 # Additional Libraries
