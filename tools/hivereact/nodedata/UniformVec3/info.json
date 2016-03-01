@@ -2,7 +2,6 @@
 	"name": "UniformVec3",
 	"funcname": "UniformVec3",
 	"info":"Uniform Vec3をつくるノード",
-	"pos": [110, 200],
 	"customfuncfile":"vec3.lua",
     "input": [
 		{"name": "name",  "type": "string", "value": "univec3"},
@@ -10,11 +9,5 @@
 	],
 	"output": [
 		{"name": "uniform",  "type": "Uniform"}
-	],
-    "panel": {
-        "visible": true,
-        "pos": [100, 100],
-        "size": [100, 100],
-        "zindex": 0
-    }
+	]
 }

@@ -3,8 +3,7 @@
 	"funcname": "PolygonObject",
 	"info":"メッシュデータを表示させるためのノード",
 	"customfuncfile": "PolygonObject.lua",
-    "uifile":"PolygonObject.jsx",
-	"input": [
+    "input": [
 		{"name": "mesh", "type": "BufferMeshData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
 		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},

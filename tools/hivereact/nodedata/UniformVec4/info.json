@@ -2,7 +2,6 @@
 	"name": "UniformVec4",
 	"funcname": "UniformVec4",
 	"info":"Uniform Vec4をつくるノード",
-	"pos": [110, 200],
 	"customfuncfile":"vec4.lua",
     "input": [
 		{"name": "name",  "type": "string", "value": "univec4"},
@@ -10,11 +9,5 @@
 	],
 	"output": [
 		{"name": "uniform",  "type": "Uniform"}
-	],
-    "panel": {
-        "visible": true,
-        "pos": [100, 100],
-        "size": [100, 100],
-        "zindex": 0
-    }
+	]
 }

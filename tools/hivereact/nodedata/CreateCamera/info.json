@@ -3,8 +3,7 @@
 	"funcname": "CreateCamera",
 	"info":"カメラをつくるためのノード",
 	"customfuncfile":"createcamera.lua",
-    "uifile":"createcamera.jsx",
-	"input": [
+    "input": [
 		{"name": "position", "type": "vec3", "value": [ 0,0,300]},
 		{"name": "target", "type": "vec3", "value": [ 0,0,0]},
 		{"name": "up", "type": "vec3", "value": [ 0,1,0]},
