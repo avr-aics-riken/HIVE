@@ -2,13 +2,8 @@
 	"name": "RenderView",
 	"funcname": "RenderView",
 	"info":"レンダリングを行うためのノード",
-	"pos": [500, 100],
-	"varname": "root",
 	"customfuncfile":"renderview.lua",
 	"uifile":"renderview.jsx",
-	"rootnode":true,
-	"select":false,
-	"close" : false,
 	"input": [
 		{"name": "position", "type": "vec3", "value": [ 0,0,300]},
 		{"name": "target", "type": "vec3", "value": [ 0,0,0]},
@@ -26,11 +21,5 @@
 		]}
 	],
 	"output": [
-	],
-    "panel": {
-        "visible": true,
-        "pos": [100, 100],
-        "size": [100, 100],
-        "zindex": 0
-    }
+	]
 }

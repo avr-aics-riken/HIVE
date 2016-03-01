@@ -1,13 +1,9 @@
 {
-	"name": "PolygonObject",
-	"funcname": "PolygonObject",
+	"name": "CreatePolygonModel",
+	"funcname": "CreatePolygonModel",
 	"info":"メッシュデータを表示させるためのノード",
-	"pos": [450, 300],
-	"varname": "instPolygonModel",
-	"customfuncfile": "PolygonObject.lua",
-    "uifile":"PolygonObject.jsx",
-	"select":false,
-	"close" : false,
+	"customfuncfile": "CreatePolygonModel.lua",
+    "uifile":"CreatePolygonModel.jsx",
 	"input": [
 		{"name": "mesh", "type": "BufferMeshData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
@@ -22,11 +18,5 @@
 	],
 	"output": [
 		{"name": "model", "type": "RenderObject"}
-	],
-    "panel": {
-        "visible": true,
-        "pos": [100, 100],
-        "size": [100, 100],
-        "zindex": 0
-    }
+	]
 }
