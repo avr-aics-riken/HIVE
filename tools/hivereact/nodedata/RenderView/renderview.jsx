@@ -22,23 +22,32 @@ class RenderView extends React.Component {
 
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
+	}
 
-        const Store_IMAGE_RECIEVED = "image_revieved";
-		this.store.on(Store_IMAGE_RECIEVED, (err, param, data) => {
-			var buffer;
-            if (param.varname !== this.node.varname) {
-                return;
-            }
-			if (param.type === 'jpg') {
-				buffer = new Blob([data]);
-			} else {
-				buffer = data;
-			}
-			this.setState({
-				param : param,
-				image : buffer
-			});
+	imageRecieved(err, param, data) {
+		var buffer;
+		if (param.varname !== this.node.varname) {
+			return;
+		}
+		if (param.type === 'jpg') {
+			buffer = new Blob([data]);
+		} else {
+			buffer = data;
+		}
+		this.setState({
+			param : param,
+			image : buffer
 		});
+	}
+
+	componentDidMount(){
+		const Store_IMAGE_RECIEVED = "image_revieved";
+		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
+	}
+
+	componentWillUnmount(){
+		const Store_IMAGE_RECIEVED = "image_revieved";
+		this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
 	}
 
     hasIPCAddress() {

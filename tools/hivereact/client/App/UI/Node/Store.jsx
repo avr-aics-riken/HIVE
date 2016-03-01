@@ -283,11 +283,24 @@ export default class Store extends EventEmitter {
 		if (payload.hasOwnProperty('plugInfo')) {
 			for (let i = 0; i < this.plugPositions.length; i = i + 1) {
 				if (payload.plugInfo.isInput) {
-					if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
-						this.plugPositions[i].input.name === payload.plugInfo.data.name) {
+					if (Array.isArray(this.plugPositions[i].input.array)) {
+						let inputArray = this.plugPositions[i].input.array;
+						for (let k = 0; k < inputArray.length; k = k + 1) {
+							let input = inputArray[k];
+							if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
+								input.name === payload.plugInfo.data.name) {
 
-						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
-						break;
+								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+								break;
+							}
+						}
+					} else {
+						if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
+							this.plugPositions[i].input.name === payload.plugInfo.data.name) {
+
+							this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+							break;
+						}
 					}
 				} else {
 					if (this.plugPositions[i].output.nodeVarname === payload.plugInfo.nodeVarname &&
