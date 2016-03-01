@@ -38,7 +38,7 @@ function RenderView:Do()
     local targetcam
 -- For Object
     if self.connection.RenderObject then
-        temp[#temp + 1] = self.connection.RenderObject
+        temp = self.connection.RenderObject
     end
         
 -- For Camera
