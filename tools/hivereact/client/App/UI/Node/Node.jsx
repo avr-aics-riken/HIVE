@@ -251,6 +251,7 @@ export default class Node extends React.Component {
 					<span
 						onClick={this.onOpenCloseButtonClick.bind(this)}
 						style={{
+							cursor : "pointer",
 							fontSize : isClose ? "12px" : "16px",
 							marginLeft : isClose ? "4px" : "0px",
 							marginRight : isClose ? "4px" : "0px"

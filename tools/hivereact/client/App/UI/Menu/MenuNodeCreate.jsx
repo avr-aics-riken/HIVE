@@ -34,11 +34,11 @@ export default class MenuNodeCreate extends React.Component {
     }
 
     componentDidMount(){
-        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged.bind(this));
+        this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount(){
-        this.props.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged.bind(this));
+        this.props.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeChanged);
     }
 
     nodeChanged(err, data){
