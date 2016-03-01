@@ -85,7 +85,6 @@ function makeNodeList(callback) {
 						json.uiFunc = uiFunc;
 					} else {
                         json.uiFunc = '';
-                        json.visible = false; 
                     }
 					nodelist.push(json);
 				} catch (e) {
