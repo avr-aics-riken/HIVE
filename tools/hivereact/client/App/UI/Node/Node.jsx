@@ -36,6 +36,8 @@ export default class Node extends React.Component {
 		this.onKeyUp = this.onKeyUp.bind(this);
 		this.styles = this.styles.bind(this);
 		this.nodeRect = this.nodeRect.bind(this);
+		this.getNodePos = this.getNodePos.bind(this);
+		this.isClosed = this.isClosed.bind(this);
 	}
 
 	nodeChanged(err, data) {
@@ -62,25 +64,30 @@ export default class Node extends React.Component {
 		}
 	}
 
+	getNodePos() {
+		return this.state.node.node.pos;
+	}
+
 	moveNode(err, data) {
 		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
 			let invzoom = 1.0 / this.props.nodeStore.getZoom();
-			this.state.node.pos = [this.offsetLeft + data.x * invzoom, this.offsetTop + data.y * invzoom];
+			this.state.node.node.pos = [this.offsetLeft + data.x * invzoom, this.offsetTop + data.y * invzoom];
 			setTimeout(() => {
 				this.props.action.changeNode({
 					varname : this.state.node.varname,
-					pos : this.state.node.pos
+					pos : this.getNodePos()
 				});
 			}, 0);
 		}
 	}
 
 	nodeRect() {
+		let rect = this.refs.node ? this.refs.node.getBoundingClientRect() : null;
 		return {
-			x : this.state.node.pos[0],
-			y : this.state.node.pos[1],
-			w : 200,
+			x : this.getNodePos()[0],
+			y : this.getNodePos()[1],
+			w : rect ? rect.right - rect.left : 200,
 			h : (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * 18 + 10
 		};
 	}
@@ -88,7 +95,7 @@ export default class Node extends React.Component {
 	/// 入力端子の数を返す
 	getInputCounts() {
 		let count = 0;
-		if (this.state.node.close) {
+		if (this.isClosed()) {
 			for (let i = 0; i < this.state.node.input.length; i = i + 1) {
 				let input = this.state.node.input[i];
 				if (Array.isArray(input.array)) {
@@ -120,8 +127,8 @@ export default class Node extends React.Component {
 
 	/// ノードの高さを計算して返す
 	getHeight() {
-		let holeSize = this.state.node.close ? 10 : 15;
-		if (this.state.node.close) {
+		let holeSize = this.isClosed() ? 10 : 15;
+		if (this.isClosed()) {
 			return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 20;
 		} else if (this.isMinimum()) {
 			return 50;
@@ -133,9 +140,9 @@ export default class Node extends React.Component {
 		return {
 			node : {
 				position : "absolute",
-				left : String(this.state.node.pos[0]),
-				top : String(this.state.node.pos[1]),
-				width : "200px",
+				left : String(this.getNodePos()[0]),
+				top : String(this.getNodePos()[1]),
+				minWidth : "150px",
 				height : String(this.getHeight.bind(this)()) + "px",
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
@@ -147,7 +154,8 @@ export default class Node extends React.Component {
 			title : {
 				color : "white", //"rgb(239, 136, 21)",
 				fontSize : "16px",
-				zoom : this.isMinimum() ? "1.5" : "1.0"
+				zoom : this.isMinimum() ? "1.5" : "1.0",
+				marginRight : "20px"
 			},
 			closeButton : {
 				position : "absolute",
@@ -176,6 +184,11 @@ export default class Node extends React.Component {
 		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
+		let rect = this.refs.node.getBoundingClientRect();
+		this.props.nodeStore.setNodeSize(this.props.nodeVarname, rect.right - rect.left, rect.bottom - rect.top);
+		if (this.props.id === String(this.props.nodeVarname + (this.props.store.getNodes().length - 1))) {
+			this.props.nodeStore.recalcPlugPosition(this.props.store);
+		}
 	}
 
 	componentWillUnmount() {
@@ -212,8 +225,8 @@ export default class Node extends React.Component {
 
 	onMouseUp(ev) {
 		this.isLeftDown = false;
-		this.offsetLeft = this.state.node.pos[0];
-		this.offsetTop = this.state.node.pos[1];
+		this.offsetLeft = this.getNodePos()[0];
+		this.offsetTop = this.getNodePos()[1];
 	}
 
 	onMouseMove(ev) {
@@ -237,16 +250,18 @@ export default class Node extends React.Component {
 
 	/// 簡易表示ボタンが押された
 	onOpenCloseButtonClick(ev) {
+		let node = JSON.parse(JSON.stringify(this.state.node.node));
+		node.close = !this.isClosed();
 		this.props.action.changeNode({
 			varname : this.props.nodeVarname,
-			close : !this.state.node.close
+			node : node
 		});
 	}
 
 	/// タイトル.
 	titleElem() {
 		const style = this.styles();
-		const isClose = this.state.node.close;
+		const isClose = this.isClosed();
 		return (<div style={style.title}>
 					<span
 						onClick={this.onOpenCloseButtonClick.bind(this)}
@@ -263,13 +278,18 @@ export default class Node extends React.Component {
 				</div>)
 	}
 
+	/// ノードが閉じているかどうか返す
+	isClosed() {
+		return this.state.node.node.close;
+	}
+
 	/// 入力端子.
 	inputElem() {
 		if (this.isMinimum()) {
 			return <div/>;
 		}
 		let inoutIndex = -1;
-		const isClose = this.state.node.close;
+		const isClose = this.isClosed();
 		let inputs = this.state.node.input.map( (inputData, index) => {
 			if (Array.isArray(inputData.array)) {
 				let arrayInputs = inputData.array.map((data, dataIndex) => {
@@ -339,7 +359,7 @@ export default class Node extends React.Component {
 
 	/// 出力端子.
 	outputElem() {
-		const isClose = this.state.node.close;
+		const isClose = this.isClosed();
 		if (this.isMinimum()) {
 			return <div/>;
 		}
