@@ -262,11 +262,9 @@ export default class ActionExecuter {
 	addPlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
 			for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
-				if (this.store.data.plugs[i].output.nodeVarname === payload.plugInfo.output.nodeVarname &&
-					this.store.data.plugs[i].output.name === payload.plugInfo.output.name &&
-					this.store.data.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
+				if (this.store.data.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
 					this.store.data.plugs[i].input.name === payload.plugInfo.input.name) {
-					// 同じプラグが既にあった.
+					// 既に繋がっている入力端子に繋げようとした
 					return;
 				}
 			}
