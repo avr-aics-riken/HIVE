@@ -29,7 +29,7 @@ export default class HiveApp extends React.Component {
                 return (
                     <div>
                         <SplitPane split="horizontal" defaultSize={window.innerHeight*0.8}>
-                            <SplitPane split="vertical" minSize="200" defaultSize="200">
+                            <SplitPane split="vertical" minSize="250" defaultSize="250">
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
                                 <SplitPane split="vertical" minSize="50">
                                     <div style={{position:"absolute",width:"100%",height:"100%"}}>
@@ -49,7 +49,7 @@ export default class HiveApp extends React.Component {
             case 1:
                 return (
                     <div>
-                        <SplitPane split="vertical" minSize="200" defaultSize="200">
+                        <SplitPane split="vertical" minSize="250" defaultSize="250">
                             <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
                             <SplitPane split="vertical" minSize="50">
                                 <div style={{position:"absolute",width:"100%",height:"100%"}}>
