@@ -22,6 +22,10 @@ class RenderView extends React.Component {
 
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
+		this.componentWillUnmount = this.componentWillUnmount.bind(this);
+
+		const Store_IMAGE_RECIEVED = "image_revieved";
+		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
 	}
 
 	imageRecieved(err, param, data) {
@@ -41,13 +45,13 @@ class RenderView extends React.Component {
 	}
 
 	componentDidMount(){
-		const Store_IMAGE_RECIEVED = "image_revieved";
-		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
+		//const Store_IMAGE_RECIEVED = "image_revieved";
+		//this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
 	}
 
 	componentWillUnmount(){
-		const Store_IMAGE_RECIEVED = "image_revieved";
-		this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
+		//const Store_IMAGE_RECIEVED = "image_revieved";
+		//this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
 	}
 
     hasIPCAddress() {
