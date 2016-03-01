@@ -14,7 +14,10 @@ RenderView.new = function (varname)
         clearcolor = {0,0,0,1},
         color_file = "output.jpg",
         depth_file = "",
+        ipcpath = ''
     }
+    this.network_ipc = nil
+    
     setmetatable(this, {__index=RenderView})
     return this
 end
@@ -54,10 +57,22 @@ function RenderView:Do()
 
     render(temp)
     
+    local mode = 'jpg'
     -- image save
-    local imageBuffer = HIVE_ImageSaver:SaveMemory(1, targetcam:GetImageBuffer())
-    local imageBufferSize = HIVE_ImageSaver:MemorySize()
-
+    local imageBuffer
+    local imageBufferSize
+    if self.property.ipcpath ~= '' then
+        mode = 'raw'
+        -- image save
+        local img = targetcam:GetImageBuffer()	
+        imageBuffer = img:GetBuffer()
+        imageBufferSize = img:GetSize()
+    else    
+        -- image save
+        imageBuffer = HIVE_ImageSaver:SaveMemory(1, targetcam:GetImageBuffer())
+        imageBufferSize = HIVE_ImageSaver:MemorySize()
+    end
+    
     -- create metabinary
     local w = property.screensize[1]
     local h = property.screensize[2]
@@ -66,7 +81,7 @@ function RenderView:Do()
             "method" : "renderedImage",            
             "to" : ]] .. targetClientId ..[[,
             "param" : {
-                "type" : "jpg",
+                "type" : "]] .. mode .. [[",
                 "width" : "]] .. w .. [[",
                 "height" : "]] .. h .. [[",
                 "canceled": false,
@@ -77,6 +92,21 @@ function RenderView:Do()
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     print('JSON=', json, 'size=', imageBufferSize)
     -- send        
-    network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
-			   
+    if self.property.ipcpath ~= '' then       
+        if self.network_ipc == nil then
+            local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname -- .. self.property.ipcpath
+            print('IPC open=', ipcAddress);
+	        self.network_ipc = require("Network").Connection()
+	        local ipcr = self.network_ipc:Connect(ipcAddress)
+	        print('IPC ret=', ipcr)
+        end
+        print('IPC->', self.network_ipc)
+        self.network_ipc:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+        print('IPC SEND!!!!!!!!!!!')			   
+
+    else
+        network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+        print('WEBSOCKET SEND!!!!!!!!!!!')			   
+
+    end
 end
