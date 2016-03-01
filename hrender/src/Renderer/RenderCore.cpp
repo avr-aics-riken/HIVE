@@ -7,6 +7,10 @@
 #include <mpi.h>
 #endif
 
+#ifdef HIVE_WITH_PMLIB
+#include "../Core/Perf.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -326,6 +330,9 @@ public:
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
+#ifdef HIVE_WITH_PMLIB
+                GetPM().start(HIVE_PERF_LABEL_RENDERCORE_RENDER);
+#endif
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
                 const std::string& depth_outfile = camera->GetDepthOutputFile();
@@ -337,10 +344,19 @@ public:
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects();
+#ifdef HIVE_WITH_PMLIB
+                GetPM().stop(HIVE_PERF_LABEL_RENDERCORE_RENDER);
+#endif
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
+#if defined(HIVE_WITH_PMLIB) && defined(HIVE_WITH_COMPOSITOR)
+                GetPM().start(HIVE_PERF_LABEL_COMPOSITOR_COMPOSITE);
+#endif
                 readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
+#if defined(HIVE_WITH_PMLIB) && defined(HIVE_WITH_COMPOSITOR)
+                GetPM().stop(HIVE_PERF_LABEL_COMPOSITOR_COMPOSITE);
+#endif
                 const double readbacktm = GetTimeCount();
 
 #ifdef HIVE_ENABLE_MPI
@@ -349,12 +365,18 @@ public:
                 if (rank == 0) {
 #endif
                 
+#ifdef HIVE_WITH_PMLIB
+                GetPM().start(HIVE_PERF_LABEL_IMAGE_SAVE);
+#endif
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
                 }
                 if (!depth_outfile.empty()) {
                     m_imagesaver.Save(depth_outfile.c_str(), depth);
                 }
+#ifdef HIVE_WITH_PMLIB
+                GetPM().stop(HIVE_PERF_LABEL_IMAGE_SAVE);
+#endif
                     
 #ifdef HIVE_ENABLE_MPI
                 }

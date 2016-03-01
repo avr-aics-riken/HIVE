@@ -11,6 +11,11 @@
 #include "Analyzer.h"
 #include "VolumeAnalyzer.h"
 #include "VolumeModel_Lua.h"
+
+#ifdef HIVE_WITH_PMLIB
+#include "../Core/Perf.h"
+#endif
+
 /**
  * VolumeAnalyzer Luaラッパー
  */
@@ -44,7 +49,13 @@ public:
     }
 
     bool Execute(VolumeModel_Lua *model) {
+#ifdef HIVE_WITH_PMLIB
+        GetPM().start(HIVE_PERF_LABEL_ANALYZER_VOLUME);
+#endif
         VolumeAnalyzer::Execute(model);
+#ifdef HIVE_WITH_PMLIB
+        GetPM().stop(HIVE_PERF_LABEL_ANALYZER_VOLUME);
+#endif
         return true;
     }
     

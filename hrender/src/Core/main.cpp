@@ -18,10 +18,7 @@
 #include "../SceneScript/SceneScript.h"
 
 #include "../Core/Path.h"
-
-#ifdef HIVE_BUILD_WITH_PMLIB
-#include "PerfMonitor.h"
-#endif
+#include "../Core/Perf.h"
 
 #ifdef _WIN32
 	#define strncasecmp(x,y,z) _strnicmp(x,y,z)
@@ -71,7 +68,7 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     //printf("[MPI] rank = %d\n", rank);
 #endif
-    
+
     char* scenefile = 0;
     std::vector<std::string> sceneargs;
     
@@ -100,10 +97,26 @@ int main(int argc, char* argv[])
 #endif
         return 0;
     }
+
+#ifdef HIVE_WITH_PMLIB
+    printf("Initialize PM\n");
+    InitPM();
+#endif
     
+#ifdef HIVE_WITH_PMLIB
+    GetPM().start(HIVE_PERF_LABEL_CORE_MAIN);
+#endif
     renderScene(scenefile, sceneargs);
+#ifdef HIVE_WITH_PMLIB
+    GetPM().stop(HIVE_PERF_LABEL_CORE_MAIN);
+#endif
     
     printf("Exit hrender.\n");
+
+#ifdef HIVE_WITH_PMLIB
+    printf("Print PM\n");
+    FinalizePM();
+#endif
     
 #ifdef HIVE_ENABLE_MPI
     printf("[MPI] finalize at rank: %d\n", rank);
