@@ -141,7 +141,7 @@ export default class Node extends React.Component {
 				position : "absolute",
 				left : String(this.getNodePos()[0]),
 				top : String(this.getNodePos()[1]),
-				width : "200px",
+				minWidth : "150px",
 				height : String(this.getHeight.bind(this)()) + "px",
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
@@ -153,7 +153,8 @@ export default class Node extends React.Component {
 			title : {
 				color : "white", //"rgb(239, 136, 21)",
 				fontSize : "16px",
-				zoom : this.isMinimum() ? "1.5" : "1.0"
+				zoom : this.isMinimum() ? "1.5" : "1.0",
+				marginRight : "20px"
 			},
 			closeButton : {
 				position : "absolute",
@@ -182,6 +183,11 @@ export default class Node extends React.Component {
 		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
+		let rect = this.refs.node.getBoundingClientRect();
+		this.props.nodeStore.setNodeSize(this.props.nodeVarname, rect.right - rect.left, rect.bottom - rect.top);
+		if (this.props.id === String(this.props.nodeVarname + (this.props.store.getNodes().length - 1))) {
+			this.props.nodeStore.recalcPlugPosition(this.props.store);
+		}
 	}
 
 	componentWillUnmount() {
