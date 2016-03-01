@@ -67,11 +67,34 @@ export default class ItemView extends React.Component {
 	}
 
 	changeFunc(name, value) {
-		this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value);
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		let inputs = this.state.input;
+		for (let i = 0; i < inputs.length; i = i + 1) {
+			if (inputs[i].name === name) {
+				inputs[i].value = value;
+				this.props.action.changeNode({
+					varname : this.props.initialNodeData.varname,
+					input : inputs
+				});
+			}
+		}
+		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value);
 	}
 
 	changeVecFunc(name, index, value) {
-		this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value, index);
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		let inputs = this.state.input;
+		for (let i = 0; i < inputs.length; i = i + 1) {
+			if (inputs[i].name === name) {
+				inputs[i].value[index] = value;
+				console.log("UPDATE", inputs)
+				this.props.action.changeNode({
+					varname : this.props.initialNodeData.varname,
+					input : inputs
+				});
+			}
+		}
+		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value, index);
 	}
 
 	changeLengthFunc(name, length) {

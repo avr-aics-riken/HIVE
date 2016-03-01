@@ -21,11 +21,7 @@ class RenderView extends React.Component {
 
 
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
-		this.componentDidMount = this.componentDidMount.bind(this);
-		this.componentWillUnmount = this.componentWillUnmount.bind(this);
-
-		const Store_IMAGE_RECIEVED = "image_revieved";
-		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
+		this.imageRecieved = this.imageRecieved.bind(this);
 	}
 
 	imageRecieved(err, param, data) {
@@ -42,16 +38,6 @@ class RenderView extends React.Component {
 			param : param,
 			image : buffer
 		});
-	}
-
-	componentDidMount(){
-		//const Store_IMAGE_RECIEVED = "image_revieved";
-		//this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
-	}
-
-	componentWillUnmount(){
-		//const Store_IMAGE_RECIEVED = "image_revieved";
-		//this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved.bind(this));
 	}
 
     hasIPCAddress() {
@@ -139,6 +125,8 @@ class RenderView extends React.Component {
 		// canvas.tabIndex = 1000;
 		window.addEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.addEventListener('mousemove', this.onImgMouseMove.bind(this), true);
+		const Store_IMAGE_RECIEVED = "image_revieved";
+		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
 	}
 
 	componentWillUnmount() {
@@ -146,6 +134,8 @@ class RenderView extends React.Component {
         imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this));
 		window.removeEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
+		const Store_IMAGE_RECIEVED = "image_revieved";
+		this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved);
 	}
 
     styles() {
