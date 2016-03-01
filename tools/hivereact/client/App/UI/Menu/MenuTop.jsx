@@ -13,15 +13,11 @@ export default class MenuTop extends React.Component {
         this.store = this.props.store;
 
         this.allClearNode = this.allClearNode.bind(this);
+        this.handleClick = this.handleClick.bind(this);
         this.saveButton = this.saveButton.bind(this);
         this.loadButton = this.loadButton.bind(this);
+        this.loadButtonClick = this.loadButtonClick.bind(this);
     }
-
-    // onDoubleClick(eve){
-    //     var e = eve.currentTarget;
-    //     this.props.action.addNodeByName(e.value);
-    // }
-    //
 
     allClearNode(){
         if(confirm('really?')){
@@ -46,6 +42,10 @@ export default class MenuTop extends React.Component {
         var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "save.json");
     }
+    loadButtonClick(){
+        var e = ReactDOM.findDOMNode(this.refs.inputFile);
+        e.click();
+    }
     loadButton(eve){
         if(eve.currentTarget.files && eve.currentTarget.files.length > 0){
             if(this.allClearNode.bind(this)()){
@@ -61,7 +61,7 @@ export default class MenuTop extends React.Component {
                     }
                     if(data.plugs && data.plugs.length > 0){
                         for(let i in data.plugs){
-                            // this.props.action.addNode(data.nodes[i]);
+                            this.props.action.addPlug(data.plugs[i]);
                         }
                     }else{
                         console.log('import failed: plugs.length === 0');
@@ -72,29 +72,34 @@ export default class MenuTop extends React.Component {
         }
     }
 
+    // ここでメニュー操作時の動作を定義
+    // info のなかの key を見て分岐したりする
+    handleClick(info){
+        let key = parseInt(info.key, 10);
+        switch(key){
+            case 1:
+                this.loadButtonClick();
+                break;
+            case 2:
+                this.saveButton();
+                break;
+            case 3:
+                this.allClearNode();
+                break;
+            case 11:
+            case 12:
+            case 13:
+                alert('menu button click! => key: ' + info.key);
+                break;
+        }
+        console.log(info);
+    }
+
     // render
     render(){
-        // ここでメニュー操作時の動作を定義
-        // info のなかの key を見て分岐したりする
-        function handleClick(info) {
-            let key = parseInt(info.key, 10);
-            switch(key){
-                case 1:
-                    // loadButton();
-                    break;
-                case 2:
-                    // saveButton();
-                    break;
-                case 3:
-                    // allClearNode();
-                    break;
-            }
-            console.log(info);
-        }
-
         // ここでメニューの構造定義
         const horizontalMenu = React.cloneElement((
-            <RcMenu onClick={handleClick}>
+            <RcMenu onClick={this.handleClick}>
                 <SubMenu title={<span>file</span>} key="0">
                     <MenuItem key="1">load</MenuItem>
                     <MenuItem key="2">save</MenuItem>
@@ -121,7 +126,10 @@ export default class MenuTop extends React.Component {
             zIndex: "99999"
         };
         return (
-            <div style={style}>{horizontalMenu}</div>
+            <div>
+                <div style={style}>{horizontalMenu}</div>
+                <input type="file" ref="inputFile" style={{display: "none"}} onChange={this.loadButton} />
+            </div>
         );
     }
 }
