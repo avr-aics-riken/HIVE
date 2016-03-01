@@ -9,21 +9,21 @@ class RenderView extends React.Component {
         this.node = props.node;
         this.action = props.action;
         this.store = props.store;
-        
+
         this.varname = this.node.varname;
-        
+
         // Mouse
         this.mouseState = 0;
         this.oldmx = 0;
         this.oldmy = 0;
 
         // View
-       
-        
+
+
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.componentDidMount = this.componentDidMount.bind(this);
 
-        const Store_IMAGE_RECIEVED = "image_revieved";        
+        const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.on(Store_IMAGE_RECIEVED, (err, param, data) => {
 			var buffer;
             if (param.varname !== this.node.varname) {
@@ -46,7 +46,7 @@ class RenderView extends React.Component {
 	}
 	componentDidUpdate() {
 		// キャンバスの更新.
-		if (this.state.image) {
+		if (this.state && this.state.image) {
 			if (this.hasIPCAddress()) {
 				/*let canvas = ReactDOM.findDOMNode(this.refs.canvas);
 				let context = canvas.getContext('2d');
@@ -71,14 +71,14 @@ class RenderView extends React.Component {
 			}
 		}
 	}
-    
+
     viewRot(rx, ry, rz) {
-        
+
         let newval = this.node.input[0].value.concat();
         newval[0] += rx;
         newval[1] += ry;
         newval[2] += rz;
-        
+
         const varname = this.node.varname;
         const inputs = JSON.parse(JSON.stringify(this.node.input));
         //console.log(this.node.input[0]);
@@ -88,15 +88,15 @@ class RenderView extends React.Component {
             input: inputs
         });
     }
-    
+
     viewTrans(tx, ty, tz) {
-        
+
     }
     viewZoom(zoom) {
-        
+
     }
 
-    onImgMouseDown(event) {        
+    onImgMouseDown(event) {
         event.preventDefault();
         this.mouseState = 1;
         this.oldmx = event.clientX;
@@ -105,16 +105,16 @@ class RenderView extends React.Component {
     onImgMouseMove(event) {
         if (this.mouseState > 0) {
             event.preventDefault();
-            
+
             const dx = event.clientX - this.oldmx;
-            const dy = event.clientY - this.oldmy;            
+            const dy = event.clientY - this.oldmy;
             //console.log('mmove', dx, dy);
-            
+
             this.viewRot(dy, dx, 0.0);
-            
+
             this.oldmx = event.clientX;
-            this.oldmy = event.clientY;            
-        }    
+            this.oldmy = event.clientY;
+        }
     }
     onImgMouseUp(event) {
         this.mouseState = 0;
@@ -130,7 +130,7 @@ class RenderView extends React.Component {
 
 	componentWillUnmount() {
         let imgElem = document.getElementById(this.getCanvasName());
-        imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this));		
+        imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this));
 		window.removeEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
 	}
