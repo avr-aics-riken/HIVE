@@ -35,47 +35,35 @@ export default class Store extends EventEmitter {
 
 		// nodemap
 		this.nodeMap = {};
+		this.isInitialRender = true;
+
+		// { nodeVarname : {width:"", height:""} }
+		this.nodeSizeMap = {};
 
 		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
 				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
 			}
+			for (let n in this.nodeSizeMap) {
+				if (!this.nodeMap.hasOwnProperty(n)) {
+					delete this.nodeSizeMap[n];
+				}
+			}
+			this.isInitialRender = true;
 		});
 
 		this.calcPlugPosition = this.calcPlugPosition.bind(this);
+		this.recalcPlugPosition = this.recalcPlugPosition.bind(this);
 
 		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
-			let plugs = coreStore.getPlugs();
-			this.plugPositions = [];
 			// ノードマップを作り直す.
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
 				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
 			}
 
-			for (let i = 0; i < plugs.length; i = i + 1) {
-				let plug = plugs[i];
-				let inVarname = plug.input.nodeVarname;
-				let outVarname = plug.output.nodeVarname;
-				if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
-					let inNode = this.nodeMap[inVarname];
-					let outNode = this.nodeMap[outVarname];
-					let plugPosition = {
-						input : {
-							nodeVarname : plug.input.nodeVarname,
-							name : plug.input.name,
-							pos : this.calcPlugPosition(true, plug, inNode)
-						},
-						output : {
-							nodeVarname : plug.output.nodeVarname,
-							name : plug.output.name,
-							pos : this.calcPlugPosition(false, plug, outNode)
-						}
-					};
-					this.plugPositions.push(plugPosition);
-				}
-			}
+			this.recalcPlugPosition(coreStore);
 			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPositions);
 		});
 
@@ -91,6 +79,35 @@ export default class Store extends EventEmitter {
 		this.isConnected = this.isConnected.bind(this);
 	}
 
+	recalcPlugPosition(coreStore) {
+		if (!this.isInitialRender) { return; }
+		this.plugPositions = [];
+		let plugs = coreStore.getPlugs();
+		for (let i = 0; i < plugs.length; i = i + 1) {
+			let plug = plugs[i];
+			let inVarname = plug.input.nodeVarname;
+			let outVarname = plug.output.nodeVarname;
+			if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
+				let inNode = this.nodeMap[inVarname];
+				let outNode = this.nodeMap[outVarname];
+				let plugPosition = {
+					input : {
+						nodeVarname : plug.input.nodeVarname,
+						name : plug.input.name,
+						pos : this.calcPlugPosition(true, plug, inNode)
+					},
+					output : {
+						nodeVarname : plug.output.nodeVarname,
+						name : plug.output.name,
+						pos : this.calcPlugPosition(false, plug, outNode)
+					}
+				};
+				this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
+				this.plugPositions.push(plugPosition);
+			}
+		}
+	}
+
 	/**
 	 * プラグ位置を計算して返す.
 	 * @param isInput 入力端子かどうか
@@ -98,7 +115,7 @@ export default class Store extends EventEmitter {
 	 * @param node プラグが接続されているノード
 	 */
 	calcPlugPosition(isInput, plug, node) {
-		let isClosed = node.close;
+		let isClosed = node.node.close;
 		const holeSize = isClosed ? 10 : 15;
 		if (isInput) {
 			if (plug.input.nodeVarname === node.varname) {
@@ -108,7 +125,7 @@ export default class Store extends EventEmitter {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
 							if (inputArray[n].name === plug.input.name) {
-								return [node.pos[0], node.pos[1] + (count + 1) * (holeSize + 3) + 20];
+								return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 20];
 							}
 							if (isClosed) {
 								if (this.isConnected(node.varname, inputArray[n].name)) {
@@ -120,7 +137,7 @@ export default class Store extends EventEmitter {
 						}
 					} else {
 						if (node.input[k].name === plug.input.name) {
-							return [node.pos[0], node.pos[1] + (count + 1) * (holeSize + 3) + 20];
+							return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 20];
 						}
 						if (isClosed) {
 							if (this.isConnected(node.varname, node.input[k].name)) {
@@ -134,9 +151,13 @@ export default class Store extends EventEmitter {
 			}
 		} else {
 			if (plug.output.nodeVarname === node.varname) {
+				let width = 200;
+				if (this.nodeSizeMap.hasOwnProperty(node.varname)) {
+					width = this.nodeSizeMap[node.varname].width;
+				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.pos[0] + 200, node.pos[1] + (k + 1) * (holeSize + 3) + 20];
+						return [node.node.pos[0] + width, node.node.pos[1] + (k + 1) * (holeSize + 3) + 20];
 					}
 				}
 			}
@@ -148,11 +169,12 @@ export default class Store extends EventEmitter {
 		let pos = [[0,0], [0,0]];
 		if (this.nodeMap.hasOwnProperty(plug.input.nodeVarname)) {
 			let node = this.nodeMap[plug.input.nodeVarname];
-			pos[0] = [node.pos[0], node.pos[1] + 18 + 20];
+			pos[0] = [node.node.pos[0], node.node.pos[1] + 18 + 20];
 		}
 		if (this.nodeMap.hasOwnProperty(plug.output.nodeVarname)) {
 			let node = this.nodeMap[plug.output.nodeVarname];
-			pos[1] = [node.pos[0] + 200, node.pos[1] + 18 + 20];
+			let width = this.nodeSizeMap[plug.output.nodeVarname].width;
+			pos[1] = [node.node.pos[0] + width, node.node.pos[1] + 18 + 20];
 		}
 		return pos;
 	}
@@ -162,6 +184,13 @@ export default class Store extends EventEmitter {
 	 */
 	getPlugPositions() {
 		return this.plugPositions;
+	}
+
+	/**
+	 * ノードサイズをセット
+	 */
+	setNodeSize(varname, width, height) {
+		this.nodeSizeMap[varname] = { width : width, height : height };
 	}
 
 	/**
@@ -339,3 +368,4 @@ Store.PLUG_HOLE_SELECTED = "plug_hole_selected";
 Store.PLUG_HOLE_DISCONNECTED = "plug_hole_disconnected";
 Store.NODE_MOVED = "node_moved";
 Store.ZOOM_CHANGED = "zoom_changed";
+Store.NEED_RERENDER = "need_rerender";

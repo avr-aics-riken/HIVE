@@ -16,10 +16,10 @@ function uuid() {
 const initialData = {
 	"varname": "invalid",
 	"select" : false,
-	"pos": [100, 100],
-	"close" : false,
 	"node" : {
-		"zindex": 0
+		"close" : false,
+		"pos": [100, 100],
+		"zindex": 0,
 	},
 	"panel": {
 		"visible": true,
@@ -91,8 +91,8 @@ export default class ActionExecuter {
 			} else {
 				node.varname = node.name + uuid();
 			}
-			if (payload.nodeInfo.hasOwnProperty('pos')) {
-				node.pos = payload.nodeInfo.pos;
+			if (payload.nodeInfo.hasOwnProperty('node')) {
+				node.node = payload.nodeInfo.node;
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
 				if (payload.nodeInfo.panel.zindex === 0) {

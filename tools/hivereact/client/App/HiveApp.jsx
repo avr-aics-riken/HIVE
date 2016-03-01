@@ -6,7 +6,6 @@ import Panel from "./UI/Panel";
 import Menu from "./UI/Menu";
 import MenuTop from "./UI/Menu/MenuTop.jsx";
 import TimeSlider from "./UI/TimeSlider";
-import { ViewerPanel } from "./UI/Panel/ViewerPanel";
 import SplitPane from 'react-split-pane';
 
 export default class HiveApp extends React.Component {
