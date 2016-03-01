@@ -66,7 +66,10 @@ export default class MenuNodeCreate extends React.Component {
         }
 
         // add node action
-        if(flg){this.props.action.addNodeByName(value);}
+        if(flg){
+            this.props.action.addNodeByName(value);
+            this.props.hiddenFunction();
+        }
 
         if(nodeNames.length === 0){return [];}
         const inputValue = value.trim().toLowerCase();
