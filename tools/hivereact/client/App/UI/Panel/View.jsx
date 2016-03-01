@@ -84,7 +84,7 @@ export default class View extends React.Component {
                 store={this.store}
                 action={this.action}
                 node={node}
-                key={key}
+                key={node.varname + key}
             />
         );
     }
