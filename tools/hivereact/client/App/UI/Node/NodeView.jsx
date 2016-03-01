@@ -62,9 +62,13 @@ export default class NodeView extends React.Component {
 				let camera = this.props.store.nodeSystem.CreateNodeInstance('CreateCamera');
 				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
 				camera.varname = "testcamera_" + String(ncount);
-				camera.pos = [100,200];
+				camera.node = {
+					pos : [100,200]
+				};
 				renderview.varname = "testrenderview_" + String(ncount);
-				renderview.pos = [350,200];
+				renderview.node = {
+					pos : [350,200]
+				};
 
 				this.props.action.addNode(camera);
 				this.props.action.addNode(renderview);
@@ -84,9 +88,13 @@ export default class NodeView extends React.Component {
 				let teapot = this.props.store.nodeSystem.CreateNodeInstance('TeapotGenerator');
 				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
 				teapot.varname = "testteapot_" + String(ncount);
-				teapot.pos = [100,200];
+				teapot.node = {
+					pos : [100,200]
+				};
 				model.varname = "testpolygonmodel_" + String(ncount);
-				model.pos = [350,200];
+				model.node = {
+					pos : [350,200]
+				};
 				renderview.varname = "testrenderview_" + String(ncount);
 				renderview.pos = [550,400];
 
@@ -148,9 +156,11 @@ export default class NodeView extends React.Component {
 
 			let nodes = this.props.store.getNodes();
 			for (let i = 0; i < nodes.length; i = i + 1) {
+				let node = JSON.parse(JSON.stringify(nodes[i].node));
+				node.pos =  [nodes[i].node.pos[0] + mx, nodes[i].node.pos[1] + my]
 				this.props.action.changeNode({
 					varname : nodes[i].varname,
-					pos : [nodes[i].pos[0] + mx, nodes[i].pos[1] + my]
+					node : node
 				});
 			}
 			this.pos = {
