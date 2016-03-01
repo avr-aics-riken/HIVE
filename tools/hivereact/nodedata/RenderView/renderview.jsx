@@ -1,6 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import nanomsg from 'nanomsg'
+import buffercopy from 'buffercopy'
+
 class RenderView extends React.Component {
 	constructor(props) {
         super(props);
@@ -41,19 +44,80 @@ class RenderView extends React.Component {
 	}
 
     hasIPCAddress() {
-		return (this.props.ipc_address && this.props.ipc_address !== "");
+		//return (this.props.ipc_address && this.props.ipc_address !== "");
+        const r = (this.node.input[8].value !== undefined && this.node.input[8].value !== "");
+        //console.log('IPCCCCC', r, this.node.input[8].value); // ipcpath        
+        return r;
 	}
+    
+    closeForIPCImageTransfer(){
+        if (this.sc === undefined) {            
+        } else {
+            this.sc.off('data');
+            this.sc = undefined;
+        }
+        
+    }
+    readyForIPCImageTransfer(){
+       	// Electron only
+        if (this.sc === undefined) {
+            var nano = nanomsg;//require('nanomsg');
+            var sc = nano.socket('pair');
+            this.sc = sc;
+            var meta = require('../lib/metabinary'); // path from index.html
+            this.meta = meta;
+            var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;// + this.node.ipcpath;
+            var ret = sc.bind(ipcAddress);       
+            console.log('IPC bind = ', ret, ipcAddress);
+        }
+
+        this.sc.on('data', (data) => {
+            //console.log('ONDATAA!!!!', this.meta);
+            if (meta === undefined) { // ????? Why undefined???
+                meta = meta
+                return;
+            }            
+            if (!this.meta.loadMetaBinary(data, (meta, data) => {
+                var w, h,
+                    param = meta.param;
+                if (param.type === 'jpg') {
+                    // resultElement is img.
+                    var resultElement = document.getElementById(this.getCanvasName('img'));
+                    resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+                    
+                } else if (param.type === 'raw'){
+                    //console.log('UPDATE CANVAS!!!');
+
+                    // resultElement is canvas.
+                    var resultElement = document.getElementById(this.getCanvasName('canvas'));                
+                    resultElement.setAttribute('width', param.width),
+                    resultElement.setAttribute('height', param.height);
+                    var context = resultElement.getContext('2d');
+                    var imageData = context.createImageData(param.width, param.height);
+                    buffercopy.buffercopy(data, imageData.data);
+                    context.putImageData(imageData, 0, 0);
+                }
+
+            })) {
+                console.error('Not metabin foramt');
+            };
+        });
+    }
+
+
 	componentDidUpdate() {
 		// キャンバスの更新.
 		if (this.state && this.state.image) {
 			if (this.hasIPCAddress()) {
-				/*let canvas = ReactDOM.findDOMNode(this.refs.canvas);
+            /*    let canvas = document.getElementById(this.getCanvasName());                
+				//let canvas = ReactDOM.findDOMNode(this.refs.canvas);
 				let context = canvas.getContext('2d');
 				let width = this.state.param.width;
 				let height = this.state.param.height;
 				canvas.setAttribute('width', width);
 				canvas.setAttribute('height', height);
-
+                //console.error('[inst]', nanomsg, buffercopy);
+                
 				if (width * height * 4 == this.state.image.length) {
 					let imageData = context.createImageData(width, height);
 					buffercopy.buffercopy(this.state.image, imageData.data);
@@ -62,9 +126,9 @@ class RenderView extends React.Component {
 					console.error("image size err:", width, height);
 				}*/
 			} else {
-		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
+  		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
-                let imgElem = document.getElementById(this.getCanvasName());
+                let imgElem = document.getElementById(this.getCanvasName('img'));
                 imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"})
                 //console.log(imgElem);
 			}
@@ -120,18 +184,33 @@ class RenderView extends React.Component {
     }
 
 	componentDidMount() {
-        let imgElem = document.getElementById(this.getCanvasName());
+        let imgElem = document.getElementById(this.getCanvasName('img'));
         imgElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
+        
+        let canElem = document.getElementById(this.getCanvasName('canvas'));
+        canElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
+        
 		// canvas.tabIndex = 1000;
 		window.addEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.addEventListener('mousemove', this.onImgMouseMove.bind(this), true);
-		const Store_IMAGE_RECIEVED = "image_revieved";
-		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
+		
+        const NODE_INPUT_CHANGED = "node_input_changed"
+        this.store.on(NODE_INPUT_CHANGED, () => {
+            if (this.hasIPCAddress()) {
+                this.readyForIPCImageTransfer();
+            }
+        })
+        /**/
+        const Store_IMAGE_RECIEVED = "image_revieved";        
+		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);        
 	}
 
 	componentWillUnmount() {
-        let imgElem = document.getElementById(this.getCanvasName());
-        imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this));
+        let imgElem = document.getElementById(this.getCanvasName('img'));
+        imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this), true);
+        let canElem = document.getElementById(this.getCanvasName('canvas'));
+        canElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
+        
 		window.removeEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
 		const Store_IMAGE_RECIEVED = "image_revieved";
@@ -143,14 +222,18 @@ class RenderView extends React.Component {
 			canvas : {
 				postion : "relative",
 				left : "0px",
-				top : "0px"
+				top : "0px",
+                width: "512px",
+                height:"512px",
+                display: (this.hasIPCAddress() ? "block" : "none")
 			},
 			image : {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
                 width: "256px",
-                height:"256px"
+                height:"256px",
+                display: (this.hasIPCAddress() ? "none" : "block")
 			}
 		}
 	}
@@ -169,25 +252,27 @@ class RenderView extends React.Component {
 
     content() {
 		const styles = this.styles();
-		if (this.props.ipc_address && this.props.ipc_address !== "") {
-			return (<canvas id="screen" style={styles.canvas} ref="canvas" ></canvas>);
+		if (this.hasIPCAddress()) {
 		} else {
-			return (<img id="screen" style={styles.image} ref="image" src="" ></img>);
-		}
+        }
+        return (<div>
+            <canvas id={this.getCanvasName('canvas')} style={styles.canvas} ></canvas>			
+            <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+            </div>);
+		
 	}
 
-    getCanvasName() {
-        return "aascreen-" + this.varname;
+    getCanvasName(prefix) {
+        return prefix + '-' + this.varname;
     }
+    
 
     render(){
 
         const styles = this.styles();
-        return (
-            <div>
-               <img id={this.getCanvasName()} style={styles.image} src="" ></img>
-            </div>
-        );
+        return this.content()
+        
+        
         /*return (
             <div>
                 <div>
