@@ -263,24 +263,31 @@ export default class NodeView extends React.Component {
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
 					style={{
-						zoom: String(this.state.zoom),
 						position : "absolute",
 						width: "100%",
 						height : "100%",
 					}}
 				>
-					{nodeList}
+					<div
+						style={{
+							position : "absolute",
+							width: "100%",
+							height : "100%",
+							zoom: String(this.state.zoom)
+						}}
+					>
+						{nodeList}
+						<NodePlugView
+							style={{zIndex:"1"}}
+							store={this.props.store}
+							action={this.props.action}
+							nodeStore={this.props.nodeStore}
+							nodeAction={this.props.nodeAction}
+						/>
+					</div>
 					{this.addButton.bind(this)(0)}
 					{this.addButton.bind(this)(1)}
                     {this.generator.bind(this)()}
-
-					<NodePlugView
-						style={{zIndex:"1"}}
-						store={this.props.store}
-						action={this.props.action}
-						nodeStore={this.props.nodeStore}
-						nodeAction={this.props.nodeAction}
-					/>
 				</div>
 				);
 	}
