@@ -48,6 +48,7 @@ export default class NodeListCreate extends React.Component {
                     store={this.props.store}
                     action={this.props.action}
                     focusFunction={this.props.focusFunction}
+                    hiddenFunction={this.props.hiddenFunction}
                     ref="creator"
                 />
                 <MenuNodeList

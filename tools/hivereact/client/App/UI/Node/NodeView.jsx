@@ -38,6 +38,7 @@ export default class NodeView extends React.Component {
         this.dblClickEvent = this.dblClickEvent.bind(this);
         this.keyDownEvent = this.keyDownEvent.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.listHidden = this.listHidden.bind(this);
         this.generator = this.generator.bind(this);
 	}
 
@@ -198,6 +199,11 @@ export default class NodeView extends React.Component {
         }
     }
 
+    listHidden(){
+        this.listVisiblity = false;
+        this.setState({listVisible: false});
+    }
+
     // キーダウンイベントのターゲットは Window
     keyDownEvent(eve){
         switch(eve.keyCode){
@@ -236,6 +242,7 @@ export default class NodeView extends React.Component {
 					visibility={this.state.listVisible}
 					position={this.state.listPos}
 					focusFunction={this.setFocusTarget.bind(this)}
+                    hiddenFunction={this.listHidden}
 					ref="creator"
 				/>
 			);
