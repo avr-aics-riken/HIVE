@@ -45,11 +45,12 @@ export default class Store extends EventEmitter {
 		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
 			let plugs = coreStore.getPlugs();
 			this.plugPositions = [];
-
+			// ノードマップを作り直す.
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
 				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
 			}
+
 			for (let i = 0; i < plugs.length; i = i + 1) {
 				let plug = plugs[i];
 				let inVarname = plug.input.nodeVarname;
@@ -77,7 +78,6 @@ export default class Store extends EventEmitter {
 
 		this.getPlugPositions = this.getPlugPositions.bind(this);
 		this.changePlugPosition = this.changePlugPosition.bind(this);
-		//this.registerNodeOffset = this.registerNodeOffset.bind(this);
 		this.moveNode = this.moveNode.bind(this);
 		this.dragPlug = this.dragPlug.bind(this);
 		this.endDragPlug = this.endDragPlug.bind(this);
@@ -96,9 +96,21 @@ export default class Store extends EventEmitter {
 	calcPlugPosition(isInput, plug, node) {
 		if (isInput) {
 			if (plug.input.nodeVarname === node.varname) {
+				let count = 0;
 				for (let k = 0; k < node.input.length; k = k + 1) {
-					if (node.input[k].name === plug.input.name) {
-						return [node.pos[0], node.pos[1] + (k + 1) * 18 + 20];
+					if (Array.isArray(node.input[k].array)) {
+						let inputArray = node.input[k].array;
+						for (let n = 0; n < inputArray.length; n = n + 1) {
+							if (inputArray[n].name === plug.input.name) {
+								return [node.pos[0], node.pos[1] + (count + 1) * 18 + 20];
+							}
+							count = count + 1;
+						}
+					} else {
+						if (node.input[k].name === plug.input.name) {
+							return [node.pos[0], node.pos[1] + (count + 1) * 18 + 20];
+						}
+						count = count + 1;
 					}
 				}
 			}
