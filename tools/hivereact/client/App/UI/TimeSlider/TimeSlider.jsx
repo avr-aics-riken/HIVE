@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Core from '../../Core';
+import UMTimeline from './UMTimeline.jsx';
 
 export default class TimeSlider extends React.Component {
     constructor(props) {
@@ -14,6 +15,7 @@ export default class TimeSlider extends React.Component {
         this.styles = this.styles.bind(this);
         this.onClick = this.onClick.bind(this);
     }
+
 
     onClick(eve){
     }
@@ -33,7 +35,7 @@ export default class TimeSlider extends React.Component {
         const style = this.styles();
         return (
             <div style={style.sliderArea}>
-                time slider area
+                <UMTimeline action={this.action} store={this.store} />
             </div>
         );
     }
