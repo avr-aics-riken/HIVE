@@ -19,13 +19,13 @@ export default class Node extends React.Component {
 			node : node,
 			closeHover : false,
 			isSelected : node.select,
-			zIndex : 1,
-			isMinimum : true
+			zIndex : 1
 		};
 
 		this.nodeChanged = this.nodeChanged.bind(this);
 		this.selectChanged = this.selectChanged.bind(this);
 		this.moveNode = this.moveNode.bind(this);
+		this.isMinimum = this.isMinimum.bind(this);
 
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.componentWillUnmount = this.componentWillUnmount.bind(this);
@@ -81,22 +81,52 @@ export default class Node extends React.Component {
 			x : this.state.node.pos[0],
 			y : this.state.node.pos[1],
 			w : 200,
-			h : (Math.max(this.state.node.input.length, this.state.node.output.length) + 1) * 18 + 10
+			h : (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * 18 + 10
 		};
 	}
 
-	// 入力端子の数を返す
+	/// 入力端子の数を返す
 	getInputCounts() {
 		let count = 0;
-		for (let i = 0; i < this.state.node.input.length; i = i + 1) {
-			let input = this.state.node.input[i];
-			if (Array.isArray(input.array)) {
-				count = count + input.array.length;
-			} else {
-				count = count + 1;
+		if (this.state.node.close) {
+			for (let i = 0; i < this.state.node.input.length; i = i + 1) {
+				let input = this.state.node.input[i];
+				if (Array.isArray(input.array)) {
+					for (let k = 0; k < input.array.length; k = k + 1) {
+						if (this.props.nodeStore.isConnected(this.state.node.varname, input.array[k].name)) {
+							count = count + 1;
+						}
+					}
+				} else  if (this.props.nodeStore.isConnected(this.state.node.varname, input.name)) {
+					count = count + 1;
+				}
+			}
+		} else {
+			for (let i = 0; i < this.state.node.input.length; i = i + 1) {
+				let input = this.state.node.input[i];
+				if (Array.isArray(input.array)) {
+					count = count + input.array.length;
+				} else {
+					count = count + 1;
+				}
 			}
 		}
 		return count;
+	}
+
+	isMinimum() {
+		return this.props.isSimple && !this.state.isSelected;
+	}
+
+	/// ノードの高さを計算して返す
+	getHeight() {
+		let holeSize = this.state.node.close ? 10 : 15;
+		if (this.state.node.close) {
+			return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 20;
+		} else if (this.isMinimum()) {
+			return 50;
+		}
+		return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 20;
 	}
 
 	styles() {
@@ -106,9 +136,7 @@ export default class Node extends React.Component {
 				left : String(this.state.node.pos[0]),
 				top : String(this.state.node.pos[1]),
 				width : "200px",
-				height :
-					this.props.isSimple ? "50" :
-						String((Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * 18 + 20),
+				height : String(this.getHeight.bind(this)()) + "px",
 				backgroundColor : "rgb(66, 69, 66)",
 				color : "white",
 				opacity : "0.8",
@@ -119,7 +147,7 @@ export default class Node extends React.Component {
 			title : {
 				color : "white", //"rgb(239, 136, 21)",
 				fontSize : "16px",
-				zoom : this.props.isSimple ? "1.5" : "1.0"
+				zoom : this.isMinimum() ? "1.5" : "1.0"
 			},
 			closeButton : {
 				position : "absolute",
@@ -207,44 +235,102 @@ export default class Node extends React.Component {
 		this.setState({ closeHover : !this.state.closeHover })
 	}
 
+	/// 簡易表示ボタンが押された
+	onOpenCloseButtonClick(ev) {
+		this.props.action.changeNode({
+			varname : this.props.nodeVarname,
+			close : !this.state.node.close
+		});
+	}
+
 	/// タイトル.
 	titleElem() {
 		const style = this.styles();
-		return <div style={style.title}>{this.state.node.name}</div>
+		const isClose = this.state.node.close;
+		return (<div style={style.title}>
+					<span
+						onClick={this.onOpenCloseButtonClick.bind(this)}
+						style={{
+							fontSize : isClose ? "12px" : "16px",
+							marginLeft : isClose ? "4px" : "0px",
+							marginRight : isClose ? "4px" : "0px"
+						}}
+					>
+						{isClose ? "▶" : "▼"}
+					</span>
+				{this.state.node.name}
+				</div>)
 	}
 
 	/// 入力端子.
 	inputElem() {
-		if (this.props.isSimple) {
+		if (this.isMinimum()) {
 			return <div/>;
 		}
 		let inoutIndex = -1;
+		const isClose = this.state.node.close;
 		let inputs = this.state.node.input.map( (inputData, index) => {
 			if (Array.isArray(inputData.array)) {
 				let arrayInputs = inputData.array.map((data, dataIndex) => {
+					if (isClose) {
+					 	if (this.props.nodeStore.isConnected(this.state.node.varname, data.name)) {
+							// 閉じる表示のときは繋がってるものだけ表示する
+							inoutIndex = inoutIndex + 1;
+							return (<NodeInOut
+										nodeStore={this.props.nodeStore}
+										nodeAction={this.props.nodeAction}
+										nodeRect={this.nodeRect(index)}
+										nodeVarname={this.props.nodeVarname}
+										isInput={true} data={data}
+										isClosed={isClose}
+										key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+										id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+										index={inoutIndex} />);
+						}
+					} else {
+						inoutIndex = inoutIndex + 1;
+						return (<NodeInOut
+									nodeStore={this.props.nodeStore}
+									nodeAction={this.props.nodeAction}
+									nodeRect={this.nodeRect(index)}
+									nodeVarname={this.props.nodeVarname}
+									isInput={true} data={data}
+									isClosed={isClose}
+									key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+									id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+									index={inoutIndex} />);
+					}
+				});
+				return arrayInputs;
+			} else {
+				if (isClose) {
+					if (this.props.nodeStore.isConnected(this.state.node.varname, inputData.name)) {
+						// 閉じる表示のときは繋がってるものだけ表示する
+						inoutIndex = inoutIndex + 1;
+						return (<NodeInOut
+									nodeStore={this.props.nodeStore}
+									nodeAction={this.props.nodeAction}
+									nodeRect={this.nodeRect(index)}
+									nodeVarname={this.props.nodeVarname}
+									isInput={true} data={inputData}
+									isClosed={isClose}
+									key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
+									id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
+									index={inoutIndex} />);
+					}
+				} else {
 					inoutIndex = inoutIndex + 1;
 					return (<NodeInOut
 								nodeStore={this.props.nodeStore}
 								nodeAction={this.props.nodeAction}
 								nodeRect={this.nodeRect(index)}
 								nodeVarname={this.props.nodeVarname}
-								isInput={true} data={data}
-								key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
-								id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+								isInput={true} data={inputData}
+								isClosed={isClose}
+								key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
+								id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
 								index={inoutIndex} />);
-				});
-				return arrayInputs;
-			} else {
-				inoutIndex = inoutIndex + 1;
-				return (<NodeInOut
-							nodeStore={this.props.nodeStore}
-							nodeAction={this.props.nodeAction}
-							nodeRect={this.nodeRect(index)}
-							nodeVarname={this.props.nodeVarname}
-							isInput={true} data={inputData}
-							key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
-							id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
-							index={inoutIndex} />);
+				}
 			}
 		});
 		return (<div>{inputs}</div>);
@@ -252,7 +338,8 @@ export default class Node extends React.Component {
 
 	/// 出力端子.
 	outputElem() {
-		if (this.props.isSimple) {
+		const isClose = this.state.node.close;
+		if (this.isMinimum()) {
 			return <div/>;
 		}
 		let outputs = this.state.node.output.map( (outputData, index) => {
@@ -263,6 +350,7 @@ export default class Node extends React.Component {
 						nodeVarname={this.props.nodeVarname}
 						isInput={false}
 						data={outputData}
+						isClosed={isClose}
 						key={this.props.nodeVarname + "_" + outputData.name + "_" + index}
 						id={this.props.nodeVarname + "_" + outputData.name + "_" + index}
 						index={index} />)

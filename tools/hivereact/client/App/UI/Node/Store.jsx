@@ -33,6 +33,9 @@ export default class Store extends EventEmitter {
 		// ビューのズーム
 		this.zoom = 1.0;
 
+		// nodemap
+		this.nodeMap = {};
+
 		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.nodeMap = {};
 			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
@@ -85,6 +88,7 @@ export default class Store extends EventEmitter {
 		this.unSelectPlugHoles = this.unSelectPlugHoles.bind(this);
 		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
 		this.changeZoom = this.changeZoom.bind(this);
+		this.isConnected = this.isConnected.bind(this);
 	}
 
 	/**
@@ -94,6 +98,8 @@ export default class Store extends EventEmitter {
 	 * @param node プラグが接続されているノード
 	 */
 	calcPlugPosition(isInput, plug, node) {
+		let isClosed = node.close;
+		const holeSize = isClosed ? 10 : 15;
 		if (isInput) {
 			if (plug.input.nodeVarname === node.varname) {
 				let count = 0;
@@ -102,15 +108,27 @@ export default class Store extends EventEmitter {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
 							if (inputArray[n].name === plug.input.name) {
-								return [node.pos[0], node.pos[1] + (count + 1) * 18 + 20];
+								return [node.pos[0], node.pos[1] + (count + 1) * (holeSize + 3) + 20];
 							}
-							count = count + 1;
+							if (isClosed) {
+								if (this.isConnected(node.varname, inputArray[n].name)) {
+									count = count + 1;
+								}
+							} else {
+								count = count + 1;
+							}
 						}
 					} else {
 						if (node.input[k].name === plug.input.name) {
-							return [node.pos[0], node.pos[1] + (count + 1) * 18 + 20];
+							return [node.pos[0], node.pos[1] + (count + 1) * (holeSize + 3) + 20];
 						}
-						count = count + 1;
+						if (isClosed) {
+							if (this.isConnected(node.varname, node.input[k].name)) {
+								count = count + 1;
+							}
+						} else {
+							count = count + 1;
+						}
 					}
 				}
 			}
@@ -118,7 +136,7 @@ export default class Store extends EventEmitter {
 			if (plug.output.nodeVarname === node.varname) {
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.pos[0] + 200, node.pos[1] + (k + 1) * 18 + 20];
+						return [node.pos[0] + 200, node.pos[1] + (k + 1) * (holeSize + 3) + 20];
 					}
 				}
 			}
@@ -203,6 +221,24 @@ export default class Store extends EventEmitter {
 				}
 			}
 		}
+	}
+
+	/// 入力端子にプラグが繋がっているかどうか返す
+	isConnected(nodeVarname, inputName) {
+		for (let i = 0; i < this.plugPositions.length; i = i + 1) {
+			if (this.plugPositions[i].input.nodeVarname === nodeVarname) {
+				if (Array.isArray(this.plugPositions[i].input.array)) {
+					for (let k = 0; k < this.plugPositions[i].input.array.length; k = k + 1) {
+						if (this.plugPositions[i].input.array[k].name === inputName) {
+							return true;
+						}
+					}
+				} else if (this.plugPositions[i].input.name === inputName) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

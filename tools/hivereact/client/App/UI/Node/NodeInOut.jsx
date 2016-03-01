@@ -59,51 +59,54 @@ export default class NodeInOut extends React.Component {
 	}
 
 	position() {
+		let holeSize =  this.props.isClosed ? 10 : 15;
 		let nodeRect = this.props.nodeRect;
 		if (this.props.isInput) {
 			return {
-				x : nodeRect.x - (15 / 2.0),
-				y : nodeRect.y + 18 * (this.props.index + 1) + 10 + 3,
+				x : nodeRect.x - (holeSize / 2.0),
+				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3,
 			}
 		} else {
 			return {
-				x : nodeRect.x + nodeRect.w - (15 / 2.0),
-				y : nodeRect.y + 18 * (this.props.index + 1) + 10 + 3
+				x : nodeRect.x + nodeRect.w - (holeSize / 2.0),
+				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3
 			}
 		}
 	}
 
 	holeCenterPosition() {
+		let holeSize =  this.props.isClosed ? 10 : 15;
 		let position = this.position();
-		position.x = (position.x + (15 / 2.0));
-		position.y = (position.y + (15 / 2.0));
+		position.x = (position.x + (holeSize / 2.0));
+		position.y = (position.y + (holeSize / 2.0));
 		return position;
 	}
 
 	styles() {
+		let holeSize =  this.props.isClosed ? 10 : 15;
 		return {
 			input : {
 				position : "absolute",
-				left : String(-15 / 2),
-				top : String(18 * (this.props.index + 1) + 10),
+				left : String(-holeSize / 2),
+				top : String( (holeSize+3) * (this.props.index + 1) + 10 + (15 - holeSize)),
 				width : "100px",
-				height : "20px"
+				height : this.props.isClosed ? "10px" : "20px"
 			},
 			output : {
 				position : "absolute",
-				right : String(-15 / 2),
-				top : String(18 * (this.props.index + 1) + 10),
+				right : String(-holeSize / 2),
+				top : String(18 * (this.props.index + 1) + 10 + (15 - holeSize)),
 				width : "100px",
-				height : "20px"
+				height : this.props.isClosed ? "10px" : "20px"
 			},
 			inhole : {
 				cursor : "pointer",
 				position : "absolute",
 				left : "0px",
-				width : "15px",
-				height : "15px",
-				marginTop : "3px",
-				borderRadius : "15px",
+				width : holeSize,
+				height : holeSize,
+				marginTop : this.props.isClosed ? "0px" : "3px",
+				borderRadius : holeSize,
 				backgroundColor : colorFunction(this.props.data.type),
 				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
@@ -111,17 +114,17 @@ export default class NodeInOut extends React.Component {
 				cursor : "pointer",
 				position : "absolute",
 				right : "0px",
-				width : "15px",
-				height : "15px",
-				marginTop : "3px",
-				borderRadius : "15px",
+				width : holeSize,
+				height : holeSize,
+				marginTop : this.props.isClosed ?  "0px" : "3px",
+				borderRadius : holeSize,
 				backgroundColor : colorFunction(this.props.data.type),
 				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
 			inholeText : {
 				position : "absolute",
 				top : "0px",
-				left : "15px", // holeのサイズ
+				left : holeSize + "px", // holeのサイズ
 				marginLeft : "4px",
 				color : "white",
 				fontSize : "14px"
@@ -129,7 +132,7 @@ export default class NodeInOut extends React.Component {
 			outholeText : {
 				position : "absolute",
 				top : "0px",
-				right : "15px", // holeのサイズ
+				right : holeSize + "px", // holeのサイズ
 				marginRight : "4px",
 				color : "white",
 				fontSize : "14px"
@@ -244,6 +247,20 @@ export default class NodeInOut extends React.Component {
 		this.props.nodeStore.removeListener(Store.PLUG_DRAGGING, this.onPlugDragging);
 	}
 
+	inHoleText() {
+		const style = this.styles(this.props.index);
+		if (!this.props.isClosed) {
+			return (<div style={style.inholeText}>{this.props.data.name}</div>);
+		}
+	}
+
+	outHoleText() {
+		const style = this.styles(this.props.index);
+		if (!this.props.isClosed) {
+			return (<div style={style.outholeText}>{this.props.data.name}</div>);
+		}
+	}
+
 	content() {
 		const style = this.styles(this.props.index);
 		if (this.props.isInput) {
@@ -254,7 +271,7 @@ export default class NodeInOut extends React.Component {
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
 						/>
-						<div style={style.inholeText}>{this.props.data.name}</div>
+						{this.inHoleText.bind(this)()}
 					</div>);
 		} else {
 			// 出力端子.
@@ -264,7 +281,7 @@ export default class NodeInOut extends React.Component {
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
 						/>
-						<div style={style.outholeText}>{this.props.data.name}</div>
+						{this.outHoleText.bind(this)()}
 					</div>);
 		}
 	}
