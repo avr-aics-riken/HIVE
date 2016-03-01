@@ -152,7 +152,7 @@ export default class Container extends React.Component {
                 left: this.state.node.panel.pos[0] + "px",
                 boxShadow: "0px 0px 3px 0px skyblue inset",
                 zIndex: this.state.node.panel.zindex,
-                opacity: this.state.node.panel.visible ? "1.0" : "0.25"
+                display: this.state.node.panel.visible ? "block" : "none"
             },
             panelTitleBar: {
                 backgroundColor: "silver",
