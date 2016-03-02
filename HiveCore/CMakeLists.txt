@@ -308,6 +308,10 @@ endif()
 add_executable (hiveCoreSimpleTest test/simpletest.cpp)
 target_link_libraries (hiveCoreSimpleTest hiveCore)
 
+# For test
+add_executable (hiveCoreSolverSample test/solversample.cpp)
+target_link_libraries (hiveCoreSolverSample hiveCore)
+
 
 # Copy GLSL Compiler in post build phase
 # @todo { Don't copy whole directory files }

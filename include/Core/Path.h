@@ -11,6 +11,7 @@
 #define INCLUDE_PATH_H
 
 std::string getBinaryDir();
+std::string getCurrentDir();
 void changeFileDir(const std::string& filefullpath);
 std::string convertFullpath(const std::string& path);
 

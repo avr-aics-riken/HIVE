@@ -12,6 +12,7 @@
 #include "sleep.h"
 
 #include <vector>
+#include <algorithm>
 
 #include "../Renderer/RenderCore.h"
 
@@ -87,6 +88,8 @@ void RegisterSceneClass(lua_State* L)
 }
 
 // ------------------------
+
+namespace {
 
 /*
     Util Functions
@@ -166,9 +169,6 @@ int h_sleep(lua_State* L)
     return 0;
 }
 
-
-
-
 // ------------------------
 /*int getRenderObjectFromTable(lua_State* L, int n, std::vector<RenderObject*>& robjs)
 {
@@ -214,6 +214,7 @@ int renderMode(lua_State* L)
             RenderCore::GetInstance(RENDER_SURFACE);
         }
     }
+    return 0;
 }
 
 int render(lua_State* L)
@@ -276,7 +277,10 @@ int screenParallelRendering(lua_State* L)
     return 1;
 }
 
-void registerFuncs(lua_State* L)
+int getMemoryData(lua_State* L);
+
+
+void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
     SetFunction(L, "render", render);
     SetFunction(L, "clearCache", clearCache);
@@ -292,6 +296,11 @@ void registerFuncs(lua_State* L)
     
     SetFunction(L, "screenParallelRendering", screenParallelRendering);
 
+    SetFunction(L, "getMemoryData", getMemoryData);
+
+    lua_pushlightuserdata(L, sceneScriptPtr);
+    lua_setglobal(L, "__sceneScript");
+    
     RegisterSceneClass(L);
 }
 
@@ -307,9 +316,21 @@ void registerArg(lua_State* L, const std::vector<std::string>& sceneargs)
     lua_setglobal(L, "arg");
     //dumpStack(L);
 }
+    
+} // namespace
 
+//---------------------------------------------------------------------
 
 class SceneScript::Impl {
+private:
+    struct UserMemoryData{
+        std::string name;
+        const void* ptr;
+        size_t size;
+        UserMemoryData(const std::string name_, const void* ptr_, size_t size_) : name(name_), ptr(ptr_), size(size_) {}
+    };
+    typedef std::vector<UserMemoryData> UserMemoryDataArray;
+    
 public:
     bool Execute(const char* luascript, const std::vector<std::string>& sceneargs);
     bool ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs);
@@ -318,10 +339,51 @@ public:
     bool Command(const char* scenecommand);
     void End();
     
+    bool CreateMemoryData(const char* dataId);
+    bool IsMemoryData(const char* dataId);
+    bool DeleteMemoryData(const char* dataId);
+    bool DeleteAllMemoryData();
+    bool SetMemoryData(const char* dataId, const void* memptr, const size_t memsize);
+    size_t GetMemoryDataSize(const char* dataId);
+    const void* GetMemoryDataPointer(const char* dataId);
+    int GetMemoryDataNum();
+    const char* GetMemoryDataId(int i);
+    
+    void PushMemoryData(const char* dataId); // for internal
+
 private:
     lua_State* m_L;
+    UserMemoryDataArray m_memoryData;
+    
+    UserMemoryDataArray::iterator getUserMemoryData(const char* dataId);
     
 };
+
+
+namespace {
+
+    int getMemoryData(lua_State* L) {
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        dumpStack(L);
+        const void* ptr = lua_touserdata(L, -1);
+        if (!ptr) {
+            lua_pushnil(L);
+            return 1;
+        }
+        
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(const_cast<void*>(ptr));
+        sceneScript->PushMemoryData(dataName);
+        return 1;
+    }
+
+} // namespace
+
+
 
 SceneScript::SceneScript() { m_imp = new Impl(); }
 SceneScript::~SceneScript(){ delete m_imp; }
@@ -341,7 +403,44 @@ bool SceneScript::Command(const char* sceneCommand) {
     return m_imp->Command(sceneCommand);
 }
 
+bool SceneScript::CreateMemoryData(const char* dataId)
+{
+    return m_imp->CreateMemoryData(dataId);
+}
+bool SceneScript::IsMemoryData(const char* dataId)
+{
+    return m_imp->IsMemoryData(dataId);
+}
+bool SceneScript::DeleteMemoryData(const char* dataId)
+{
+    return m_imp->DeleteMemoryData(dataId);
+}
+bool SceneScript::DeleteAllMemoryData()
+{
+    return m_imp->DeleteAllMemoryData();
+}
+bool SceneScript::SetMemoryData(const char* dataId, const void* memptr, const size_t memsize)
+{
+    return m_imp->SetMemoryData(dataId, memptr, memsize);
+}
+size_t SceneScript::GetMemoryDataSize(const char* dataId) const
+{
+    return m_imp->GetMemoryDataSize(dataId);
+}
+const void* SceneScript::GetMemoryDataPointer(const char* dataId) const
+{
+    return m_imp->GetMemoryDataPointer(dataId);
+}
+int SceneScript::GetMemoryDataNum() const
+{
+    return m_imp->GetMemoryDataNum();
+}
+const char* SceneScript::GetMemoryDataId(int i) const
+{
+    return m_imp->GetMemoryDataId(i);
+}
 
+//----------------
 
 bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs)
 {
@@ -384,7 +483,7 @@ void SceneScript::Impl::Begin(const std::vector<std::string>& sceneargs)
         }
     }
     m_L = createLua();
-    registerFuncs(m_L);
+    registerFuncs(m_L, this);
     
     // Reference path bin dir
     std::string includeBinDir = std::string("package.cpath=\"") + getBinaryDir() + std::string("?.\" .. dllExtension() .. \";\"..package.cpath");
@@ -409,5 +508,97 @@ void SceneScript::Impl::End()
     RenderCore::Finalize();
 }
 
+
+bool SceneScript::Impl::CreateMemoryData(const char* dataId)
+{
+    UserMemoryDataArray::const_iterator it = getUserMemoryData(dataId);
+    if (it != m_memoryData.end()) {
+        return false;
+    }
+    m_memoryData.push_back(UserMemoryData(std::string(dataId), 0, 0));
+    return true;
+}
+bool SceneScript::Impl::IsMemoryData(const char* dataId)
+{
+    UserMemoryDataArray::const_iterator it = getUserMemoryData(dataId);
+    if (it != m_memoryData.end()) {
+        return false;
+    }
+    return true;
+}
+bool SceneScript::Impl::DeleteMemoryData(const char* dataId)
+{
+    UserMemoryDataArray::const_iterator it = getUserMemoryData(dataId);
+    if (it != m_memoryData.end()) {
+        m_memoryData.erase(it);
+        return true;
+    }
+    return false;
+}
+bool SceneScript::Impl::DeleteAllMemoryData()
+{
+    m_memoryData.clear();
+    return true;
+}
+bool SceneScript::Impl::SetMemoryData(const char* dataId, const void* memptr, const size_t memsize)
+{
+    UserMemoryDataArray::iterator it = getUserMemoryData(dataId);
+    if (it == m_memoryData.end()) {
+        return false;
+    }
+    
+    it->ptr  = memptr;
+    it->size = memsize;
+    
+    return true;
+}
+size_t SceneScript::Impl::GetMemoryDataSize(const char* dataId)
+{
+    UserMemoryDataArray::iterator it = getUserMemoryData(dataId);
+    if (it == m_memoryData.end()) {
+        return 0;
+    }
+    return it->size;
+}
+const void* SceneScript::Impl::GetMemoryDataPointer(const char* dataId)
+{
+    UserMemoryDataArray::iterator it = getUserMemoryData(dataId);
+    if (it == m_memoryData.end()) {
+        return 0;
+    }
+    return it->ptr;
+}
+int SceneScript::Impl::GetMemoryDataNum()
+{
+    return m_memoryData.size();
+}
+const char* SceneScript::Impl::GetMemoryDataId(int i)
+{
+    if (i >= m_memoryData.size()) {
+        return "";
+    }
+    return m_memoryData[i].name.c_str();
+}
+
+SceneScript::Impl::UserMemoryDataArray::iterator SceneScript::Impl::getUserMemoryData(const char* dataId)
+{
+    const size_t n = m_memoryData.size();
+    const std::string dataname(dataId);
+    for (size_t i = 0; i < n; ++i) {
+        if (m_memoryData[i].name == dataname) {
+            return m_memoryData.begin() + i;
+        }
+    }
+    return m_memoryData.end();
+}
+
+void SceneScript::Impl::PushMemoryData(const char* dataId)
+{
+    UserMemoryDataArray::const_iterator it = getUserMemoryData(dataId);
+    LuaTable t;
+    t.map("pointer", const_cast<void*>(it->ptr));
+    t.map("size", it->size);
+    t.pushLuaTableValue(m_L);
+}
 
 
