@@ -289,7 +289,6 @@ export default class NodeView extends React.Component {
 	origin() {
 		if (this.refs.viewport) {
 			let rect = this.refs.viewport.getBoundingClientRect();
-			console.log(this.refs.viewport.scrollLeft, this.refs.viewport.scrollTop)
 			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
 			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
 			return String(x) + "px " + String(y) + "px";

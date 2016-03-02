@@ -149,11 +149,10 @@ export default class Node extends React.Component {
 				color : "white",
 				opacity : "0.8",
 				padding : "5px",
-				border : this.state.isSelected ? "solid 1px orange" : "none",
 				zIndex : this.state.zIndex,
 				border : "solid 2px",
 				borderRadius : "4.5px",
-				borderColor : "rgb(54, 196, 168)"
+				borderColor : this.state.isSelected ? "rgb(124, 255, 238)" : "rgb(54, 196, 168)"
 			},
 			title : {
 				color : "white", //"rgb(239, 136, 21)",
