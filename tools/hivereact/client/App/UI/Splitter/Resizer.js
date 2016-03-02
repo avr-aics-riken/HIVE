@@ -15,10 +15,17 @@ exports.default = _react2.default.createClass({
     onMouseDown: function onMouseDown(event) {
         this.props.onMouseDown(event);
     },
+    style: function styles(){
+        var dontmoveStyle = {};
+        if(this.props.dontmove){
+            dontmoveStyle = {cursor: "auto"};
+        }
+        return dontmoveStyle;
+    },
     render: function render() {
         var split = this.props.split;
         var classes = ['Resizer', split];
-        return _react2.default.createElement('span', { className: classes.join(' '), onMouseDown: this.onMouseDown });
+        return _react2.default.createElement('span', { className: classes.join(' '), style: this.style(), onMouseDown: this.onMouseDown });
     }
 });
 module.exports = exports['default'];
