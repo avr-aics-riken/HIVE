@@ -64,7 +64,7 @@ class RenderView extends React.Component {
             var nano = nanomsg;//require('nanomsg');
             var sc = nano.socket('pair');
             this.sc = sc;
-            var meta = require('../lib/metabinary'); // path from index.html
+            var meta = require(require("path").resolve('./lib/metabinary')); // path from index.html
             this.meta = meta;
             var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;// + this.node.ipcpath;
             var ret = sc.bind(ipcAddress);
