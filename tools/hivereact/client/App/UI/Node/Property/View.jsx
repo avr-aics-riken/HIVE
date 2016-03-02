@@ -59,10 +59,10 @@ export default class View extends React.Component {
 			view : {
 				//position : "absolute",
 				width : "250px",
-				height : "100%",
+                //height : "100%",
 				//right : "0px",
 				//top : "0px",
-				backgroundColor : "rgba(80, 80, 80, 0.2)",
+                //backgroundColor : "rgba(80, 80, 80, 0.2)",
 				color : "white",
 				display : (this.isVisible.bind(this)()) ? "block" : "none"
 			}

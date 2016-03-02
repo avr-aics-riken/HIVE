@@ -28,7 +28,7 @@ export default class MenuNodeList extends React.Component {
                 margin: "0px",
                 padding: "0px",
                 width: "100%",
-                height: "250px",
+                height: "248px",
                 overflow: "auto"
             },
             select: {
@@ -38,8 +38,8 @@ export default class MenuNodeList extends React.Component {
                 fontSize: "large",
                 margin: "0px",
                 padding: "0px",
-                width: "250px",
-                minHeight: "100%",
+                width: "248px",
+                minHeight: "95%",
                 overflow: "auto"
             },
             list: {
@@ -51,10 +51,10 @@ export default class MenuNodeList extends React.Component {
                 lineHeight: "24px",
                 margin: "5px 3px",
                 padding: "2px",
-                width: "244px",
+                width: "242px",
                 height: "24px",
                 overflow: "auto",
-                textShadow: "0px 0px 3px #030",
+                textShadow: "0px 0px 3px #022",
                 cursor: "pointer"
             }
         };
