@@ -30,6 +30,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferImageData_Lua*,ImageData)
     LUA_SCRIPTCLASS_METHOD_ARG0(ImageLoader::Buffer,ImageBuffer)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,ImageBufferSize)
+    LUA_SCRIPTCLASS_METHOD_ARG5(bool, LoadRawFromPointer, int, int, int, int, void*)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(ImageLoader_Lua);

@@ -31,6 +31,9 @@ public:
     
     /// @retval no compressed buffer size
     int ImageBufferSize() const;
+    
+    bool LoadRawFromPointer(int width, int height, int color, int bit, void* ptr);
+
 };
 
 #endif //_IMAGELOADER_H_

@@ -187,6 +187,28 @@ public:
         delete [] dstbuffer;
         return result;
     }
+    
+    /**
+     * RAWファイルロード
+     * @param filepath  ファイルフルパス
+     * @retval true 成功
+     * @retval false 失敗
+     */
+    bool LoadRawFromPointer(int width, int height, int color, int bit, void* ptr)
+    {
+        float * dstbuffer = NULL;
+        printf("RAW: from pointer \n");
+        printf(" %d x %d x %d x %dbit\n", width, height, color, bit);
+        if (color !=4 || bit != 8) { // temp
+            return false;
+        }
+        
+        m_image->Create(BufferImageData::RGBA8, width, height);
+        memcpy(m_image->ImageBuffer()->GetBuffer(), ptr, sizeof(unsigned char) * 4 * width * height);
+
+        return true;
+    }
+
 
     /**
      * ファイルロード[拡張子自動判別]
@@ -279,4 +301,9 @@ const ImageLoader::Buffer ImageLoader::ImageBuffer() const
 int ImageLoader::ImageBufferSize() const
 {
     return m_imp->ImageBufferSize();
+}
+
+bool ImageLoader::LoadRawFromPointer(int width, int height, int color, int bit, void* ptr)
+{
+    return m_imp->LoadRawFromPointer(width, height, color, bit, ptr);
 }

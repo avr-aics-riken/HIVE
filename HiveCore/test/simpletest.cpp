@@ -17,38 +17,10 @@
 
 #include "SceneScript/SceneScript.h"
 
-#include "Core/Path.h"
-#include "Core/sleep.h"
-
-
-/**
- * sceneレンダリングコア関数
- */
-void renderScene(const char* scenefile, const std::vector<std::string>& sceneargs)
-{
-    printf("RENDER!! > %s\n", scenefile);
-    
-    std::string scenepath(scenefile);
-    std::string scenefullfile = convertFullpath(scenepath);
-    changeFileDir(scenefullfile);
-
-    SceneScript script;
-    if (!script.ExecuteFile(scenefullfile.c_str(), sceneargs)) {
-        fprintf(stderr, "[Error] scene file!! > %s\n", scenefullfile.c_str());
-    }
-}
-
 #define STRINGIFY(A) #A
 
 int main(int argc, char* argv[])
 {
-#ifdef _WIN32
-	#ifdef _DEBUG
-		_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
-		_CrtSetBreakAlloc(1037);
-	#endif
-#endif
-
 #ifdef HIVE_ENABLE_MPI
     int rank = 0;
     MPI_Init(&argc, &argv);

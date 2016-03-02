@@ -604,6 +604,8 @@ public:
             lua_pushnumber(L, GetNumber());
         } else if (type == LuaTable::TYPE_STRING){
             lua_pushstring(L, GetString().c_str());
+        } else if (type == LuaTable::TYPE_USERDATA){
+            lua_pushlightuserdata(L, GetUserData());
         } else {
             assert(0); // Unknown type
         }
