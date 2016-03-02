@@ -46,17 +46,17 @@ class RenderView extends React.Component {
     hasIPCAddress() {
 		//return (this.props.ipc_address && this.props.ipc_address !== "");
         const r = (this.node.input[8].value !== undefined && this.node.input[8].value !== "");
-        //console.log('IPCCCCC', r, this.node.input[8].value); // ipcpath        
+        //console.log('IPCCCCC', r, this.node.input[8].value); // ipcpath
         return r;
 	}
-    
+
     closeForIPCImageTransfer(){
-        if (this.sc === undefined) {            
+        if (this.sc === undefined) {
         } else {
             this.sc.off('data');
             this.sc = undefined;
         }
-        
+
     }
     readyForIPCImageTransfer(){
        	// Electron only
@@ -67,41 +67,41 @@ class RenderView extends React.Component {
             var meta = require('../lib/metabinary'); // path from index.html
             this.meta = meta;
             var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;// + this.node.ipcpath;
-            var ret = sc.bind(ipcAddress);       
+            var ret = sc.bind(ipcAddress);
             console.log('IPC bind = ', ret, ipcAddress);
-        }
 
-        this.sc.on('data', (data) => {
-            //console.log('ONDATAA!!!!', this.meta);
-            if (meta === undefined) { // ????? Why undefined???
-                meta = meta
-                return;
-            }            
-            if (!this.meta.loadMetaBinary(data, (meta, data) => {
-                var w, h,
-                    param = meta.param;
-                if (param.type === 'jpg') {
-                    // resultElement is img.
-                    var resultElement = document.getElementById(this.getCanvasName('img'));
-                    resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
-                    
-                } else if (param.type === 'raw'){
-                    //console.log('UPDATE CANVAS!!!');
+	        this.sc.on('data', (data) => {
+	            //console.log('ONDATAA!!!!', this.meta);
+	            if (meta === undefined) { // ????? Why undefined???
+	                meta = meta
+	                return;
+	            }
+	            if (!this.meta.loadMetaBinary(data, (meta, data) => {
+	                var w, h,
+	                    param = meta.param;
+	                if (param.type === 'jpg') {
+	                    // resultElement is img.
+	                    var resultElement = document.getElementById(this.getCanvasName('img'));
+	                    resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
 
-                    // resultElement is canvas.
-                    var resultElement = document.getElementById(this.getCanvasName('canvas'));                
-                    resultElement.setAttribute('width', param.width),
-                    resultElement.setAttribute('height', param.height);
-                    var context = resultElement.getContext('2d');
-                    var imageData = context.createImageData(param.width, param.height);
-                    buffercopy.buffercopy(data, imageData.data);
-                    context.putImageData(imageData, 0, 0);
-                }
+	                } else if (param.type === 'raw'){
+	                    //console.log('UPDATE CANVAS!!!');
 
-            })) {
-                console.error('Not metabin foramt');
-            };
-        });
+	                    // resultElement is canvas.
+	                    var resultElement = document.getElementById(this.getCanvasName('canvas'));
+	                    resultElement.setAttribute('width', param.width),
+	                    resultElement.setAttribute('height', param.height);
+	                    var context = resultElement.getContext('2d');
+	                    var imageData = context.createImageData(param.width, param.height);
+	                    buffercopy.buffercopy(data, imageData.data);
+	                    context.putImageData(imageData, 0, 0);
+	                }
+
+	            })) {
+	                console.error('Not metabin foramt');
+	            };
+	        });
+		}
     }
 
 
@@ -109,7 +109,7 @@ class RenderView extends React.Component {
 		// キャンバスの更新.
 		if (this.state && this.state.image) {
 			if (this.hasIPCAddress()) {
-            /*    let canvas = document.getElementById(this.getCanvasName());                
+            /*    let canvas = document.getElementById(this.getCanvasName());
 				//let canvas = ReactDOM.findDOMNode(this.refs.canvas);
 				let context = canvas.getContext('2d');
 				let width = this.state.param.width;
@@ -117,7 +117,7 @@ class RenderView extends React.Component {
 				canvas.setAttribute('width', width);
 				canvas.setAttribute('height', height);
                 //console.error('[inst]', nanomsg, buffercopy);
-                
+
 				if (width * height * 4 == this.state.image.length) {
 					let imageData = context.createImageData(width, height);
 					buffercopy.buffercopy(this.state.image, imageData.data);
@@ -186,14 +186,14 @@ class RenderView extends React.Component {
 	componentDidMount() {
         let imgElem = document.getElementById(this.getCanvasName('img'));
         imgElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
-        
+
         let canElem = document.getElementById(this.getCanvasName('canvas'));
         canElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
-        
+
 		// canvas.tabIndex = 1000;
 		window.addEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.addEventListener('mousemove', this.onImgMouseMove.bind(this), true);
-		
+
         const NODE_INPUT_CHANGED = "node_input_changed"
         this.store.on(NODE_INPUT_CHANGED, () => {
             if (this.hasIPCAddress()) {
@@ -201,8 +201,8 @@ class RenderView extends React.Component {
             }
         })
         /**/
-        const Store_IMAGE_RECIEVED = "image_revieved";        
-		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);        
+        const Store_IMAGE_RECIEVED = "image_revieved";
+		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
 	}
 
 	componentWillUnmount() {
@@ -210,11 +210,12 @@ class RenderView extends React.Component {
         imgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this), true);
         let canElem = document.getElementById(this.getCanvasName('canvas'));
         canElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
-        
+
 		window.removeEventListener('mouseup', this.onImgMouseUp.bind(this));
 		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
 		const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved);
+		this.closeForIPCImageTransfer();
 	}
 
     styles() {
@@ -225,7 +226,7 @@ class RenderView extends React.Component {
 				top : "0px",
                 width: "512px",
                 height:"512px",
-                transform : "scale(1.0,-1.0)",				
+                transform : "scale(1.0,-1.0)",
                 display: (this.hasIPCAddress() ? "block" : "none")
 			},
 			image : {
@@ -257,23 +258,23 @@ class RenderView extends React.Component {
 		} else {
         }
         return (<div>
-            <canvas id={this.getCanvasName('canvas')} style={styles.canvas} ></canvas>			
+            <canvas id={this.getCanvasName('canvas')} style={styles.canvas} ></canvas>
             <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
             </div>);
-		
+
 	}
 
     getCanvasName(prefix) {
         return prefix + '-' + this.varname;
     }
-    
+
 
     render(){
 
         const styles = this.styles();
         return this.content()
-        
-        
+
+
         /*return (
             <div>
                 <div>
