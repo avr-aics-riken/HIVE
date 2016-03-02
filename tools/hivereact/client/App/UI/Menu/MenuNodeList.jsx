@@ -12,9 +12,9 @@ export default class MenuNodeList extends React.Component {
         };
 
         this.styles = this.styles.bind(this);
-        this.props.store.on(Core.Constants.INITIALIZED, ()=>{
+        this.props.store.on(Core.Constants.INITIALIZED, (()=>{
             this.setState({nodeList: this.props.store.getNodeNameList()});
-        }.bind(this));
+        }).bind(this));
     }
 
     onDoubleClick(eve){
@@ -25,42 +25,45 @@ export default class MenuNodeList extends React.Component {
     styles() {
         return {
             block: {
-                backgroundColor: "rgba(0, 0, 0, 0.25)",
                 margin: "0px",
                 padding: "0px",
                 width: "100%",
-                height: "300px",
-                boxShadow: "0px 0px 1px 0px white inset",
+                height: "248px",
                 overflow: "auto"
             },
             select: {
-                backgroundColor: "rgba(0, 0, 0, 0.25)",
+                backgroundColor: "transparent",
                 border: "none",
-                color: "whitesmoke",
+                color: "turquoise",
                 fontSize: "large",
                 margin: "0px",
                 padding: "0px",
-                width: "100%",
-                minHeight: "100%",
-                boxShadow: "0px 0px 1px 0px white inset",
+                width: "248px",
+                minHeight: "95%",
                 overflow: "auto"
             },
             list: {
+                // backgroundColor: "rgba(128, 128, 128, 0.5)",
+                backgroundColor: "#666",
+                borderRadius: "5px",
+                color: "turquoise",
                 fontSize: "small",
                 lineHeight: "24px",
-                padding: "1px 5px",
-                width: "100%",
-                height: "20px",
-                boxShadow: "0px 0px 1px 0px white inset",
+                margin: "5px 3px",
+                padding: "2px",
+                width: "242px",
+                height: "24px",
+                overflow: "auto",
+                textShadow: "0px 0px 3px #022",
                 cursor: "pointer"
             }
-        }
+        };
     }
 
     generator(value, key){
         const style = this.styles();
         return (
-            <option style={style.list} key={key} value={value} onDoubleClick={this.onDoubleClick.bind(this)}>{value}</option>
+            <option style={style.list} key={key} value={value} onDoubleClick={this.onDoubleClick.bind(this)}>{"・" + value}</option>
         );
     }
 

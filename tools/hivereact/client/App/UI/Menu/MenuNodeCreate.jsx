@@ -102,9 +102,9 @@ export default class MenuNodeCreate extends React.Component {
                 // sectionTitle:                'react-autosuggest__section-title',
                 // sectionSuggestionsContainer: 'react-autosuggest__section-suggestions-container'
                 input: {
-                    backgroundColor: "black",
+                    backgroundColor: "#eee",
                     border: "none",
-                    color: "silver",
+                    color: "#666",
                     width: "100%",
                     margin: "0px",
                     padding: "8px 0px"
@@ -129,7 +129,7 @@ export default class MenuNodeCreate extends React.Component {
                 },
                 suggestionFocused: {
                     backgroundColor: "rgba(16, 16, 16, 1.0)",
-                    color: "red"
+                    color: "turquoise"
                 }
             }
         };

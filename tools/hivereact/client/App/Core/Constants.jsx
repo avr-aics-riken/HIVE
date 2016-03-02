@@ -13,5 +13,6 @@ module.exports = {
     NODE_SELECTE_CHANGED : "node_selected",
     PLUG_ADDED : "plug_added",
     PLUG_DELETED : "plug_deleted",
-	PANEL_VISIBLE_CHANGED : "panel_visible_changed"
+	PANEL_VISIBLE_CHANGED : "panel_visible_changed",
+	PANEL_SIZE_CHANGED : "panel_size_changed"
 }

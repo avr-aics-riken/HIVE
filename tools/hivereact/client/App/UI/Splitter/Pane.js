@@ -22,12 +22,14 @@ exports.default = _react2.default.createClass({
     render: function render() {
         var split = this.props.split;
         var classes = ['Pane', split];
+        var overflow = this.props.overflow[this.props.target];
+        if(!overflow){overflow = 'auto';}
 
         var style = {
             flex: 1,
             position: 'relative',
             outline: 'none',
-            overflow: 'auto'
+            overflow: overflow
         };
         if (this.state.size !== undefined) {
             if (split === 'vertical') {

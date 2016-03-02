@@ -62,22 +62,6 @@ export default class View extends React.Component {
         };
     }
 
-    menuButton(value, key){
-        var styles = this.styles();
-        return (
-            <div style={styles.button} key={key}>{value}</div>
-        );
-    }
-
-    menuArea(){
-        var styles = this.styles();
-        return (
-            <div style={styles.menu}>
-                {['button1', 'button2', 'button3'].map(this.menuButton.bind(this))}
-            </div>
-        );
-    }
-
     generator(node, key) {
         return (
             <Container
@@ -93,7 +77,6 @@ export default class View extends React.Component {
         var styles = this.styles();
         var a = (
             <div style={styles.container}>
-                {this.menuArea.bind(this)()}
                 {this.state.nodes.map((value, key)=>{
                     return this.generator(value, key);
                 })}

@@ -61,15 +61,17 @@ export default class NodeInOut extends React.Component {
 
 	position() {
 		let holeSize =  this.props.isClosed ? 10 : 15;
+		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
+		let holeSizeH =  this.props.isClosed ? 10 : 8;
 		let nodeRect = this.props.nodeRect;
 		if (this.props.isInput) {
 			return {
-				x : nodeRect.x - (holeSize / 2.0),
+				x : nodeRect.x - (holeSizeW / 2.0),
 				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3,
 			}
 		} else {
 			return {
-				x : nodeRect.x + nodeRect.w - (holeSize / 2.0),
+				x : nodeRect.x + nodeRect.w - (holeSizeW / 2.0),
 				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3
 			}
 		}
@@ -77,25 +79,29 @@ export default class NodeInOut extends React.Component {
 
 	holeCenterPosition() {
 		let holeSize =  this.props.isClosed ? 10 : 15;
+		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
+		let holeSizeH =  this.props.isClosed ? 10 : 8;
 		let position = this.position();
-		position.x = (position.x + (holeSize / 2.0));
+		position.x = (position.x + (holeSizeW / 2.0));
 		position.y = (position.y + (holeSize / 2.0));
 		return position;
 	}
 
 	styles() {
 		let holeSize =  this.props.isClosed ? 10 : 15;
+		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
+		let holeSizeH =  this.props.isClosed ? 10 : 8;
 		return {
 			input : {
 				position : "absolute",
-				left : String(-holeSize / 2),
+				left : String(-holeSizeW / 2),
 				top : String( (holeSize+3) * (this.props.index + 1) + 10 + (15 - holeSize)),
 				width : "100px",
 				height : this.props.isClosed ? "10px" : "20px"
 			},
 			output : {
 				position : "absolute",
-				right : String(-holeSize / 2),
+				right : String(-holeSizeW / 2),
 				top : String(18 * (this.props.index + 1) + 10 + (15 - holeSize)),
 				width : "100px",
 				height : this.props.isClosed ? "10px" : "20px"
@@ -104,10 +110,10 @@ export default class NodeInOut extends React.Component {
 				cursor : "pointer",
 				position : "absolute",
 				left : "0px",
-				width : holeSize + "px",
-				height : holeSize + "px",
+				width : holeSizeW + "px",
+				height : holeSizeH + "px",
 				marginTop : this.props.isClosed ? "0px" : "3px",
-				borderRadius : holeSize,
+				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
@@ -115,17 +121,17 @@ export default class NodeInOut extends React.Component {
 				cursor : "pointer",
 				position : "absolute",
 				right : "0px",
-				width : holeSize,
-				height : holeSize,
+				width : holeSizeW,
+				height : holeSizeH,
 				marginTop : this.props.isClosed ?  "0px" : "3px",
-				borderRadius : holeSize,
+				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none",
 			},
 			inholeText : {
 				position : "absolute",
 				top : "0px",
-				left : holeSize + "px", // holeのサイズ
+				left : holeSizeW + 3 + "px", // holeのサイズ
 				marginLeft : "4px",
 				color : "white",
 				fontSize : "14px"
@@ -133,7 +139,7 @@ export default class NodeInOut extends React.Component {
 			outholeText : {
 				position : "absolute",
 				top : "0px",
-				right : holeSize + "px", // holeのサイズ
+				right : holeSizeW + 3 + "px", // holeのサイズ
 				marginRight : "4px",
 				color : "white",
 				fontSize : "14px"
