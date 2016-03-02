@@ -6,7 +6,7 @@ import Panel from "./UI/Panel";
 import Menu from "./UI/Menu";
 import MenuTop from "./UI/Menu/MenuTop.jsx";
 import TimeSlider from "./UI/TimeSlider";
-import SplitPane from 'react-split-pane';
+import Splitter from "./UI/Splitter";
 
 export default class HiveApp extends React.Component {
     constructor (props) {
@@ -26,23 +26,23 @@ export default class HiveApp extends React.Component {
         switch(this.layoutType){
             case 2:
                 return (
-                    <div>
-                        <SplitPane split="horizontal" defaultSize={window.innerHeight*0.8}>
-                            <SplitPane split="vertical" minSize="250" defaultSize="250">
+                    <Splitter axis={"horizontal"} move={false}>
+                        <MenuTop store={this.store} action={this.action}/>
+                        <Splitter axis={"horizontal"} move={false}>
+                            <Splitter axis={"vertical"} move={false}>
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
-                                <SplitPane split="vertical" minSize="50">
+                                <Splitter axis="vertical">
                                     <div style={{position:"absolute",width:"100%",height:"100%"}}>
                                         <Node.View store={this.store} action={this.action} />
                                     </div>
                                     <div>
                                         <Panel.View store={this.store} action={this.action} />
                                     </div>
-                                </SplitPane>
-                            </SplitPane>
+                                </Splitter>
+                            </Splitter>
                             <TimeSlider.View store={this.store} action={this.action} />
-                        </SplitPane>
-                        <MenuTop store={this.store} action={this.action}/>
-                    </div>
+                        </Splitter>
+                    </Splitter>
                 );
                 break;
             case 1:

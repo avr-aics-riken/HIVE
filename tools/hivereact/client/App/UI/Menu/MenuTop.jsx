@@ -120,9 +120,9 @@ export default class MenuTop extends React.Component {
 
         let style = {
             width: "100%",
-            position: "absolute",
-            top: "0px",
-            left: "0px",
+            // position: "absolute",
+            // top: "0px",
+            // left: "0px",
             zIndex: "99999"
         };
         return (
