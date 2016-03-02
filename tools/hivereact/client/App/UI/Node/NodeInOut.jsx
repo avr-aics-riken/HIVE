@@ -62,7 +62,7 @@ export default class NodeInOut extends React.Component {
 	position() {
 		let holeSize =  this.props.isClosed ? 10 : 15;
 		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
-		let holeSizeH =  this.props.isClosed ? 10 : 8.5;
+		let holeSizeH =  this.props.isClosed ? 10 : 8;
 		let nodeRect = this.props.nodeRect;
 		if (this.props.isInput) {
 			return {
@@ -80,7 +80,7 @@ export default class NodeInOut extends React.Component {
 	holeCenterPosition() {
 		let holeSize =  this.props.isClosed ? 10 : 15;
 		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
-		let holeSizeH =  this.props.isClosed ? 10 : 8.5;
+		let holeSizeH =  this.props.isClosed ? 10 : 8;
 		let position = this.position();
 		position.x = (position.x + (holeSizeW / 2.0));
 		position.y = (position.y + (holeSize / 2.0));
@@ -90,7 +90,7 @@ export default class NodeInOut extends React.Component {
 	styles() {
 		let holeSize =  this.props.isClosed ? 10 : 15;
 		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
-		let holeSizeH =  this.props.isClosed ? 10 : 8.5;
+		let holeSizeH =  this.props.isClosed ? 10 : 8;
 		return {
 			input : {
 				position : "absolute",
@@ -113,7 +113,7 @@ export default class NodeInOut extends React.Component {
 				width : holeSizeW + "px",
 				height : holeSizeH + "px",
 				marginTop : this.props.isClosed ? "0px" : "3px",
-				borderRadius : "3.5px 3.5px 3.5px 3.5px / 3.5px 3.5px 3.5px 3.5px",
+				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
@@ -124,7 +124,7 @@ export default class NodeInOut extends React.Component {
 				width : holeSizeW,
 				height : holeSizeH,
 				marginTop : this.props.isClosed ?  "0px" : "3px",
-				borderRadius : "3.5px 3.5px 3.5px 3.5px / 3.5px 3.5px 3.5px 3.5px",
+				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none",
 			},
