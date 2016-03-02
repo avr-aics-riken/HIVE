@@ -23,6 +23,7 @@ export default class View extends React.Component {
 		this.nodeAction = new Action(this.props.action.dispatcher, this.nodeStore.getDispatchToken());
     }
 
+/*
 	onWheel(ev) {
 		let zoom = this.nodeStore.getZoom();
 		if (ev.deltaY > 0) {
@@ -37,11 +38,15 @@ export default class View extends React.Component {
 			}
 		}
 	}
-
+*/
 	render () {
 		return (<div
-					onWheel={this.onWheel.bind(this)}
-		 			style={{position:"absolute",width:"100%",height:"100%",overflow:"hidden"}}
+					//onWheel={this.onWheel.bind(this)}
+		 			style={{
+						position:"absolute",
+						width:"100%",
+						height: "100%"
+					}}
 				>
 					<NodeView
 						store={this.props.store}

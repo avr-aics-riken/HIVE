@@ -21,7 +21,7 @@ export default class NodeView extends React.Component {
 				nodes : [].concat(this.props.store.getNodes())
 			});
 		});
-		
+
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
 			this.setState({
 				zoom : zoom,
@@ -40,6 +40,8 @@ export default class NodeView extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
         this.listHidden = this.listHidden.bind(this);
         this.generator = this.generator.bind(this);
+		this.width = 4000;
+		this.height = 4000;
 	}
 
 	styles(id) {
@@ -152,6 +154,26 @@ export default class NodeView extends React.Component {
 		if (this.isRightDown) {
 			let px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
 			let py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
+			let my = (py - this.pos.y);
+			let zoom = this.props.nodeStore.getZoom();
+			if (my > 0) {
+				if (zoom >= 0.5) {
+					zoom = zoom - 0.05;
+					this.props.nodeAction.changeZoom(zoom);
+				}
+			} else {
+				if (zoom <= 2.0) {
+					zoom = zoom + 0.05;
+					this.props.nodeAction.changeZoom(zoom);
+				}
+			}
+			this.pos = {
+				x : px,
+				y : py
+			};
+		/*
+			let px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
+			let py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
 			let invzoom = 1.0 / this.state.zoom;
 			let mx = (px - this.pos.x) * invzoom;
 			let my = (py - this.pos.y) * invzoom;
@@ -169,6 +191,7 @@ export default class NodeView extends React.Component {
 				x : px,
 				y : py
 			};
+		*/
 		}
 	}
 
@@ -253,6 +276,9 @@ export default class NodeView extends React.Component {
     componentDidMount(){
         window.addEventListener('keydown', this.keyDownEvent.bind(this));
 		window.addEventListener('mouseup', this.onMouseUp.bind(this));
+		let rect = this.refs.viewport.getBoundingClientRect();
+		this.width = rect.right - rect.left;
+		this.height = rect.bottom - rect.top;
     }
 
     componentWillUnmount(){
@@ -260,6 +286,17 @@ export default class NodeView extends React.Component {
 		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
     }
 
+	origin() {
+		if (this.refs.viewport) {
+			let rect = this.refs.viewport.getBoundingClientRect();
+			console.log(this.refs.viewport.scrollLeft, this.refs.viewport.scrollTop)
+			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
+			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
+			return String(x) + "px " + String(y) + "px";
+		} else {
+			return "0px 0px";
+		}
+	}
 
 	render() {
 		const styles = this.styles.bind(this)();
@@ -285,14 +322,20 @@ export default class NodeView extends React.Component {
 						position : "absolute",
 						width: "100%",
 						height : "100%",
+						overflow:"auto"
 					}}
+					ref="viewport"
 				>
 					<div
 						style={{
 							position : "absolute",
-							width: "100%",
-							height : "100%",
-							zoom: String(this.state.zoom)
+							width:"4000px",
+							height:"4000px",
+							//zoom: String(this.state.zoom)
+							transform : "scale(" + this.state.zoom + ")",
+							transformOrigin : this.origin.bind(this)(),
+							border : "1px solid",
+							borderColor : "gray"
 						}}
 					>
 						{nodeList}
