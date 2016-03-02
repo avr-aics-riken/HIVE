@@ -97,7 +97,7 @@
 }
 .rc-menu-submenu > .rc-menu {
   /* background-color: #fff; */
-  background-color: turquoise; /* サブメニューの背景色 */
+  background-color: rgb(33, 187, 151); /* サブメニューの背景色 */
 }
 .rc-menu .rc-menu-submenu-title .anticon,
 .rc-menu .rc-menu-item .anticon {
@@ -108,7 +108,7 @@
 }
 .rc-menu-horizontal {
   /* background-color: #F3F5F7; */
-  background-color: turquoise;
+  background-color: rgb(33, 187, 151);
   border: none;
   border-bottom: 1px solid transparent;
   /* border-bottom: 1px solid #d9d9d9; */
@@ -119,9 +119,10 @@
 .rc-menu-horizontal > .rc-menu-item,
 .rc-menu-horizontal > .rc-menu-submenu > .rc-menu-submenu-title {
   /* padding: 15px 20px; */
+  text-align: center;
   margin: 3px 0px 0px 0px;
   padding: 0px 20px;
-  min-width: 100px;
+  min-width: 120px;
   border-right: 1px solid #555;
 }
 .rc-menu-horizontal > .rc-menu-submenu,
@@ -133,7 +134,7 @@
 .rc-menu-horizontal > .rc-menu-item-active {
   /* border-bottom: 2px solid #2db7f5; */
   /* background-color: #F3F5F7;        */
-  border-bottom: 2px solid aquamarine;
+  border-bottom: 2px solid teal;
   background-color: teal;
   /* color: #2baee9; */
   color: #051a1f;
