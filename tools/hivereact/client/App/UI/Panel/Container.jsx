@@ -73,6 +73,7 @@ export default class Container extends React.Component {
             node.panel.pos[1] = this.offsetTop + mv.y;
             this.action.changeNode(node);
         }
+		ev.preventDefault();
     }
 
     onScaleDown(ev) {
