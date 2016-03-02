@@ -1,165 +1,184 @@
-import React    from 'react';
-import ReactDOM from 'react-dom';
+'use strict';
 
-export default class Splitter extends React.Component {
-    constructor(props) {
-        super(props);
-        this.axis        = props.axis || 'horizontal'; // horizontal or vertical
-        this.move        = props.move;                 // boolean
-        this.offset      = props.offset || 0;          // if horizon then margin-top, else margin-left
-        this.style       = props.style;                // custom css
-        this.minSize     = props.minSize || 50;        // min size
-        this.maxSize     = props.maxSize || 50;        // max size
-        this.defaultSize = props.defaultSize || 50;    // default size
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-        this.state = {
-            dragging: false
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactDom = require('react-dom');
+
+var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _Pane = require('./Pane');
+
+var _Pane2 = _interopRequireDefault(_Pane);
+
+var _Resizer = require('./Resizer');
+
+var _Resizer2 = _interopRequireDefault(_Resizer);
+
+var _reactVendorPrefix = require('react-vendor-prefix');
+
+var _reactVendorPrefix2 = _interopRequireDefault(_reactVendorPrefix);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = _react2.default.createClass({
+    displayName: 'Splitter',
+    getInitialState: function getInitialState() {
+        return {
+            active: false,
+            resized: false
         };
-
-        this.HANDLE_SIZE = 8;
-
-        this.componentDidMount = this.componentDidMount.bind(this);
-        this.componentWillUnmount = this.componentWillUnmount.bind(this);
-        this.onMouseDown = this.onMouseDown.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
-        this.onMouseMove = this.onMouseMove.bind(this);
-        this.calcStyleValue = this.calcStyleValue.bind(this);
-        this.merge = this.merge.bind(this);
-        this.styles = this.styles.bind(this);
-    }
-
-    componentDidMount(){
-        // event setting
-        if(!this.move){return;}
-        let d = this.refs.handle;
-        if(this.axis === 'horizontal'){
-            let h = d.offsetTop + this.HANDLE_SIZE / 2;
-            this.onMouseMove({pageX: d.offsetLeft, pageY: h});
-        }else{
-            let h = d.offsetLeft + this.HANDLE_SIZE / 2;
-            this.onMouseMove({pageX: h, pageY: d.offsetTop});
+    },
+    getDefaultProps: function getDefaultProps() {
+        return {
+            split: 'vertical',
+            minSize: 0
+        };
+    },
+    componentDidMount: function componentDidMount() {
+        document.addEventListener('mouseup', this.onMouseUp);
+        document.addEventListener('mousemove', this.onMouseMove);
+        var ref = this.refs.pane1;
+        if (ref && this.props.defaultSize !== undefined && !this.state.resized) {
+            ref.setState({
+                size: this.props.defaultSize
+            });
         }
-        window.addEventListener('mouseup', this.onMouseUp, false);
-        window.addEventListener('mousemove', this.onMouseMove, false);
-    }
-
-    componentWillUnmount(){
-    }
-
-    onMouseDown(){
-        this.setState({dragging: true});
-    }
-
-    onMouseUp(){
-        this.setState({dragging: false});
-    }
-
-    onMouseMove(eve){
-        var offset, x, y, h, h1, h2;
-        if(!this.state.dragging || !this.move){return;}
-        let e = this.refs.pane1;
-        let f = this.refs.pane2;
-        if(this.axis === 'horizontal'){
-            offset = e.offsetTop;
-            x = eve.pageX;
-            y = eve.pageY - offset;
-            h = window.innerHeight - offset;
-            h2 = h - y  - 1 - this.HANDLE_SIZE / 2;
-            h1 = h - h2 - 1 - this.HANDLE_SIZE / 2;
-            e.style.flexGrow = Math.max(h1, this.minSize);
-            f.style.flexGrow = Math.max(h2, this.maxSize);
-        }else{
-            offset = e.offsetLeft;
-            x = eve.pageX - offset;
-            y = eve.pageY;
-            h = window.innerWidth - offset;
-            h2 = h - y  - this.HANDLE_SIZE / 2;
-            h1 = h - h2 - this.HANDLE_SIZE / 2;
-            e.style.flexGrow = Math.max(h1, this.minSize);
-            f.style.flexGrow = Math.max(h2, this.maxSize);
+    },
+    componentWillUnmount: function componentWillUnmount() {
+        document.removeEventListener('mouseup', this.onMouseUp);
+        document.removeEventListener('mousemove', this.onMouseMove);
+    },
+    onMouseDown: function onMouseDown(event) {
+        this.unFocus();
+        var position = this.props.split === 'vertical' ? event.clientX : event.clientY;
+        if (this.props.onDragStart) {
+            this.props.onDragStart();
         }
-    }
+        this.setState({
+            active: true,
+            position: position
+        });
+    },
+    onMouseMove: function onMouseMove(event) {
+        if (this.state.active) {
+            this.unFocus();
+            var ref = this.refs.pane1;
+            if (ref) {
+                var node = _reactDom2.default.findDOMNode(ref);
+                if (node.getBoundingClientRect) {
+                    if(this.props.dontmoved){return;}
+                    var width = node.getBoundingClientRect().width;
+                    var height = node.getBoundingClientRect().height;
+                    var current = this.props.split === 'vertical' ? event.clientX : event.clientY;
+                    var size = this.props.split === 'vertical' ? width : height;
+                    var position = this.state.position;
 
-    // css style parser (beta)
-    calcStyleValue(value){
-        let i;
-        if(value === null || value === undefined){return null;}
-        i = value;
-        if(value.match){
-            if(value.match(/%|px/)){
-                i = parseFloat(value.replace(/%|px/, ''));
+                    var newSize = size - (position - current);
+                    this.setState({
+                        position: current,
+                        resized: true
+                    });
+
+                    if (newSize < this.props.minSize) {
+                        newSize = this.props.minSize;
+                    }
+
+                    if (this.props.onChange) {
+                        this.props.onChange(newSize);
+                    }
+                    ref.setState({
+                        size: newSize
+                    });
+                }
             }
         }
-        if(i === null || i === undefined || isNaN(i)){return null;}
-        return i;
-    }
+    },
+    onMouseUp: function onMouseUp() {
+        if (this.state.active) {
+            if (this.props.onDragFinished) {
+                this.props.onDragFinished();
+            }
+            this.setState({
+                active: false
+            });
+        }
+    },
+    unFocus: function unFocus() {
+        if (document.selection) {
+            document.selection.empty();
+        } else {
+            window.getSelection().removeAllRanges();
+        }
+    },
 
-    merge(into, obj){
-        for(let attr in obj){
+
+    merge: function merge(into, obj) {
+        for (var attr in obj) {
             into[attr] = obj[attr];
         }
-    }
+    },
 
-    styles(){
-        return this.axis === 'horizontal' ? {
-            splitter: {
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'darkred',
-                display: 'flex',
-                flex: 1,
-                flexDirection: 'column',
-                position: 'absolute'
-            },
-            handle: {
-                width: '100%',
-                height: this.HANDLE_SIZE + 'px',
-                boxShadow: '0px 0px 0px 1px gray inset',
-                cursor: 'pointer'
-            },
-            pane: {
-                backgroundColor: 'rgba(0, 255, 0, 0.2)'
-            }
-        } : {
-            splitter: {
-                width: '100%',
-                height: '100%',
-                backgroundColor: 'darkblue',
-                display: 'flex',
-                flexDirection: 'row'
-            },
-            handle: {
-                width: this.HANDLE_SIZE + 'px',
-                height: '100%',
-                boxShadow: '0px 0px 0px 1px gray inset',
-                cursor: 'pointer'
-            },
-            pane: {
-                backgroundColor: 'rgba(0, 255, 0, 0.2)',
-                flexGrow: 1
-            }
+    render: function render() {
+
+        var split = this.props.split;
+
+        var style = {
+            display: 'flex',
+            flex: 1,
+            position: 'relative',
+            outline: 'none',
+            overflow: 'hidden',
+            MozUserSelect: 'text',
+            WebkitUserSelect: 'text',
+            msUserSelect: 'text',
+            userSelect: 'text'
         };
-    }
 
-    render(){
-        const styles = this.styles();
-        if(!this.style){
-            this.style = styles.splitter;
-        }else{
-            this.merge(this.style, styles.splitter);
+        if (split === 'vertical') {
+            this.merge(style, {
+                flexDirection: 'row',
+                height: '100%',
+                position: 'absolute',
+                left: 0,
+                right: 0
+            });
+        } else {
+            this.merge(style, {
+                flexDirection: 'column',
+                height: '100%',
+                minHeight: '100%',
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                width: '100%'
+            });
         }
-        var child = this.props.children;
-        return (
-            <div style={this.style}>
-                <div ref="pane1" style={styles.pane}>{child[0]}</div>
-                <div ref="handle"
-                     style={styles.handle}
-                     onMouseDown={this.onMouseDown}
-                     onMouseUp={this.onMouseUp}
-                />
-                <div ref="pane2" style={styles.pane}>{child[1]}</div>
-            </div>
+
+        var children = this.props.children;
+        var classes = ['SplitPane', split];
+        var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
+
+        return _react2.default.createElement(
+            'div',
+            { className: classes.join(' '), style: prefixed.styles, ref: 'splitPane' },
+            _react2.default.createElement(
+                _Pane2.default,
+                { ref: 'pane1', key: 'pane1', split: split },
+                children[0]
+            ),
+            _react2.default.createElement(_Resizer2.default, { ref: 'resizer', key: 'resizer', onMouseDown: this.onMouseDown, split: split }),
+            _react2.default.createElement(
+                _Pane2.default,
+                { ref: 'pane2', key: 'pane2', split: split },
+                children[1]
+            )
         );
     }
-}
-
+});
+module.exports = exports['default'];
