@@ -48,11 +48,9 @@ function RenderView:Do()
     if self.connection.Camera then
         temp[#temp + 1] = self.connection.Camera
         targetcam = self.connection.Camera
-        print('!!!connection CAMERA!!!!')
     else
         temp[#temp + 1] = self.cam
         targetcam = self.cam
-        print('!!!internal CAMERA!!!!')        
     end
 
     render(temp)
@@ -90,7 +88,7 @@ function RenderView:Do()
             "id":0
     }]]
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-    print('JSON=', json, 'size=', imageBufferSize)
+    --print('JSON=', json, 'size=', imageBufferSize)
     -- send        
     if self.property.ipcpath ~= '' then       
         if self.network_ipc == nil then
