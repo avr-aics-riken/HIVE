@@ -38,7 +38,6 @@ export default class Menu extends React.Component {
     styles() {
         return {
             menuArea: {
-                backgroundColor: "rgba(96, 16, 8, 0.5)",
                 color: "#eee",
                 fontSize: "10pt",
                 margin: "0px",
@@ -54,20 +53,18 @@ export default class Menu extends React.Component {
                 overflow: "auto" // temp
             },
             header: {
-                backgroundColor: "rgba(200, 200, 200, 0.7)",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
                 textAlign: "30px",
                 margin: "0px",
                 padding: "0px",
                 width: "100%",
-                minHeight: "30px",
-                boxShadow: "0px 0px 1px 0px white inset"
+                minHeight: "30px"
             },
             headerCaption: {
-                color: "#333",
+                color: "whitesmoke",
                 fontWeight: "bold",
-                padding: "5px 10px",
-                textShadow: "0px 0px 1px #fab",
-                boxShadow: "-1px -1px 0px 1px #666 inset"
+                letterSpacing: "1.25px",
+                padding: "5px 10px"
             },
             container: {
                 margin: "0px",
@@ -86,7 +83,7 @@ export default class Menu extends React.Component {
             <div style={style.menuArea}>
                 <div style={style.container}>
                     <div style={style.header}>
-                        <div style={style.headerCaption}>Node Create</div>
+                        <div style={style.headerCaption}>Node List</div>
                     </div>
                     <MenuNodeCreate
                         store={this.props.store}
