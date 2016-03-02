@@ -19,6 +19,32 @@ html, body {
     background: linear-gradient(rgb(0, 18, 23), rgb(10, 42, 54));
 }
 
+/* Turn on custom 8px wide scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+	background-color: rgba(0,0,0,0);
+	-webkit-border-radius: 100px;
+}
+/* hover effect for both scrollbar area, and scrollbar 'thumb' */
+::-webkit-scrollbar:hover {
+  background-color: rgba(0, 0, 0, 0.09);
+}
+
+/* The scrollbar 'thumb' ...that marque oval shape in a scrollbar */
+::-webkit-scrollbar-thumb {
+  /* This is the EXACT color of Mac OS scrollbars.
+     Yes, I pulled out digital color meter */
+  background: rgba(0,0,0,0.5);
+  -webkit-border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:active {
+  background: rgba(0,0,0,0.61); /* Some darker color when you click it */
+  -webkit-border-radius: 100px;
+}
+
+background: linear-gradient(45deg, white, silver);
+min-height: 100%;
+
 #titlebar {
 	position : relative;
 	width : 100%;
@@ -37,6 +63,3 @@ html, body {
 
 .Pane.horizontal {
 }
-
-
-

@@ -145,14 +145,14 @@ export default class Node extends React.Component {
 				top : String(this.getNodePos()[1]),
 				minWidth : "150px",
 				height : String(this.getHeight.bind(this)()) + "px",
-				backgroundColor : "rgba(2, 17, 27, 0.6)",
+				backgroundColor :  this.state.isSelected ? "rgba(2, 17, 27, 0.6)" : "rgba(67, 67, 67, 0.9)",
 				color : "white",
 				//opacity : "0.8",
 				padding : "5px",
 				zIndex : this.state.zIndex,
-				border : "solid 2px",
+				border : this.state.isSelected ? "solid 2px" : "solid 2px rgba (0, 0, 0, 0)",
 				borderRadius : "4.5px",
-				borderColor : this.state.isSelected ? "rgb(124, 255, 238)" : "rgb(54, 196, 168)"
+				borderColor : this.state.isSelected ? "rgb(54, 196, 168)" : "rgba(0, 0, 0, 0)"
 			},
 			title : {
 				color : "white", //"rgb(239, 136, 21)",
