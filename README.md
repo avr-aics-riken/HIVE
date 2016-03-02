@@ -2,6 +2,8 @@
 
 HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" and is built on SURFACE.
 
+[![Build Status](https://travis-ci.org/avr-aics-riken/HIVE.svg?branch=master)](https://travis-ci.org/avr-aics-riken/HIVE)
+
 ## Requirements
 
 * cmake 2.8 or later
