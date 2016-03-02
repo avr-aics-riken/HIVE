@@ -126,7 +126,7 @@ export default class MenuTop extends React.Component {
             zIndex: "99999"
         };
         return (
-            <div>
+            <div style={{position: "relative", width: "100%", zIndex: "99999"}}>
                 <div style={style}>{horizontalMenu}</div>
                 <input type="file" ref="inputFile" style={{display: "none"}} onChange={this.loadButton} />
             </div>
