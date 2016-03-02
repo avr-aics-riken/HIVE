@@ -2,33 +2,33 @@ import React from "react"
 import ReactDOM from "react-dom"
 import Store from './Store.jsx'
 
-function colorFunction(type) {
+function colorFunction(type, hover) {
 	if (type === "string") {
-		return "#14a271";
+		return hover ? "#34c291" : "#14a271";
 	} else if (type === "float") {
-		return "#139aa5";
+		return hover ? "#33bac5" : "#139aa5";
 	} else if (type === "vec4") {
-		return "#1b6ad6";
+		return hover ? "#3b8af6" : "#1b6ad6";
 	} else if (type === "vec3") {
-		return "#566f9f";
+		return hover ? "#768fbf" : "#566f9f";
 	} else if (type === "vec2") {
-		return "#8222a7";
+		return hover ? "#a242c7" : "#8222a7";
 	} else if (type === "RenderObject") {
-		return "#ad3b78";
+		return hover ? "#cd5b98" : "#ad3b78";
 	} else if (type === "Uniform") {
-		return "#b19e14";
+		return hover ? "#d1be34" : "#b19e14";
 	} else if (type === "BufferMeshData") {
-		return "#be1656";
+		return hover ? "#de3676" :"#be1656";
 	} else if (type === "BufferPointData") {
-		return "#e023e0";
+		return hover ? "#ff43ff" : "#e023e0";
 	} else if (type === "BufferLineData") {
-		return "#20cae0";
+		return hover ? "#40eaff" : "#20cae0";
 	} else if (type === "BufferVolumeData") {
-		return "#17d042";
+		return hover ? "#37f062" : "#17d042";
 	} else if (type === "Any") {
-		return "#ef8815";
+		return hover ? "#ffa835" : "#ef8815";
 	} else { // Object
-		return "#c12417";
+		return hover ? "#e14437" : "#c12417";
 	}
 }
 
@@ -41,7 +41,8 @@ export default class NodeInOut extends React.Component {
 		this.styles = this.styles.bind(this);
 
 		this.state = {
-			isDragging : false
+			isDragging : false,
+			hover : false,
 		};
 		this.pos = {
 			x : 0,
@@ -103,11 +104,11 @@ export default class NodeInOut extends React.Component {
 				cursor : "pointer",
 				position : "absolute",
 				left : "0px",
-				width : holeSize,
-				height : holeSize,
+				width : holeSize + "px",
+				height : holeSize + "px",
 				marginTop : this.props.isClosed ? "0px" : "3px",
 				borderRadius : holeSize,
-				backgroundColor : colorFunction(this.props.data.type),
+				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
 			outhole : {
@@ -118,8 +119,8 @@ export default class NodeInOut extends React.Component {
 				height : holeSize,
 				marginTop : this.props.isClosed ?  "0px" : "3px",
 				borderRadius : holeSize,
-				backgroundColor : colorFunction(this.props.data.type),
-				border : (this.state.isDragging) ? "solid 1px" : "none"
+				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
+				border : (this.state.isDragging) ? "solid 1px" : "none",
 			},
 			inholeText : {
 				position : "absolute",
@@ -261,6 +262,11 @@ export default class NodeInOut extends React.Component {
 		}
 	}
 
+	/// マウスホバーされた
+	onHover(ev) {
+		this.setState({ hover : !this.state.hover })
+	}
+
 	content() {
 		const style = this.styles(this.props.index);
 		if (this.props.isInput) {
@@ -270,6 +276,8 @@ export default class NodeInOut extends React.Component {
 							onMouseDown={this.onMouseDown.bind(this)}
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
+							onMouseEnter={this.onHover.bind(this)}
+							onMouseLeave={this.onHover.bind(this)}
 						/>
 						{this.inHoleText.bind(this)()}
 					</div>);
@@ -280,6 +288,8 @@ export default class NodeInOut extends React.Component {
 							onMouseDown={this.onMouseDown.bind(this)}
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
+							onMouseEnter={this.onHover.bind(this)}
+							onMouseLeave={this.onHover.bind(this)}
 						/>
 						{this.outHoleText.bind(this)()}
 					</div>);
