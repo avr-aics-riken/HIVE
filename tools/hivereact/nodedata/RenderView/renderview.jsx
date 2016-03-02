@@ -25,6 +25,8 @@ class RenderView extends React.Component {
 
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.imageRecieved = this.imageRecieved.bind(this);
+		this.imageRecieveWrap = this.imageRecieveWrap.bind(this);
+		this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 	}
 
 	imageRecieved(err, param, data) {
@@ -185,6 +187,36 @@ class RenderView extends React.Component {
         this.mouseState = 0;
     }
 
+	imageRecieveWrap(err, data) {
+		if (this.hasIPCAddress()) {
+			this.readyForIPCImageTransfer();
+		}
+	}
+
+	onPanelSizeChanged(err, data) {
+		// イメージサイズの更新.
+		if (this.state) {
+			if (this.props.node.panel.visible) {
+				let rect = this.refs.content.getBoundingClientRect();
+				let width = rect.right - rect.left;
+				let height = rect.bottom - rect.top;
+				if (Number(this.state.param.width) !== width || Number(this.state.param.height) !== height) {
+					console.log("update image size");
+					this.state.param.width = width;
+					this.state.param.height = height;
+
+					setTimeout( ()=> {
+						this.action.changeNodeInput(
+							this.props.node.varname,
+							"screensize",
+							[width, height]
+						);
+					}, 0);
+				}
+			}
+		}
+	}
+
 	componentDidMount() {
         let imgElem = document.getElementById(this.getCanvasName('img'));
         imgElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
@@ -197,14 +229,12 @@ class RenderView extends React.Component {
 		window.addEventListener('mousemove', this.onImgMouseMove.bind(this), true);
 
         const NODE_INPUT_CHANGED = "node_input_changed"
-        this.store.on(NODE_INPUT_CHANGED, () => {
-            if (this.hasIPCAddress()) {
-                this.readyForIPCImageTransfer();
-            }
-        })
+        this.store.on(NODE_INPUT_CHANGED, this.imageRecieveWrap);
         /**/
         const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
+
+		this.store.on("panel_size_changed", this.onPanelSizeChanged);
 	}
 
 	componentWillUnmount() {
@@ -217,6 +247,8 @@ class RenderView extends React.Component {
 		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
 		const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved);
+		this.store.off("node_input_changed", this.imageRecieveWrap);
+		this.store.off("panel_size_changed", this.onPanelSizeChanged);
 		this.closeForIPCImageTransfer();
 	}
 
@@ -226,8 +258,8 @@ class RenderView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: "512px",
-                height:"512px",
+                width: String(Math.max(this.props.node.panel.size[0], 256)) + "px",
+                height: String(Math.max(this.props.node.panel.size[1], 256)) + "px",
                 transform : "scale(1.0,-1.0)",
                 display: (this.hasIPCAddress() ? "block" : "none")
 			},
@@ -235,8 +267,8 @@ class RenderView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: "256px",
-                height:"256px",
+                width: String(Math.max(this.props.node.panel.size[0], 256)) + "px",
+                height: String(Math.max(this.props.node.panel.size[1], 256)) + "px",
                 display: (this.hasIPCAddress() ? "none" : "block")
 			}
 		}
@@ -259,8 +291,10 @@ class RenderView extends React.Component {
 		if (this.hasIPCAddress()) {
 		} else {
         }
-        return (<div>
-            <canvas id={this.getCanvasName('canvas')} style={styles.canvas} ></canvas>
+        return (<div ref="content">
+            <canvas id={this.getCanvasName('canvas')} style={styles.canvas}
+				width={this.props.node.panel.size[0]}
+				height={this.props.node.panel.size[1]} ></canvas>
             <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
             </div>);
 

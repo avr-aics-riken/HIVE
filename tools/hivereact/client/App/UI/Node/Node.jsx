@@ -145,12 +145,14 @@ export default class Node extends React.Component {
 				top : String(this.getNodePos()[1]),
 				minWidth : "150px",
 				height : String(this.getHeight.bind(this)()) + "px",
-				backgroundColor : "rgb(66, 69, 66)",
+				backgroundColor :  this.state.isSelected ? "rgba(2, 17, 27, 0.6)" : "rgba(67, 67, 67, 0.9)",
 				color : "white",
-				opacity : "0.8",
+				//opacity : "0.8",
 				padding : "5px",
-				border : this.state.isSelected ? "solid 1px orange" : "none",
-				zIndex : this.state.zIndex
+				zIndex : this.state.zIndex,
+				border : this.state.isSelected ? "solid 2px" : "solid 2px rgba (0, 0, 0, 0)",
+				borderRadius : "4.5px",
+				borderColor : this.state.isSelected ? "rgb(54, 196, 168)" : "rgba(0, 0, 0, 0)"
 			},
 			title : {
 				color : "white", //"rgb(239, 136, 21)",
@@ -163,16 +165,16 @@ export default class Node extends React.Component {
 				right : "0px",
 				top : "0px",
 				margin : "5px",
-				width: "15px",
-				height: "15px",
-				backgroundColor : "#ea4412",
+				width: "17px",
+				height: "17px",
+				backgroundColor : "rgb(54, 196, 168)",
 				textAlign : "center",
-				borderRadius : "5px",
-				border : this.state.closeHover ? "solid 1px" : "none"
-			},
-			closeText : {
-				lineHeight : "12px",
-				cursor : "pointer"
+				borderRadius : "4.5px",
+				opacity : this.state.closeHover ? "0.9" : "1.0",
+				cursor : "pointer",
+				backgroundImage : "url(./img/node_close.png)",
+				backgroundRepeat: "no-repeat",
+				backgroundSize: "contain"
 			}
 		}
 	}
@@ -388,7 +390,6 @@ export default class Node extends React.Component {
 					onMouseEnter={this.onCloseHover.bind(this)}
 					onMouseLeave={this.onCloseHover.bind(this)}
 				>
-					<div style={style.closeText}>x</div>
 				</div>)
 	}
 

@@ -27,10 +27,10 @@ export default class HiveApp extends React.Component {
             case 2:
                 return (
                     <div>
-                        <Splitter split="horizontal" defaultSize={window.innerHeight*0.8}>
-                            <Splitter split="vertical" minSize="250" defaultSize="250">
+                        <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
+                            <Splitter split="vertical" defaultSize="250" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
-                                <Splitter split="vertical" minSize="50">
+                                <Splitter split="vertical" minSize="50" secondPaneSize="200">
                                     <div style={{position:"absolute",width:"100%",height:"100%"}}>
                                         <Node.View store={this.store} action={this.action} />
                                     </div>

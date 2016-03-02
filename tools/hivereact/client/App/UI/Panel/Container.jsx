@@ -69,10 +69,15 @@ export default class Container extends React.Component {
         if (this.isLeftDown) {
             let node = this.state.node;
             let mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
-            node.panel.pos[0] = this.offsetLeft + mv.x;
-            node.panel.pos[1] = this.offsetTop + mv.y;
-            this.action.changeNode(node);
+			let panel = JSON.parse(JSON.stringify(node.panel));
+            panel.pos[0] = this.offsetLeft + mv.x;
+            panel.pos[1] = this.offsetTop + mv.y;
+            this.action.changeNode({
+				varname : node.varname,
+				panel : panel
+			});
         }
+		ev.preventDefault();
     }
 
     onScaleDown(ev) {
@@ -93,9 +98,13 @@ export default class Container extends React.Component {
         if (this.isScaleLeftDown) {
             let node = this.state.node;
             let mv = {x: ev.clientX - this.scalePos.x, y: ev.clientY - this.scalePos.y};
-            node.panel.size[0] = Math.max(this.offsetScaleLeft + mv.x, 100);
-            node.panel.size[1] = Math.max(this.offsetScaleTop + mv.y, 100);
-            this.action.changeNode(node);
+			let panel = JSON.parse(JSON.stringify(node.panel));
+            panel.size[0] = Math.max(this.offsetScaleLeft + mv.x, 100);
+            panel.size[1] = Math.max(this.offsetScaleTop + mv.y, 100);
+            this.action.changeNode({
+				varname : node.varname,
+				panel : panel
+			});
         }
     }
 

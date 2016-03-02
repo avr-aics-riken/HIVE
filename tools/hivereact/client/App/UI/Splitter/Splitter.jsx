@@ -49,6 +49,71 @@ exports.default = _react2.default.createClass({
                 size: this.props.defaultSize
             });
         }
+        setTimeout(function(){
+            let ref1 = this.refs.pane1;
+            let ref2 = this.refs.pane2;
+            if (ref2 && this.props.secondPaneSize !== undefined && !this.state.resized) {
+                var windowsize = 0;
+                var node = _reactDom2.default.findDOMNode(ref2);
+                if(this.props.split === 'vertical'){
+                    windowsize = node.getBoundingClientRect().width;
+                }else{
+                    windowsize = node.getBoundingClientRect().height;
+                }
+                ref1.setState({
+                    size: (windowsize * 2) - this.props.secondPaneSize
+                });
+            }
+        }.bind(this), 100);
+
+        window.addEventListener('resize', function(){
+            if(!this.props.lockSecondPane || !this.props.secondPaneSize){return;}
+            // if (this.state.active) {
+                this.unFocus();
+                var ref1 = this.refs.pane1;
+                var ref2 = this.refs.pane2;
+                if (ref1) {
+                    var node1 = _reactDom2.default.findDOMNode(ref1);
+                    var node2 = _reactDom2.default.findDOMNode(ref2);
+                    if (node1.getBoundingClientRect) {
+                        var w1 = node1.getBoundingClientRect().width;
+                        var h1 = node1.getBoundingClientRect().height;
+                        var w2 = node2.getBoundingClientRect().width;
+                        var h2 = node2.getBoundingClientRect().height;
+                        var size = this.props.split === 'vertical' ? w1 : h1;
+                        var current = this.props.split === 'vertical' ? w2 : h2;
+                        var second = parseInt(this.props.secondPaneSize, 10);
+                        if(!isNaN(this.state.position)){
+                            second = Math.max(Math.min(second, this.state.position), second);
+                        }
+                        var diff = 0;
+                        if(current > second){
+                            diff = current - second;
+                            size += diff;
+                        }else{
+                            diff = second - current;
+                            size -= diff;
+                        }
+                        var newSize = size;
+                        this.setState({
+                            position: size
+                            // resized: true
+                        });
+
+                        if (newSize < this.props.minSize) {
+                            newSize = this.props.minSize;
+                        }
+
+                        if (this.props.onChange) {
+                            this.props.onChange(newSize);
+                        }
+                        ref1.setState({
+                            size: newSize
+                        });
+                    }
+                }
+            // }
+        }.bind(this), false);
     },
     componentWillUnmount: function componentWillUnmount() {
         document.removeEventListener('mouseup', this.onMouseUp);
@@ -72,7 +137,7 @@ exports.default = _react2.default.createClass({
             if (ref) {
                 var node = _reactDom2.default.findDOMNode(ref);
                 if (node.getBoundingClientRect) {
-                    if(this.props.dontmoved){return;}
+                    if(this.props.dontmove){return;}
                     var width = node.getBoundingClientRect().width;
                     var height = node.getBoundingClientRect().height;
                     var current = this.props.split === 'vertical' ? event.clientX : event.clientY;
@@ -163,19 +228,23 @@ exports.default = _react2.default.createClass({
         var children = this.props.children;
         var classes = ['SplitPane', split];
         var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
+        var move = this.props.dontmove;
+        var overflow = {pane1: this.props.overflow1, pane2: this.props.overflow2};
 
         return _react2.default.createElement(
             'div',
             { className: classes.join(' '), style: prefixed.styles, ref: 'splitPane' },
             _react2.default.createElement(
                 _Pane2.default,
-                { ref: 'pane1', key: 'pane1', split: split },
+                { ref: 'pane1', key: 'pane1', target: 'pane1',split: split, overflow: overflow},
                 children[0]
             ),
-            _react2.default.createElement(_Resizer2.default, { ref: 'resizer', key: 'resizer', onMouseDown: this.onMouseDown, split: split }),
+            _react2.default.createElement(
+                _Resizer2.default,
+                { ref: 'resizer', key: 'resizer', onMouseDown: this.onMouseDown, split: split, dontmove: move }),
             _react2.default.createElement(
                 _Pane2.default,
-                { ref: 'pane2', key: 'pane2', split: split },
+                { ref: 'pane2', key: 'pane2', target: 'pane2', split: split, overflow: overflow },
                 children[1]
             )
         );
