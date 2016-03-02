@@ -26,12 +26,11 @@ export default class HiveApp extends React.Component {
         switch(this.layoutType){
             case 2:
                 return (
-                    <Splitter axis={"horizontal"} move={false}>
-                        <MenuTop store={this.store} action={this.action}/>
-                        <Splitter axis={"horizontal"} move={false}>
-                            <Splitter axis={"vertical"} move={false}>
+                    <div>
+                        <Splitter split="horizontal" defaultSize={window.innerHeight*0.8}>
+                            <Splitter split="vertical" minSize="250" defaultSize="250">
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
-                                <Splitter axis="vertical">
+                                <Splitter split="vertical" minSize="50">
                                     <div style={{position:"absolute",width:"100%",height:"100%"}}>
                                         <Node.View store={this.store} action={this.action} />
                                     </div>
@@ -42,7 +41,8 @@ export default class HiveApp extends React.Component {
                             </Splitter>
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
-                    </Splitter>
+                        <MenuTop store={this.store} action={this.action}/>
+                    </div>
                 );
                 break;
             case 1:
