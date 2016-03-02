@@ -53,7 +53,7 @@ class RenderView extends React.Component {
     closeForIPCImageTransfer(){
         if (this.sc === undefined) {
         } else {
-            this.sc.off('data');
+            this.sc.close();
             this.sc = undefined;
         }
 
@@ -89,12 +89,14 @@ class RenderView extends React.Component {
 
 	                    // resultElement is canvas.
 	                    var resultElement = document.getElementById(this.getCanvasName('canvas'));
-	                    resultElement.setAttribute('width', param.width),
-	                    resultElement.setAttribute('height', param.height);
-	                    var context = resultElement.getContext('2d');
-	                    var imageData = context.createImageData(param.width, param.height);
-	                    buffercopy.buffercopy(data, imageData.data);
-	                    context.putImageData(imageData, 0, 0);
+                        if (resultElement) { // why undefined, sometime??
+                            resultElement.setAttribute('width', param.width),
+                            resultElement.setAttribute('height', param.height);
+                            var context = resultElement.getContext('2d');
+                            var imageData = context.createImageData(param.width, param.height);
+                            buffercopy.buffercopy(data, imageData.data);
+                            context.putImageData(imageData, 0, 0);
+                        }
 	                }
 
 	            })) {
