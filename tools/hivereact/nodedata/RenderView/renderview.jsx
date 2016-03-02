@@ -225,6 +225,7 @@ class RenderView extends React.Component {
 				top : "0px",
                 width: "512px",
                 height:"512px",
+                transform : "scale(1.0,-1.0)",				
                 display: (this.hasIPCAddress() ? "block" : "none")
 			},
 			image : {
