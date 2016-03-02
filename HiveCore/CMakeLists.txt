@@ -304,6 +304,11 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 
+# For test
+add_executable (hiveCoreSimpleTest test/simpletest.cpp)
+target_link_libraries (hiveCoreSimpleTest hiveCore)
+
+
 # Copy GLSL Compiler in post build phase
 # @todo { Don't copy whole directory files }
 SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
