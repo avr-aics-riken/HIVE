@@ -226,8 +226,8 @@ class RenderView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: "512px",
-                height:"512px",
+                width: String(Math.max(this.props.node.panel.size[0], 256)) + "px",
+                height: String(Math.max(this.props.node.panel.size[1], 256)) + "px",
                 transform : "scale(1.0,-1.0)",
                 display: (this.hasIPCAddress() ? "block" : "none")
 			},
@@ -235,8 +235,8 @@ class RenderView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: "256px",
-                height:"256px",
+                width: String(Math.max(this.props.node.panel.size[0], 256)) + "px",
+                height: String(Math.max(this.props.node.panel.size[1], 256)) + "px",
                 display: (this.hasIPCAddress() ? "none" : "block")
 			}
 		}
@@ -260,7 +260,9 @@ class RenderView extends React.Component {
 		} else {
         }
         return (<div>
-            <canvas id={this.getCanvasName('canvas')} style={styles.canvas} ></canvas>
+            <canvas id={this.getCanvasName('canvas')} style={styles.canvas}
+				width={this.props.node.panel.size[0]}
+				height={this.props.node.panel.size[1]} ></canvas>
             <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
             </div>);
 
