@@ -321,8 +321,7 @@ export default class NodeView extends React.Component {
 						position : "absolute",
 						width: "100%",
 						height : "100%",
-						overflow:"auto",
-						background : "linear-gradient(rgb(0, 18, 23), rgb(10, 42, 54))" //"rgb(1, 18, 28)"
+						overflow:"auto"
 					}}
 					ref="viewport"
 				>

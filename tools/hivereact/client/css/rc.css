@@ -1,14 +1,19 @@
+/* light color: aquamarine */
+/* base color: turquoise */
+/* dark color: teal */
+/* black color: #051a1f */
+
 .rc-menu {
   outline: none;
   margin-bottom: 0;
   padding-left: 0;
   list-style: none;
   z-index: 99999;
-  border: 1px solid #333;
-  box-shadow: 0 0 4px #333;
+  border: 1px solid #051a1f;
+  box-shadow: 0 0 4px #051a1f;
   /* border-radius: 3px; */
   /* color: #666; */
-  color: #ddd;
+  color: #051a1f; /* 全体のフォントの色 */
 }
 .rc-menu-hidden {
   display: none;
@@ -28,22 +33,26 @@
 .rc-menu-submenu-inline.rc-menu-submenu-active,
 .rc-menu-submenu-inline.rc-menu-submenu-active > .rc-menu-submenu-title:hover {
   /* background-color: #fff; */
-  background-color: #666;
+  background-color: teal;
 }
 .rc-menu-inline > .rc-menu-item-active:hover,
 .rc-menu-item-active,
 .rc-menu-submenu-active,
+.rc-menu-item-selected:hover,
 .rc-menu-submenu-inline.rc-menu-submenu-active > .rc-menu-submenu-title:hover {
   /* background-color: #eaf8fe; */
-  background-color: #111;
-  color: crimson;
+  background-color: teal;
+  color: #051a1f; /* サブメニューのホバー時 */
 }
 .rc-menu-item-selected {
   /* background-color: #eaf8fe; */
-  background-color: #111;
+  /* background-color: turquoise; */
 }
 .rc-menu > li.rc-menu-submenu {
   padding: 0;
+}
+.rc-menu-submenu-horizontal > .rc-menui-submenu:hover {
+    background-color: teal;
 }
 .rc-menu-submenu-horizontal > .rc-menu {
   top: 100%;
@@ -88,7 +97,7 @@
 }
 .rc-menu-submenu > .rc-menu {
   /* background-color: #fff; */
-  background-color: #111;
+  background-color: turquoise; /* サブメニューの背景色 */
 }
 .rc-menu .rc-menu-submenu-title .anticon,
 .rc-menu .rc-menu-item .anticon {
@@ -99,11 +108,11 @@
 }
 .rc-menu-horizontal {
   /* background-color: #F3F5F7; */
-  background-color: #111;
+  background-color: turquoise;
   border: none;
   border-bottom: 1px solid transparent;
   /* border-bottom: 1px solid #d9d9d9; */
-  border-bottom: 1px solid #666;
+  border-bottom: 1px solid #051a1f;
   box-shadow: none;
   margin: 0px;
 }
@@ -124,10 +133,10 @@
 .rc-menu-horizontal > .rc-menu-item-active {
   /* border-bottom: 2px solid #2db7f5; */
   /* background-color: #F3F5F7;        */
-  border-bottom: 2px solid crimson;
-  background-color: #311;
+  border-bottom: 2px solid aquamarine;
+  background-color: teal;
   /* color: #2baee9; */
-  color: crimson;
+  color: #051a1f;
 }
 .rc-menu-horizontal:after {
   content: "\20";
