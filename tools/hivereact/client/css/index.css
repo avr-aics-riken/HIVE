@@ -29,7 +29,6 @@ html, body {
 
 .Pane.vertical {
     margin-top: 40px;
-    /* padding-top: 40px; */
 }
 
 .Pane.vertical .Pane.vertical {
@@ -37,7 +36,6 @@ html, body {
 }
 
 .Pane.horizontal {
-    height: 20%;
 }
 
 
