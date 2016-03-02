@@ -14,11 +14,11 @@ SET(HIVE_BUILD_WITH_CDMLIB OFF CACHE BOOL "Build with CDMlib support?(Also need 
 SET(HIVE_BUILD_WITH_PDMLIB OFF CACHE BOOL "Build with PDMlib support?")
 SET(HIVE_BUILD_WITH_HDMLIB OFF CACHE BOOL "Build with HDMlib support?")
 SET(HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?")
-SET(HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_BCMTOOLS option)")
-SET(HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_COMPOSITOR option)")
+SET(HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_MPI option)")
+SET(HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)")
 SET(HIVE_BUILD_WITH_OPENGL ON CACHE BOOL "Build with OpenGL support?(Also need to enable HIVE_BUILD_WITH_OPENGL option)")
 SET(HIVE_BUILD_WITH_NANOMSG ON CACHE BOOL "Build with Nanomsg support?(Also need to enable HIVE_BUILD_WITH_NANOMSG option)")
-
+SET(HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?")
 
 # PROJECT OUTPUT SETTING
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
