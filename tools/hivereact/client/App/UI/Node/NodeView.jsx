@@ -209,8 +209,8 @@ export default class NodeView extends React.Component {
 
     // 現状は NodeView 内にある SVG Element から呼ばれる
     dblClickEvent(eve){
-		let x = eve.clientX - eve.currentTarget.getBoundingClientRect().left;
-		let y = eve.clientY - eve.currentTarget.getBoundingClientRect().top;
+		let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
+		let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
         this.listVisiblity = !this.listVisiblity;
         this.setState({
             listVisible: this.listVisiblity,
