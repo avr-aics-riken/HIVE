@@ -80,17 +80,23 @@ exports.default = _react2.default.createClass({
                         var h1 = node1.getBoundingClientRect().height;
                         var w2 = node2.getBoundingClientRect().width;
                         var h2 = node2.getBoundingClientRect().height;
-                        var current = this.props.split === 'vertical' ?
-                            w2 - parseInt(this.props.secondPaneSize, 10) :
-                            h2 - parseInt(this.props.secondPaneSize, 10);
                         var size = this.props.split === 'vertical' ? w1 : h1;
-                        // var position = this.state.position;
-                        // if(isNaN(position)){
-                        //     position = current;}
-                        // var newSize = size - (position - current);
-                        var newSize = size + current;
+                        var current = this.props.split === 'vertical' ? w2 : h2;
+                        var second = parseInt(this.props.secondPaneSize, 10);
+                        if(!isNaN(this.state.position)){
+                            second = Math.max(Math.min(second, this.state.position), second);
+                        }
+                        var diff = 0;
+                        if(current > second){
+                            diff = current - second;
+                            size += diff;
+                        }else{
+                            diff = second - current;
+                            size -= diff;
+                        }
+                        var newSize = size;
                         this.setState({
-                            position: current
+                            position: size
                             // resized: true
                         });
 
@@ -223,13 +229,14 @@ exports.default = _react2.default.createClass({
         var classes = ['SplitPane', split];
         var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
         var move = this.props.dontmove;
+        var overflow = {pane1: this.props.overflow1, pane2: this.props.overflow2};
 
         return _react2.default.createElement(
             'div',
             { className: classes.join(' '), style: prefixed.styles, ref: 'splitPane' },
             _react2.default.createElement(
                 _Pane2.default,
-                { ref: 'pane1', key: 'pane1', split: split },
+                { ref: 'pane1', key: 'pane1', target: 'pane1',split: split, overflow: overflow},
                 children[0]
             ),
             _react2.default.createElement(
@@ -237,7 +244,7 @@ exports.default = _react2.default.createClass({
                 { ref: 'resizer', key: 'resizer', onMouseDown: this.onMouseDown, split: split, dontmove: move }),
             _react2.default.createElement(
                 _Pane2.default,
-                { ref: 'pane2', key: 'pane2', split: split },
+                { ref: 'pane2', key: 'pane2', target: 'pane2', split: split, overflow: overflow },
                 children[1]
             )
         );
