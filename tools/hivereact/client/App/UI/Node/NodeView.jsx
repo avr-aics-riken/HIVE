@@ -47,11 +47,11 @@ export default class NodeView extends React.Component {
 	styles(id) {
 		return {
 			button : {
-				position : "absolute",
+				position : "fixed",
 				width : "100px",
 				height : "20px",
-				right : "50%",
-				top : String(id * 20) + "px",
+				left : "300px",
+				top : String(50 + id * 20) + "px",
 				backgroundColor : "blue",
 				color : "white"
 			}
@@ -61,17 +61,18 @@ export default class NodeView extends React.Component {
     // TO BE DELETED
 	addButtonClick(id) {
 		return () => {
+			let offset = 1700;
 			let ncount = Math.floor(Math.random() * 100000) + this.props.store.getNodes().length;
 			if (id === 0) {
 				let camera = this.props.store.nodeSystem.CreateNodeInstance('CreateCamera');
 				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
 				camera.varname = "testcamera_" + String(ncount);
 				camera.node = {
-					pos : [100,200]
+					pos : [offset + 100, offset + 200]
 				};
 				renderview.varname = "testrenderview_" + String(ncount);
 				renderview.node = {
-					pos : [350,200]
+					pos : [offset + 350, offset + 200]
 				};
 
 				this.props.action.addNode(camera);
@@ -93,14 +94,16 @@ export default class NodeView extends React.Component {
 				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
 				teapot.varname = "testteapot_" + String(ncount);
 				teapot.node = {
-					pos : [100,200]
+					pos : [offset + 100, offset + 200]
 				};
 				model.varname = "testpolygonmodel_" + String(ncount);
 				model.node = {
-					pos : [350,200]
+					pos : [offset + 350, offset + 200]
 				};
 				renderview.varname = "testrenderview_" + String(ncount);
-				renderview.pos = [550,400];
+				renderview.node = {
+					pos : [offset + 550, offset + 400]
+				};
 
 				this.props.action.addNode(teapot);
 				this.props.action.addNode(model);
@@ -279,6 +282,10 @@ export default class NodeView extends React.Component {
 		let rect = this.refs.viewport.getBoundingClientRect();
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
+
+		this.refs.viewport.scrollTop = 1700;
+		this.refs.viewport.scrollLeft = 1700;
+
     }
 
     componentWillUnmount(){
@@ -319,8 +326,8 @@ export default class NodeView extends React.Component {
 					onMouseMove={this.onMouseMove.bind(this)}
 					style={{
 						position : "absolute",
-						width: "100%",
-						height : "100%",
+						width:"100%",
+						height:"100%",
 						overflow:"auto"
 					}}
 					ref="viewport"
