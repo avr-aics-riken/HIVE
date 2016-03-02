@@ -167,6 +167,8 @@ export default class ActionExecuter {
 					let hasPanel = srcNode.hasOwnProperty('panel');
 					let prePanelVisible = dstNode.panel.visible;
 					let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
+					let prePanelSize = JSON.stringify(dstNode.panel.size);
+					let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
 					for (let info in payload.nodeInfo) {
 						if (info !== "uiComponent" && this.store.data.nodes[i].hasOwnProperty(info)) {
@@ -183,6 +185,9 @@ export default class ActionExecuter {
 					}
 					if (hasPanel && prePanelVisible !== postPanelVisible) {
 						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, this.store.data.nodes[i], i);
+					}
+					if (hasPanel && prePanelSize !== postPanelSize) {
+						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, this.store.data.nodes[i], i);
 					}
 				}
 			}
