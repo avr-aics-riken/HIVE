@@ -84,10 +84,11 @@ export default class Node extends React.Component {
 
 	nodeRect() {
 		let rect = this.refs.node ? this.refs.node.getBoundingClientRect() : null;
+		let zoom = 1.0 / this.props.nodeStore.getZoom();
 		return {
 			x : this.getNodePos()[0],
 			y : this.getNodePos()[1],
-			w : rect ? rect.right - rect.left : 200,
+			w : rect ? (rect.right - rect.left) * zoom : 200 * zoom,
 			h : (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * 18 + 10
 		};
 	}
