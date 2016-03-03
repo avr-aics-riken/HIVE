@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from "react-dom";
 import Core from './Core';
 import Hive from './HIVE';
 import Node from "./UI/Node";
@@ -14,8 +15,67 @@ export default class HiveApp extends React.Component {
 
         this.store = new Core.Store();
         this.action = new Core.Action(this.store.getDispatchToken());
-
         this.layoutType = 2;
+
+        this.onDragOver = this.onDragOver.bind(this);
+        this.onDrop = this.onDrop.bind(this);
+        this.componentDidMount = this.componentDidMount.bind(this);
+        this.allClearNode = this.allClearNode.bind(this);
+        this.loadFile = this.loadFile.bind(this);
+    }
+
+    componentDidMount(){
+        let e = ReactDOM.findDOMNode(this.refs.droptarget);
+        e.addEventListener('dragover', this.onDragOver, false);
+        e.addEventListener('drop', this.onDrop, false);
+    }
+
+    onDragOver(eve){
+        eve.stopPropagation();
+        eve.preventDefault();
+    }
+
+    onDrop(eve){
+        eve.stopPropagation();
+        eve.preventDefault();
+        if(eve.dataTransfer.files && eve.dataTransfer.files.length > 0){
+            this.loadFile(eve.dataTransfer.files[0]);
+        }
+        return false;
+    }
+
+    allClearNode(){
+        let nodes = this.store.getNodes();
+        let plugs = this.store.getPlugs();
+        for(let i = plugs.length - 1; i >= 0; --i){
+            this.action.deletePlug(plugs[i]);
+        }
+        for(let i = nodes.length - 1; i >= 0; --i){
+            this.action.deleteNode(nodes[i].varname);
+        }
+    }
+
+    loadFile(file){
+        this.allClearNode();
+        var reader = new FileReader();
+        reader.onload = function(){
+            let data = (JSON.parse(reader.result));
+            if(data.nodes && data.nodes.length > 0){
+                for(let i in data.nodes){
+                    this.action.importNode(data.nodes[i]);
+                }
+            }else{
+                console.log('import failed: nodes.length === 0');
+            }
+            if(data.plugs && data.plugs.length > 0){
+                for(let i in data.plugs){
+                    this.action.addPlug(data.plugs[i]);
+                }
+            }else{
+                console.log('import failed: plugs.length === 0');
+            }
+        }.bind(this);
+        reader.readAsText(file);
     }
 
     menu() {
@@ -26,7 +86,7 @@ export default class HiveApp extends React.Component {
         switch(this.layoutType){
             case 2:
                 return (
-                    <div>
+                    <div ref="droptarget">
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
                             <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
