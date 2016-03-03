@@ -27,6 +27,7 @@ export default class MenuNodeList extends React.Component {
         if(this.floating){
             return {
                 block: {
+                    backgroundColor: "rgba(0, 0, 0, 0.7)",
                     textAlign: "center",
                     margin: "0px",
                     padding: "0px",
@@ -47,18 +48,19 @@ export default class MenuNodeList extends React.Component {
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                    backgroundColor: "#666",
-                    borderRadius: "5px",
-                    color: "turquoise",
+                    backgroundColor: "#444",
+                    borderRadius: "3px",
+                    color: "aquamarine",
                     fontSize: "small",
                     textAlign: "left",
                     lineHeight: "24px",
-                    margin: "5px 2px",
+                    margin: "6px 2px",
                     padding: "2px",
                     width: "236px",
                     height: "24px",
                     overflow: "auto",
                     textShadow: "0px 0px 3px #022",
+                    boxShadow: "0px 0px 5px -2px white",
                     cursor: "pointer"
                 }
             };
@@ -84,17 +86,18 @@ export default class MenuNodeList extends React.Component {
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                    backgroundColor: "#666",
-                    borderRadius: "5px",
-                    color: "turquoise",
+                    backgroundColor: "#444",
+                    borderRadius: "3px",
+                    color: "aquamarine",
                     fontSize: "small",
                     lineHeight: "24px",
-                    margin: "5px 3px",
+                    margin: "6px 3px",
                     padding: "2px",
                     width: "242px",
                     height: "24px",
                     overflow: "auto",
                     textShadow: "0px 0px 3px #022",
+                    boxShadow: "0px 0px 5px -2px white",
                     cursor: "pointer"
                 }
             };
