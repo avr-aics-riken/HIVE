@@ -19,8 +19,10 @@ export default class MenuTop extends React.Component {
         this.loadButtonClick = this.loadButtonClick.bind(this);
     }
 
-    allClearNode(){
-        if(confirm('really?')){
+    allClearNode(disableConfirm){
+        var flg = false;
+        if(!disableConfirm){flg = confirm('really?');}
+        if(flg){
             let nodes = this.props.store.getNodes();
             let plugs = this.props.store.getPlugs();
             for(let i = plugs.length - 1; i >= 0; --i){
@@ -48,27 +50,26 @@ export default class MenuTop extends React.Component {
     }
     loadButton(eve){
         if(eve.currentTarget.files && eve.currentTarget.files.length > 0){
-            if(this.allClearNode.bind(this)()){
-                var reader = new FileReader();
-                reader.onload = function(){
-                    let data = (JSON.parse(reader.result));
-                    if(data.nodes && data.nodes.length > 0){
-                        for(let i in data.nodes){
-                            this.props.action.importNode(data.nodes[i]);
-                        }
-                    }else{
-                        console.log('import failed: nodes.length === 0');
+            this.allClearNode.bind(this)(true);
+            var reader = new FileReader();
+            reader.onload = function(){
+                let data = (JSON.parse(reader.result));
+                if(data.nodes && data.nodes.length > 0){
+                    for(let i in data.nodes){
+                        this.props.action.importNode(data.nodes[i]);
                     }
-                    if(data.plugs && data.plugs.length > 0){
-                        for(let i in data.plugs){
-                            this.props.action.addPlug(data.plugs[i]);
-                        }
-                    }else{
-                        console.log('import failed: plugs.length === 0');
+                }else{
+                    console.log('import failed: nodes.length === 0');
+                }
+                if(data.plugs && data.plugs.length > 0){
+                    for(let i in data.plugs){
+                        this.props.action.addPlug(data.plugs[i]);
                     }
-                }.bind(this);
-                reader.readAsText(eve.currentTarget.files[0]);
-            }
+                }else{
+                    console.log('import failed: plugs.length === 0');
+                }
+            }.bind(this);
+            reader.readAsText(eve.currentTarget.files[0]);
         }
     }
 
@@ -84,6 +85,9 @@ export default class MenuTop extends React.Component {
                 this.saveButton();
                 break;
             case 3:
+                console.log('"export function" called!');
+                break;
+            case 4:
                 this.allClearNode();
                 break;
             case 11:
@@ -103,7 +107,8 @@ export default class MenuTop extends React.Component {
                 <SubMenu title={<span>file</span>} key="0">
                     <MenuItem key="1">load</MenuItem>
                     <MenuItem key="2">save</MenuItem>
-                    <MenuItem key="3">all node clear</MenuItem>
+                    <MenuItem key="3">export</MenuItem>
+                    <MenuItem key="4">all node clear</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>dummy</span>} key="10">
                     <MenuItem key="11">dummy1</MenuItem>
