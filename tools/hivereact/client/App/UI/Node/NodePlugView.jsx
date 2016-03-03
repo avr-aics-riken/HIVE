@@ -113,7 +113,7 @@ export default class NodePlugView extends React.Component {
 					plug={plugPos}
 		 			key={plugPos.input.nodeVarname + '_' + plugPos.output.nodeVarname + '_' +
 						plugPos.input.name + '_' + plugPos.output.name + '_' + String(key)}
-					isSimple={this.props.nodeStore.getZoom() > 0.6 ? false : true}
+					isSimple={false} //this.props.nodeStore.getZoom() > 0.6 ? false : true}
 					isTemporary={false}  />);
 	}
 

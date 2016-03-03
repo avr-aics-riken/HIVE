@@ -227,21 +227,34 @@ export default class NodeView extends React.Component {
 
     // 現状は NodeView 内にある SVG Element から呼ばれる
     dblClickEvent(eve){
-		let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
-		let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
-        this.listVisiblity = !this.listVisiblity;
-        this.setState({
-            listVisible: this.listVisiblity,
-			listPos: [x, y]
-            //listPos: [eve.layerX, eve.layerY]
-        });
-        if(this.listVisiblity){
-            setTimeout((()=>{
-                var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
-                e.focus();
-            }).bind(this), 50);
-        }
+		if (eve.button === 0) {
+			let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
+			let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
+	        this.listVisiblity = !this.listVisiblity;
+	        this.setState({
+	            listVisible: this.listVisiblity,
+				listPos: [x, y]
+	            //listPos: [eve.layerX, eve.layerY]
+	        });
+			if(this.listVisiblity){
+				setTimeout((()=>{
+					var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
+					e.focus();
+				}).bind(this), 50);
+			}
+		}
     }
+
+	onClick(eve) {
+		if (eve.button === 0) {
+			if (this.listVisiblity) {
+				this.listVisiblity = false;
+				this.setState({
+					listVisible: this.listVisiblity
+				});
+			}
+		}
+	}
 
     listHidden(){
         this.listVisiblity = false;
@@ -364,6 +377,7 @@ export default class NodeView extends React.Component {
 		return (
 				<div
 					onDoubleClick={this.dblClickEvent.bind(this)}
+					onClick={this.onClick.bind(this)}
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
 					onWheel={this.onWheel.bind(this)}
