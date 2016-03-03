@@ -132,7 +132,7 @@ export default class ActionExecuter {
 				this.store.data.nodes.splice(n.index, 1);
 
 				// 関連するプラグを削除.
-				for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
+				for (let i = this.store.data.plugs.length - 1; i >= 0; i = i - 1) {
 					let plug = this.store.data.plugs[i];
 					if (plug.input.nodeVarname === payload.varname) {
 						this.deletePlug({ plugInfo : plug });
