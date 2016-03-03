@@ -148,7 +148,7 @@ class RenderView extends React.Component {
 		}
 	}
 
-    viewRot(rotx, roty, roz) {
+    viewRot(rotx, roty, rotz) {
 		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
 		let eyedir = subtract(position, target);
@@ -163,15 +163,12 @@ class RenderView extends React.Component {
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
 		let pos = add(target, v);
 
-		console.log(rx, ry, target, pos)
 		if (Math.abs(dot(normalize(subtract(target, pos)), vec3(0, 1, 0))) < 0.99) {
-			position = pos;
 			const varname = this.node.varname;
-			const inputs = JSON.parse(JSON.stringify(this.node.input));
 			this.action.changeNodeInput({
 				varname : varname,
 				input : {
-					"position" : position,
+					"position" : pos,
 					"target" : target
 				}
 			});
@@ -179,10 +176,40 @@ class RenderView extends React.Component {
     }
 
     viewTrans(tx, ty, tz) {
+		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
+		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
+		let mv = vec3(-tx, ty, 0.0);
+		let az = normalize(subtract(position, target));
+		let ax = normalize(cross(vec3(0, 1, 0), az));
+		let ay = normalize(cross(az, ax));
+		let mx = transpose(mat3(ax, ay, az));
+		let mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));
+		let pos = add(add(position, scale(-tx, ax)), scale(ty, ay));
+		let tar = add(add(target,   scale(-tx, ax)), scale(ty, ay));
 
+		const varname = this.node.varname;
+		this.action.changeNodeInput({
+			varname : varname,
+			input : {
+				"position" : pos,
+				"target" : tar
+			}
+		});
     }
     viewZoom(zoom) {
-
+		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
+		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
+		let v = subtract(position, target);
+		let r = 1.0 - (zoom / 1000.0);
+		v = scale(r, v);
+		position = add(target, v);
+		const varname = this.node.varname;
+		this.action.changeNodeInput({
+			varname : varname,
+			input : {
+				"position" : position
+			}
+		});
     }
 
     onImgMouseDown(event) {
@@ -199,7 +226,13 @@ class RenderView extends React.Component {
             const dy = event.clientY - this.oldmy;
             //console.log('mmove', dx, dy);
 
-            this.viewRot(dy, -dx, 0.0);
+			if (event.button === 0) {
+            	this.viewRot(dy, -dx, 0.0);
+			} else if (event.button === 1) {
+				this.viewTrans(dx, dy);
+			} else if (event.button === 2) {
+				this.viewZoom(dx + dy);
+			}
 
             this.oldmx = event.clientX;
             this.oldmy = event.clientY;
