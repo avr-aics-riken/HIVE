@@ -1,11 +1,12 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../../Core'
-import ItemText from './ItemText.jsx'
-import ItemVec from './ItemVec.jsx'
-import ItemCheckbox from './ItemCheckbox.jsx'
-import ItemArray from './ItemArray.jsx'
-import ItemTextInput from './ItemTextInput.jsx'
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../../Core';
+import ItemTitle from './ItemTitle.jsx';
+import ItemText from './ItemText.jsx';
+import ItemVec from './ItemVec.jsx';
+import ItemCheckbox from './ItemCheckbox.jsx';
+import ItemArray from './ItemArray.jsx';
+import ItemTextInput from './ItemTextInput.jsx';
 
 /**
  * ノードプロパティ1ノード分.
@@ -35,11 +36,11 @@ export default class ItemView extends React.Component {
 		return {
 			view : {
 				width : "250px",
-				backgroundColor : "rgb(80, 80, 80)",
-				color : "black",
+				// backgroundColor : "rgb(80, 80, 80)",
+				// color : "black",
 				display : "table"
 			}
-		}
+		};
 	}
 
 	inputChanged(err, data) {
@@ -95,7 +96,7 @@ export default class ItemView extends React.Component {
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
 				inputs[i].value[index] = value;
-				console.log("UPDATE", inputs)
+				console.log("UPDATE", inputs);
 				this.props.action.changeNode({
 					varname : this.props.initialNodeData.varname,
 					input : inputs
@@ -173,8 +174,7 @@ export default class ItemView extends React.Component {
 		});
 		return (
 			<div>
-				<ItemText
-					isHeader={true}
+				<ItemTitle
 					initialParam={{
 						name : "Node",
 						value : this.state.name

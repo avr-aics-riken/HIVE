@@ -221,7 +221,7 @@ export default class Container extends React.Component {
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
-                    {this.state.node.varname}
+                    {this.state.node.name}
                     <div
                         style={styles.panelCloseButton}
                         onClick={this.onCloseClick.bind(this)}

@@ -227,7 +227,7 @@ class RenderView extends React.Component {
             //console.log('mmove', dx, dy);
 
 			if (event.button === 0) {
-            	this.viewRot(dy, -dx, 0.0);
+            	this.viewRot(-dy * 0.5, -dx * 0.5, 0.0);
 			} else if (event.button === 1) {
 				this.viewTrans(dx, dy);
 			} else if (event.button === 2) {
@@ -359,8 +359,6 @@ class RenderView extends React.Component {
 
 
     render(){
-	console.log(this.props.node.panel.size)
-
         const styles = this.styles();
         return this.content()
 

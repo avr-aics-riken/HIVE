@@ -64,7 +64,8 @@ export default class View extends React.Component {
 				//top : "0px",
                 //backgroundColor : "rgba(80, 80, 80, 0.2)",
 				color : "white",
-				display : (this.isVisible.bind(this)()) ? "block" : "none"
+				display : (this.isVisible.bind(this)()) ? "block" : "none",
+                overflow: "auto"
 			}
 		}
 	}
