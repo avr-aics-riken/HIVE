@@ -696,15 +696,15 @@ export default class UMTimeline extends React.Component {
 
     initData() {
         var setting = {
-            background: "rgb(55, 55, 55)",
-            lineColor: "rgb(0, 0, 0)",
-            spiltterColor: "rgb(80, 80, 80)",
-            contentColor: "rgb(80, 80, 80)",
-            propColor: "rgb(70, 70, 70)",
-            keyColor: "rgb(200, 200, 200)",
-            textColor: "rgb(255, 255, 255)",
-            propTextColor: "rgb(200, 200, 200)",
-            seekLineColor: "rgb(255, 255, 255)",
+            background    : "rgb(30  , 30  , 30)"  ,
+            lineColor     : "rgb(0   , 0   , 0)"   ,
+            spiltterColor : "rgb(60  , 60  , 60)"  ,
+            contentColor  : "rgb(60  , 60  , 60)"  ,
+            propColor     : "rgb(50  , 50  , 50)"  ,
+            keyColor      : "rgb(200 , 200 , 200)" ,
+            textColor     : "rgb(255 , 255 , 255)" ,
+            propTextColor : "rgb(200 , 200 , 200)" ,
+            seekLineColor : "rgb(255 , 255 , 255)" ,
             propPaddingX: 5,
             lineWidth: 0.5,
             split: 200, // px
@@ -722,8 +722,8 @@ export default class UMTimeline extends React.Component {
             contents: [{
                 name: "test",
                 closed: false,
-                color: "rgb(100, 100, 200)",
-                propColor: "rgba(100, 100, 200, 0.7)",
+                color: "rgb(32, 96, 196)",
+                propColor: "rgba(32, 96, 196, 0.5)",
                 props: [{
                     name: "hogehoge",
                     data: {
@@ -742,8 +742,8 @@ export default class UMTimeline extends React.Component {
             }, {
                 name: "munimuni",
                 closed: false,
-                color: "rgb(200, 100, 100)",
-                propColor: "rgba(200, 100, 100, 0.7)",
+                color: "rgb(196, 32, 64)",
+                propColor: "rgba(196, 32, 64, 0.5)",
                 props: [{
                     name: "piropiro",
                     data: {
@@ -755,8 +755,8 @@ export default class UMTimeline extends React.Component {
             }, {
                 name: "aaa",
                 closed: true,
-                color: "rgb(100, 200, 100)",
-                propColor: "rgba(100, 200, 100, 0.7)",
+                color: "rgb(96, 196, 32)",
+                propColor: "rgba(96, 196, 32, 0.5)",
                 props: [{
                     name: "piropiro",
                     data: {
