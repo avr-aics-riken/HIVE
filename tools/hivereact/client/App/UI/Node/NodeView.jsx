@@ -162,8 +162,8 @@ export default class NodeView extends React.Component {
             const mv = (dx + dy) * 0.005;			
 			let zoom = this.props.nodeStore.getZoom();
             zoom = zoom + mv;
-            if (zoom <= 0.5) {
-                zoom = 0.5;
+            if (zoom <= 0.1) {
+                zoom = 0.1;
             } else if (zoom >= 2.0) {
                 zoom = 2.0;
             }
@@ -339,7 +339,7 @@ export default class NodeView extends React.Component {
 							//zoom: String(this.state.zoom)
 							transform : "scale(" + this.state.zoom + ")",
 							transformOrigin : this.origin.bind(this)(),
-							border : "1px solid",
+							border : "10px solid",
 							borderColor : "gray"
 						}}
 					>
