@@ -155,21 +155,20 @@ export default class NodeView extends React.Component {
 
 	onMouseMove(ev) {
 		if (this.isRightDown) {
-			let px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
-			let py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
-			let my = (py - this.pos.y);
+			const px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
+			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
+            const dx = (px - this.pos.x);
+            const dy = (py - this.pos.y);
+            const mv = (dx + dy) * 0.005;			
 			let zoom = this.props.nodeStore.getZoom();
-			if (my > 0) {
-				if (zoom >= 0.5) {
-					zoom = zoom - 0.05;
-					this.props.nodeAction.changeZoom(zoom);
-				}
-			} else {
-				if (zoom <= 2.0) {
-					zoom = zoom + 0.05;
-					this.props.nodeAction.changeZoom(zoom);
-				}
-			}
+            zoom = zoom + mv;
+            if (zoom <= 0.5) {
+                zoom = 0.5;
+            } else if (zoom >= 2.0) {
+                zoom = 2.0;
+            }
+            this.props.nodeAction.changeZoom(zoom);
+
 			this.pos = {
 				x : px,
 				y : py
