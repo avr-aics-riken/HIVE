@@ -22,7 +22,7 @@ function UniformVec3:uniform()
         name = self.connection.name
     end
     if self.connection.value then
-        name = self.connection.value
+        value = self.connection.value
     end
     
     return {name=name, value=value, type='vec3'}
