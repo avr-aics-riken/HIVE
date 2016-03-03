@@ -152,8 +152,10 @@ export default class NodeView extends React.Component {
 			};
         }
         if(this.listVisiblity){
-            this.listVisiblity = false;
-            this.setState({listVisible: this.listVisiblity,});
+            setTimeout((()=>{
+                this.listVisiblity = false;
+                this.setState({listVisible: this.listVisiblity,});
+            }).bind(this), 50);
         }
 	}
 
