@@ -20,7 +20,7 @@ export default class MenuTop extends React.Component {
     }
 
     allClearNode(disableConfirm){
-        var flg = false;
+        var flg = true;
         if(!disableConfirm){flg = confirm('really?');}
         if(flg){
             let nodes = this.props.store.getNodes();
