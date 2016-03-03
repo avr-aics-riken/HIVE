@@ -1,0 +1,12 @@
+{
+	"name": "LoadOBJ",
+	"funcname": "LoadOBJ",
+	"info":"OBJをロードするためのノード",
+	"customfuncfile":"loadobj.lua",
+    "input": [
+		{"name": "filepath", "type": "string", "value": ""}
+	],
+	"output": [
+		{"name": "MeshData",  "type": "BufferMeshData"}
+	]
+}
