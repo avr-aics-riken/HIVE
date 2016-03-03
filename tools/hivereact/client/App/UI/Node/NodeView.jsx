@@ -1,8 +1,8 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../Core'
-import Node from './Node.jsx'
-import Store from './Store.jsx'
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../Core';
+import Node from './Node.jsx';
+import Store from './Store.jsx';
 import NodeListCreate from "./NodeListCreate.jsx";
 import NodePlugView from "./NodePlugView.jsx";
 
@@ -55,7 +55,7 @@ export default class NodeView extends React.Component {
 				backgroundColor : "blue",
 				color : "white"
 			}
-		}
+		};
 	}
 
     // TO BE DELETED
@@ -129,7 +129,7 @@ export default class NodeView extends React.Component {
 					}
 				});
 			}
-		}
+		};
 	}
 
     // TO BE DELETED
@@ -150,7 +150,11 @@ export default class NodeView extends React.Component {
 				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
 				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
 			};
-		}
+        }
+        if(this.listVisiblity){
+            this.listVisiblity = false;
+            this.setState({listVisible: this.listVisiblity,});
+        }
 	}
 
 	onMouseMove(ev) {

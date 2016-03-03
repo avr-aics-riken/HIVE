@@ -109,7 +109,7 @@ export default class MenuNodeCreate extends React.Component {
                     color: "#666",
                     width: "236px",
                     margin: "2px 3px",
-                    padding: "8px 3px"
+                    padding: "5px 3px"
                 },
                 suggestionsContainer: {
                     listStyle: "none",

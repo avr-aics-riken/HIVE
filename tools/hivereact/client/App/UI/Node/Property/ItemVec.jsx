@@ -46,7 +46,7 @@ export default class ItemVec extends React.Component {
         return {
             view : border.bind(this)(),
             key : {
-                backgroundColor: "#666",
+                backgroundColor: "rgb(84,84,84)",
                 color : "white",
                 fontSize: "smaller",
                 letterSpacing: "normal",
@@ -62,11 +62,12 @@ export default class ItemVec extends React.Component {
                 color : "#333",
                 letterSpacing: "normal",
                 padding: "1px",
-                width : "160px",
+                width : "164px",
                 verticalAlign: "middle",
                 display: "inline-block"
             },
             flex : {
+                paddingLeft: "3px"
                 // display: "flex",
                 // flexDirection: "row"
             },
