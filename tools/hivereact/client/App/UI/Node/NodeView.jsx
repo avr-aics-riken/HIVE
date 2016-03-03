@@ -152,12 +152,6 @@ export default class NodeView extends React.Component {
 				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
 			};
         }
-        if(this.listVisiblity){
-            setTimeout((()=>{
-                this.listVisiblity = false;
-                this.setState({listVisible: this.listVisiblity,});
-            }).bind(this), 50);
-        }
 	}
 
 	onMouseMove(ev) {
