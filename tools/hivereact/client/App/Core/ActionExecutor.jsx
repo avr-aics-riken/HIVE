@@ -214,7 +214,6 @@ export default class ActionExecuter {
 									input : copy
 								}
 							})
-							return;
 						}
 					}
 				}
