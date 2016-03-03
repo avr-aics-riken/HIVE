@@ -261,11 +261,10 @@ class RenderView extends React.Component {
 					this.state.param.height = height;
 
 					setTimeout( ()=> {
-						this.action.changeNodeInput(
-							this.props.node.varname,
-							"screensize",
-							[width, height]
-						);
+						this.action.changeNodeInput({
+							varname : this.props.node.varname,
+							input : {"screensize" : [width, height]}
+						});
 					}, 0);
 				}
 			}
@@ -361,6 +360,7 @@ class RenderView extends React.Component {
 
 
     render(){
+	console.log(this.props.node.panel.size)
 
         const styles = this.styles();
         return this.content()
