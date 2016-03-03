@@ -14,6 +14,7 @@ export default class MenuNodeCreate extends React.Component {
         };
 
         this.styles = this.styles.bind(this);
+        this.floating = (this.props.focusFunction !== undefined);
 
         this.nodeChanged = this.nodeChanged.bind(this);
 

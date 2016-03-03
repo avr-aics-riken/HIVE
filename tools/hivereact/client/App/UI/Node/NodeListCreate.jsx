@@ -24,13 +24,14 @@ export default class NodeListCreate extends React.Component {
     styles() {
         return {
             menuArea: {
-                backgroundColor: "rgba(16, 96, 8, 0.5)",
+                backgroundColor: "transparent",
+                border: "3px solid rgb(33, 187, 151)",
                 color: "#eee",
                 fontSize: "10pt",
                 margin: "0px",
-                padding: "0px",
-                width: "200px",
-                height: "200px",
+                padding: "3px",
+                width: "260px",
+                height: "260px",
                 position: "absolute",
                 top: this.top + "px",
                 left: this.left + "px",
@@ -54,6 +55,7 @@ export default class NodeListCreate extends React.Component {
                 <MenuNodeList
                     store={this.props.store}
                     action={this.props.action}
+                    floating={true}
                 />
             </div>
         );
