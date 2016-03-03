@@ -27,6 +27,7 @@ export default class MenuNodeList extends React.Component {
         if(this.floating){
             return {
                 block: {
+                    textAlign: "center",
                     margin: "0px",
                     padding: "0px",
                     width: "248px",
@@ -38,9 +39,9 @@ export default class MenuNodeList extends React.Component {
                     border: "none",
                     color: "turquoise",
                     fontSize: "large",
-                    margin: "0px",
+                    margin: "0px auto",
                     padding: "0px",
-                    width: "248px",
+                    width: "240px",
                     minHeight: "100%",
                     overflow: "auto"
                 },
@@ -50,10 +51,11 @@ export default class MenuNodeList extends React.Component {
                     borderRadius: "5px",
                     color: "turquoise",
                     fontSize: "small",
+                    textAlign: "left",
                     lineHeight: "24px",
-                    margin: "5px 3px",
+                    margin: "5px 2px",
                     padding: "2px",
-                    width: "244px",
+                    width: "236px",
                     height: "24px",
                     overflow: "auto",
                     textShadow: "0px 0px 3px #022",
