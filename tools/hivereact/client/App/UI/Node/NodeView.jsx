@@ -40,6 +40,7 @@ export default class NodeView extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
         this.listHidden = this.listHidden.bind(this);
         this.generator = this.generator.bind(this);
+		this.onNodeAdded = this.onNodeAdded.bind(this);
 		this.width = 4000;
 		this.height = 4000;
 	}
@@ -151,12 +152,6 @@ export default class NodeView extends React.Component {
 				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
 			};
         }
-        if(this.listVisiblity){
-            setTimeout((()=>{
-                this.listVisiblity = false;
-                this.setState({listVisible: this.listVisiblity,});
-            }).bind(this), 50);
-        }
 	}
 
 	onMouseMove(ev) {
@@ -165,7 +160,7 @@ export default class NodeView extends React.Component {
 			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
-            const mv = (dx + dy) * 0.005;			
+            const mv = (dx + dy) * 0.005;
 			let zoom = this.props.nodeStore.getZoom();
             zoom = zoom + mv;
             if (zoom <= 0.1) {
@@ -280,6 +275,28 @@ export default class NodeView extends React.Component {
 		}
 	}
 
+	onNodeAdded(err, data) {
+		if (!err) {
+			let initialpos = this.props.store.getInitialNodePosition();
+			if (data.node.pos[0] === initialpos[0] && data.node.pos[1] === initialpos[1]) {
+				let rect = this.refs.viewport.getBoundingClientRect();
+				let width = rect.right - rect.left;
+				let height = rect.bottom - rect.top;
+				let n = JSON.parse(JSON.stringify(data.node));
+				n.pos = [this.refs.viewport.scrollLeft + width / 2 - 200, this.refs.viewport.scrollTop + height / 2 - 200];
+				if (n.pos[0] <= 0) { n.pos[0] = 200; }
+				if (n.pos[1] <= 0) { n.pos[1] = 200; }
+				if (n.pos[0] >= 4000) { n.pos[0] = 3800; }
+				if (n.pos[1] >= 4000) { n.pos[1] = 3800; }
+				setTimeout(() => {
+					this.props.action.changeNode({
+						varname : data.varname,
+						node : n
+					});
+				}, 0);
+			}
+		}
+	}
 
     componentDidMount(){
         window.addEventListener('keydown', this.keyDownEvent.bind(this));
@@ -291,15 +308,17 @@ export default class NodeView extends React.Component {
 		this.refs.viewport.scrollTop = 1700;
 		this.refs.viewport.scrollLeft = 1700;
 
+		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
     }
 
     componentWillUnmount(){
         window.removeEventListener('keydown', this.keyDownEvent.bind(this));
 		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
+		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
     }
 
 	origin() {
-		if (this.refs.viewport) {
+		if (this.refs.view) {
 			let rect = this.refs.viewport.getBoundingClientRect();
 			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
 			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
@@ -348,6 +367,7 @@ export default class NodeView extends React.Component {
 							border : "10px solid",
 							borderColor : "gray"
 						}}
+						ref="view"
 					>
 						{nodeList}
 						<NodePlugView
