@@ -4,6 +4,7 @@ import Core from '../../Core';
 import MenuStore from './MenuStore.jsx';
 import MenuNodeCreate from './MenuNodeCreate.jsx';
 import MenuNodeList from './MenuNodeList.jsx';
+import Node from "../Node";
 
 export default class Menu extends React.Component {
     constructor(props) {
@@ -83,7 +84,7 @@ export default class Menu extends React.Component {
             <div style={style.menuArea}>
                 <div style={style.container}>
                     <div style={style.header}>
-                        <div style={style.headerCaption}>Node List</div>
+                        <div style={style.headerCaption}>Node</div>
                     </div>
                     <MenuNodeCreate
                         store={this.props.store}
@@ -96,6 +97,15 @@ export default class Menu extends React.Component {
                         action={this.props.action}
                         menuStore={this.props.menuStore}
                         menuAction={this.props.menuAction}
+                    />
+                </div>
+                <div style={style.container}>
+                    <div style={style.header}>
+                        <div style={style.headerCaption}>Property</div>
+                    </div>
+                    <Node.Property
+                        store={this.props.store}
+                        action={this.props.action}
                     />
                 </div>
             </div>
