@@ -20,7 +20,9 @@
 		"electron-packager" : "*",
 		"react-split-pane" : "*",
 		"react-autosuggest" : "*",
-		"react-color" : "*"
+		"react-color" : "*",
+        "rc-menu": "*",
+        "velocity-animate": "*"        
 	},
 	"window": {
 		"toolbar": true,
