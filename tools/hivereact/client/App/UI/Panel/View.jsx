@@ -17,6 +17,7 @@ export default class View extends React.Component {
         this.generator = this.generator.bind(this);
         this.nodeCountChanged = this.nodeCountChanged.bind(this);
 
+        this.onMouseDown = this.onMouseDown.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
     }
@@ -33,31 +34,18 @@ export default class View extends React.Component {
         this.setState({nodes: [].concat(this.store.getNodes())});
     }
 
+    onMouseDown(){
+        this.props.action.unSelectNode([], this.props.nodeVarname);
+    }
+
     styles() {
         return {
             container: {
-                backgroundColor: "#333",
                 margin : "0px",
                 padding : "0px",
                 width : "100%",
-                height: "100%"
-            },
-            menu: {
-                backgroundColor: "black",
-                border: "1px solid #999",
-                color: "#eee",
-                minWidth: "100px",
-                height: "20px",
-                position: "absolute",
-                left: "0px",
-                top: "0px"
-            },
-            button: {
-                backgroundColor: "#666",
-                height: "20px",
-                padding: "0px 5px",
-                float: "left",
-                boxShadow: "0px 0px 1px 0px white inset"
+                height: "100%",
+                position: "absolute"
             }
         };
     }
@@ -76,7 +64,7 @@ export default class View extends React.Component {
     render() {
         var styles = this.styles();
         var a = (
-            <div style={styles.container}>
+            <div style={styles.container} onMouseDown={this.onMouseDown}>
                 {this.state.nodes.map((value, key)=>{
                     return this.generator(value, key);
                 })}
