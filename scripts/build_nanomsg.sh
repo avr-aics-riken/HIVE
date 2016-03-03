@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 topdir=`pwd`
 installdir=`pwd`/third_party/local
