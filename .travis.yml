@@ -18,3 +18,6 @@ script:
   - export OMPI_CC=gcc-4.8
   - export OMPI_CXX=g++-4.8
   - make -C build VERBOSE=1
+
+notifications:
+ slack: rikenhivedev:RQkEy9ZpqsW18gIXDPoWg1F0
