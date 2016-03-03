@@ -1,6 +1,5 @@
 
 print('load obj')
 
-local obj = OBJLoader()
+local obj = require("ObjLoader")()
 obj:Load('invalid.obj')
-

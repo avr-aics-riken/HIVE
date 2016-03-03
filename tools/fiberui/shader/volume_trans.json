@@ -1,0 +1,6 @@
+{
+"type":"VOLUME",
+"uniforms":[
+	{"label" : "Transfer Function", "name" : "trans", "uniform" : "rgbatex", "ui" : "transferfunction", "width" : 256, "height": 1, "rgba":[] }
+]
+}

@@ -16,6 +16,8 @@ SET(HIVE_BUILD_WITH_HDMLIB OFF CACHE BOOL "Build with HDMlib support?")
 SET(HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?")
 SET(HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_MPI option)")
 SET(HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)")
+SET(HIVE_BUILD_WITH_OPENGL ON CACHE BOOL "Build with OpenGL support?(Also need to enable HIVE_BUILD_WITH_OPENGL option)")
+SET(HIVE_BUILD_WITH_NANOMSG ON CACHE BOOL "Build with Nanomsg support?(Also need to enable HIVE_BUILD_WITH_NANOMSG option)")
 SET(HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?")
 
 # PROJECT OUTPUT SETTING
@@ -41,6 +43,8 @@ add_subdirectory(third_party/lua)
 add_subdirectory(tools)
 
 # build
+add_subdirectory(HiveCore)
+add_subdirectory(lib)
 add_subdirectory(hrender)
 add_subdirectory(HIVE)
 

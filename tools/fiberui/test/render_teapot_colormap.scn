@@ -1,0 +1,22 @@
+print('Render Teapot with ColorMap')
+
+local camera = HIVE_ObjectTable["view"];
+camera:LookAt(
+	0,10,30,
+	0,3,0,
+	0,1,0,
+	60
+)
+hcmd.UpdateSceneInformation()
+
+local gen = PrimitiveGenerator()
+
+local model = PolygonModel()
+local meshdata = gen:Teapot(3.0)
+model:Create(meshdata)
+model:SetShader('../test/colormap.frag')
+
+HIVE_ObjectTable["teapot"] = model
+hcmd.ApplyColorMapTex("teapot", "colormap_tex", "colormap");
+
+hcmd.RenderCamera(512,512,"view","raw",true);

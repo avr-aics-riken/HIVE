@@ -4,7 +4,7 @@ local camera = Camera()
 --camera:SetScreenSize(256, 256)
 camera:SetScreenSize(2048, 2048)
 --camera:SetScreenSize(8192, 8192) --250[sec]
-camera:SetFilename('image_sph_vector.jpg')
+camera:SetFilename('volume_to_vector.jpg')
 
 camera:LookAt(
 	80,80,80,
@@ -13,10 +13,10 @@ camera:LookAt(
 	60
 )
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('fvel_0000001470.sph')
 
-local vtovec = VolumeToVector()
+local vtovec = require("VolumeToVector")()
 local voldata = sph:VolumeData()
 print(vtovec)
 print(voldata)

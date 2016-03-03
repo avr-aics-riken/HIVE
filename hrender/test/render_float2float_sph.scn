@@ -13,10 +13,10 @@ camera:LookAt(
 )
 
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('fvel_0000001470.sph')
 
-local f2f = FloatsToFloat()
+local f2f = require("require("FloatsToFloat")")()
 f2f:Create(sph:VolumeData(), 2) -- RED channel
 
 local volume = VolumeModel()

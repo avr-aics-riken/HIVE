@@ -12,7 +12,7 @@ camera:LookAt(
 )
 
 
-local obj = OBJLoader()
+local obj = require("ObjLoader")()
 obj:Load('bunny.obj')
 
 local model = LineModel()
@@ -22,5 +22,3 @@ model:Create(linedata)
 model:SetShader('white.frag')
 
 render {camera, model}
-
-
