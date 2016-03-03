@@ -45,7 +45,7 @@ class Color extends React.Component {
 					a: clampFloatRGB(this.props.node.input[0].value[3])
 				}}
 				onChange={this.onColorChange.bind(this)}
-				type="sketch" />;
+				type="sketch" />
 		</div>);
 	}
 }
