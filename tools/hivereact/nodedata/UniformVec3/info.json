@@ -3,7 +3,6 @@
 	"funcname": "UniformVec3",
 	"info":"Uniform Vec3をつくるノード",
 	"customfuncfile":"vec3.lua",
-	"uifile":"vec3.jsx",
     "input": [
 		{"name": "name",  "type": "string", "value": "univec3"},
 		{"name": "value",  "type": "vec3", "value": [0,0,0]}
