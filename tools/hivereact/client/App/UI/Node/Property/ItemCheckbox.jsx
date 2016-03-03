@@ -49,10 +49,12 @@ export default class ItemCheckbox extends React.Component {
                 width : "80px",
                 verticalAlign: "middle",
                 display: "inline-block",
+                textShadow: "0px 0px 3px black"
             },
             value : {
                 color : "#333",
                 letterSpacing: "normal",
+                marginLeft: "1px",
                 padding: "1px",
                 width : "160px",
                 verticalAlign: "middle",
