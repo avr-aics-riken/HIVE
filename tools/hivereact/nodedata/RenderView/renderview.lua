@@ -12,7 +12,7 @@ RenderView.new = function (varname)
         up = {0,1,0},
         fov = 60,
         clearcolor = {0,0,0,1},
-        color_file = "output.jpg",
+        color_file = "",
         depth_file = "",
         ipcpath = ''
     }
