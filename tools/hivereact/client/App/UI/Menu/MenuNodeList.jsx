@@ -12,6 +12,7 @@ export default class MenuNodeList extends React.Component {
         };
 
         this.styles = this.styles.bind(this);
+        this.floating = (this.props.floating !== undefined);
         this.props.store.on(Core.Constants.INITIALIZED, (()=>{
             this.setState({nodeList: this.props.store.getNodeNameList()});
         }).bind(this));
@@ -23,41 +24,79 @@ export default class MenuNodeList extends React.Component {
     }
 
     styles() {
-        return {
-            block: {
-                margin: "0px",
-                padding: "0px",
-                width: "100%",
-                height: "248px",
-                overflow: "auto"
-            },
-            select: {
-                backgroundColor: "transparent",
-                border: "none",
-                color: "turquoise",
-                fontSize: "large",
-                margin: "0px",
-                padding: "0px",
-                width: "248px",
-                minHeight: "95%",
-                overflow: "auto"
-            },
-            list: {
-                // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                backgroundColor: "#666",
-                borderRadius: "5px",
-                color: "turquoise",
-                fontSize: "small",
-                lineHeight: "24px",
-                margin: "5px 3px",
-                padding: "2px",
-                width: "242px",
-                height: "24px",
-                overflow: "auto",
-                textShadow: "0px 0px 3px #022",
-                cursor: "pointer"
-            }
-        };
+        if(this.floating){
+            return {
+                block: {
+                    margin: "0px",
+                    padding: "0px",
+                    width: "248px",
+                    height: "218px",
+                    overflow: "auto"
+                },
+                select: {
+                    backgroundColor: "transparent",
+                    border: "none",
+                    color: "turquoise",
+                    fontSize: "large",
+                    margin: "0px",
+                    padding: "0px",
+                    width: "248px",
+                    minHeight: "100%",
+                    overflow: "auto"
+                },
+                list: {
+                    // backgroundColor: "rgba(128, 128, 128, 0.5)",
+                    backgroundColor: "#666",
+                    borderRadius: "5px",
+                    color: "turquoise",
+                    fontSize: "small",
+                    lineHeight: "24px",
+                    margin: "5px 3px",
+                    padding: "2px",
+                    width: "244px",
+                    height: "24px",
+                    overflow: "auto",
+                    textShadow: "0px 0px 3px #022",
+                    cursor: "pointer"
+                }
+            };
+        }else{
+            return {
+                block: {
+                    margin: "0px",
+                    padding: "0px",
+                    width: "100%",
+                    height: "248px",
+                    overflow: "auto"
+                },
+                select: {
+                    backgroundColor: "transparent",
+                    border: "none",
+                    color: "turquoise",
+                    fontSize: "large",
+                    margin: "0px",
+                    padding: "0px",
+                    width: "248px",
+                    minHeight: "95%",
+                    overflow: "auto"
+                },
+                list: {
+                    // backgroundColor: "rgba(128, 128, 128, 0.5)",
+                    backgroundColor: "#666",
+                    borderRadius: "5px",
+                    color: "turquoise",
+                    fontSize: "small",
+                    lineHeight: "24px",
+                    margin: "5px 3px",
+                    padding: "2px",
+                    width: "242px",
+                    height: "24px",
+                    overflow: "auto",
+                    textShadow: "0px 0px 3px #022",
+                    cursor: "pointer"
+                }
+            };
+        }
     }
 
     generator(value, key){

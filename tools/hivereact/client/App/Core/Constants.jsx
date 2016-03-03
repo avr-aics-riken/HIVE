@@ -15,4 +15,9 @@ module.exports = {
     PLUG_DELETED : "plug_deleted",
 	PANEL_VISIBLE_CHANGED : "panel_visible_changed",
 	PANEL_SIZE_CHANGED : "panel_size_changed"
-}
+};
+
+// color 定数化したい気もする
+// backgroundColor :  this.state.isSelected ? "rgba(2, 17, 27, 0.6)" : "rgba(67, 67, 67, 0.9)",
+// borderColor : this.state.isSelected ? "rgb(54, 196, 168)" : "rgba(0, 0, 0, 0)"
+
