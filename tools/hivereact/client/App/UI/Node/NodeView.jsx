@@ -330,7 +330,7 @@ export default class NodeView extends React.Component {
 
 	render() {
 		const styles = this.styles.bind(this)();
-		let isSimple = this.state.zoom <= 0.6;
+		let isSimple = false;//this.state.zoom <= 0.6;
 		let invzoom = (1.0 / this.state.zoom);
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
 			return (<Node nodeVarname={nodeData.varname}

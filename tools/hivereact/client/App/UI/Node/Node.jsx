@@ -144,7 +144,7 @@ export default class Node extends React.Component {
 				position : "absolute",
 				left : String(this.getNodePos()[0]),
 				top : String(this.getNodePos()[1]),
-				minWidth : "150px",
+				minWidth : "200px",
 				height : String(this.getHeight.bind(this)()) + "px",
 				backgroundColor :  this.state.isSelected ? "rgba(2, 17, 27, 0.6)" : "rgba(67, 67, 67, 0.9)",
 				color : "white",
