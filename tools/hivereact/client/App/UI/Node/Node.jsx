@@ -172,7 +172,6 @@ export default class Node extends React.Component {
 				textAlign : "center",
 				borderRadius : "4.5px",
 				opacity : this.state.closeHover ? "0.9" : "1.0",
-				cursor : "pointer",
 				backgroundImage : "url(./img/node_close.png)",
 				backgroundRepeat: "no-repeat",
 				backgroundSize: "contain"
@@ -248,8 +247,15 @@ export default class Node extends React.Component {
 	}
 
 	/// 閉じるボタンにマウスホバーされた
-	onCloseHover(ev) {
-		this.setState({ closeHover : !this.state.closeHover })
+	onCloseEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		this.setState({ closeHover : !this.state.closeHover });
+		ev.target.style.cursor = "pointer";
+	}
+
+	onCloseLeave(ev) {
+		this.setState({ closeHover : !this.state.closeHover });
+		ev.target.style.cursor = "default";
 	}
 
 	/// 簡易表示ボタンが押された
@@ -262,6 +268,15 @@ export default class Node extends React.Component {
 		});
 	}
 
+	onTitleEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		ev.target.style.cursor = "pointer";
+	}
+
+	onTitleLeave(ev) {
+		ev.target.style.cursor = "default";
+	}
+
 	/// タイトル.
 	titleElem() {
 		const style = this.styles();
@@ -270,11 +285,12 @@ export default class Node extends React.Component {
 					<span
 						onClick={this.onOpenCloseButtonClick.bind(this)}
 						style={{
-							cursor : "pointer",
 							fontSize : isClose ? "12px" : "16px",
 							marginLeft : isClose ? "4px" : "0px",
 							marginRight : isClose ? "4px" : "0px"
 						}}
+						onMouseEnter={this.onTitleEnter.bind(this)}
+						onMouseLeave={this.onTitleLeave.bind(this)}
 					>
 						{isClose ? "▶" : "▼"}
 					</span>
@@ -388,8 +404,8 @@ export default class Node extends React.Component {
 		const style = this.styles();
 		return (<div style={style.closeButton}
 					onClick={this.onCloseClick.bind(this)}
-					onMouseEnter={this.onCloseHover.bind(this)}
-					onMouseLeave={this.onCloseHover.bind(this)}
+					onMouseEnter={this.onCloseEnter.bind(this)}
+					onMouseLeave={this.onCloseLeave.bind(this)}
 				>
 				</div>)
 	}
