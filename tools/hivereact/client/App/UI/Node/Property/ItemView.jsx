@@ -39,7 +39,13 @@ export default class ItemView extends React.Component {
 				// backgroundColor : "rgb(80, 80, 80)",
 				// color : "black",
 				display : "table"
-			}
+			},
+            propertyContainer: {
+                backgroundColor: "silver",
+                borderRadius: "3px",
+                margin: "2px",
+                width: "246px"
+            }
 		};
 	}
 
@@ -143,6 +149,7 @@ export default class ItemView extends React.Component {
 					name : "show panel",
 					value : this.state.isShowPanel
 				}}
+                top={true}
 				changeCheckboxFunc={this.changeCheckboxFunc.bind(this)}
 				key={String(this.props.id + "_panel")}
 				id={String(this.props.id + "_panel")} />);
@@ -150,26 +157,31 @@ export default class ItemView extends React.Component {
 	}
 
 	contents() {
+		const styles = this.styles.bind(this)();
 		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
-			let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
+            let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
+            let bottom = this.props.initialNodeData.input.length - 1 === parseInt(key, 10);
 			if (Array.isArray(hole.array)) {
 				return (<ItemArray
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
 							changeLengthFunc={this.changeLengthFunc.bind(this)}
-							initialParam={hole} key={id} id={id} />);
+                            initialParam={hole} key={id} id={id}
+                            bottom={bottom} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id}  changeVecFunc={this.changeVecFunc.bind(this)} />);
+							initialParam={hole} key={id} id={id}  changeVecFunc={this.changeVecFunc.bind(this)}
+                            bottom={bottom} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
 				return (<ItemTextInput
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)} />);
+							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+                            bottom={bottom} />);
 			} else {
-				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} />);
+				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} bottom={bottom}/>);
 			}
 		});
 		return (
@@ -181,9 +193,10 @@ export default class ItemView extends React.Component {
 					}}
 					key={String(this.props.id + "_title")}
 					id={String(this.props.id + "_title")} />
-
-				{this.panelCheckbox.bind(this)()}
-				{inputs}
+                <div style={styles.propertyContainer}>
+                    {this.panelCheckbox.bind(this)()}
+                    {inputs}
+                </div>
 			</div>
 		);
 	}
