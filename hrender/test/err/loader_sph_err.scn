@@ -1,7 +1,7 @@
 
 print('load SPH')
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('invalid.sph')
 
 

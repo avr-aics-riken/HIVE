@@ -1,6 +1,6 @@
 function LoadSPH(property)
 	local sphloader
-	sphloader = SPHLoader()
+	sphloader = require("SphLoader")()
 	sphloader:Load(property.filepath)
 	return sphloader
 end

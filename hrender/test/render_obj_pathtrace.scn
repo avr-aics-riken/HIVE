@@ -52,7 +52,7 @@ local img
 --env, img = makeEnvironment('IMG_2043 Panorama_RAW.hdr', 1000, 90)
 env, img = makeEnvironment('aosky_016_16k.hdr', 1000, 90)
 
-local objloader = OBJLoader()
+local objloader = require("ObjLoader")()
 local r = objloader:Load('bunny.obj')
 if not r then
 	print('Failed to load bunny.obj');
@@ -68,5 +68,3 @@ model:SetShader('pathtrace.frag')
 
 
 render({camera, floor, model, env})
-
-

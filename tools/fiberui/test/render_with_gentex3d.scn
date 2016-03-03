@@ -1,0 +1,46 @@
+print('render_with_texture')
+--local bit = require("bit")
+
+local gen  = PrimitiveGenerator()
+local plane = gen:Quad(100, 100)
+
+local pm = PolygonModel();
+pm:Create(plane);
+pm:SetShader("../test/textured.frag");
+
+-- load from file
+local gentex = GenTexture()
+
+local textable = {}
+
+--create tax texture
+for j = 0, 255 do
+	for i = 0, 255 do
+		table.insert(textable, bit32.bxor(i, j));
+		table.insert(textable, bit32.bxor(i, j));
+		table.insert(textable, bit32.bxor(i, j));
+		table.insert(textable, bit32.bxor(i, j));
+	end
+end
+
+
+print (#textable)
+
+
+gentex:Create2D(textable, 1, 256, 256);
+local img = gentex:ImageData()
+
+pm:SetTexture('mytex0', img) -- Bind
+
+local cam = Camera()
+cam:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+hcmd.UpdateSceneInformation()
+
+HIVE_ObjectTable["gentex3d"] = pm
+
+hcmd.RenderCamera(512,512,"view","raw",true);

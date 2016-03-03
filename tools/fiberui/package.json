@@ -1,0 +1,23 @@
+{
+	"name": "fiberui",
+	"version": "0.0.1",
+	"private": true,
+	"scripts": {
+		"start": "electron main.js"
+	},
+	"main" : "main.js",
+	"dependencies": {
+		"websocket": "*",
+		"pty.js": "*",
+		"nanomsg": "*",
+		"buffercopy": "*"
+	},
+	"window": {
+		"toolbar": true,
+		"resizable": true,
+		"fullscreen": false,
+		"frame": true,
+		"width": 800,
+		"height": 600
+	}
+}

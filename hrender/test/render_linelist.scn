@@ -2,7 +2,7 @@ print('render_pointlist')
 
 local cam = Camera()
 cam:SetScreenSize(1024, 1024)
-cam:SetFilename("render_pointlist.jpg")
+cam:SetFilename("render_linelist.jpg")
 cam:LookAt(
 	0,0,100,
 	0,0,0,
