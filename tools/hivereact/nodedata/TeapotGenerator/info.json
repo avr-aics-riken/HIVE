@@ -4,7 +4,7 @@
 	"info":"Teapotを生成するためのノード",
 	"customfuncfile":"generator.lua",
     "input": [
-		{"name": "size", "type": "float", "value": [1.0]}
+		{"name": "size", "type": "float", "value": [30.0]}
 	],
 	"output": [
 		{"name": "MeshData",  "type": "BufferMeshData"}

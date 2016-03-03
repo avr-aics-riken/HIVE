@@ -1,0 +1,12 @@
+{
+	"name": "Sphere Generator",
+	"funcname": "SphereGenerator",
+	"info":"Sphereを生成するためのノード",
+	"customfuncfile":"generator.lua",
+    "input": [
+		{"name": "radius", "type": "float", "value": [30.0]}
+	],
+	"output": [
+		{"name": "PointData",  "type": "BufferPointData"}
+	]
+}
