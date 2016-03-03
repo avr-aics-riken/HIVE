@@ -1,0 +1,13 @@
+{
+	"name": "UniformFloat",
+	"funcname": "UniformFloat",
+	"info":"Uniform floatをつくるノード",
+	"customfuncfile":"float.lua",
+    "input": [
+		{"name": "name",  "type": "string", "value": "unifloat"},
+		{"name": "value",  "type": "float", "value": 0.0}
+	],
+	"output": [
+		{"name": "uniform",  "type": "Uniform"}
+	]
+}

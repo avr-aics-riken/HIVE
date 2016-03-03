@@ -125,7 +125,7 @@ export default class Store extends EventEmitter {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
 							if (inputArray[n].name === plug.input.name) {
-								return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 7) + 20];
+								return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 24];
 							}
 							if (isClosed) {
 								if (this.isConnected(node.varname, inputArray[n].name)) {
