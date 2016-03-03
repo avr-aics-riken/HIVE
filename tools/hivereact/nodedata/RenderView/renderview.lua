@@ -23,18 +23,50 @@ RenderView.new = function (varname)
 end
 
 function RenderView:Do()
-    local property = self.property    
-    self.cam:SetScreenSize(property.screensize[1], property.screensize[2])
-    self.cam:SetFilename(property.color_file)
-    if property.depth_file ~= nil then
-        self.cam:SetDepthFilename(property.depth_file)
+    local property = self.property
+    
+    local screensize = property.screensize
+    local clearcolor = property.clearcolor
+    local color_file = property.color_file
+    local depth_file = property.depth_file
+    local position = property.position
+    local target   = property.target
+    local up       = property.up
+    local fov      = property.fov
+    if self.connection.screensize then
+        screensize = self.connection.screensize
     end
-    self.cam:ClearColor(property.clearcolor[1],property.clearcolor[2],property.clearcolor[3],property.clearcolor[4])
+    if self.connection.clearcolor then
+        clearcolor = self.connection.clearcolor
+    end
+    if self.connection.color_file then
+        color_file = self.connection.color_file
+    end
+    if self.connection.depth_file then
+        depth_file = self.connection.depth_file
+    end
+    if self.connection.position then
+        position = self.connection.position
+    end
+    if self.connection.target then
+        target = self.connection.target
+    end
+    if self.connection.up then
+        up = self.connection.up
+    end
+    if self.connection.fov then
+        fov = self.connection.fov
+    end
+
+    self.cam:SetScreenSize(screensize[1], screensize[2])
+    self.cam:SetFilename(color_file)
+    self.cam:SetDepthFilename(depth_file)
+    self.cam:ClearColor(clearcolor[1],clearcolor[2],clearcolor[3],clearcolor[4])
     self.cam:LookAt(
-        property.position[1], property.position[2], property.position[3],
-        property.target[1], property.target[2], property.target[3],
-        property.up[1], property.up[2], property.up[3],
-        property.fov
+        position[1], position[2], position[3],
+        target[1],   target[2],   target[3],
+        up[1],       up[2],       up[3],
+        fov
     )
     
     local temp = {}
