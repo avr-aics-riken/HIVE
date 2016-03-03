@@ -4,7 +4,20 @@ topdir=`pwd`
 installdir=`pwd`/third_party/local
 #c_compiler=mpicc
 #cxx_compiler=mpicxx
-cmake_bin=cmake
+
+if [ -z "${CC+x}" ]; then
+  c_compiler=mpicc
+  CC=mpicc
+else
+  c_compiler=${CC}
+fi
+
+if [ -z "${CXX+x}" ]; then
+  cxx_compiler=mpicxx
+  CXX=mpicxx
+else
+  cxx_compiler=${CXX}
+fi
 
 set -e
 
