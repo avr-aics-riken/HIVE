@@ -378,10 +378,11 @@ export default class NodeView extends React.Component {
 							nodeAction={this.props.nodeAction}
 						/>
 					</div>
-					{this.addButton.bind(this)(0)}
-					{this.addButton.bind(this)(1)}
                     {this.generator.bind(this)()}
 				</div>
 				);
 	}
 }
+
+//{this.addButton.bind(this)(0)}
+//{this.addButton.bind(this)(1)}
