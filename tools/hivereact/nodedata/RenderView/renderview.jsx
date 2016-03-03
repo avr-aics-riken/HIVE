@@ -252,9 +252,8 @@ class RenderView extends React.Component {
 		// イメージサイズの更新.
 		if (this.state) {
 			if (this.props.node.panel.visible) {
-				let rect = this.refs.content.getBoundingClientRect();
-				let width = rect.right - rect.left;
-				let height = rect.bottom - rect.top;
+				let width = this.props.node.panel.size[0];
+				let height = this.props.node.panel.size[1];
 				if (Number(this.state.param.width) !== width || Number(this.state.param.height) !== height) {
 					console.log("update image size");
 					this.state.param.width = width;
@@ -345,7 +344,7 @@ class RenderView extends React.Component {
 		if (this.hasIPCAddress()) {
 		} else {
         }
-        return (<div ref="content">
+        return (<div>
             <canvas id={this.getCanvasName('canvas')} style={styles.canvas}
 				width={this.props.node.panel.size[0]}
 				height={this.props.node.panel.size[1]} ></canvas>
