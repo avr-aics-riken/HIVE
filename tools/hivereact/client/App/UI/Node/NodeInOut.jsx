@@ -269,7 +269,7 @@ export default class NodeInOut extends React.Component {
 	}
 
 	/// マウスホバーされた
-	onHover(ev) {
+	onMouseEnter(ev) {
 		if (ev.button === 1 || ev.button === 2) { return; }
 		this.setState({ hover : !this.state.hover })
 		ev.target.style.cursor = "pointer";
@@ -289,7 +289,7 @@ export default class NodeInOut extends React.Component {
 							onMouseDown={this.onMouseDown.bind(this)}
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
-							onMouseEnter={this.onHover.bind(this)}
+							onMouseEnter={this.onMouseEnter.bind(this)}
 							onMouseLeave={this.onMouseLeave.bind(this)}
 						/>
 						{this.inHoleText.bind(this)()}
@@ -301,7 +301,7 @@ export default class NodeInOut extends React.Component {
 							onMouseDown={this.onMouseDown.bind(this)}
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
-							onMouseEnter={this.onHover.bind(this)}
+							onMouseEnter={this.onMouseEnter.bind(this)}
 							onMouseLeave={this.onMouseLeave.bind(this)}
 						/>
 						{this.outHoleText.bind(this)()}
