@@ -137,7 +137,7 @@ export default class Store extends EventEmitter {
 						}
 					} else {
 						if (node.input[k].name === plug.input.name) {
-							return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 7) + 20];
+							return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 24];
 						}
 						if (isClosed) {
 							if (this.isConnected(node.varname, node.input[k].name)) {
@@ -157,7 +157,7 @@ export default class Store extends EventEmitter {
 				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.node.pos[0] + width, node.node.pos[1] + (k + 1) * (holeSize + 7) + 20];
+						return [node.node.pos[0] + width, node.node.pos[1] + (k + 1) * (holeSize + 3) + 24];
 					}
 				}
 			}
