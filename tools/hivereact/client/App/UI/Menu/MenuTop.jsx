@@ -104,13 +104,13 @@ export default class MenuTop extends React.Component {
         // ここでメニューの構造定義
         const horizontalMenu = React.cloneElement((
             <RcMenu onClick={this.handleClick}>
-                <SubMenu title={<span>file</span>} key="0">
-                    <MenuItem key="1">load</MenuItem>
-                    <MenuItem key="2">save</MenuItem>
-                    <MenuItem key="3">export</MenuItem>
-                    <MenuItem key="4">all node clear</MenuItem>
+                <SubMenu title={<span>File</span>} key="0">
+                    <MenuItem key="1">Load</MenuItem>
+                    <MenuItem key="2">Save</MenuItem>
+                    <MenuItem key="3">Export</MenuItem>
+                    <MenuItem key="4">Clear all</MenuItem>
                 </SubMenu>
-                <SubMenu title={<span>dummy</span>} key="10">
+                <SubMenu title={<span>Edit</span>} key="10">
                     <MenuItem key="11">dummy1</MenuItem>
                     <MenuItem key="12">dummy2</MenuItem>
                     <MenuItem key="13">dummy3</MenuItem>
