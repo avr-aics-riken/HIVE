@@ -13,22 +13,6 @@ function uuid() {
     return uuid;
 }
 
-const initialData = {
-	"varname": "invalid",
-	"select" : false,
-	"node" : {
-		"close" : false,
-		"pos": [100, 100],
-		"zindex": 0,
-	},
-	"panel": {
-		"visible": true,
-		"size": [100, 100],
-        "pos": [100, 100],
-		"zindex": 0
-	}
-};
-
 export default class ActionExecuter {
 	constructor(store) {
 		this.store = store;
@@ -65,10 +49,9 @@ export default class ActionExecuter {
 	}
 
 	assignInitialNodeValue(node) {
-		console.log("eee", node);
-		for (let key in initialData) {
+		for (let key in ActionExecuter.initialData) {
 			if (!node.hasOwnProperty(key)) {
-				node[key] = JSON.parse(JSON.stringify(initialData[key]));
+				node[key] = JSON.parse(JSON.stringify(ActionExecuter.initialData[key]));
 			}
 		}
 		if (node.uiFunc === "") {
@@ -361,3 +344,19 @@ export default class ActionExecuter {
         }
     }
 }
+
+ActionExecuter.initialData = {
+	"varname": "invalid",
+	"select" : false,
+	"node" : {
+		"close" : false,
+		"pos": [100, 100],
+		"zindex": 0,
+	},
+	"panel": {
+		"visible": true,
+		"size": [100, 100],
+		"pos": [100, 100],
+		"zindex": 0
+	}
+};

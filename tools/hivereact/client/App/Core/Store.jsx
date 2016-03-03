@@ -17,7 +17,7 @@ export default class Store extends EventEmitter {
 
 		this.actionExecuter = new ActionExecuter(this);
         this.dispatchToken = Dispatcher.register(this.actionExecuter.actionHandler.bind(this.actionExecuter));
-        
+
 		this.initHive = this.initHive.bind(this);
 		this.getNodes = this.getNodes.bind(this);
 		this.getNode = this.getNode.bind(this);
@@ -26,7 +26,7 @@ export default class Store extends EventEmitter {
 
 		this.initHive(this.data);
 	}
-    
+
     // private:
 	initHive(nodePlugData) {
 		this.hive = new Hive();
@@ -86,4 +86,10 @@ export default class Store extends EventEmitter {
 		return namelist;
 	}
 
+	/**
+	 * 初期ノード位置(固定)を返す
+	 */
+	getInitialNodePosition() {
+		return ActionExecuter.initialData.node.pos;
+	}
 }
