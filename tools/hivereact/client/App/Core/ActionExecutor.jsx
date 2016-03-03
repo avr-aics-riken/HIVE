@@ -166,7 +166,7 @@ export default class ActionExecuter {
 
 					let hasPanel = srcNode.hasOwnProperty('panel');
 					let prePanel = JSON.stringify(dstNode.panel);
-					let postPanel = hasPanel ? JSON.stringify(dstNode.panel) : null;
+					let postPanel = hasPanel ? JSON.stringify(payload.nodeInfo.panel) : null;
 					let prePanelVisible = dstNode.panel.visible;
 					let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
 					let prePanelSize = JSON.stringify(dstNode.panel.size);
