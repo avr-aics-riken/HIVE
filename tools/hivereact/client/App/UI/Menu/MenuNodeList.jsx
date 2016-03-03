@@ -13,6 +13,7 @@ export default class MenuNodeList extends React.Component {
 
         this.styles = this.styles.bind(this);
         this.floating = (this.props.floating !== undefined);
+        this.unFocus = this.unFocus.bind(this);
         this.props.store.on(Core.Constants.INITIALIZED, (()=>{
             this.setState({nodeList: this.props.store.getNodeNameList()});
         }).bind(this));
@@ -21,7 +22,13 @@ export default class MenuNodeList extends React.Component {
     onClick(eve){
         var e = eve.currentTarget;
         this.props.action.addNodeByName(e.value);
+        this.unFocus();
         if(this.props.hiddenFunction){this.props.hiddenFunction();}
+    }
+
+    unFocus(){
+        var e = ReactDOM.findDOMNode(this.refs.select);
+        e.selectedIndex = -1;
     }
 
     styles() {
@@ -116,7 +123,7 @@ export default class MenuNodeList extends React.Component {
         const style = this.styles();
         return (
             <div style={style.block}>
-                <select style={style.select} size={this.state.nodeList.length}>
+                <select ref="select" style={style.select} size={this.state.nodeList.length}>
                     {this.state.nodeList.map(this.generator.bind(this))}
                 </select>
             </div>
