@@ -13,7 +13,7 @@ function SphereGenerator:Do()
     self:UpdateValue()
 end
 
-function SphereGenerator:MeshData()
+function SphereGenerator:PointData()
     local v = self.value
     local radius = v.radius
     return self.gen:Sphere(radius);

@@ -7,6 +7,10 @@
 		{"name": "filepath", "type": "string", "value": ""}
 	],
 	"output": [
-		{"name": "MeshData",  "type": "BufferMeshData"}
+		{"name": "MeshData",  "type": "BufferMeshData"},
+		{"name": "NormalData",  "type": "BufferVectorData"},		
+        {"name": "PointData",  "type": "BufferPointData"},
+		{"name": "LineData",  "type": "BufferLineData"},
+		{"name": "TetraData",  "type": "BufferTetraData"}        
 	]
 }

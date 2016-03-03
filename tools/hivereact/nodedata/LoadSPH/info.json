@@ -1,0 +1,14 @@
+{
+	"name": "LoadSPH",
+	"funcname": "LoadSPH",
+	"info":"SPHをロードするためのノード",
+	"customfuncfile":"loadsph.lua",
+    "input": [
+		{"name": "filepath", "type": "string", "value": ""}
+	],
+	"output": [
+		{"name": "VolumeData",  "type": "BufferVolumeData"},
+        {"name": "Size",  "type": "vec3"},
+	    {"name": "Component",  "type": "float"}	
+    ]
+}
