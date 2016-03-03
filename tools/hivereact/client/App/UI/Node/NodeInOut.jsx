@@ -271,12 +271,12 @@ export default class NodeInOut extends React.Component {
 	/// マウスホバーされた
 	onMouseEnter(ev) {
 		if (ev.button === 1 || ev.button === 2) { return; }
-		this.setState({ hover : !this.state.hover })
+		this.setState({ hover : true })
 		ev.target.style.cursor = "pointer";
 	}
 
 	onMouseLeave(ev) {
-		this.setState({ hover : !this.state.hover })
+		this.setState({ hover : false })
 		ev.target.style.cursor = "default";
 	}
 
