@@ -28,7 +28,7 @@ export default class MenuNodeList extends React.Component {
         if(this.floating){
             return {
                 block: {
-                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    // backgroundColor: "rgba(0, 0, 0, 0.7)",
                     textAlign: "center",
                     margin: "0px",
                     padding: "0px",

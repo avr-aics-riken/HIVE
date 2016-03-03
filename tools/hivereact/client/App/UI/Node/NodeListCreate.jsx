@@ -24,7 +24,7 @@ export default class NodeListCreate extends React.Component {
     styles() {
         return {
             menuArea: {
-                backgroundColor: "transparent",
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
                 border: "3px solid rgb(33, 187, 151)",
                 color: "#eee",
                 fontSize: "10pt",
