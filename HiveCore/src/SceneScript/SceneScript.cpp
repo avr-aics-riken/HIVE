@@ -278,6 +278,8 @@ int screenParallelRendering(lua_State* L)
 }
 
 int getMemoryData(lua_State* L);
+int getMemoryDataNames(lua_State* L);
+
 
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
@@ -297,7 +299,8 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
     SetFunction(L, "screenParallelRendering", screenParallelRendering);
 
     SetFunction(L, "getMemoryData", getMemoryData);
-
+    SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
+    
     lua_pushlightuserdata(L, sceneScriptPtr);
     lua_setglobal(L, "__sceneScript");
     
@@ -369,9 +372,9 @@ namespace {
         }
         const char* dataName = lua_tostring(L, 1);
         lua_getglobal(L, "__sceneScript");
-        dumpStack(L);
         const void* ptr = lua_touserdata(L, -1);
         if (!ptr) {
+            fprintf(stderr,"Invalid sceneScript instance\n");
             lua_pushnil(L);
             return 1;
         }
@@ -381,6 +384,26 @@ namespace {
         return 1;
     }
 
+    int getMemoryDataNames(lua_State* L) {
+        lua_getglobal(L, "__sceneScript");
+        const void* ptr = lua_touserdata(L, -1);
+        if (!ptr) {
+            fprintf(stderr,"Invalid sceneScript instance\n");
+            lua_pushnil(L);
+            return 1;
+        }
+
+        LuaTable t;
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(const_cast<void*>(ptr));
+        const int n = sceneScript->GetMemoryDataNum();
+        for (int i = 0; i < n; ++i) {
+            t.push(sceneScript->GetMemoryDataId(i));
+        }
+        t.pushLuaTableValue(L);
+        return 1;
+    }
+
+    
 } // namespace
 
 
