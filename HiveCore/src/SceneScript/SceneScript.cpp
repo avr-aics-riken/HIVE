@@ -551,7 +551,7 @@ bool SceneScript::Impl::IsMemoryData(const char* dataId)
 }
 bool SceneScript::Impl::DeleteMemoryData(const char* dataId)
 {
-    UserMemoryDataArray::const_iterator it = getUserMemoryData(dataId);
+    UserMemoryDataArray::iterator it = getUserMemoryData(dataId);
     if (it != m_memoryData.end()) {
         m_memoryData.erase(it);
         return true;
