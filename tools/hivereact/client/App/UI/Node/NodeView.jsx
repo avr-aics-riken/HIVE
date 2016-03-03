@@ -30,6 +30,7 @@ export default class NodeView extends React.Component {
 			});
 		});
 
+		this.isLeftDown = false;
 		this.isRightDown = false;
 		this.isMiddleDown = false;
         this.listVisiblity = false;
@@ -146,7 +147,13 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseDown(ev) {
-		if (ev.button === 1) {
+		if (ev.button === 0) {
+			this.isLeftDown = true;
+			this.pos = {
+				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
+				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
+			};
+		} else if (ev.button === 1) {
 			this.isMiddleDown = true;
 			this.pos = {
 				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
@@ -162,7 +169,7 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseMove(ev) {
-		if (this.isMiddleDown) {
+		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
 			const px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
 			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
             const dx = (px - this.pos.x);
@@ -202,8 +209,15 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseUp(ev) {
-		this.isRightDown = false;
-		this.isMiddleDown = false;
+		if (ev.button == 2 && this.isRightDown) {
+			this.isRightDown = false;
+		}
+		if (ev.button == 1 && this.isMiddleDown) {
+			this.isMiddleDown = false;
+		}
+		if (ev.button == 0 && this.isLeftDown) {
+			this.isLeftDown = false;
+		}
 	}
 
     // この関数をフォーカスしたい子要素に渡して呼んでもらう
