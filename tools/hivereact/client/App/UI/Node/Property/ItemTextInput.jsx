@@ -46,7 +46,7 @@ export default class ItemTextInput extends React.Component {
         return {
             view : border.bind(this)(),
             key : {
-                backgroundColor: "#666",
+                backgroundColor: "rgb(84,84,84)",
                 color : "white",
                 fontSize: "smaller",
                 letterSpacing: "normal",
@@ -63,9 +63,9 @@ export default class ItemTextInput extends React.Component {
                 borderRadius: "3px",
                 color : "#333",
                 letterSpacing: "normal",
-                marginLeft: "1px",
+                marginLeft: "5px",
                 padding: "1px",
-                width : "162px",
+                width : "153px",
                 height: "19px",
                 verticalAlign: "bottom",
                 display: "inline-block",

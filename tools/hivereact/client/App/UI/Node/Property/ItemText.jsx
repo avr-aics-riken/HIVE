@@ -43,7 +43,7 @@ export default class ItemText extends React.Component {
         return {
             view : border.bind(this)(),
             key : {
-                backgroundColor: "#666",
+                backgroundColor: "rgb(84,84,84)",
                 color : "white",
                 fontSize: "smaller",
                 letterSpacing: "normal",

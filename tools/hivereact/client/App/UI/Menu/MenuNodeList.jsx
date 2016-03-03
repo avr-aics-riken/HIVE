@@ -18,7 +18,7 @@ export default class MenuNodeList extends React.Component {
         }).bind(this));
     }
 
-    onDoubleClick(eve){
+    onClick(eve){
         var e = eve.currentTarget;
         this.props.action.addNodeByName(e.value);
     }
@@ -50,11 +50,11 @@ export default class MenuNodeList extends React.Component {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
                     backgroundColor: "#444",
                     borderRadius: "3px",
-                    color: "aquamarine",
+                    color: "rgb(32, 255, 220)",
                     fontSize: "small",
                     textAlign: "left",
                     lineHeight: "24px",
-                    margin: "6px 2px",
+                    margin: "3px 2px",
                     padding: "2px",
                     width: "236px",
                     height: "24px",
@@ -88,10 +88,10 @@ export default class MenuNodeList extends React.Component {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
                     backgroundColor: "#444",
                     borderRadius: "3px",
-                    color: "aquamarine",
+                    color: "rgb(32, 255, 220)",
                     fontSize: "small",
                     lineHeight: "24px",
-                    margin: "6px 3px",
+                    margin: "3px 3px",
                     padding: "2px",
                     width: "242px",
                     height: "24px",
@@ -107,7 +107,7 @@ export default class MenuNodeList extends React.Component {
     generator(value, key){
         const style = this.styles();
         return (
-            <option style={style.list} key={key} value={value} onDoubleClick={this.onDoubleClick.bind(this)}>{"・" + value}</option>
+            <option style={style.list} key={key} value={value} onClick={this.onClick.bind(this)}>{"・" + value}</option>
         );
     }
 

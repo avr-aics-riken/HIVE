@@ -42,7 +42,7 @@ export default class ItemView extends React.Component {
 				display : "table"
 			},
             propertyContainer: {
-                backgroundColor: "silver",
+                backgroundColor: "rgb(133,133,133)",
                 borderRadius: "3px",
                 margin: "2px",
                 width: "246px"
