@@ -13,13 +13,11 @@ TeapotGenerator.new = function ()
 end
 
 function TeapotGenerator:Do()
-    local size = tonumber(self.property.size)
-    if size == nil then
-       self.property.size = 1     
-    end
+    self:UpdateValue()
 end
 
 function TeapotGenerator:MeshData()
-    local size = self.property.size    
+    local v = self.value    
+    local size = v.size    
     return self.gen:Teapot(size);
 end

@@ -15,9 +15,8 @@ function Color:Do()
 end
 
 function Color:color()
-    local value = self.property.value
-    if self.connection.value then
-        value = self.connection.value
-    end	
+    self:UpdateValue()
+    local v = self.value
+    local value = v.value
     return value
 end

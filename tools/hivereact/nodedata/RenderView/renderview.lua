@@ -23,68 +23,42 @@ RenderView.new = function (varname)
 end
 
 function RenderView:Do()
-    local property = self.property
+    self:UpdateValue()
+    local v = self.value
     
-    local screensize = property.screensize
-    local clearcolor = property.clearcolor
-    local color_file = property.color_file
-    local depth_file = property.depth_file
-    local position = property.position
-    local target   = property.target
-    local up       = property.up
-    local fov      = property.fov
-    if self.connection.screensize then
-        screensize = self.connection.screensize
-    end
-    if self.connection.clearcolor then
-        clearcolor = self.connection.clearcolor
-    end
-    if self.connection.color_file then
-        color_file = self.connection.color_file
-    end
-    if self.connection.depth_file then
-        depth_file = self.connection.depth_file
-    end
-    if self.connection.position then
-        position = self.connection.position
-    end
-    if self.connection.target then
-        target = self.connection.target
-    end
-    if self.connection.up then
-        up = self.connection.up
-    end
-    if self.connection.fov then
-        fov = self.connection.fov
-    end
-
-    self.cam:SetScreenSize(screensize[1], screensize[2])
-    self.cam:SetFilename(color_file)
-    self.cam:SetDepthFilename(depth_file)
-    self.cam:ClearColor(clearcolor[1],clearcolor[2],clearcolor[3],clearcolor[4])
+    self.cam:SetScreenSize(v.screensize[1], v.screensize[2])
+    self.cam:SetFilename(v.color_file)
+    self.cam:SetDepthFilename(v.depth_file)
+    self.cam:ClearColor(v.clearcolor[1],v.clearcolor[2],v.clearcolor[3],v.clearcolor[4])
     self.cam:LookAt(
-        position[1], position[2], position[3],
-        target[1],   target[2],   target[3],
-        up[1],       up[2],       up[3],
-        fov
+        v.position[1], v.position[2], v.position[3],
+        v.target[1],   v.target[2],   v.target[3],
+        v.up[1],       v.up[2],       v.up[3],
+        v.fov
     )
     
     local temp = {}
     local targetcam
 -- For Object
-    if self.connection.RenderObject then
-        temp = self.connection.RenderObject
+    if v.RenderObject then
+        temp = v.RenderObject
     end
         
 -- For Camera
-    if self.connection.Camera then
-        temp[#temp + 1] = self.connection.Camera
-        targetcam = self.connection.Camera
+    if v.Camera then
+        temp[#temp + 1] = v.Camera
+        targetcam = v.Camera
     else
         temp[#temp + 1] = self.cam
         targetcam = self.cam
     end
 
+-- dump
+--[[
+    for i,v in pairs(temp) do
+         print('RenderObject->', v);   
+    end
+--]]
     render(temp)
     
     local mode = 'jpg'
@@ -104,8 +78,8 @@ function RenderView:Do()
     end
     
     -- create metabinary
-    local w = property.screensize[1]
-    local h = property.screensize[2]
+    local w = v.screensize[1]
+    local h = v.screensize[2]
     local json = [[{
             "JSONRPC" : "2.0",
             "method" : "renderedImage",            

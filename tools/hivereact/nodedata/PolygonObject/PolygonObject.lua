@@ -13,22 +13,27 @@ PolygonObject.new = function (varname)
             
         }
     }
-
+    local pm = PolygonModel();
+    this.pmodel = pm
+    
     setmetatable(this, {__index=PolygonObject})
     return this
 end
 
-function PolygonObject:Do()
-    local pm = PolygonModel();
-    local property = self.property
-    self.pmodel = pm
-    if self.connection.mesh then
-	   pm:Create(self.connection.mesh)
+function PolygonObject:Do()    
+    
+    self:UpdateValue()
+    local v = self.value    
+    local pm = PolygonModel(); -- make new Model!
+    self.pmodel = pm           -- replace
+    
+    if v.mesh then
+	   pm:Create(v.mesh)
     end
-	pm:SetTranslate(property.translate[1], property.translate[2], property.translate[3])
-	pm:SetRotate(property.rotate[1], property.rotate[2], property.rotate[3])
-	pm:SetScale(property.scale[1], property.scale[2], property.scale[3])
-	pm:SetShader(property.shadername)
+	pm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])
+	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
+	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
+	pm:SetShader(v.shadername)
 
 	local uniforms = self.connection.Uniform
     if uniforms ~= nil then    
