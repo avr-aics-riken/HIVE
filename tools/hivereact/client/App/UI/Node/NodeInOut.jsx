@@ -107,7 +107,6 @@ export default class NodeInOut extends React.Component {
 				height : this.props.isClosed ? "10px" : "20px"
 			},
 			inhole : {
-				cursor : "pointer",
 				position : "absolute",
 				left : "0px",
 				width : holeSizeW + "px",
@@ -118,7 +117,6 @@ export default class NodeInOut extends React.Component {
 				border : (this.state.isDragging) ? "solid 1px" : "none"
 			},
 			outhole : {
-				cursor : "pointer",
 				position : "absolute",
 				right : "0px",
 				width : holeSizeW,
@@ -149,27 +147,29 @@ export default class NodeInOut extends React.Component {
 
 	// プラグをドラッグするActionを発行.
 	onMouseDown(ev) {
-		let id = this.props.id;
-		this.pos = {
-			x : ev.clientX,
-			y : ev.clientY
-		}
-		if (this.props.isInput) {
-			this.props.nodeAction.dragPlug(id, {
+		if (ev.button === 0) {
+			let id = this.props.id;
+			this.pos = {
 				x : ev.clientX,
 				y : ev.clientY
-			}, this.pos);
-		} else {
-			this.props.nodeAction.dragPlug(id, this.pos, {
-				x : ev.clientX,
-				y : ev.clientY
-			});
-		}
-		this.props.nodeAction.unSelectPlugHoles();
-		this.props.nodeAction.selectPlugHole(this.plugInfo());
+			}
+			if (this.props.isInput) {
+				this.props.nodeAction.dragPlug(id, {
+					x : ev.clientX,
+					y : ev.clientY
+				}, this.pos);
+			} else {
+				this.props.nodeAction.dragPlug(id, this.pos, {
+					x : ev.clientX,
+					y : ev.clientY
+				});
+			}
+			this.props.nodeAction.unSelectPlugHoles();
+			this.props.nodeAction.selectPlugHole(this.plugInfo());
 
-		ev.preventDefault();
-		ev.stopPropagation();
+			ev.preventDefault();
+			ev.stopPropagation();
+		}
 	}
 
 	onClick(ev) {
@@ -270,7 +270,14 @@ export default class NodeInOut extends React.Component {
 
 	/// マウスホバーされた
 	onHover(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
 		this.setState({ hover : !this.state.hover })
+		ev.target.style.cursor = "pointer";
+	}
+
+	onMouseLeave(ev) {
+		this.setState({ hover : !this.state.hover })
+		ev.target.style.cursor = "default";
 	}
 
 	content() {
@@ -283,7 +290,7 @@ export default class NodeInOut extends React.Component {
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
 							onMouseEnter={this.onHover.bind(this)}
-							onMouseLeave={this.onHover.bind(this)}
+							onMouseLeave={this.onMouseLeave.bind(this)}
 						/>
 						{this.inHoleText.bind(this)()}
 					</div>);
@@ -295,7 +302,7 @@ export default class NodeInOut extends React.Component {
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
 							onMouseEnter={this.onHover.bind(this)}
-							onMouseLeave={this.onHover.bind(this)}
+							onMouseLeave={this.onMouseLeave.bind(this)}
 						/>
 						{this.outHoleText.bind(this)()}
 					</div>);
