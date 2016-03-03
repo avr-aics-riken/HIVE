@@ -1,6 +1,6 @@
-import React from "react"
-import ReactDOM from "react-dom"
-import Core from '../../../Core'
+import React from "react";
+import ReactDOM from "react-dom";
+import Core from '../../../Core';
 
 /**
  * ノードプロパティアイテム(vector)ビュー.
@@ -14,22 +14,72 @@ export default class ItemVec extends React.Component {
 	}
 
 	styles() {
-		return {
-			view : {
-				width : "250px",
-				backgroundColor : "#aeaeae",
-				display : "table-row"
-			},
-			key : {
-				backgroundColor : "#ccc",
-				width : "85px",
-				display: "table-cell"
-			},
-			value : {
-				width : "50px",
-				display: "table-cell"
-			}
-		}
+        let border = ()=>{
+            if(this.props.top && this.props.bottom){
+                return {
+                    borderRadius: "3px 3px 3px 3px",
+                    letterSpacing: "-5px",
+                    overflow: "hidden"
+                };
+            }else if(this.props.top){
+                return {
+                    borderBottom: "1px solid rgb(33, 187, 151)",
+                    borderRadius: "3px 3px 0px 0px",
+                    letterSpacing: "-5px",
+                    overflow: "hidden"
+                };
+            }else if(this.props.bottom){
+                return {
+                    border: "none",
+                    borderRadius: "0px 0px 3px 3px",
+                    letterSpacing: "-5px",
+                    overflow: "hidden"
+                };
+            }else{
+                return {
+                    borderBottom: "1px solid rgb(33, 187, 151)",
+                    letterSpacing: "-5px",
+                    overflow: "hidden"
+                };
+            }
+        };
+        return {
+            view : border.bind(this)(),
+            key : {
+                backgroundColor: "#666",
+                color : "white",
+                fontSize: "smaller",
+                letterSpacing: "normal",
+                textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
+                padding: "1px",
+                width : "80px",
+                verticalAlign: "middle",
+                display: "inline-block",
+                overflow: "hidden",
+                textShadow: "0px 0px 3px black"
+            },
+            value : {
+                color : "#333",
+                letterSpacing: "normal",
+                padding: "1px",
+                width : "160px",
+                verticalAlign: "middle",
+                display: "inline-block"
+            },
+            flex : {
+                // display: "flex",
+                // flexDirection: "row"
+            },
+            inputs: {
+                border: "0px",
+                borderRadius: "3px",
+                marginLeft: "1px",
+                width: "36px",
+                height: "18px",
+                float: "left"
+                // flexGrow: 1
+            }
+        };
 	}
 
 	onChange(index) {
@@ -40,13 +90,13 @@ export default class ItemVec extends React.Component {
 			this.setState({
 				values : [].concat(this.state.values)
 			});
-		}
+		};
 	}
 
 	valueElem() {
 		const styles = this.styles.bind(this)();
 		let values = this.props.initialParam.value.map( (val, key) => {
-			return (<input style={styles.value}
+			return (<input style={styles.inputs}
 						type="text"
 						ref="text"
 						onChange={this.onChange.bind(this)(key)}
@@ -64,7 +114,11 @@ export default class ItemVec extends React.Component {
 					<div style={styles.key}>
 						{this.props.initialParam.name}
 					</div>
-					{this.valueElem.bind(this)()}
+                    <div style={styles.value}>
+                        <div style={styles.flex}>
+                            {this.valueElem.bind(this)()}
+                        </div>
+                    </div>
 				</div>);
 	}
 }
