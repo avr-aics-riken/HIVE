@@ -239,10 +239,10 @@ export default class NodeView extends React.Component {
     keyDownEvent(eve){
         switch(eve.keyCode){
             case 27:
-                this.listVisiblity = false;
-                this.setState({listVisible: false});
+                this.listHidden();
                 break;
             case 32:
+                eve.preventDefault();
                 this.setState({
                     listVisible: true
                 });
