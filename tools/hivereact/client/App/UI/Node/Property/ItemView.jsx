@@ -31,6 +31,7 @@ export default class ItemView extends React.Component {
         this.topRowUsed = false;
 		this.inputChanged = this.inputChanged.bind(this);
 		this.panelVisibleChanged = this.panelVisibleChanged.bind(this);
+		this.updateHandle = null;
 	}
 
 	styles() {
@@ -54,10 +55,16 @@ export default class ItemView extends React.Component {
 		if (data.varname === this.props.initialNodeData.varname) {
 			var myin = JSON.stringify(this.state.input);
 			var datain = JSON.stringify(data.input);
+
 			if (myin !== datain) {
-				this.setState({
-					input : [].concat(data.input)
-				});
+				if (!this.updateHandle) {
+					this.updateHandle = setTimeout(() => {
+						this.setState({
+							input : [].concat(data.input)
+						});
+						this.updateHandle = null;
+					}, 100);
+				}
 			}
 		}
 	}
