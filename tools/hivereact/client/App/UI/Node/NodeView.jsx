@@ -31,6 +31,7 @@ export default class NodeView extends React.Component {
 		});
 
 		this.isRightDown = false;
+		this.isMiddleDown = false;
         this.listVisiblity = false;
         this.focusTarget = null;
 
@@ -145,7 +146,13 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseDown(ev) {
-		if (ev.button === 2) {
+		if (ev.button === 1) {
+			this.isMiddleDown = true;
+			this.pos = {
+				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
+				y : ev.clientY - ev.currentTarget.getBoundingClientRect().top
+			};
+		} else if (ev.button === 2) {
 			this.isRightDown = true;
 			this.pos = {
 				x : ev.clientX - ev.currentTarget.getBoundingClientRect().left,
@@ -155,7 +162,20 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseMove(ev) {
-		if (this.isRightDown) {
+		if (this.isMiddleDown) {
+			const px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
+			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
+            const dx = (px - this.pos.x);
+            const dy = (py - this.pos.y);
+			if (this.refs.viewport) {
+				this.refs.viewport.scrollLeft = this.refs.viewport.scrollLeft - dx;
+				this.refs.viewport.scrollTop = this.refs.viewport.scrollTop - dy;
+			}
+			this.pos = {
+				x : px,
+				y : py
+			};
+		} else if (this.isRightDown) {
 			const px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
 			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
             const dx = (px - this.pos.x);
@@ -174,32 +194,16 @@ export default class NodeView extends React.Component {
 				x : px,
 				y : py
 			};
-		/*
-			let px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
-			let py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
-			let invzoom = 1.0 / this.state.zoom;
-			let mx = (px - this.pos.x) * invzoom;
-			let my = (py - this.pos.y) * invzoom;
-
-			let nodes = this.props.store.getNodes();
-			for (let i = 0; i < nodes.length; i = i + 1) {
-				let node = JSON.parse(JSON.stringify(nodes[i].node));
-				node.pos =  [nodes[i].node.pos[0] + mx, nodes[i].node.pos[1] + my]
-				this.props.action.changeNode({
-					varname : nodes[i].varname,
-					node : node
-				});
-			}
-			this.pos = {
-				x : px,
-				y : py
-			};
-		*/
 		}
+	}
+
+	onWheel(ev) {
+		ev.preventDefault();
 	}
 
 	onMouseUp(ev) {
 		this.isRightDown = false;
+		this.isMiddleDown = false;
 	}
 
     // この関数をフォーカスしたい子要素に渡して呼んでもらう
@@ -348,6 +352,7 @@ export default class NodeView extends React.Component {
 					onDoubleClick={this.dblClickEvent.bind(this)}
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
+					onWheel={this.onWheel.bind(this)}
 					style={{
 						position : "absolute",
 						width:"100%",
