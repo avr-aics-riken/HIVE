@@ -670,10 +670,10 @@ export default class UMTimeline extends React.Component {
             };
         }(mstate)));
         canvas.addEventListener('mouseup', function(ev) {
-            var is_left_down = false;
-            var is_key_changing = false;
-            var is_split_moving = false;
-            var is_middle_down = false;
+            //is_left_down = false;
+            is_key_changing = false;
+            is_split_moving = false;
+            is_middle_down = false;
             canvas.style.cursor = "default";
         });
         canvas.addEventListener('mousewheel', function(ev) {
