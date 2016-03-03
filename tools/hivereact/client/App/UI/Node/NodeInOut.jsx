@@ -67,12 +67,12 @@ export default class NodeInOut extends React.Component {
 		if (this.props.isInput) {
 			return {
 				x : nodeRect.x - (holeSizeW / 2.0),
-				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3,
+				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 7,
 			}
 		} else {
 			return {
 				x : nodeRect.x + nodeRect.w - (holeSizeW / 2.0),
-				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3
+				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 7
 			}
 		}
 	}
@@ -111,7 +111,7 @@ export default class NodeInOut extends React.Component {
 				left : "0px",
 				width : holeSizeW + "px",
 				height : holeSizeH + "px",
-				marginTop : this.props.isClosed ? "0px" : "3px",
+				marginTop : this.props.isClosed ? "0px" : "7px",
 				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none"
@@ -121,7 +121,7 @@ export default class NodeInOut extends React.Component {
 				right : "0px",
 				width : holeSizeW,
 				height : holeSizeH,
-				marginTop : this.props.isClosed ?  "0px" : "3px",
+				marginTop : this.props.isClosed ?  "0px" : "7px",
 				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none",
