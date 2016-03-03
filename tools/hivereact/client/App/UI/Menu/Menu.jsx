@@ -51,14 +51,14 @@ export default class Menu extends React.Component {
                 zIndex: "9999",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 float: "left",
-                overflow: "auto" // temp
+                // overflow: "auto" // temp
             },
             header: {
                 backgroundColor: "rgba(0, 0, 0, 0.5)",
                 textAlign: "30px",
-                margin: "0px",
+                margin: "0px 0px 0px -20px",
                 padding: "0px",
-                width: "100%",
+                width: "270px",
                 minHeight: "30px"
             },
             headerCaption: {

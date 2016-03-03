@@ -28,7 +28,7 @@ export default class HiveApp extends React.Component {
                 return (
                     <div>
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
-                            <Splitter split="vertical" defaultSize="250" dontmove={true}>
+                            <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
                                 <Splitter split="vertical" minSize="50" secondPaneSize="200">
                                     <div style={{position:"absolute",width:"100%",height:"100%"}}>
