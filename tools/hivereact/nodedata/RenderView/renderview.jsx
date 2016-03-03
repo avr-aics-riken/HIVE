@@ -27,6 +27,7 @@ class RenderView extends React.Component {
 		this.imageRecieved = this.imageRecieved.bind(this);
 		this.imageRecieveWrap = this.imageRecieveWrap.bind(this);
 		this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
+		this.getInputValue = this.getInputValue.bind(this);
 	}
 
 	imageRecieved(err, param, data) {
@@ -139,21 +140,42 @@ class RenderView extends React.Component {
 		}
 	}
 
-    viewRot(rx, ry, rz) {
+	getInputValue(key) {
+		for (let i = 0; i < this.node.input.length; i = i + 1) {
+			if (this.node.input[i].name === key) {
+				return this.node.input[i].value;
+			}
+		}
+	}
 
-        let newval = this.node.input[0].value.concat();
-        newval[0] += rx;
-        newval[1] += ry;
-        newval[2] += rz;
+    viewRot(rotx, roty, roz) {
+		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
+		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
+		let eyedir = subtract(position, target);
+		let v = vec4(eyedir[0], eyedir[1], eyedir[2], 0.0);
+		let az = normalize(subtract(position, target));
+		let ax = normalize(cross(vec3(0, 1, 0), az));
+		let ay = normalize(cross(az, ax));
+		let rx = rotate(rotx, ax);
+		let ry = rotate(roty, ay);
 
-        const varname = this.node.varname;
-        const inputs = JSON.parse(JSON.stringify(this.node.input));
-        //console.log(this.node.input[0]);
-        inputs[0].value = newval;
-        this.action.changeNode({
-            varname: varname,
-            input: inputs
-        });
+		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
+		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
+		let pos = add(target, v);
+
+		console.log(rx, ry, target, pos)
+		if (Math.abs(dot(normalize(subtract(target, pos)), vec3(0, 1, 0))) < 0.99) {
+			position = pos;
+			const varname = this.node.varname;
+			const inputs = JSON.parse(JSON.stringify(this.node.input));
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : position,
+					"target" : target
+				}
+			});
+		}
     }
 
     viewTrans(tx, ty, tz) {
@@ -177,7 +199,7 @@ class RenderView extends React.Component {
             const dy = event.clientY - this.oldmy;
             //console.log('mmove', dx, dy);
 
-            this.viewRot(dy, dx, 0.0);
+            this.viewRot(dy, -dx, 0.0);
 
             this.oldmx = event.clientX;
             this.oldmy = event.clientY;
@@ -230,7 +252,7 @@ class RenderView extends React.Component {
 
         const NODE_INPUT_CHANGED = "node_input_changed"
         this.store.on(NODE_INPUT_CHANGED, this.imageRecieveWrap);
-        /**/
+
         const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
 

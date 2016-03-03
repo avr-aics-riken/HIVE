@@ -102,22 +102,20 @@ export default class Action {
 
 	/**
 	 * ノードの入力を変更する
-	 * @param varname ノード変数名
-	 * @param inputName ノード入力名
-	 * @param value ノード入力の値
-	 * @param index valueが配列中の値を指す場合にindexを指定できる。
-	 *            例えばinputNameに対応した値が[0, 1, 2] であるとき、
-	 *            value=3, index=1を指定すると[0, 3, 2]に変更される。
-	 *            指定しない場合は何もいれないか、nullを入れる。
+	 * @param inputInfo 以下の形式でノード入力を指定する
+	 * {
+	 *    varname : varname,
+	 *    input : {
+	 *         ノード入力名1: ノード入力の値1,
+	 *         ノード入力名2: ノード入力の値2, ..
+	 *    }
+	 * }
 	 */
-	changeNodeInput(varname, inputName, value, index) {
+	changeNodeInput(inputInfo) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "changeNodeInput",
-			varname : varname,
-			inputName : inputName,
-			value : value,
-			index : index
+			inputInfo : inputInfo
 		});
 	}
 
