@@ -55,6 +55,7 @@ export default class NodeListCreate extends React.Component {
                 <MenuNodeList
                     store={this.props.store}
                     action={this.props.action}
+                    hiddenFunction={this.props.hiddenFunction}
                     floating={true}
                 />
             </div>

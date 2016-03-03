@@ -21,6 +21,7 @@ export default class MenuNodeList extends React.Component {
     onClick(eve){
         var e = eve.currentTarget;
         this.props.action.addNodeByName(e.value);
+        if(this.props.hiddenFunction){this.props.hiddenFunction();}
     }
 
     styles() {
