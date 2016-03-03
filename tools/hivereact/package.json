@@ -19,7 +19,8 @@
 		"eventemitter3" : "*",
 		"electron-packager" : "*",
 		"react-split-pane" : "*",
-		"react-autosuggest" : "*"
+		"react-autosuggest" : "*",
+		"react-color" : "*"
 	},
 	"window": {
 		"toolbar": true,

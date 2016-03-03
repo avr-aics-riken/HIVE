@@ -165,6 +165,8 @@ export default class ActionExecuter {
 					let postSelect = hasSelect ? payload.nodeInfo.select : null;
 
 					let hasPanel = srcNode.hasOwnProperty('panel');
+					let prePanel = JSON.stringify(dstNode.panel);
+					let postPanel = hasPanel ? JSON.stringify(dstNode.panel) : null;
 					let prePanelVisible = dstNode.panel.visible;
 					let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
 					let prePanelSize = JSON.stringify(dstNode.panel.size);
@@ -182,6 +184,9 @@ export default class ActionExecuter {
 					}
 					if (hasSelect && preSelect !== postSelect) {
 						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.data.nodes[i], i);
+					}
+					if (hasPanel && prePanel !== postPanel) {
+						this.store.emit(Constants.PANEL_CHANGED, null, this.store.data.nodes[i], i);
 					}
 					if (hasPanel && prePanelVisible !== postPanelVisible) {
 						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, this.store.data.nodes[i], i);
@@ -350,6 +355,7 @@ export default class ActionExecuter {
 				let index = n.index;
 				node.panel.visible = payload.visible;
 				this.store.emit(Constants.NODE_CHANGED, null, node, index);
+				this.store.emit(Constants.PANEL_CHANGED, null, node, index);
 				this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, node, index);
 			}
         }

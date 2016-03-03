@@ -29,7 +29,7 @@ export default class Container extends React.Component {
 
     nodeChanged(err, data) {
         if(data.varname === this.state.node.varname){
-            this.setState({node: data});
+            this.setState({node: Object.assign({}, data)});
         }
     }
 
@@ -38,7 +38,8 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousemove', this.onScaleMove);
         window.addEventListener('mouseup', this.onScaleUp);
-        this.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.NODE_INPUT_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.PANEL_CHANGED, this.nodeChanged);
         this.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
@@ -47,7 +48,8 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onMouseUp);
         window.removeEventListener('mousemove', this.onScaleMove);
         window.removeEventListener('mouseup', this.onScaleUp);
-        this.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.nodeChanged);
+		this.store.removeListener(Core.Constants.PANEL_CHANGED, this.nodeChanged);
         this.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
