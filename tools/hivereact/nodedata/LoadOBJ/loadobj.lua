@@ -17,3 +17,15 @@ end
 function LoadOBJ:MeshData()
     return self.loader:MeshData()
 end
+function LoadOBJ:PointData()
+    return self.loader:PointData()
+end
+function LoadOBJ:LineData()
+    return self.loader:LineData()
+end
+function LoadOBJ:TetraData()
+    return self.loader:TetraData()
+end
+function LoadOBJ:NormalData()
+    return self.loader:NormalData()
+end
