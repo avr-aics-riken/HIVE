@@ -104,11 +104,12 @@ export default class MenuNodeCreate extends React.Component {
                 // sectionSuggestionsContainer: 'react-autosuggest__section-suggestions-container'
                 input: {
                     backgroundColor: "#eee",
+                    borderRadius: "3px",
                     border: "none",
                     color: "#666",
-                    width: "100%",
-                    margin: "0px",
-                    padding: "8px 0px"
+                    width: "236px",
+                    margin: "2px 3px",
+                    padding: "8px 3px"
                 },
                 suggestionsContainer: {
                     listStyle: "none",
