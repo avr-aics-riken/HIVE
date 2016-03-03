@@ -21,12 +21,7 @@ export default class MenuNodeList extends React.Component {
 
     onClick(eve){
         var e = eve.currentTarget;
-        this.props.action.addNode({
-			name : e.value,
-			node : {
-				pos : [2000, 2000]
-			}
-		});
+        this.props.action.addNodeByName(e.value);
         this.unFocus();
         if(this.props.hiddenFunction){this.props.hiddenFunction();}
     }
