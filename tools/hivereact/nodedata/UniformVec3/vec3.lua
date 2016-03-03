@@ -13,18 +13,12 @@ end
 
 function UniformVec3:Do()
     -- nothing to do
+    self:UpdateValue()
 end
 
 function UniformVec3:uniform()
-    local name = self.property.name
-    local value = self.property.value
-    if self.connection.name then
-        name = self.connection.name
-    end
-    if self.connection.value then
-        value = self.connection.value
-    end
+    local v = self.value    
     
-    return {name=name, value=value, type='vec3'}
+    return {name=v.name, value=v.value, type='vec3'}
 end
 
