@@ -2,12 +2,9 @@
 TeapotGenerator = {}
 setmetatable(TeapotGenerator, {__index = BaseComponent})
 
-TeapotGenerator.new = function ()
-    local this = {}
+TeapotGenerator.new = function (varname)
+    local this = BaseComponent.new(varname)
     this.gen = PrimitiveGenerator()    
-    this.property = {
-        size = 1
-    }
     setmetatable(this, {__index=TeapotGenerator})
     return this
 end

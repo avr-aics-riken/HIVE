@@ -72,7 +72,7 @@ export default class ActionExecuter {
 			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
 				node.varname = payload.nodeInfo.varname;
 			} else {
-				node.varname = node.name + uuid();
+				node.varname = node.funcname + uuid();
 			}
 			if (payload.nodeInfo.hasOwnProperty('node')) {
 				node.node = payload.nodeInfo.node;
