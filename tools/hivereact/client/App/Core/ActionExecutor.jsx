@@ -6,12 +6,25 @@ function uuid() {
         random = Math.random() * 16 | 0;
 
         if (i == 8 || i == 12 || i == 16 || i == 20) {
-            uuid += "_"
+            uuid += "_";
         }
         uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
     }
     return uuid;
 }
+function positionGetter(target, nodeList){
+    for(let i = 0, j = nodeList.length; i < j; ++i){
+        if(Math.abs(nodeList[i].panel.pos[0] - target.panel.pos[0]) < 50 ||
+           Math.abs(nodeList[i].panel.pos[1] - target.panel.pos[1]) < 50){
+               target.panel.pos[0] += 50;
+               target.panel.pos[1] += 50;
+               positionGetter(target, nodeList);
+               break;
+           }
+    }
+    target.panel.zindex = nodeList.length + 1;
+}
+
 
 export default class ActionExecuter {
 	constructor(store) {
@@ -59,7 +72,6 @@ export default class ActionExecuter {
 			delete node.panel.visible;
 		}
 	}
-
 	/**
 	 * ノード追加
 	 */
@@ -84,20 +96,8 @@ export default class ActionExecuter {
 			}
 			if(node){
 				this.assignInitialNodeValue(node);
-				let nl = this.store.getNodes();
+				var nl = this.store.getNodes();
 				positionGetter(node, nl);
-				function positionGetter(target, nodeList){
-					for(let i = 0, j = nl.length; i < j; ++i){
-						if(Math.abs(nl[i].panel.pos[0] - target.panel.pos[0]) < 50 ||
-						   Math.abs(nl[i].panel.pos[1] - target.panel.pos[1]) < 50){
-							target.panel.pos[0] += 50;
-							target.panel.pos[1] += 50;
-							positionGetter(target, nodeList);
-							break;
-						}
-					}
-					target.panel.zindex = nodeList.length + 1;
-				}
 				this.store.data.nodes.push(node);
 			}
 			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
