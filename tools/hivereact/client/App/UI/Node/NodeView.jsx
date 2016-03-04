@@ -349,7 +349,7 @@ export default class NodeView extends React.Component {
     }
 
 	origin() {
-		if (this.refs.view) {
+		if (this.refs.viewport) {
 			let rect = this.refs.viewport.getBoundingClientRect();
 			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
 			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
@@ -380,36 +380,39 @@ export default class NodeView extends React.Component {
 					onClick={this.onClick.bind(this)}
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
-					onWheel={this.onWheel.bind(this)}
-					style={{
-						position : "absolute",
-						width:"100%",
-						height:"100%",
-						overflow:"auto"
-					}}
-					ref="viewport"
 				>
 					<div
 						style={{
 							position : "absolute",
-							width:"4000px",
-							height:"4000px",
-							//zoom: String(this.state.zoom)
-							transform : "scale(" + this.state.zoom + ")",
-							transformOrigin : this.origin.bind(this)(),
-							border : "10px solid",
-							borderColor : "gray"
+							width:"100%",
+							height:"100%",
+							overflow:"auto"
 						}}
-						ref="view"
+						ref="viewport"
+						onWheel={this.onWheel.bind(this)}
 					>
-						{nodeList}
-						<NodePlugView
-							style={{zIndex:"1"}}
-							store={this.props.store}
-							action={this.props.action}
-							nodeStore={this.props.nodeStore}
-							nodeAction={this.props.nodeAction}
-						/>
+						<div
+							style={{
+								position : "absolute",
+								width:"4000px",
+								height:"4000px",
+								//zoom: String(this.state.zoom)
+								transform : "scale(" + this.state.zoom + ")",
+								transformOrigin : this.origin.bind(this)(),
+								border : "10px solid",
+								borderColor : "gray"
+							}}
+							ref="view"
+						>
+							{nodeList}
+							<NodePlugView
+								style={{zIndex:"1"}}
+								store={this.props.store}
+								action={this.props.action}
+								nodeStore={this.props.nodeStore}
+								nodeAction={this.props.nodeAction}
+							/>
+						</div>
 					</div>
                     {this.generator.bind(this)()}
 				</div>
