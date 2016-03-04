@@ -52,7 +52,7 @@ export default class MenuNodeList extends React.Component {
                     padding: "0px",
                     width: "240px",
                     minHeight: "100%",
-                    overflow: "auto"
+                    overflow: "visible"
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
@@ -88,9 +88,9 @@ export default class MenuNodeList extends React.Component {
                     fontSize: "large",
                     margin: "0px",
                     padding: "0px",
-                    width: "248px",
-                    minHeight: "95%",
-                    overflow: "auto"
+                    width: "240px",
+                    height: "100%",
+                    overflow: "visible"
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
@@ -99,9 +99,9 @@ export default class MenuNodeList extends React.Component {
                     color: "rgb(32, 255, 220)",
                     fontSize: "small",
                     lineHeight: "24px",
-                    margin: "3px 3px",
+                    margin: "3px",
                     padding: "2px",
-                    width: "242px",
+                    width: "238px",
                     height: "24px",
                     overflow: "auto",
                     textShadow: "0px 0px 3px #022",
