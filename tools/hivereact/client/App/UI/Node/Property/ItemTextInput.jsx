@@ -63,6 +63,7 @@ export default class ItemTextInput extends React.Component {
             },
             value : {
                 border: "0px",
+				outline: "0",
                 borderRadius: "3px",
                 color : "#333",
                 letterSpacing: "normal",

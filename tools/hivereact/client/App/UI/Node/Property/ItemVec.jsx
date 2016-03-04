@@ -76,6 +76,7 @@ export default class ItemVec extends React.Component {
                 // flexDirection: "row"
             },
             inputs: {
+				outline: "0",
                 border: "0px",
                 borderRadius: "3px",
                 marginLeft: "1px",
@@ -103,7 +104,8 @@ export default class ItemVec extends React.Component {
 	}
 
 	submit(ev) {
-		if (this.currentEdit.value && this.currentEdit.index >= 0) {
+		console.log(this.currentEdit.value, this.currentEdit.index);
+		if (this.currentEdit.value !== null && !isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {
 			console.log("submit", this.currentEdit.index, this.currentEdit.value)
 			this.props.changeVecFunc(this.props.initialParam.name, this.currentEdit.index, this.currentEdit.value);
 		} else if (isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {

@@ -14,6 +14,9 @@ export default class ItemArray extends React.Component {
 		this.state = {
 			value : String(this.props.initialParam.array.length)
 		};
+		this.currentEdit = {
+			value : null
+		};
 	}
 	styles() {
         let border = ()=>{
@@ -62,6 +65,7 @@ export default class ItemArray extends React.Component {
                 display: "inline-block",
             },
             inputs: {
+				outline: "0",
                 border: "0px",
                 borderRadius: "3px",
                 color : "#333",
@@ -78,11 +82,38 @@ export default class ItemArray extends React.Component {
 
 	onChange() {
 		return (ev) => {
-			this.props.changeLengthFunc(this.props.initialParam.name, ev.target.value);
+			this.currentEdit = {
+				value : ev.target.value
+			};
 			this.setState({
 				value : ev.target.value
 			});
 		};
+	}
+
+	submit(ev) {
+		if (this.currentEdit.value) {
+			this.props.changeLengthFunc(this.props.initialParam.name, this.currentEdit.value);
+		}
+		ev.target.style.border = "none";
+		ev.target.blur();
+	}
+
+	onKeyPress(ev) {
+		if (ev.key === 'Enter') {
+			this.submit.bind(this)(ev);
+		}
+	}
+
+	onBlur(ev) {
+		this.submit.bind(this)(ev);
+		this.currentEdit = {
+			value : null
+		};
+	}
+
+	onFocus(ev) {
+		ev.target.style.border = "2px solid darkgreen";
 	}
 
 	createArrayContents() {
@@ -112,6 +143,9 @@ export default class ItemArray extends React.Component {
 							defaultValue={this.state.value}
 							value={this.state.value}
 							onChange={this.onChange.bind(this)()}
+							onKeyPress={this.onKeyPress.bind(this)}
+							onBlur={this.onBlur.bind(this)}
+							onFocus={this.onFocus.bind(this)}
 						>
 						</input>
 					</div>
