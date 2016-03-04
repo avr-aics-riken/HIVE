@@ -22,12 +22,14 @@ export default class HiveApp extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
         this.allClearNode = this.allClearNode.bind(this);
         this.loadFile = this.loadFile.bind(this);
+
     }
 
     componentDidMount(){
         let e = ReactDOM.findDOMNode(this.refs.droptarget);
         e.addEventListener('dragover', this.onDragOver, false);
         e.addEventListener('drop', this.onDrop, false);
+
     }
 
     onDragOver(eve){
@@ -90,7 +92,7 @@ export default class HiveApp extends React.Component {
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
                             <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={this.layoutType} />
-                                <Splitter split="vertical" minSize="50" secondPaneSize="200">
+                                <Splitter split="vertical" minSize="50">
                                     <div style={{position:"absolute",width:"100%",height:"100%"}}>
                                         <Node.View store={this.store} action={this.action} />
                                     </div>
