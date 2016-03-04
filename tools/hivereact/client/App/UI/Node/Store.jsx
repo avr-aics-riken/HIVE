@@ -223,7 +223,7 @@ export default class Store extends EventEmitter {
 			if (payload.hasOwnProperty("id") && payload.id === this.dispatchToken) {
 				(() => {
 					this[payload.actionType].bind(this)(payload);
-				}());
+				})();
 			}
 		}
 	}
