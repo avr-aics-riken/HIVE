@@ -108,7 +108,7 @@ export default class MenuNodeCreate extends React.Component {
                     borderRadius: "3px",
                     border: "none",
                     color: "#666",
-                    width: "236px",
+                    width: "232px",
                     margin: "2px 3px",
                     padding: "5px 3px"
                 },
