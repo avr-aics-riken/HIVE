@@ -26,7 +26,7 @@ class Slider extends React.Component {
 					withBars={true}
 				>
 					<div className='thum'></div>
-			</ReactSlider>;
+			</ReactSlider>
 		</div>);
 	}
 }
