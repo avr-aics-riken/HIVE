@@ -43,7 +43,7 @@ export default class ActionExecuter {
 			if (payload.hasOwnProperty("id") && payload.id === this.store.getDispatchToken()) {
 				(() => {
 					this[payload.actionType].bind(this)(payload);
-				}());
+				})();
 			}
 		}
 	}
