@@ -1,3 +1,5 @@
+import ModuleEntry from './ModuleEntry.jsx';
+
 import React from 'react';
 import ReactDOM from "react-dom";
 import Core from './Core';
