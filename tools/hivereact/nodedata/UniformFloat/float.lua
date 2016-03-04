@@ -14,5 +14,5 @@ end
 
 function UniformFloat:uniform()
     local v = self.value
-    return v.value
+    return {"name": v.name,  "type": "float", "value": v.value}
 end
