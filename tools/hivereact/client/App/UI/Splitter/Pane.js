@@ -45,7 +45,6 @@ exports.default = _react2.default.createClass({
                 style.flexGrow = this.state.size / this.state.parentSize;
             } else {
                 style.flexGrow = this.state.size / this.state.parentSize;
-                console.log(this.state);
             }
         }
         var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
