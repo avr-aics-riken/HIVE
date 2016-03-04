@@ -11,6 +11,9 @@ export default class ItemTextInput extends React.Component {
 		this.state = {
 			value : this.props.initialParam.value
 		};
+		this.currentEdit = {
+			value : null
+		};
 	}
 
 	styles() {
@@ -75,11 +78,38 @@ export default class ItemTextInput extends React.Component {
 
 	onChange() {
 		return (ev) => {
-			this.props.changeFunc(this.props.initialParam.name, ev.target.value);
+			this.currentEdit = {
+				value : ev.target.value
+			};
 			this.setState({
 				value : ev.target.value
 			});
 		};
+	}
+
+	submit(ev) {
+		if (this.currentEdit.value) {
+			this.props.changeFunc(this.props.initialParam.name, this.currentEdit.value);
+		}
+		ev.target.style.border = "none";
+		ev.target.blur();
+	}
+
+	onKeyPress(ev) {
+		if (ev.key === 'Enter') {
+			this.submit.bind(this)(ev);
+		}
+	}
+
+	onBlur(ev) {
+		this.submit.bind(this)(ev);
+		this.currentEdit = {
+			value : null
+		};
+	}
+
+	onFocus(ev) {
+		ev.target.style.border = "2px solid darkgreen";
 	}
 
 	render () {
@@ -93,6 +123,9 @@ export default class ItemTextInput extends React.Component {
 						ref="text"
 						value={this.state.value}
 						onChange={this.onChange.bind(this)()}
+						onKeyPress={this.onKeyPress.bind(this)}
+						onBlur={this.onBlur.bind(this)}
+						onFocus={this.onFocus.bind(this)}
 					></input>
 				</div>);
 	}

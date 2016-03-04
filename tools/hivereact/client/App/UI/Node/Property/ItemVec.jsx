@@ -11,6 +11,10 @@ export default class ItemVec extends React.Component {
 		this.state = {
 			values : this.props.initialParam.value
 		};
+		this.currentEdit = {
+			index : -1,
+			value : null
+		};
 	}
 
 	styles() {
@@ -77,7 +81,8 @@ export default class ItemVec extends React.Component {
                 marginLeft: "1px",
                 width: "36px",
                 height: "18px",
-                float: "left"
+                float: "left",
+				border : "1px solid rgba(54, 196, 168, 0.0)"
                 // flexGrow: 1
             }
         };
@@ -85,13 +90,48 @@ export default class ItemVec extends React.Component {
 
 	onChange(index) {
 		return (ev) => {
-			let val = Number(ev.target.value);
+			let val = ev.target.value;
 			this.state.values[index] = val;
-			this.props.changeVecFunc(this.props.initialParam.name, index, val);
+			this.currentEdit = {
+				index : index,
+				value : parseFloat(val)
+			};
 			this.setState({
 				values : [].concat(this.state.values)
 			});
 		};
+	}
+
+	submit(ev) {
+		if (this.currentEdit.value && this.currentEdit.index >= 0) {
+			console.log("submit", this.currentEdit.index, this.currentEdit.value)
+			this.props.changeVecFunc(this.props.initialParam.name, this.currentEdit.index, this.currentEdit.value);
+		} else if (isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {
+			this.state.values[this.currentEdit.index] = 0;
+			this.setState({
+				values : [].concat(this.state.values)
+			});
+		}
+		ev.target.style.border = "none";
+		ev.target.blur();
+	}
+
+	onKeyPress(ev) {
+		if (ev.key === 'Enter') {
+			this.submit.bind(this)(ev);
+		}
+	}
+
+	onBlur(ev) {
+		this.submit.bind(this)(ev);
+		this.currentEdit = {
+			index : -1,
+			value : null
+		};
+	}
+
+	onFocus(ev) {
+		ev.target.style.border = "2px solid darkgreen";
 	}
 
 	valueElem() {
@@ -103,6 +143,9 @@ export default class ItemVec extends React.Component {
 						onChange={this.onChange.bind(this)(key)}
 						defaultValue={this.state.values[key]}
 						value={this.state.values[key]}
+						onKeyPress={this.onKeyPress.bind(this)}
+						onBlur={this.onBlur.bind(this)}
+						onFocus={this.onFocus.bind(this)}
 						key={key}
 					></input>);
 		});
