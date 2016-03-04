@@ -104,9 +104,7 @@ export default class ItemVec extends React.Component {
 	}
 
 	submit(ev) {
-		console.log(this.currentEdit.value, this.currentEdit.index);
 		if (this.currentEdit.value !== null && !isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {
-			console.log("submit", this.currentEdit.index, this.currentEdit.value)
 			this.props.changeVecFunc(this.props.initialParam.name, this.currentEdit.index, this.currentEdit.value);
 		} else if (isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {
 			this.state.values[this.currentEdit.index] = 0;
