@@ -22,7 +22,8 @@
 		"react-autosuggest" : "*",
 		"react-color" : "*",
         "rc-menu": "*",
-        "velocity-animate": "*"        
+        "velocity-animate": "*",
+		"react-slider" : "*"
 	},
 	"window": {
 		"toolbar": true,

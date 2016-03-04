@@ -3,6 +3,7 @@
 	"funcname": "UniformFloat",
 	"info":"Uniform floatをつくるノード",
 	"customfuncfile":"float.lua",
+	"uifile" : "float.jsx",
     "input": [
 		{"name": "name",  "type": "string", "value": "unifloat"},
 		{"name": "value",  "type": "float", "value": 0.0}

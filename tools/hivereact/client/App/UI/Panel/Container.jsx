@@ -8,6 +8,8 @@ export default class Container extends React.Component {
 
         this.store = props.store;
         this.action = props.action;
+		let n = this.props.node;
+		n.uiComponent = eval(this.props.node.uiFunc);
         this.state = {
             node: this.props.node,
             closeHover: false
@@ -214,9 +216,6 @@ export default class Container extends React.Component {
         // if(!this.state.node.panel.visible){return;}
         var node, res, styles = this.styles();
         node = this.state.node;
-        if(!node.uiComponent){
-            node.uiComponent = eval(node.uiFunc);
-        }
         if (node.uiComponent === undefined) {
             res = "";
         } else {
