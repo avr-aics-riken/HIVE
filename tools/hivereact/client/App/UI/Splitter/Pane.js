@@ -41,7 +41,6 @@ exports.default = _react2.default.createClass({
             style.flex = 'none';
         }
         var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
-
         return _react2.default.createElement(
             'div',
             { className: classes.join(' '), style: prefixed.styles },
