@@ -41,12 +41,11 @@ exports.default = _react2.default.createClass({
         //     style.flex = 'none';
         // }
         if (this.state.size !== undefined && this.state.parentSize !== undefined) {
-            if (split === 'vertical') {
+            if (this.props.target === 'pane1') {
                 style.flexGrow = this.state.size / this.state.parentSize;
-                style.display = 'flex';
             } else {
                 style.flexGrow = this.state.size / this.state.parentSize;
-                style.display = 'flex';
+                console.log(this.state);
             }
         }
         var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });

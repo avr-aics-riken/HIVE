@@ -80,54 +80,53 @@ exports.default = _react2.default.createClass({
             }
         }.bind(this), 100);
 
-        window.addEventListener('resize', function(){
-            if(!this.props.lockSecondPane || !this.props.secondPaneSize){return;}
-            // if (this.state.active) {
-                this.unFocus();
-                if (ref1) {
-                    if (node1.getBoundingClientRect) {
-                        var w1 = node1.getBoundingClientRect().width;
-                        var h1 = node1.getBoundingClientRect().height;
-                        var w2 = node2.getBoundingClientRect().width;
-                        var h2 = node2.getBoundingClientRect().height;
-                        var size = this.props.split === 'vertical' ? w1 : h1;
-                        var current = this.props.split === 'vertical' ? w2 : h2;
-                        var second = parseInt(this.props.secondPaneSize, 10);
-                        if(!isNaN(this.state.position)){
-                            second = Math.max(Math.min(second, this.state.position), second);
-                        }
-                        var diff = 0;
-                        if(current > second){
-                            diff = current - second;
-                            size += diff;
-                        }else{
-                            diff = second - current;
-                            size -= diff;
-                        }
-                        var newSize = size;
-                        this.setState({
-                            position: size
-                            // resized: true
-                        });
-        
-                        if (newSize < this.props.minSize) {
-                            newSize = this.props.minSize;
-                        }
-        
-                        if (this.props.onChange) {
-                            this.props.onChange(newSize);
-                        }
-                        ref1.setState({
-                            size: newSize
-                        });
-                    }
-                }
-            // }
-        }.bind(this), false);
+        window.addEventListener('resize', this.onResize, false);
     },
     componentWillUnmount: function componentWillUnmount() {
         document.removeEventListener('mouseup', this.onMouseUp);
         document.removeEventListener('mousemove', this.onMouseMove);
+    },
+    onResize: function(){
+        this.unFocus();
+        if (this.props.onChange) {
+            this.props.onChange(newSize);
+        }
+        var ref1 = this.refs.pane1;
+        var ref2 = this.refs.pane2;
+        var node1 = _reactDom2.default.findDOMNode(ref1);
+        var node2 = _reactDom2.default.findDOMNode(ref2);
+        var parentSize = this.props.split === 'vertical' ? node1.parentNode.offsetWidth : node1.parentNode.offsetHeight;
+        var newSize = this.props.split === 'vertical' ? node1.offsetWidth : node1.offsetHeight;
+        var newSecond = this.props.split === 'vertical' ? node2.offsetWidth : node2.offsetHeight;
+        parentSize -= this.resizerSize;
+        if(this.props.lockSecondPane && this.props.secondPaneSize){
+            if(this.props.secondPaneSize && this.props.lockSecondPane){
+                newSecond = Math.max(newSecond, parseInt(this.props.secondPaneSize, 10));
+                newSize = parentSize - newSecond;
+            }
+        }else{
+            if(this.props.dontmove){
+                newSize = parseInt(this.props.defaultSize, 10);
+                newSecond = parentSize - newSize;
+            }else{
+                if(this.props.minSize){
+                    newSize = Math.max(newSize, parseInt(this.props.minSize, 10));
+                    newSecond = parentSize - newSize;
+                }
+                if(this.props.secondPaneSize){
+                    newSecond = Math.max(newSecond, parseInt(this.props.secondPaneSize, 10));
+                    newSize = parentSize - newSecond;
+                }
+            }
+        }
+        ref1.setState({
+            size: newSize,
+            parentSize: parentSize
+        });
+        ref2.setState({
+            size: newSecond,
+            parentSize: parentSize
+        });
     },
     onMouseDown: function onMouseDown(event) {
         this.unFocus();
@@ -176,9 +175,7 @@ exports.default = _react2.default.createClass({
                         // newSize = Math.max(newSize, this.props.minSize);
                         // newSecond = parentSize - newSize;
                     }else{
-                        if(this.props.secondPaneSize && this.props.lockSecondPane){
-                            newSecond = parentSize - newSize;
-                        }
+                        newSecond = parentSize - newSize;
                     }
                     ref1.setState({
                         size: newSize,
