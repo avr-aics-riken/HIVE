@@ -114,3 +114,12 @@ function RenderView:Do()
 
     end
 end
+
+
+function RenderView:Camera()
+    return self.cam
+end
+
+function RenderView:Image()
+    return self.cam:GetImageBuffer()
+end
