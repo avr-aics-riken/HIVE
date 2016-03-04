@@ -48,7 +48,8 @@ class RenderView extends React.Component {
 
     hasIPCAddress() {
 		//return (this.props.ipc_address && this.props.ipc_address !== "");
-        const r = (this.node.input[8].value !== undefined && this.node.input[8].value !== "");
+        //const r = (this.node.input[8].value !== undefined && this.node.input[8].value !== "");
+	    const r = (this.getInputValue('ipcpath') != "");        
         //console.log('IPCCCCC', r, this.node.input[8].value); // ipcpath
         return r;
 	}
