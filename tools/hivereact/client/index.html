@@ -13,10 +13,28 @@
     <script src="./App/lib/metabinary.js"></script>
 	<script src="./App/lib/MV.js"></script>
     <script src="./App/lib/FileSaver.js"></script>
+    <script src="https://fb.me/react-0.14.7.js"
+        integrity="sha384-xQae1pUPdAKUe0u0KUTNt09zzdwheX4VSUsV8vatqM+t6X7rta01qOzessL808ox"
+        crossorigin="anonymous"></script>
+    <script src="https://fb.me/react-dom-0.14.7.js"
+        integrity="sha384-A1t0GCrR06cTHvMjaxeSE8XOiz6j7NvWdmxhN/9z748wEvJTVk13Rr8gMzTUnd8G"
+        crossorigin="anonymous"></script>
+    <script>
+        /** This is for 'babel'ed module.  */
+        function require(modulename) {
+            if (modulename === 'react') {
+                return React;
+            } else if (modulename === 'react-dom') {
+                return ReactDOM;   
+            }
+            console.error('Unknown module!!>', modulename);
+            return null;
+        }
+        </script>
 </head>
-<body id="body">
+<body id="body"  onContextmenu="return false">
 	<script>
-	window.onload = function() {
+    window.onload = function() {        
 		var bundlePath = './bundle.js';
 		if (typeof process !== 'undefined' && process.env.ENVIRONMENT
 			&& process.env.ENVIRONMENT.substring(0, 3) === 'DEV') {
