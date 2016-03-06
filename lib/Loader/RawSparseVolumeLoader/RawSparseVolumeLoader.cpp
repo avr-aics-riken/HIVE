@@ -75,7 +75,7 @@ bool RawSparseVolumeLoader::Load(const char* filename, int width, int height, in
 
 /**
  * Load Raw Sparse Volume from memory(pointer)
- * @param pointer The pointer to Raw Sparse Volume struct
+ * @param pointer The pointer to Raw Sparse Volume struct(HIVESparseVolume)
  * @retval true Sucess
  * @retval false Fail
  */
@@ -91,6 +91,7 @@ bool RawSparseVolumeLoader::LoadFromPointer(void *ptr)
     printf("sparseVolume.numBlocks = %d\n", sparseVolume->numBlocks);
 
     for (int i = 0; i < sparseVolume->numBlocks; i++) {
+#if 0 // DBG
         printf("sparseVolume.blocks[%d].extent = %d, %d, %d\n", i,
             sparseVolume->blocks[i].extent[0],
             sparseVolume->blocks[i].extent[1],
@@ -107,6 +108,7 @@ bool RawSparseVolumeLoader::LoadFromPointer(void *ptr)
             sparseVolume->blocks[i].level);
         printf("sparseVolume.blocks[%d].data = %p\n", i,
             sparseVolume->blocks[i].data);
+#endif
     }
 
     bool isDouble = false; 
