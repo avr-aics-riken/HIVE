@@ -68,8 +68,8 @@ volume:SetShader('def_volume_raymarch_tf.frag') -- $HIVE/hrender/test
 volume:SetTexture('tf_tex', tftex:ImageData())
 volume:SetClampToEdge(true, true, true)
 volume:SetTextureWrapping('tf_tex', true, true, true) -- CLAMP_TO_EDGE wrap mode for transfer function texture.
-volume:SetFloat('tf_min', -10.5)
-volume:SetFloat('tf_max', 400.0)
+volume:SetFloat('tf_min', 0.0)
+volume:SetFloat('tf_max', 1.0)
 volume:SetFloat('tf_opacity', 0.0025)
 
 render {camera, volume}
