@@ -196,7 +196,6 @@ public:
      */
     bool LoadRawFromPointer(int width, int height, int color, int bit, void* ptr)
     {
-        float * dstbuffer = NULL;
         printf("RAW: from pointer \n");
         printf(" %d x %d x %d x %dbit\n", width, height, color, bit);
         if (color !=4 || bit != 8) { // temp

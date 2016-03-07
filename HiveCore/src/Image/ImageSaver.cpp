@@ -192,7 +192,6 @@ public:
         else if (ext == "hdr")
         {
             if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
-                const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
                 if (data->Format() == BufferImageData::RGBA32F)
                 {
                     // flip y copy
