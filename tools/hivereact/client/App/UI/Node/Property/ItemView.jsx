@@ -44,7 +44,7 @@ export default class ItemView extends React.Component {
 			},
             propertyContainer: {
                 backgroundColor: "rgb(133,133,133)",
-                borderRadius: "3px",
+                borderRadius: "2px",
                 margin: "2px",
                 width: "246px"
             }
