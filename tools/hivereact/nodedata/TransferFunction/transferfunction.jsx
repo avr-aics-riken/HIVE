@@ -168,7 +168,7 @@ class TransferFunction extends React.Component {
         }
     }
     maxInputChange(){
-        if (parseFloat(maxInput.value) !== NaN) {
+        if (parseFloat(this.maxInput.value) !== NaN) {
             this.setState({valMax: parseFloat(this.maxInput.value)});
             this.drawGraph();
             if (this.changeCallback){
@@ -412,7 +412,7 @@ class TransferFunction extends React.Component {
             colorframe: {
                 lineHeight: "30px",
                 width: "300px",
-                height: "30px"
+                height: "20px"
             },
             btnframe: {
                 textAlign: "center",
@@ -421,11 +421,11 @@ class TransferFunction extends React.Component {
                 display: "flex",
                 flexDirection: "row"
             },
-            redbtn:   {backgroundColor: this.state.redbtnColor  , margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px"},
-            greenbtn: {backgroundColor: this.state.greenbtnColor, margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px"},
-            bluebtn:  {backgroundColor: this.state.bluebtnColor , margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px"},
-            alphabtn: {backgroundColor: this.state.alphabtnColor, margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px"},
-            allbtn:   {backgroundColor: this.state.allbtnColor  , margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px"},
+            redbtn:   {backgroundColor: this.state.redbtnColor  , margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px", cursor: "pointer"},
+            greenbtn: {backgroundColor: this.state.greenbtnColor, margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px", cursor: "pointer"},
+            bluebtn:  {backgroundColor: this.state.bluebtnColor , margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px", cursor: "pointer"},
+            alphabtn: {backgroundColor: this.state.alphabtnColor, margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px", cursor: "pointer"},
+            allbtn:   {backgroundColor: this.state.allbtnColor  , margin: "auto 1px",  width: "58px", height: "20px", fontSize: "13px", color: "#555", borderRadius: "3px", cursor: "pointer"},
             presetframe: {
                 lineHeight: "30px",
                 height: "30px",
