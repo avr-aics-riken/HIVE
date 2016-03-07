@@ -90,6 +90,18 @@ export default class Action {
 	}
 
 	/**
+	 * ノードを削除する
+	 * @param varname ノード変数名リスト
+	 */
+	deleteNodes(varnameList) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "deleteNodes",
+			varnameList : varnameList
+		});
+	}
+
+	/**
 	 * ノードを変更する
 	 */
 	changeNode(nodeInfo) {
@@ -127,6 +139,36 @@ export default class Action {
 			id :this.id,
 			actionType: "changeNodes",
 			nodeInfoList : nodeInfoList
+		});
+	}
+
+	/**
+	 * コピーする.
+	 */
+	copy() {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "copy"
+		});
+	}
+
+	/**
+	 * ペーストする.
+	 */
+	paste() {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "paste"
+		});
+	}
+
+	/**
+	 * 削除する
+	 */
+	delete() {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "delete"
 		});
 	}
 
