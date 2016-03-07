@@ -51,6 +51,8 @@ export default class ActionExecuter {
 		this.copy = this.copy.bind(this);
 		this.paste = this.paste.bind(this);
 		this.delete = this.delete.bind(this);
+		this.makeGroup = this.makeGroup.bind(this);
+		this.addGroup = this.addGroup.bind(this);
 	}
 
     /**
@@ -85,7 +87,11 @@ export default class ActionExecuter {
 		if (payload.hasOwnProperty('nodeInfo')) {
 			let node = null;
 			if (payload.nodeInfo.hasOwnProperty('name')) {
-				node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
+				if (payload.nodeInfo.name === "Group") {
+					node = payload.nodeInfo;
+				} else {
+					node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
+				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
 				node.varname = payload.nodeInfo.varname;
@@ -282,6 +288,53 @@ export default class ActionExecuter {
 	 */
 	delete(payload) {
 		this.store.emit(Constants.DELETE_CALLED, null);
+	}
+
+	/**
+	 * グループを追加する.
+	 */
+	addGroup(payload) {
+		if (payload.hasOwnProperty('group')) {
+			let group = payload.group;
+			let nodes = group.nodes;
+			// まずnodesを取り除く（deleteはしない)
+			// plugは変更なし。
+			for (let k = 0; k < nodes.length; k = k + 1) {
+				let n = nodes[k];
+				for (let i = this.store.data.nodes.length - 1; i >= 0; i = i - 1) {
+					let dn = this.store.data.nodes[i];
+					if (n.varname === dn.varname) {
+						this.store.data.nodes.splice(i, 1);
+					}
+				}
+			}
+			// groupを追加する。
+			this.addNode({ nodeInfo : group });
+			console.log("addGroup");
+		}
+	}
+
+	/**
+	 * グループを作成する
+	 */
+	makeGroup(payload) {
+		let nodeList = this.store.getSelectedNodeList();
+		if (nodeList.length <= 1) { return; }
+
+		console.log("nodeList", nodeList)
+
+		let group = {
+			name : "Group",
+			varname : "group_" + uuid(),
+			nodes : nodeList,
+			plugs : this.getPlugsFromNodes(nodeList),
+			input : [],
+			output : []
+		};
+
+		this.addGroup({ group : group });
+
+		this.store.emit(Constants.MAKE_GROUP_CALLED, null);
 	}
 
 	/**
