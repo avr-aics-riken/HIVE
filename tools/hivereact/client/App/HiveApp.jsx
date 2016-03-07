@@ -46,6 +46,13 @@ export default class HiveApp extends React.Component {
         e.addEventListener('click', this.onClick, false);
         e.addEventListener('dblclick', this.onDblClick, false);
         window.addEventListener('keydown', this.onKeyDown, false);
+        let el, pos, x, y, w, h;
+        el = ReactDOM.findDOMNode(this.refs.hoverTarget);
+        pos = el.getBoundingClientRect();
+        w = el.clientWidth;
+        h = el.clientHeight;
+        x = w / 2 + pos.left - 100;
+        y = h / 2 + pos.top - 150;
     }
 
     onDragOver(eve){
