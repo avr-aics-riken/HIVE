@@ -193,6 +193,8 @@ export default class Node extends React.Component {
 		if (this.props.id === String(this.props.nodeVarname + (this.props.store.getNodes().length - 1))) {
 			this.props.nodeStore.recalcPlugPosition(this.props.store);
 		}
+
+		this.refs.node.addEventListener('dblclick', this.preventDefault);
 	}
 
 	componentWillUnmount() {
@@ -203,6 +205,8 @@ export default class Node extends React.Component {
 		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
+
+		this.refs.node.removeEventListener('dblclick', this.preventDefault);
 	}
 
 	onKeyDown(ev) {
@@ -267,6 +271,12 @@ export default class Node extends React.Component {
 			varname : this.props.nodeVarname,
 			node : node
 		});
+		ev.stopPropagation();
+	}
+
+	preventDefault(ev) {
+		ev.preventDefault();
+		ev.stopPropagation();
 	}
 
 	onTitleEnter(ev) {
