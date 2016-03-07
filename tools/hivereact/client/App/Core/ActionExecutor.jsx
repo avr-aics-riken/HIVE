@@ -36,6 +36,7 @@ export default class ActionExecuter {
         // only Functions
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
+		this.deleteNodes = this.deleteNodes.bind(this);
 		this.changeNode = this.changeNode.bind(this);
 		this.changeNodes = this.changeNodes.bind(this);
 		this.changeNodeInput = this.changeNodeInput.bind(this);
@@ -47,6 +48,9 @@ export default class ActionExecuter {
 		this.unSelectNode = this.unSelectNode.bind(this);
 		this.pasteNodes = this.pasteNodes.bind(this);
 		this.getPlugsFromNodes = this.getPlugsFromNodes.bind(this);
+		this.copy = this.copy.bind(this);
+		this.paste = this.paste.bind(this);
+		this.delete = this.delete.bind(this);
 	}
 
     /**
@@ -130,6 +134,17 @@ export default class ActionExecuter {
 				}
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
 				this.store.emit(Constants.NODE_DELETED, null, n.node);
+			}
+		}
+	}
+
+	/**
+	 * ノードを削除する
+	 */
+	deleteNodes(payload) {
+		if (payload.hasOwnProperty('varnameList')) {
+			for (let i = 0; i < payload.varnameList.length; i = i + 1) {
+				this.deleteNode({varname : payload.varnameList[i].varname});
 			}
 		}
 	}
@@ -246,6 +261,27 @@ export default class ActionExecuter {
 			}
 		}
 		return plugs;
+	}
+
+	/**
+	 * ペーストする.
+	 */
+	copy(payload) {
+		this.store.emit(Constants.COPY_CALLED, null);
+	}
+
+	/**
+	 * ペーストする.
+	 */
+	paste(payload) {
+		this.store.emit(Constants.PASTE_CALLED, null);
+	}
+
+	/**
+	 * 削除する
+	 */
+	delete(payload) {
+		this.store.emit(Constants.DELETE_CALLED, null);
 	}
 
 	/**

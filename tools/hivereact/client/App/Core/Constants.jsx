@@ -15,7 +15,10 @@ module.exports = {
     PLUG_DELETED : "plug_deleted",
 	PANEL_CHANGED : "panel_changed",
 	PANEL_VISIBLE_CHANGED : "panel_visible_changed",
-	PANEL_SIZE_CHANGED : "panel_size_changed"
+	PANEL_SIZE_CHANGED : "panel_size_changed",
+	COPY_CALLED : "copy_called",
+	PASTE_CALLED : "paste_called",
+	DELETE_CALLED : "delete_called"
 };
 
 // color 定数化したい気もする

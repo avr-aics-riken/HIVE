@@ -91,9 +91,13 @@ export default class MenuTop extends React.Component {
                 this.allClearNode();
                 break;
             case 11:
+				this.props.action.copy();
+                break;
             case 12:
+				this.props.action.paste();
+                break;
             case 13:
-                alert('menu button click! => key: ' + info.key);
+				this.props.action.delete();
                 break;
         }
         console.log(info);
@@ -111,9 +115,9 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="4">Clear all</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>Edit</span>} key="10">
-                    <MenuItem key="11">dummy1</MenuItem>
-                    <MenuItem key="12">dummy2</MenuItem>
-                    <MenuItem key="13">dummy3</MenuItem>
+                    <MenuItem key="11">Copy</MenuItem>
+                    <MenuItem key="12">Paste</MenuItem>
+                    <MenuItem key="13">Delete</MenuItem>
                 </SubMenu>
             </RcMenu>
         ), {
@@ -189,5 +193,3 @@ const animation = {
         };
     },
 };
-
-
