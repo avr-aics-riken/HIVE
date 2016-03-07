@@ -9,7 +9,7 @@ export default class Container extends React.Component {
         this.store = props.store;
         this.action = props.action;
 		let n = this.props.node;
-		n.uiComponent = eval(this.props.node.uiFunc);
+		n.uiComponent = eval(this.props.node.uiFunc);        
         this.state = {
             node: this.props.node,
             closeHover: false
@@ -218,13 +218,31 @@ export default class Container extends React.Component {
         node = this.state.node;
         if (node.uiComponent === undefined) {
             res = "";
-        } else {
+        } else { // if (node.jsx === true) {
             res = React.createFactory(this.state.node.uiComponent)({
                 store: this.store,
                 action: this.action,
                 node: node
             });
-        }
+        }/* else {
+            class CustomUI extends React.Component{
+                constructor(props) {
+                    super(props);
+                    this.props = props;
+                }
+                render() {
+                    return (<div></div>);
+                }
+                componentDidMount() {
+                    const dom = ReactDOM.findDOMNode(this);
+                    this.props.node.uiComponent(dom, this.props.node);
+                }
+                componentWillUnmount() {
+                    //console.log('DIDUNMOUNT');                    
+                }
+            } 
+            res = <CustomUI node={node}/>
+        }*/
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
