@@ -11,6 +11,6 @@
 		{"name": "step",  "type": "float", "value": 0.01}
 	],
 	"output": [
-		{"name": "value",  "type": "float"}
+		{"name": "fval",  "type": "float"}
 	]
 }

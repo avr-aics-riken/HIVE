@@ -12,7 +12,7 @@ function Slider:Do()
     self:UpdateValue()
 end
 
-function Slider:uniform()
+function Slider:fval()
     local v = self.value
     return v.value
 end
