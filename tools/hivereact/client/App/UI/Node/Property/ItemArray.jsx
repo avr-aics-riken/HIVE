@@ -50,6 +50,7 @@ export default class ItemArray extends React.Component {
                 fontSize: "smaller",
                 letterSpacing: "normal",
                 padding: "1px",
+				paddingLeft : "4px",
                 width : "80px",
                 verticalAlign: "middle",
                 display: "inline-block",
@@ -67,14 +68,16 @@ export default class ItemArray extends React.Component {
             inputs: {
 				outline: "0",
                 border: "0px",
-                borderRadius: "3px",
+                borderRadius: "2px",
                 color : "#333",
                 letterSpacing: "normal",
-                marginLeft: "5px",
+                marginLeft: "3px",
                 padding: "1px",
                 width : "153px",
-                height: "20px",
-                verticalAlign: "bottom",
+                height: "19px",
+				marginTop: "1px",
+				marginBottom: "1px",
+                verticalAlign: "middle",
                 display: "inline-block",
             }
         };
