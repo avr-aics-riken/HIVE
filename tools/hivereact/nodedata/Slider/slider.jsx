@@ -4,7 +4,12 @@ import ReactSlider from "react-slider"
 class Slider extends React.Component {
     constructor(props) {
         super(props);
+		this.componentDidUpdate = this.componentDidUpdate.bind(this);
     }
+
+	componentDidUpdate() {
+		this.refs.slider._handleResize();
+	}
 
 	onChange(val) {
 		this.props.action.changeNodeInput({
@@ -16,8 +21,9 @@ class Slider extends React.Component {
 	}
 
 	render() {
-		return (<div className={'slider'} style={{margin:'4', width : '250px', height:'32', padding:'2'}}>
+		return (<div className={'slider'} style={{margin:'4', minWidth:"250px", height:'70', padding:'2'}}>
 			<ReactSlider
+					ref="slider"
 					value={[ this.props.node.input[0].value]}
 					min={ this.props.node.input[1].value }
 					max={ this.props.node.input[2].value }
@@ -27,6 +33,11 @@ class Slider extends React.Component {
 				>
 					<div className='thum'></div>
 			</ReactSlider>
+			<div style={{marginTop:"30px", bottom:"0px", float:"left"}}>min:{this.props.node.input[1].value}</div>
+			<div style={{marginTop:"30px", bottom:"0px", float:"right"}}>max:{this.props.node.input[2].value}</div>
+			<div style={{marginTop:"-18px", textAlign:"center", width : "100%", height : "30px", paddingBottom:"-30px", float:"left"}}>
+				<div style={{}}>step:{this.props.node.input[3].value}</div>
+			</div>
 		</div>);
 	}
 }
