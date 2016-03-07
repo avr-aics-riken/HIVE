@@ -23,7 +23,7 @@ export default class HiveApp extends React.Component {
 
         this.state = {
             listVisible: false,
-            listPos: []
+            listPos: [window.innerWidth / 2, window.innerHeight / 2 - 150]
         };
 
         this.onDragOver = this.onDragOver.bind(this);
@@ -37,6 +37,7 @@ export default class HiveApp extends React.Component {
         this.setFocusTarget = this.setFocusTarget.bind(this);
         this.hoverHidden = this.hoverHidden.bind(this);
         this.hoverGenerator = this.hoverGenerator.bind(this);
+        this.setHoverPosition = this.setHoverPosition.bind(this);
     }
 
     componentDidMount(){
@@ -46,13 +47,6 @@ export default class HiveApp extends React.Component {
         e.addEventListener('click', this.onClick, false);
         e.addEventListener('dblclick', this.onDblClick, false);
         window.addEventListener('keydown', this.onKeyDown, false);
-        let el, pos, x, y, w, h;
-        el = ReactDOM.findDOMNode(this.refs.hoverTarget);
-        pos = el.getBoundingClientRect();
-        w = el.clientWidth;
-        h = el.clientHeight;
-        x = w / 2 + pos.left - 100;
-        y = h / 2 + pos.top - 150;
     }
 
     onDragOver(eve){
@@ -81,14 +75,7 @@ export default class HiveApp extends React.Component {
                     listVisible: true
                 });
                 setTimeout((()=>{
-                    let el, pos, x, y, w, h;
-                    el = ReactDOM.findDOMNode(this.refs.hoverTarget);
-                    pos = el.getBoundingClientRect();
-                    w = el.clientWidth;
-                    h = el.clientHeight;
-                    x = w / 2 + pos.left - 100;
-                    y = h / 2 + pos.top - 150;
-                    this.setState({listPos: [x, y]});
+                    this.setHoverPosition();
                     var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
                     e.focus();
                 }).bind(this), 50);
@@ -174,6 +161,17 @@ export default class HiveApp extends React.Component {
     hoverHidden(){
         this.listVisiblity = false;
         this.setState({listVisible: false});
+    }
+
+    setHoverPosition(){
+        let el, pos, x, y, w, h;
+        el = ReactDOM.findDOMNode(this.refs.hoverTarget);
+        pos = el.getBoundingClientRect();
+        w = el.clientWidth;
+        h = el.clientHeight;
+        x = w / 2 + pos.left - 100;
+        y = h / 2 + pos.top - 150;
+        this.setState({listPos: [x, y]});
     }
 
     hoverGenerator(){
