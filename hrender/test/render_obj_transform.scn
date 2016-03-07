@@ -12,7 +12,7 @@ camera:LookAt(
 )
 
 
-local obj = OBJLoader()
+local obj = require("ObjLoader")()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
@@ -24,7 +24,7 @@ model:SetTranslate(30, 40, 20)
 model:SetRotate(30, 60, 40);
 model:SetScale(10, 1, 1);
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -35,5 +35,3 @@ print(analy:MaxZ())
 
 
 render {camera, model}
-
-

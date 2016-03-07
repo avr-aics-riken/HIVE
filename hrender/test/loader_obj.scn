@@ -1,6 +1,6 @@
 
 print('load obj')
 
-local obj = OBJLoader()
+local obj = require("ObjLoader")()
 obj:Load('bunny.obj')
 

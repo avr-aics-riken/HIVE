@@ -9,7 +9,7 @@ function RenderForSIP(arg)
 			local imageBufferSize = saver:MemorySize()
 
 			-- create metabinary
-			local metabin = MetaBinary()
+			local metabin = require("Network").MetaBinary()
 			local json = [[{
 				 "jsonrpc" : "2.0",
 				 "method" : "AddContent",
@@ -26,7 +26,7 @@ function RenderForSIP(arg)
 
 			print('Send:', arg.send);
 			-- send through websockt
-			local network = Connection()
+			local network = require("Network").Connection()
 			network:Connect(arg.send) --'ws://localhost:8082/v1/')
 			network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
 			network:Close()

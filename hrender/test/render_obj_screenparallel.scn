@@ -12,7 +12,7 @@ camera:LookAt(
 	60
 )
 
-local obj = OBJLoader()
+local obj = require("ObjLoader")()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
@@ -20,7 +20,7 @@ local meshdata = obj:MeshData()
 model:Create(meshdata)
 model:SetShader('polygon.frag')
 
-local analy = PolygonAnalyzer()
+local analy = require("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -36,5 +36,3 @@ if mpiMode() == true then
 end
 
 render {camera, model}
-
-

@@ -1,0 +1,18 @@
+local camera = HIVE_ObjectTable["view"];
+camera:LookAt(
+	0,10,30,
+	0,3,0,
+	0,1,0,
+	60
+)
+
+local stl = require("StlLoader")()
+stl:Load('../test/bunny.stl')
+
+local model = PolygonModel()
+local meshdata = stl:MeshData()
+model:Create(meshdata)
+model:SetShader('../test/white.frag')
+HIVE_ObjectTable["bunny"] = model
+
+hcmd.RenderCamera(512,512,"view","raw",true);
