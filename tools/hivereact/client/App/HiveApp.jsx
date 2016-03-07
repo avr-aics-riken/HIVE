@@ -44,6 +44,7 @@ export default class HiveApp extends React.Component {
         let e = ReactDOM.findDOMNode(this.refs.droptarget);
         e.addEventListener('dragover', this.onDragOver, false);
         e.addEventListener('drop', this.onDrop, false);
+        e = ReactDOM.findDOMNode(this.refs.hoverTarget);
         e.addEventListener('click', this.onClick, false);
         e.addEventListener('dblclick', this.onDblClick, false);
         window.addEventListener('keydown', this.onKeyDown, false);
@@ -98,8 +99,10 @@ export default class HiveApp extends React.Component {
 
     onDblClick(eve){
         if (eve.button === 0) {
-            let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
-            let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
+            // let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
+            // let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
+            let x = eve.pageX;
+            let y = eve.pageY;
             this.listVisiblity = !this.listVisiblity;
             this.setState({
                 listVisible: this.listVisiblity,
