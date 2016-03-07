@@ -56,6 +56,7 @@ export default class ItemVec extends React.Component {
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",
+				paddingLeft : "4px",
                 width : "80px",
                 verticalAlign: "middle",
                 display: "inline-block",
@@ -65,23 +66,26 @@ export default class ItemVec extends React.Component {
             value : {
                 color : "#333",
                 letterSpacing: "normal",
-                padding: "1px",
+                //padding: "1px",
                 width : "164px",
                 verticalAlign: "middle",
                 display: "inline-block"
             },
             flex : {
-                paddingLeft: "3px"
+                //paddingLeft: "3px"
                 // display: "flex",
                 // flexDirection: "row"
             },
             inputs: {
 				outline: "0",
                 border: "0px",
-                borderRadius: "3px",
-                marginLeft: "1px",
+                borderRadius: "2px",
+                marginLeft: "3px",
+				marginTop: "1px",
+				marginBottom: "1px",
+                verticalAlign: "middle",
                 width: "36px",
-                height: "18px",
+				height: "19px",
                 float: "left",
 				border : "1px solid rgba(54, 196, 168, 0.0)"
                 // flexGrow: 1
