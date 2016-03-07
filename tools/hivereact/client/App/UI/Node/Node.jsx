@@ -188,7 +188,8 @@ export default class Node extends React.Component {
 		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 		let rect = this.refs.node.getBoundingClientRect();
-		this.props.nodeStore.setNodeSize(this.props.nodeVarname, rect.right - rect.left, rect.bottom - rect.top);
+		let invzoom = 1.0 / this.props.nodeStore.getZoom();
+		this.props.nodeStore.setNodeSize(this.props.nodeVarname, (rect.right - rect.left) * invzoom, (rect.bottom - rect.top) * invzoom);
 		if (this.props.id === String(this.props.nodeVarname + (this.props.store.getNodes().length - 1))) {
 			this.props.nodeStore.recalcPlugPosition(this.props.store);
 		}
