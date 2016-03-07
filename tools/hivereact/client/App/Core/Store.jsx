@@ -23,6 +23,7 @@ export default class Store extends EventEmitter {
 		this.getNode = this.getNode.bind(this);
 		this.getNodeNameList = this.getNodeNameList.bind(this);
 		this.getDispatchToken = this.getDispatchToken.bind(this);
+		this.getSelectedNodeList = this.getSelectedNodeList.bind(this);
 
 		this.initHive(this.data);
 	}
@@ -91,5 +92,18 @@ export default class Store extends EventEmitter {
 	 */
 	getInitialNodePosition() {
 		return ActionExecuter.initialData.node.pos;
+	}
+
+	/**
+	 * 選択中のノードリストを返す.
+	 */
+	getSelectedNodeList() {
+		let selected = [];
+		for (let i = 0, size = this.data.nodes.length; i < size; i = i + 1) {
+			if (this.data.nodes[i].select) {
+				selected.push(this.data.nodes[i]);
+			}
+		}
+		return selected;
 	}
 }
