@@ -36,6 +36,15 @@ export default class NodeView extends React.Component {
 		this.onNodeAdded = this.onNodeAdded.bind(this);
 		this.width = 4000;
 		this.height = 4000;
+
+		this.copyNode = this.copyNode.bind(this);
+		this.pasteNode = this.pasteNode.bind(this);
+		this.onKeyDown = this.onKeyDown.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
+
+		this.copied = null;
+		this.copyNode = this.copyNode.bind(this);
+		this.pasteNode = this.pasteNode.bind(this);
 	}
 
 	styles(id) {
@@ -160,22 +169,17 @@ export default class NodeView extends React.Component {
 	}
 
 	onMouseMove(ev) {
+		this.rect = ev.currentTarget.getBoundingClientRect();
+		const px = ev.clientX - this.rect.left;
+		const py = ev.clientY - this.rect.top;
 		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
-			const px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
-			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
 			if (this.refs.viewport) {
 				this.refs.viewport.scrollLeft = this.refs.viewport.scrollLeft - dx;
 				this.refs.viewport.scrollTop = this.refs.viewport.scrollTop - dy;
 			}
-			this.pos = {
-				x : px,
-				y : py
-			};
 		} else if (this.isRightDown) {
-			const px = ev.clientX - ev.currentTarget.getBoundingClientRect().left;
-			const py = ev.clientY - ev.currentTarget.getBoundingClientRect().top;
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
             const mv = (dx + dy) * 0.005;
@@ -187,12 +191,12 @@ export default class NodeView extends React.Component {
                 zoom = 2.0;
             }
             this.props.nodeAction.changeZoom(zoom);
-
-			this.pos = {
-				x : px,
-				y : py
-			};
 		}
+
+		this.pos = {
+			x : px,
+			y : py
+		};
 	}
 
 	onWheel(ev) {
@@ -244,12 +248,59 @@ export default class NodeView extends React.Component {
 		this.refs.viewport.scrollLeft = 1700;
 
 		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
+		window.addEventListener('keydown', this.onKeyDown);
+		window.addEventListener('keyup', this.onKeyUp);
     }
 
     componentWillUnmount(){
 		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
+		window.removeEventListener('keydown', this.onKeyDown);
+		window.removeEventListener('keyup', this.onKeyUp);
     }
+
+	onKeyDown(ev) {
+		this.isCtrlDown = ev.ctrlKey;
+		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
+			this.copyNode();
+		}
+		if (this.isCtrlDown && ev.keyCode === 86) { // "v"
+			this.pasteNode();
+		}
+	}
+
+	onKeyUp(ev) {
+		this.isCtrlDown = ev.ctrlKey;
+	}
+
+	copyNode() {
+		let nodeList = this.props.store.getSelectedNodeList();
+		this.copied = JSON.stringify(nodeList);
+	}
+
+	pasteNode(ev) {
+		let copyNodes = null;
+		if (this.copied) {
+			copyNodes = JSON.parse(this.copied);
+			let diffPos = [0, 0];
+			for (let i = 0; i < copyNodes.length; i = i + 1) {
+				let node = copyNodes[i];
+				delete node.varname;
+				if (i === 0) {
+					diffPos[0] = this.refs.viewport.scrollLeft + this.pos.x - node.node.pos[0];
+					diffPos[1] = this.refs.viewport.scrollTop + this.pos.y - node.node.pos[1];
+				}
+				copyNodes[i].node.pos[0] += diffPos[0];
+				copyNodes[i].node.pos[1] += diffPos[1];
+				console.log(copyNodes[i].node.pos, diffPos);
+				this.props.action.addNode(copyNodes[i]);
+
+				// todo : plugもコピー
+			}
+			this.copied = null;
+		}
+		console.log("pasteNode");
+	}
 
 	origin() {
 		if (this.refs.viewport) {

@@ -94,7 +94,10 @@ export default class ActionExecuter {
 					payload.nodeInfo.panel.zindex = this.store.data.nodes.length + 1;
 				}
 			}
-			if(node){
+			if (payload.nodeInfo.hasOwnProperty('input')) {
+				node.input = payload.nodeInfo.input;
+			}
+			if (node) {
 				this.assignInitialNodeValue(node);
 				var nl = this.store.getNodes();
 				positionGetter(node, nl);
