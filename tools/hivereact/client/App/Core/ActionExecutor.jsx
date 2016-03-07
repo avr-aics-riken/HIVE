@@ -48,6 +48,7 @@ export default class ActionExecuter {
 		this.unSelectNode = this.unSelectNode.bind(this);
 		this.pasteNodes = this.pasteNodes.bind(this);
 		this.getPlugsFromNodes = this.getPlugsFromNodes.bind(this);
+		this.getGroupInoutFromNodes = this.getGroupInoutFromNodes.bind(this);
 		this.copy = this.copy.bind(this);
 		this.paste = this.paste.bind(this);
 		this.delete = this.delete.bind(this);
@@ -75,7 +76,7 @@ export default class ActionExecuter {
 				node[key] = JSON.parse(JSON.stringify(ActionExecuter.initialData[key]));
 			}
 		}
-		if (node.uiFunc === "") {
+		if (!node.hasOwnProperty('uiFunc') || node.uiFunc === "") {
 			// UI無し
 			delete node.panel.visible;
 		}
@@ -269,6 +270,34 @@ export default class ActionExecuter {
 		return plugs;
 	}
 
+
+	/**
+	 * ノードの集合から, ノードの集合外に繋がっている入力の、プラグリストを返す。
+	 */
+	getGroupInoutFromNodes(nodes, isInput) {
+		let plugs = [];
+		let varnameToNodes = {};
+		for (let i = 0; i <  nodes.length; i = i + 1) {
+			varnameToNodes[nodes[i].varname] = nodes[i];
+		}
+
+		for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
+			let plug = this.store.data.plugs[i];
+			if (isInput &&
+				varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
+				!varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
+				plugs.push(plug);
+			}
+			if (!isInput &&
+				!varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
+				varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
+				plugs.push(plug);
+			}
+		}
+		return plugs;
+	}
+
+
 	/**
 	 * ペーストする.
 	 */
@@ -309,6 +338,7 @@ export default class ActionExecuter {
 				}
 			}
 			// groupを追加する。
+			console.log("addgroup", group)
 			this.addNode({ nodeInfo : group });
 			console.log("addGroup");
 		}
@@ -323,17 +353,42 @@ export default class ActionExecuter {
 
 		console.log("nodeList", nodeList)
 
+		let inplugs = this.getGroupInoutFromNodes(nodeList, true);
+		let outplugs = this.getGroupInoutFromNodes(nodeList, false);
+		let inputs = [];
+		let outputs = [];
+		for (let i = 0; i < nodeList.length; i = i + 1) {
+			let n = nodeList[i];
+			for (let k = 0; k < inplugs.length; k = k + 1) {
+				let plug = inplugs[k];
+				if (n.varname === plug.input.nodeVarname) {
+					for (let j = 0; j < n.input.length; j = j + 1) {
+						if (n.input[j].name === plug.input.name) {
+							inputs.push(n.input[j]);
+						}
+					}
+				}
+			}
+			for (let k = 0; k < outplugs.length; k = k + 1) {
+				let plug = outplugs[k];
+				if (n.varname === plug.output.nodeVarname) {
+					for (let j = 0; j < n.output.length; j = j + 1) {
+						if (n.output[j].name === plug.output.name) {
+							outputs.push(n.output[j]);
+						}
+					}
+				}
+			}
+		}
 		let group = {
 			name : "Group",
 			varname : "group_" + uuid(),
 			nodes : nodeList,
 			plugs : this.getPlugsFromNodes(nodeList),
-			input : [],
-			output : []
+			input : inputs,
+			output : outputs
 		};
-
 		this.addGroup({ group : group });
-
 		this.store.emit(Constants.MAKE_GROUP_CALLED, null);
 	}
 
