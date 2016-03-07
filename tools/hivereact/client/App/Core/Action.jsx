@@ -131,6 +131,17 @@ export default class Action {
 	}
 
 	/**
+	 * ノードをペーストする.
+	 */
+	pasteNodes(nodeInfoList) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "pasteNodes",
+			nodeInfoList : nodeInfoList
+		});
+	}
+
+	/**
 	 * ノードをインポートする
 	 * @param nodeInfo ノード情報
 	 */

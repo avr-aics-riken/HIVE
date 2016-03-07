@@ -45,6 +45,8 @@ export default class ActionExecuter {
 		this.changePanelVisible = this.changePanelVisible.bind(this);
 		this.selectNode = this.selectNode.bind(this);
 		this.unSelectNode = this.unSelectNode.bind(this);
+		this.pasteNodes = this.pasteNodes.bind(this);
+		this.getPlugsFromNodes = this.getPlugsFromNodes.bind(this);
 	}
 
     /**
@@ -221,6 +223,62 @@ export default class ActionExecuter {
 				this.changeNode({
 					nodeInfo : payload.nodeInfoList[i]
 				});
+			}
+		}
+	}
+
+
+	/**
+	 * ノード間のプラグリストを返す
+	 */
+	getPlugsFromNodes(nodes) {
+		let plugs = [];
+		let varnameToNodes = {};
+		for (let i = 0; i <  nodes.length; i = i + 1) {
+			varnameToNodes[nodes[i].varname] = nodes[i];
+		}
+
+		for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
+			let plug = this.store.data.plugs[i];
+			if (varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
+				varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
+				plugs.push(plug);
+			}
+		}
+		return plugs;
+	}
+
+	/**
+	 * ノードをペーストする.
+	 */
+	pasteNodes(payload) {
+ 		if (payload.hasOwnProperty('nodeInfoList')) {
+			// ノード間のプラグリストのコピーを取得.
+			let plugs = JSON.parse(JSON.stringify(this.getPlugsFromNodes(payload.nodeInfoList)));
+
+			// ノードを追加
+			for (let i = 0; i < payload.nodeInfoList.length; i = i + 1) {
+				let src = payload.nodeInfoList[i];
+				let preVarname = src.varname;
+				delete src.varname;
+				this.addNode({ nodeInfo : src });
+				let node = this.store.data.nodes[this.store.data.nodes.length - 1];
+
+				// プラグの接続を新規に作ったノードに変更.
+				for (let k = 0; k < plugs.length; k = k + 1) {
+					console.log(plugs[k].input.nodeVarname, preVarname);
+					if (plugs[k].input.nodeVarname === preVarname) {
+						plugs[k].input.nodeVarname = node.varname;
+					}
+					if (plugs[k].output.nodeVarname === preVarname) {
+						plugs[k].output.nodeVarname = node.varname;
+					}
+				}
+			}
+
+			// プラグを追加
+			for (let i = 0; i < plugs.length; i = i + 1) {
+				this.addPlug({ plugInfo: plugs[i] });
 			}
 		}
 	}
