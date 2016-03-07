@@ -41,10 +41,7 @@ export default class Store extends EventEmitter {
 		this.nodeSizeMap = {};
 
 		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
-			this.nodeMap = {};
-			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
-				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
-			}
+			this.regenerateNodeMap(coreStore);
 			for (let n in this.nodeSizeMap) {
 				if (!this.nodeMap.hasOwnProperty(n)) {
 					delete this.nodeSizeMap[n];
@@ -58,11 +55,7 @@ export default class Store extends EventEmitter {
 
 		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
 			// ノードマップを作り直す.
-			this.nodeMap = {};
-			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
-				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
-			}
-
+			this.regenerateNodeMap(coreStore);
 			this.recalcPlugPosition(coreStore);
 			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPositions);
 		});
@@ -77,6 +70,24 @@ export default class Store extends EventEmitter {
 		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
 		this.changeZoom = this.changeZoom.bind(this);
 		this.isConnected = this.isConnected.bind(this);
+	}
+
+	regenerateNodeMap(coreStore) {
+		let addNodeToNodeMap = (n) => {
+			if (n.hasOwnProperty('nodes') && n.hasOwnProperty('plugs')) {
+				// group node
+				for (let i = 0; i < n.nodes.length; i = i + 1) {
+					addNodeToNodeMap(n.nodes[i]);
+				}
+			} else {
+				this.nodeMap[n.varname] = n;
+			}
+		}
+		this.nodeMap = {};
+		for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
+			let n = coreStore.getNodes()[i];
+			addNodeToNodeMap(n);
+		}
 	}
 
 	recalcPlugPosition(coreStore) {
