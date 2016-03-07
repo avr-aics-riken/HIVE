@@ -10,6 +10,15 @@ export default class ItemText extends React.Component {
 		super(props);
 	}
 
+	textAlign() {
+		if (this.props.initialParam.hasOwnProperty('name')) {
+			if (this.props.initialParam.name.match(/^\[\d\]$/)) {
+				return "right";
+			}
+		}
+		return "left";
+	}
+
 	styles() {
         let border = ()=>{
             if(this.props.top && this.props.bottom){
@@ -47,7 +56,7 @@ export default class ItemText extends React.Component {
                 color : "white",
                 fontSize: "smaller",
                 letterSpacing: "normal",
-                textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
+                textAlign: this.textAlign.bind(this)(),
                 padding: "1px",
 				paddingLeft : "5px",
                 width : "80px",
