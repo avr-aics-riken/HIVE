@@ -2,8 +2,6 @@
 	hrender server for HIVE
 --]]
 
-arg = {...}
-
 hcmd = require('HiveCommand')
 
 if hcmd == nil then
@@ -17,12 +15,32 @@ else
 end
 
 local connectAddress = 'ws://localhost:8080/'
-if arg[1] and arg[1]:sub(1,5) == 'ws://' then
-	connectAddress = arg[1]
+local ipcAddress = nil --'ipc:///tmp/HIVE_server_ipc'
+targetClientId = -1
+network_ipc = nil
+
+
+for i, v in pairs(arg) do
+	if v and v:sub(1,5) == 'ws://' then
+		connectAddress = v
+	end
+	if v and v:sub(1,9) == '--client:' then
+		targetClientId = v:sub(10)
+	end
+	if v and v:sub(1,6) == 'ipc://' then
+		ipcAddress = v
+	end
 end
 
+print('[Server] Client Id=' .. targetClientId)
 print('HIVE renderer START. Connect to', connectAddress);
 
+if ipcAddress then
+	print('IPC open=', ipcAddress);
+	network_ipc = require("Network").Connection()
+	local ipcr = network_ipc:Connect(ipcAddress)
+	print('IPC ret=', ipcr)
+end
 
 local Log = function() end
 -- for Debug
@@ -32,14 +50,14 @@ package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
 -- Global Weboket Connection
-network = Connection()
+network = require("Network").Connection()
 network:SetTimeout(100)
 
 -- Global Jpeg Saver
 HIVE_ImageSaver = ImageSaver()
 
 -- Global Metabin
-HIVE_metabin = MetaBinary()
+HIVE_metabin = require("Network").MetaBinary()
 
 
 local defaultCamera = Camera() -- 'view'
@@ -47,13 +65,9 @@ defaultCamera:SetScreenSize(256,256)
 defaultCamera:SetFilename('view.jpg')
 defaultCamera:LookAt(0,0,300, 0,0,0, 0,1,0, 60)
 HIVE_ObjectTable = {view=defaultCamera} -- Global: All Object List
+HIVE_TextureTable = {} -- Global: Texture Table
 HIVE_ObjectTimeline = {}
 HIVE_DataTable   = {} -- Global: Data List
-
-local function mysleep(sec)
-	local start = os.time()
-	while os.time() - start < sec do end
-end
 
 --[[
 local function sendMasterError(err)
@@ -68,12 +82,12 @@ end
 --]]
 
 local function sendClientError(err, id)
-	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = 'client', id = id});
+	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = targetClientId, id = id});
 	network:SendText(errtxt)
 end
 
 local function sendClientResult(ret, id)
-	local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = 'client', id = id});
+	local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = targetClientId, id = id});
 	network:SendText(retval)
 end
 
@@ -86,7 +100,7 @@ end
 local function connectHIVE()
 	local r = network:Connect(connectAddress)
 	if r then
-		sendMasterMethod('register', {mode = 'renderer'})
+		sendMasterMethod('register', {mode = 'renderer', targetid = targetClientId})
 	end
 	return r
 end
@@ -103,9 +117,9 @@ local function eval(src)
 	if func == nil or err then
 		return nil, err
 	end
-	
+
 	success, ret = pcall(func)
-	
+
 	if success then
 		if ret then
 			return ret, nil
@@ -180,10 +194,11 @@ function mainloop()
 				renderMethod(data.method, data.param, data.id)
 			end
 		else
+			sleep(1)
 			r = network:GetState()
 			-- Reconnection
 			if r == "CLOSED" or r == "NOT_CONNECTED" then
-				mysleep(1)
+				sleep(1000)
 				r = connectHIVE();
 				if r then
 					Log('[Connection] Reconnected')

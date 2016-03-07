@@ -1,0 +1,12 @@
+{
+	"name": "TeapotGenerator",
+	"funcname": "TeapotGenerator",
+	"info":"Teapotを生成するためのノード",
+	"customfuncfile":"generator.lua",
+    "input": [
+		{"name": "size", "type": "float", "value": [1.0]}
+	],
+	"output": [
+		{"name": "MeshData",  "type": "BufferMeshData"}
+	]
+}

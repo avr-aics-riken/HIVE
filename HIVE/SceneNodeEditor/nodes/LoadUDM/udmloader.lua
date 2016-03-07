@@ -1,7 +1,7 @@
 
 
 function LoadUDM(property)
-	local udm = UDMLoader()
+	local udm = require("UdmLoader")()
 	udm:Load(property.filepath)
 	local udminst = {
 		Tetra = function()

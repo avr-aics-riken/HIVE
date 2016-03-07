@@ -535,15 +535,23 @@ function svgNodeUI(draw) {
 			}
 			return src;
 		}
-		function makePlugValueSrc(nodevarname, node) {
+		function makePlugValueSrc(nodevarname, node, isArray) {
 			var src = '',
 				plugname = getPlugVarName(nodevarname, node.name);
 			if (plugArray[plugname]) {
 				temp = plugArray[plugname].varname;
 				if (temp.substr(temp.length - 1, temp.length) === ':') {
-					src += node.name + '=' + temp.substr(0, temp.length - 1);
+					if (isArray) {
+						src += temp.substr(0, temp.length - 1);
+					} else {
+						src += node.name + '=' + temp.substr(0, temp.length - 1);
+					}
 				} else {
-					src += node.name + '=' + plugArray[plugname].varname + '()';
+					if (isArray) {
+						src += plugArray[plugname].varname + '()';
+					} else {
+						src += node.name + '=' + plugArray[plugname].varname + '()';
+					}
 				}
 			} else if (node.value) {
 				src += makeValueSrc(node);
@@ -569,7 +577,7 @@ function svgNodeUI(draw) {
 					if (Array.isArray(node.input[j].array)) {
 						src += node.input[j].name + '={';
 						for (k = 0; k < node.input[j].array.length; k = k + 1) {
-							src += makePlugValueSrc(node.varname, node.input[j].array[k]);
+							src += makePlugValueSrc(node.varname, node.input[j].array[k], true);
 							if (k !== node.input[j].array.length - 1) {
 								src += ', ';
 							}

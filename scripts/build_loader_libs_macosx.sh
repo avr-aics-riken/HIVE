@@ -221,6 +221,19 @@ function build_pmlib {
         cd ${topdir}
 }
 
+function build_nanomsg {
+
+	cd third_party/ 
+	cd nanomsg/
+	#if [ -f "Makefile" ]; then
+	#	make distclean
+	#fi
+
+	autoreconf -ivf
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/nanomsg && make && make install
+	cd ${topdir}
+}
+
 clean_install_dir
 build_tp
 build_netcdf
@@ -232,3 +245,4 @@ build_pdmlib
 build_udmlib
 build_pmlib
 build_compositor
+build_nanomsg

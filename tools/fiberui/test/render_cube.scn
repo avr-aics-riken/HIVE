@@ -1,0 +1,29 @@
+print('Render Cube')
+local camera = Camera()
+camera:LookAt(
+	10,10,10,
+	0,0,0,
+	0,1,0,
+	60
+)
+hcmd.UpdateSceneInformation()
+
+local gen = PrimitiveGenerator()
+
+local width  = 5
+local height = 5
+local depth  = 5
+
+local model = PolygonModel()
+local meshdata = gen:Cube(width, height, depth)
+model:SetShader('../test/textured.frag')
+model:Create(meshdata)
+
+local loader = ImageLoader()
+local isloaded = loader:Load("../test/testimg.tga")
+print('TEXTUREAAA', isloaded)
+local img = loader:ImageData()
+model:SetTexture('mytex0', img)
+
+HIVE_ObjectTable["cube"] = model
+hcmd.RenderCamera(512,512,"view","raw",true);

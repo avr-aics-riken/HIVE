@@ -1,0 +1,75 @@
+
+--
+--  expect to send from test/send_renderimage_ipc.scn
+--
+
+print('Send Render Image')
+
+--local sendmode = "jpg"
+local sendmode = "raw"
+
+local width  = 1024
+local height = 512
+
+local camera = Camera()
+camera:SetScreenSize(width, height)
+
+local obj = require("ObjLoader")()
+local saver = ImageSaver()
+local metabin = require("Network").MetaBinary()
+local network = require("Network").Connection()
+network:Connect('ipc:///tmp/HIVEtest')
+
+obj:Load('bunny.obj')
+local model = PolygonModel()
+local meshdata = obj:MeshData()
+model:Create(meshdata)
+model:SetShader('normal.frag')
+
+
+local PI2 = 3.1415926 * 10.0
+
+for i=1,300 do
+
+	camera:LookAt(
+		100*math.sin(i/300.0*PI2), 0, 100*math.cos(i/300.0*PI2),
+		0,0,0,
+		0,1,0,
+		60
+	)
+
+
+	render {camera, model}
+
+
+	-- create metabinary
+	local json = [[{
+	 "method" : "reqAddContent",
+	 "param": {
+		 "type" : "]] .. sendmode .. [[",
+		 "posx" : "0",
+		 "posy" : "0",
+		 "width" : "]] .. width .. [[",
+		 "height" : "]] .. height .. [["}
+	 }
+	 ]]
+
+
+	if (sendmode == "jpg") then
+		-- save render image as jpg on memory
+		local imageBuffer = saver:SaveMemory(1, camera:GetImageBuffer())
+		local imageBufferSize = saver:MemorySize()
+		metabin:Create(json, imageBuffer, imageBufferSize)
+	elseif (sendmode == "raw") then
+		local img = camera:GetImageBuffer()
+		metabin:Create(json, img:GetBuffer(), img:GetSize())
+	end
+
+	--print("MetaSize=", metabin:BinaryBufferSize(), "ImgSize=", img:GetSize())
+
+	-- send through websockt
+	--network:Connect('ws://localhost:8082/v1/')
+	network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
+
+end
+network:Close()
