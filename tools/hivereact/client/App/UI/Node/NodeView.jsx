@@ -283,20 +283,18 @@ export default class NodeView extends React.Component {
 		if (this.copied) {
 			copyNodes = JSON.parse(this.copied);
 			let diffPos = [0, 0];
+
+			// ノードをペースト
 			for (let i = 0; i < copyNodes.length; i = i + 1) {
 				let node = copyNodes[i];
-				delete node.varname;
 				if (i === 0) {
 					diffPos[0] = this.refs.viewport.scrollLeft + this.pos.x - node.node.pos[0];
 					diffPos[1] = this.refs.viewport.scrollTop + this.pos.y - node.node.pos[1];
 				}
 				copyNodes[i].node.pos[0] += diffPos[0];
 				copyNodes[i].node.pos[1] += diffPos[1];
-				console.log(copyNodes[i].node.pos, diffPos);
-				this.props.action.addNode(copyNodes[i]);
-
-				// todo : plugもコピー
 			}
+			this.props.action.pasteNodes(copyNodes);
 			this.copied = null;
 		}
 		console.log("pasteNode");
