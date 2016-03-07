@@ -7,8 +7,7 @@
 
 #include <vector>
 #include "Ref.h"
-//#include "VolumeModel.h"
-class VolumeModel;
+class BufferVolumeData;
 
 /**
  * ボリュームデータ解析クラス
@@ -30,8 +29,8 @@ public:
     double MaxY();
     double MaxZ();
     const std::vector<float>& GetHistgram() const;
-    const std::vector<float> GetHistgramInRange(VolumeModel*, double min, double max) const;
-    bool Execute(VolumeModel*);
+    const std::vector<float> GetHistgramInRange(BufferVolumeData*, double min, double max) const;
+    bool Execute(BufferVolumeData*);
 };
 
 
