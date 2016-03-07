@@ -490,6 +490,10 @@ export default class ActionExecuter {
 					return;
 				}
 			}
+			if (payload.plugInfo.input.nodeVarname === payload.plugInfo.output.nodeVarname) {
+				// 同じノードに繋げようとした
+				return;
+			}
 			this.store.data.plugs.push(payload.plugInfo);
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
 			this.store.emit(Constants.PLUG_ADDED, null, payload.plugInfo);
