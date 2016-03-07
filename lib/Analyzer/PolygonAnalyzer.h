@@ -7,8 +7,7 @@
 #define _POLYGONANALYZER_H_
 
 #include "Ref.h"
-//#include "PolygonModel.h"
-class PolygonModel;
+class BufferMeshData;
 
 /**
  * ポリゴンデータ解析クラス
@@ -28,7 +27,7 @@ public:
     double MaxX();
     double MaxY();
     double MaxZ();
-    bool Execute(PolygonModel*);
+    bool Execute(BufferMeshData*);
 };
 
 
