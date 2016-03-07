@@ -173,6 +173,16 @@ export default class Action {
 	}
 
 	/**
+	 * グループを作成する
+	 */
+	makeGroup() {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "makeGroup"
+		});
+	}
+
+	/**
 	 * ノードをペーストする.
 	 */
 	pasteNodes(nodeInfoList) {

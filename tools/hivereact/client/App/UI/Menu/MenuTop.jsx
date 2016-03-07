@@ -99,6 +99,9 @@ export default class MenuTop extends React.Component {
             case 13:
 				this.props.action.delete();
                 break;
+            case 14:
+				this.props.action.makeGroup();
+                break;
         }
         console.log(info);
     }
@@ -118,6 +121,7 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="11">Copy</MenuItem>
                     <MenuItem key="12">Paste</MenuItem>
                     <MenuItem key="13">Delete</MenuItem>
+                    <MenuItem key="14">MakeGroup</MenuItem>
                 </SubMenu>
             </RcMenu>
         ), {

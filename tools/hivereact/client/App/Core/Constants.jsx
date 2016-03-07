@@ -18,7 +18,8 @@ module.exports = {
 	PANEL_SIZE_CHANGED : "panel_size_changed",
 	COPY_CALLED : "copy_called",
 	PASTE_CALLED : "paste_called",
-	DELETE_CALLED : "delete_called"
+	DELETE_CALLED : "delete_called",
+	MAKE_GROUP_CALLED : "make_group_called"
 };
 
 // color 定数化したい気もする

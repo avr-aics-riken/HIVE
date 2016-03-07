@@ -48,9 +48,12 @@ export default class ActionExecuter {
 		this.unSelectNode = this.unSelectNode.bind(this);
 		this.pasteNodes = this.pasteNodes.bind(this);
 		this.getPlugsFromNodes = this.getPlugsFromNodes.bind(this);
+		this.getGroupInoutFromNodes = this.getGroupInoutFromNodes.bind(this);
 		this.copy = this.copy.bind(this);
 		this.paste = this.paste.bind(this);
 		this.delete = this.delete.bind(this);
+		this.makeGroup = this.makeGroup.bind(this);
+		this.addGroup = this.addGroup.bind(this);
 	}
 
     /**
@@ -73,7 +76,7 @@ export default class ActionExecuter {
 				node[key] = JSON.parse(JSON.stringify(ActionExecuter.initialData[key]));
 			}
 		}
-		if (node.uiFunc === "") {
+		if (!node.hasOwnProperty('uiFunc') || node.uiFunc === "") {
 			// UI無し
 			delete node.panel.visible;
 		}
@@ -85,7 +88,11 @@ export default class ActionExecuter {
 		if (payload.hasOwnProperty('nodeInfo')) {
 			let node = null;
 			if (payload.nodeInfo.hasOwnProperty('name')) {
-				node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
+				if (payload.nodeInfo.name === "Group") {
+					node = payload.nodeInfo;
+				} else {
+					node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
+				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
 				node.varname = payload.nodeInfo.varname;
@@ -263,6 +270,34 @@ export default class ActionExecuter {
 		return plugs;
 	}
 
+
+	/**
+	 * ノードの集合から, ノードの集合外に繋がっている入力の、プラグリストを返す。
+	 */
+	getGroupInoutFromNodes(nodes, isInput) {
+		let plugs = [];
+		let varnameToNodes = {};
+		for (let i = 0; i <  nodes.length; i = i + 1) {
+			varnameToNodes[nodes[i].varname] = nodes[i];
+		}
+
+		for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
+			let plug = this.store.data.plugs[i];
+			if (isInput &&
+				varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
+				!varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
+				plugs.push(plug);
+			}
+			if (!isInput &&
+				!varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
+				varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
+				plugs.push(plug);
+			}
+		}
+		return plugs;
+	}
+
+
 	/**
 	 * ペーストする.
 	 */
@@ -285,6 +320,79 @@ export default class ActionExecuter {
 	}
 
 	/**
+	 * グループを追加する.
+	 */
+	addGroup(payload) {
+		if (payload.hasOwnProperty('group')) {
+			let group = payload.group;
+			let nodes = group.nodes;
+			// まずnodesを取り除く（deleteはしない)
+			// plugは変更なし。
+			for (let k = 0; k < nodes.length; k = k + 1) {
+				let n = nodes[k];
+				for (let i = this.store.data.nodes.length - 1; i >= 0; i = i - 1) {
+					let dn = this.store.data.nodes[i];
+					if (n.varname === dn.varname) {
+						this.store.data.nodes.splice(i, 1);
+					}
+				}
+			}
+			// groupを追加する。
+			console.log("addgroup", group)
+			this.addNode({ nodeInfo : group });
+			console.log("addGroup");
+		}
+	}
+
+	/**
+	 * グループを作成する
+	 */
+	makeGroup(payload) {
+		let nodeList = this.store.getSelectedNodeList();
+		if (nodeList.length <= 1) { return; }
+
+		console.log("nodeList", nodeList)
+
+		let inplugs = this.getGroupInoutFromNodes(nodeList, true);
+		let outplugs = this.getGroupInoutFromNodes(nodeList, false);
+		let inputs = [];
+		let outputs = [];
+		for (let i = 0; i < nodeList.length; i = i + 1) {
+			let n = nodeList[i];
+			for (let k = 0; k < inplugs.length; k = k + 1) {
+				let plug = inplugs[k];
+				if (n.varname === plug.input.nodeVarname) {
+					for (let j = 0; j < n.input.length; j = j + 1) {
+						if (n.input[j].name === plug.input.name) {
+							inputs.push(n.input[j]);
+						}
+					}
+				}
+			}
+			for (let k = 0; k < outplugs.length; k = k + 1) {
+				let plug = outplugs[k];
+				if (n.varname === plug.output.nodeVarname) {
+					for (let j = 0; j < n.output.length; j = j + 1) {
+						if (n.output[j].name === plug.output.name) {
+							outputs.push(n.output[j]);
+						}
+					}
+				}
+			}
+		}
+		let group = {
+			name : "Group",
+			varname : "group_" + uuid(),
+			nodes : nodeList,
+			plugs : this.getPlugsFromNodes(nodeList),
+			input : inputs,
+			output : outputs
+		};
+		this.addGroup({ group : group });
+		this.store.emit(Constants.MAKE_GROUP_CALLED, null);
+	}
+
+	/**
 	 * ノードをペーストする.
 	 */
 	pasteNodes(payload) {
@@ -302,7 +410,6 @@ export default class ActionExecuter {
 
 				// プラグの接続を新規に作ったノードに変更.
 				for (let k = 0; k < plugs.length; k = k + 1) {
-					console.log(plugs[k].input.nodeVarname, preVarname);
 					if (plugs[k].input.nodeVarname === preVarname) {
 						plugs[k].input.nodeVarname = node.varname;
 					}
@@ -382,6 +489,10 @@ export default class ActionExecuter {
 					// 既に繋がっている入力端子に繋げようとした
 					return;
 				}
+			}
+			if (payload.plugInfo.input.nodeVarname === payload.plugInfo.output.nodeVarname) {
+				// 同じノードに繋げようとした
+				return;
 			}
 			this.store.data.plugs.push(payload.plugInfo);
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
