@@ -85,7 +85,7 @@ bool PolygonAnalyzer::Execute(BufferMeshData* mesh)
 {
     std::vector<float> m_volHist[3];
     
-    if(!mesh) {
+    if(!mesh || mesh->GetType() != BufferData::TYPE_MESH) {
         fprintf(stderr,"Mesh data not found.");
         return false;
     }
