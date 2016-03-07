@@ -19,14 +19,14 @@ export default class ItemCheckbox extends React.Component {
             if(this.props.top){
                 return {
                     borderBottom: "1px solid rgb(33, 187, 151)",
-                    borderRadius: "3px 3px 0px 0px",
+                    borderRadius: "2px 2px 0px 0px",
                     letterSpacing: "-5px",
                     overflow: "hidden"
                 };
             }else if(this.props.bottom){
                 return {
                     border: "none",
-                    borderRadius: "0px 0px 3px 3px",
+                    borderRadius: "0px 0px 2px 2px",
                     letterSpacing: "-5px",
                     overflow: "hidden"
                 };

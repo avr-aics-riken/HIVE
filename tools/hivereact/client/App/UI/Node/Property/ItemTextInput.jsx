@@ -20,21 +20,21 @@ export default class ItemTextInput extends React.Component {
         let border = ()=>{
             if(this.props.top && this.props.bottom){
                 return {
-                    borderRadius: "3px 3px 3px 3px",
+                    borderRadius: "2px 2px 2px 2px",
                     letterSpacing: "-5px",
                     overflow: "hidden"
                 };
             }else if(this.props.top){
                 return {
                     borderBottom: "1px solid rgb(33, 187, 151)",
-                    borderRadius: "3px 3px 0px 0px",
+                    borderRadius: "2px 2px 0px 0px",
                     letterSpacing: "-5px",
                     overflow: "hidden"
                 };
             }else if(this.props.bottom){
                 return {
                     border: "none",
-                    borderRadius: "0px 0px 3px 3px",
+                    borderRadius: "0px 0px 2px 2px",
                     letterSpacing: "-5px",
                     overflow: "hidden"
                 };
@@ -55,6 +55,7 @@ export default class ItemTextInput extends React.Component {
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",
+				paddingLeft : "4px",
                 width : "80px",
                 verticalAlign: "middle",
                 display: "inline-block",
@@ -64,14 +65,16 @@ export default class ItemTextInput extends React.Component {
             value : {
                 border: "0px",
 				outline: "0",
-                borderRadius: "3px",
+                borderRadius: "2px",
                 color : "#333",
                 letterSpacing: "normal",
-                marginLeft: "5px",
+                marginLeft: "3px",
+				marginTop: "1px",
+				marginBottom: "1px",
+                verticalAlign: "middle",
                 padding: "1px",
                 width : "153px",
                 height: "19px",
-                verticalAlign: "bottom",
                 display: "inline-block",
             }
         };

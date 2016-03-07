@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import Core from '../../Core';
 import Node from './Node.jsx';
 import Store from './Store.jsx';
-import NodeListCreate from "./NodeListCreate.jsx";
 import NodePlugView from "./NodePlugView.jsx";
 
 /**
@@ -24,24 +23,16 @@ export default class NodeView extends React.Component {
 
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
 			this.setState({
-				zoom : zoom,
-				listVisible: false,
-				listPos: []
+				zoom : zoom
 			});
 		});
 
 		this.isLeftDown = false;
 		this.isRightDown = false;
 		this.isMiddleDown = false;
-        this.listVisiblity = false;
         this.focusTarget = null;
 
-        this.setFocusTarget = this.setFocusTarget.bind(this);
-        this.dblClickEvent = this.dblClickEvent.bind(this);
-        this.keyDownEvent = this.keyDownEvent.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.listHidden = this.listHidden.bind(this);
-        this.generator = this.generator.bind(this);
 		this.onNodeAdded = this.onNodeAdded.bind(this);
 		this.width = 4000;
 		this.height = 4000;
@@ -220,92 +211,6 @@ export default class NodeView extends React.Component {
 		}
 	}
 
-    // この関数をフォーカスしたい子要素に渡して呼んでもらう
-    setFocusTarget(element){
-        this.focusTarget = element;
-    }
-
-    // 現状は NodeView 内にある SVG Element から呼ばれる
-    dblClickEvent(eve){
-		if (eve.button === 0) {
-			let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
-			let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
-	        this.listVisiblity = !this.listVisiblity;
-	        this.setState({
-	            listVisible: this.listVisiblity,
-				listPos: [x, y]
-	            //listPos: [eve.layerX, eve.layerY]
-	        });
-			if(this.listVisiblity){
-				setTimeout((()=>{
-					var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
-					e.focus();
-				}).bind(this), 50);
-			}
-		}
-    }
-
-	onClick(eve) {
-		if (eve.button === 0) {
-			if (this.listVisiblity) {
-				this.listVisiblity = false;
-				this.setState({
-					listVisible: this.listVisiblity
-				});
-			}
-		}
-	}
-
-    listHidden(){
-        this.listVisiblity = false;
-        this.setState({listVisible: false});
-    }
-
-    // キーダウンイベントのターゲットは Window
-    keyDownEvent(eve){
-        switch(eve.keyCode){
-            case 27:
-                this.listHidden();
-                break;
-            case 32:
-                eve.preventDefault();
-                this.setState({
-                    listVisible: true
-                });
-                setTimeout((()=>{
-                    let el, x, y, w, h;
-                    el = ReactDOM.findDOMNode(this.focusTarget);
-                    el = el.parentNode.parentNode; // temp
-                    w = el.clientWidth;
-                    h = el.clientHeight;
-                    x = w / 2 - 100; // temp
-                    y = h / 2 - 150; // temp
-                    this.setState({listPos: [x, y]});
-                    var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
-                    e.focus();
-                }).bind(this), 50);
-                break;
-            default:
-                break;
-        }
-    }
-
-	generator(){
-		if (this.state.listVisible){
-			return (
-				<NodeListCreate
-					store={this.props.store}
-					action={this.props.action}
-					visibility={this.state.listVisible}
-					position={this.state.listPos}
-					focusFunction={this.setFocusTarget.bind(this)}
-                    hiddenFunction={this.listHidden}
-					ref="creator"
-				/>
-			);
-		}
-	}
-
 	onNodeAdded(err, data) {
 		if (!err) {
 			let initialpos = this.props.store.getInitialNodePosition();
@@ -330,7 +235,6 @@ export default class NodeView extends React.Component {
 	}
 
     componentDidMount(){
-        window.addEventListener('keydown', this.keyDownEvent.bind(this));
 		window.addEventListener('mouseup', this.onMouseUp.bind(this));
 		let rect = this.refs.viewport.getBoundingClientRect();
 		this.width = rect.right - rect.left;
@@ -343,7 +247,6 @@ export default class NodeView extends React.Component {
     }
 
     componentWillUnmount(){
-        window.removeEventListener('keydown', this.keyDownEvent.bind(this));
 		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
     }
@@ -376,8 +279,6 @@ export default class NodeView extends React.Component {
 		} ));
 		return (
 				<div
-					onDoubleClick={this.dblClickEvent.bind(this)}
-					onClick={this.onClick.bind(this)}
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
 				>
@@ -414,7 +315,6 @@ export default class NodeView extends React.Component {
 							/>
 						</div>
 					</div>
-                    {this.generator.bind(this)()}
 				</div>
 				);
 	}
