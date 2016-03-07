@@ -9,7 +9,7 @@
 #include "LuaUtil.h"
 #include "Analyzer.h"
 #include "PolygonAnalyzer.h"
-//#include "PolygonModel_Lua.h"
+#include "BufferMeshData_Lua.h"
 /**
  * PolygonAnalyzer Luaラッパー
  */
@@ -42,10 +42,9 @@ public:
         return PolygonAnalyzer::MaxZ();
     }
 
-/*    bool Execute(PolygonModel_Lua *model) {
-        PolygonAnalyzer::Execute(model);
-        return true;
-    }*/
+    bool Execute(BufferMeshData_Lua* mesh) {
+        return PolygonAnalyzer::Execute(mesh);
+    }
 
     LUA_SCRIPTCLASS_BEGIN(PolygonAnalyzer_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MinX)
@@ -54,7 +53,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxZ)
-//    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Execute, PolygonModel_Lua*) // TODO
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Execute, BufferMeshData_Lua*)
     LUA_SCRIPTCLASS_END();
 
 };
