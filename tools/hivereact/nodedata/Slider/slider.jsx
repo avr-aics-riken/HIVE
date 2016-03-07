@@ -35,7 +35,7 @@ class Slider extends React.Component {
 			</ReactSlider>
 			<div style={{marginTop:"30px", bottom:"0px", float:"left"}}>min:{this.props.node.input[1].value}</div>
 			<div style={{marginTop:"30px", bottom:"0px", float:"right"}}>max:{this.props.node.input[2].value}</div>
-			<div style={{marginTop:"-18px", textAlign:"center", width : "100%", height : "30px", paddingBottom:"-30px", float:"left"}}>
+			<div style={{marginTop:"-18px", textAlign:"center", width : "100%", height : "30px", float:"left"}}>
 				<div style={{}}>step:{this.props.node.input[3].value}</div>
 			</div>
 		</div>);
