@@ -37,14 +37,13 @@ export default class NodeView extends React.Component {
 		this.width = 4000;
 		this.height = 4000;
 
-		this.copyNode = this.copyNode.bind(this);
-		this.pasteNode = this.pasteNode.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onKeyUp = this.onKeyUp.bind(this);
 
 		this.copied = null;
-		this.copyNode = this.copyNode.bind(this);
-		this.pasteNode = this.pasteNode.bind(this);
+		this.onCopy = this.onCopy.bind(this);
+		this.onPaste = this.onPaste.bind(this);
+		this.onDelete = this.onDelete.bind(this);
 	}
 
 	styles(id) {
@@ -248,6 +247,9 @@ export default class NodeView extends React.Component {
 		this.refs.viewport.scrollLeft = 1700;
 
 		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
+		this.props.store.on(Core.Constants.PASTE_CALLED, this.onPaste);
+		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
+		this.props.store.on(Core.Constants.DELETE_CALLED, this.onDelete);
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
     }
@@ -255,6 +257,9 @@ export default class NodeView extends React.Component {
     componentWillUnmount(){
 		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
+		this.props.store.off(Core.Constants.PASTE_CALLED, this.onPaste);
+		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
+		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
 		window.removeEventListener('keydown', this.onKeyDown);
 		window.removeEventListener('keyup', this.onKeyUp);
     }
@@ -262,23 +267,36 @@ export default class NodeView extends React.Component {
 	onKeyDown(ev) {
 		this.isCtrlDown = ev.ctrlKey;
 		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
-			this.copyNode();
+			this.onCopy(null);
 		}
 		if (this.isCtrlDown && ev.keyCode === 86) { // "v"
-			this.pasteNode();
+			this.onPaste(null);
+		}
+		if (ev.keyCode === 46) { // delete
+			this.onDelete(null);
 		}
 	}
 
-	onKeyUp(ev) {
-		this.isCtrlDown = ev.ctrlKey;
+	// メニューまたはショートカットで削除が呼ばれた
+	onDelete(err) {
+		if (!err) {
+			let nodeList = this.props.store.getSelectedNodeList();
+			setTimeout( () => {
+				this.props.action.deleteNodes(nodeList);
+			}, 0);
+		}
 	}
 
-	copyNode() {
-		let nodeList = this.props.store.getSelectedNodeList();
-		this.copied = JSON.stringify(nodeList);
+	// メニューまたはショートカットでコピーが呼ばれた
+	onCopy(err) {
+		if (!err) {
+			let nodeList = this.props.store.getSelectedNodeList();
+			this.copied = JSON.stringify(nodeList);
+		}
 	}
 
-	pasteNode(ev) {
+	// メニューまたはショートカットでペーストが呼ばれた
+	onPaste(err) {
 		let copyNodes = null;
 		if (this.copied) {
 			copyNodes = JSON.parse(this.copied);
@@ -294,10 +312,16 @@ export default class NodeView extends React.Component {
 				copyNodes[i].node.pos[0] += diffPos[0];
 				copyNodes[i].node.pos[1] += diffPos[1];
 			}
-			this.props.action.pasteNodes(copyNodes);
+			setTimeout(() => {
+				this.props.action.pasteNodes(copyNodes);
+			}, 0);
 			this.copied = null;
 		}
 		console.log("pasteNode");
+	}
+
+	onKeyUp(ev) {
+		this.isCtrlDown = ev.ctrlKey;
 	}
 
 	origin() {
