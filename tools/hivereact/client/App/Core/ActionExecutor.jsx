@@ -302,7 +302,6 @@ export default class ActionExecuter {
 
 				// プラグの接続を新規に作ったノードに変更.
 				for (let k = 0; k < plugs.length; k = k + 1) {
-					console.log(plugs[k].input.nodeVarname, preVarname);
 					if (plugs[k].input.nodeVarname === preVarname) {
 						plugs[k].input.nodeVarname = node.varname;
 					}
