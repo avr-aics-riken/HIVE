@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import Core from '../../Core';
-import MenuNodeCreate from '../Menu/MenuNodeCreate.jsx';
-import MenuNodeList from '../Menu/MenuNodeList.jsx';
+import MenuNodeCreate from './MenuNodeCreate.jsx';
+import MenuNodeList from './MenuNodeList.jsx';
 
-export default class NodeListCreate extends React.Component {
+export default class HoverNodeCreate extends React.Component {
     constructor(props) {
         super(props);
 
