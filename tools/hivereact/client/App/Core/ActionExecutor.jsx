@@ -12,6 +12,7 @@ function uuid() {
     }
     return uuid;
 }
+
 function positionGetter(target, nodeList){
     for(let i = 0, j = nodeList.length; i < j; ++i){
         if(Math.abs(nodeList[i].panel.pos[0] - target.panel.pos[0]) < 50 ||
@@ -39,6 +40,7 @@ export default class ActionExecuter {
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
+		this.clearAll = this.clearAll.bind(this);
 		this.changeNode = this.changeNode.bind(this);
 		this.changeNodes = this.changeNodes.bind(this);
 		this.changeNodeInput = this.changeNodeInput.bind(this);
@@ -81,6 +83,17 @@ export default class ActionExecuter {
 		if (!node.hasOwnProperty('uiFunc') || node.uiFunc === "") {
 			// UI無し
 			delete node.panel.visible;
+		}
+
+		for (let i = 0; i < node.input.length; i = i + 1) {
+			if (!node.input[i].hasOwnProperty('nodeVarname')) {
+				node.input[i].nodeVarname = node.varname;
+			}
+		}
+		for (let i = 0; i < node.output.length; i = i + 1) {
+			if (!node.output[i].hasOwnProperty('nodeVarname')) {
+				node.output[i].nodeVarname = node.varname;
+			}
 		}
 	}
     
@@ -125,19 +138,20 @@ export default class ActionExecuter {
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
 				if (payload.nodeInfo.panel.zindex === 0) {
-					payload.nodeInfo.panel.zindex = this.store.data.nodes.length + 1;
+					payload.nodeInfo.panel.zindex = this.store.getNodes().length + 1;
 				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('input')) {
 				node.input = payload.nodeInfo.input;
 			}
+
 			if (node) {
 				this.assignInitialNodeValue(node);
 				var nl = this.store.getNodes();
 				positionGetter(node, nl);
-				this.store.data.nodes.push(node);
+				this.store.getNodes().push(node);
 			}
-			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
+			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 			this.store.emit(Constants.NODE_ADDED, null, node);
 		}
 	}
@@ -149,18 +163,18 @@ export default class ActionExecuter {
 		if (payload.hasOwnProperty('varname')) {
 			let n = this.store.getNode(payload.varname);
 			if (n) {
-				this.store.data.nodes.splice(n.index, 1);
+				this.store.getNodes().splice(n.index, 1);
 
 				// 関連するプラグを削除.
-				for (let i = this.store.data.plugs.length - 1; i >= 0; i = i - 1) {
-					let plug = this.store.data.plugs[i];
+				for (let i = this.store.getPlugs().length - 1; i >= 0; i = i - 1) {
+					let plug = this.store.getPlugs()[i];
 					if (plug.input.nodeVarname === payload.varname) {
 						this.deletePlug({ plugInfo : plug });
 					} else if (plug.output.nodeVarname === payload.varname) {
 						this.deletePlug({ plugInfo : plug });
 					}
 				}
-				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
+				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 				this.store.emit(Constants.NODE_DELETED, null, n.node);
 			}
 		}
@@ -178,13 +192,31 @@ export default class ActionExecuter {
 	}
 
 	/**
+	 * すべてのデータをクリア(削除）する
+	 */
+	clearAll(payload) {
+	    let nodes = this.store.getNodes("");
+        let plugs = this.store.getPlugs("");
+        for (let i = plugs.length - 1; i >= 0; --i){
+            this.deletePlug({
+				plugInfo : plugs[i]
+			});
+        }
+        for (let i = nodes.length - 1; i >= 0; --i){
+            this.action.deleteNode({
+				varname: nodes[i].varname
+			});
+        }
+	}
+
+	/**
  	 * ノード変更.
  	 */
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
- 			for (let i = 0; i < this.store.data.nodes.length; i = i + 1) {
-				if (this.store.data.nodes[i].varname === payload.nodeInfo.varname) {
-					let dstNode = this.store.data.nodes[i];
+ 			for (let i = 0; i < this.store.getNodes().length; i = i + 1) {
+				if (this.store.getNodes()[i].varname === payload.nodeInfo.varname) {
+					let dstNode = this.store.getNodes()[i];
 					let srcNode =  payload.nodeInfo;
 
 					let hasInput = srcNode.hasOwnProperty('input');
@@ -204,26 +236,26 @@ export default class ActionExecuter {
 					let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
 					for (let info in payload.nodeInfo) {
-						if (info !== "uiComponent" && this.store.data.nodes[i].hasOwnProperty(info)) {
-							this.store.data.nodes[i][info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
+						if (info !== "uiComponent" && this.store.getNodes()[i].hasOwnProperty(info)) {
+							this.store.getNodes()[i][info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 						}
 					}
 
-					this.store.emit(Constants.NODE_CHANGED, null, this.store.data.nodes[i], i);
+					this.store.emit(Constants.NODE_CHANGED, null, this.store.getNodes()[i], i);
 					if (hasInput && preInputs !== postInputs) {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, this.store.data.nodes[i], i);
+						this.store.emit(Constants.NODE_INPUT_CHANGED, null, this.store.getNodes()[i], i);
 					}
 					if (hasSelect && preSelect !== postSelect) {
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.data.nodes[i], i);
+						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.getNodes()[i], i);
 					}
 					if (hasPanel && prePanel !== postPanel) {
-						this.store.emit(Constants.PANEL_CHANGED, null, this.store.data.nodes[i], i);
+						this.store.emit(Constants.PANEL_CHANGED, null, this.store.getNodes()[i], i);
 					}
 					if (hasPanel && prePanelVisible !== postPanelVisible) {
-						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, this.store.data.nodes[i], i);
+						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, this.store.getNodes()[i], i);
 					}
 					if (hasPanel && prePanelSize !== postPanelSize) {
-						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, this.store.data.nodes[i], i);
+						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, this.store.getNodes()[i], i);
 					}
 				}
 			}
@@ -281,8 +313,8 @@ export default class ActionExecuter {
 			varnameToNodes[nodes[i].varname] = nodes[i];
 		}
 
-		for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
-			let plug = this.store.data.plugs[i];
+		for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
+			let plug = this.store.getPlugs()[i];
 			if (varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
 				varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
 				plugs.push(plug);
@@ -302,8 +334,8 @@ export default class ActionExecuter {
 			varnameToNodes[nodes[i].varname] = nodes[i];
 		}
 
-		for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
-			let plug = this.store.data.plugs[i];
+		for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
+			let plug = this.store.getPlugs()[i];
 			if (isInput &&
 				varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
 				!varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
@@ -351,16 +383,36 @@ export default class ActionExecuter {
 			// plugは変更なし。
 			for (let k = 0; k < nodes.length; k = k + 1) {
 				let n = nodes[k];
-				for (let i = this.store.data.nodes.length - 1; i >= 0; i = i - 1) {
-					let dn = this.store.data.nodes[i];
+				for (let i = this.store.getNodes().length - 1; i >= 0; i = i - 1) {
+					let dn = this.store.getNodes()[i];
 					if (n.varname === dn.varname) {
-						this.store.data.nodes.splice(i, 1);
+						this.store.getNodes().splice(i, 1);
+					}
+				}
+			}
+			let plugs = group.plugs;
+			for (let k = 0; k < plugs.length; k = k + 1) {
+				let p = plugs[k];
+				for (let i = this.store.getPlugs().length - 1; i >= 0; i = i - 1) {
+					let pp = this.store.getPlugs()[i];
+					if (p.input.nodeVarname === pp.input.nodeVarname &&
+						p.output.nodeVarname === pp.output.nodeVarname &&
+						p.input.name === pp.input.name&&
+						p.output.name === pp.output.name) {
+						this.store.getPlugs().splice(i, 1);
 					}
 				}
 			}
 			// groupを追加する。
 			console.log("addgroup", group)
 			this.addNode({ nodeInfo : group });
+
+			//this.store.data.nodePath = [group.varname];
+
+			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
+			this.store.emit(Constants.NODE_ADDED, null, group);
+			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+
 			console.log("addGroup");
 		}
 	}
@@ -427,7 +479,7 @@ export default class ActionExecuter {
 				let preVarname = src.varname;
 				delete src.varname;
 				this.addNode({ nodeInfo : src });
-				let node = this.store.data.nodes[this.store.data.nodes.length - 1];
+				let node = this.store.getNodes()[this.store.getNodes().length - 1];
 
 				// プラグの接続を新規に作ったノードに変更.
 				for (let k = 0; k < plugs.length; k = k + 1) {
@@ -478,10 +530,10 @@ export default class ActionExecuter {
 					}
 				}
 			} else {
-				for (let i = 0; i < this.store.data.nodes.length; i = i + 1) {
-					// if (this.store.data.nodes[i].select) {
-						this.store.data.nodes[i].select = false;
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.data.nodes[i], i);
+				for (let i = 0; i < this.store.getNodes().length; i = i + 1) {
+					// if (this.store.getNodes()[i].select) {
+						this.store.getNodes()[i].select = false;
+						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.getNodes()[i], i);
 					// }
 				}
 			}
@@ -493,8 +545,8 @@ export default class ActionExecuter {
 	 */
 	importNode(payload) {
 		if (payload.hasOwnProperty('nodeInfo')) {
-            this.store.data.nodes.push(payload.nodeInfo);
-			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.data.nodes.length);
+            this.store.getNodes().push(payload.nodeInfo);
+			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 			this.store.emit(Constants.NODE_ADDED, null, payload.nodeInfo);
 		}
 	}
@@ -504,9 +556,9 @@ export default class ActionExecuter {
 	 */
 	addPlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
-			for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
-				if (this.store.data.plugs[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
-					this.store.data.plugs[i].input.name === payload.plugInfo.input.name) {
+			for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
+				if (this.store.getPlugs()[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
+					this.store.getPlugs()[i].input.name === payload.plugInfo.input.name) {
 					// 既に繋がっている入力端子に繋げようとした
 					return;
 				}
@@ -515,8 +567,8 @@ export default class ActionExecuter {
 				// 同じノードに繋げようとした
 				return;
 			}
-			this.store.data.plugs.push(payload.plugInfo);
-			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
+			this.store.getPlugs().push(payload.plugInfo);
+			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 			this.store.emit(Constants.PLUG_ADDED, null, payload.plugInfo);
 		}
 	}
@@ -527,9 +579,9 @@ export default class ActionExecuter {
 	deletePlug(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
 			let info = payload.plugInfo;
-			for (let i = 0; i < this.store.data.plugs.length; i = i + 1) {
-				let input = this.store.data.plugs[i].input;
-				let output = this.store.data.plugs[i].output;
+			for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
+				let input = this.store.getPlugs()[i].input;
+				let output = this.store.getPlugs()[i].output;
 				if (output.nodeVarname === info.output.nodeVarname &&
 					input.nodeVarname === info.input.nodeVarname &&
 					output.name === info.output.name) {
@@ -537,17 +589,17 @@ export default class ActionExecuter {
 					if (Array.isArray(input.array)) {
 						for (let k = 0; k < input.array.length; k = k + 1) {
 							if (input.array[k].name === info.input.name) {
-								let plug = this.store.data.plugs[i];
-								this.store.data.plugs.splice(i, 1);
-								this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
+								let plug = this.store.getPlugs()[i];
+								this.store.getPlugs().splice(i, 1);
+								this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 								this.store.emit(Constants.PLUG_DELETED, null, plug);
 								return;
 							}
 						}
 					} else if (input.name === info.input.name) {
-						let plug = this.store.data.plugs[i];
-						this.store.data.plugs.splice(i, 1);
-						this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.data.plugs.length);
+						let plug = this.store.getPlugs()[i];
+						this.store.getPlugs().splice(i, 1);
+						this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 						this.store.emit(Constants.PLUG_DELETED, null, plug);
 						return;
 					}

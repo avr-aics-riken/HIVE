@@ -23,9 +23,10 @@ export default class View extends React.Component {
 		this.nodeAction = new Action(this.props.action.dispatcher, this.nodeStore.getDispatchToken());
     }
 
+
+
 	render () {
 		return (<div
-					//onWheel={this.onWheel.bind(this)}
 		 			style={{
 						position:"absolute",
 						width:"100%",
