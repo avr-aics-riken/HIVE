@@ -32,6 +32,8 @@ export default class Store extends EventEmitter {
 		this.getDataAtPath = this.getDataAtPath.bind(this);
 		this.getOutput = this.getOutput.bind(this);
 		this.getInput = this.getInput.bind(this);
+		this.getRootNodes = this.getRootNodes.bind(this);
+		this.getRootPlugs = this.getRootPlugs.bind(this);
 		this.initHive(this.data);
 	}
 
@@ -68,7 +70,7 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * 全てのノードリストを返す
+	 * 現在のノード階層のノードリストを返す
 	 */
 	getNodes(nodePath) {
 		let path = this.data.nodePath;
@@ -78,6 +80,13 @@ export default class Store extends EventEmitter {
 
 		let result = this.getDataAtPath(path);
 		return result.nodes;
+	}
+
+	/**
+	 * ルート階層のノードリストを返す
+	 */
+	getRootNodes() {
+		return this.getNodes([]);
 	}
 
 	/**
@@ -91,6 +100,13 @@ export default class Store extends EventEmitter {
 
 		let result = this.getDataAtPath(path);
 		return result.plugs;
+	}
+
+	/**
+	 * ルート階層のプラグリストを返す
+	 */
+	getRootPlugs() {
+		return this.getPlugs([]);
 	}
 
 	/**
