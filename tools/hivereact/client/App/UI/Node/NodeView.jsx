@@ -13,8 +13,11 @@ export default class NodeView extends React.Component {
 		super(props);
 		this.state = {
 			nodes : this.props.store.getNodes(),
-			zoom : this.props.nodeStore.getZoom()
+			zoom : this.props.nodeStore.getZoom(),
+			globalOutHover : false,
+			globalInHover : false
 		};
+
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			this.setState({
 				nodes : [].concat(this.props.store.getNodes())
@@ -202,7 +205,23 @@ export default class NodeView extends React.Component {
 		ev.preventDefault();
 	}
 
+	connectToGlobalIn() {
+
+	}
+
+	connectToGlobalOut() {
+
+	}
+
 	onMouseUp(ev) {
+		const rect = this.refs.bound.getBoundingClientRect();
+		if (ev.clientX < (rect.left + 20)) {
+			this.connectToGlobalOut();
+		}
+		if (ev.clientX > (rect.right - 20)) {
+			this.connectToGlobalIn();
+		}
+
 		if (ev.button == 2 && this.isRightDown) {
 			this.isRightDown = false;
 		}
@@ -335,13 +354,11 @@ export default class NodeView extends React.Component {
 		}
 	}
 
-	render() {
-		const styles = this.styles.bind(this)();
+	nodeList() {
 		let isSimple = false;//this.state.zoom <= 0.6;
-		let invzoom = (1.0 / this.state.zoom);
 		let nodeList = (this.state.nodes.map( (nodeData, key) => {
 			return (<Node nodeVarname={nodeData.varname}
-			 			store={this.props.store}
+						store={this.props.store}
 						action={this.props.action}
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
@@ -350,11 +367,75 @@ export default class NodeView extends React.Component {
 						isSimple={isSimple}
 					></Node>);
 		} ));
+		return nodeList;
+	}
+
+	onGlobalInMouseUp(ev) {
+
+	}
+
+	onGlobalMouseUp(ev) {
+	console.log("mouseupda")
+	}
+
+	onGlobalOutEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		this.setState({ globalOutHover : true });
+		ev.target.style.cursor = "pointer";
+	}
+
+	onGlobalOutLeave(ev) {
+		this.setState({ globalOutHover : false });
+		ev.target.style.cursor = "default";
+	}
+
+	onGlobalEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+
+		let inRect = this.refs.globalIn.getBoundingClientRect();
+		console.log(inRect, ev.clientX, ev.clientY);
+
+		this.setState({ globalInHover : true });
+		ev.target.style.cursor = "pointer";
+	}
+
+	onGlobalLeave(ev) {
+		this.setState({ globalInHover : false });
+		ev.target.style.cursor = "default";
+	}
+
+	render() {
+		const styles = this.styles.bind(this)();
 		return (
 				<div
+					ref="bound"
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
+
+					onMouseUp={this.onGlobalMouseUp.bind(this)}
 				>
+					<div ref="globalIn"
+						 style={{
+							position : "absolute",
+							width : "20px",
+							height : "100%",
+							left : "0px",
+							top  : "50%",
+							transform : "translateY(-50%)",
+							backgroundColor : this.state.globalInHover ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.1)"
+						}}
+					/>
+					<div ref="globalOut"
+						 style={{
+							position : "absolute",
+							width : "20px",
+							height : "100%",
+							right : "0px",
+							top  : "50%",
+							transform : "translateY(-50%)",
+							backgroundColor : this.state.globalOutHover ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.1)"
+						}}
+					/>
 					<div
 						style={{
 							position : "absolute",
@@ -378,7 +459,7 @@ export default class NodeView extends React.Component {
 							}}
 							ref="view"
 						>
-							{nodeList}
+							{this.nodeList.bind(this)()}
 							<NodePlugView
 								style={{zIndex:"1"}}
 								store={this.props.store}

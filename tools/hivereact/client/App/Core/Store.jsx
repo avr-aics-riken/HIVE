@@ -11,8 +11,13 @@ export default class Store extends EventEmitter {
 
         // private:
         this.data = {
-            nodes : [], // 全てのノード
-            plugs : []  // 全てのプラグ
+			name : "",    //シーン名
+			varname : "root",
+            nodes : [],   // 全てのノード
+            plugs : [],   // 全てのプラグ
+			input : [],   // シーンの入力端子
+			output : [],  // シーンの出力端子
+			nodePath : [] // 表示しているノード階層のパス
         }
 
 		this.actionExecuter = new ActionExecuter(this);
@@ -24,7 +29,11 @@ export default class Store extends EventEmitter {
 		this.getNodeNameList = this.getNodeNameList.bind(this);
 		this.getDispatchToken = this.getDispatchToken.bind(this);
 		this.getSelectedNodeList = this.getSelectedNodeList.bind(this);
-
+		this.getDataAtPath = this.getDataAtPath.bind(this);
+		this.getOutput = this.getOutput.bind(this);
+		this.getInput = this.getInput.bind(this);
+		this.getRootNodes = this.getRootNodes.bind(this);
+		this.getRootPlugs = this.getRootPlugs.bind(this);
 		this.initHive(this.data);
 	}
 
@@ -61,26 +70,97 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * 全てのノードリストを返す
+	 * 現在のノード階層のノードリストを返す
 	 */
-	getNodes() {
-		return this.data.nodes;
+	getNodes(nodePath) {
+		let path = this.data.nodePath;
+		if (nodePath !== null && nodePath !== undefined) {
+			path = nodePath;
+		}
+
+		let result = this.getDataAtPath(path);
+		return result.nodes;
+	}
+
+	/**
+	 * ルート階層のノードリストを返す
+	 */
+	getRootNodes() {
+		return this.getNodes([]);
 	}
 
 	/**
 	 * 全てのプラグリストを返す
 	 */
-	getPlugs() {
-		return this.data.plugs;
+	getPlugs(nodePath) {
+		let path = this.data.nodePath;
+		if (nodePath !== null && nodePath !== undefined) {
+			path = nodePath;
+		}
+
+		let result = this.getDataAtPath(path);
+		return result.plugs;
+	}
+
+	/**
+	 * ルート階層のプラグリストを返す
+	 */
+	getRootPlugs() {
+		return this.getPlugs([]);
+	}
+
+	/**
+	 * 指定したノード階層でのデータを返す
+	 * @param path ノード階層を表す配列
+	 */
+	getDataAtPath(path) {
+		let result = this.data;
+		for (let i = 0; i < path.length; i = i + 1) {
+			let p = path[i];
+			let found = false;
+			for (let k = 0; k < result.nodes.length; k = k + 1) {
+				if (result.nodes[k].varname === p) {
+					found = true;
+					result = result.nodes[k];
+					break;
+				}
+			}
+			if (!found) { break; }
+		}
+		return result;
+	}
+
+	/**
+	 * 現在のノード階層を返す.
+	 */
+	getNodePath() {
+		return this.data.nodePath;
+	}
+
+	/**
+	 * 現在のノード階層でのinputを返す.
+	 */
+	getInput() {
+		let data = this.getDataAtPath(this.getNodePath());
+		return data.input;
+	}
+
+	/**
+	 * 現在のノード階層でのoutputを返す.
+	 */
+	getOutput() {
+		let data = this.getDataAtPath(this.getNodePath());
+		return data.output;
 	}
 
 	/**
 	 * 特定のnodeとそのindexを返す.
 	 */
 	getNode(varname) {
-		for (let i = 0; i < this.data.nodes.length; i = i + 1) {
-			if (this.data.nodes[i].varname === varname) {
-				return { node : this.data.nodes[i], index : i }
+		let nodes = this.getNodes();
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			if (nodes[i].varname === varname) {
+				return { node : nodes[i], index : i }
 			}
 		}
 		return null;
@@ -105,10 +185,11 @@ export default class Store extends EventEmitter {
 	 * 選択中のノードリストを返す.
 	 */
 	getSelectedNodeList() {
+		let nodes = this.getNodes();
 		let selected = [];
-		for (let i = 0, size = this.data.nodes.length; i < size; i = i + 1) {
-			if (this.data.nodes[i].select) {
-				selected.push(this.data.nodes[i]);
+		for (let i = 0, size = nodes.length; i < size; i = i + 1) {
+			if (nodes[i].select) {
+				selected.push(nodes[i]);
 			}
 		}
 		return selected;

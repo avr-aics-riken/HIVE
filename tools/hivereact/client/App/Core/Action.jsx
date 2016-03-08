@@ -197,6 +197,16 @@ export default class Action {
 	}
 
 	/**
+	 * すべてのデータをクリア(削除）する
+	 */
+	clearAll() {
+		this.dispatcher.dispatch({
+			id : this.id,
+			actionType : "clearAll"
+		});
+	}
+
+	/**
 	 * グループを作成する
 	 */
 	makeGroup() {

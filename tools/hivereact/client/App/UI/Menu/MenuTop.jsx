@@ -40,8 +40,8 @@ export default class MenuTop extends React.Component {
     }
     saveButton(eve){
         var data = {
-            nodes: this.props.store.getNodes(),
-            plugs: this.props.store.getPlugs()
+            nodes: this.props.store.getNodes(""),
+            plugs: this.props.store.getPlugs("")
         };
         var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
         saveAs(blob, "save.json");
