@@ -78,11 +78,11 @@ export default class NodePlugView extends React.Component {
 					setTimeout(() => {
 						this.props.action.addPlug({
 							output : {
-								nodeVarname : output.nodeVarname,
+								nodeVarname : output.data.nodeVarname,
 								name : output.data.name
 							},
 							input : {
-								nodeVarname : input.nodeVarname,
+								nodeVarname : input.data.nodeVarname,
 								name : input.data.name
 							}
 						})
