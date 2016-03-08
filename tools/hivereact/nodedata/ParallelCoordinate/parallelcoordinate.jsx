@@ -67,9 +67,9 @@ class ParallelCoordinate extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
 
         // tmp
-        this.densityCheck = {checked: false}; // check box
+        this.densityCheck = {checked: true}; // check box
         this.densityNormal = {checked: true};
-        this.densityRange = {checked: true};
+        this.densityRange = {value: 90};
         this.usr = {
             ratecount: 10,
             glRender: this.glRender
@@ -202,43 +202,43 @@ class ParallelCoordinate extends React.Component {
     }
 
     fromPickerToArray(){
-        var i, a, c, e, r, g, b;
-        a = [
-            'glforeground',
-            'glbrush'
-        ];
-        for(i = 1; i <= 2; ++i){
-            // e = document.getElementById('lineColor' + i);
-            // c = e.style.backgroundColor.match(/\d+/g);
-            // c = [255 / i, 128 / i, 64 / i];
-            // r = parseint(c[0]) / 255;
-            // g = parseint(c[1]) / 255;
-            // b = parseint(c[2]) / 255;
-            // this.glContext[a[i - 1]].color = [r, g, b, 0.1];
-        }
-        a = [
-            'lowColor',
-            'middleLowColor',
-            'middleColor',
-            'middleHighColor',
-            'highColor'
-        ];
-        for(i = 1; i <= 5; ++i){
-            // e = document.getElementById('fgColor' + i);
-            // c = e.style.backgroundColor.match(/\d+/g);
-            c = [64, 128, 255];
-            r = parseInt(c[0]) / 255;
-            g = parseInt(c[1]) / 255;
-            b = parseInt(c[2]) / 255;
-            this.glContext['glforeground'][a[i - 1]] = [r, g, b];
-            // e = document.getElementById('brColor' + i);
-            // c = e.style.backgroundColor.match(/\d+/g);
-            c = [64, 255, 128];
-            r = parseInt(c[0]) / 255;
-            g = parseInt(c[1]) / 255;
-            b = parseInt(c[2]) / 255;
-            this.glContext['glbrush'][a[i - 1]] = [r, g, b];
-        }
+        // var i, a, c, e, r, g, b;
+        // a = [
+        //     'glforeground',
+        //     'glbrush'
+        // ];
+        // for(i = 1; i <= 2; ++i){
+        //     // e = document.getElementById('lineColor' + i);
+        //     // c = e.style.backgroundColor.match(/\d+/g);
+        //     // c = [255 / i, 128 / i, 64 / i];
+        //     // r = parseint(c[0]) / 255;
+        //     // g = parseint(c[1]) / 255;
+        //     // b = parseint(c[2]) / 255;
+        //     // this.glContext[a[i - 1]].color = [r, g, b, 0.1];
+        // }
+        // a = [
+        //     'lowColor',
+        //     'middleLowColor',
+        //     'middleColor',
+        //     'middleHighColor',
+        //     'highColor'
+        // ];
+        // for(i = 1; i <= 5; ++i){
+        //     // e = document.getElementById('fgColor' + i);
+        //     // c = e.style.backgroundColor.match(/\d+/g);
+        //     c = [64, 128, 255];
+        //     r = parseInt(c[0]) / 255;
+        //     g = parseInt(c[1]) / 255;
+        //     b = parseInt(c[2]) / 255;
+        //     this.glContext['glforeground'][a[i - 1]] = [r, g, b];
+        //     // e = document.getElementById('brColor' + i);
+        //     // c = e.style.backgroundColor.match(/\d+/g);
+        //     c = [64, 255, 128];
+        //     r = parseInt(c[0]) / 255;
+        //     g = parseInt(c[1]) / 255;
+        //     b = parseInt(c[2]) / 255;
+        //     this.glContext['glbrush'][a[i - 1]] = [r, g, b];
+        // }
     }
     fromArrayToPicker(){
         // var i, a, c, e, r, g, b;
@@ -438,9 +438,9 @@ class ParallelCoordinate extends React.Component {
             (()=>{
                 var i;
                 for(i = 1; i < width; i *= 2){}
-                gc.plp.bufferWidth = i;
+                gc.plp.bufferWidth = Math.max(i, 1024);
                 for(i = 1; i < height; i *= 2){}
-                gc.plp.bufferHeight = i;
+                gc.plp.bufferHeight = Math.max(Math.max(i, 1024), gc.plp.bufferWidth);
             })();
             gc.plp.horizonBuffer  = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
             gc.plp.verticalBuffer = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
@@ -448,9 +448,6 @@ class ParallelCoordinate extends React.Component {
             // 初回ロードではない場合色取得
             this.fromPickerToArray();
         }
-
-        // debugger;
-
 
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
@@ -503,6 +500,9 @@ class ParallelCoordinate extends React.Component {
             lines = this.linecount * (101 - this.densityRange.value) / 100 * 0.5;
         }
         if(this.density){
+
+            // debugger;
+
             // first scene to vertical buffer
             gl.bindFramebuffer(gl.FRAMEBUFFER, gc.plp.verticalBuffer.framebuffer);
             gl.viewport(0, 0, gc.plp.bufferWidth, gc.plp.bufferHeight);
@@ -577,20 +577,23 @@ class ParallelCoordinate extends React.Component {
                 backgroundColor: "white",
                 width: "500px",
                 height: "400px",
-                margin: "2px 5px",
-                display: "flex",
-                flexDirection: "column"
+                margin: "2px 5px"
             },
             examples: {
                 width: "500px",
-                height: "320px",
-                flexGrow: "1",
+                height: "320px"
             },
             uiFrame: {
                 backgroundColor: "silver",
                 width: "100%",
                 height: "80px",
-                flexGrow: "1",
+                display: "flex",
+                flexDirection: "row"
+            },
+            flexcol: {
+                flex: "1 0 auto",
+                textAlign: "center",
+                padding: "5px",
             },
             canvas: {},
         };
@@ -603,7 +606,9 @@ class ParallelCoordinate extends React.Component {
                 <div ref="container" style={styles.container}>
                     <div ref="examples" className="parcoords" style={styles.examples}></div>
                     <div style={styles.uiFrame}>
-                        <p>ui</p>
+                        <div style={styles.flexcol}>1</div>
+                        <div style={styles.flexcol}>2</div>
+                        <div style={styles.flexcol}>3</div>
                     </div>
                 </div>
             </div>
