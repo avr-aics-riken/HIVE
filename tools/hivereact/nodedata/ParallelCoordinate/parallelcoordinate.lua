@@ -1,20 +1,20 @@
-TransferFunction = {}
-setmetatable(TransferFunction, {__index = BaseComponent})
+ParallelCoordinate = {}
+setmetatable(ParallelCoordinate, {__index = BaseComponent})
 
-TransferFunction.new = function (varname)
+ParallelCoordinate.new = function (varname)
     local this = BaseComponent.new(varname)
     this.property = {
         value = {1,1,1,1}
     }
-    setmetatable(this, {__index=TransferFunction})
+    setmetatable(this, {__index=ParallelCoordinate})
     return this
 end
 
-function TransferFunction:Do()
+function ParallelCoordinate:Do()
     -- nothing to do
 end
 
-function TransferFunction:color()
+function ParallelCoordinate:color()
     self:UpdateValue()
     local v = self.value
     local value = v.value
