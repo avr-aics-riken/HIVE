@@ -217,6 +217,17 @@ export default class Action {
 	}
 
 	/**
+	 * グループを移動する
+	 */
+	digGroup(groupVarname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "digGroup",
+			groupVarname : groupVarname
+		});
+	}
+
+	/**
 	 * ノードをペーストする.
 	 */
 	pasteNodes(nodeInfoList) {

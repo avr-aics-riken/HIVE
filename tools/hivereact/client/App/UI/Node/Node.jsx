@@ -34,6 +34,7 @@ export default class Node extends React.Component {
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onKeyUp = this.onKeyUp.bind(this);
+		this.onDoubleClick = this.onDoubleClick.bind(this);
 		this.styles = this.styles.bind(this);
 		this.nodeRect = this.nodeRect.bind(this);
 		this.getNodePos = this.getNodePos.bind(this);
@@ -194,7 +195,7 @@ export default class Node extends React.Component {
 			this.props.nodeStore.recalcPlugPosition(this.props.store);
 		}
 
-		this.refs.node.addEventListener('dblclick', this.preventDefault);
+		this.refs.node.addEventListener('dblclick', this.onDoubleClick);
 	}
 
 	componentWillUnmount() {
@@ -206,7 +207,7 @@ export default class Node extends React.Component {
 		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
 
-		this.refs.node.removeEventListener('dblclick', this.preventDefault);
+		this.refs.node.removeEventListener('dblclick', this.onDoubleClick);
 	}
 
 	onKeyDown(ev) {
@@ -422,6 +423,10 @@ export default class Node extends React.Component {
 	}
 
 	onDoubleClick(ev) {
+		let n = this.state.node;
+		if (this.props.nodeStore.isGroup(n)) {
+			this.props.action.digGroup(n.varname);
+		}
 		ev.preventDefault();
 		ev.stopPropagation();
 	}

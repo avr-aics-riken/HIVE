@@ -404,6 +404,50 @@ export default class NodeView extends React.Component {
 		ev.target.style.cursor = "default";
 	}
 
+	onNaviEnter(ev) {
+		ev.target.style.fontWeight = "bold";
+		ev.target.style.cursor = "pointer";
+	}
+
+	onNaviLeave(ev) {
+		ev.target.style.fontWeight = "normal";
+		ev.target.style.cursor = "default";
+	}
+
+	onNaviClick(varname) {
+		return (ev) => {
+			console.log("onNaviClick")
+			this.props.action.digGroup(varname);
+		}
+	}
+
+	/// ノードの階層ナビゲータ
+	navigator() {
+		let path = this.props.store.getNodePath();
+		if (path.length === 0) { return; }
+		let naviPath = [this.props.store.data.varname].concat(path);
+		let navi = naviPath.map( (varname, index) => {
+			let name = varname;
+			if (index > 0) {
+				name = this.props.store.findNode(this.props.store.data, varname).name;
+			}
+			return (<div style={{
+						float : "left",
+						top : "0px",
+						left : "0px",
+						height : "25px",
+					}}
+						key={varname + "_" + String(index)}
+						onMouseEnter={this.onNaviEnter.bind(this)}
+						onMouseLeave={this.onNaviLeave.bind(this)}
+						onClick={this.onNaviClick.bind(this)(varname)}
+					>
+						{name} /
+					</div>)
+		});
+		return navi;
+	}
+
 	render() {
 		const styles = this.styles.bind(this)();
 		return (
@@ -469,6 +513,19 @@ export default class NodeView extends React.Component {
 							/>
 						</div>
 					</div>
+						<div ref="navigator"
+							style={{
+							   position : "absolute",
+							   	marginLeft : "30px",
+							   	width : "100%",
+								heigth : "20px",
+								top : "0px",
+								left : "0px",
+								color : "white"
+							}}
+						>
+							{this.navigator.bind(this)()}
+						</div>
 				</div>
 				);
 	}
