@@ -47,6 +47,13 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
+	 * shaderフォルダのファイル一覧を返す.
+	 */
+	getShaderList() {
+		return this.hive.getShaderList();
+	}
+
+	/**
 	 * dispatchTokenを返す.
 	 */
 	getDispatchToken() {
