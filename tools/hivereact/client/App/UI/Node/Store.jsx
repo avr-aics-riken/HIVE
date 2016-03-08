@@ -12,9 +12,9 @@ function calcSimplePlugPositionY(node) {
 
 function validatePlugInfo(plug, plugInfo, dataName) {
 	if (dataName !== null && dataName !== undefined) {
-		return (plug.nodeVarname === plugInfo.nodeVarname && dataName === plugInfo.data.name);
+		return (plug.nodeVarname === plugInfo.data.nodeVarname && dataName === plugInfo.data.name);
 	} else {
-		return (plug.nodeVarname === plugInfo.nodeVarname && plug.name === plugInfo.data.name);
+		return (plug.nodeVarname === plugInfo.data.nodeVarname && plug.name === plugInfo.data.name);
 	}
 }
 
@@ -351,13 +351,14 @@ export default class Store extends EventEmitter {
 	 */
 	disconnectPlugHole(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
+			console.log(payload.plugInfo);
 			for (let i = 0; i < this.plugPositions.length; i = i + 1) {
 				if (payload.plugInfo.isInput) {
 					if (Array.isArray(this.plugPositions[i].input.array)) {
 						let inputArray = this.plugPositions[i].input.array;
 						for (let k = 0; k < inputArray.length; k = k + 1) {
 							let input = inputArray[k];
-							if (validatePlugInfo(this.plugPositions[i].input, payload.plugInfo.nodeVarname, input.name)) {
+							if (validatePlugInfo(this.plugPositions[i].input, payload.plugInfo, input.name)) {
 								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
 								break;
 							}
