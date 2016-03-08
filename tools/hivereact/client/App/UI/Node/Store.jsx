@@ -1,6 +1,23 @@
 import EventEmitter from 'eventemitter3'
 import Core from '../../Core'
 
+function calcPlugPositionY(node, inoutIndex) {
+	const holeSize = node.node.close ? 10 : 15;
+	return node.node.pos[1] + (inoutIndex + 1) * (holeSize + 3) + 24
+}
+
+function calcSimplePlugPositionY(node) {
+	return node.node.pos[1] + 18 + 20
+}
+
+function validatePlugInfo(plug, plugInfo, dataName) {
+	if (dataName !== null && dataName !== undefined) {
+		return (plug.nodeVarname === plugInfo.nodeVarname && dataName === plugInfo.data.name);
+	} else {
+		return (plug.nodeVarname === plugInfo.nodeVarname && plug.name === plugInfo.data.name);
+	}
+}
+
 export default class Store extends EventEmitter {
 	constructor(dispatcher, coreStore) {
 		super();
@@ -70,12 +87,17 @@ export default class Store extends EventEmitter {
 		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
 		this.changeZoom = this.changeZoom.bind(this);
 		this.isConnected = this.isConnected.bind(this);
+		this.isGroup = this.isGroup.bind(this);
+	}
+
+	isGroup(node) {
+		return (node.hasOwnProperty('nodes') && node.hasOwnProperty('plugs'));
 	}
 
 	regenerateNodeMap(coreStore) {
 		let addNodeToNodeMap = (n) => {
-			if (n.hasOwnProperty('nodes') && n.hasOwnProperty('plugs')) {
-				// group node
+			if (this.isGroup(n)) {
+				this.nodeMap[n.varname] = n;
 				for (let i = 0; i < n.nodes.length; i = i + 1) {
 					addNodeToNodeMap(n.nodes[i]);
 				}
@@ -101,6 +123,7 @@ export default class Store extends EventEmitter {
 			if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
 				let inNode = this.nodeMap[inVarname];
 				let outNode = this.nodeMap[outVarname];
+				console.log("recalc", inNode, outNode)
 				let plugPosition = {
 					input : {
 						nodeVarname : plug.input.nodeVarname,
@@ -127,16 +150,15 @@ export default class Store extends EventEmitter {
 	 */
 	calcPlugPosition(isInput, plug, node) {
 		let isClosed = node.node.close;
-		const holeSize = isClosed ? 10 : 15;
 		if (isInput) {
-			if (plug.input.nodeVarname === node.varname) {
+			if (plug.input.nodeVarname === node.varname || this.isGroup(node)) {
 				let count = 0;
 				for (let k = 0; k < node.input.length; k = k + 1) {
 					if (Array.isArray(node.input[k].array)) {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
 							if (inputArray[n].name === plug.input.name) {
-								return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 24];
+								return [node.node.pos[0], calcPlugPositionY(node, count)];
 							}
 							if (isClosed) {
 								if (this.isConnected(node.varname, inputArray[n].name)) {
@@ -148,7 +170,7 @@ export default class Store extends EventEmitter {
 						}
 					} else {
 						if (node.input[k].name === plug.input.name) {
-							return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 24];
+							return [node.node.pos[0], calcPlugPositionY(node, count)];
 						}
 						if (isClosed) {
 							if (this.isConnected(node.varname, node.input[k].name)) {
@@ -160,19 +182,22 @@ export default class Store extends EventEmitter {
 					}
 				}
 			}
+			//return [100000, node.node.pos[1]];
 		} else {
-			if (plug.output.nodeVarname === node.varname) {
+			if (plug.output.nodeVarname === node.varname || this.isGroup(node)) {
 				let width = 200;
 				if (this.nodeSizeMap.hasOwnProperty(node.varname)) {
 					width = this.nodeSizeMap[node.varname].width;
 				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.node.pos[0] + width, node.node.pos[1] + (k + 1) * (holeSize + 3) + 24];
+						return [node.node.pos[0] + width, calcPlugPositionY(node, k)];
 					}
 				}
 			}
+			//return [-100000, node.node.pos[1]];
 		}
+		//console.error("notcalculate", this.isGroup(node), isInput, plug, node)
 		return null;
 	}
 
@@ -180,12 +205,12 @@ export default class Store extends EventEmitter {
 		let pos = [[0,0], [0,0]];
 		if (this.nodeMap.hasOwnProperty(plug.input.nodeVarname)) {
 			let node = this.nodeMap[plug.input.nodeVarname];
-			pos[0] = [node.node.pos[0], node.node.pos[1] + 18 + 20];
+			pos[0] = [node.node.pos[0], calcSimplePlugPositionY(node)];
 		}
 		if (this.nodeMap.hasOwnProperty(plug.output.nodeVarname)) {
 			let node = this.nodeMap[plug.output.nodeVarname];
 			let width = this.nodeSizeMap[plug.output.nodeVarname].width;
-			pos[1] = [node.node.pos[0] + width, node.node.pos[1] + 18 + 20];
+			pos[1] = [node.node.pos[0] + width, calcSimplePlugPositionY(node)];
 		}
 		return pos;
 	}
@@ -327,25 +352,19 @@ export default class Store extends EventEmitter {
 						let inputArray = this.plugPositions[i].input.array;
 						for (let k = 0; k < inputArray.length; k = k + 1) {
 							let input = inputArray[k];
-							if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
-								input.name === payload.plugInfo.data.name) {
-
+							if (validatePlugInfo(this.plugPositions[i].input, payload.plugInfo.nodeVarname, input.name)) {
 								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
 								break;
 							}
 						}
 					} else {
-						if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
-							this.plugPositions[i].input.name === payload.plugInfo.data.name) {
-
+						if (validatePlugInfo(this.plugPositions[i].input, payload.plugInfo)) {
 							this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
 							break;
 						}
 					}
 				} else {
-					if (this.plugPositions[i].output.nodeVarname === payload.plugInfo.nodeVarname &&
-						this.plugPositions[i].output.name === payload.plugInfo.data.name) {
-
+					if (validatePlugInfo(this.plugPositions[i].output, payload.plugInfo)) {
 						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
 						break;
 					}

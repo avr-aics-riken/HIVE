@@ -64,6 +64,7 @@ export default class HiveApp extends React.Component {
         return false;
     }
 
+    // キーダウンイベントのターゲットは Window
     onKeyDown(eve){
         switch(eve.keyCode){
             case 27:
@@ -98,6 +99,8 @@ export default class HiveApp extends React.Component {
 
     onDblClick(eve){
         if (eve.button === 0) {
+            // let x = eve.currentTarget.scrollLeft + eve.clientX - eve.currentTarget.getBoundingClientRect().left;
+            // let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
             let x = eve.pageX;
             let y = eve.pageY;
             this.listVisiblity = !this.listVisiblity;
@@ -115,14 +118,7 @@ export default class HiveApp extends React.Component {
     }
 
     allClearNode(){
-        let nodes = this.store.getNodes();
-        let plugs = this.store.getPlugs();
-        for(let i = plugs.length - 1; i >= 0; --i){
-            this.action.deletePlug(plugs[i]);
-        }
-        for(let i = nodes.length - 1; i >= 0; --i){
-            this.action.deleteNode(nodes[i].varname);
-        }
+		this.action.clearAll();
     }
 
     loadFile(file){
@@ -152,6 +148,7 @@ export default class HiveApp extends React.Component {
         return this.state.isInitialized ? (<Menu.View store={this.store} action={this.action} />) : (<div />);
     }
 
+    // ========================================================================
     // この関数をフォーカスしたい子要素に渡して呼んでもらう
     setFocusTarget(element){
         this.focusTarget = element;
