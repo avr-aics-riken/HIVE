@@ -1,0 +1,13 @@
+{
+	"name": "TransferFunction",
+	"funcname": "TransferFunction",
+	"info":"TransferFunctionをつくるノード",
+	"customfuncfile":"transferfunction.lua",
+	"uifile":"transferfunction.jsx",
+    "input": [
+		{"name": "value",  "type": "vec4", "value": [1,1,1,1]}
+	],
+	"output": [
+		{"name": "color",  "type": "vec4"}
+	]
+}
