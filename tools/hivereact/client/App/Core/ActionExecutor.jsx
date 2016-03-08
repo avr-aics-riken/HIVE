@@ -56,6 +56,8 @@ export default class ActionExecuter {
 		this.delete = this.delete.bind(this);
 		this.makeGroup = this.makeGroup.bind(this);
 		this.addGroup = this.addGroup.bind(this);
+		this.digGroup = this.digGroup.bind(this);
+		this.findGroupPath = this.findGroupPath.bind(this);
 	}
 
     /**
@@ -443,6 +445,42 @@ export default class ActionExecuter {
 		};
 		this.addGroup({ group : group });
 		this.store.emit(Constants.MAKE_GROUP_CALLED, null);
+	}
+
+	/// グループのパスを探して返す
+	findGroupPath(root, varname, groupPath) {
+		if (!root) {
+			return null;
+		}
+		let nameList = [].concat(groupPath);
+		if (this.store.isGroup(root)) {
+			nameList.push(root.varname);
+			if (varname === root.varname) {
+				return nameList;
+			}
+			for (let i = 0; i < root.nodes.length; i = i + 1) {
+				let list = this.findGroupPath(root.nodes[i], varname, nameList);
+				if (list) {
+					return list;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * グループを移動する
+	 */
+	digGroup(payload) {
+		if (payload.hasOwnProperty('groupVarname')) {
+			let groupPath = this.findGroupPath(this.store.data, payload.groupVarname, []);
+			if (groupPath && groupPath.length > 0) {
+				groupPath.splice(0, 1);
+				this.store.data.nodePath = groupPath;
+				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
+				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+			}
+		}
 	}
 
 	/**
