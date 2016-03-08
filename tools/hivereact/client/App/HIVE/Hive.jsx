@@ -61,6 +61,10 @@ export default class Hive extends EventEmitter {
 			console.log('updateInfo');
 		}));
 
+        this.conn.method('rendererLog', (data) => {
+		      console.log('processlog>', data);	
+		});
+
 		this.conn.method('renderedImage', (param, data) => {
 			// 画像を受け取る ws version
 			console.log("renderImage recieved", param, data);
