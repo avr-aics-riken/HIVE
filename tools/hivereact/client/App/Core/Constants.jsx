@@ -8,6 +8,7 @@ module.exports = {
     NODE_COUNT_CHANGED : "node_count_changed",
     PLUG_COUNT_CHANGED : "plug_count_changed",
     IMAGE_RECIEVED : "image_revieved",
+    RENDERER_LOG_RECIEVED: "renderer_log_recieved",
     NODE_ADDED : "node_added",
     NODE_DELETED : "node_deleted",
     NODE_SELECTE_CHANGED : "node_selected",

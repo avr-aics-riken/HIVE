@@ -62,12 +62,13 @@ export default class Hive extends EventEmitter {
 		}));
 
         this.conn.method('rendererLog', (data) => {
-		      console.log('processlog>', data);	
+		    //console.log('processlog>', data);
+            this.emit(Hive.RENDERER_LOG_RECIEVED, data);
 		});
 
 		this.conn.method('renderedImage', (param, data) => {
 			// 画像を受け取る ws version
-			console.log("renderImage recieved", param, data);
+			//console.log("renderImage recieved", param, data);
 			this.emit(Hive.IMAGE_RECIEVED, null, param, data);
 			/*
 				var w, h, cmd;
@@ -141,3 +142,4 @@ export default class Hive extends EventEmitter {
 }
 Hive.NODE_CHANGED = "core_node_changed";
 Hive.IMAGE_RECIEVED = "core_image_revieved";
+Hive.RENDERER_LOG_RECIEVED = "renderer_log_recieved";
