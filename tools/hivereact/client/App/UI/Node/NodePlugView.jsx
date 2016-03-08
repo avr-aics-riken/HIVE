@@ -13,7 +13,8 @@ export default class NodePlugView extends React.Component {
 
 		this.state = {
 			plugPositions : this.props.nodeStore.getPlugPositions(),
-			temporaryPlug : null
+			temporaryPlug : null,
+			rerender : false
 		};
 
 		this.props.nodeStore.on(Store.PLUG_COUNT_CHANGED, (err) => {
@@ -42,6 +43,9 @@ export default class NodePlugView extends React.Component {
 					}
 				}
 			}
+			this.setState({
+				rerender : !this.state.rerender
+			})
 		});
 
 		this.props.nodeStore.on(Store.PLUG_DRAGGING, (err, id, inpos, outpos) => {
@@ -124,6 +128,65 @@ export default class NodePlugView extends React.Component {
 		}
 	}
 
+	globalPlugIn() {
+		let globalIn = this.props.store.getInput();
+		let store = this.props.store;
+		//console.log("globalPlugIn", globalIn)
+		let globalInPlugs = globalIn.map( (data, index) => {
+			let currentRoot = store.getDataAtPath(store.getNodePath());
+			if (!store.getNode(data.nodeVarname)) { return; }
+			let node = store.getNode(data.nodeVarname).node;
+			let p = {
+				input : {
+					name : data.name,
+					nodeVarname : node.varname,
+					pos : node.node.pos
+				},
+				output : {
+					name : "",
+					nodeVarname : "",
+					pos : [-10000, node.node.pos[1]]
+				}
+			};
+			let pos = this.props.nodeStore.calcPlugPosition(true, p, node);
+			if (pos) {
+				p.input.pos = pos;
+			}
+			return (<NodePlug nodeStore={this.props.nodeStore} plug={p} isTemporary={false}
+					key={node.varname + "_" + String(Math.random())}/>);
+		});
+		return globalInPlugs;
+	}
+
+	globalPlugOut() {
+		let globalOut = this.props.store.getOutput();
+		let store = this.props.store;
+		//console.log("globalPlugOut", globalOut)
+		let globalOutPlugs = globalOut.map( (data, index) => {
+			if (!store.getNode(data.nodeVarname)) { return; }
+			let node = store.getNode(data.nodeVarname).node;
+			let p = {
+				input : {
+					name : "",
+					nodeVarname : "",
+					pos : [10000, node.node.pos[1]]
+				},
+				output : {
+					name : data.name,
+					nodeVarname : node.varname,
+					pos : node.node.pos
+				}
+			};
+			let pos = this.props.nodeStore.calcPlugPosition(false, p, node);
+			if (pos) {
+				p.output.pos = pos;
+			}
+			return (<NodePlug nodeStore={this.props.nodeStore} plug={p} isTemporary={false}
+					key={node.varname + "_" + String(Math.random())}/>);
+		});
+		return globalOutPlugs;
+	}
+
 	onMouseDown() {
 		this.props.nodeAction.unSelectPlugHoles();
 		this.props.action.unSelectNode([], null);
@@ -140,6 +203,8 @@ export default class NodePlugView extends React.Component {
 				>
 					{plugList}
 					{this.temporaryPlug()}
+					{this.globalPlugIn.bind(this)()}
+					{this.globalPlugOut.bind(this)()}
 				</svg>
 		);
 	}
