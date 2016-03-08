@@ -44,7 +44,7 @@ class ParallelCoordinate extends React.Component {
         this.mat = new matIV();
         this.weight = [];
         this.csvData = null;
-        this.density = true;
+        this.density = false;
         this.prev = {
             prevType: null,
             glforeground: null,
@@ -67,7 +67,7 @@ class ParallelCoordinate extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
 
         // tmp
-        this.densityCheck = {checked: true}; // check box
+        this.densityCheck = {checked: false}; // check box
         this.densityNormal = {checked: true};
         this.densityRange = {checked: true};
         this.usr = {
@@ -101,12 +101,12 @@ class ParallelCoordinate extends React.Component {
     useAxes(){
         // csv file load
         if(this.csvData == null){
-            d3.csv('./App/resource/nut.csv', function(data){
+            d3.csv('./App/resource/nut.csv', (function(data){
                 this.csvData = data;
-                beginDraw(this.csvData);
-            });
+                this.beginDraw(this.csvData);
+            }).bind(this));
         }else{
-            beginDraw(this.csvData);
+            this.beginDraw(this.csvData);
         }
     }
 
@@ -139,14 +139,14 @@ class ParallelCoordinate extends React.Component {
             }
         }
         this.linecount = this.dataval.length;
-        this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})('#example')
-            .data(this.dataval)        // データの代入
+        this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})(ReactDOM.findDOMNode(this.refs.examples))
+            .data(this.dataval)   // データの代入
             .mode("queue")        // 描画を WebGL Renderer に
-            .width(300)          // canvas のサイズ（横幅）
-            .height(200);         // canvas のサイズ（縦）
+            .width(500)           // 描画エリアのサイズ（横幅）
+            .height(320);         // 描画エリアのサイズ（縦）
 
         this.glInitialize();
-        this.parcoords.render()        // ラインを描画する
+        this.parcoords.render()   // ラインを描画する
             .createAxes()         // 目盛を生成する
             .reorderable()        // 軸の並び替え有効化
             .brushMode("1D-axes") // 抽出のやり方
@@ -159,7 +159,7 @@ class ParallelCoordinate extends React.Component {
             var m = this.parcoords.canvas.marks;
             var c = document.createElement('canvas');
             this.canvasAttCopy(c, 'glbrush', m);
-            this.glContext['glbrush'].color           = [0.6, 0.2, 0.9, 0.1]; // brush line
+            this.glContext['glbrush'].color           = [0.6, 0.9, 0.3, 0.1]; // brush line
             this.glContext['glbrush'].lowColor        = [0.0, 0.1, 0.0];
             this.glContext['glbrush'].middleLowColor  = [0.1, 0.3, 0.1];
             this.glContext['glbrush'].middleColor     = [0.1, 0.7, 0.3];
@@ -168,7 +168,7 @@ class ParallelCoordinate extends React.Component {
             e.insertBefore(c, e.firstChild);
             c = document.createElement('canvas');
             this.canvasAttCopy(c, 'glforeground', m);
-            this.glContext['glforeground'].color           = [0.9, 0.6, 0.2, 0.1]; // foreground line
+            this.glContext['glforeground'].color           = [0.9, 0.3, 0.6, 0.1]; // foreground line
             this.glContext['glforeground'].lowColor        = [0.1, 0.0, 0.0];
             this.glContext['glforeground'].middleLowColor  = [0.2, 0.2, 0.1];
             this.glContext['glforeground'].middleColor     = [0.6, 0.5, 0.1];
@@ -208,12 +208,13 @@ class ParallelCoordinate extends React.Component {
             'glbrush'
         ];
         for(i = 1; i <= 2; ++i){
-            e = document.getElementById('lineColor' + i);
-            c = e.style.backgroundColor.match(/\d+/g);
-            r = parseInt(c[0]) / 255;
-            g = parseInt(c[1]) / 255;
-            b = parseInt(c[2]) / 255;
-            this.glContext[a[i - 1]].color = [r, g, b, 0.1];
+            // e = document.getElementById('lineColor' + i);
+            // c = e.style.backgroundColor.match(/\d+/g);
+            // c = [255 / i, 128 / i, 64 / i];
+            // r = parseint(c[0]) / 255;
+            // g = parseint(c[1]) / 255;
+            // b = parseint(c[2]) / 255;
+            // this.glContext[a[i - 1]].color = [r, g, b, 0.1];
         }
         a = [
             'lowColor',
@@ -223,14 +224,16 @@ class ParallelCoordinate extends React.Component {
             'highColor'
         ];
         for(i = 1; i <= 5; ++i){
-            e = document.getElementById('fgColor' + i);
-            c = e.style.backgroundColor.match(/\d+/g);
+            // e = document.getElementById('fgColor' + i);
+            // c = e.style.backgroundColor.match(/\d+/g);
+            c = [64, 128, 255];
             r = parseInt(c[0]) / 255;
             g = parseInt(c[1]) / 255;
             b = parseInt(c[2]) / 255;
             this.glContext['glforeground'][a[i - 1]] = [r, g, b];
-            e = document.getElementById('brColor' + i);
-            c = e.style.backgroundColor.match(/\d+/g);
+            // e = document.getElementById('brColor' + i);
+            // c = e.style.backgroundColor.match(/\d+/g);
+            c = [64, 255, 128];
             r = parseInt(c[0]) / 255;
             g = parseInt(c[1]) / 255;
             b = parseInt(c[2]) / 255;
@@ -238,34 +241,34 @@ class ParallelCoordinate extends React.Component {
         }
     }
     fromArrayToPicker(){
-        var i, a, c, e, r, g, b;
-        a = [
-            'glforeground',
-            'glbrush'
-        ];
-        for(i = 1; i <= 2; ++i){
-            r = zeroPadding(new Number(parseInt(glContext[a[i - 1]].color[0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(glContext[a[i - 1]].color[1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(glContext[a[i - 1]].color[2] * 255)).toString(16), 2);
-            e = document.getElementById('lineColor' + i).value = '#' + r + g + b;
-        }
-        a = [
-            'lowColor',
-            'middleLowColor',
-            'middleColor',
-            'middleHighColor',
-            'highColor'
-        ];
-        for(i = 1; i <= 5; ++i){
-            r = zeroPadding(new Number(parseInt(glContext['glforeground'][a[i - 1]][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(glContext['glforeground'][a[i - 1]][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(glContext['glforeground'][a[i - 1]][2] * 255)).toString(16), 2);
-            e = document.getElementById('fgColor' + i).value = '#' + r + g + b;
-            r = zeroPadding(new Number(parseInt(glContext['glbrush'][a[i - 1]][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(glContext['glbrush'][a[i - 1]][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(glContext['glbrush'][a[i - 1]][2] * 255)).toString(16), 2);
-            e = document.getElementById('brColor' + i).value = '#' + r + g + b;
-        }
+        // var i, a, c, e, r, g, b;
+        // a = [
+        //     'glforeground',
+        //     'glbrush'
+        // ];
+        // for(i = 1; i <= 2; ++i){
+        //     r = zeroPadding(new Number(parseInt(this.glContext[a[i - 1]].color[0] * 255)).toString(16), 2);
+        //     g = zeroPadding(new Number(parseInt(this.glContext[a[i - 1]].color[1] * 255)).toString(16), 2);
+        //     b = zeroPadding(new Number(parseInt(this.glContext[a[i - 1]].color[2] * 255)).toString(16), 2);
+        //     e = document.getElementById('lineColor' + i).value = '#' + r + g + b;
+        // }
+        // a = [
+        //     'lowColor',
+        //     'middleLowColor',
+        //     'middleColor',
+        //     'middleHighColor',
+        //     'highColor'
+        // ];
+        // for(i = 1; i <= 5; ++i){
+        //     r = zeroPadding(new Number(parseInt(this.glContext['glforeground'][a[i - 1]][0] * 255)).toString(16), 2);
+        //     g = zeroPadding(new Number(parseInt(this.glContext['glforeground'][a[i - 1]][1] * 255)).toString(16), 2);
+        //     b = zeroPadding(new Number(parseInt(this.glContext['glforeground'][a[i - 1]][2] * 255)).toString(16), 2);
+        //     e = document.getElementById('fgColor' + i).value = '#' + r + g + b;
+        //     r = zeroPadding(new Number(parseInt(this.glContext['glbrush'][a[i - 1]][0] * 255)).toString(16), 2);
+        //     g = zeroPadding(new Number(parseInt(this.glContext['glbrush'][a[i - 1]][1] * 255)).toString(16), 2);
+        //     b = zeroPadding(new Number(parseInt(this.glContext['glbrush'][a[i - 1]][2] * 255)).toString(16), 2);
+        //     e = document.getElementById('brColor' + i).value = '#' + r + g + b;
+        // }
     }
 
     glRender(target, data, lines, left, right){
@@ -423,12 +426,12 @@ class ParallelCoordinate extends React.Component {
                 for(var i = 0; i < 30; i++){
                     var r = 1.0 + 2.0 * i;
                     var w = Math.exp(-0.5 * (r * r) / 150.0);
-                    weight[i] = w;
+                    this.weight[i] = w;
                     if(i > 0){w *= 2.0;}
                     t += w;
                 }
-                for(i = 0; i < weight.length; i++){
-                    weight[i] /= t;
+                for(i = 0; i < this.weight.length; i++){
+                    this.weight[i] /= t;
                 }
             })();
 
@@ -445,6 +448,9 @@ class ParallelCoordinate extends React.Component {
             // 初回ロードではない場合色取得
             this.fromPickerToArray();
         }
+
+        // debugger;
+
 
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
@@ -518,7 +524,7 @@ class ParallelCoordinate extends React.Component {
             set_attribute(gl, vboPL, gc.plp.attL, gc.plp.attS);
             gl.uniform2fv(gc.plp.uniL.resolution, [gc.plp.bufferWidth, gc.plp.bufferHeight]);
             gl.uniform1i(gc.plp.uniL.horizontal, true);
-            gl.uniform1fv(gc.plp.uniL.weight, weight);
+            gl.uniform1fv(gc.plp.uniL.weight, this.weight);
             gl.uniform1i(gc.plp.uniL.texture, 0);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
@@ -568,8 +574,23 @@ class ParallelCoordinate extends React.Component {
     styles(){
         return {
             container: {
-                width: "300px",
-                height: "200px"
+                backgroundColor: "white",
+                width: "500px",
+                height: "400px",
+                margin: "2px 5px",
+                display: "flex",
+                flexDirection: "column"
+            },
+            examples: {
+                width: "500px",
+                height: "320px",
+                flexGrow: "1",
+            },
+            uiFrame: {
+                backgroundColor: "silver",
+                width: "100%",
+                height: "80px",
+                flexGrow: "1",
             },
             canvas: {},
         };
@@ -580,12 +601,10 @@ class ParallelCoordinate extends React.Component {
         return (
             <div>
                 <div ref="container" style={styles.container}>
-                    <div ref="examples" className="parcoords">
-                        
+                    <div ref="examples" className="parcoords" style={styles.examples}></div>
+                    <div style={styles.uiFrame}>
+                        <p>ui</p>
                     </div>
-                </div>
-                <div>
-                    <p>ui</p>
                 </div>
             </div>
         );

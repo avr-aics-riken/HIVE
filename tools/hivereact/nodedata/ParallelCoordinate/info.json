@@ -1,9 +1,9 @@
 {
-	"name": "TransferFunction",
-	"funcname": "TransferFunction",
-	"info":"TransferFunctionをつくるノード",
-	"customfuncfile":"transferfunction.lua",
-	"uifile":"transferfunction.jsx",
+	"name": "ParallelCoordinate",
+	"funcname": "ParallelCoordinate",
+	"info":"ParallelCoordinateをつくるノード",
+	"customfuncfile":"parallelcoordinate.lua",
+	"uifile":"parallelcoordinate.jsx",
     "input": [
 		{"name": "value",  "type": "vec4", "value": [1,1,1,1]}
 	],
