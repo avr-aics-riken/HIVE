@@ -17,6 +17,8 @@ export default class MenuTop extends React.Component {
         this.saveButton = this.saveButton.bind(this);
         this.loadButton = this.loadButton.bind(this);
         this.loadButtonClick = this.loadButtonClick.bind(this);
+        
+        this.showConsole = props.consoleShow;
     }
 
     allClearNode(disableConfirm){
@@ -72,58 +74,64 @@ export default class MenuTop extends React.Component {
             reader.readAsText(eve.currentTarget.files[0]);
         }
     }
+    exportButton(eve){
+        console.log('"export function" called!');
+    }
+    
+    // Edit menu
+    editNodeCopy() { this.props.action.copy(); }
+    editNodePaste() { this.props.action.paste(); }
+    editNodeDelete() { this.props.action.delete(); }
+    editNodeMakeGroup() { this.props.action.makeGroup(); }
 
+    // Layout menu
+    layoutAll() { this.props.action.setLayout('all'); }
+    layoutNode() { this.props.action.setLayout('node'); }
+    layoutPanel() { this.props.action.setLayout('panel'); }
+    
+    // Window menu
+    windowToggleConsoleOutput() {
+        this.showConsole = !this.showConsole;
+        this.props.action.showConsoleOutput(this.showConsole);
+    }
+    
     // ここでメニュー操作時の動作を定義
     // info のなかの key を見て分岐したりする
     handleClick(info){
         let key = parseInt(info.key, 10);
-        switch(key){
-            case 1:
-                this.loadButtonClick();
-                break;
-            case 2:
-                this.saveButton();
-                break;
-            case 3:
-                console.log('"export function" called!');
-                break;
-            case 4:
-                this.allClearNode();
-                break;
-            case 11:
-				this.props.action.copy();
-                break;
-            case 12:
-				this.props.action.paste();
-                break;
-            case 13:
-				this.props.action.delete();
-                break;
-            case 14:
-				this.props.action.makeGroup();
-                break;
+        try {
+            this[info.key](info.value);
+        } catch (e) {
+            console.error("Unknown menu command", info, e);
         }
-        console.log(info);
     }
-
+ 
     // render
     render(){
         // ここでメニューの構造定義
         const horizontalMenu = React.cloneElement((
             <RcMenu onClick={this.handleClick}>
-                <SubMenu title={<span>File</span>} key="0">
-                    <MenuItem key="1">Load</MenuItem>
-                    <MenuItem key="2">Save</MenuItem>
-                    <MenuItem key="3">Export</MenuItem>
-                    <MenuItem key="4">Clear all</MenuItem>
+                <SubMenu title={<span>File</span>} key="file">
+                    <MenuItem key="loadButtonClick">Load</MenuItem>
+                    <MenuItem key="saveButton">Save</MenuItem>
+                    <MenuItem key="exportButton">Export</MenuItem>
+                    <MenuItem key="allClearNode">Clear all</MenuItem>
                 </SubMenu>
-                <SubMenu title={<span>Edit</span>} key="10">
-                    <MenuItem key="11">Copy</MenuItem>
-                    <MenuItem key="12">Paste</MenuItem>
-                    <MenuItem key="13">Delete</MenuItem>
-                    <MenuItem key="14">MakeGroup</MenuItem>
+                <SubMenu title={<span>Edit</span>} key="edit">
+                    <MenuItem key="editNodeCopy">Copy</MenuItem>
+                    <MenuItem key="editNodePaste">Paste</MenuItem>
+                    <MenuItem key="editNodeDelete">Delete</MenuItem>
+                    <MenuItem key="editNodeMakeGroup">MakeGroup</MenuItem>
                 </SubMenu>
-            </RcMenu>
+                <SubMenu title={<span>Layout</span>} key="layout">
+                    <MenuItem key="layoutAll">All</MenuItem>
+                    <MenuItem key="layoutNode">Node mode</MenuItem>
+                    <MenuItem key="layoutPanel">Panel mode</MenuItem>
+                </SubMenu>
+                <SubMenu title={<span>Window</span>} key="Window">
+                    <MenuItem key="windowToggleConsoleOutput">Console Output</MenuItem>
+                </SubMenu>
+                </RcMenu>
         ), {
             mode: 'horizontal',
             openAnimation: 'slide-up',
