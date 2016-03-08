@@ -3,7 +3,8 @@
 
 var	HRENDER = __dirname + '/../../build/bin/hrender',
 //var	HRENDER = __dirname + '/../hrender',
-	HRENDER_ARG = [__dirname +'/lua/hrender_server.lua'],
+    HRENDER_CWD = __dirname +'/lua/',
+	HRENDER_ARG = [HRENDER_CWD + 'hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = __dirname + '/client/',
 	metabin = require(__dirname + '/lib/metabinary'),
@@ -164,21 +165,29 @@ function requestShaderList(clientNode, msg_id) {
 	var files = [],
 		shaderlist = [],
 		i,
-		infofile;
-	console.log('[DEBUG] requestShaderList');
-	getFile('./shader', files);
+		//infofile,
+        shaderDir = __dirname + '/shader';
+        
+	console.log('[DEBUG] requestShaderList', shaderDir);
+	getFile(shaderDir, files);
 	for (i = 0; i < files.length; i = i + 1) {
-		if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
-			infofile = files[i].path.replace('.frag', '.json');
-			try {
-				files[i].info = JSON.parse(fs.readFileSync(infofile));
+        if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
+            
+            //relative
+            files[i].fullpath =  files[i].path;
+            files[i].path = path.relative(HRENDER_CWD, files[i].path);
+			shaderlist.push(files[i]);
+            // disable
+			/*infofile = files[i].path.replace('.frag', '.json');
+            try {
+				files[i].info = JSON.parse(fs.readFileSync(shaderfile));
 				shaderlist.push(files[i]);
 			} catch (e) {
 				console.error('[Error] Failed to read: ' + infofile);
-			}
+			}*/
 		}
 	}
-	clientNode.send(JSON.stringify({
+    clientNode.send(JSON.stringify({
 		JSONRPC: "2.0",
 		result: JSON.stringify(shaderlist),
 		id: msg_id
