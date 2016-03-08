@@ -36,7 +36,7 @@ export default class ActionExecuter {
 
         // only Functions
         this.showConsoleOutput = this.showConsoleOutput.bind(this);
-        this.setLayout = this.setLayout.bind(this); 
+        this.setLayout = this.setLayout.bind(this);
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
@@ -90,15 +90,27 @@ export default class ActionExecuter {
 		for (let i = 0; i < node.input.length; i = i + 1) {
 			if (!node.input[i].hasOwnProperty('nodeVarname')) {
 				node.input[i].nodeVarname = node.varname;
+				if (Array.isArray(node.input[i].array)) {
+					let array = node.input[i].array;
+					for (let n = 0; n < array.length; n = n + 1) {
+						node.input[i].array[n].nodeVarname = node.varname;
+					}
+				}
 			}
 		}
 		for (let i = 0; i < node.output.length; i = i + 1) {
 			if (!node.output[i].hasOwnProperty('nodeVarname')) {
 				node.output[i].nodeVarname = node.varname;
+				if (Array.isArray(node.output[i].array)) {
+					let array = node.output[i].array;
+					for (let n = 0; n < array.length; n = n + 1) {
+						node.output[i].array[n].nodeVarname = node.varname;
+					}
+				}
 			}
 		}
 	}
-    
+
     /**
 	 * コンソール画面表示
 	 */
@@ -107,16 +119,16 @@ export default class ActionExecuter {
             this.store.emit(Constants.CONSOLEOUTPUT_SHOW, payload.show);
         }
     }
-    
+
     /**
 	 * レイアウト変更
 	 */
     setLayout(payload) {
         if (payload.hasOwnProperty('mode')) {
             this.store.emit(Constants.LAYOUT_CHANGED, payload.mode);
-        }    
+        }
     }
-    
+
 	/**
 	 * ノード追加
 	 */

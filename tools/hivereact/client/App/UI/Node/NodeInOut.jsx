@@ -202,7 +202,6 @@ export default class NodeInOut extends React.Component {
 
 	plugInfo() {
 		return {
-			nodeVarname : this.props.nodeVarname,
 			data : this.props.data,
 			isInput : this.props.isInput
 		}
