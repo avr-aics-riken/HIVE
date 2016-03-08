@@ -364,7 +364,16 @@ ws.on('request', function (request) {
 				for (a in args) {
 					console.log('ARG=[' + a + '] = ' + args[a]);
 				}
-				clientNode.renderproc = startupHRenderServer(args);
+				clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
+                    return function (data) {
+                        clientNode.send(JSON.stringify({
+                            JSONRPC: "2.0",
+                            method: "rendererLog",
+                            param: JSON.stringify(data.toString()),
+                            id: 0
+                        }));
+                    };
+                })(clientNode));
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
@@ -589,7 +598,7 @@ function captureThumbnail() {
 
 var spawnProcesses = [];
 
-function startupHRenderServer(optarray) {
+function startupHRenderServer(optarray, outcallback) {
 	'use strict';
 	var process = null,
 		i,
@@ -605,9 +614,15 @@ function startupHRenderServer(optarray) {
 		process = spawn(HRENDER, arg);
 		process.stdout.on('data', function (data) {
 			console.log('stdout: ' + data);
+            if (outcallback) {
+                outcallback(data);
+            }
 		});
 		process.stderr.on('data', function (data) {
 			console.error('stderr: ' + data);
+            if (outcallback) {
+                outcallback(data);
+            }
 		});
 		process.on('exit', function (code) {
 			console.error('-------------------------\nhrender is terminated.\n-------------------------');
