@@ -34,6 +34,8 @@ export default class ActionExecuter {
         //
 
         // only Functions
+        this.showConsoleOutput = this.showConsoleOutput.bind(this);
+        this.setLayout = this.setLayout.bind(this); 
 		this.addNode = this.addNode.bind(this);
 		this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
@@ -81,6 +83,25 @@ export default class ActionExecuter {
 			delete node.panel.visible;
 		}
 	}
+    
+    /**
+	 * コンソール画面表示
+	 */
+    showConsoleOutput(payload) {
+        if (payload.hasOwnProperty('show')) {
+            this.store.emit(Constants.CONSOLEOUTPUT_SHOW, payload.show);
+        }
+    }
+    
+    /**
+	 * レイアウト変更
+	 */
+    setLayout(payload) {
+        if (payload.hasOwnProperty('mode')) {
+            this.store.emit(Constants.LAYOUT_CHANGED, payload.mode);
+        }    
+    }
+    
 	/**
 	 * ノード追加
 	 */

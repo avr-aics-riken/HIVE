@@ -6,6 +6,30 @@ export default class Action {
 		this.id = id;
 	}
 
+    /**
+	 * Console出力画面を表示する
+	 * @param show 表示情報
+	 */
+	showConsoleOutput(show) {
+        this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "showConsoleOutput",
+			show : show
+		});
+    }
+
+    /**
+	 * Layoutを変更する
+	 * @param mode レイアウト名称
+	 */
+    setLayout(mode) {
+        this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "setLayout",
+			mode : mode
+		});
+    }
+
 	/**
 	 * ノードを追加する
 	 * @param nodeInfo ノード情報
