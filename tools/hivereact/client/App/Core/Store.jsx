@@ -12,7 +12,7 @@ export default class Store extends EventEmitter {
         // private:
         this.data = {
 			name : "",    //シーン名
-			varname : "root",
+			varname : "Root",
             nodes : [],   // 全てのノード
             plugs : [],   // 全てのプラグ
 			input : [],   // シーンの入力端子
@@ -24,6 +24,7 @@ export default class Store extends EventEmitter {
         this.dispatchToken = Dispatcher.register(this.actionExecuter.actionHandler.bind(this.actionExecuter));
 
 		this.initHive = this.initHive.bind(this);
+		this.isGroup = this.isGroup.bind(this);
 		this.getNodes = this.getNodes.bind(this);
 		this.getNode = this.getNode.bind(this);
 		this.getNodeNameList = this.getNodeNameList.bind(this);
@@ -34,6 +35,7 @@ export default class Store extends EventEmitter {
 		this.getInput = this.getInput.bind(this);
 		this.getRootNodes = this.getRootNodes.bind(this);
 		this.getRootPlugs = this.getRootPlugs.bind(this);
+		this.findNode = this.findNode.bind(this);
 		this.initHive(this.data);
 	}
 
@@ -53,6 +55,13 @@ export default class Store extends EventEmitter {
 			this.hive.runScript(script);
 		});
 		this.nodeSystem.initEmitter(this);
+	}
+
+	/**
+	 * グループノードかどうか返す.
+	 */
+	isGroup(node) {
+		return (node.hasOwnProperty('nodes') && node.hasOwnProperty('plugs'));
 	}
 
 	/**
@@ -156,11 +165,31 @@ export default class Store extends EventEmitter {
 	/**
 	 * 特定のnodeとそのindexを返す.
 	 */
-	getNode(varname) {
+	getNode(varname, isRecursive) {
 		let nodes = this.getNodes();
 		for (let i = 0; i < nodes.length; i = i + 1) {
 			if (nodes[i].varname === varname) {
 				return { node : nodes[i], index : i }
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * ノードを探してnodeを返す.
+	 */
+	findNode(rootNode, varname) {
+		if (this.isGroup(rootNode)) {
+			let nodes = rootNode.nodes;
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				let n = nodes[i];
+				if (n.varname === varname) {
+					return n;
+				}
+				let result = this.findNode(n, varname);
+				if (result) {
+					return result;
+				}
 			}
 		}
 		return null;

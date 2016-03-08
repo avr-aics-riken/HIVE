@@ -52,6 +52,7 @@ export default class Store extends EventEmitter {
 
 		// nodemap
 		this.nodeMap = {};
+		this.nodeToGroupMap = {};
 		this.isInitialRender = true;
 
 		// { nodeVarname : {width:"", height:""} }
@@ -87,25 +88,24 @@ export default class Store extends EventEmitter {
 		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
 		this.changeZoom = this.changeZoom.bind(this);
 		this.isConnected = this.isConnected.bind(this);
-		this.isGroup = this.isGroup.bind(this);
-	}
-
-	isGroup(node) {
-		return (node.hasOwnProperty('nodes') && node.hasOwnProperty('plugs'));
+		this.isGroup = coreStore.isGroup;
 	}
 
 	regenerateNodeMap(coreStore) {
 		let addNodeToNodeMap = (n) => {
 			if (this.isGroup(n)) {
 				this.nodeMap[n.varname] = n;
+				this.nodeToGroupMap[n.varname] = n;
 				for (let i = 0; i < n.nodes.length; i = i + 1) {
 					addNodeToNodeMap(n.nodes[i]);
+					this.nodeToGroupMap[n.nodes[i].varname] = n;
 				}
 			} else {
 				this.nodeMap[n.varname] = n;
 			}
 		}
 		this.nodeMap = {};
+		this.nodeToGroupMap = {};
 		for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
 			let n = coreStore.getNodes()[i];
 			addNodeToNodeMap(n);
@@ -113,7 +113,7 @@ export default class Store extends EventEmitter {
 	}
 
 	recalcPlugPosition(coreStore) {
-		if (!this.isInitialRender) { return; }
+		//if (!this.isInitialRender) { return; }
 		this.plugPositions = [];
 		let plugs = coreStore.getPlugs();
 		for (let i = 0; i < plugs.length; i = i + 1) {
@@ -123,7 +123,12 @@ export default class Store extends EventEmitter {
 			if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
 				let inNode = this.nodeMap[inVarname];
 				let outNode = this.nodeMap[outVarname];
-				console.log("recalc", inNode, outNode)
+				if (!coreStore.getNode(inVarname)) {
+					inNode = this.nodeToGroupMap[inVarname];
+				}
+				if (!coreStore.getNode(outVarname)) {
+					outNode = this.nodeToGroupMap[outVarname];
+				}
 				let plugPosition = {
 					input : {
 						nodeVarname : plug.input.nodeVarname,
