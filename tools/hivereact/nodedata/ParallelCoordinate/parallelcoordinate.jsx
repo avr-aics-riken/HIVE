@@ -22,6 +22,11 @@ class prgLocations {
     }
 }
 
+// ============================================================================
+// this.importData === 描画するデータ（未指定の場合サンプル CSV を読み込む）
+// this.dimensionTitles === 上部に出る項目タイトルを格納した配列（未指定の場合配列インデックス）
+// 両者とも、beginDraw を経由しないと描画に反映されない
+// ============================================================================
 class ParallelCoordinate extends React.Component {
     constructor(props) {
         super(props);
@@ -133,6 +138,7 @@ class ParallelCoordinate extends React.Component {
         if(!f){this.useAxes();}
     }
 
+    // このメソッドが呼ばれた時点で this.importData になんか入ってるとそれを描画する
     useAxes(){
         let e = ReactDOM.findDOMNode(this.refs.examples);
         if(e){e.innerHTML = '';}
@@ -148,7 +154,6 @@ class ParallelCoordinate extends React.Component {
         }
     }
 
-    // 与えられたデータ（現状は CSV データ）を解析
     beginDraw(data){
         if(data.length < 3){console.log('invalid data:' + data); return;}
         this.dimensionTitles = {};
@@ -533,6 +538,16 @@ class ParallelCoordinate extends React.Component {
     }
 
     componentDidMount(){
+        // importData は最初の次元が縦方向にマッピングされる
+        // 横棒の折れ線グラフが描かれるイメージ
+        // 以下のようにすれば、100 本の線が、それぞれ 10 項目をマッピングする形で描画される
+        this.importData = [];
+        for(let i = 0; i < 100; ++i){
+            this.importData[i] = [];
+            for(let j = 0; j < 10; ++j){
+                this.importData[i].push(Math.random() * 100.0);
+            }
+        }
         this.useAxes();
     }
 
