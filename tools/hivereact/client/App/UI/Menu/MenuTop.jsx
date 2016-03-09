@@ -51,7 +51,21 @@ export default class MenuTop extends React.Component {
             var reader = new FileReader();
             reader.onload = function(){
                 let data = (JSON.parse(reader.result));
-				this.props.action.load(data);
+				//this.props.action.load(data);
+                if(data.nodes && data.nodes.length > 0){
+                    for(let i in data.nodes){
+                        this.props.action.importNode(data.nodes[i]);
+                    }
+                }else{
+                    console.log('import failed: nodes.length === 0');
+                }
+                if(data.plugs && data.plugs.length > 0){
+                    for(let i in data.plugs){
+                        this.props.action.addPlug(data.plugs[i]);
+                    }
+                }else{
+                    console.log('import failed: plugs.length === 0');
+                }
             }.bind(this);
             reader.readAsText(eve.currentTarget.files[0]);
         }
