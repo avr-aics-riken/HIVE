@@ -182,7 +182,7 @@ export default class NodePlugView extends React.Component {
 				}
 			}
 			if (!node) {
-				console.error("not found global plug node");
+				console.error("not found global plug node", data.nodeVarname, store.data);
 			}
 			let p = {
 				input : {
@@ -221,7 +221,7 @@ export default class NodePlugView extends React.Component {
 				}
 			}
 			if (!node) {
-				console.error("not found global plug node");
+				console.error("not found global plug node", data.nodeVarname, store.data);
 			}
 			let p = {
 				input : {

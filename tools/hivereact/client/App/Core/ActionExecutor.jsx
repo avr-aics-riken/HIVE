@@ -180,52 +180,73 @@ export default class ActionExecuter {
 	/// ノードに参照をもっているplug, input, outputを
 	/// シーンから全て検索して削除する。
 	deleteNodeRelatedValues(node) {
-		// 関連するプラグを削除.
-		for (let i = this.store.getPlugs().length - 1; i >= 0; i = i - 1) {
-			let plug = this.store.getPlugs()[i];
-			if (plug.input.nodeVarname === node.varname) {
-				this.deletePlug({ plugInfo : plug });
-			} else if (plug.output.nodeVarname === node.varname) {
-				this.deletePlug({ plugInfo : plug });
-			}
-			if (this.store.isGroup(node)) {
-				// グループから通常ノードに繋がっているプラグを削除.
-				for (let k = 0; k < node.input.length; k = k + 1) {
-					if (node.input[k].nodeVarname === plug.input.nodeVarname) {
-						this.deletePlug({ plugInfo : plug });
+		// 子ノードのうちgroupでないもののリストをdstに入れる。
+		var getChildNodes = (dst, group) => {
+				let nodes = group.nodes;
+				for (let i = 0; i < nodes.length; i = i + 1) {
+					let n = nodes[i];
+					if (this.store.isGroup(n)) {
+						getChildNodes(dst, n);
+					} else {
+						dst.push(n);
 					}
 				}
-				for (let k = 0; k < node.output.length; k = k + 1) {
-					if (node.output[k].nodeVarname === plug.output.nodeVarname) {
-						this.deletePlug({ plugInfo : plug });
-					}
-				}
+			};
+
+		// グループであれば、グループ以外の有効な子ノード全てに対して実行し直す。
+		if (this.store.isGroup(node)) {
+			let nodeList = [];
+			getChildNodes(nodeList, node);
+			for (let i = 0; i < nodeList.length; i = i + 1) {
+				this.deleteNodeRelatedValues(nodeList[i]);
 			}
 		}
-		// グループの公開端子を削除.
-		// TODO: グループのグループ
-		let inputs = this.store.getInput();
-		for (let k = inputs.length - 1; k >= 0; k = k - 1) {
-			if (inputs[k].nodeVarname === node.varname) {
-				inputs.splice(k, 1);
-			}
-		}
-		let outputs = this.store.getOutput();
-		for (let k = outputs.length - 1; k >= 0; k = k - 1) {
-			if (outputs[k].nodeVarname === node.varname) {
-				outputs.splice(k, 1);
-			}
-		}
-		// 関連するプラグを全部消す
+
+		// input, outputの削除.
 		let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
-		if (tempPath.length > 0) {
-			tempPath.splice(tempPath.length-1, 1);
-		}
-		let plugs = this.store.getPlugs(tempPath);
-		for (let k = plugs.length - 1; k >= 0; k = k - 1) {
-			if (plugs[k].input.nodeVarname === node.varname || plugs[k].output.nodeVarname === node.varname) {
-				plugs.splice(k, 1);
+		for (let i = tempPath.length - 1; i >= 0; i = i - 1) {
+			let inputs = this.store.getInput(tempPath);
+			for (let k = inputs.length - 1; k >= 0; k = k - 1) {
+				if (inputs[k].nodeVarname === node.varname) {
+					inputs.splice(k, 1);
+				}
 			}
+			let outputs = this.store.getOutput(tempPath);
+			for (let k = outputs.length - 1; k >= 0; k = k - 1) {
+				if (outputs[k].nodeVarname === node.varname) {
+					outputs.splice(k, 1);
+				}
+			}
+			tempPath.splice(i, 1);
+		}
+
+		// 関連するプラグを全部消す
+		tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
+		for (let i = tempPath.length - 1; i >= 0; i = i - 1) {
+			let group = this.store.getDataAtPath(tempPath);
+			let plugs = this.store.getPlugs(tempPath);
+			for (let j = plugs.length - 1; j >= 0; j = j - 1) {
+				let plug = plugs[j];
+				if (plug.input.nodeVarname === node.varname) {
+					this.deletePlug({ plugInfo : plug });
+				} else if (plug.output.nodeVarname === node.varname) {
+					this.deletePlug({ plugInfo : plug });
+				}
+				if (this.store.isGroup(group)) {
+					// グループから通常ノードに繋がっているプラグを削除.
+					for (let k = 0; k < group.input.length; k = k + 1) {
+						if (group.input[k].nodeVarname === node.nodeVarname) {
+							this.deletePlug({ plugInfo : plug });
+						}
+					}
+					for (let k = 0; k < group.output.length; k = k + 1) {
+						if (group.output[k].nodeVarname === node.nodeVarname) {
+							this.deletePlug({ plugInfo : plug });
+						}
+					}
+				}
+			}
+			tempPath.splice(i, 1);
 		}
 	}
 
