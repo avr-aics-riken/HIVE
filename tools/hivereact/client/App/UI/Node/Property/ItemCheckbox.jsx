@@ -78,7 +78,7 @@ export default class ItemCheckbox extends React.Component {
 					</div>
 					<input type="checkbox"
 					 	style={styles.value}
-						checked={this.props.initialParam.value}
+						checked={this.state.checked}
 						onChange={this.onChange.bind(this)}
 					>
 					</input>
