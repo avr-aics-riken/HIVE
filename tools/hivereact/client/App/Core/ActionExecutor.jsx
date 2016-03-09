@@ -60,6 +60,8 @@ export default class ActionExecuter {
 		this.addGroup = this.addGroup.bind(this);
 		this.digGroup = this.digGroup.bind(this);
 		this.findGroupPath = this.findGroupPath.bind(this);
+		this.publishOutput = this.publishOutput.bind(this);
+		this.publishInput = this.publishInput.bind(this);
 	}
 
     /**
@@ -206,6 +208,38 @@ export default class ActionExecuter {
 	}
 
 	/**
+	 * 現在のノード階層に対して入力を追加する.
+	 */
+	publishInput(payload) {
+		if (payload.hasOwnProperty('data')) {
+			let data = payload.data;
+			if (data.hasOwnProperty('name') &&
+				data.hasOwnProperty('nodeVarname') &&
+				data.hasOwnProperty('type')) {
+				let input = this.store.getInput();
+				input.push(data);
+				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+			}
+		}
+	}
+
+	/**
+	 * 現在のノード階層に対して出力を追加する.
+	 */
+	publishOutput(payload) {
+		if (payload.hasOwnProperty('data')) {
+			let data = payload.data;
+			if (data.hasOwnProperty('name') &&
+				data.hasOwnProperty('nodeVarname') &&
+				data.hasOwnProperty('type')) {
+				let output = this.store.getOutput();
+				output.push(data);
+				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+			}
+		}
+	}
+
+	/**
 	 * すべてのデータをクリア(削除）する
 	 */
 	clearAll(payload) {
@@ -221,6 +255,9 @@ export default class ActionExecuter {
 				varname: nodes[i].varname
 			});
         }
+		this.store.data.nodePath = [];
+		this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
+		this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 	}
 
 	/**
