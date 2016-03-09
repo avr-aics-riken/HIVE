@@ -64,6 +64,9 @@ export default class ActionExecuter {
 		this.publishInput = this.publishInput.bind(this);
 		this.unPublishInput = this.unPublishInput.bind(this);
 		this.unPublishOutput = this.unPublishOutput.bind(this);
+		this.deleteNodeRelatedValues = this.deleteNodeRelatedValues.bind(this);
+		this.save = this.save.bind(this);
+		this.load = this.load.bind(this);
 	}
 
     /**
@@ -174,6 +177,58 @@ export default class ActionExecuter {
 		}
 	}
 
+	/// ノードに参照をもっているplug, input, outputを
+	/// シーンから全て検索して削除する。
+	deleteNodeRelatedValues(node) {
+		// 関連するプラグを削除.
+		for (let i = this.store.getPlugs().length - 1; i >= 0; i = i - 1) {
+			let plug = this.store.getPlugs()[i];
+			if (plug.input.nodeVarname === node.varname) {
+				this.deletePlug({ plugInfo : plug });
+			} else if (plug.output.nodeVarname === node.varname) {
+				this.deletePlug({ plugInfo : plug });
+			}
+			if (this.store.isGroup(node)) {
+				// グループから通常ノードに繋がっているプラグを削除.
+				for (let k = 0; k < node.input.length; k = k + 1) {
+					if (node.input[k].nodeVarname === plug.input.nodeVarname) {
+						this.deletePlug({ plugInfo : plug });
+					}
+				}
+				for (let k = 0; k < node.output.length; k = k + 1) {
+					if (node.output[k].nodeVarname === plug.output.nodeVarname) {
+						this.deletePlug({ plugInfo : plug });
+					}
+				}
+			}
+		}
+		// グループの公開端子を削除.
+		// TODO: グループのグループ
+		let inputs = this.store.getInput();
+		for (let k = inputs.length - 1; k >= 0; k = k - 1) {
+			if (inputs[k].nodeVarname === node.varname) {
+				inputs.splice(k, 1);
+			}
+		}
+		let outputs = this.store.getOutput();
+		for (let k = outputs.length - 1; k >= 0; k = k - 1) {
+			if (outputs[k].nodeVarname === node.varname) {
+				outputs.splice(k, 1);
+			}
+		}
+		// 関連するプラグを全部消す
+		let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
+		if (tempPath.length > 0) {
+			tempPath.splice(tempPath.length-1, 1);
+		}
+		let plugs = this.store.getPlugs(tempPath);
+		for (let k = plugs.length - 1; k >= 0; k = k - 1) {
+			if (plugs[k].input.nodeVarname === node.varname || plugs[k].output.nodeVarname === node.varname) {
+				plugs.splice(k, 1);
+			}
+		}
+	}
+
 	/**
 	 * ノード削除
 	 */
@@ -183,40 +238,9 @@ export default class ActionExecuter {
 			if (n) {
 				this.store.getNodes().splice(n.index, 1);
 				let node = n.node;
-
-				// 関連するプラグを削除.
-				for (let i = this.store.getPlugs().length - 1; i >= 0; i = i - 1) {
-					let plug = this.store.getPlugs()[i];
-					if (plug.input.nodeVarname === payload.varname) {
-						this.deletePlug({ plugInfo : plug });
-					} else if (plug.output.nodeVarname === payload.varname) {
-						this.deletePlug({ plugInfo : plug });
-					}
-					if (this.store.isGroup(node)) {
-						for (let k = 0; k < node.input.length; k = k + 1) {
-							if (node.input[k].nodeVarname === plug.input.nodeVarname) {
-								this.deletePlug({ plugInfo : plug });
-							}
-						}
-						for (let k = 0; k < node.output.length; k = k + 1) {
-							if (node.output[k].nodeVarname === plug.output.nodeVarname) {
-								this.deletePlug({ plugInfo : plug });
-							}
-						}
-					}
-				}
-				if (this.store.isGroup(node)) {
-					// 関連するプラグを全部消す
-					let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
-					if (tempPath.length > 0) {
-						tempPath.splice(tempPath.length-1, 1);
-					}
-					let plugs = this.store.getPlugs(tempPath);
-					for (let k = plugs.length - 1; k >= 0; k = k - 1) {
-						if (plugs[k].input.nodeVarname === node.varname || plugs[k].output.nodeVarname === node.varname) {
-							plugs.splice(k, 1);
-						}
-					}
+				this.deleteNodeRelatedValues(node);
+				if (this.store.getNodes().length === 0) {
+					console.log("TODO:グループ内に何も無くなった.");
 				}
 
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
@@ -652,6 +676,49 @@ export default class ActionExecuter {
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 			}
+		}
+	}
+
+	/**
+	 * ファイルに保存する
+	 */
+	save(payload) {
+		var data = this.store.data;
+		var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, "save.json");
+	}
+
+	/**
+	 * データから読み込む
+	 */
+	load(payload) {
+		if (payload.hasOwnProperty('data')) {
+			let data = payload.data;
+
+			if (data.nodes && data.nodes.length > 0){
+				this.store.data.nodes = [];
+				for (let i in data.nodes){
+					this.importNode({ nodeInfo : data.nodes[i]});
+				}
+			} else {
+				console.log('import failed: nodes.length === 0');
+			}
+			if (data.plugs && data.plugs.length > 0){
+				this.store.data.plugs = [];
+				for (let i in data.plugs) {
+					this.addPlug({ plugInfo : data.plugs[i]});
+				}
+			} else {
+				console.log('import failed: plugs.length === 0');
+			}
+			for (let i in data) {
+				if (data.hasOwnProperty(i)) {
+					if (i !== "nodes" && i !== "plugs") {
+						this.store.data[i] = data[i];
+					}
+				}
+			}
+			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 		}
 	}
 

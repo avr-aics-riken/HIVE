@@ -272,6 +272,28 @@ export default class Action {
 	}
 
 	/**
+	 * ファイルに保存する
+	 */
+	save() {
+		this.dispatcher.dispatch({
+			id : this.id,
+			actionType : "save"
+		});
+	}
+
+	/**
+	 * データから読み込む
+	 * @param data 読み込むデータ.
+	 */
+	load(data) {
+		this.dispatcher.dispatch({
+			id : this.id,
+			actionType : "load",
+			data : data
+		});
+	}
+
+	/**
 	 * ノードをペーストする.
 	 */
 	pasteNodes(nodeInfoList) {
