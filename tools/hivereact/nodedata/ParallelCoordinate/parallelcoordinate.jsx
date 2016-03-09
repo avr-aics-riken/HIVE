@@ -83,7 +83,14 @@ class ParallelCoordinate extends React.Component {
         if (param.varname !== varname) {
             return;
         }
-        let a = new Float32Array(data);
+        let a
+        if (param.datatype === "byte") {
+            a = new Uint8Array(data);
+            console.log('byte');
+        } else if (param.datatype === 'float'){
+            a = new Float32Array(data);
+            console.log('float');
+        }
         let component = parseInt(param.component, 10);
         let parse = [];
         for(let i = 0, j = a.length / component; i < j; ++i){
