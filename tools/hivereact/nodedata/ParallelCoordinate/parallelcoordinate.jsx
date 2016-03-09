@@ -81,12 +81,10 @@ class ParallelCoordinate extends React.Component {
         console.log(err, param, data);
         var buffer;
         const varname = this.node.varname;
-        if(param.varname !== varname){return;}
-        if(param.type === 'jpg'){
-            buffer = new Blob([data]);
-        }else{
-            buffer = data;
+        if (param.varname !== varname) {
+            return;
         }
+        console.log('Parallel dara recieved', param, data, new Float32Array(data));
         this.setState({
             data: buffer,
             param: param
@@ -609,6 +607,8 @@ class ParallelCoordinate extends React.Component {
     componentWillUnmount(){
         const Store_IMAGE_RECIEVED = "image_revieved";
         this.store.removeListener(Store_IMAGE_RECIEVED, this.imageRecieved);
+        //this.glContext['glforeground'].color = this.props.node.input[0].value;
+        //this.glContext['glbrush'].color = this.props.node.input[1].value;
     }
 
     styles(){

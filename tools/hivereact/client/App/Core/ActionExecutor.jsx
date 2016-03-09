@@ -65,6 +65,8 @@ export default class ActionExecuter {
 		this.unPublishInput = this.unPublishInput.bind(this);
 		this.unPublishOutput = this.unPublishOutput.bind(this);
 		this.deleteNodeRelatedValues = this.deleteNodeRelatedValues.bind(this);
+		this.getChildNodes = this.getChildNodes.bind(this);
+		this.getChildPlugs = this.getChildPlugs.bind(this);
 		this.save = this.save.bind(this);
 		this.load = this.load.bind(this);
 	}
@@ -177,26 +179,40 @@ export default class ActionExecuter {
 		}
 	}
 
+	// 子ノードのうちgroupでないもののリストをdstに入れる。
+	getChildNodes(dst, group) {
+		let nodes = group.nodes;
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			let n = nodes[i];
+			if (this.store.isGroup(n)) {
+				this.getChildNodes(dst, n);
+			} else {
+				dst.push(n);
+			}
+		}
+	};
+
+	// あるノード以下のplugsをdstに入れる
+	getChildPlugs(dst, group) {
+		let nodes = group.nodes;
+		for (let i = 0; i < group.plugs.length; i = i + 1) {
+			dst.push(group.plugs[i]);
+		}
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			let n = nodes[i];
+			if (this.store.isGroup(n)) {
+				this.getChildPlugs(dst, n);
+			}
+		}
+	};
+
 	/// ノードに参照をもっているplug, input, outputを
 	/// シーンから全て検索して削除する。
 	deleteNodeRelatedValues(node) {
-		// 子ノードのうちgroupでないもののリストをdstに入れる。
-		var getChildNodes = (dst, group) => {
-				let nodes = group.nodes;
-				for (let i = 0; i < nodes.length; i = i + 1) {
-					let n = nodes[i];
-					if (this.store.isGroup(n)) {
-						getChildNodes(dst, n);
-					} else {
-						dst.push(n);
-					}
-				}
-			};
-
 		// グループであれば、グループ以外の有効な子ノード全てに対して実行し直す。
 		if (this.store.isGroup(node)) {
 			let nodeList = [];
-			getChildNodes(nodeList, node);
+			this.getChildNodes(nodeList, node);
 			for (let i = 0; i < nodeList.length; i = i + 1) {
 				this.deleteNodeRelatedValues(nodeList[i]);
 			}
@@ -409,15 +425,14 @@ export default class ActionExecuter {
 				varname: nodes[i].varname
 			});
         }
-		this.store.data = {
-			name : "",    //シーン名
-			varname : "Root",
-            nodes : [],   // 全てのノード
-            plugs : [],   // 全てのプラグ
-			input : [],   // シーンの入力端子
-			output : [],  // シーンの出力端子
-			nodePath : [] // 表示しているノード階層のパス
-        };
+		this.store.data.name = "";    //シーン名
+		this.store.data.varname = "Root";
+		this.store.data.nodes = [];   // 全てのノード
+		this.store.data.plugs = [];   // 全てのプラグ
+		this.store.data.input = [];   // シーンの入力端子
+		this.store.data.output = [];  // シーンの出力端子
+		this.store.data.nodePath = []; // 表示しているノード階層のパス
+
 		this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 		this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 	}
@@ -760,34 +775,31 @@ export default class ActionExecuter {
 	 */
 	load(payload) {
 		if (payload.hasOwnProperty('data')) {
-		/*
 			this.clearAll();
-
+			// this.store.dataはnodesystemが参照しているため代入してはいけない.
 			let data = payload.data;
-			if(data.nodes && data.nodes.length > 0){
-				for(let i in data.nodes){
-					this.importNode({ nodeInfo : data.nodes[i]});
-				}
-			}else{
-				console.log('import failed: nodes.length === 0');
-			}
-			if(data.plugs && data.plugs.length > 0){
-				for(let i in data.plugs){
-					this.addPlug({plugInfo : data.plugs[i]});
-				}
-			}else{
-				console.log('import failed: plugs.length === 0');
-			}
 			for (let i in data) {
 				if (data.hasOwnProperty(i)) {
-					if (i !== "nodes" && i !== "plugs") {
-						console.log(i, data[i]);
-						this.store.data[i] = data[i];
-					}
+					this.store.data[i] = data[i];
 				}
 			}
+			// すべての有効なノードとプラグのリストを取得
+			let nodeList = [];
+			this.getChildNodes(nodeList, this.store.data);
+			let plugList = [];
+			this.getChildPlugs(plugList, this.store.data);
+
+			// 追加された通知を送る
+			for (let i = 0 ; i < nodeList.length; i = i + 1) {
+				let n = nodeList[i];
+				this.store.emit(Constants.NODE_ADDED, null, n);
+			}
+			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
+			for (let i = 0; i < plugList.length; i = i + 1) {
+				let p = plugList[i];
+				this.store.emit(Constants.PLUG_ADDED, null, p);
+			}
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
-			*/
 		}
 	}
 
