@@ -29,6 +29,26 @@ class RenderView extends React.Component {
 		this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 		this.getInputValue = this.getInputValue.bind(this);
 	}
+    
+    progressiveUpdate(param) {
+        let w = param.width;
+        let h = param.height;
+        const varname = this.node.varname;
+        const ssize = this.getInputValue("screensize");
+        if (w < ssize[0] || h < ssize[1]) {            
+            w *= 2;
+            h *= 2;
+            //console.log('PROGRESSIVE:', w, h);
+            setTimeout(() => {            
+                this.action.changeNodeInput({
+                    varname : varname,
+                    input : {
+                        "rendersize" : [w,h]                    
+                    }
+                });
+            },0);
+        }
+    }
 
 	imageRecieved(err, param, data) {
 		var buffer;
@@ -47,22 +67,7 @@ class RenderView extends React.Component {
 		});
 		
         // progressive update
-        let w = param.width;
-        let h = param.height;        
-        const ssize = this.getInputValue("screensize");
-        if (w < ssize[0] || h < ssize[1]) {            
-            w *= 2;
-            h *= 2;
-            //console.log('PROGRESSIVE:', w, h);
-            setTimeout(() => {            
-                this.action.changeNodeInput({
-                    varname : varname,
-                    input : {
-                        "rendersize" : [w,h]                    
-                    }
-                });
-            },0);
-        }
+        this.progressiveUpdate(param);
 	}
 
     hasIPCAddress() {
@@ -116,6 +121,8 @@ class RenderView extends React.Component {
                             var imageData = context.createImageData(param.width, param.height);
                             buffercopy.buffercopy(data, imageData.data);
                             context.putImageData(imageData, 0, 0);
+                            
+                            this.progressiveUpdate(param);
                         }
 	                }
 

@@ -10,7 +10,7 @@ function defaultCallback(src) {
 			console.error('runscript error:', err, {script: src});
 			console.trace();
 		} else {
-			console.log('runscript result:', res, {script: src});
+			//console.log('runscript result:', res, {script: src});
 		}
 	};
 }

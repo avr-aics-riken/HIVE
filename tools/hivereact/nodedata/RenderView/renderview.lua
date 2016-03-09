@@ -82,7 +82,7 @@ function RenderView:Do()
     --local h = v.screensize[2]
     local w = v.rendersize[1]
     local h = v.rendersize[2]
-    print('rendersize=('.. w ..",".. h ..")")
+    print('rendersize=('.. w ..",".. h ..")", 'cancel=', tostring(HIVE_isRenderCanceled))
     
     local json = [[{
             "JSONRPC" : "2.0",
