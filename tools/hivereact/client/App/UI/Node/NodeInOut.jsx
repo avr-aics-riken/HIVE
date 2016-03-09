@@ -173,9 +173,8 @@ export default class NodeInOut extends React.Component {
 	}
 
 	onClick(ev) {
-		if (this.props.isInput) {
-			this.props.nodeAction.disconnectPlugHole(this.plugInfo());
-		}
+		let plugInfo = this.plugInfo();
+		this.props.nodeAction.disconnectPlugHole(plugInfo);
 	}
 
 	// プラグをドラッグするActionを発行.

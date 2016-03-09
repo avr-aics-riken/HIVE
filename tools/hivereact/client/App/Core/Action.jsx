@@ -137,12 +137,34 @@ export default class Action {
 	}
 
 	/**
+	 * 現在のノード階層に対して入力を削除する.
+	 */
+	unPublishInput(inputData) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "unPublishInput",
+			data : inputData
+		});
+	}
+
+	/**
 	 * 現在のノード階層に対して出力を追加する.
 	 */
 	publishOutput(outputData) {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "publishOutput",
+			data : outputData
+		});
+	}
+
+	/**
+	 * 現在のノード階層に対して出力を削除する.
+	 */
+	unPublishOutput(outputData) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "unPublishOutput",
 			data : outputData
 		});
 	}
