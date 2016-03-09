@@ -17,7 +17,7 @@ export default class MenuTop extends React.Component {
         this.saveButton = this.saveButton.bind(this);
         this.loadButton = this.loadButton.bind(this);
         this.loadButtonClick = this.loadButtonClick.bind(this);
-        
+
         this.showConsole = props.consoleShow;
     }
 
@@ -39,12 +39,7 @@ export default class MenuTop extends React.Component {
         }
     }
     saveButton(eve){
-        var data = {
-            nodes: this.props.store.getNodes(""),
-            plugs: this.props.store.getPlugs("")
-        };
-        var blob = new Blob([JSON.stringify(data, null, 2)], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, "save.json");
+		this.props.action.save();
     }
     loadButtonClick(){
         var e = ReactDOM.findDOMNode(this.refs.inputFile);
@@ -56,20 +51,7 @@ export default class MenuTop extends React.Component {
             var reader = new FileReader();
             reader.onload = function(){
                 let data = (JSON.parse(reader.result));
-                if(data.nodes && data.nodes.length > 0){
-                    for(let i in data.nodes){
-                        this.props.action.importNode(data.nodes[i]);
-                    }
-                }else{
-                    console.log('import failed: nodes.length === 0');
-                }
-                if(data.plugs && data.plugs.length > 0){
-                    for(let i in data.plugs){
-                        this.props.action.addPlug(data.plugs[i]);
-                    }
-                }else{
-                    console.log('import failed: plugs.length === 0');
-                }
+				this.props.action.load(data);
             }.bind(this);
             reader.readAsText(eve.currentTarget.files[0]);
         }
@@ -77,7 +59,7 @@ export default class MenuTop extends React.Component {
     exportButton(eve){
         console.log('"export function" called!');
     }
-    
+
     // Edit menu
     editNodeCopy() { this.props.action.copy(); }
     editNodePaste() { this.props.action.paste(); }
@@ -88,13 +70,13 @@ export default class MenuTop extends React.Component {
     layoutAll() { this.props.action.setLayout('all'); }
     layoutNode() { this.props.action.setLayout('node'); }
     layoutPanel() { this.props.action.setLayout('panel'); }
-    
+
     // Window menu
     windowToggleConsoleOutput() {
         this.showConsole = !this.showConsole;
         this.props.action.showConsoleOutput(this.showConsole);
     }
-    
+
     // ここでメニュー操作時の動作を定義
     // info のなかの key を見て分岐したりする
     handleClick(info){
@@ -105,7 +87,7 @@ export default class MenuTop extends React.Component {
             console.error("Unknown menu command", info, e);
         }
     }
- 
+
     // render
     render(){
         // ここでメニューの構造定義

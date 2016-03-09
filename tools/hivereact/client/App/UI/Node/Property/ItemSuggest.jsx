@@ -21,14 +21,7 @@ export default class ItemSuggest extends React.Component {
         this.onChange = this.onChange.bind(this);
     }
     getSuggestions(value) {
-        let tempList = [
-            '../shader/hoge.vert',
-            '../shader/fuga.vert',
-            '../shader/piyo.vert',
-            '../shader/hoge.frag',
-            '../shader/hoge.gl'
-        ];
-        var pathList = tempList;
+        var pathList = this.props.store.getShaderList();
         var path = [];
         var flg = false;
         if(pathList){
