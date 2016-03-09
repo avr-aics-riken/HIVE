@@ -40,7 +40,6 @@ export default class ItemSuggest extends React.Component {
     onSuggestionsUpdateRequested({value}){
         this.setState({suggestions: this.getSuggestions(value)});
         if(value !== '' && value.match(/.+\.frag$/)){
-            console.log(__dirname + '/../../../../' + value);
             fs.exists(__dirname + '/../../../../' + value, ((ex)=>{
                 if(ex){this.props.changeFunc(this.props.initialParam.name, value);}
             }).bind(this));
