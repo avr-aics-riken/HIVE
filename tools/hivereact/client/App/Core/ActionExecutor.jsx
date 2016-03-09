@@ -76,6 +76,7 @@ export default class ActionExecuter {
 		}
 	}
 
+	/// nodeに初期値を設定.
 	assignInitialNodeValue(node) {
 		for (let key in ActionExecuter.initialData) {
 			if (!node.hasOwnProperty(key)) {
@@ -86,7 +87,6 @@ export default class ActionExecuter {
 			// UI無し
 			delete node.panel.visible;
 		}
-
 		for (let i = 0; i < node.input.length; i = i + 1) {
 			if (!node.input[i].hasOwnProperty('nodeVarname')) {
 				node.input[i].nodeVarname = node.varname;
@@ -526,8 +526,16 @@ export default class ActionExecuter {
 			// ノードを追加
 			for (let i = 0; i < payload.nodeInfoList.length; i = i + 1) {
 				let src = payload.nodeInfoList[i];
+				// varnameの変更のため既存のものを削除.
 				let preVarname = src.varname;
 				delete src.varname;
+				// input, outputのvarnameのため既存のものを削除.
+				for (let i = 0; i < src.input.length; i = i + 1) {
+					delete src.input[i].nodeVarname;
+				}
+				for (let i = 0; i < src.output.length; i = i + 1) {
+					delete src.output[i].nodeVarname;
+				}
 				this.addNode({ nodeInfo : src });
 				let node = this.store.getNodes()[this.store.getNodes().length - 1];
 
