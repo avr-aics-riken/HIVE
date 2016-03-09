@@ -38,14 +38,20 @@ export default class ItemSuggest extends React.Component {
     }
     onSuggestionsUpdateRequested({value}){
         this.setState({suggestions: this.getSuggestions(value)});
-        if(value !== ''){
+        if(value !== '' && value.match(/.+\.frag$/)){
             this.props.changeFunc(this.props.initialParam.name, value);
+            // fs.exists(__dirname + '/../../../../' + value, ((ex)=>{
+                // if(ex){this.props.changeFunc(this.props.initialParam.name, value);}
+            // }).bind(this));
         }
     }
     getSuggestionValue(suggestion){
         return suggestion.name;
     }
     renderSuggestion(suggestion){return (<span>{suggestion.name}</span>);}
+    onChange(eve, {newValue}){
+        this.setState({value: newValue});
+    }
 
     styles() {
         let border = ()=>{
@@ -160,10 +166,6 @@ export default class ItemSuggest extends React.Component {
                 }
             }
         };
-    }
-
-    onChange(eve, {newValue}){
-        this.setState({value: newValue});
     }
 
     render () {
