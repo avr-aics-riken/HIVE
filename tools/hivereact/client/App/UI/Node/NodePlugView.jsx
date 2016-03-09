@@ -172,9 +172,18 @@ export default class NodePlugView extends React.Component {
 		let store = this.props.store;
 		//console.log("globalPlugIn", globalIn)
 		let globalInPlugs = globalIn.map( (data, index) => {
-			let currentRoot = store.getDataAtPath(store.getNodePath());
-			if (!store.getNode(data.nodeVarname)) { return; }
-			let node = store.getNode(data.nodeVarname).node;
+			let n = store.getNode(data.nodeVarname);
+			let node = n ? n.node : null;
+			let nodes = store.getNodes();
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				if (store.findNode(nodes[i], data.nodeVarname)) {
+					node = nodes[i];
+					break;
+				}
+			}
+			if (!node) {
+				console.error("not found global plug node");
+			}
 			let p = {
 				input : {
 					name : data.name,
@@ -192,7 +201,7 @@ export default class NodePlugView extends React.Component {
 				p.input.pos = pos;
 			}
 			return (<NodePlug nodeStore={this.props.nodeStore} plug={p} isTemporary={false}
-					key={node.varname + "_" + String(Math.random())}/>);
+					key={node.varname + "_" + String(Math.floor(Math.random() * 100000))}/>);
 		});
 		return globalInPlugs;
 	}
@@ -202,8 +211,18 @@ export default class NodePlugView extends React.Component {
 		let store = this.props.store;
 		//console.log("globalPlugOut", globalOut)
 		let globalOutPlugs = globalOut.map( (data, index) => {
-			if (!store.getNode(data.nodeVarname)) { return; }
-			let node = store.getNode(data.nodeVarname).node;
+			let n = store.getNode(data.nodeVarname);
+			let node = n ? n.node : null;
+			let nodes = store.getNodes();
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				if (store.findNode(nodes[i], data.nodeVarname)) {
+					node = nodes[i];
+					break;
+				}
+			}
+			if (!node) {
+				console.error("not found global plug node");
+			}
 			let p = {
 				input : {
 					name : "",
@@ -221,7 +240,7 @@ export default class NodePlugView extends React.Component {
 				p.output.pos = pos;
 			}
 			return (<NodePlug nodeStore={this.props.nodeStore} plug={p} isTemporary={false}
-					key={node.varname + "_" + String(Math.random())}/>);
+					key={node.varname + "_" + String(Math.floor(Math.random() * 100000))}/>);
 		});
 		return globalOutPlugs;
 	}

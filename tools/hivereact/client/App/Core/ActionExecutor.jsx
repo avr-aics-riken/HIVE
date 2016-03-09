@@ -631,6 +631,38 @@ export default class ActionExecuter {
 				}
 			}
 		}
+
+		// 外部に公開している端子の処理
+		let ins = this.store.getInput();
+		let outs = this.store.getOutput();
+		let varnameToInput = {};
+		let varnameToOutput = {};
+		for (let i = 0; i < ins.length; i = i + 1) {
+			varnameToInput[ins[i].nodeVarname] = ins[i];
+		}
+		for (let i = 0; i < outs.length; i = i + 1) {
+			varnameToOutput[outs[i].nodeVarname] = outs[i];
+		}
+		for (let i = 0; i < nodeList.length; i = i + 1) {
+			let n = nodeList[i];
+			for (let k = 0; k < n.input.length; ++k) {
+				let input = n.input[k];
+				if (varnameToInput.hasOwnProperty(input.nodeVarname)) {
+					if (varnameToInput[input.nodeVarname].name === input.name) {
+						inputs.push(input);
+					}
+				}
+			}
+			for (let k = 0; k < n.output.length; ++k) {
+				let output = n.output[k];
+				if (varnameToOutput.hasOwnProperty(output.nodeVarname)) {
+					if (varnameToOutput[output.nodeVarname].name === output.name) {
+						outputs.push(output);
+					}
+				}
+			}
+		}
+
 		let group = {
 			name : "Group",
 			varname : "group_" + uuid(),
