@@ -1,18 +1,6 @@
 import React from 'react';
 import ReactDOM from "react-dom";
 
-/* ----------------------------------------------------------------------------
- * index.ejs から参照している d3.parcoords.js は純正じゃなく手入れしてあるので
- * 注意。カラーピッカー用の cpick.js も若干修正が入っている。
- * cpiock.js と連携するためにグローバル汚染してる（意図的）。
- * 現状は CSV は D3.js の機能を使ってデータを取得している。
- * 密度ベースは若干ノイズが乗るが、バックバッファ全体に引き延ばしているので最後
- * のシーンが正方形じゃないと歪む。
- * ページのロードと同時に初期描画を一度は行う。その際にデータが変数にいったんキャッシュ
- * されるようになっており、選択範囲の変更を伴わない再描画には、このキャッシュが利用され
- * るようになっている。（再描画ボタンの押下やモードのみの切り替えなど）
- * ------------------------------------------------------------------------- */
-
 function zeroPadding(n, c){
     return (new Array(c + 1).join('0') + n).slice(-c);
 }
@@ -39,41 +27,26 @@ class ParallelCoordinate extends React.Component {
         super(props);
 
         // member
-        this.parcoords;
-        this.glContext = {};
-        this.mat = new matIV();
-        this.weight = [];
-        this.csvData = null;
-        this.density = true;
-        this.densityNormalize = true;
+        this.store = this.props.store;
+        this.action = this.props.action;
+        this.node = this.props.node;
+
+        this.mat = new matIV(); // from App/lib/glutil.js
+        this.glContext = {};    // cache
         this.prev = {
             prevType: null,
             glforeground: null,
             glbrush: null
         };
+        this.usr = {glRender: this.glRender};
+        this.parcoords;         // from d3.parcoord.js
+        this.importData = null;
         this.dataval = null;
+        this.density = false;
+        this.densityNormalize = false;
+        this.weight = [];
         this.linecount = 0;
         this.dimensionTitles = {};
-        this.colors = {
-            line: [
-                [0.9, 0.3, 0.6, 0.1],
-                [0.6, 0.9, 0.3, 0.1]
-            ],
-            foreground: [
-                [0.1, 0.0, 0.0],
-                [0.2, 0.2, 0.1],
-                [0.6, 0.5, 0.1],
-                [0.9, 0.4, 0.2],
-                [0.5, 0.1, 0.1]
-            ],
-            brush: [
-                [0.0, 0.1, 0.0],
-                [0.1, 0.3, 0.1],
-                [0.1, 0.7, 0.3],
-                [0.2, 0.4, 0.9],
-                [0.1, 0.1, 0.5]
-            ]
-        };
 
         // method
         this.redraw = this.redraw.bind(this);
@@ -81,43 +54,15 @@ class ParallelCoordinate extends React.Component {
         this.beginDraw = this.beginDraw.bind(this);
         this.glInitialize = this.glInitialize.bind(this);
         this.canvasAttCopy = this.canvasAttCopy.bind(this);
-        this.fromPickerToArray = this.fromPickerToArray.bind(this);
-        this.fromArrayToPicker = this.fromArrayToPicker.bind(this);
         this.glRender = this.glRender.bind(this);
-
+        this.singleConv = this.singleConv.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentDidUpdate = this.componentDidUpdate.bind(this);
 
         // event
         this.onChangeDensity = this.onChangeDensity.bind(this);
         this.onChangeDensityNormalize = this.onChangeDensityNormalize.bind(this);
         this.onColorChange = this.onColorChange.bind(this);
-        this.singleConv = this.singleConv.bind(this);
-        this.colorConv = this.colorConv.bind(this);
-
-        // state
-        this.state = {
-            density: this.density,
-            densityNormalize: this.densityNormalize,
-            densityRange: 90,
-            colorString0:  this.singleConv(this.colors.line[0]),
-            colorString1:  this.singleConv(this.colors.line[1]),
-            colorString2:  this.singleConv(this.colors.foreground[0]),
-            colorString3:  this.singleConv(this.colors.foreground[1]),
-            colorString4:  this.singleConv(this.colors.foreground[2]),
-            colorString5:  this.singleConv(this.colors.foreground[3]),
-            colorString6:  this.singleConv(this.colors.foreground[4]),
-            colorString7:  this.singleConv(this.colors.brush[0]),
-            colorString8:  this.singleConv(this.colors.brush[1]),
-            colorString9:  this.singleConv(this.colors.brush[2]),
-            colorString10: this.singleConv(this.colors.brush[3]),
-            colorString11: this.singleConv(this.colors.brush[4])
-        };
-
-        // tmp
-        this.usr = {
-            ratecount: 10,
-            glRender: this.glRender
-        };
     }
 
     onChangeDensity(){
@@ -134,20 +79,23 @@ class ParallelCoordinate extends React.Component {
 
     onColorChange(eve){
         var c, e, r, g, b;
-        e = eve.currentTarget;
-        c = e.value.match(/[0-9|a-f]{2}/ig);
-        r = parseInt(c[0], 16) / 255;
-        g = parseInt(c[1], 16) / 255;
-        b = parseInt(c[2], 16) / 255;
-        c = parseInt(e.id.replace(/\D/g, ''), 10);
-        if(c < 2){
-            this.colors.line[c] = [r, g, b, 0.1];
-        }else if(c < 7){
-            this.colors.foreground[c - 2] = [r, g, b];
-        }else{
-            this.colors.brush[c - 7] = [r, g, b];
+        var a = [];
+        for(let i = 1; i <= 2; ++i){
+            e = ReactDOM.findDOMNode(this.refs["lineColor" + i]);
+            c = e.value.match(/[0-9|a-f]{2}/ig);
+            r = parseInt(c[0], 16) / 255;
+            g = parseInt(c[1], 16) / 255;
+            b = parseInt(c[2], 16) / 255;
+            a.push([r, g, b, this.props.node.input[i - 1].value[3]]);
         }
-        this.colorConv();
+        // send action from color input change
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {
+                lineColor1: a[0],
+                lineColor2: a[1]
+            }
+        });
         this.redraw();
     }
 
@@ -158,48 +106,6 @@ class ParallelCoordinate extends React.Component {
         return '#' + r + g + b;
     }
 
-    colorConv(){
-        var i, j, r, g, b;
-        var e = [];
-        // 色を16進数の文字列に変換する
-        for(i = 1; i <= 2; ++i){
-            j = i - 1;
-            r = zeroPadding(new Number(parseInt(this.colors.line[j][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(this.colors.line[j][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(this.colors.line[j][2] * 255)).toString(16), 2);
-            e[j] = '#' + r + g + b;
-        }
-        for(i = 1; i <= 5; ++i){
-            j = i - 1;
-            r = zeroPadding(new Number(parseInt(this.colors.foreground[j][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(this.colors.foreground[j][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(this.colors.foreground[j][2] * 255)).toString(16), 2);
-            e[i + 1] = '#' + r + g + b;
-        }
-        for(i = 1; i <= 5; ++i){
-            j = i - 1;
-            r = zeroPadding(new Number(parseInt(this.colors.brush[j][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(this.colors.brush[j][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(this.colors.brush[j][2] * 255)).toString(16), 2);
-            e[i + 6] = '#' + r + g + b;
-        }
-        this.setState({
-            colorString0:  e[0],
-            colorString1:  e[1],
-            colorString2:  e[2],
-            colorString3:  e[3],
-            colorString4:  e[4],
-            colorString5:  e[5],
-            colorString6:  e[6],
-            colorString7:  e[7],
-            colorString8:  e[8],
-            colorString9:  e[9],
-            colorString10: e[10],
-            colorString11: e[11]
-        });
-    }
-
-    // ドローコールを含む glRender を条件に応じて呼ぶ
     redraw(){
         var f = false;
         if(this.prev.prevType != null){
@@ -231,14 +137,14 @@ class ParallelCoordinate extends React.Component {
         let e = ReactDOM.findDOMNode(this.refs.examples);
         if(e){e.innerHTML = '';}
         // csv file load
-        if(this.csvData == null){
+        if(this.importData == null){
             // dom reset
             d3.csv('./App/resource/nut.csv', (function(data){
-                this.csvData = data;
-                this.beginDraw(this.csvData);
+                this.importData = data;
+                this.beginDraw(this.importData);
             }).bind(this));
         }else{
-            this.beginDraw(this.csvData);
+            this.beginDraw(this.importData);
         }
     }
 
@@ -293,23 +199,22 @@ class ParallelCoordinate extends React.Component {
             var m = this.parcoords.canvas.marks;
             var c = document.createElement('canvas');
             this.canvasAttCopy(c, 'glbrush', m);
-            this.glContext['glbrush'].color           = this.colors.line[1];
-            this.glContext['glbrush'].lowColor        = this.colors.brush[0];
-            this.glContext['glbrush'].middleLowColor  = this.colors.brush[1];
-            this.glContext['glbrush'].middleColor     = this.colors.brush[2];
-            this.glContext['glbrush'].middleHighColor = this.colors.brush[3];
-            this.glContext['glbrush'].highColor       = this.colors.brush[4];
+            this.glContext['glbrush'].color = this.props.node.input[1].value;
+            // this.glContext['glbrush'].lowColor        = this.colors.brush[0];
+            // this.glContext['glbrush'].middleLowColor  = this.colors.brush[1];
+            // this.glContext['glbrush'].middleColor     = this.colors.brush[2];
+            // this.glContext['glbrush'].middleHighColor = this.colors.brush[3];
+            // this.glContext['glbrush'].highColor       = this.colors.brush[4];
             e.insertBefore(c, e.firstChild);
             c = document.createElement('canvas');
             this.canvasAttCopy(c, 'glforeground', m);
-            this.glContext['glforeground'].color           = this.colors.line[0];
-            this.glContext['glforeground'].lowColor        = this.colors.foreground[0];
-            this.glContext['glforeground'].middleLowColor  = this.colors.foreground[1];
-            this.glContext['glforeground'].middleColor     = this.colors.foreground[2];
-            this.glContext['glforeground'].middleHighColor = this.colors.foreground[3];
-            this.glContext['glforeground'].highColor       = this.colors.foreground[4];
+            this.glContext['glforeground'].color = this.props.node.input[0].value;
+            // this.glContext['glforeground'].lowColor        = this.colors.foreground[0];
+            // this.glContext['glforeground'].middleLowColor  = this.colors.foreground[1];
+            // this.glContext['glforeground'].middleColor     = this.colors.foreground[2];
+            // this.glContext['glforeground'].middleHighColor = this.colors.foreground[3];
+            // this.glContext['glforeground'].highColor       = this.colors.foreground[4];
             e.insertBefore(c, e.firstChild);
-            // this.fromArrayToPicker();
         }
 
     }
@@ -335,77 +240,10 @@ class ParallelCoordinate extends React.Component {
         }
     }
 
-    fromPickerToArray(){
-        var i, a, c, e, r, g, b;
-        a = [
-            'glforeground',
-            'glbrush'
-        ];
-        for(i = 1; i <= 2; ++i){
-            e = ReactDOM.findDOMNode(this.refs['lineColor' + i]);
-            c = e.value.match(/[0-9|a-f]{2}/ig);
-            r = parseInt(c[0], 16) / 255;
-            g = parseInt(c[1], 16) / 255;
-            b = parseInt(c[2], 16) / 255;
-            this.glContext[a[i - 1]].color = [r, g, b, 0.1];
-        }
-        a = [
-            'lowColor',
-            'middleLowColor',
-            'middleColor',
-            'middleHighColor',
-            'highColor'
-        ];
-        for(i = 1; i <= 5; ++i){
-            e = ReactDOM.findDOMNode(this.refs['fgColor' + i]);
-            c = e.value.match(/[0-9|a-f]{2}/ig);
-            r = parseInt(c[0], 16) / 255;
-            g = parseInt(c[1], 16) / 255;
-            b = parseInt(c[2], 16) / 255;
-            this.glContext['glforeground'][a[i - 1]] = [r, g, b];
-            e = ReactDOM.findDOMNode(this.refs['brColor' + i]);
-            c = e.value.match(/[0-9|a-f]{2}/ig);
-            r = parseInt(c[0], 16) / 255;
-            g = parseInt(c[1], 16) / 255;
-            b = parseInt(c[2], 16) / 255;
-            this.glContext['glbrush'][a[i - 1]] = [r, g, b];
-        }
-    }
-    fromArrayToPicker(){
-        var i, a, c, e, r, g, b;
-        a = [
-            'glforeground',
-            'glbrush'
-        ];
-        for(i = 1; i <= 2; ++i){
-            r = zeroPadding(new Number(parseInt(this.glContext[a[i - 1]].color[0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(this.glContext[a[i - 1]].color[1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(this.glContext[a[i - 1]].color[2] * 255)).toString(16), 2);
-            e = ReactDOM.findDOMNode(this.refs['lineColor' + i]).value = '#' + r + g + b;
-        }
-        a = [
-            'lowColor',
-            'middleLowColor',
-            'middleColor',
-            'middleHighColor',
-            'highColor'
-        ];
-        for(i = 1; i <= 5; ++i){
-            r = zeroPadding(new Number(parseInt(this.glContext['glforeground'][a[i - 1]][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(this.glContext['glforeground'][a[i - 1]][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(this.glContext['glforeground'][a[i - 1]][2] * 255)).toString(16), 2);
-            e = ReactDOM.findDOMNode(this.refs['fgColor' + i]).value = '#' + r + g + b;
-            r = zeroPadding(new Number(parseInt(this.glContext['glbrush'][a[i - 1]][0] * 255)).toString(16), 2);
-            g = zeroPadding(new Number(parseInt(this.glContext['glbrush'][a[i - 1]][1] * 255)).toString(16), 2);
-            b = zeroPadding(new Number(parseInt(this.glContext['glbrush'][a[i - 1]][2] * 255)).toString(16), 2);
-            e = ReactDOM.findDOMNode(this.refs['brColor' + i]).value = '#' + r + g + b;
-        }
-    }
-
     glRender(target, data, lines, left, right){
         this.prev.prevType = target;
         this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right};
-        if(this.glContext[target].gl == null){alert('webgl initialize error'); return;}
+        if(this.glContext[target].gl == null){return;}
 
         var gc = this.glContext[target];
         var gl = gc.gl;
@@ -575,9 +413,6 @@ class ParallelCoordinate extends React.Component {
             })();
             gc.plp.horizonBuffer  = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
             gc.plp.verticalBuffer = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
-        }else{
-            // 初回ロードではない場合色取得
-            this.fromPickerToArray();
         }
 
         gl.enable(gl.BLEND);
@@ -624,13 +459,13 @@ class ParallelCoordinate extends React.Component {
         );
         mat.multiply(pMatrix, vMatrix, vpMatrix);
 
-        if(this.state.densityNormalize){
-            lines *= (101 - this.state.densityRange) / 100 * 0.5;
+        if(this.densityNormalize){
+            lines *= (101 - this.densityRange) / 100 * 0.5;
         }else{
-            lines = this.linecount * (101 - this.state.densityRange) / 100 * 0.5;
+            lines = this.linecount * (101 - this.densityRange) / 100 * 0.5;
         }
 
-        if(this.state.density){
+        if(this.density){
             // first scene to vertical buffer
             gl.bindFramebuffer(gl.FRAMEBUFFER, gc.plp.verticalBuffer.framebuffer);
             gl.viewport(0, 0, gc.plp.bufferWidth, gc.plp.bufferHeight);
@@ -698,7 +533,12 @@ class ParallelCoordinate extends React.Component {
     }
 
     componentDidMount(){
-        this.useAxes(); // まず一度描画する（仮
+        this.useAxes();
+    }
+
+    componentDidUpdate(){
+        this.glContext['glforeground'].color = this.props.node.input[0].value;
+        this.glContext['glbrush'].color = this.props.node.input[1].value;
     }
 
     styles(){
@@ -752,35 +592,9 @@ class ParallelCoordinate extends React.Component {
                     <div style={styles.uiFrame}>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.state.density} id="densityCheck" onChange={this.onChangeDensity} />
-                                <label onClick={this.onChangeDensity}>density mode</label>
-                            </div>
-                            <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.state.densityNormalize} id="densityNormalize" onChange={this.onChangeDensityNormalize} />
-                                <label onClick={this.onChangeDensityNormalize}>density normalize</label>
-                            </div>
-                        </div>
-                        <div style={styles.flexrow}>
-                            <div style={styles.flexcol}>
                                 <p style={styles.inputTitle}>line</p>
-                                <input type="color" id="color0" ref="lineColor1" value={this.state.colorString0} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color1" ref="lineColor2" value={this.state.colorString1} onChange={this.onColorChange} style={styles.colorInputs} />
-                            </div>
-                            <div style={styles.flexcol}>
-                                <p style={styles.inputTitle}>density</p>
-                                <input type="color" id="color2" ref="fgColor1" value={this.state.colorString2} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color3" ref="fgColor2" value={this.state.colorString3} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color4" ref="fgColor3" value={this.state.colorString4} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color5" ref="fgColor4" value={this.state.colorString5} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color6" ref="fgColor5" value={this.state.colorString6} onChange={this.onColorChange} style={styles.colorInputs} />
-                            </div>
-                            <div style={styles.flexcol}>
-                                <p style={styles.inputTitle}>select</p>
-                                <input type="color" id="color7"  ref="brColor1" value={this.state.colorString7}  onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color8"  ref="brColor2" value={this.state.colorString8}  onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color9"  ref="brColor3" value={this.state.colorString9}  onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color10" ref="brColor4" value={this.state.colorString10} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color11" ref="brColor5" value={this.state.colorString11} onChange={this.onColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[0].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[1].value)} onChange={this.onColorChange} style={styles.colorInputs} />
                             </div>
                         </div>
                     </div>
@@ -791,4 +605,46 @@ class ParallelCoordinate extends React.Component {
 }
 
 module.exports = ParallelCoordinate;
+
+            // <div>
+            //     <div ref="container" style={styles.container}>
+            //         <div ref="examples" className="parcoords" style={styles.examples}></div>
+            //         <div style={styles.uiFrame}>
+            //             <div style={styles.flexrow}>
+            //                 <div style={styles.flexcol}>
+            //                     <input type="checkbox" checked={this.state.density} id="densityCheck" onChange={this.onChangeDensity} />
+            //                     <label onClick={this.onChangeDensity}>density mode</label>
+            //                 </div>
+            //                 <div style={styles.flexcol}>
+            //                     <input type="checkbox" checked={this.state.densityNormalize} id="densityNormalize" onChange={this.onChangeDensityNormalize} />
+            //                     <label onClick={this.onChangeDensityNormalize}>density normalize</label>
+            //                 </div>
+            //             </div>
+            //             <div style={styles.flexrow}>
+            //                 <div style={styles.flexcol}>
+            //                     <p style={styles.inputTitle}>line</p>
+            //                     <input type="color" id="color0" ref="lineColor1" value={this.state.colorString0} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color1" ref="lineColor2" value={this.state.colorString1} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                 </div>
+            //                 <div style={styles.flexcol}>
+            //                     <p style={styles.inputTitle}>density</p>
+            //                     <input type="color" id="color2" ref="fgColor1" value={this.state.colorString2} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color3" ref="fgColor2" value={this.state.colorString3} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color4" ref="fgColor3" value={this.state.colorString4} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color5" ref="fgColor4" value={this.state.colorString5} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color6" ref="fgColor5" value={this.state.colorString6} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                 </div>
+            //                 <div style={styles.flexcol}>
+            //                     <p style={styles.inputTitle}>select</p>
+            //                     <input type="color" id="color7"  ref="brColor1" value={this.state.colorString7}  onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color8"  ref="brColor2" value={this.state.colorString8}  onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color9"  ref="brColor3" value={this.state.colorString9}  onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color10" ref="brColor4" value={this.state.colorString10} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                     <input type="color" id="color11" ref="brColor5" value={this.state.colorString11} onChange={this.onColorChange} style={styles.colorInputs} />
+            //                 </div>
+            //             </div>
+            //         </div>
+            //     </div>
+            // </div>
+            //
 
