@@ -78,25 +78,29 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        console.log(err, param, data);
         var buffer;
         const varname = this.node.varname;
         if (param.varname !== varname) {
             return;
         }
-        console.log('Parallel dara recieved', param, data, new Float32Array(data));
+        let a = new Float32Array(data);
+        let component = parseInt(param.component, 10);
+        let parse = [];
+        for(let i = 0, j = a.length / component; i < j; ++i){
+            let k = i * component;
+            parse.push([a[k], a[k + 1], a[k + 2]]);
+        }
         this.setState({
-            data: buffer,
+            parse: parse,
+            data: data,
             param: param
         });
-        imageParse();
+        setTimeout(this.imageParse, 50);
     }
 
     imageParse(){
         if(this.state.parse === null || this.state.parse === undefined){return;}
-        let a = new Float32Array(this.state.parse);
-        console.log(a);
-        if(a !== null && a.length > 2){
+        if(this.state.parse[0].length > 2){
             this.useAxes();
         }else{
             console.log('parallel: invalid data');
@@ -229,7 +233,6 @@ class ParallelCoordinate extends React.Component {
     }
     glInitialize(){
         if(this.parcoords == null){return;}
-        console.log(this.parcoords.state);
         if(!document.getElementById('glforeground')){
             this.glContext = {};
             var e = this.parcoords.selection.node();
@@ -253,7 +256,6 @@ class ParallelCoordinate extends React.Component {
             // this.glContext['glforeground'].highColor       = this.colors.foreground[4];
             e.insertBefore(c, e.firstChild);
         }
-
     }
     canvasAttCopy(c, name, m){
         c.id = name;
