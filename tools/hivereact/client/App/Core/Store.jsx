@@ -52,7 +52,7 @@ export default class Store extends EventEmitter {
 		});
         this.hive.on(Hive.RENDERER_LOG_RECIEVED, (data) => {
 			this.emit(Constants.RENDERER_LOG_RECIEVED, data);
-		});		
+		});
 		this.nodeSystem.on(NodeSystem.SCRIPT_SERIALIZED, (script) => {
 			//console.warn('SCRIPT>', script);
 			this.hive.runScript(script);
@@ -150,19 +150,29 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * 現在のノード階層でのinputを返す.
+	 * 指定したノード階層でのinputを返す.
 	 */
-	getInput() {
-		let data = this.getDataAtPath(this.getNodePath());
-		return data.input;
+	getInput(nodePath) {
+		let path = this.data.nodePath;
+		if (nodePath !== null && nodePath !== undefined) {
+			path = nodePath;
+		}
+
+		let result = this.getDataAtPath(path);
+		return result.input;
 	}
 
 	/**
-	 * 現在のノード階層でのoutputを返す.
+	 * 指定したノード階層でのoutputを返す.
 	 */
-	getOutput() {
-		let data = this.getDataAtPath(this.getNodePath());
-		return data.output;
+	getOutput(nodePath) {
+		let path = this.data.nodePath;
+		if (nodePath !== null && nodePath !== undefined) {
+			path = nodePath;
+		}
+
+		let result = this.getDataAtPath(path);
+		return result.output;
 	}
 
 	/**
