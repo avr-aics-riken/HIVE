@@ -59,7 +59,11 @@ function RenderView:Do()
          print('RenderObject->', v);   
     end
 --]]
-    render(temp, HIVE_fetchEvent)
+    if v.screensize[1] / 10 < v.rendersize[1] then
+        render(temp, HIVE_fetchEvent)
+    else
+        render(temp)
+    end
     
     local mode = 'jpg'
     -- image save
