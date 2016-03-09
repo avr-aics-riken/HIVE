@@ -5,6 +5,9 @@ class TransferFunction extends React.Component {
     constructor(props) {
         super(props);
 
+        this.action  = props.action;
+        this.node = props.node;
+        
         // members
         this.wrapper = null;
         this.cw = 300;
@@ -89,7 +92,26 @@ class TransferFunction extends React.Component {
         this.getNumValues        = this.getNumValues.bind(this);
         this.setAnalyzeResult    = this.setAnalyzeResult.bind(this);
         this.styles              = this.styles.bind(this);
-    }
+        
+        this.changeCallback = () => {
+            let rgba = [4*numVals]
+            for(let i = 0; i < numVals; ++i){
+                rgba[4*i  ] = parseInt(this.valueRed[i]*255); 
+                rgba[4*i+1] = parseInt(this.valueGreen[i]*255); 
+                rgba[4*i+2] = parseInt(this.valueBlue[i]*255);                 
+                rgba[4*i+3] = parseInt(this.valueAlpha[i]*255); 
+            }
+            console.log(rgba);            
+            //this.node.rgba
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "rgba" : rgba                    
+                }
+            });
+        }
+     }
     onSelectChange(eve){
         var e = eve.target.value;
         var t = parseInt(e);

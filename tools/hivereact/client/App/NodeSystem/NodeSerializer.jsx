@@ -34,7 +34,7 @@ export default class NodeSerializer {
         return setsrc;
     }
     setPropertyString(nodeinfo, name, value) {
-        const setsrc = nodeinfo.varname + ":Set('" + name + "','" + value + "')\n"
+        const setsrc = nodeinfo.varname + ":Set('" + name + "',\"" + value + "\")\n"
         return setsrc;
     }
     setPropertyVal(nodeinfo, name, value) {
@@ -53,6 +53,16 @@ export default class NodeSerializer {
         const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "," + z + "," + a + "})\n"
         return setsrc;
     }
+    setPropertyFloatArray(nodeinfo, name, value) {
+        var arraystr = '{';
+        var i;
+        for (i = 0; i <value.length; ++i) {
+            arraystr += value[i] + ','; 
+        }
+        arraystr += '}';
+        const setsrc = nodeinfo.varname + ":Set('" + name + "'," + arraystr + ")\n"
+        return setsrc;
+    }    
     clearConnect(nodeinfo) {
         const clrsrc = nodeinfo.varname + ":ClearConnect()\n"
         return clrsrc;
@@ -76,6 +86,8 @@ export default class NodeSerializer {
                 script += this.setPropertyString(node, v.name, v.value);
             } else if(v.type === 'bool') {
                 script += this.setPropertyBool(node, v.name, v.value);            
+            } else if(v.type === 'floatarray') {
+                script += this.setPropertyFloatArray(node, v.name, v.value);                        
             } else {
                 // TODO: ex. RenderObject
                 //script += this.setPropertyVal(node, v.name, v.value);
