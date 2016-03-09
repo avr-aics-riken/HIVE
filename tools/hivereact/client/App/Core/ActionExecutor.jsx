@@ -221,10 +221,12 @@ export default class ActionExecuter {
 		}
 
 		// 関連するプラグを全部消す
+		let origPath = this.store.data.nodePath;
 		tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
-		for (let i = tempPath.length - 1; i >= 0; i = i - 1) {
+		for (let i = tempPath.length; i >= 0; i = i - 1) {
 			let group = this.store.getDataAtPath(tempPath);
 			let plugs = this.store.getPlugs(tempPath);
+			this.store.data.nodePath = tempPath;
 			for (let j = plugs.length - 1; j >= 0; j = j - 1) {
 				let plug = plugs[j];
 				if (plug.input.nodeVarname === node.varname) {
@@ -232,22 +234,27 @@ export default class ActionExecuter {
 				} else if (plug.output.nodeVarname === node.varname) {
 					this.deletePlug({ plugInfo : plug });
 				}
-				if (this.store.isGroup(group)) {
-					// グループから通常ノードに繋がっているプラグを削除.
-					for (let k = 0; k < group.input.length; k = k + 1) {
-						if (group.input[k].nodeVarname === node.nodeVarname) {
-							this.deletePlug({ plugInfo : plug });
-						}
+			}
+			if (this.store.isGroup(group)) {
+				// グループから通常ノードに繋がっているプラグを削除.
+				for (let k = 0; k < group.input.length; k = k + 1) {
+					console.log(group.input[k].nodeVarname, node.varname);
+					if (group.input[k].nodeVarname === node.varname) {
+						this.deletePlug({ plugInfo : plug });
 					}
-					for (let k = 0; k < group.output.length; k = k + 1) {
-						if (group.output[k].nodeVarname === node.nodeVarname) {
-							this.deletePlug({ plugInfo : plug });
-						}
+				}
+				for (let k = 0; k < group.output.length; k = k + 1) {
+					console.log(group.output[k].nodeVarname, node.varname);
+					if (group.output[k].nodeVarname === node.varname) {
+						this.deletePlug({ plugInfo : plug });
 					}
 				}
 			}
-			tempPath.splice(i, 1);
+			if (i > 0) {
+				tempPath.splice(i - 1, 1);
+			}
 		}
+		this.store.data.nodePath = origPath;
 	}
 
 	/**
