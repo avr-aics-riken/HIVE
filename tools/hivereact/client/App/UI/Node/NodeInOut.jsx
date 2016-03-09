@@ -231,6 +231,7 @@ export default class NodeInOut extends React.Component {
 		if (!this.state.isDragging) {
 			this.props.nodeAction.selectPlugHole(this.plugInfo());
 		}
+		this.props.nodeAction.unSelectPlugHoles();
 	}
 
 	onPlugDragging(err, id, inpos, outpos) {
