@@ -40,11 +40,13 @@ function ParallelCoordinate:Do()
         },
         "id":0
     }]]
-    
-    local imageBuffer = vol:Buffer()
+        
+    local imageBuffer = vol:Pointer()
+    print('imagebuffer=', imageBuffer)
     local imageBufferSize = w * h * d * 4
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+    print('send!!!!!!!!!!!', imageBufferSize, self.varname);
     return true
 end
 
