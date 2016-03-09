@@ -303,6 +303,8 @@ export default class NodeView extends React.Component {
     }
 
 	onKeyDown(ev) {
+		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
+		let rect = this.refs.bound.getBoundingClientRect();
 		this.isCtrlDown = ev.ctrlKey;
 		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
 			this.onCopy(null);
