@@ -23,9 +23,7 @@ class prgLocations {
 }
 
 // ============================================================================
-// this.importData === 描画するデータ（未指定の場合サンプル CSV を読み込む）
 // this.dimensionTitles === 上部に出る項目タイトルを格納した配列（未指定の場合配列インデックス）
-// 両者とも、beginDraw を経由しないと描画に反映されない
 // ============================================================================
 class ParallelCoordinate extends React.Component {
     constructor(props) {
@@ -45,7 +43,6 @@ class ParallelCoordinate extends React.Component {
         };
         this.usr = {glRender: this.glRender};
         this.parcoords;         // from d3.parcoord.js
-        this.importData = null;
         this.dataval = null;
         this.density = false;
         this.densityNormalize = false;
@@ -72,12 +69,12 @@ class ParallelCoordinate extends React.Component {
         this.imageParse = this.imageParse.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
 
         // event
         this.onChangeDensity = this.onChangeDensity.bind(this);
         this.onChangeDensityNormalize = this.onChangeDensityNormalize.bind(this);
         this.onColorChange = this.onColorChange.bind(this);
-        
     }
 
     imageRecieved(err, param, data){
@@ -86,14 +83,24 @@ class ParallelCoordinate extends React.Component {
         if (param.varname !== varname) {
             return;
         }
-        console.log('Parallel dara recieved', param, data, new Float32Array(data));
+        let a = new Float32Array(data);
+        let component = parseInt(param.component, 10);
+        let parse = [];
+        for(let i = 0, j = a.length / component; i < j; ++i){
+            let k = i * component;
+            parse.push([a[k], a[k + 1], a[k + 2]]);
+        }
+        this.setState({
+            parse: parse,
+            data: data,
+            param: param
+        });
+        setTimeout(this.imageParse, 50);
     }
 
     imageParse(){
-        if(this.state.data === null || this.state.data === undefined){return;}
-        let a = new Float32Array(this.state.data);
-        console.log(a);
-        if(a !== null && a.length > 2){
+        if(this.state.parse === null || this.state.parse === undefined){return;}
+        if(this.state.parse[0].length > 2){
             this.useAxes();
         }else{
             console.log('parallel: invalid data');
@@ -249,7 +256,6 @@ class ParallelCoordinate extends React.Component {
             // this.glContext['glforeground'].highColor       = this.colors.foreground[4];
             e.insertBefore(c, e.firstChild);
         }
-
     }
     canvasAttCopy(c, name, m){
         c.id = name;
@@ -458,6 +464,7 @@ class ParallelCoordinate extends React.Component {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         if(data == null){return;}
+        // data をアウトプットに出すとしたらここぽい気がする
 
         var vMatrix = mat.identity(mat.create());
         var pMatrix = mat.identity(mat.create());
@@ -579,16 +586,31 @@ class ParallelCoordinate extends React.Component {
         //         this.state.parse[i].push(Math.random() * 100.0);
         //     }
         // }
-        this.useAxes();
+        // this.setState(
+        //     {parse: [
+        //         [0.1, 0.3, 0.5, 0.7, 0.9],
+        //         [0.1, 0.3, 0.5, 0.7, 0.9],
+        //         [0.1, 0.3, 0.5, 0.7, 0.9],
+        //         [0.1, 0.3, 0.5, 0.7, 0.9],
+        //         [0.1, 0.3, 0.5, 0.7, 0.9]
+        //     ]}
+        // );
+        // setTimeout((()=>{this.imageParse();}), 50);
+        this.glInitialize();
     }
 
     componentDidUpdate(){
+        if(this.glContext.hasOwnProperty('glforeground')){
+            this.glContext['glforeground'].color = this.props.node.input[0].value;
+            this.glContext['glbrush'].color = this.props.node.input[1].value;
+        }
+    }
+
+    componentWillUnmount(){
+        const Store_IMAGE_RECIEVED = "image_revieved";
+        this.store.removeListener(Store_IMAGE_RECIEVED, this.imageRecieved);
         //this.glContext['glforeground'].color = this.props.node.input[0].value;
         //this.glContext['glbrush'].color = this.props.node.input[1].value;
-    }
-    componentWillUnmount() {
-        const Store_IMAGE_RECIEVED = "image_revieved";        
-        this.store.removeListener(Store_IMAGE_RECIEVED, this.imageRecieved);        
     }
 
     styles(){
