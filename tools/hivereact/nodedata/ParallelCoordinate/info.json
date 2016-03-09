@@ -5,10 +5,10 @@
 	"customfuncfile":"parallelcoordinate.lua",
 	"uifile":"parallelcoordinate.jsx",
     "input": [
-		{"name": "lineColor1", "type": "vec4", "value": [0.9, 0.3, 0.5, 0.2]},
-		{"name": "lineColor2", "type": "vec4", "value": [0.3, 0.9, 0.5, 0.2]}
+  		{"name": "lineColor1", "type": "vec4", "value": [0.9, 0.3, 0.5, 0.2]},
+		{"name": "lineColor2", "type": "vec4", "value": [0.3, 0.9, 0.5, 0.2]},
+		{"name": "volume", "type": "BufferVolumeData" }
 	],
 	"output": [
-		{"name": "color",  "type": "vec4"}
 	]
 }
