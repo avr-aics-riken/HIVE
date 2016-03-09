@@ -224,6 +224,7 @@ export default class NodeInOut extends React.Component {
 					y : center.y + (ev.clientY - this.pos.y)
 				}, center);
 			}
+			this.props.nodeAction.unSelectPlugHoles();
 		}
 	}
 
