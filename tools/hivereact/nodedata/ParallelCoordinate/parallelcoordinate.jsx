@@ -53,6 +53,13 @@ class ParallelCoordinate extends React.Component {
         this.linecount = 0;
         this.dimensionTitles = {};
 
+        // state
+        this.state = {
+            parse: null,
+            data: null,
+            param: null
+        };
+
         // method
         this.redraw = this.redraw.bind(this);
         this.useAxes = this.useAxes.bind(this);
@@ -61,6 +68,8 @@ class ParallelCoordinate extends React.Component {
         this.canvasAttCopy = this.canvasAttCopy.bind(this);
         this.glRender = this.glRender.bind(this);
         this.singleConv = this.singleConv.bind(this);
+        this.imageRecieved = this.imageRecieved.bind(this);
+        this.imageParse = this.imageParse.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 
@@ -68,6 +77,32 @@ class ParallelCoordinate extends React.Component {
         this.onChangeDensity = this.onChangeDensity.bind(this);
         this.onChangeDensityNormalize = this.onChangeDensityNormalize.bind(this);
         this.onColorChange = this.onColorChange.bind(this);
+    }
+
+    imageRecieved(err, param, data){
+        var buffer;
+        const varname = this.node.varname;
+        if(param.varname !== varname){return;}
+        if(param.type === 'jpg'){
+            buffer = new Blob([data]);
+        }else{
+            buffer = data;
+        }
+        this.setState({
+            data: buffer,
+            param: param
+        });
+    }
+
+    imageParse(){
+        if(this.state.data === null || this.state.data === undefined){return;}
+        let a = new Float32Array(this.state.data);
+        console.log(a);
+        if(a !== null && a.length > 2){
+            this.useAxes();
+        }else{
+            console.log('parallel: invalid data');
+        }
     }
 
     onChangeDensity(){
@@ -138,19 +173,17 @@ class ParallelCoordinate extends React.Component {
         if(!f){this.useAxes();}
     }
 
-    // このメソッドが呼ばれた時点で this.importData になんか入ってるとそれを描画する
     useAxes(){
         let e = ReactDOM.findDOMNode(this.refs.examples);
         if(e){e.innerHTML = '';}
-        // csv file load
-        if(this.importData == null){
+        if(this.state.parse === null){
             // dom reset
-            d3.csv('./App/resource/nut.csv', (function(data){
-                this.importData = data;
-                this.beginDraw(this.importData);
-            }).bind(this));
+            // d3.csv('./App/resource/nut.csv', (function(data){
+            //     this.state.parse = data;
+            //     this.beginDraw(this.state.parse);
+            // }).bind(this));
         }else{
-            this.beginDraw(this.importData);
+            this.beginDraw(this.state.parse);
         }
     }
 
@@ -538,20 +571,26 @@ class ParallelCoordinate extends React.Component {
     }
 
     componentDidMount(){
-        // importData は最初の次元が縦方向にマッピングされる
+        const Store_IMAGE_RECIEVED = "image_revieved";
+        this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
+
+        // state.parse は最初の次元が縦方向にマッピングされる
         // 横棒の折れ線グラフが描かれるイメージ
         // 以下のようにすれば、100 本の線が、それぞれ 10 項目をマッピングする形で描画される
-        this.importData = [];
-        for(let i = 0; i < 100; ++i){
-            this.importData[i] = [];
-            for(let j = 0; j < 10; ++j){
-                this.importData[i].push(Math.random() * 100.0);
-            }
-        }
+        // this.state.parse = [];
+        // for(let i = 0; i < 100; ++i){
+        //     this.state.parse[i] = [];
+        //     for(let j = 0; j < 10; ++j){
+        //         this.state.parse[i].push(Math.random() * 100.0);
+        //     }
+        // }
         this.useAxes();
     }
 
     componentDidUpdate(){
+        const Store_IMAGE_RECIEVED = "image_revieved";
+        this.store.removeListener(Store_IMAGE_RECIEVED, this.imageRecieved);
+
         this.glContext['glforeground'].color = this.props.node.input[0].value;
         this.glContext['glbrush'].color = this.props.node.input[1].value;
     }
