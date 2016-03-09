@@ -37,7 +37,7 @@ export default class Hive extends EventEmitter {
 	}
 
 	connect(wsurl, ipcAddress, ogl) {
-		this.conn = new window.HiveConnect({url:wsurl, ipc:ipcAddress, opengl:ogl});
+		this.conn = new window.HiveConnect({url:wsurl, ipc:'', opengl:ogl});
         
 		this.conn.method('registerRender', (res) => {
             

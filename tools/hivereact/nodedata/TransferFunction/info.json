@@ -5,9 +5,9 @@
 	"customfuncfile":"transferfunction.lua",
 	"uifile":"transferfunction.jsx",
     "input": [
-		{"name": "value",  "type": "vec4", "value": [1,1,1,1]}
+  		{"name": "rgba",  "type": "floatarray", "visible":false, "value":[] }        
 	],
 	"output": [
-		{"name": "color",  "type": "vec4"}
+		{"name": "Image",  "type": "BufferImageData"}
 	]
 }
