@@ -237,16 +237,14 @@ export default class ActionExecuter {
 			}
 			if (this.store.isGroup(group)) {
 				// グループから通常ノードに繋がっているプラグを削除.
-				for (let k = 0; k < group.input.length; k = k + 1) {
-					console.log(group.input[k].nodeVarname, node.varname);
+				for (let k = group.input.length - 1; k >= 0; k = k - 1) {
 					if (group.input[k].nodeVarname === node.varname) {
-						this.deletePlug({ plugInfo : plug });
+						group.input.splice(k, 1);
 					}
 				}
-				for (let k = 0; k < group.output.length; k = k + 1) {
-					console.log(group.output[k].nodeVarname, node.varname);
+				for (let k = group.output.length - 1; k >= 0; k = k - 1) {
 					if (group.output[k].nodeVarname === node.varname) {
-						this.deletePlug({ plugInfo : plug });
+						group.output.splice(k, 1);
 					}
 				}
 			}
