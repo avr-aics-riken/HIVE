@@ -266,6 +266,7 @@ export default class ActionExecuter {
 
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 				this.store.emit(Constants.NODE_DELETED, null, n.node);
+				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 			}
 		}
 	}
@@ -877,12 +878,12 @@ export default class ActionExecuter {
 			for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
 				if (this.store.getPlugs()[i].input.nodeVarname === payload.plugInfo.input.nodeVarname &&
 					this.store.getPlugs()[i].input.name === payload.plugInfo.input.name) {
-					// 既に繋がっている入力端子に繋げようとした
+					console.log("既に繋がっている入力端子に繋げようとした");
 					return;
 				}
 			}
 			if (payload.plugInfo.input.nodeVarname === payload.plugInfo.output.nodeVarname) {
-				// 同じノードに繋げようとした
+				console.log("同じノードに繋げようとした");
 				return;
 			}
 			this.store.getPlugs().push(payload.plugInfo);
