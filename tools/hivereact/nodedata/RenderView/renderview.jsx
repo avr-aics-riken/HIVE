@@ -21,7 +21,7 @@ class RenderView extends React.Component {
         this.oldmy = 0;
 
         // View
-
+        
 
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.imageRecieved = this.imageRecieved.bind(this);
@@ -32,7 +32,8 @@ class RenderView extends React.Component {
 
 	imageRecieved(err, param, data) {
 		var buffer;
-		if (param.varname !== this.node.varname) {
+        const varname = this.node.varname;        
+		if (param.varname !== varname) {
 			return;
 		}
 		if (param.type === 'jpg') {
@@ -40,10 +41,28 @@ class RenderView extends React.Component {
 		} else {
 			buffer = data;
 		}
-		this.setState({
+        this.setState({
 			param : param,
 			image : buffer
 		});
+		
+        // progressive update
+        let w = param.width;
+        let h = param.height;        
+        const ssize = this.getInputValue("screensize");
+        if (w < ssize[0] || h < ssize[1]) {            
+            w *= 2;
+            h *= 2;
+            //console.log('PROGRESSIVE:', w, h);
+            setTimeout(() => {            
+                this.action.changeNodeInput({
+                    varname : varname,
+                    input : {
+                        "rendersize" : [w,h]                    
+                    }
+                });
+            },0);
+        }
 	}
 
     hasIPCAddress() {
@@ -156,6 +175,9 @@ class RenderView extends React.Component {
 		let ay = normalize(cross(az, ax));
 		let rx = rotate(rotx, ax);
 		let ry = rotate(roty, ay);
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let rw = parseInt(ssize[0] / 16);
+        let rh = parseInt(ssize[1] / 16);         
 
 		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
@@ -167,7 +189,8 @@ class RenderView extends React.Component {
 				varname : varname,
 				input : {
 					"position" : pos,
-					"target" : target
+					"target" : target,
+                    "rendersize" : [rw, rh]
 				}
 			});
 		}
@@ -260,7 +283,10 @@ class RenderView extends React.Component {
 					setTimeout( ()=> {
 						this.action.changeNodeInput({
 							varname : this.props.node.varname,
-							input : {"screensize" : [width, height]}
+							input : {
+                                "screensize" : [width, height],
+                                "rendersize" : [parseInt(width/16), parseInt(height/16)]                            
+                            }
 						});
 					}, 0);
 				}

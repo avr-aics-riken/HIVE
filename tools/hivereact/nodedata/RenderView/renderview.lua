@@ -26,7 +26,7 @@ function RenderView:Do()
     self:UpdateValue()
     local v = self.value
     
-    self.cam:SetScreenSize(v.screensize[1], v.screensize[2])
+    self.cam:SetScreenSize(v.rendersize[1], v.rendersize[2])--v.screensize[1], v.screensize[2])
     self.cam:SetFilename(v.color_file)
     self.cam:SetDepthFilename(v.depth_file)
     self.cam:ClearColor(v.clearcolor[1],v.clearcolor[2],v.clearcolor[3],v.clearcolor[4])
@@ -59,7 +59,7 @@ function RenderView:Do()
          print('RenderObject->', v);   
     end
 --]]
-    render(temp)
+    render(temp, HIVE_fetchEvent)
     
     local mode = 'jpg'
     -- image save
@@ -78,8 +78,12 @@ function RenderView:Do()
     end
     
     -- create metabinary
-    local w = v.screensize[1]
-    local h = v.screensize[2]
+    --local w = v.screensize[1]
+    --local h = v.screensize[2]
+    local w = v.rendersize[1]
+    local h = v.rendersize[2]
+    print('rendersize=('.. w ..",".. h ..")")
+    
     local json = [[{
             "JSONRPC" : "2.0",
             "method" : "renderedImage",            
@@ -88,7 +92,7 @@ function RenderView:Do()
                 "type" : "]] .. mode .. [[",
                 "width" : "]] .. w .. [[",
                 "height" : "]] .. h .. [[",
-                "canceled": false,
+                "canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[,
                 "varname": "]] .. self.varname .. [["
             },
             "id":0
