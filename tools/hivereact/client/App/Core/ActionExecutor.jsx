@@ -240,7 +240,17 @@ export default class ActionExecuter {
 				for (let i = 0; i < input.length; i = i + 1) {
 					if (input[i].name === data.name && input[i].nodeVarname === data.nodeVarname) {
 						input.splice(i, 1);
-						// TODO: 関連するプラグを全部消す
+						// 関連するプラグを全部消す
+						let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
+						if (tempPath.length > 0) {
+							tempPath.splice(tempPath.length-1, 1);
+						}
+						let plugs = this.store.getPlugs(tempPath);
+						for (let k = plugs.length - 1; k >= 0; k = k - 1) {
+							if (plugs[k].input.nodeVarname === data.nodeVarname && plugs[k].input.name === data.name) {
+								plugs.splice(k, 1);
+							}
+						}
 						deleted = true;
 						break;
 					}
@@ -252,6 +262,9 @@ export default class ActionExecuter {
 		}
 	}
 
+	/**
+	 * 現在のノード階層に対して出力を削除する.
+	 */
 	unPublishOutput(payload) {
 		if (payload.hasOwnProperty('data')) {
 			let data = payload.data;
@@ -264,7 +277,17 @@ export default class ActionExecuter {
 				for (let i = 0; i < output.length; i = i + 1) {
 					if (output[i].name === data.name && output[i].nodeVarname === data.nodeVarname) {
 						output.splice(i, 1);
-						// TODO: 関連するプラグを全部消す
+						// 関連するプラグを全部消す
+						let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
+						if (tempPath.length > 0) {
+							tempPath.splice(tempPath.length-1, 1);
+						}
+						let plugs = this.store.getPlugs(tempPath);
+						for (let k = plugs.length - 1; k >= 0; k = k - 1) {
+							if (plugs[k].output.nodeVarname === data.nodeVarname && plugs[k].output.name === data.name) {
+								plugs.splice(k, 1);
+							}
+						}
 						deleted = true;
 						break;
 					}
