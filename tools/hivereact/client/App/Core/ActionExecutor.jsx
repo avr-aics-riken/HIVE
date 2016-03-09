@@ -409,7 +409,15 @@ export default class ActionExecuter {
 				varname: nodes[i].varname
 			});
         }
-		this.store.data.nodePath = [];
+		this.store.data = {
+			name : "",    //シーン名
+			varname : "Root",
+            nodes : [],   // 全てのノード
+            plugs : [],   // 全てのプラグ
+			input : [],   // シーンの入力端子
+			output : [],  // シーンの出力端子
+			nodePath : [] // 表示しているノード階層のパス
+        };
 		this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 		this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 	}
@@ -752,32 +760,34 @@ export default class ActionExecuter {
 	 */
 	load(payload) {
 		if (payload.hasOwnProperty('data')) {
-			let data = payload.data;
+		/*
+			this.clearAll();
 
-			if (data.nodes && data.nodes.length > 0){
-				this.store.data.nodes = [];
-				for (let i in data.nodes){
+			let data = payload.data;
+			if(data.nodes && data.nodes.length > 0){
+				for(let i in data.nodes){
 					this.importNode({ nodeInfo : data.nodes[i]});
 				}
-			} else {
+			}else{
 				console.log('import failed: nodes.length === 0');
 			}
-			if (data.plugs && data.plugs.length > 0){
-				this.store.data.plugs = [];
-				for (let i in data.plugs) {
-					this.addPlug({ plugInfo : data.plugs[i]});
+			if(data.plugs && data.plugs.length > 0){
+				for(let i in data.plugs){
+					this.addPlug({plugInfo : data.plugs[i]});
 				}
-			} else {
+			}else{
 				console.log('import failed: plugs.length === 0');
 			}
 			for (let i in data) {
 				if (data.hasOwnProperty(i)) {
 					if (i !== "nodes" && i !== "plugs") {
+						console.log(i, data[i]);
 						this.store.data[i] = data[i];
 					}
 				}
 			}
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+			*/
 		}
 	}
 
