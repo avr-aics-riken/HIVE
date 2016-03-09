@@ -181,6 +181,13 @@ export default class ItemView extends React.Component {
                             initialParam={hole} key={id} id={id}
                             top={topRow}
                             bottom={bottom} />);
+			} else if (hole.meta === 'shaderlist') {
+				return (<ItemSuggest
+							varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+                            top={topRow}
+                            bottom={bottom} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec
 							varname={this.props.initialNodeData.varname}
@@ -204,13 +211,6 @@ export default class ItemView extends React.Component {
                             top={topRow}
                             bottom={bottom}
 				            changeCheckboxFunc={this.changeFunc.bind(this)} />);                       
-			} else if (hole.type === 'suggest') {
-				return (<ItemSuggest
-							varname={this.props.initialNodeData.varname}
-							store={this.props.store}
-							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
-                            top={topRow}
-                            bottom={bottom} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
 			}
