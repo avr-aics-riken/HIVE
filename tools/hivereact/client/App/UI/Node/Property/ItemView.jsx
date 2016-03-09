@@ -7,6 +7,7 @@ import ItemVec from './ItemVec.jsx';
 import ItemCheckbox from './ItemCheckbox.jsx';
 import ItemArray from './ItemArray.jsx';
 import ItemTextInput from './ItemTextInput.jsx';
+import ItemSuggest from './ItemSuggest.jsx';
 
 /**
  * ノードプロパティ1ノード分.
@@ -203,6 +204,13 @@ export default class ItemView extends React.Component {
                             top={topRow}
                             bottom={bottom}
 				            changeCheckboxFunc={this.changeFunc.bind(this)} />);                       
+			} else if (hole.type === 'suggest') {
+				return (<ItemSuggest
+							varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+                            top={topRow}
+                            bottom={bottom} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
 			}
