@@ -29,6 +29,10 @@ export default class NodeSerializer {
         return src;
     }
     
+    setPropertyBool(nodeinfo, name, value) {
+        const setsrc = nodeinfo.varname + ":Set('" + name + "'," + value + ")\n"
+        return setsrc;
+    }
     setPropertyString(nodeinfo, name, value) {
         const setsrc = nodeinfo.varname + ":Set('" + name + "','" + value + "')\n"
         return setsrc;
@@ -70,6 +74,8 @@ export default class NodeSerializer {
                 script += this.setPropertyVal(node, v.name, v.value);
             } else if(v.type === 'string') {
                 script += this.setPropertyString(node, v.name, v.value);
+            } else if(v.type === 'bool') {
+                script += this.setPropertyBool(node, v.name, v.value);            
             } else {
                 // TODO: ex. RenderObject
                 //script += this.setPropertyVal(node, v.name, v.value);

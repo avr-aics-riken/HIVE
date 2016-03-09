@@ -94,7 +94,7 @@ export default class ItemView extends React.Component {
 		let inputs = this.state.input;
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
-				inputs[i].value = value;
+            	inputs[i].value = value;
 				this.props.action.changeNode({
 					varname : this.props.initialNodeData.varname,
 					input : inputs
@@ -194,6 +194,15 @@ export default class ItemView extends React.Component {
 							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
                             bottom={bottom} />);
+            } else if (hole.type === 'bool') {
+			    return (<ItemCheckbox
+				            varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+                            initialParam={hole}
+                            key={id} id={id}                            							
+                            top={topRow}
+                            bottom={bottom}
+				            changeCheckboxFunc={this.changeFunc.bind(this)} />);                       
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
 			}

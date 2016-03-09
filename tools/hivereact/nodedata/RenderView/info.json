@@ -11,7 +11,7 @@
 		{"name": "fov", "type": "float", "value": 60},
 		{"name": "screensize", "type": "vec2", "value": [512,512]},
 		{"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
-        {"name": "ipcpath", "type": "string", "value": ""},
+        {"name": "ipcmode", "type": "bool", "value": false},
         {"name": "Camera",  "type": "RenderObject"},        		
         {"name": "RenderObject",  "type": "RenderObject", "array": [
 			{"name": "RenderObject[0]",  "type": "RenderObject"},
