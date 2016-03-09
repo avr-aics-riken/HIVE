@@ -44,7 +44,7 @@ export default class Store extends EventEmitter {
 		this.hive = new Hive();
 		this.nodeSystem = new NodeSystem(nodePlugData, (nodeSystem) => {
 			// initilized.
-            this.hive.connect('ws://localhost:8080', '', true);
+            this.hive.connect('ws://localhost:8080');
 			this.emit(Constants.INITIALIZED, null);
 		});
 		this.hive.on(Hive.IMAGE_RECIEVED, (err, param, data) => {
