@@ -39,6 +39,7 @@ public:
     int Depth() const;
     int Component() const;
     FloatBuffer *Buffer() const;
+    const float* Pointer() const;
 
     // Fetch voxel data. `ret` pointer must have enough storage space to store voxel data,
     // larger than # of compoents in this volume data.
