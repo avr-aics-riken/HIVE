@@ -28,19 +28,18 @@ export default class ItemSuggest extends React.Component {
             '../shader/hoge.frag',
             '../shader/hoge.gl'
         ];
-        var shaderPathList = tempList;
-        var shaderPath = [];
+        var pathList = tempList;
+        var path = [];
         var flg = false;
-        if(shaderPathList){
-            for(let i in shaderPathList){
-                shaderPath.push({name: shaderPathList[i]});
+        if(pathList){
+            for(let i in pathList){
+                path.push({name: pathList[i]});
             }
         }
-        if(shaderPath.length === 0){return [];}
+        if(path.length === 0){return [];}
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
-        return inputLength === 0 ? [] : shaderPath.filter(nodename =>
-             // nodename.name.toLowerCase().slice(0, inputLength) === inputValue
+        return inputLength === 0 ? [] : path.filter(nodename =>
              nodename.name.toLowerCase().indexOf(inputValue) !== -1
         );
     }
