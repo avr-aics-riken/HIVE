@@ -680,7 +680,7 @@ export default class ActionExecuter {
 	}
 
 	/**
-	 * 保存する
+	 * ファイルに保存する
 	 */
 	save(payload) {
 		var data = this.store.data;
@@ -689,25 +689,36 @@ export default class ActionExecuter {
 	}
 
 	/**
-	 * 読み込む
+	 * データから読み込む
 	 */
 	load(payload) {
 		if (payload.hasOwnProperty('data')) {
 			let data = payload.data;
+
 			if (data.nodes && data.nodes.length > 0){
-				for(let i in data.nodes){
+				this.store.data.nodes = [];
+				for (let i in data.nodes){
 					this.importNode({ nodeInfo : data.nodes[i]});
 				}
 			} else {
 				console.log('import failed: nodes.length === 0');
 			}
 			if (data.plugs && data.plugs.length > 0){
-				for(let i in data.plugs){
+				this.store.data.plugs = [];
+				for (let i in data.plugs) {
 					this.addPlug({ plugInfo : data.plugs[i]});
 				}
 			} else {
 				console.log('import failed: plugs.length === 0');
 			}
+			for (let i in data) {
+				if (data.hasOwnProperty(i)) {
+					if (i !== "nodes" && i !== "plugs") {
+						this.store.data[i] = data[i];
+					}
+				}
+			}
+			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 		}
 	}
 

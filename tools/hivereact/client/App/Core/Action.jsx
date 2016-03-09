@@ -272,7 +272,7 @@ export default class Action {
 	}
 
 	/**
-	 * 保存する
+	 * ファイルに保存する
 	 */
 	save() {
 		this.dispatcher.dispatch({
@@ -282,7 +282,8 @@ export default class Action {
 	}
 
 	/**
-	 * 読み込む
+	 * データから読み込む
+	 * @param data 読み込むデータ.
 	 */
 	load(data) {
 		this.dispatcher.dispatch({
