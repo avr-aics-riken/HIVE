@@ -69,24 +69,50 @@ export default class NodePlugView extends React.Component {
 
 		this.props.nodeStore.on(Store.PLUG_HOLE_SELECTED, (err, data) => {
 			if (data.length >= 2) {
-				if (data[0].isInput !== data[1].isInput &&
-					data[0].data.type === data[1].data.type) {
-					console.log("プラグが接続された", data);
-
-					let input = data[0].isInput ? data[0] : data[1];
-					let output = data[0].isInput ? data[1] : data[0];
-					setTimeout(() => {
-						this.props.action.addPlug({
-							output : {
-								nodeVarname : output.data.nodeVarname,
-								name : output.data.name
-							},
-							input : {
-								nodeVarname : input.data.nodeVarname,
-								name : input.data.name
+				if (data[0].isInput !== data[1].isInput) {
+					if (data[0].data.type !== data[1].data.type &&
+						data[0].data.type === "all" || data[1].data.type === "all") {
+						console.log("外部に公開する端子へ接続された", data);
+						let input = data[0].isInput ? data[0] : data[1];
+						let output = data[0].isInput ? data[1] : data[0];
+						if (data[0].data.type === "all") {
+							if (data[0].isInput) {
+								setTimeout(() => {
+									this.props.action.publishOutput(output.data);
+								}, 0);
+							} else {
+								setTimeout(() => {
+									this.props.action.publishInput(input.data);
+								}, 0);
 							}
-						})
-					}, 0);
+						} else if (data[1].data.type === "all") {
+							if (data[1].isInput) {
+								setTimeout(() => {
+									this.props.action.publishOutput(output.data);
+								}, 0);
+							} else {
+								setTimeout(() => {
+									this.props.action.publishInput(input.data);
+								}, 0);
+							}
+						}
+					} else if (data[0].data.type === data[1].data.type) {
+						console.log("プラグが接続された", data);
+						let input = data[0].isInput ? data[0] : data[1];
+						let output = data[0].isInput ? data[1] : data[0];
+						setTimeout(() => {
+							this.props.action.addPlug({
+								output : {
+									nodeVarname : output.data.nodeVarname,
+									name : output.data.name
+								},
+								input : {
+									nodeVarname : input.data.nodeVarname,
+									name : input.data.name
+								}
+							})
+						}, 0);
+					}
 				}
 				setTimeout(() => {
 					this.props.nodeAction.unSelectPlugHoles();

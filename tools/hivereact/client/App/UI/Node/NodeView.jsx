@@ -47,6 +47,9 @@ export default class NodeView extends React.Component {
 		this.onCopy = this.onCopy.bind(this);
 		this.onPaste = this.onPaste.bind(this);
 		this.onDelete = this.onDelete.bind(this);
+
+		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
+		this.connectToGlobalIn = this.connectToGlobalIn.bind(this);
 	}
 
 	styles(id) {
@@ -205,12 +208,28 @@ export default class NodeView extends React.Component {
 		ev.preventDefault();
 	}
 
-	connectToGlobalIn() {
-
+	connectToGlobalIn(ev) {
+		let globalIn = {
+			data : {
+				name : "GlobalInput",
+				varname : "GlobalInput",
+				type : "all"
+			},
+			isInput : true
+		};
+		this.props.nodeAction.selectPlugHole(globalIn);
 	}
 
-	connectToGlobalOut() {
-
+	connectToGlobalOut(ev) {
+		let globalOut = {
+			data : {
+				name : "GlobalOutput",
+				varname : "GlobalOutput",
+				type : "all"
+			},
+			isInput : false
+		};
+		this.props.nodeAction.selectPlugHole(globalOut);
 	}
 
 	onMouseUp(ev) {
@@ -374,10 +393,6 @@ export default class NodeView extends React.Component {
 
 	}
 
-	onGlobalMouseUp(ev) {
-	console.log("mouseupda")
-	}
-
 	onGlobalOutEnter(ev) {
 		if (ev.button === 1 || ev.button === 2) { return; }
 		this.setState({ globalOutHover : true });
@@ -389,7 +404,7 @@ export default class NodeView extends React.Component {
 		ev.target.style.cursor = "default";
 	}
 
-	onGlobalEnter(ev) {
+	onGlobalInEnter(ev) {
 		if (ev.button === 1 || ev.button === 2) { return; }
 
 		let inRect = this.refs.globalIn.getBoundingClientRect();
@@ -399,7 +414,7 @@ export default class NodeView extends React.Component {
 		ev.target.style.cursor = "pointer";
 	}
 
-	onGlobalLeave(ev) {
+	onGlobalInLeave(ev) {
 		this.setState({ globalInHover : false });
 		ev.target.style.cursor = "default";
 	}
@@ -455,8 +470,6 @@ export default class NodeView extends React.Component {
 					ref="bound"
 					onMouseDown={this.onMouseDown.bind(this)}
 					onMouseMove={this.onMouseMove.bind(this)}
-
-					onMouseUp={this.onGlobalMouseUp.bind(this)}
 				>
 					<div ref="globalIn"
 						 style={{
@@ -466,7 +479,7 @@ export default class NodeView extends React.Component {
 							left : "0px",
 							top  : "50%",
 							transform : "translateY(-50%)",
-							backgroundColor : this.state.globalInHover ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.1)"
+							backgroundColor : this.state.globalInHover ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)"
 						}}
 					/>
 					<div ref="globalOut"
@@ -477,7 +490,7 @@ export default class NodeView extends React.Component {
 							right : "0px",
 							top  : "50%",
 							transform : "translateY(-50%)",
-							backgroundColor : this.state.globalOutHover ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.1)"
+							backgroundColor : this.state.globalOutHover ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.1)"
 						}}
 					/>
 					<div
@@ -513,19 +526,19 @@ export default class NodeView extends React.Component {
 							/>
 						</div>
 					</div>
-						<div ref="navigator"
-							style={{
-							   position : "absolute",
-							   	marginLeft : "30px",
-							   	width : "100%",
-								heigth : "20px",
-								top : "0px",
-								left : "0px",
-								color : "white"
-							}}
-						>
-							{this.navigator.bind(this)()}
-						</div>
+					<div ref="navigator"
+						style={{
+						   position : "absolute",
+						   	marginLeft : "30px",
+						   	width : "100%",
+							heigth : "20px",
+							top : "0px",
+							left : "0px",
+							color : "white"
+						}}
+					>
+						{this.navigator.bind(this)()}
+					</div>
 				</div>
 				);
 	}
