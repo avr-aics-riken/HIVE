@@ -201,7 +201,7 @@ export default class NodePlugView extends React.Component {
 				p.input.pos = pos;
 			}
 			return (<NodePlug nodeStore={this.props.nodeStore} plug={p} isTemporary={false}
-					key={node.varname + "_" + String(Math.floor(Math.random() * 100000))}/>);
+					key={data.nodeVarname + "_" + data.name + "_" + JSON.stringify(pos)}/>);
 		});
 		return globalInPlugs;
 	}
@@ -240,7 +240,7 @@ export default class NodePlugView extends React.Component {
 				p.output.pos = pos;
 			}
 			return (<NodePlug nodeStore={this.props.nodeStore} plug={p} isTemporary={false}
-					key={node.varname + "_" + String(Math.floor(Math.random() * 100000))}/>);
+					key={data.nodeVarname + "_" + data.name + "_" + JSON.stringify(pos)}/>);
 		});
 		return globalOutPlugs;
 	}
