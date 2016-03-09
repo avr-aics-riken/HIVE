@@ -182,6 +182,7 @@ export default class ActionExecuter {
 			let n = this.store.getNode(payload.varname);
 			if (n) {
 				this.store.getNodes().splice(n.index, 1);
+				let node = n.node;
 
 				// 関連するプラグを削除.
 				for (let i = this.store.getPlugs().length - 1; i >= 0; i = i - 1) {
@@ -191,7 +192,33 @@ export default class ActionExecuter {
 					} else if (plug.output.nodeVarname === payload.varname) {
 						this.deletePlug({ plugInfo : plug });
 					}
+					if (this.store.isGroup(node)) {
+						for (let k = 0; k < node.input.length; k = k + 1) {
+							if (node.input[k].nodeVarname === plug.input.nodeVarname) {
+								this.deletePlug({ plugInfo : plug });
+							}
+						}
+						for (let k = 0; k < node.output.length; k = k + 1) {
+							if (node.output[k].nodeVarname === plug.output.nodeVarname) {
+								this.deletePlug({ plugInfo : plug });
+							}
+						}
+					}
 				}
+				if (this.store.isGroup(node)) {
+					// 関連するプラグを全部消す
+					let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
+					if (tempPath.length > 0) {
+						tempPath.splice(tempPath.length-1, 1);
+					}
+					let plugs = this.store.getPlugs(tempPath);
+					for (let k = plugs.length - 1; k >= 0; k = k - 1) {
+						if (plugs[k].input.nodeVarname === node.varname || plugs[k].output.nodeVarname === node.varname) {
+							plugs.splice(k, 1);
+						}
+					}
+				}
+
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 				this.store.emit(Constants.NODE_DELETED, null, n.node);
 			}
