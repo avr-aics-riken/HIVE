@@ -87,7 +87,7 @@ export default class NodeInOut extends React.Component {
 		return position;
 	}
 
-	styles() {
+	styles(holevisible) {
 		let holeSize =  this.props.isClosed ? 10 : 15;
 		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
 		let holeSizeH =  this.props.isClosed ? 10 : 8;
@@ -114,7 +114,8 @@ export default class NodeInOut extends React.Component {
 				marginTop : this.props.isClosed ? "0px" : "7px",
 				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
-				border : (this.state.isDragging) ? "solid 1px" : "none"
+				border : (this.state.isDragging) ? "solid 1px" : "none",
+                display: (holevisible === true || holevisible === undefined) ? "block" : "none"
 			},
 			outhole : {
 				position : "absolute",
@@ -253,14 +254,14 @@ export default class NodeInOut extends React.Component {
 	}
 
 	inHoleText() {
-		const style = this.styles(this.props.index);
+        const style = this.styles();//this.props.index);
 		if (!this.props.isClosed) {
 			return (<div style={style.inholeText}>{this.props.data.name}</div>);
 		}
 	}
 
 	outHoleText() {
-		const style = this.styles(this.props.index);
+		const style = this.styles();//this.props.index);
 		if (!this.props.isClosed) {
 			return (<div style={style.outholeText}>{this.props.data.name}</div>);
 		}
@@ -279,8 +280,9 @@ export default class NodeInOut extends React.Component {
 	}
 
 	content() {
-		const style = this.styles(this.props.index);
-		if (this.props.isInput) {
+        const plugInfo = this.plugInfo();
+		const style = this.styles(plugInfo.data.hole);//this.props.index);
+        if (this.props.isInput) {
 			// 入力端子.
 			return (<div style={style.input}>
 						<div style={style.inhole}
