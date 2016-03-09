@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import nanomsg from 'nanomsg'
-import buffercopy from 'buffercopy'
+//import nanomsg from 'nanomsg'
+//import buffercopy from 'buffercopy'
 
 class RenderView extends React.Component {
 	constructor(props) {
@@ -65,7 +65,8 @@ class RenderView extends React.Component {
     readyForIPCImageTransfer(){
        	// Electron only
         if (this.sc === undefined) {
-            var nano = nanomsg;//require('nanomsg');
+            var nano = require('nanomsg');
+            var buffercopy = require('buffercopy');
             var sc = nano.socket('pair');
             this.sc = sc;
             var meta = require(require("path").resolve('./lib/metabinary')); // path from index.html
