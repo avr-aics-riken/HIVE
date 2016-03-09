@@ -1,4 +1,3 @@
-import fs from 'fs';
 import React from "react";
 import ReactDOM from "react-dom";
 import Autosuggest from 'react-autosuggest';
@@ -40,9 +39,10 @@ export default class ItemSuggest extends React.Component {
     onSuggestionsUpdateRequested({value}){
         this.setState({suggestions: this.getSuggestions(value)});
         if(value !== '' && value.match(/.+\.frag$/)){
-            fs.exists(__dirname + '/../../../../' + value, ((ex)=>{
-                if(ex){this.props.changeFunc(this.props.initialParam.name, value);}
-            }).bind(this));
+            this.props.changeFunc(this.props.initialParam.name, value);
+            // fs.exists(__dirname + '/../../../../' + value, ((ex)=>{
+                // if(ex){this.props.changeFunc(this.props.initialParam.name, value);}
+            // }).bind(this));
         }
     }
     getSuggestionValue(suggestion){
