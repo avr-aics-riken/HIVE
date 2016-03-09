@@ -47,12 +47,8 @@ class RenderView extends React.Component {
 	}
 
     hasIPCAddress() {
-		//return (this.props.ipc_address && this.props.ipc_address !== "");
-        //const r = (this.node.input[8].value !== undefined && this.node.input[8].value !== "");
-	    const r = (this.getInputValue('ipcpath') != "");        
-        //console.log('IPCCCCC', r, this.node.input[8].value); // ipcpath
-        return r;
-	}
+		return this.getInputValue('ipcmode');        
+    }
 
     closeForIPCImageTransfer(){
         if (this.sc === undefined) {
@@ -71,7 +67,7 @@ class RenderView extends React.Component {
             this.sc = sc;
             var meta = require(require("path").resolve('./lib/metabinary')); // path from index.html
             this.meta = meta;
-            var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;// + this.node.ipcpath;
+            var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;
             var ret = sc.bind(ipcAddress);
             console.log('IPC bind = ', ret, ipcAddress);
 

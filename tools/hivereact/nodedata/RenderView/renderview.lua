@@ -14,7 +14,7 @@ RenderView.new = function (varname)
         clearcolor = {0,0,0,1},
         color_file = "",
         depth_file = "",
-        ipcpath = ''
+        ipcmode = false
     }
     this.network_ipc = nil
     
@@ -65,7 +65,7 @@ function RenderView:Do()
     -- image save
     local imageBuffer
     local imageBufferSize
-    if self.property.ipcpath ~= '' then
+    if self.property.ipcmode then
         mode = 'raw'
         -- image save
         local img = targetcam:GetImageBuffer()	
@@ -95,10 +95,11 @@ function RenderView:Do()
     }]]
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     --print('JSON=', json, 'size=', imageBufferSize)
-    -- send        
-    if self.property.ipcpath ~= '' then       
+    -- send
+    print('ipcmode', self.property.ipcmode)        
+    if self.property.ipcmode then       
         if self.network_ipc == nil then
-            local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname -- .. self.property.ipcpath
+            local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname
             print('IPC open=', ipcAddress);
 	        self.network_ipc = require("Network").Connection()
 	        local ipcr = self.network_ipc:Connect(ipcAddress)
