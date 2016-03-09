@@ -32,6 +32,8 @@ app.on('ready', function () {
 	mainWindow = new BrowserWindow({
 		"frame": true,
         "autoHideMenuBar": true,
+        "width": 1024,
+        "height": 800,
         "title": "HIVE UI2"/*,
 		"titleBarStyle": "hidden",*/
 	});
