@@ -64,7 +64,7 @@ MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を�
 
 ## getMemoryDataNames()
 
-libHiveCoreを利用するネイティブから、インメモリ経由でデータの受けられるインターフェース。格納されているデータの識別名(string)一覧を取得する。
+libHiveCoreを利用するネイティブから、インメモリ経由でデータの受けられるインターフェース。格納されているデータの識別名(string)一覧(table型)を取得する。
 
 
 ## getMemoryData(name)
