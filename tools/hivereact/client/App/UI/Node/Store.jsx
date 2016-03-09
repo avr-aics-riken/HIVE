@@ -89,6 +89,7 @@ export default class Store extends EventEmitter {
 		this.changeZoom = this.changeZoom.bind(this);
 		this.isConnected = this.isConnected.bind(this);
 		this.isGroup = coreStore.isGroup;
+		this.coreStore = coreStore;
 	}
 
 	regenerateNodeMap(coreStore) {
@@ -351,7 +352,8 @@ export default class Store extends EventEmitter {
 	 */
 	disconnectPlugHole(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
-			console.log(payload.plugInfo);
+			let plugInfo = payload.plugInfo;
+			console.log(plugInfo);
 			for (let i = 0; i < this.plugPositions.length; i = i + 1) {
 				if (payload.plugInfo.isInput) {
 					if (Array.isArray(this.plugPositions[i].input.array)) {
@@ -372,6 +374,30 @@ export default class Store extends EventEmitter {
 				} else {
 					if (validatePlugInfo(this.plugPositions[i].output, payload.plugInfo)) {
 						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+						break;
+					}
+				}
+			}
+			// 外部へ公開していた場合は公開を中止する。
+			if (payload.plugInfo.isInput) {
+				let inputs = this.coreStore.getInput();
+				for (let i = 0; i < inputs.length; i = i + 1) {
+					let input = inputs[i];
+					if (input.varname === plugInfo.data.varname &&
+						input.name === plugInfo.data.name) {
+
+						this.emit(Store.GROUP_INPUT_DISCONNECTED, null, input);
+						break;
+					}
+				}
+			} else {
+				let outputs = this.coreStore.getOutput();
+				for (let i = 0; i < outputs.length; i = i + 1) {
+					let output = outputs[i];
+					if (output.varname === plugInfo.data.varname &&
+						output.name === plugInfo.data.name) {
+
+						this.emit(Store.GROUP_OUTPUT_DISCONNECTED, null, output);
 						break;
 					}
 				}
@@ -405,3 +431,5 @@ Store.PLUG_HOLE_DISCONNECTED = "plug_hole_disconnected";
 Store.NODE_MOVED = "node_moved";
 Store.ZOOM_CHANGED = "zoom_changed";
 Store.NEED_RERENDER = "need_rerender";
+Store.GROUP_INPUT_DISCONNECTED = "group_input_disconnected";
+Store.GROUP_OUTPUT_DISCONNECTED = "group_output_disconnected";

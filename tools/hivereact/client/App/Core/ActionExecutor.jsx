@@ -62,6 +62,8 @@ export default class ActionExecuter {
 		this.findGroupPath = this.findGroupPath.bind(this);
 		this.publishOutput = this.publishOutput.bind(this);
 		this.publishInput = this.publishInput.bind(this);
+		this.unPublishInput = this.unPublishInput.bind(this);
+		this.unPublishOutput = this.unPublishOutput.bind(this);
 	}
 
     /**
@@ -219,6 +221,57 @@ export default class ActionExecuter {
 				let input = this.store.getInput();
 				input.push(data);
 				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+			}
+		}
+	}
+
+	/**
+	 * 現在のノード階層に対して入力を削除する.
+	 */
+	unPublishInput(payload) {
+		if (payload.hasOwnProperty('data')) {
+			let data = payload.data;
+			if (data.hasOwnProperty('name') &&
+				data.hasOwnProperty('nodeVarname') &&
+				data.hasOwnProperty('type')) {
+				let input = this.store.getInput();
+
+				let deleted = false;
+				for (let i = 0; i < input.length; i = i + 1) {
+					if (input[i].name === data.name && input[i].nodeVarname === data.nodeVarname) {
+						input.splice(i, 1);
+						// TODO: 関連するプラグを全部消す
+						deleted = true;
+						break;
+					}
+				}
+				if (deleted) {
+					this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+				}
+			}
+		}
+	}
+
+	unPublishOutput(payload) {
+		if (payload.hasOwnProperty('data')) {
+			let data = payload.data;
+			if (data.hasOwnProperty('name') &&
+				data.hasOwnProperty('nodeVarname') &&
+				data.hasOwnProperty('type')) {
+				let output = this.store.getOutput();
+
+				let deleted = false;
+				for (let i = 0; i < output.length; i = i + 1) {
+					if (output[i].name === data.name && output[i].nodeVarname === data.nodeVarname) {
+						output.splice(i, 1);
+						// TODO: 関連するプラグを全部消す
+						deleted = true;
+						break;
+					}
+				}
+				if (deleted) {
+					this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+				}
 			}
 		}
 	}

@@ -67,6 +67,18 @@ export default class NodePlugView extends React.Component {
 			});
 		});
 
+		this.props.nodeStore.on(Store.GROUP_INPUT_DISCONNECTED, (err, data) => {
+			setTimeout(() => {
+				this.props.action.unPublishInput(data);
+			}, 0);
+		});
+
+		this.props.nodeStore.on(Store.GROUP_OUTPUT_DISCONNECTED, (err, data) => {
+			setTimeout(() => {
+				this.props.action.unPublishOutput(data);
+			}, 0);
+		});
+
 		this.props.nodeStore.on(Store.PLUG_HOLE_SELECTED, (err, data) => {
 			if (data.length >= 2) {
 				if (data[0].isInput !== data[1].isInput) {
@@ -121,6 +133,7 @@ export default class NodePlugView extends React.Component {
 		});
 
 		this.props.nodeStore.on(Store.PLUG_HOLE_DISCONNECTED, (err, data) => {
+			console.log("disconnected", data)
 			setTimeout(() => {
 				this.props.action.deletePlug({
 					output : {
