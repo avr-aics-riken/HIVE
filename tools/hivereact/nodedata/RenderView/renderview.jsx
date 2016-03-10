@@ -21,7 +21,7 @@ class RenderView extends React.Component {
         this.oldmy = 0;
 
         // View
-        
+
 
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.imageRecieved = this.imageRecieved.bind(this);
@@ -29,21 +29,21 @@ class RenderView extends React.Component {
 		this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 		this.getInputValue = this.getInputValue.bind(this);
 	}
-    
+
     progressiveUpdate(param) {
         let w = param.width;
         let h = param.height;
         const varname = this.node.varname;
         const ssize = this.getInputValue("screensize");
-        if (w < ssize[0] || h < ssize[1]) {            
+        if (w < ssize[0] || h < ssize[1]) {
             w *= 2;
             h *= 2;
             //console.log('PROGRESSIVE:', w, h);
-            setTimeout(() => {            
+            setTimeout(() => {
                 this.action.changeNodeInput({
                     varname : varname,
                     input : {
-                        "rendersize" : [w,h]                    
+                        "rendersize" : [w,h]
                     }
                 });
             },0);
@@ -52,7 +52,7 @@ class RenderView extends React.Component {
 
 	imageRecieved(err, param, data) {
 		var buffer;
-        const varname = this.node.varname;        
+        const varname = this.node.varname;
 		if (param.varname !== varname) {
 			return;
 		}
@@ -65,13 +65,13 @@ class RenderView extends React.Component {
 			param : param,
 			image : buffer
 		});
-		
+
         // progressive update
         this.progressiveUpdate(param);
 	}
 
     hasIPCAddress() {
-		return this.getInputValue('ipcmode');        
+		return this.getInputValue('ipcmode');
     }
 
     closeForIPCImageTransfer(){
@@ -121,7 +121,7 @@ class RenderView extends React.Component {
                             var imageData = context.createImageData(param.width, param.height);
                             buffercopy.buffercopy(data, imageData.data);
                             context.putImageData(imageData, 0, 0);
-                            
+
                             this.progressiveUpdate(param);
                         }
 	                }
@@ -182,9 +182,9 @@ class RenderView extends React.Component {
 		let ay = normalize(cross(az, ax));
 		let rx = rotate(rotx, ax);
 		let ry = rotate(roty, ay);
-        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
         let rw = parseInt(ssize[0] / 16);
-        let rh = parseInt(ssize[1] / 16);         
+        let rh = parseInt(ssize[1] / 16);
 
 		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
@@ -271,12 +271,18 @@ class RenderView extends React.Component {
     }
 
 	imageRecieveWrap(err, data) {
+		if (data.varname !== this.node.varname) {
+			return;
+		}
 		if (this.hasIPCAddress()) {
 			this.readyForIPCImageTransfer();
 		}
 	}
 
 	onPanelSizeChanged(err, data) {
+		if (data.varname !== this.node.varname) {
+			return;
+		}
 		// イメージサイズの更新.
 		if (this.state) {
 			if (this.props.node.panel.visible) {
@@ -292,7 +298,7 @@ class RenderView extends React.Component {
 							varname : this.props.node.varname,
 							input : {
                                 "screensize" : [width, height],
-                                "rendersize" : [parseInt(width/16), parseInt(height/16)]                            
+                                "rendersize" : [parseInt(width/16), parseInt(height/16)]
                             }
 						});
 					}, 0);
