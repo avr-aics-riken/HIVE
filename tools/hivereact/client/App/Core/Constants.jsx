@@ -4,6 +4,7 @@ module.exports = {
     INITIALIZED : "initialized",
     NODE_CHANGED : "node_changed",
     NODE_INPUT_CHANGED : "node_input_changed",
+	NODE_POSITION_CHANGED : "node_position_changed",
     PLUG_CHANGED : "plug_changed",
     NODE_COUNT_CHANGED : "node_count_changed",
     PLUG_COUNT_CHANGED : "plug_count_changed",
@@ -22,7 +23,7 @@ module.exports = {
 	DELETE_CALLED : "delete_called",
 	MAKE_GROUP_CALLED : "make_group_called",
     LAYOUT_CHANGED : "layout_changed",
-    CONSOLEOUTPUT_SHOW: "consoleoutput_show"    
+    CONSOLEOUTPUT_SHOW: "consoleoutput_show"
 };
 
 // color 定数化したい気もする
