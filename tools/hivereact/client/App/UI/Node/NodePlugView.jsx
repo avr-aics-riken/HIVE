@@ -12,29 +12,31 @@ export default class NodePlugView extends React.Component {
 		super(props);
 
 		this.state = {
-			plugPositions : this.props.nodeStore.getPlugPositions(),
+			plugPosList : this.props.nodeStore.getPlugPosList(),
 			temporaryPlug : null,
 			rerender : false
 		};
 
 		this.props.nodeStore.on(Store.PLUG_COUNT_CHANGED, (err) => {
 			this.setState({
-				plugPositions : [].concat(this.props.nodeStore.getPlugPositions())
+				plugPosList : [].concat(this.props.nodeStore.getPlugPosList())
 			});
 		});
 
 		this.props.store.on(Core.Constants.NODE_POSITION_CHANGED, (err, data) => {
-			let plugs = this.state.plugPositions;
+			let plugs = this.state.plugPosList;
+
 			for (let i = 0, size = plugs.length; i < size; i = i + 1) {
 				let plug = plugs[i];
 
-				// ここ遅いので後で何とかする
-				let inpos = this.props.nodeStore.calcPlugPosition(true, plug, data);
-				if (inpos) {
-					setTimeout(() => {
-						this.props.nodeAction.changePlugPosition(plug.input.nodeVarname, true, plug.input.name, inpos);
-					}, 0);
-				} else {
+				if (plug.input.nodeRef.varname === data.varname) {
+					let inpos = this.props.nodeStore.calcPlugPosition(true, plug, data);
+					if (inpos) {
+						setTimeout(() => {
+							this.props.nodeAction.changePlugPosition(plug.input.nodeVarname, true, plug.input.name, inpos);
+						}, 0);
+					}
+				} else if (plug.output.nodeRef.varname === data.varname) {
 					let outpos = this.props.nodeStore.calcPlugPosition(false, plug, data);
 					if (outpos) {
 						setTimeout(() => {
@@ -251,7 +253,7 @@ export default class NodePlugView extends React.Component {
 	}
 
 	render() {
-		let plugList = (this.state.plugPositions.map( (plugPos, key) => {
+		let plugList = (this.state.plugPosList.map( (plugPos, key) => {
 			return this.createPlug.bind(this)(plugPos, key);
 		} ));
 		return (
