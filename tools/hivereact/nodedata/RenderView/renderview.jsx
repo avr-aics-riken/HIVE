@@ -214,13 +214,17 @@ class RenderView extends React.Component {
 		let mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));
 		let pos = add(add(position, scale(-tx, ax)), scale(ty, ay));
 		let tar = add(add(target,   scale(-tx, ax)), scale(ty, ay));
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let rw = parseInt(ssize[0] / 16);
+        let rh = parseInt(ssize[1] / 16);
 
 		const varname = this.node.varname;
 		this.action.changeNodeInput({
 			varname : varname,
 			input : {
 				"position" : pos,
-				"target" : tar
+				"target" : tar,
+                "rendersize" : [rw, rh]
 			}
 		});
     }
@@ -228,6 +232,10 @@ class RenderView extends React.Component {
 		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
 		let v = subtract(position, target);
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let rw = parseInt(ssize[0] / 16);
+        let rh = parseInt(ssize[1] / 16);
+
 		let r = 1.0 - (zoom / 1000.0);
 		v = scale(r, v);
 		position = add(target, v);
@@ -235,7 +243,8 @@ class RenderView extends React.Component {
 		this.action.changeNodeInput({
 			varname : varname,
 			input : {
-				"position" : position
+				"position" : position,
+                "rendersize" : [rw, rh]
 			}
 		});
     }
