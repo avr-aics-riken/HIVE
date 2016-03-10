@@ -463,27 +463,34 @@ export default class ActionExecuter {
 					let prePanelSize = JSON.stringify(dstNode.panel.size);
 					let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
+					let hasNodeParam = srcNode.hasOwnProperty('node');
+					let preNodePos = JSON.stringify(dstNode.node.pos);
+					let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
+
 					for (let info in payload.nodeInfo) {
 						if (info !== "uiComponent" && this.store.getNodes()[i].hasOwnProperty(info)) {
-							this.store.getNodes()[i][info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
+							dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 						}
 					}
 
-					this.store.emit(Constants.NODE_CHANGED, null, this.store.getNodes()[i], i);
+					this.store.emit(Constants.NODE_CHANGED, null, dstNode, i);
 					if (hasInput && preInputs !== postInputs) {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
 					}
 					if (hasSelect && preSelect !== postSelect) {
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, dstNode, i);
+					}
+					if (hasNodeParam && preNodePos !== postNodePos) {
+						this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode, i);
 					}
 					if (hasPanel && prePanel !== postPanel) {
-						this.store.emit(Constants.PANEL_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.PANEL_CHANGED, null, dstNode, i);
 					}
 					if (hasPanel && prePanelVisible !== postPanelVisible) {
-						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, dstNode, i);
 					}
 					if (hasPanel && prePanelSize !== postPanelSize) {
-						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, dstNode, i);
 					}
 				}
 			}
