@@ -28,15 +28,17 @@ export default class Store extends EventEmitter {
 		//   input : {
 		//      pos : [x, y],
 		//      nodeVarname : varname,
-		//      name : name
+		//      name : name,
+		//		nodeRef : 接続先のノードまたはグループ
 		//   },
 		//   output : {
 		//      pos : [x, y],
 		//      nodeVarname : varname,
-		//      name : name
+		//      name : name,
+		//		nodeRef : 接続先のノードまたはグループ
 		//   },
 		// }
-		this.plugPositions = [];
+		this.plugPosList = [];
 
 		// 以下の形式の選択中の端子情報リスト
 		// 端子は2つ以上選択できず、2つ選択されたときは接続されたものとみなす
@@ -53,7 +55,6 @@ export default class Store extends EventEmitter {
 		// nodemap
 		this.nodeMap = {};
 		this.nodeToGroupMap = {};
-		this.isInitialRender = true;
 
 		// { nodeVarname : {width:"", height:""} }
 		this.nodeSizeMap = {};
@@ -65,7 +66,6 @@ export default class Store extends EventEmitter {
 					delete this.nodeSizeMap[n];
 				}
 			}
-			this.isInitialRender = true;
 		});
 
 		this.calcPlugPosition = this.calcPlugPosition.bind(this);
@@ -75,10 +75,10 @@ export default class Store extends EventEmitter {
 			// ノードマップを作り直す.
 			this.regenerateNodeMap(coreStore);
 			this.recalcPlugPosition(coreStore);
-			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPositions);
+			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPosList);
 		});
 
-		this.getPlugPositions = this.getPlugPositions.bind(this);
+		this.getPlugPosList = this.getPlugPosList.bind(this);
 		this.changePlugPosition = this.changePlugPosition.bind(this);
 		this.moveNode = this.moveNode.bind(this);
 		this.dragPlug = this.dragPlug.bind(this);
@@ -114,8 +114,7 @@ export default class Store extends EventEmitter {
 	}
 
 	recalcPlugPosition(coreStore) {
-		//if (!this.isInitialRender) { return; }
-		this.plugPositions = [];
+		this.plugPosList = [];
 		let plugs = coreStore.getPlugs();
 		for (let i = 0; i < plugs.length; i = i + 1) {
 			let plug = plugs[i];
@@ -134,16 +133,18 @@ export default class Store extends EventEmitter {
 					input : {
 						nodeVarname : plug.input.nodeVarname,
 						name : plug.input.name,
-						pos : this.calcPlugPosition(true, plug, inNode)
+						pos : this.calcPlugPosition(true, plug, inNode),
+						nodeRef : inNode
 					},
 					output : {
 						nodeVarname : plug.output.nodeVarname,
 						name : plug.output.name,
-						pos : this.calcPlugPosition(false, plug, outNode)
+						pos : this.calcPlugPosition(false, plug, outNode),
+						nodeRef : outNode
 					}
 				};
 				this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
-				this.plugPositions.push(plugPosition);
+				this.plugPosList.push(plugPosition);
 			}
 		}
 	}
@@ -157,6 +158,7 @@ export default class Store extends EventEmitter {
 	calcPlugPosition(isInput, plug, node) {
 		let isClosed = node.node.close;
 		if (isInput) {
+			//console.log("plug", plug)
 			if (plug.input.nodeVarname === node.varname || this.isGroup(node)) {
 				let count = 0;
 				for (let k = 0; k < node.input.length; k = k + 1) {
@@ -224,8 +226,8 @@ export default class Store extends EventEmitter {
 	/**
 	 * plug位置リストを返す.
 	 */
-	getPlugPositions() {
-		return this.plugPositions;
+	getPlugPosList() {
+			return this.plugPosList;
 	}
 
 	/**
@@ -275,20 +277,20 @@ export default class Store extends EventEmitter {
 	 * @private
 	 */
 	changePlugPosition(payload) {
-		for (let i = 0; i < this.plugPositions.length; i = i + 1) {
+		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
 			if (payload.isInput) {
-				if (this.plugPositions[i].input.nodeVarname === payload.nodeVarname &&
-					this.plugPositions[i].input.name === payload.name) {
+				if (this.plugPosList[i].input.nodeVarname === payload.nodeVarname &&
+					this.plugPosList[i].input.name === payload.name) {
 
-					this.plugPositions[i].input.pos = JSON.parse(JSON.stringify(payload.pos));
-					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions[i]);
+					this.plugPosList[i].input.pos = JSON.parse(JSON.stringify(payload.pos));
+					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPosList[i]);
 				}
 			} else {
-				if (this.plugPositions[i].output.nodeVarname === payload.nodeVarname &&
-					this.plugPositions[i].output.name === payload.name) {
+				if (this.plugPosList[i].output.nodeVarname === payload.nodeVarname &&
+					this.plugPosList[i].output.name === payload.name) {
 
-					this.plugPositions[i].output.pos = JSON.parse(JSON.stringify(payload.pos));
-					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions[i]);
+					this.plugPosList[i].output.pos = JSON.parse(JSON.stringify(payload.pos));
+					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPosList[i]);
 				}
 			}
 		}
@@ -296,15 +298,15 @@ export default class Store extends EventEmitter {
 
 	/// 入力端子にプラグが繋がっているかどうか返す
 	isConnected(nodeVarname, inputName) {
-		for (let i = 0; i < this.plugPositions.length; i = i + 1) {
-			if (this.plugPositions[i].input.nodeVarname === nodeVarname) {
-				if (Array.isArray(this.plugPositions[i].input.array)) {
-					for (let k = 0; k < this.plugPositions[i].input.array.length; k = k + 1) {
-						if (this.plugPositions[i].input.array[k].name === inputName) {
+		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
+			if (this.plugPosList[i].input.nodeVarname === nodeVarname) {
+				if (Array.isArray(this.plugPosList[i].input.array)) {
+					for (let k = 0; k < this.plugPosList[i].input.array.length; k = k + 1) {
+						if (this.plugPosList[i].input.array[k].name === inputName) {
 							return true;
 						}
 					}
-				} else if (this.plugPositions[i].input.name === inputName) {
+				} else if (this.plugPosList[i].input.name === inputName) {
 					return true;
 				}
 			}
@@ -354,26 +356,26 @@ export default class Store extends EventEmitter {
 		if (payload.hasOwnProperty('plugInfo')) {
 			let plugInfo = payload.plugInfo;
 			console.log(plugInfo);
-			for (let i = 0; i < this.plugPositions.length; i = i + 1) {
+			for (let i = 0; i < this.plugPosList.length; i = i + 1) {
 				if (payload.plugInfo.isInput) {
-					if (Array.isArray(this.plugPositions[i].input.array)) {
-						let inputArray = this.plugPositions[i].input.array;
+					if (Array.isArray(this.plugPosList[i].input.array)) {
+						let inputArray = this.plugPosList[i].input.array;
 						for (let k = 0; k < inputArray.length; k = k + 1) {
 							let input = inputArray[k];
-							if (validatePlugInfo(this.plugPositions[i].input, payload.plugInfo, input.name)) {
-								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+							if (validatePlugInfo(this.plugPosList[i].input, payload.plugInfo, input.name)) {
+								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPosList[i]);
 								break;
 							}
 						}
 					} else {
-						if (validatePlugInfo(this.plugPositions[i].input, payload.plugInfo)) {
-							this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+						if (validatePlugInfo(this.plugPosList[i].input, payload.plugInfo)) {
+							this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPosList[i]);
 							break;
 						}
 					}
 				} else {
-					if (validatePlugInfo(this.plugPositions[i].output, payload.plugInfo)) {
-						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+					if (validatePlugInfo(this.plugPosList[i].output, payload.plugInfo)) {
+						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPosList[i]);
 						break;
 					}
 				}
