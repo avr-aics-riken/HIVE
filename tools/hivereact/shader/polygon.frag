@@ -20,6 +20,7 @@ void main(void)
 #ifdef LSGL_ES
     vec3 p,n,dir;
     isectinfo(p, n, dir);
+    dir = vec3(0,1,0);
 #else
     vec3 dir = vec3(0.0,1.0,0.0);
     vec3 n = vnormal;
