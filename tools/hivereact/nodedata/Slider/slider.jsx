@@ -15,7 +15,7 @@ class Slider extends React.Component {
 		this.props.action.changeNodeInput({
 			varname : this.props.node.varname,
 			input : {
-				"value" : val
+				"value" : Number(val)
 			}
 		});
 	}
