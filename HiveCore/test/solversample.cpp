@@ -19,6 +19,7 @@
 
 #include "Core/Path.h"
 #include "Core/sleep.h"
+#include "Core/Perf.h"
 
 
 /**
@@ -46,6 +47,9 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     //printf("[MPI] rank = %d\n", rank);
 #endif
+
+    // Initialize performance monitor.
+    PMon::Init();
     
     SceneScript script;
     script.CreateMemoryData("testdata");
@@ -69,6 +73,8 @@ int main(int argc, char* argv[])
     
     delete [] testdata;
     
+    // Report performance.
+    PMon::Report();
     
 #ifdef HIVE_ENABLE_MPI
     printf("[MPI] finalize at rank: %d\n", rank);

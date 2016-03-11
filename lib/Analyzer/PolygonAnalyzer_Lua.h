@@ -10,9 +10,7 @@
 #include "Analyzer.h"
 #include "PolygonAnalyzer.h"
 
-#ifdef HIVE_WITH_PMLIB
-#include "Perf.h" // Core
-#endif
+#include "Core/Perf.h"
 
 //#include "PolygonModel_Lua.h"
 /**
