@@ -1,0 +1,12 @@
+{
+	"name": "LoadImage",
+	"funcname": "LoadImage",
+	"info":"Imageをロードするノード",
+	"customfuncfile":"loadimage.lua",
+    "input": [
+		{"name": "filepath",  "type": "string", "value": ""}
+	],
+	"output": [
+      	{"name": "image",  "type": "BufferImageData"}	
+	]
+}

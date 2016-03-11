@@ -3,7 +3,8 @@
 
 var	HRENDER = __dirname + '/../../build/bin/hrender',
 //var	HRENDER = __dirname + '/../hrender',
-	HRENDER_ARG = [__dirname +'/lua/hrender_server.lua'],
+    HRENDER_CWD = __dirname +'/lua/',
+	HRENDER_ARG = [HRENDER_CWD + 'hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = __dirname + '/client/',
 	metabin = require(__dirname + '/lib/metabinary'),
@@ -164,21 +165,29 @@ function requestShaderList(clientNode, msg_id) {
 	var files = [],
 		shaderlist = [],
 		i,
-		infofile;
-	console.log('[DEBUG] requestShaderList');
-	getFile('./shader', files);
+		//infofile,
+        shaderDir = __dirname + '/shader';
+        
+	console.log('[DEBUG] requestShaderList', shaderDir);
+	getFile(shaderDir, files);
 	for (i = 0; i < files.length; i = i + 1) {
-		if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
-			infofile = files[i].path.replace('.frag', '.json');
-			try {
-				files[i].info = JSON.parse(fs.readFileSync(infofile));
+        if (files[i].type === 'file' && files[i].name.substr(files[i].name.length - 5) === '.frag') {
+            
+            //relative
+            files[i].fullpath =  files[i].path;
+            files[i].path = path.relative(HRENDER_CWD, files[i].path);
+			shaderlist.push(files[i]);
+            // disable
+			/*infofile = files[i].path.replace('.frag', '.json');
+            try {
+				files[i].info = JSON.parse(fs.readFileSync(shaderfile));
 				shaderlist.push(files[i]);
 			} catch (e) {
 				console.error('[Error] Failed to read: ' + infofile);
-			}
+			}*/
 		}
 	}
-	clientNode.send(JSON.stringify({
+    clientNode.send(JSON.stringify({
 		JSONRPC: "2.0",
 		result: JSON.stringify(shaderlist),
 		id: msg_id
@@ -355,7 +364,16 @@ ws.on('request', function (request) {
 				for (a in args) {
 					console.log('ARG=[' + a + '] = ' + args[a]);
 				}
-				clientNode.renderproc = startupHRenderServer(args);
+				clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
+                    return function (data) {
+                        clientNode.send(JSON.stringify({
+                            JSONRPC: "2.0",
+                            method: "rendererLog",
+                            param: JSON.stringify(data.toString()),
+                            id: 0
+                        }));
+                    };
+                })(clientNode));
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
@@ -580,7 +598,7 @@ function captureThumbnail() {
 
 var spawnProcesses = [];
 
-function startupHRenderServer(optarray) {
+function startupHRenderServer(optarray, outcallback) {
 	'use strict';
 	var process = null,
 		i,
@@ -596,9 +614,15 @@ function startupHRenderServer(optarray) {
 		process = spawn(HRENDER, arg);
 		process.stdout.on('data', function (data) {
 			console.log('stdout: ' + data);
+            if (outcallback) {
+                outcallback(data);
+            }
 		});
 		process.stderr.on('data', function (data) {
 			console.error('stderr: ' + data);
+            if (outcallback) {
+                outcallback(data);
+            }
 		});
 		process.on('exit', function (code) {
 			console.error('-------------------------\nhrender is terminated.\n-------------------------');

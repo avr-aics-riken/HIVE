@@ -5,7 +5,7 @@
 
 #include "VolumeAnalyzer.h"
 #include "Analyzer.h"
-#include "../Buffer/BufferMeshData.h"
+#include "../Buffer/BufferVolumeData.h"
 #include "Buffer.h"
 
 /// コンストラクタ
@@ -86,80 +86,74 @@ const std::vector<float>& VolumeAnalyzer::GetHistgram() const
  * 最小最大を指定し, ヒストグラムを返す
  * @return ヒストグラム
  */
-const std::vector<float> VolumeAnalyzer::GetHistgramInRange(VolumeModel *model, double min, double max) const
+const std::vector<float> VolumeAnalyzer::GetHistgramInRange(BufferVolumeData* volume, double min, double max) const
 {
     VolumeAnalyzerProc proc;
     std::vector<float> histgram[3];
     
-    // TODO!
-    /*if(model->GetVolume()) {
-        BufferVolumeData *volume = model->GetVolume();
-        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
-        int temp_num[3] = {
-            volume->Width(),
-            volume->Height(),
-            volume->Depth()
-        };
-        
-        const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
-        if(fnum <= 0)
-        {
-            fprintf(stderr,"Volume data empty\n");
+    if (!volume || volume->GetType() != BufferData::TYPE_VOLUME) {
+        fprintf(stderr,"Invalid volume data\n");
+        return histgram[0];
+    }
+    
+    const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+    const int temp_num[3] = {
+        volume->Width(),
+        volume->Height(),
+        volume->Depth()
+    };
+    
+    const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
+    if (fnum <= 0) {
+        fprintf(stderr,"Volume data empty\n");
+    } else  {
+        if (volume->Component() == 1) {
+            proc.AnalyzeScalarInRange(histgram[0], min, max, buffer, temp_num);
+        } else if (volume->Component() == 3) {
+            double temp_min[3] = { min, min, min };
+            double temp_max[3] = { max, max, max };
+            proc.AnalyzeVectorInRange(histgram, temp_min, temp_max, buffer, temp_num);
+        } else {
+            fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
         }
-        else
-        {
-            if (volume->Component() == 1) {
-                proc.AnalyzeScalarInRange(histgram[0], min, max, buffer, temp_num);
-            } else if (volume->Component() == 3) {
-                double temp_min[3] = { min, min, min };
-                double temp_max[3] = { min, min, min };
-                proc.AnalyzeVectorInRange(histgram, temp_min, temp_max, buffer, temp_num);
-            } else {
-                fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
-            }
-        }
-    }*/
+    }
     return histgram[0];
 }
 
 /**
  * ボリュームモデル解析
- * @param model 解析対象PolygonModel
+ * @param model 解析対象BufferVolumeData
  * @retval true 成功
  * @retval false 失敗
  */
-bool VolumeAnalyzer::Execute(VolumeModel *model)
+bool VolumeAnalyzer::Execute(BufferVolumeData *volume)
 {
-    VolumeAnalyzerProc proc;
+    if (!volume || volume->GetType() != BufferData::TYPE_VOLUME) {
+        fprintf(stderr,"Invalid volume data.");
+        return false;
+    }
     
-    // TODO!
-    /*if(model->GetVolume()) {
-        BufferVolumeData *volume = model->GetVolume();
-        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+    const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+    const int temp_num[3] = {
+        volume->Width(),
+        volume->Height(),
+        volume->Depth()
+    };
 
-        int temp_num[3] = {
-            volume->Width(),
-            volume->Height(),
-            volume->Depth()
-        };
-
-        const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
-        if(fnum <= 0)
-        {
-            fprintf(stderr,"Volume data empty\n");
-            return false;
-        }
-        
-        if (volume->Component() == 1) {
-            proc.AnalyzeScalar(m_volHist[0], m_minVal[0], m_maxVal[0], buffer, temp_num);
-        } else if (volume->Component() == 3) {
-            proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
-        } else {
-            fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
-        }
+    const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
+    if (temp_num[0] == 0 || temp_num[1] == 0 || temp_num[2] == 0 || fnum <= 0) {
+        fprintf(stderr,"Volume data empty\n");
+        return false;
+    }
+    
+    VolumeAnalyzerProc proc;
+    if (volume->Component() == 1) {
+        proc.AnalyzeScalar(m_volHist[0], m_minVal[0], m_maxVal[0], buffer, temp_num);
+    } else if (volume->Component() == 3) {
+        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
     } else {
-        fprintf(stderr,"Volume data not found.");
-    }*/
+        fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
+    }
     return true;
 }
 

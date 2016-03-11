@@ -2206,6 +2206,9 @@ BufferMeshData* PrimitiveGenerator::Teapot(float scale) const
         VX::Math::idx3 face1(indexdata[i][0]-1, indexdata[i][1]-1, indexdata[i][2]-1);
         indecies[i] = face1;
     }
+    for (int i = 0; i < vsize; ++i) {
+        normals[i] = VX::Math::vec3(0,0,0);
+    }
     for (int i = 0; i < fsize; ++i) {
         VX::Math::idx3 &idx = indecies[i];
         const VX::Math::vec3 v1(vertexdata[idx[0]]);

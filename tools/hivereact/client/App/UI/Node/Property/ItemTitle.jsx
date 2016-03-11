@@ -14,11 +14,12 @@ export default class ItemTitle extends React.Component {
 		return {
 			title : {
                 backgroundColor : "rgb(33, 187, 151)",
-                borderRadius: "3px",
+                borderRadius: "2px",
                 color : "#011",
                 lineHeight: "24px",
                 margin: "2px",
                 padding: "0px 2px",
+				paddingLeft : "4px",
                 width : "246px",
                 height: "24px",
 			}

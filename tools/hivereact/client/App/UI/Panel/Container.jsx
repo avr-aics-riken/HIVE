@@ -8,6 +8,8 @@ export default class Container extends React.Component {
 
         this.store = props.store;
         this.action = props.action;
+		let n = this.props.node;
+		n.uiComponent = eval(this.props.node.uiFunc);        
         this.state = {
             node: this.props.node,
             closeHover: false
@@ -24,12 +26,12 @@ export default class Container extends React.Component {
         this.onScaleMove = this.onScaleMove.bind(this);
         this.onScaleUp = this.onScaleUp.bind(this);
         this.onScaleDown = this.onScaleDown.bind(this);
-
+        this.onCancelBubble = this.onCancelBubble.bind(this);
     }
 
     nodeChanged(err, data) {
         if(data.varname === this.state.node.varname){
-            this.setState({node: data});
+            this.setState({node: Object.assign({}, data)});
         }
     }
 
@@ -38,7 +40,8 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onMouseUp);
         window.addEventListener('mousemove', this.onScaleMove);
         window.addEventListener('mouseup', this.onScaleUp);
-        this.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.NODE_INPUT_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.PANEL_CHANGED, this.nodeChanged);
         this.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
@@ -47,11 +50,13 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onMouseUp);
         window.removeEventListener('mousemove', this.onScaleMove);
         window.removeEventListener('mouseup', this.onScaleUp);
-        this.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.PANEL_CHANGED, this.nodeChanged);
         this.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {
+        ev.stopPropagation();
         if(ev.button === 0){
             this.isLeftDown = true;
             this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
@@ -69,18 +74,19 @@ export default class Container extends React.Component {
         if (this.isLeftDown) {
             let node = this.state.node;
             let mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
-			let panel = JSON.parse(JSON.stringify(node.panel));
+            let panel = JSON.parse(JSON.stringify(node.panel));
             panel.pos[0] = this.offsetLeft + mv.x;
             panel.pos[1] = this.offsetTop + mv.y;
             this.action.changeNode({
-				varname : node.varname,
-				panel : panel
-			});
+                varname : node.varname,
+                panel : panel
+            });
         }
-		ev.preventDefault();
+        ev.preventDefault();
     }
 
     onScaleDown(ev) {
+        ev.stopPropagation();
         if(ev.button === 0){
             this.isScaleLeftDown = true;
             this.scalePos = {x: ev.clientX, y: ev.clientY};
@@ -98,14 +104,18 @@ export default class Container extends React.Component {
         if (this.isScaleLeftDown) {
             let node = this.state.node;
             let mv = {x: ev.clientX - this.scalePos.x, y: ev.clientY - this.scalePos.y};
-			let panel = JSON.parse(JSON.stringify(node.panel));
+            let panel = JSON.parse(JSON.stringify(node.panel));
             panel.size[0] = Math.max(this.offsetScaleLeft + mv.x, 100);
             panel.size[1] = Math.max(this.offsetScaleTop + mv.y, 100);
             this.action.changeNode({
-				varname : node.varname,
-				panel : panel
-			});
+                varname : node.varname,
+                panel : panel
+            });
         }
+    }
+
+    onCancelBubble(ev){
+        ev.stopPropagation();
     }
 
     // 閉じるボタンが押された.
@@ -150,8 +160,10 @@ export default class Container extends React.Component {
     styles() {
         return {
             container : {
-                backgroundColor: "#666",
-                border: this.state.node.select ? "1px solid orange" : "0px solid orange",
+                backgroundColor: "rgb(69, 69, 69)",
+                border: "2px solid " + (this.state.node.select ? "rgba(33, 187, 151, 1.0)" : "rgba(0, 0, 0, 0.0)"),
+                borderRadius: "5px",
+                color: "whitesmoke",
                 margin : "0px",
                 padding : "0px",
                 minWidth : this.state.node.panel.size[0] + "px",
@@ -159,43 +171,41 @@ export default class Container extends React.Component {
                 position: "absolute",
                 top:  this.state.node.panel.pos[1] + "px",
                 left: this.state.node.panel.pos[0] + "px",
-                boxShadow: "0px 0px 3px 0px skyblue inset",
                 zIndex: this.state.node.panel.zindex,
                 display: this.state.node.panel.visible ? "block" : "none"
             },
             panelTitleBar: {
-                backgroundColor: "silver",
-                color: "#333",
-                fontSize: "8pt",
-                lineHeight: "24px",
-                minHeight: "24px",
+                fontSize: "12pt",
+                lineHeight: "30px",
+                minHeight: "30px",
                 margin: "0px",
                 padding: "0px 5px",
-                cursor: "move"
+                cursor: "move",
+                textShadow: "0px 0px 3px black"
             },
             panelCloseButton: {
-                backgroundColor : "#ea4412",
-                border: this.state.closeHover ? "solid 1px white" : "none",
+                backgroundColor : "rgb(33, 187, 151)",
                 borderRadius : "5px",
                 color: "white",
-                fontWeight: "bold",
-                lineHeight: "15px",
-                textAlign : "center",
-                margin : "4px",
-                width: "15px",
-                height: "15px",
+                margin : "6px",
+                width: "18px",
+                height: "18px",
                 position : "absolute",
                 top: "0px",
                 right: "0px",
+                opacity: this.state.closeHover ? "0.9" : "1.0",
+                backgroundImage : "url(./img/node_close.png)",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
                 cursor: "pointer"
             },
             panelScale: {
-                backgroundColor: "orange",
+                backgroundColor: "rgb(33, 187, 151)",
                 position: "absolute",
                 bottom: "0px",
                 right: "0px",
-                width: "15px",
-                height: "15px",
+                width: "18px",
+                height: "18px",
                 overflow: "hidden",
                 cursor: "se-resize"
             }
@@ -206,18 +216,33 @@ export default class Container extends React.Component {
         // if(!this.state.node.panel.visible){return;}
         var node, res, styles = this.styles();
         node = this.state.node;
-        if(!node.uiComponent){
-            node.uiComponent = eval(node.uiFunc);
-        }
         if (node.uiComponent === undefined) {
             res = "";
-        } else {
+        } else { // if (node.jsx === true) {
             res = React.createFactory(this.state.node.uiComponent)({
                 store: this.store,
                 action: this.action,
                 node: node
             });
-        }
+        }/* else {
+            class CustomUI extends React.Component{
+                constructor(props) {
+                    super(props);
+                    this.props = props;
+                }
+                render() {
+                    return (<div></div>);
+                }
+                componentDidMount() {
+                    const dom = ReactDOM.findDOMNode(this);
+                    this.props.node.uiComponent(dom, this.props.node);
+                }
+                componentWillUnmount() {
+                    //console.log('DIDUNMOUNT');                    
+                }
+            } 
+            res = <CustomUI node={node}/>
+        }*/
         return (
             <div style={styles.container}>
                 <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
@@ -227,9 +252,9 @@ export default class Container extends React.Component {
                         onClick={this.onCloseClick.bind(this)}
                         onMouseEnter={this.onCloseHover.bind(this)}
                         onMouseLeave={this.onCloseHover.bind(this)}
-                    >x</div>
+                    />
                 </div>
-                <div>{res}</div>
+                <div onMouseDown={this.onCancelBubble}>{res}</div>
                 <div style={styles.panelScale} onMouseDown={this.onScaleDown.bind(this)}>
                 </div>
             </div>

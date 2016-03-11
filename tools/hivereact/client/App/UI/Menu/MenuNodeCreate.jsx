@@ -76,7 +76,8 @@ export default class MenuNodeCreate extends React.Component {
         const inputValue = value.trim().toLowerCase();
         const inputLength = inputValue.length;
         return inputLength === 0 ? [] : nodeNames.filter(nodename =>
-             nodename.name.toLowerCase().slice(0, inputLength) === inputValue
+             // nodename.name.toLowerCase().slice(0, inputLength) === inputValue
+             nodename.name.toLowerCase().indexOf(inputValue) !== -1
         );
     }
     onSuggestionsUpdateRequested({value}){this.setState({suggestions: this.getSuggestions(value)});}
@@ -107,9 +108,9 @@ export default class MenuNodeCreate extends React.Component {
                     borderRadius: "3px",
                     border: "none",
                     color: "#666",
-                    width: "236px",
+                    width: "232px",
                     margin: "2px 3px",
-                    padding: "8px 3px"
+                    padding: "5px 3px"
                 },
                 suggestionsContainer: {
                     listStyle: "none",

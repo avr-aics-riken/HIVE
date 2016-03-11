@@ -133,7 +133,7 @@ public:
 	// Analyzer volume and returns min/max value and histogram.
 	template <typename T>
 	void AnalyzeScalar(std::vector<float> &outHistogram, double &minVal,
-							 double &maxVal, const T *vol, int res[3],
+							 double &maxVal, const T *vol, const int res[3],
 							 int numBins = 256) {
 		
 		// 1. find min and max value;
@@ -165,7 +165,7 @@ public:
      */
     template <typename T>
     void AnalyzeScalarInRange(std::vector<float> &outHistogram, double minVal,
-                       double maxVal, const T *vol, int res[3],
+                       double maxVal, const T *vol, const int res[3],
                        int numBins = 256) {
         
         // compute histogram;
@@ -183,7 +183,7 @@ public:
 	template <typename T>
 	void AnalyzeVector(std::vector<float> outHistograms[3],
 							 double minVal[3], double maxVal[3], const T *vol,
-							 int res[3], int numBins = 256, int component = 3) {
+							 const int res[3], int numBins = 256, int component = 3) {
 		
 		for (int k = 0; k < 3; k++) { // TODO: component
 			
@@ -218,7 +218,7 @@ public:
     template <typename T>
     void AnalyzeVectorInRange(std::vector<float> outHistograms[3],
                               double minVal[3], double maxVal[3], const T *vol,
-                              int res[3], int numBins = 256, int component = 3) {
+                              const int res[3], int numBins = 256, int component = 3) {
         
         for (int k = 0; k < 3; k++) { // TODO: component
             // compute histogram;

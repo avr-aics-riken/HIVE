@@ -17,12 +17,12 @@ public:
     , m_clampToEdgeT(false)
     , m_clampToEdgeR(false)
     {
-        
+        m_volume = 0;
     }
     /// デストラクタ
     ~Impl()
     {
-        
+        m_volume = 0;
     }
     
     /**

@@ -1,0 +1,13 @@
+{
+	"name": "TransferFunction",
+	"funcname": "TransferFunction",
+	"info":"TransferFunctionをつくるノード",
+	"customfuncfile":"transferfunction.lua",
+	"uifile":"transferfunction.jsx",
+    "input": [
+  		{"name": "rgba",  "type": "floatarray", "visible":false, "value":[] }        
+	],
+	"output": [
+		{"name": "Image",  "type": "BufferImageData"}
+	]
+}

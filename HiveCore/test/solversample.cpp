@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
     unsigned char* testdata = new unsigned char[testsize];
     for (int y = 0; y < 1024; ++y) {
         for (int x = 0; x < 1024; ++x) {
-            testdata[4*(y * 1024 + x)  ] = static_cast<unsigned char>(x);
+            testdata[4*(y * 1024 + x)  ] = static_cast<unsigned char>(x/1024.0*255);
             testdata[4*(y * 1024 + x)+1] = static_cast<unsigned char>(y);
             testdata[4*(y * 1024 + x)+2] = static_cast<unsigned char>(0);
             testdata[4*(y * 1024 + x)+3] = static_cast<unsigned char>(255);

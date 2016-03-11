@@ -14,7 +14,7 @@ RenderView.new = function (varname)
         clearcolor = {0,0,0,1},
         color_file = "",
         depth_file = "",
-        ipcpath = ''
+        ipcmode = false
     }
     this.network_ipc = nil
     
@@ -23,43 +23,57 @@ RenderView.new = function (varname)
 end
 
 function RenderView:Do()
-    local property = self.property    
-    self.cam:SetScreenSize(property.screensize[1], property.screensize[2])
-    self.cam:SetFilename(property.color_file)
-    if property.depth_file ~= nil then
-        self.cam:SetDepthFilename(property.depth_file)
-    end
-    self.cam:ClearColor(property.clearcolor[1],property.clearcolor[2],property.clearcolor[3],property.clearcolor[4])
+    self:UpdateValue()
+    local v = self.value
+    
+    self.cam:SetScreenSize(v.rendersize[1], v.rendersize[2])--v.screensize[1], v.screensize[2])
+    self.cam:SetFilename(v.color_file)
+    self.cam:SetDepthFilename(v.depth_file)
+    self.cam:ClearColor(v.clearcolor[1],v.clearcolor[2],v.clearcolor[3],v.clearcolor[4])
     self.cam:LookAt(
-        property.position[1], property.position[2], property.position[3],
-        property.target[1], property.target[2], property.target[3],
-        property.up[1], property.up[2], property.up[3],
-        property.fov
+        v.position[1], v.position[2], v.position[3],
+        v.target[1],   v.target[2],   v.target[3],
+        v.up[1],       v.up[2],       v.up[3],
+        v.fov
     )
     
     local temp = {}
     local targetcam
 -- For Object
-    if self.connection.RenderObject then
-        temp = self.connection.RenderObject
+    if v.RenderObject then
+        temp = v.RenderObject
     end
         
 -- For Camera
-    if self.connection.Camera then
-        temp[#temp + 1] = self.connection.Camera
-        targetcam = self.connection.Camera
+    if v.Camera then
+        temp[#temp + 1] = v.Camera
+        targetcam = v.Camera
     else
         temp[#temp + 1] = self.cam
         targetcam = self.cam
     end
 
-    render(temp)
+-- dump
+--[[
+    for i,v in pairs(temp) do
+         print('RenderObject->', v);   
+    end
+--]]
+    if v.screensize[1] / 10 < v.rendersize[1] then
+        render(temp, HIVE_fetchEvent)
+    else
+        render(temp)
+    end
+    
+    if network == nil and HIVE_metabin == nil then -- no UI mode        
+        return
+    end 
     
     local mode = 'jpg'
     -- image save
     local imageBuffer
     local imageBufferSize
-    if self.property.ipcpath ~= '' then
+    if self.property.ipcmode then
         mode = 'raw'
         -- image save
         local img = targetcam:GetImageBuffer()	
@@ -72,8 +86,12 @@ function RenderView:Do()
     end
     
     -- create metabinary
-    local w = property.screensize[1]
-    local h = property.screensize[2]
+    --local w = v.screensize[1]
+    --local h = v.screensize[2]
+    local w = v.rendersize[1]
+    local h = v.rendersize[2]
+    print('rendersize=('.. w ..",".. h ..")", 'cancel=', tostring(HIVE_isRenderCanceled))
+    
     local json = [[{
             "JSONRPC" : "2.0",
             "method" : "renderedImage",            
@@ -82,17 +100,18 @@ function RenderView:Do()
                 "type" : "]] .. mode .. [[",
                 "width" : "]] .. w .. [[",
                 "height" : "]] .. h .. [[",
-                "canceled": false,
+                "canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[,
                 "varname": "]] .. self.varname .. [["
             },
             "id":0
     }]]
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     --print('JSON=', json, 'size=', imageBufferSize)
-    -- send        
-    if self.property.ipcpath ~= '' then       
+    -- send
+    print('ipcmode', self.property.ipcmode)        
+    if self.property.ipcmode then       
         if self.network_ipc == nil then
-            local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname -- .. self.property.ipcpath
+            local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname
             print('IPC open=', ipcAddress);
 	        self.network_ipc = require("Network").Connection()
 	        local ipcr = self.network_ipc:Connect(ipcAddress)
@@ -107,4 +126,13 @@ function RenderView:Do()
         print('WEBSOCKET SEND!!!!!!!!!!!')			   
 
     end
+end
+
+
+function RenderView:Camera()
+    return self.cam
+end
+
+function RenderView:Image()
+    return self.cam:GetImageBuffer()
 end

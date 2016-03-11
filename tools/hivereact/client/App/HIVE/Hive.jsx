@@ -10,7 +10,7 @@ function defaultCallback(src) {
 			console.error('runscript error:', err, {script: src});
 			console.trace();
 		} else {
-			console.log('runscript result:', res, {script: src});
+			//console.log('runscript result:', res, {script: src});
 		}
 	};
 }
@@ -22,16 +22,34 @@ function runScriptInternal(conn, src, callback) {
 	conn.rendererMethod('runscript', {script: src}, callback || defaultCallback(src));
 }
 
+/**
+ * shaderlistを取得
+ */
+function getShaderList(conn, callback) {
+	conn.masterMethod('requestShaderList', {}, callback || defaultCallback(src));
+}
+
 export default class Hive extends EventEmitter {
 	constructor() {
 		super();
 		this.conn = null;
+        this.shaderlist = [];
 	}
 
 	connect(wsurl, ipcAddress, ogl) {
-		this.conn = new window.HiveConnect({url:wsurl, ipc:ipcAddress, opengl:ogl});
-
+		this.conn = new window.HiveConnect({url:wsurl, ipc:'', opengl:ogl});
+        
 		this.conn.method('registerRender', (res) => {
+            
+            this.shaderlist = [];
+            getShaderList(this.conn, (err, shaderlist) => {                
+                var i;
+                for (i in shaderlist) {
+                    //console.log(shaderlist[i].path);
+                    this.shaderlist.push(shaderlist[i].path); // relative path 
+                }
+            });
+        
 			console.log('registerRender!!!!!', res);
 			// HiveConnectにレンダラが関連付けられた
 			var rendererId = res.id;
@@ -43,9 +61,14 @@ export default class Hive extends EventEmitter {
 			console.log('updateInfo');
 		}));
 
+        this.conn.method('rendererLog', (data) => {
+		    //console.log('processlog>', data);
+            this.emit(Hive.RENDERER_LOG_RECIEVED, data);
+		});
+
 		this.conn.method('renderedImage', (param, data) => {
 			// 画像を受け取る ws version
-			console.log("renderImage recieved", param, data);
+			//console.log("renderImage recieved", param, data);
 			this.emit(Hive.IMAGE_RECIEVED, null, param, data);
 			/*
 				var w, h, cmd;
@@ -76,7 +99,10 @@ export default class Hive extends EventEmitter {
         });
     }
     
-	testRender() {
+    getShaderList() {
+        return this.shaderlist;
+    }
+	/*testRender() {
 		runScriptInternal(this.conn,
 			`
 			package.path = './?.lua;' .. package.path
@@ -112,7 +138,8 @@ export default class Hive extends EventEmitter {
 
 	changeNode() {
 		console.log("change node at HiveCore");
-	}
+	}*/
 }
 Hive.NODE_CHANGED = "core_node_changed";
 Hive.IMAGE_RECIEVED = "core_image_revieved";
+Hive.RENDERER_LOG_RECIEVED = "renderer_log_recieved";

@@ -6,6 +6,7 @@ BaseComponent.new = function (varname)
     this.varname = varname
     this.property = {}
     this.connection = {}
+    this.value = {}
     setmetatable(this, {__index = BaseComponent})
     return this;
 end
@@ -45,6 +46,16 @@ end
 
 function BaseComponent:Do()    
     print('[Warning:BaseComponent][LUA] Need to override Do() method.')
+end
+
+function BaseComponent:UpdateValue()
+    self.value = {}
+    for i, v in pairs(self.property) do
+        self.value[i] = v;
+    end
+    for i, v in pairs(self.connection) do
+        self.value[i] = v;
+    end
 end
 
 return BaseComponent

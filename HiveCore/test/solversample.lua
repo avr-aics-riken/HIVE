@@ -24,5 +24,29 @@ if data then
 end
 
 
-local img = ImageLoader()
-img:LoadRawFromPointer(1024,1024,4,8,data.pointer)
+local loader = ImageLoader()
+loader:LoadRawFromPointer(1024,1024,4,8,data.pointer)
+
+local img = loader:ImageData()
+
+
+
+local gen  = PrimitiveGenerator()
+local plane = gen:Quad(100, 100)
+
+local pm = PolygonModel();
+pm:SetShader("textured.frag");
+pm:SetTexture('mytex0', img) -- Bind
+pm:Create(plane);
+
+local cam = Camera()
+cam:SetScreenSize(512, 512)
+cam:SetFilename("solversampleout.jpg")
+cam:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+render({cam, pm})

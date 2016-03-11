@@ -77,27 +77,28 @@ double PolygonAnalyzer::MaxZ() {
 
 /**
  * ポリゴンモデル解析
- * @param model 解析対象PolygonModel
+ * @param model 解析対象BufferMeshData
  * @retval true 成功
  * @retval false 失敗
  */
-bool PolygonAnalyzer::Execute(PolygonModel *model)
+bool PolygonAnalyzer::Execute(BufferMeshData* mesh)
 {
-    PolygonAnalyzerProc proc;
     std::vector<float> m_volHist[3];
     
-    // TODO!
-    /*if(model->GetMesh()) {
-        int number = model->GetMesh()->Position()->GetNum();
-        const float* buffer = static_cast<const float*>(model->GetMesh()->Position()->GetBuffer());
-        if(number <= 0) {
-            fprintf(stderr,"Mesh vertex number is ZERO.");
-            return false;
-        }
-        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
-    } else {
+    if(!mesh || mesh->GetType() != BufferData::TYPE_MESH) {
         fprintf(stderr,"Mesh data not found.");
-    }*/
+        return false;
+    }
+    
+    int number = mesh->Position()->GetNum();
+    const float* buffer = static_cast<const float*>(mesh->Position()->GetBuffer());
+    if (number <= 0) {
+        fprintf(stderr,"Mesh vertex number is ZERO.");
+        return false;
+    }
+    
+    PolygonAnalyzerProc proc;
+    proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, number);
     
     return true;
 }

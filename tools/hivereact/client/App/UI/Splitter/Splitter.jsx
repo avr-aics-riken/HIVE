@@ -40,18 +40,26 @@ exports.default = _react2.default.createClass({
             minSize: 0
         };
     },
+    resizerSize: 4,
     componentDidMount: function componentDidMount() {
         document.addEventListener('mouseup', this.onMouseUp);
         document.addEventListener('mousemove', this.onMouseMove);
-        var ref = this.refs.pane1;
-        if (ref && this.props.defaultSize !== undefined && !this.state.resized) {
-            ref.setState({
-                size: this.props.defaultSize
+        var ref1 = this.refs.pane1;
+        var ref2 = this.refs.pane2;
+        var node1 = _reactDom2.default.findDOMNode(ref1);
+        var node2 = _reactDom2.default.findDOMNode(ref2);
+        if (ref1 && this.props.defaultSize !== undefined && !this.state.resized) {
+            let parentSize = this.props.split === 'vertical' ? node1.parentNode.offsetWidth : node1.parentNode.offsetHeight;
+            ref1.setState({
+                size: this.props.defaultSize,
+                parentSize: parentSize
+            });
+            ref2.setState({
+                size: parentSize - this.props.defaultSize,
+                parentSize: parentSize
             });
         }
         setTimeout(function(){
-            let ref1 = this.refs.pane1;
-            let ref2 = this.refs.pane2;
             if (ref2 && this.props.secondPaneSize !== undefined && !this.state.resized) {
                 var windowsize = 0;
                 var node = _reactDom2.default.findDOMNode(ref2);
@@ -60,64 +68,65 @@ exports.default = _react2.default.createClass({
                 }else{
                     windowsize = node.getBoundingClientRect().height;
                 }
+                windowsize *= 2;
                 ref1.setState({
-                    size: (windowsize * 2) - this.props.secondPaneSize
+                    size: windowsize - this.props.secondPaneSize,
+                    parentSize: windowsize
+                });
+                ref2.setState({
+                    size: this.props.secondPaneSize,
+                    parentSize: windowsize
                 });
             }
         }.bind(this), 100);
 
-        window.addEventListener('resize', function(){
-            if(!this.props.lockSecondPane || !this.props.secondPaneSize){return;}
-            // if (this.state.active) {
-                this.unFocus();
-                var ref1 = this.refs.pane1;
-                var ref2 = this.refs.pane2;
-                if (ref1) {
-                    var node1 = _reactDom2.default.findDOMNode(ref1);
-                    var node2 = _reactDom2.default.findDOMNode(ref2);
-                    if (node1.getBoundingClientRect) {
-                        var w1 = node1.getBoundingClientRect().width;
-                        var h1 = node1.getBoundingClientRect().height;
-                        var w2 = node2.getBoundingClientRect().width;
-                        var h2 = node2.getBoundingClientRect().height;
-                        var size = this.props.split === 'vertical' ? w1 : h1;
-                        var current = this.props.split === 'vertical' ? w2 : h2;
-                        var second = parseInt(this.props.secondPaneSize, 10);
-                        if(!isNaN(this.state.position)){
-                            second = Math.max(Math.min(second, this.state.position), second);
-                        }
-                        var diff = 0;
-                        if(current > second){
-                            diff = current - second;
-                            size += diff;
-                        }else{
-                            diff = second - current;
-                            size -= diff;
-                        }
-                        var newSize = size;
-                        this.setState({
-                            position: size
-                            // resized: true
-                        });
-
-                        if (newSize < this.props.minSize) {
-                            newSize = this.props.minSize;
-                        }
-
-                        if (this.props.onChange) {
-                            this.props.onChange(newSize);
-                        }
-                        ref1.setState({
-                            size: newSize
-                        });
-                    }
-                }
-            // }
-        }.bind(this), false);
+        window.addEventListener('resize', this.onResize, false);
     },
     componentWillUnmount: function componentWillUnmount() {
         document.removeEventListener('mouseup', this.onMouseUp);
         document.removeEventListener('mousemove', this.onMouseMove);
+    },
+    onResize: function(){
+        this.unFocus();
+        if (this.props.onChange) {
+            this.props.onChange(newSize);
+        }
+        var ref1 = this.refs.pane1;
+        var ref2 = this.refs.pane2;
+        var node1 = _reactDom2.default.findDOMNode(ref1);
+        var node2 = _reactDom2.default.findDOMNode(ref2);
+        var parentSize = this.props.split === 'vertical' ? node1.parentNode.offsetWidth : node1.parentNode.offsetHeight;
+        var newSize = this.props.split === 'vertical' ? node1.offsetWidth : node1.offsetHeight;
+        var newSecond = this.props.split === 'vertical' ? node2.offsetWidth : node2.offsetHeight;
+        parentSize -= this.resizerSize;
+        if(this.props.lockSecondPane && this.props.secondPaneSize){
+            if(this.props.secondPaneSize && this.props.lockSecondPane){
+                newSecond = Math.max(newSecond, parseInt(this.props.secondPaneSize, 10));
+                newSize = parentSize - newSecond;
+            }
+        }else{
+            if(this.props.dontmove){
+                newSize = parseInt(this.props.defaultSize, 10);
+                newSecond = parentSize - newSize;
+            }else{
+                if(this.props.minSize){
+                    newSize = Math.max(newSize, parseInt(this.props.minSize, 10));
+                    newSecond = parentSize - newSize;
+                }
+                if(this.props.secondPaneSize){
+                    newSecond = Math.max(newSecond, parseInt(this.props.secondPaneSize, 10));
+                    newSize = parentSize - newSecond;
+                }
+            }
+        }
+        ref1.setState({
+            size: newSize,
+            parentSize: parentSize
+        });
+        ref2.setState({
+            size: newSecond,
+            parentSize: parentSize
+        });
     },
     onMouseDown: function onMouseDown(event) {
         this.unFocus();
@@ -133,18 +142,19 @@ exports.default = _react2.default.createClass({
     onMouseMove: function onMouseMove(event) {
         if (this.state.active) {
             this.unFocus();
-            var ref = this.refs.pane1;
-            if (ref) {
-                var node = _reactDom2.default.findDOMNode(ref);
-                if (node.getBoundingClientRect) {
-                    if(this.props.dontmove){return;}
-                    var width = node.getBoundingClientRect().width;
-                    var height = node.getBoundingClientRect().height;
+            var ref1 = this.refs.pane1;
+            var ref2 = this.refs.pane2;
+            if (ref1) {
+                var node1 = _reactDom2.default.findDOMNode(ref1);
+                if (node1.getBoundingClientRect) {
+                    var width = node1.getBoundingClientRect().width;
+                    var height = node1.getBoundingClientRect().height;
                     var current = this.props.split === 'vertical' ? event.clientX : event.clientY;
                     var size = this.props.split === 'vertical' ? width : height;
                     var position = this.state.position;
 
                     var newSize = size - (position - current);
+                    var newSecond = 0;
                     this.setState({
                         position: current,
                         resized: true
@@ -157,8 +167,23 @@ exports.default = _react2.default.createClass({
                     if (this.props.onChange) {
                         this.props.onChange(newSize);
                     }
-                    ref.setState({
-                        size: newSize
+
+                    var parentSize = this.props.split === 'vertical' ? node1.parentNode.offsetWidth : node1.parentNode.offsetHeight;
+                    parentSize -= this.resizerSize;
+                    if(this.props.dontmove){
+                        return;
+                        // newSize = Math.max(newSize, this.props.minSize);
+                        // newSecond = parentSize - newSize;
+                    }else{
+                        newSecond = parentSize - newSize;
+                    }
+                    ref1.setState({
+                        size: newSize,
+                        parentSize: parentSize
+                    });
+                    ref2.setState({
+                        size: newSecond,
+                        parentSize: parentSize
                     });
                 }
             }

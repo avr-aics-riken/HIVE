@@ -1,6 +1,23 @@
 import EventEmitter from 'eventemitter3'
 import Core from '../../Core'
 
+function calcPlugPositionY(node, inoutIndex) {
+	const holeSize = node.node.close ? 10 : 15;
+	return node.node.pos[1] + (inoutIndex + 1) * (holeSize + 3) + 24
+}
+
+function calcSimplePlugPositionY(node) {
+	return node.node.pos[1] + 18 + 20
+}
+
+function validatePlugInfo(plug, plugInfo, dataName) {
+	if (dataName !== null && dataName !== undefined) {
+		return (plug.nodeVarname === plugInfo.data.nodeVarname && dataName === plugInfo.data.name);
+	} else {
+		return (plug.nodeVarname === plugInfo.data.nodeVarname && plug.name === plugInfo.data.name);
+	}
+}
+
 export default class Store extends EventEmitter {
 	constructor(dispatcher, coreStore) {
 		super();
@@ -11,15 +28,17 @@ export default class Store extends EventEmitter {
 		//   input : {
 		//      pos : [x, y],
 		//      nodeVarname : varname,
-		//      name : name
+		//      name : name,
+		//		nodeRef : 接続先のノードまたはグループ
 		//   },
 		//   output : {
 		//      pos : [x, y],
 		//      nodeVarname : varname,
-		//      name : name
+		//      name : name,
+		//		nodeRef : 接続先のノードまたはグループ
 		//   },
 		// }
-		this.plugPositions = [];
+		this.plugPosList = [];
 
 		// 以下の形式の選択中の端子情報リスト
 		// 端子は2つ以上選択できず、2つ選択されたときは接続されたものとみなす
@@ -35,39 +54,55 @@ export default class Store extends EventEmitter {
 
 		// nodemap
 		this.nodeMap = {};
-		this.isInitialRender = true;
+		this.nodeToGroupMap = {};
 
 		// { nodeVarname : {width:"", height:""} }
 		this.nodeSizeMap = {};
 
 		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
-			this.nodeMap = {};
-			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
-				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
-			}
+			// ノードマップを作り直す.
+			this.regenerateNodeMap(coreStore);
+			this.recalcPlugPosition(coreStore);
 			for (let n in this.nodeSizeMap) {
 				if (!this.nodeMap.hasOwnProperty(n)) {
 					delete this.nodeSizeMap[n];
 				}
 			}
-			this.isInitialRender = true;
+			this.emit(Store.NODE_COUNT_CHANGED, null);
+		});
+
+		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
+			// ノードマップを作り直す.
+			this.regenerateNodeMap(coreStore);
+			this.recalcPlugPosition(coreStore);
+			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPosList);
+		});
+
+		coreStore.on(Core.Constants.NODE_POSITION_CHANGED, (err, data) => {
+			for (let i = 0, size = this.plugPosList.length; i < size; i = i + 1) {
+				let plug = this.plugPosList[i];
+				if (plug.input.nodeVarname === data.varname ||
+					(plug.input.hasOwnProperty('nodeRef') && plug.input.nodeRef.varname === data.varname)) {
+					let inpos = this.calcPlugPosition(true, plug, data);
+					if (inpos) {
+						plug.input.pos = inpos;
+					}
+				}
+				if (plug.output.nodeVarname === data.varname ||
+					(plug.output.hasOwnProperty('nodeRef') && plug.output.nodeRef.varname === data.varname)) {
+					let outpos = this.calcPlugPosition(false, plug, data);
+					if (outpos) {
+						plug.output.pos = outpos;
+					}
+				}
+			}
+			this.emit(Store.PLUG_POSITION_CHANGED, null);
 		});
 
 		this.calcPlugPosition = this.calcPlugPosition.bind(this);
 		this.recalcPlugPosition = this.recalcPlugPosition.bind(this);
 
-		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
-			// ノードマップを作り直す.
-			this.nodeMap = {};
-			for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
-				this.nodeMap[coreStore.getNodes()[i].varname] = coreStore.getNodes()[i];
-			}
-
-			this.recalcPlugPosition(coreStore);
-			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPositions);
-		});
-
-		this.getPlugPositions = this.getPlugPositions.bind(this);
+		this.getPlugPosList = this.getPlugPosList.bind(this);
 		this.changePlugPosition = this.changePlugPosition.bind(this);
 		this.moveNode = this.moveNode.bind(this);
 		this.dragPlug = this.dragPlug.bind(this);
@@ -77,35 +112,138 @@ export default class Store extends EventEmitter {
 		this.disconnectPlugHole = this.disconnectPlugHole.bind(this);
 		this.changeZoom = this.changeZoom.bind(this);
 		this.isConnected = this.isConnected.bind(this);
+		this.isGroup = coreStore.isGroup;
+
+		this.coreStore = coreStore;
+		this.getCurrentNode = this.getCurrentNode.bind(this);
 	}
 
-	recalcPlugPosition(coreStore) {
-		if (!this.isInitialRender) { return; }
-		this.plugPositions = [];
-		let plugs = coreStore.getPlugs();
+	regenerateNodeMap(coreStore) {
+		let addNodeToNodeMap = (n) => {
+			if (this.isGroup(n)) {
+				this.nodeMap[n.varname] = n;
+				this.nodeToGroupMap[n.varname] = n;
+				for (let i = 0; i < n.nodes.length; i = i + 1) {
+					addNodeToNodeMap(n.nodes[i]);
+					this.nodeToGroupMap[n.nodes[i].varname] = n;
+				}
+			} else {
+				this.nodeMap[n.varname] = n;
+			}
+		}
+		this.nodeMap = {};
+		this.nodeToGroupMap = {};
+		for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
+			let n = coreStore.getNodes()[i];
+			this.nodeMap[n.varname] = n;
+			//addNodeToNodeMap(n);
+		}
+	}
+
+	// 現在のノード階層で該当するノードを返す。
+	// 現在の階層にノードがない場合は、ノードを含んでいるグループが返る。
+	// ノードが無い場合はnullを返す.
+	getCurrentNode(varname) {
+		let node = null;
+		let nodes = this.coreStore.getNodes();
+		if (this.nodeMap.hasOwnProperty(varname)) {
+			node = this.nodeMap[varname];
+		} else {
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				if (this.coreStore.findNode(nodes[i], varname)) {
+					node = nodes[i];
+					break;
+				}
+			}
+		}
+		return node;
+	}
+
+	recalcPlugs() {
+		let plugs = this.coreStore.getPlugs();
 		for (let i = 0; i < plugs.length; i = i + 1) {
 			let plug = plugs[i];
-			let inVarname = plug.input.nodeVarname;
-			let outVarname = plug.output.nodeVarname;
-			if (this.nodeMap.hasOwnProperty(inVarname) && this.nodeMap.hasOwnProperty(outVarname)) {
-				let inNode = this.nodeMap[inVarname];
-				let outNode = this.nodeMap[outVarname];
+			let inNode = this.getCurrentNode(plug.input.nodeVarname);
+			let outNode = this.getCurrentNode(plug.output.nodeVarname);
+			if (inNode && outNode) {
 				let plugPosition = {
 					input : {
 						nodeVarname : plug.input.nodeVarname,
 						name : plug.input.name,
-						pos : this.calcPlugPosition(true, plug, inNode)
+						pos : this.calcPlugPosition(true, plug, inNode),
+						nodeRef : inNode
 					},
 					output : {
 						nodeVarname : plug.output.nodeVarname,
 						name : plug.output.name,
-						pos : this.calcPlugPosition(false, plug, outNode)
+						pos : this.calcPlugPosition(false, plug, outNode),
+						nodeRef : outNode
 					}
 				};
-				this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
-				this.plugPositions.push(plugPosition);
+				//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
+				this.plugPosList.push(plugPosition);
 			}
 		}
+	}
+
+	recalcGlobalInputs() {
+		let globalIn = this.coreStore.getInput();
+		for (let i = 0; i < globalIn.length; i = i + 1) {
+			let data = globalIn[i];
+			let node = this.getCurrentNode(data.nodeVarname);
+			if (!node) {
+				console.error("not found global plug node", data.nodeVarname, this.coreStore.data);
+			}
+			let plugPosition = {
+				input : {
+					name : data.name,
+					nodeVarname : node.varname,
+					nodeRef : node
+				},
+				output : {
+					name : "",
+					nodeVarname : "",
+					pos : [-10000, node.node.pos[1]]
+				}
+			};
+			plugPosition.input.pos = this.calcPlugPosition(true, plugPosition, node);
+			//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
+			this.plugPosList.push(plugPosition);
+		}
+	}
+
+	recalcGlobalOutputs() {
+		let globalOut = this.coreStore.getOutput();
+		for (let i = 0; i < globalOut.length; i = i + 1) {
+			let data = globalOut[i];
+			let node = this.getCurrentNode(data.nodeVarname);
+			if (!node) {
+				console.error("not found global plug node", data.nodeVarname, this.coreStore.data);
+			}
+			let plugPosition = {
+				input : {
+					name : "",
+					nodeVarname : "",
+					pos : [10000, node.node.pos[1]]
+				},
+				output : {
+					name : data.name,
+					nodeVarname : node.varname,
+					nodeRef : node
+				}
+			};
+			plugPosition.output.pos = this.calcPlugPosition(false, plugPosition, node);
+			//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
+			this.plugPosList.push(plugPosition);
+		}
+	}
+
+	recalcPlugPosition(coreStore) {
+		this.plugPosList = [];
+		this.recalcPlugs.bind(this)();
+		this.recalcGlobalInputs.bind(this)();
+		this.recalcGlobalOutputs.bind(this)();
+		this.emit(Store.PLUG_POSITION_CHANGED, null);
 	}
 
 	/**
@@ -116,16 +254,18 @@ export default class Store extends EventEmitter {
 	 */
 	calcPlugPosition(isInput, plug, node) {
 		let isClosed = node.node.close;
-		const holeSize = isClosed ? 10 : 15;
 		if (isInput) {
-			if (plug.input.nodeVarname === node.varname) {
+			if (plug.input.nodeVarname === node.varname || this.isGroup(node)) {
 				let count = 0;
 				for (let k = 0; k < node.input.length; k = k + 1) {
 					if (Array.isArray(node.input[k].array)) {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
 							if (inputArray[n].name === plug.input.name) {
-								return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 20];
+								if (node.node.pos[0] === null) {
+									console.error(node);
+								}
+								return [node.node.pos[0], calcPlugPositionY(node, count)];
 							}
 							if (isClosed) {
 								if (this.isConnected(node.varname, inputArray[n].name)) {
@@ -137,7 +277,10 @@ export default class Store extends EventEmitter {
 						}
 					} else {
 						if (node.input[k].name === plug.input.name) {
-							return [node.node.pos[0], node.node.pos[1] + (count + 1) * (holeSize + 3) + 20];
+							if (node.node.pos[0] === null) {
+								console.error(node);
+							}
+							return [node.node.pos[0], calcPlugPositionY(node, count)];
 						}
 						if (isClosed) {
 							if (this.isConnected(node.varname, node.input[k].name)) {
@@ -149,19 +292,22 @@ export default class Store extends EventEmitter {
 					}
 				}
 			}
+			//return [100000, node.node.pos[1]];
 		} else {
-			if (plug.output.nodeVarname === node.varname) {
+			if (plug.output.nodeVarname === node.varname || this.isGroup(node)) {
 				let width = 200;
 				if (this.nodeSizeMap.hasOwnProperty(node.varname)) {
 					width = this.nodeSizeMap[node.varname].width;
 				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					if (node.output[k].name === plug.output.name) {
-						return [node.node.pos[0] + width, node.node.pos[1] + (k + 1) * (holeSize + 3) + 20];
+						return [node.node.pos[0] + width, calcPlugPositionY(node, k)];
 					}
 				}
 			}
+			//return [-100000, node.node.pos[1]];
 		}
+		//console.error("notcalculate", this.isGroup(node), isInput, plug, node)
 		return null;
 	}
 
@@ -169,12 +315,12 @@ export default class Store extends EventEmitter {
 		let pos = [[0,0], [0,0]];
 		if (this.nodeMap.hasOwnProperty(plug.input.nodeVarname)) {
 			let node = this.nodeMap[plug.input.nodeVarname];
-			pos[0] = [node.node.pos[0], node.node.pos[1] + 18 + 20];
+			pos[0] = [node.node.pos[0], calcSimplePlugPositionY(node)];
 		}
 		if (this.nodeMap.hasOwnProperty(plug.output.nodeVarname)) {
 			let node = this.nodeMap[plug.output.nodeVarname];
 			let width = this.nodeSizeMap[plug.output.nodeVarname].width;
-			pos[1] = [node.node.pos[0] + width, node.node.pos[1] + 18 + 20];
+			pos[1] = [node.node.pos[0] + width, calcSimplePlugPositionY(node)];
 		}
 		return pos;
 	}
@@ -182,8 +328,8 @@ export default class Store extends EventEmitter {
 	/**
 	 * plug位置リストを返す.
 	 */
-	getPlugPositions() {
-		return this.plugPositions;
+	getPlugPosList() {
+			return this.plugPosList;
 	}
 
 	/**
@@ -222,8 +368,8 @@ export default class Store extends EventEmitter {
 		if (payload && this.hasOwnProperty(payload.actionType)) {
 			if (payload.hasOwnProperty("id") && payload.id === this.dispatchToken) {
 				(() => {
-					this[payload.actionType].bind(this)(payload);
-				}());
+					this[payload.actionType](payload);
+				})();
 			}
 		}
 	}
@@ -233,20 +379,20 @@ export default class Store extends EventEmitter {
 	 * @private
 	 */
 	changePlugPosition(payload) {
-		for (let i = 0; i < this.plugPositions.length; i = i + 1) {
+		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
 			if (payload.isInput) {
-				if (this.plugPositions[i].input.nodeVarname === payload.nodeVarname &&
-					this.plugPositions[i].input.name === payload.name) {
+				if (this.plugPosList[i].input.nodeVarname === payload.nodeVarname &&
+					this.plugPosList[i].input.name === payload.name) {
 
-					this.plugPositions[i].input.pos = JSON.parse(JSON.stringify(payload.pos));
-					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions[i]);
+					this.plugPosList[i].input.pos = JSON.parse(JSON.stringify(payload.pos));
+					//this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPosList[i]);
 				}
 			} else {
-				if (this.plugPositions[i].output.nodeVarname === payload.nodeVarname &&
-					this.plugPositions[i].output.name === payload.name) {
+				if (this.plugPosList[i].output.nodeVarname === payload.nodeVarname &&
+					this.plugPosList[i].output.name === payload.name) {
 
-					this.plugPositions[i].output.pos = JSON.parse(JSON.stringify(payload.pos));
-					this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPositions[i]);
+					this.plugPosList[i].output.pos = JSON.parse(JSON.stringify(payload.pos));
+					//this.emit(Store.PLUG_POSITION_CHANGED, null, this.plugPosList[i]);
 				}
 			}
 		}
@@ -254,15 +400,15 @@ export default class Store extends EventEmitter {
 
 	/// 入力端子にプラグが繋がっているかどうか返す
 	isConnected(nodeVarname, inputName) {
-		for (let i = 0; i < this.plugPositions.length; i = i + 1) {
-			if (this.plugPositions[i].input.nodeVarname === nodeVarname) {
-				if (Array.isArray(this.plugPositions[i].input.array)) {
-					for (let k = 0; k < this.plugPositions[i].input.array.length; k = k + 1) {
-						if (this.plugPositions[i].input.array[k].name === inputName) {
+		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
+			if (this.plugPosList[i].input.nodeVarname === nodeVarname) {
+				if (Array.isArray(this.plugPosList[i].input.array)) {
+					for (let k = 0; k < this.plugPosList[i].input.array.length; k = k + 1) {
+						if (this.plugPosList[i].input.array[k].name === inputName) {
 							return true;
 						}
 					}
-				} else if (this.plugPositions[i].input.name === inputName) {
+				} else if (this.plugPosList[i].input.name === inputName) {
 					return true;
 				}
 			}
@@ -310,32 +456,53 @@ export default class Store extends EventEmitter {
 	 */
 	disconnectPlugHole(payload) {
 		if (payload.hasOwnProperty('plugInfo')) {
-			for (let i = 0; i < this.plugPositions.length; i = i + 1) {
+			let plugInfo = payload.plugInfo;
+			console.log(plugInfo);
+			for (let i = 0; i < this.plugPosList.length; i = i + 1) {
 				if (payload.plugInfo.isInput) {
-					if (Array.isArray(this.plugPositions[i].input.array)) {
-						let inputArray = this.plugPositions[i].input.array;
+					if (Array.isArray(this.plugPosList[i].input.array)) {
+						let inputArray = this.plugPosList[i].input.array;
 						for (let k = 0; k < inputArray.length; k = k + 1) {
 							let input = inputArray[k];
-							if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
-								input.name === payload.plugInfo.data.name) {
-
-								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+							if (validatePlugInfo(this.plugPosList[i].input, payload.plugInfo, input.name)) {
+								this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPosList[i]);
 								break;
 							}
 						}
 					} else {
-						if (this.plugPositions[i].input.nodeVarname === payload.plugInfo.nodeVarname &&
-							this.plugPositions[i].input.name === payload.plugInfo.data.name) {
-
-							this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+						if (validatePlugInfo(this.plugPosList[i].input, payload.plugInfo)) {
+							this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPosList[i]);
 							break;
 						}
 					}
 				} else {
-					if (this.plugPositions[i].output.nodeVarname === payload.plugInfo.nodeVarname &&
-						this.plugPositions[i].output.name === payload.plugInfo.data.name) {
+					if (validatePlugInfo(this.plugPosList[i].output, payload.plugInfo)) {
+						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPosList[i]);
+						break;
+					}
+				}
+			}
+			// 外部へ公開していた場合は公開を中止する。
+			if (payload.plugInfo.isInput) {
+				let inputs = this.coreStore.getInput();
+				for (let i = 0; i < inputs.length; i = i + 1) {
+					let input = inputs[i];
 
-						this.emit(Store.PLUG_HOLE_DISCONNECTED, null, this.plugPositions[i]);
+					if (input.nodeVarname === plugInfo.data.nodeVarname &&
+						input.name === plugInfo.data.name) {
+
+						this.emit(Store.GROUP_INPUT_DISCONNECTED, null, input);
+						break;
+					}
+				}
+			} else {
+				let outputs = this.coreStore.getOutput();
+				for (let i = 0; i < outputs.length; i = i + 1) {
+					let output = outputs[i];
+					if (output.nodeVarname === plugInfo.data.nodeVarname &&
+						output.name === plugInfo.data.name) {
+
+						this.emit(Store.GROUP_OUTPUT_DISCONNECTED, null, output);
 						break;
 					}
 				}
@@ -369,3 +536,5 @@ Store.PLUG_HOLE_DISCONNECTED = "plug_hole_disconnected";
 Store.NODE_MOVED = "node_moved";
 Store.ZOOM_CHANGED = "zoom_changed";
 Store.NEED_RERENDER = "need_rerender";
+Store.GROUP_INPUT_DISCONNECTED = "group_input_disconnected";
+Store.GROUP_OUTPUT_DISCONNECTED = "group_output_disconnected";

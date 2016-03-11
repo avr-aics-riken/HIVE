@@ -21,6 +21,8 @@ export default class Node extends React.Component {
 			isSelected : node.select,
 			zIndex : 1
 		};
+		this.offsetLeft = node.node.pos[0];
+		this.offsetTop = node.node.pos[1];
 
 		this.nodeChanged = this.nodeChanged.bind(this);
 		this.selectChanged = this.selectChanged.bind(this);
@@ -34,6 +36,7 @@ export default class Node extends React.Component {
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onKeyUp = this.onKeyUp.bind(this);
+		this.onDoubleClick = this.onDoubleClick.bind(this);
 		this.styles = this.styles.bind(this);
 		this.nodeRect = this.nodeRect.bind(this);
 		this.getNodePos = this.getNodePos.bind(this);
@@ -72,11 +75,12 @@ export default class Node extends React.Component {
 		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
 			let invzoom = 1.0 / this.props.nodeStore.getZoom();
-			this.state.node.node.pos = [this.offsetLeft + data.x * invzoom, this.offsetTop + data.y * invzoom];
+			let n = JSON.parse(JSON.stringify(this.state.node.node));
+			n.pos = [this.offsetLeft + data.x * invzoom, this.offsetTop + data.y * invzoom];
 			setTimeout(() => {
 				this.props.action.changeNode({
 					varname : this.state.node.varname,
-					pos : this.getNodePos()
+					node : n
 				});
 			}, 0);
 		}
@@ -143,7 +147,7 @@ export default class Node extends React.Component {
 				position : "absolute",
 				left : String(this.getNodePos()[0]),
 				top : String(this.getNodePos()[1]),
-				minWidth : "150px",
+				minWidth : "200px",
 				height : String(this.getHeight.bind(this)()) + "px",
 				backgroundColor :  this.state.isSelected ? "rgba(2, 17, 27, 0.6)" : "rgba(67, 67, 67, 0.9)",
 				color : "white",
@@ -171,7 +175,6 @@ export default class Node extends React.Component {
 				textAlign : "center",
 				borderRadius : "4.5px",
 				opacity : this.state.closeHover ? "0.9" : "1.0",
-				cursor : "pointer",
 				backgroundImage : "url(./img/node_close.png)",
 				backgroundRepeat: "no-repeat",
 				backgroundSize: "contain"
@@ -188,10 +191,13 @@ export default class Node extends React.Component {
 		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 		let rect = this.refs.node.getBoundingClientRect();
-		this.props.nodeStore.setNodeSize(this.props.nodeVarname, rect.right - rect.left, rect.bottom - rect.top);
+		let invzoom = 1.0 / this.props.nodeStore.getZoom();
+		this.props.nodeStore.setNodeSize(this.props.nodeVarname, (rect.right - rect.left) * invzoom, (rect.bottom - rect.top) * invzoom);
 		if (this.props.id === String(this.props.nodeVarname + (this.props.store.getNodes().length - 1))) {
 			this.props.nodeStore.recalcPlugPosition(this.props.store);
 		}
+
+		this.refs.node.addEventListener('dblclick', this.onDoubleClick);
 	}
 
 	componentWillUnmount() {
@@ -202,6 +208,8 @@ export default class Node extends React.Component {
 		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
 		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
+
+		this.refs.node.removeEventListener('dblclick', this.onDoubleClick);
 	}
 
 	onKeyDown(ev) {
@@ -219,10 +227,12 @@ export default class Node extends React.Component {
 			this.offsetLeft = ev.currentTarget.offsetLeft;
 			this.offsetTop = ev.currentTarget.offsetTop;
 
-			if (!this.isCtrlDown) {
+			if (!this.isCtrlDown && !this.state.isSelected) {
 				this.props.action.unSelectNode([], this.props.nodeVarname);
 			}
-			this.props.action.selectNode([this.props.nodeVarname]);
+			if (this.isCtrlDown || this.props.store.getSelectedNodeList().length == 0) {
+				this.props.action.selectNode([this.props.nodeVarname]);
+			}
 		}
 	}
 
@@ -234,6 +244,7 @@ export default class Node extends React.Component {
 
 	onMouseMove(ev) {
 		if (this.isLeftDown) {
+			if (this.props.nodeAction.dispatcher.isDispatching()) { return; }
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
 
@@ -247,8 +258,15 @@ export default class Node extends React.Component {
 	}
 
 	/// 閉じるボタンにマウスホバーされた
-	onCloseHover(ev) {
-		this.setState({ closeHover : !this.state.closeHover })
+	onCloseEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		this.setState({ closeHover : !this.state.closeHover });
+		ev.target.style.cursor = "pointer";
+	}
+
+	onCloseLeave(ev) {
+		this.setState({ closeHover : !this.state.closeHover });
+		ev.target.style.cursor = "default";
 	}
 
 	/// 簡易表示ボタンが押された
@@ -259,6 +277,21 @@ export default class Node extends React.Component {
 			varname : this.props.nodeVarname,
 			node : node
 		});
+		ev.stopPropagation();
+	}
+
+	preventDefault(ev) {
+		ev.preventDefault();
+		ev.stopPropagation();
+	}
+
+	onTitleEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		ev.target.style.cursor = "pointer";
+	}
+
+	onTitleLeave(ev) {
+		ev.target.style.cursor = "default";
 	}
 
 	/// タイトル.
@@ -269,11 +302,12 @@ export default class Node extends React.Component {
 					<span
 						onClick={this.onOpenCloseButtonClick.bind(this)}
 						style={{
-							cursor : "pointer",
 							fontSize : isClose ? "12px" : "16px",
 							marginLeft : isClose ? "4px" : "0px",
 							marginRight : isClose ? "4px" : "0px"
 						}}
+						onMouseEnter={this.onTitleEnter.bind(this)}
+						onMouseLeave={this.onTitleLeave.bind(this)}
 					>
 						{isClose ? "▶" : "▼"}
 					</span>
@@ -387,13 +421,17 @@ export default class Node extends React.Component {
 		const style = this.styles();
 		return (<div style={style.closeButton}
 					onClick={this.onCloseClick.bind(this)}
-					onMouseEnter={this.onCloseHover.bind(this)}
-					onMouseLeave={this.onCloseHover.bind(this)}
+					onMouseEnter={this.onCloseEnter.bind(this)}
+					onMouseLeave={this.onCloseLeave.bind(this)}
 				>
 				</div>)
 	}
 
 	onDoubleClick(ev) {
+		let n = this.state.node;
+		if (this.props.nodeStore.isGroup(n)) {
+			this.props.action.digGroup(n.varname);
+		}
 		ev.preventDefault();
 		ev.stopPropagation();
 	}

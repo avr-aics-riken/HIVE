@@ -1,4 +1,40 @@
 
+function setPropertyBool(nodeinfo, name, value) {
+    const setsrc = nodeinfo.varname + ":Set('" + name + "'," + value + ")\n"
+    return setsrc;
+}
+function setPropertyString(nodeinfo, name, value) {
+    const setsrc = nodeinfo.varname + ":Set('" + name + "',\"" + value + "\")\n"
+    return setsrc;
+}
+function setPropertyVal(nodeinfo, name, value) {
+    const setsrc = nodeinfo.varname + ":Set('" + name + "'," + value + ")\n"
+    return setsrc;
+}
+function setPropertyVal2(nodeinfo, name, x, y) {
+    const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "})\n"
+    return setsrc;
+}
+function setPropertyVal3(nodeinfo, name, x, y, z) {
+    const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "," + z + "})\n"
+    return setsrc;
+}
+function setPropertyVal4(nodeinfo, name, x, y, z, a) {
+    const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "," + z + "," + a + "})\n"
+    return setsrc;
+}
+function setPropertyFloatArray(nodeinfo, name, value) {
+    var arraystr = '{';
+    var i;
+    for (i = 0; i <value.length; ++i) {
+        arraystr += value[i] + ','; 
+    }
+    arraystr += '}';
+    const setsrc = nodeinfo.varname + ":Set('" + name + "'," + arraystr + ")\n"
+    return setsrc;
+}    
+
+//-----
 
 export default class NodeSerializer {
 	constructor() {
@@ -29,26 +65,6 @@ export default class NodeSerializer {
         return src;
     }
     
-    setPropertyString(nodeinfo, name, value) {
-        const setsrc = nodeinfo.varname + ":Set('" + name + "','" + value + "')\n"
-        return setsrc;
-    }
-    setPropertyVal(nodeinfo, name, value) {
-        const setsrc = nodeinfo.varname + ":Set('" + name + "'," + value + ")\n"
-        return setsrc;
-    }
-    setPropertyVal2(nodeinfo, name, x, y) {
-        const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "})\n"
-        return setsrc;
-    }
-    setPropertyVal3(nodeinfo, name, x, y, z) {
-        const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "," + z + "})\n"
-        return setsrc;
-    }
-    setPropertyVal4(nodeinfo, name, x, y, z, a) {
-        const setsrc = nodeinfo.varname + ":Set('" + name + "',{" + x + "," + y + "," + z + "," + a + "})\n"
-        return setsrc;
-    }
     clearConnect(nodeinfo) {
         const clrsrc = nodeinfo.varname + ":ClearConnect()\n"
         return clrsrc;
@@ -61,15 +77,19 @@ export default class NodeSerializer {
         for (i = 0; i < inputs.length; ++i) {
             let v = inputs[i];
             if (v.type === 'vec4') {
-                script += this.setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
+                script += setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
             } else if (v.type === 'vec3') {
-                script += this.setPropertyVal3(node, v.name, v.value[0], v.value[1], v.value[2]);
+                script += setPropertyVal3(node, v.name, v.value[0], v.value[1], v.value[2]);
             } else if(v.type === 'vec2') {
-                script += this.setPropertyVal2(node, v.name, v.value[0], v.value[1]);
+                script += setPropertyVal2(node, v.name, v.value[0], v.value[1]);
             } else if(v.type === 'float') {
-                script += this.setPropertyVal(node, v.name, v.value);
+                script += setPropertyVal(node, v.name, v.value);
             } else if(v.type === 'string') {
-                script += this.setPropertyString(node, v.name, v.value);
+                script += setPropertyString(node, v.name, v.value);
+            } else if(v.type === 'bool') {
+                script += setPropertyBool(node, v.name, v.value);            
+            } else if(v.type === 'floatarray') {
+                script += setPropertyFloatArray(node, v.name, v.value);                        
             } else {
                 // TODO: ex. RenderObject
                 //script += this.setPropertyVal(node, v.name, v.value);
