@@ -193,10 +193,14 @@ d3.parcoords = function(config) {
                 var extent = d3.extent(__.data, function(d) { return +d[k]; });
 
                 // minmax 設定してるのここ
-                if(config.usr.minScale !== null && config.usr.minScale !== undefined &&
-                   config.usr.maxScale !== null && config.usr.maxScale !== undefined){
-                    config.usr.extent = [config.usr.minScale, config.usr.maxScale];
-                    extent = [config.usr.minScale, config.usr.maxScale];
+                if(config.usr.customScale &&
+                   config.usr.min !== null && config.usr.min !== undefined &&
+                   config.usr.max !== null && config.usr.max !== undefined){
+                    config.usr.extent = [config.usr.min, config.usr.max];
+                    extent = [config.usr.min, config.usr.max];
+                }
+                if(config.usr.extent === null || config.usr.extent === undefined){
+                    config.usr.extent = [extent[0], extent[1]];
                 }
 
                 // special case if single value
@@ -916,7 +920,7 @@ d3.parcoords = function(config) {
                 pc.highlight(highlighted);
             }
         }
-    }
+    };
 
     // pairs of adjacent dimensions
     pc.adjacent_pairs = function(arr) {
@@ -1030,13 +1034,13 @@ d3.parcoords = function(config) {
             // test if within range
             var within = {
                 "date": function(d,p,dimension) {
-                    return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
+                    return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1];
                 },
                 "number": function(d,p,dimension) {
-                    return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1]
+                    return extents[dimension][0] <= d[p] && d[p] <= extents[dimension][1];
                 },
                 "string": function(d,p,dimension) {
-                    return extents[dimension][0] <= yscale[p](d[p]) && yscale[p](d[p]) <= extents[dimension][1]
+                    return extents[dimension][0] <= yscale[p](d[p]) && yscale[p](d[p]) <= extents[dimension][1];
                 }
             };
 
@@ -1075,7 +1079,7 @@ d3.parcoords = function(config) {
 
             brush
                 .y(yscale[axis])
-                .on("brushstart", function() { d3.event.sourceEvent.stopPropagation() })
+                .on("brushstart", function() { d3.event.sourceEvent.stopPropagation();})
                 .on("brush", function() {
                     brushUpdated(selected());
                 })
@@ -1130,7 +1134,7 @@ d3.parcoords = function(config) {
             },
             selected: selected,
             brushState: brushExtents
-        }
+        };
     })();
     // brush mode: 2D-strums
     // bl.ocks.org/syntagmatic/5441022
@@ -1483,13 +1487,13 @@ d3.parcoords = function(config) {
             // test if within range
             var within = {
                 "date": function(d,p,dimension,b) {
-                    return b[0] <= d[p] && d[p] <= b[1]
+                    return b[0] <= d[p] && d[p] <= b[1];
                 },
                 "number": function(d,p,dimension,b) {
-                    return b[0] <= d[p] && d[p] <= b[1]
+                    return b[0] <= d[p] && d[p] <= b[1];
                 },
                 "string": function(d,p,dimension,b) {
-                    return b[0] <= yscale[p](d[p]) && yscale[p](d[p]) <= b[1]
+                    return b[0] <= yscale[p](d[p]) && yscale[p](d[p]) <= b[1];
                 }
             };
 
@@ -1531,7 +1535,7 @@ d3.parcoords = function(config) {
 
             brush
                 .y(yscale[axis])
-                .on("brushstart", function() { d3.event.sourceEvent.stopPropagation() })
+                .on("brushstart", function() { d3.event.sourceEvent.stopPropagation();})
                 .on("brush", function() {
                     brushUpdated(selected());
                 })
@@ -1603,7 +1607,7 @@ d3.parcoords = function(config) {
             },
             selected: selected,
             brushState: brushExtents
-        }
+        };
     })();
     pc.interactive = function() {
         flags.interactive = true;
@@ -1623,7 +1627,7 @@ d3.parcoords = function(config) {
         // selection size
         pc.selection.select("svg")
             .attr("width", __.width)
-            .attr("height", __.height)
+            .attr("height", __.height);
             pc.svg.attr("transform", "translate(" + __.margin.left + "," + __.margin.top + ")");
 
         // FIXME: the current brush state should pass through
