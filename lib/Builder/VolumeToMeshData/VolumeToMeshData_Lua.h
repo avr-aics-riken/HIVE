@@ -42,7 +42,7 @@ public:
     LUA_SCRIPTCLASS_BEGIN(VolumeToMeshData_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferVolumeData_Lua*)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,SetIsoValue, float)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int, IsoSurface)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG0("VolumeToMeshData", int, IsoSurface)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*,MeshData)
     LUA_SCRIPTCLASS_END()
 

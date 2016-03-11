@@ -49,7 +49,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(HDMLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG2(bool,Init,const char*, const char*)
-    LUA_SCRIPTCLASS_METHOD_ARG5(BufferSparseVolumeData_Lua*,LoadField, const char*, const char*, int, int, int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG5("HDMLoader", BufferSparseVolumeData_Lua*,LoadField, const char*, const char*, int, int, int)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(HDMLoader_Lua);

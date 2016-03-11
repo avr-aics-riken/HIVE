@@ -48,7 +48,7 @@ public:
     LUA_SCRIPTCLASS_BEGIN(UDMLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,NumTimeSteps)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,TimeStepAt,int)
-    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("UDMLoader",bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*, TetraData)
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua*, ExtraData, const char*)

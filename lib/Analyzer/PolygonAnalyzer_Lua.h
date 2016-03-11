@@ -10,8 +10,6 @@
 #include "Analyzer.h"
 #include "PolygonAnalyzer.h"
 
-#include "Core/Perf.h"
-
 //#include "PolygonModel_Lua.h"
 /**
  * PolygonAnalyzer Luaラッパー
