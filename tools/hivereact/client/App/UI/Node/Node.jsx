@@ -224,10 +224,6 @@ export default class Node extends React.Component {
 			this.mousePos = { x : ev.clientX, y : ev.clientY };
 			this.offsetLeft = ev.currentTarget.offsetLeft;
 			this.offsetTop = ev.currentTarget.offsetTop;
-
-			if (!this.isCtrlDown) {
-				this.props.action.unSelectNode([], this.props.nodeVarname);
-			}
 			this.props.action.selectNode([this.props.nodeVarname]);
 		}
 	}
