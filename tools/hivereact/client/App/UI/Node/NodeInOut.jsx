@@ -225,6 +225,7 @@ export default class NodeInOut extends React.Component {
 				}, center);
 			}
 			this.props.nodeAction.unSelectPlugHoles();
+			ev.preventDefault();
 		}
 	}
 
