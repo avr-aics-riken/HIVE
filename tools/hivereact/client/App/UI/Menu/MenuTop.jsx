@@ -20,6 +20,10 @@ export default class MenuTop extends React.Component {
         this.exportSceneButton = this.exportSceneButton.bind(this);
         this.exportGroupButton = this.exportGroupButton.bind(this);
 
+		this.state = {
+			fileValue : ""
+		};
+
         this.showConsole = props.consoleShow;
     }
 
@@ -49,11 +53,13 @@ export default class MenuTop extends React.Component {
     }
     loadButton(eve){
         if(eve.currentTarget.files && eve.currentTarget.files.length > 0){
-            this.allClearNode.bind(this)(true);
             var reader = new FileReader();
             reader.onload = function(){
                 let data = (JSON.parse(reader.result));
 				this.props.action.load(data);
+				this.setState({
+					fileValue : ""
+				})
             }.bind(this);
             reader.readAsText(eve.currentTarget.files[0]);
         }
@@ -103,10 +109,10 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="loadButtonClick">Load</MenuItem>
                     <MenuItem key="saveButton">Save</MenuItem>
                     <MenuItem key="allClearNode">Clear all</MenuItem>
-                    <MenuItem >-----------------------</MenuItem>                    
+                    <MenuItem >-----------------------</MenuItem>
                     <MenuItem key="exportSceneButton">Scene Script Export</MenuItem>
                     <MenuItem key="exportGroupButton">Group Export</MenuItem>
-                    
+
                 </SubMenu>
                 <SubMenu title={<span>Edit</span>} key="edit">
                     <MenuItem key="editNodeCopy">Copy</MenuItem>
@@ -140,7 +146,7 @@ export default class MenuTop extends React.Component {
         return (
             <div style={{position: "relative", width: "100%", zIndex: "99999"}}>
                 <div style={style}>{horizontalMenu}</div>
-                <input type="file" ref="inputFile" style={{display: "none"}} onChange={this.loadButton} />
+                <input type="file" ref="inputFile" style={{display: "none"}} value={this.state.fileValue} onChange={this.loadButton} />
             </div>
         );
     }
