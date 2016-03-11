@@ -1056,13 +1056,17 @@ void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int
 
 /**
  * Sparse 3Dテクスチャの生成
- * @param width 幅
- * @param height 高さ
- * @param depth 深度
+ * @param level LoD level
+ * @param width 空間上での幅
+ * @param height 空間上での高さ
+ * @param depth 空間上での深度
+ * @param cellWidth cell 幅
+ * @param cellHeight cell 高さ
+ * @param cellDepth cell 深度
  * @param component 種類
  * @param volumedata ボリュームデータ
  */
-void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
+void SparseTexImage3DPointer_SGL(int level, unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int cellWidth, unsigned int cellHeight, unsigned int cellDepth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
 	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
 	GLint format = GL_LUMINANCE;
@@ -1076,7 +1080,7 @@ void SparseTexImage3DPointer_SGL(unsigned int xoffset, unsigned int yoffset, uns
 		assert(0);
 	}
 	sgl.lsglTexPageCommitment(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, width, height, depth, GL_TRUE);
-	sgl.lsglTexSubImage3DPointer(GL_TEXTURE_3D, 0, xoffset, yoffset, zoffset, width, height, depth, format, GL_FLOAT, volumedata);
+	sgl.lsglTexSubImage3DPointer(GL_TEXTURE_3D, level, xoffset, yoffset, zoffset, width, height, depth, cellWidth, cellHeight, cellDepth, format, GL_FLOAT, volumedata);
 
 	// @fixme { Setting TexParameter is only required to set once, not everytime. }
     if (clampToEdgeS) {
