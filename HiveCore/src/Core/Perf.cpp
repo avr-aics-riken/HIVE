@@ -27,7 +27,7 @@ public:
         } else if (type == PMon::PMON_CALC) {
             ty = pm_lib::PerfMonitor::CALC;
         }
-        printf("setprop: %s\n", label);
+        //printf("setprop: %s\n", label);
         m_pm.setProperties(label, ty, exclusive);
         return true;
     }
@@ -37,7 +37,7 @@ public:
             fprintf(stderr, "[PMon] WARN: Not initialized.\n");
             return false;
         }
-        printf("start: %s\n", label);
+        //printf("start: %s\n", label);
         m_pm.start(label);
         return true;
     }
@@ -47,7 +47,7 @@ public:
             fprintf(stderr, "[PMon] WARN: Not initialized.\n");
             return false;
         }
-        printf("stop: %s\n", label);
+        //printf("stop: %s\n", label);
         m_pm.stop(label);
         return true;
     }
