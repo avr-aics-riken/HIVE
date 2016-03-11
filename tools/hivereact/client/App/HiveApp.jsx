@@ -23,6 +23,9 @@ export default class HiveApp extends React.Component {
         this.action = new Core.Action(this.store.getDispatchToken());
         this.listVisiblity = false;
 
+		this.nodeStore = new Node.Store(this.action.dispatcher, this.store);
+		this.nodeAction = new Node.Action(this.action.dispatcher, this.nodeStore.getDispatchToken());
+
         this.state = {
             layoutType: 'all',
             consoleOutputVisible: false,
@@ -42,10 +45,10 @@ export default class HiveApp extends React.Component {
         this.hoverHidden = this.hoverHidden.bind(this);
         this.hoverGenerator = this.hoverGenerator.bind(this);
         this.setHoverPosition = this.setHoverPosition.bind(this);
-        
+
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
-            
+
             this.setState({"layoutType": val});
         });
         this.store.on(Constants.CONSOLEOUTPUT_SHOW, (val) => {
@@ -205,8 +208,8 @@ export default class HiveApp extends React.Component {
         let layoutMode = 2;
         if (this.state.layoutType === "all") { layoutMode = 2 }
         else if (this.state.layoutType === "node") { layoutMode = 1 }
-        else if (this.state.layoutType === "panel") { layoutMode = 0 }        
-        
+        else if (this.state.layoutType === "panel") { layoutMode = 0 }
+
         switch(layoutMode){
             case 2:
                 return (
@@ -216,7 +219,7 @@ export default class HiveApp extends React.Component {
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
                                 <Splitter split="vertical" minSize="50">
                                     <div ref="hoverTarget" style={{position:"absolute",width:"100%",height:"100%"}}>
-                                        <Node.View store={this.store} action={this.action} />
+                                        <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction}  />
                                     </div>
                                     <div>
                                         <Panel.View store={this.store} action={this.action} />
@@ -238,8 +241,8 @@ export default class HiveApp extends React.Component {
                             <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
                                 <div ref="hoverTarget" style={{position:"absolute",width:"100%",height:"100%"}}>
-                                    <Node.View store={this.store} action={this.action} />
-                                </div>                            
+                                    <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} />
+                                </div>
                             </Splitter>
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
