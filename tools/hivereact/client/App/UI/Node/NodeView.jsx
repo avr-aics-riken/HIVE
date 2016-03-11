@@ -65,92 +65,7 @@ export default class NodeView extends React.Component {
 			}
 		};
 	}
-
-    // TO BE DELETED
-	addButtonClick(id) {
-		return () => {
-			let offset = 1700;
-			let ncount = Math.floor(Math.random() * 100000) + this.props.store.getNodes().length;
-			if (id === 0) {
-				let camera = this.props.store.nodeSystem.CreateNodeInstance('CreateCamera');
-				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
-				camera.varname = "testcamera_" + String(ncount);
-				camera.node = {
-					pos : [offset + 100, offset + 200]
-				};
-				renderview.varname = "testrenderview_" + String(ncount);
-				renderview.node = {
-					pos : [offset + 350, offset + 200]
-				};
-
-				this.props.action.addNode(camera);
-				this.props.action.addNode(renderview);
-				this.props.action.addPlug({
-					output : {
-						nodeVarname : camera.varname,
-						name : camera.output[0].name
-					},
-					input : {
-						nodeVarname : renderview.varname,
-						name : renderview.input[9].name
-					}
-				});
-			}
-			if (id === 1) {
-				let model = this.props.store.nodeSystem.CreateNodeInstance('PolygonObject');
-				let teapot = this.props.store.nodeSystem.CreateNodeInstance('TeapotGenerator');
-				let renderview = this.props.store.nodeSystem.CreateNodeInstance('RenderView');
-				teapot.varname = "testteapot_" + String(ncount);
-				teapot.node = {
-					pos : [offset + 100, offset + 200]
-				};
-				model.varname = "testpolygonmodel_" + String(ncount);
-				model.node = {
-					pos : [offset + 350, offset + 200]
-				};
-				renderview.varname = "testrenderview_" + String(ncount);
-				renderview.node = {
-					pos : [offset + 550, offset + 400]
-				};
-
-				this.props.action.addNode(teapot);
-				this.props.action.addNode(model);
-				this.props.action.addNode(renderview);
-				this.props.action.addPlug({
-					output : {
-						nodeVarname : teapot.varname,
-						name : teapot.output[0].name
-					},
-					input : {
-						nodeVarname : model.varname,
-						name : model.input[0].name
-					}
-				});
-				this.props.action.addPlug({
-					output : {
-						nodeVarname : model.varname,
-						name : model.output[0].name
-					},
-					input : {
-						nodeVarname : renderview.varname,
-						name : renderview.input[10].array[0].name
-					}
-				});
-			}
-		};
-	}
-
-    // TO BE DELETED
-	/// 追加ボタン(仮)
-	addButton(id) {
-		const styles = this.styles.bind(this)(id);
-		return (<div style={styles.button}
-					onClick={this.addButtonClick.bind(this)(id)}
-				>
-					Add Node
-				</div>);
-	}
-
+    
 	onMouseDown(ev) {
 		if (ev.button === 0) {
 			this.isLeftDown = true;
@@ -545,6 +460,3 @@ export default class NodeView extends React.Component {
 				);
 	}
 }
-
-//{this.addButton.bind(this)(0)}
-//{this.addButton.bind(this)(1)}
