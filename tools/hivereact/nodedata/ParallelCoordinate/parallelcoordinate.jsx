@@ -30,12 +30,14 @@ class ParallelCoordinate extends React.Component {
         super(props);
 
         // member
-        this.store = this.props.store;
+        this.store  = this.props.store;
         this.action = this.props.action;
-        this.node = this.props.node;
+        this.node   = this.props.node;
+        this.foreground = this.node.varname + '_foreground';
+        this.brushed    = this.node.varname + '_brushed';
 
         this.mat = new matIV(); // from App/lib/glutil.js
-        this.glContext = {};    // cache
+        this.glContext = {};
         this.prev = {
             prevType: null,
             glforeground: null,
@@ -45,6 +47,7 @@ class ParallelCoordinate extends React.Component {
         this.parcoords;         // from d3.parcoord.js
         this.dataval = null;
         this.density = false;
+        this.densityRange = 90;
         this.densityNormalize = false;
         this.weight = [];
         this.linecount = 0;
@@ -61,12 +64,13 @@ class ParallelCoordinate extends React.Component {
         this.redraw = this.redraw.bind(this);
         this.useAxes = this.useAxes.bind(this);
         this.beginDraw = this.beginDraw.bind(this);
-        this.glInitialize = this.glInitialize.bind(this);
-        this.canvasAttCopy = this.canvasAttCopy.bind(this);
+        this.glInitialColor = this.glInitialColor.bind(this);
         this.glRender = this.glRender.bind(this);
         this.singleConv = this.singleConv.bind(this);
         this.imageRecieved = this.imageRecieved.bind(this);
         this.imageParse = this.imageParse.bind(this);
+        this.setCanvas = this.setCanvas.bind(this);
+        this.setContext = this.setContext.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
@@ -78,20 +82,19 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        var buffer;
+        var a, buffer;
         const varname = this.node.varname;
-        if (param.varname !== varname) {
-            return;
-        }
-        let a
-        if (param.datatype === "byte") {
+        if(param.varname !== varname){return;}
+        if(param.datatype === 'byte'){
             a = new Uint8Array(data);
-            console.log('byte');
-        } else if (param.datatype === 'float'){
+        }else if(param.datatype === 'float'){
             a = new Float32Array(data);
-            console.log('float');
         }
         let component = parseInt(param.component, 10);
+        if(isNaN(component) || component === null || component === undefined || component < 2){
+            console.log('parse error: invalid component count');
+            return;
+        }
         let parse = [];
         for(let i = 0, j = a.length / component; i < j; ++i){
             let k = i * component;
@@ -145,7 +148,7 @@ class ParallelCoordinate extends React.Component {
                 lineColor2: a[1]
             }
         });
-        this.redraw();
+        setTimeout(this.redraw, 50);
     }
 
     singleConv(color){
@@ -158,24 +161,24 @@ class ParallelCoordinate extends React.Component {
     redraw(){
         var f = false;
         if(this.prev.prevType != null){
-            if(this.prev.glbrush != null && this.prev.glbrush.data != null){
+            if(this.prev[this.brushed] != null && this.prev[this.brushed].data != null){
                 f = true;
                 this.glRender(
-                    'glbrush',
-                    this.prev.glbrush.data,
-                    this.prev.glbrush.lines,
-                    this.prev.glbrush.left,
-                    this.prev.glbrush.right
+                    this.brushed,
+                    this.prev[this.brushed].data,
+                    this.prev[this.brushed].lines,
+                    this.prev[this.brushed].left,
+                    this.prev[this.brushed].right
                 );
             }
             if(this.prev.glforeground != null && this.prev.glforeground.data != null){
                 f = true;
                 this.glRender(
-                    'glforeground',
-                    this.prev.glforeground.data,
-                    this.prev.glforeground.lines,
-                    this.prev.glforeground.left,
-                    this.prev.glforeground.right
+                    this.foreground,
+                    this.prev[this.foreground].data,
+                    this.prev[this.foreground].lines,
+                    this.prev[this.foreground].left,
+                    this.prev[this.foreground].right
                 );
             }
         }
@@ -184,14 +187,21 @@ class ParallelCoordinate extends React.Component {
 
     useAxes(){
         let e = ReactDOM.findDOMNode(this.refs.examples);
-        if(e){e.innerHTML = '';}
-        if(this.state.parse === null){
-            // dom reset
-            // d3.csv('./App/resource/nut.csv', (function(data){
-            //     this.state.parse = data;
-            //     this.beginDraw(this.state.parse);
-            // }).bind(this));
-        }else{
+        let d = [];
+        if(e){
+            for(let i in e.childNodes){
+                if(e.childNodes[i].tagName === 'svg'){
+                    d.push(e.childNodes[i]);
+                }
+                if(e.childNodes[i].id && !e.childNodes[i].id.match(/(foreground|brushed)/)){
+                    d.push(e.childNodes[i]);
+                }
+            }
+            for(let i in d){
+                e.removeChild(d[i]);
+            }
+        }
+        if(this.state.parse !== null){
             this.beginDraw(this.state.parse);
         }
     }
@@ -223,7 +233,14 @@ class ParallelCoordinate extends React.Component {
                 }
             }
         }
-        this.usr = {glRender: this.glRender};
+        // usr には parcoord.js 側に渡したいこっち都合のものがいろいろ入ってる
+        this.usr = {
+            glRender: this.glRender,
+            setCanvas: this.setCanvas,
+            foreground: this.foreground,
+            brushed: this.brushed,
+            varname: this.node.varname
+        };
         this.linecount = this.dataval.length;
         this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})(ReactDOM.findDOMNode(this.refs.examples))
             .data(this.dataval)   // データの代入
@@ -231,65 +248,62 @@ class ParallelCoordinate extends React.Component {
             .width(500)           // 描画エリアのサイズ（横幅）
             .height(320);         // 描画エリアのサイズ（縦）
 
-        this.glInitialize();
+        this.glInitialColor();
         this.parcoords.render()   // ラインを描画する
             .createAxes()         // 目盛を生成する
             .reorderable()        // 軸の並び替え有効化
             .brushMode("1D-axes") // 抽出のやり方
             .interactive();       // 常時更新
     }
-    glInitialize(){
-        if(this.parcoords == null){return;}
-        if(!document.getElementById('glforeground')){
-            this.glContext = {};
-            var e = this.parcoords.selection.node();
-            var m = this.parcoords.canvas.marks;
-            var c = document.createElement('canvas');
-            this.canvasAttCopy(c, 'glbrush', m);
-            this.glContext['glbrush'].color = this.props.node.input[1].value;
-            // this.glContext['glbrush'].lowColor        = this.colors.brush[0];
-            // this.glContext['glbrush'].middleLowColor  = this.colors.brush[1];
-            // this.glContext['glbrush'].middleColor     = this.colors.brush[2];
-            // this.glContext['glbrush'].middleHighColor = this.colors.brush[3];
-            // this.glContext['glbrush'].highColor       = this.colors.brush[4];
-            e.insertBefore(c, e.firstChild);
-            c = document.createElement('canvas');
-            this.canvasAttCopy(c, 'glforeground', m);
-            this.glContext['glforeground'].color = this.props.node.input[0].value;
-            // this.glContext['glforeground'].lowColor        = this.colors.foreground[0];
-            // this.glContext['glforeground'].middleLowColor  = this.colors.foreground[1];
-            // this.glContext['glforeground'].middleColor     = this.colors.foreground[2];
-            // this.glContext['glforeground'].middleHighColor = this.colors.foreground[3];
-            // this.glContext['glforeground'].highColor       = this.colors.foreground[4];
-            e.insertBefore(c, e.firstChild);
+    setCanvas(canvas){
+        this.setContext(canvas, this.foreground);
+        this.setContext(canvas, this.brushed);
+    }
+    setContext(canvas, id){
+        if(this.glContext[id] === null || this.glContext[id] === undefined){
+            this.glContext[id] = {};
+            this.glContext[id].canvas          = canvas[id];
+            this.glContext[id].gl              = canvas[id].getContext('webgl');
+            this.glContext[id].color           = [0.2, 0.2, 0.2, 0.1];
+            this.glContext[id].lowColor        = [1.0, 1.0, 1.0];
+            this.glContext[id].middleLowColor  = [0.2, 0.2, 0.2];
+            this.glContext[id].middleColor     = [0.1, 0.5, 0.3];
+            this.glContext[id].middleHighColor = [0.6, 0.6, 0.2];
+            this.glContext[id].highColor       = [0.8, 0.2, 0.1];
+            this.glContext[id].pl              = new prgLocations();
+            this.glContext[id].plp             = new prgLocations();
+            this.glContext[id].plf             = new prgLocations();
+            this.glContext[id].ext             = this.glContext[id].gl.getExtension('OES_texture_float');
         }
     }
-    canvasAttCopy(c, name, m){
-        c.id = name;
-        c.style.cssText = m.style.cssText;
-        c.width = m.width;
-        c.height = m.height;
-
-        if(this.glContext[name] == null){
-            this.glContext[name] = {
-                gl: c.getContext('webgl'),
-                color:           [0.2, 0.2, 0.2, 0.1],
-                lowColor:        [1.0, 1.0, 1.0],
-                middleLowColor:  [0.2, 0.2, 0.2],
-                middleColor:     [0.1, 0.5, 0.3],
-                middleHighColor: [0.6, 0.6, 0.2],
-                highColor:       [0.8, 0.2, 0.1],
-                pl:  new prgLocations(),
-                plp: new prgLocations(),
-                plf: new prgLocations()
-            };
-        }
+    glInitialColor(){
+        this.glContext[this.brushed].color = this.props.node.input[1].value;
+        // this.glContext[this.brushed].lowColor        = this.colors.brush[0];
+        // this.glContext[this.brushed].middleLowColor  = this.colors.brush[1];
+        // this.glContext[this.brushed].middleColor     = this.colors.brush[2];
+        // this.glContext[this.brushed].middleHighColor = this.colors.brush[3];
+        // this.glContext[this.brushed].highColor       = this.colors.brush[4];
+        this.glContext[this.foreground].color = this.props.node.input[0].value;
+        // this.glContext[this.foreground].lowColor        = this.colors.foreground[0];
+        // this.glContext[this.foreground].middleLowColor  = this.colors.foreground[1];
+        // this.glContext[this.foreground].middleColor     = this.colors.foreground[2];
+        // this.glContext[this.foreground].middleHighColor = this.colors.foreground[3];
+        // this.glContext[this.foreground].highColor       = this.colors.foreground[4];
     }
 
     glRender(target, data, lines, left, right){
-        this.prev.prevType = target;
-        this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right};
-        if(this.glContext[target].gl == null){return;}
+        if(!target){return;}
+        if(data){
+            this.prev.prevType = target;
+            this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right};
+            if(this.glContext[target].gl == null){return;}
+        }else{
+            if(this.glContext[target].gl !== null && this.glContext[target].gl !== undefined){
+                this.glContext[target].gl.viewport(0, 0, width, height);
+                this.glContext[target].gl.clearColor(0.0, 0.0, 0.0, 0.0);
+                this.glContext[target].gl.clear(this.glContext[target].gl.COLOR_BUFFER_BIT);
+            }
+        }
 
         var gc = this.glContext[target];
         var gl = gc.gl;
@@ -298,9 +312,8 @@ class ParallelCoordinate extends React.Component {
         var vPolyPosition, vboPL;
         var width = gl.canvas.width;
         var height = gl.canvas.height;
-        var ext;
+        var ext = gc.ext;
         var mat = this.mat;
-        ext = gl.getExtension('OES_texture_float');
 
         if(gc.pl.prg == null){
             gc.pl.vSource = '';
@@ -603,21 +616,18 @@ class ParallelCoordinate extends React.Component {
         //     ]}
         // );
         // setTimeout((()=>{this.imageParse();}), 50);
-        this.glInitialize();
     }
 
     componentDidUpdate(){
-        if(this.glContext.hasOwnProperty('glforeground')){
-            this.glContext['glforeground'].color = this.props.node.input[0].value;
-            this.glContext['glbrush'].color = this.props.node.input[1].value;
+        if(this.glContext.hasOwnProperty(this.foreground)){
+            this.glContext[this.foreground].color = this.props.node.input[0].value;
+            this.glContext[this.brushed].color = this.props.node.input[1].value;
         }
     }
 
     componentWillUnmount(){
         const Store_IMAGE_RECIEVED = "image_revieved";
         this.store.removeListener(Store_IMAGE_RECIEVED, this.imageRecieved);
-        //this.glContext['glforeground'].color = this.props.node.input[0].value;
-        //this.glContext['glbrush'].color = this.props.node.input[1].value;
     }
 
     styles(){
@@ -705,22 +715,22 @@ module.exports = ParallelCoordinate;
             //                     <input type="color" id="color0" ref="lineColor1" value={this.state.colorString0} onChange={this.onColorChange} style={styles.colorInputs} />
             //                     <input type="color" id="color1" ref="lineColor2" value={this.state.colorString1} onChange={this.onColorChange} style={styles.colorInputs} />
             //                 </div>
-            //                 <div style={styles.flexcol}>
-            //                     <p style={styles.inputTitle}>density</p>
-            //                     <input type="color" id="color2" ref="fgColor1" value={this.state.colorString2} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color3" ref="fgColor2" value={this.state.colorString3} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color4" ref="fgColor3" value={this.state.colorString4} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color5" ref="fgColor4" value={this.state.colorString5} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color6" ref="fgColor5" value={this.state.colorString6} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                 </div>
-            //                 <div style={styles.flexcol}>
-            //                     <p style={styles.inputTitle}>select</p>
-            //                     <input type="color" id="color7"  ref="brColor1" value={this.state.colorString7}  onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color8"  ref="brColor2" value={this.state.colorString8}  onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color9"  ref="brColor3" value={this.state.colorString9}  onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color10" ref="brColor4" value={this.state.colorString10} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color11" ref="brColor5" value={this.state.colorString11} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                 </div>
+                            // <div style={styles.flexcol}>
+                            //     <p style={styles.inputTitle}>density</p>
+                            //     <input type="color" id="color3" ref="fgColor1" value={this.singleConv(this.props.node.input[2].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color4" ref="fgColor2" value={this.singleConv(this.props.node.input[3].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color5" ref="fgColor3" value={this.singleConv(this.props.node.input[4].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color6" ref="fgColor4" value={this.singleConv(this.props.node.input[5].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color7" ref="fgColor5" value={this.singleConv(this.props.node.input[6].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            // </div>
+                            // <div style={styles.flexcol}>
+                            //     <p style={styles.inputTitle}>select</p>
+                            //     <input type="color" id="color8"  ref="brColor1" value={this.singleConv(this.props.node.input[7].value)}  onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color9"  ref="brColor2" value={this.singleConv(this.props.node.input[8].value)}  onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color10" ref="brColor3" value={this.singleConv(this.props.node.input[9].value)}  onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color11" ref="brColor4" value={this.singleConv(this.props.node.input[10].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            //     <input type="color" id="color12" ref="brColor5" value={this.singleConv(this.props.node.input[11].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            // </div>
             //             </div>
             //         </div>
             //     </div>

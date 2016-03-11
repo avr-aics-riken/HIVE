@@ -80,7 +80,7 @@ export default class ActionExecuter {
 		if (payload && this.hasOwnProperty(payload.actionType)) {
 			if (payload.hasOwnProperty("id") && payload.id === this.store.getDispatchToken()) {
 				(() => {
-					this[payload.actionType].bind(this)(payload);
+					this[payload.actionType](payload);
 				})();
 			}
 		}
@@ -442,7 +442,7 @@ export default class ActionExecuter {
 			});
         }
         for (let i = nodes.length - 1; i >= 0; --i){
-            this.action.deleteNode({
+            this.deleteNode({
 				varname: nodes[i].varname
 			});
         }
