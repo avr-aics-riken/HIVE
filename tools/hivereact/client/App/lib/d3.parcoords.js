@@ -192,6 +192,13 @@ d3.parcoords = function(config) {
             "number": function(k) {
                 var extent = d3.extent(__.data, function(d) { return +d[k]; });
 
+                // minmax 設定してるのここ
+                if(config.usr.minScale !== null && config.usr.minScale !== undefined &&
+                   config.usr.maxScale !== null && config.usr.maxScale !== undefined){
+                    config.usr.extent = [config.usr.minScale, config.usr.maxScale];
+                    extent = [config.usr.minScale, config.usr.maxScale];
+                }
+
                 // special case if single value
                 if (extent[0] === extent[1]) {
                     return d3.scale.ordinal()
@@ -199,9 +206,16 @@ d3.parcoords = function(config) {
                         .rangePoints([h()+1, 1]);
                 }
 
-                return d3.scale.linear()
-                    .domain(extent)
+                // log scale するとしたらここ（真偽値で厳密チェックする
+                if(config.usr.logScale === true){
+                    return d3.scale.log()
+                    .domain(config.usr.extent)
                     .range([h()+1, 1]);
+                }else{
+                    return d3.scale.linear()
+                    .domain(config.usr.extent)
+                    .range([h()+1, 1]);
+                }
             },
             "string": function(k) {
                 var counts = {},
@@ -381,7 +395,7 @@ d3.parcoords = function(config) {
 
     function glData(v, target){
         if(v == null || v.length === 0){pc.glRender(target, null); return;}
-        var a, b, c, d, i, j, k, l, m, x, y, left, right;
+        var a, b, c, d, e, f, i, j, k, l, m, s, x, y, left, right;
         a = [];
         k = v[0].length;
         for(i = 0, j = v.length; i < j; ++i){
@@ -401,15 +415,26 @@ d3.parcoords = function(config) {
             for(l = 0, m = c.length; l < m; ++l){
                 d.push(c[l].colCount);
             }
+            e = [];
+            f = true;
             for(l = 0; l < k; ++l){
+                s = v[i][d[l]];
                 x = position(d[l]);
-                y = yscale[d[l]](v[i][d[l]]);
-                if(l <= 1){
-                    a.push(x, y);
+                y = yscale[d[l]](s);
+                if(s >= config.usr.extent[0] && s <= config.usr.extent[1]){
+                    if(l <= 1){
+                        e.push(x, y);
+                    }else{
+                        m = (l - 1) * 4;
+                        e.push(e[m - 2], e[m - 1], x, y);
+                    }
                 }else{
-                    m = b + (l - 1) * 4;
-                    a.push(a[m - 2], a[m - 1], x, y);
+                    f = false;
+                    break;
                 }
+            }
+            if(f){
+                e.map(function(val){a.push(val);});
             }
         }
         pc.glRender(target, a, v.length, left, right);
