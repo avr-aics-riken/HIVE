@@ -1,0 +1,16 @@
+.slider .bar {
+    position: relative;
+    background: #555;
+    top: 8px;
+    height: 4px;
+}
+
+.slider .thum {
+    background-color:#888;
+    height: 20px;
+    width: 8px;
+    text-align: center;
+
+    cursor: pointer;
+    border-radius: 3px;
+}

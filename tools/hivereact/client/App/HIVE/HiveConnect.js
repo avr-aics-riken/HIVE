@@ -4,16 +4,16 @@
 (function (window) {
 	'use strict';
 
-	function HiveConnect(opt) { //wsUrl, ipcAddress) {
+	function HiveConnect(opt) {
 		var wsUrl, ipcAddress, openglMode;
 
 		if (opt) {
 			if (opt.url) {
 				wsUrl = opt.url;
 			}
-			if (opt.ipc) {
-				ipcAddress = opt.ipc;
-			}
+			//if (opt.ipc) {
+			//	ipcAddress = opt.ipc;
+			//}
 			if (opt.opengl) {
 				openglMode = opt.opengl;
 			}
@@ -22,7 +22,7 @@
 			wsUrl = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
 		}
 		this.url = wsUrl;
-		this.ipcAddress = ipcAddress;
+		//this.ipcAddress = ipcAddress;
 		this.openGLMode = openglMode;
 		this.messageCount = 0;
 		this.callbacks = {};
@@ -32,7 +32,7 @@
 		this.reconnectTimeout = 2000;
 		this.reconnect();
 
-		if (ipcAddress) {
+		/*if (ipcAddress) {
 			// Electron only
 			var nano = require('nanomsg');
 			var sc = nano.socket('pair');
@@ -67,7 +67,7 @@
 					console.error('Not metabin foramt');
 				};
 			});
-		}
+		}*/
 
 	}
 

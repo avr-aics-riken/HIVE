@@ -20,18 +20,18 @@ CreateCamera.new = function (varname)
 end
 
 function CreateCamera:Do()
-    local property = self.property    
-    self.cam:SetScreenSize(property.screensize[1], property.screensize[2])
-    self.cam:SetFilename(property.color_file)
-    if property.depth_file ~= nil then
-        self.cam:SetDepthFilename(property.depth_file)
-    end
-    self.cam:ClearColor(property.clearcolor[1],property.clearcolor[2],property.clearcolor[3],property.clearcolor[4])
+    self:UpdateValue()
+    local v = self.value
+ 
+    self.cam:SetScreenSize(v.screensize[1], v.screensize[2])
+    self.cam:SetFilename(v.color_file)
+    self.cam:SetDepthFilename(v.depth_file)
+    self.cam:ClearColor(v.clearcolor[1], v.clearcolor[2], v.clearcolor[3], v.clearcolor[4])
     self.cam:LookAt(
-        property.position[1], property.position[2], property.position[3],
-        property.target[1], property.target[2], property.target[3],
-        property.up[1], property.up[2], property.up[3],
-        property.fov
+        v.position[1], v.position[2], v.position[3],
+        v.target[1],   v.target[2],   v.target[3],
+        v.up[1],       v.up[2],       v.up[3],
+        v.fov
     ) 
 end
 

@@ -3,7 +3,6 @@ import ReactDOM from "react-dom";
 import Menu from "./Menu.jsx";
 import MenuStore from "./MenuStore.jsx";
 import MenuAction from "./MenuAction.jsx";
-import Node from "../Node";
 
 var Dispatcher = require("flux").Dispatcher;
 
@@ -17,19 +16,15 @@ export default class View extends React.Component {
 
     render(){
         return (
-		<div>
-            <Menu
-                store={this.props.store}
-                action={this.props.action}
-                layoutType={this.props.layoutType}
-                menuStore={this.menuStore}
-                menuAction={this.menuAction}
-            />
-			<Node.Property
-				store={this.props.store}
-				action={this.props.action}
-			/>
-		</div>
+            <div style={{width: "100%", height: "100%", position: "absolute", padding: "0px 10px 0px 14px"}}>
+                <Menu
+                    store={this.props.store}
+                    action={this.props.action}
+                    layoutType={this.props.layoutType}
+                    menuStore={this.menuStore}
+                    menuAction={this.menuAction}
+                />
+            </div>
         );
     }
 }

@@ -24,18 +24,27 @@ var server = require('./server');
 app.on('ready', function () {
 	"use strict";
 	var argv = process.argv,
-		egargs = [],
-		connectURL = "ipc:///tmp/HIVE_IPC" + Math.random().toString().slice(0, 5),
-		encodedURL = encodeURIComponent(connectURL);
+		egargs = [];
+		//connectURL = "ipc:///tmp/HIVE_IPC" + Math.random().toString().slice(0, 5),
+		//encodedURL = encodeURIComponent(connectURL);
 
 	// BrowserWindowの作成
 	mainWindow = new BrowserWindow({
-		"frame": true/*,
+		"frame": true,
+        "autoHideMenuBar": true,
+        "width": 1280,
+        "height": 800,
+        "title": "HIVE UI2"/*,
 		"titleBarStyle": "hidden",*/
 	});
 
-    mainWindow.setAutoHideMenuBar(true);
-	mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html') + '?url=' + encodedURL);
+    // ズーム禁止
+    //var webFrame = require('electron').webFrame;
+    //webFrame.setZoomLevelLimits(1,1);
+    
+    
+    //mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html') + '?url=' + encodedURL);
+    mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html'));
 
 	mainWindow.on('close', function () {
 		if (server.stopHRenderServer) {

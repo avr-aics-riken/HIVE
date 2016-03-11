@@ -13,21 +13,29 @@ export default class MenuNodeList extends React.Component {
 
         this.styles = this.styles.bind(this);
         this.floating = (this.props.floating !== undefined);
+        this.unFocus = this.unFocus.bind(this);
         this.props.store.on(Core.Constants.INITIALIZED, (()=>{
             this.setState({nodeList: this.props.store.getNodeNameList()});
         }).bind(this));
     }
 
-    onDoubleClick(eve){
+    onClick(eve){
         var e = eve.currentTarget;
         this.props.action.addNodeByName(e.value);
+        this.unFocus();
+        if(this.props.hiddenFunction){this.props.hiddenFunction();}
+    }
+
+    unFocus(){
+        var e = ReactDOM.findDOMNode(this.refs.select);
+        e.selectedIndex = -1;
     }
 
     styles() {
         if(this.floating){
             return {
                 block: {
-                    backgroundColor: "rgba(0, 0, 0, 0.7)",
+                    // backgroundColor: "rgba(0, 0, 0, 0.7)",
                     textAlign: "center",
                     margin: "0px",
                     padding: "0px",
@@ -44,17 +52,17 @@ export default class MenuNodeList extends React.Component {
                     padding: "0px",
                     width: "240px",
                     minHeight: "100%",
-                    overflow: "auto"
+                    overflow: "visible"
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
                     backgroundColor: "#444",
                     borderRadius: "3px",
-                    color: "aquamarine",
+                    color: "rgb(32, 255, 220)",
                     fontSize: "small",
                     textAlign: "left",
                     lineHeight: "24px",
-                    margin: "6px 2px",
+                    margin: "3px 2px",
                     padding: "2px",
                     width: "236px",
                     height: "24px",
@@ -80,20 +88,20 @@ export default class MenuNodeList extends React.Component {
                     fontSize: "large",
                     margin: "0px",
                     padding: "0px",
-                    width: "248px",
-                    minHeight: "95%",
-                    overflow: "auto"
+                    width: "240px",
+                    height: "100%",
+                    overflow: "visible"
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
                     backgroundColor: "#444",
                     borderRadius: "3px",
-                    color: "aquamarine",
+                    color: "rgb(32, 255, 220)",
                     fontSize: "small",
                     lineHeight: "24px",
-                    margin: "6px 3px",
+                    margin: "3px",
                     padding: "2px",
-                    width: "242px",
+                    width: "238px",
                     height: "24px",
                     overflow: "auto",
                     textShadow: "0px 0px 3px #022",
@@ -107,7 +115,7 @@ export default class MenuNodeList extends React.Component {
     generator(value, key){
         const style = this.styles();
         return (
-            <option style={style.list} key={key} value={value} onDoubleClick={this.onDoubleClick.bind(this)}>{"・" + value}</option>
+            <option style={style.list} key={key} value={value} onClick={this.onClick.bind(this)}>{"・" + value}</option>
         );
     }
 
@@ -115,7 +123,7 @@ export default class MenuNodeList extends React.Component {
         const style = this.styles();
         return (
             <div style={style.block}>
-                <select style={style.select} size={this.state.nodeList.length}>
+                <select ref="select" style={style.select} size={this.state.nodeList.length}>
                     {this.state.nodeList.map(this.generator.bind(this))}
                 </select>
             </div>

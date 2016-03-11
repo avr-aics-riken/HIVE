@@ -81,6 +81,12 @@ public:
     {
         if (!filename) { return false; }
         if (!data) { return false; }
+        if (std::string(filename) == "") { return false; }
+        const int width = data->Width();
+        const int height = data->Height();
+        
+        if (width == 0 || height == 0) { return false; }
+        
         bool result = false;
         
         std::string path(filename);
@@ -96,8 +102,6 @@ public:
             path += ".jpg";
         }
         
-        const int width = data->Width();
-        const int height = data->Height();
         if (ext == "png" || ext == "PNG")
         {
             const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
@@ -188,10 +192,18 @@ public:
         else if (ext == "hdr")
         {
             if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
-                const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
                 if (data->Format() == BufferImageData::RGBA32F)
                 {
-                    result = SimpleHDRSaver(path.c_str(), width, height, srcbuffer);
+                    // flip y copy
+                    float *hdrbuffer = new float[width*height*4];
+                    for (int y = 0; y < height; ++y) {
+                        const int src_offsety = sizeof(float) * width * y;
+                        const int dst_offsety = sizeof(float) * width * (height - 1 - y);
+                        memcpy(hdrbuffer + dst_offsety, data->FloatImageBuffer()->GetBuffer() + src_offsety, sizeof(float) * 4 * width);
+                    }
+
+                    result = SimpleHDRSaver(path.c_str(), width, height, hdrbuffer);
+                    delete [] hdrbuffer;
                 }
                 else if (data->Format() == BufferImageData::R32F)
                 {
@@ -203,9 +215,17 @@ public:
                 const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
                 if (data->Format() == BufferImageData::RGBA8) {
                     // BYTE -> float
+                    // flip y copy
                     float *hdrbuffer = new float[width*height*4];
-                    for (size_t i = 0; i < width * height * 4; i++) {
-                        hdrbuffer[i] = (float)srcbuffer[i] / 255.5f;
+                    for (size_t y = 0; y < height; y++) {
+                        for (size_t x = 0; x < width; x++) {
+                            const int src_offset_i = 4 * (width * y + x);
+                            const int dst_offset_i = 4 * (width * (height - 1 - y) + x);
+                            hdrbuffer[dst_offset_i    ] = (float)srcbuffer[src_offset_i    ] / 255.5f;
+                            hdrbuffer[dst_offset_i + 1] = (float)srcbuffer[src_offset_i + 1] / 255.5f;
+                            hdrbuffer[dst_offset_i + 2] = (float)srcbuffer[src_offset_i + 2] / 255.5f;
+                            hdrbuffer[dst_offset_i + 3] = (float)srcbuffer[src_offset_i + 3] / 255.5f;
+                        }
                     }
                     
                     result = SimpleHDRSaver(path.c_str(), width, height, hdrbuffer);

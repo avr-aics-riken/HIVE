@@ -1,0 +1,16 @@
+{
+	"name": "Slider",
+	"funcname": "Slider",
+	"info":"sliderをつくるノード",
+	"customfuncfile":"slider.lua",
+	"uifile" : "slider.jsx",
+    "input": [
+		{"name": "value",  "type": "float", "value": 0.0},
+		{"name": "min",  "type": "float", "value": 0.0},
+		{"name": "max",  "type": "float", "value": 1.0},
+		{"name": "step",  "type": "float", "value": 0.01}
+	],
+	"output": [
+		{"name": "fval",  "type": "float"}
+	]
+}

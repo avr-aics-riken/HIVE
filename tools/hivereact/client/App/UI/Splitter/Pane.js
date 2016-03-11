@@ -31,17 +31,23 @@ exports.default = _react2.default.createClass({
             outline: 'none',
             overflow: overflow
         };
-        if (this.state.size !== undefined) {
-            if (split === 'vertical') {
-                style.width = this.state.size;
+        // if (this.state.size !== undefined) {
+        //     if (split === 'vertical') {
+        //         style.width = this.state.size;
+        //     } else {
+        //         style.height = this.state.size;
+        //         style.display = 'flex';
+        //     }
+        //     style.flex = 'none';
+        // }
+        if (this.state.size !== undefined && this.state.parentSize !== undefined) {
+            if (this.props.target === 'pane1') {
+                style.flexGrow = this.state.size / this.state.parentSize;
             } else {
-                style.height = this.state.size;
-                style.display = 'flex';
+                style.flexGrow = this.state.size / this.state.parentSize;
             }
-            style.flex = 'none';
         }
         var prefixed = _reactVendorPrefix2.default.prefix({ styles: style });
-
         return _react2.default.createElement(
             'div',
             { className: classes.join(' '), style: prefixed.styles },

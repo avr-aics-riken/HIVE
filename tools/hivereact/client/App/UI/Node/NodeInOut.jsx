@@ -67,12 +67,12 @@ export default class NodeInOut extends React.Component {
 		if (this.props.isInput) {
 			return {
 				x : nodeRect.x - (holeSizeW / 2.0),
-				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3,
+				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 7,
 			}
 		} else {
 			return {
 				x : nodeRect.x + nodeRect.w - (holeSizeW / 2.0),
-				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 3
+				y : nodeRect.y + (holeSize + 3) * (this.props.index + 1) + 10 + 7
 			}
 		}
 	}
@@ -87,7 +87,7 @@ export default class NodeInOut extends React.Component {
 		return position;
 	}
 
-	styles() {
+	styles(holevisible) {
 		let holeSize =  this.props.isClosed ? 10 : 15;
 		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
 		let holeSizeH =  this.props.isClosed ? 10 : 8;
@@ -107,23 +107,22 @@ export default class NodeInOut extends React.Component {
 				height : this.props.isClosed ? "10px" : "20px"
 			},
 			inhole : {
-				cursor : "pointer",
 				position : "absolute",
 				left : "0px",
 				width : holeSizeW + "px",
 				height : holeSizeH + "px",
-				marginTop : this.props.isClosed ? "0px" : "3px",
+				marginTop : this.props.isClosed ? "0px" : "7px",
 				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
-				border : (this.state.isDragging) ? "solid 1px" : "none"
+				border : (this.state.isDragging) ? "solid 1px" : "none",
+                display: (holevisible === true || holevisible === undefined) ? "block" : "none"
 			},
 			outhole : {
-				cursor : "pointer",
 				position : "absolute",
 				right : "0px",
 				width : holeSizeW,
 				height : holeSizeH,
-				marginTop : this.props.isClosed ?  "0px" : "3px",
+				marginTop : this.props.isClosed ?  "0px" : "7px",
 				borderRadius : "7px 7px 7px 7px / 7px 7px 7px 7px",
 				backgroundColor : colorFunction(this.props.data.type, this.state.hover),
 				border : (this.state.isDragging) ? "solid 1px" : "none",
@@ -149,33 +148,34 @@ export default class NodeInOut extends React.Component {
 
 	// プラグをドラッグするActionを発行.
 	onMouseDown(ev) {
-		let id = this.props.id;
-		this.pos = {
-			x : ev.clientX,
-			y : ev.clientY
-		}
-		if (this.props.isInput) {
-			this.props.nodeAction.dragPlug(id, {
+		if (ev.button === 0) {
+			let id = this.props.id;
+			this.pos = {
 				x : ev.clientX,
 				y : ev.clientY
-			}, this.pos);
-		} else {
-			this.props.nodeAction.dragPlug(id, this.pos, {
-				x : ev.clientX,
-				y : ev.clientY
-			});
-		}
-		this.props.nodeAction.unSelectPlugHoles();
-		this.props.nodeAction.selectPlugHole(this.plugInfo());
+			}
+			if (this.props.isInput) {
+				this.props.nodeAction.dragPlug(id, {
+					x : ev.clientX,
+					y : ev.clientY
+				}, this.pos);
+			} else {
+				this.props.nodeAction.dragPlug(id, this.pos, {
+					x : ev.clientX,
+					y : ev.clientY
+				});
+			}
+			this.props.nodeAction.unSelectPlugHoles();
+			this.props.nodeAction.selectPlugHole(this.plugInfo());
 
-		ev.preventDefault();
-		ev.stopPropagation();
+			ev.preventDefault();
+			ev.stopPropagation();
+		}
 	}
 
 	onClick(ev) {
-		if (this.props.isInput) {
-			this.props.nodeAction.disconnectPlugHole(this.plugInfo());
-		}
+		let plugInfo = this.plugInfo();
+		this.props.nodeAction.disconnectPlugHole(plugInfo);
 	}
 
 	// プラグをドラッグするActionを発行.
@@ -202,7 +202,6 @@ export default class NodeInOut extends React.Component {
 
 	plugInfo() {
 		return {
-			nodeVarname : this.props.nodeVarname,
 			data : this.props.data,
 			isInput : this.props.isInput
 		}
@@ -225,6 +224,8 @@ export default class NodeInOut extends React.Component {
 					y : center.y + (ev.clientY - this.pos.y)
 				}, center);
 			}
+			this.props.nodeAction.unSelectPlugHoles();
+			ev.preventDefault();
 		}
 	}
 
@@ -255,35 +256,43 @@ export default class NodeInOut extends React.Component {
 	}
 
 	inHoleText() {
-		const style = this.styles(this.props.index);
+        const style = this.styles();//this.props.index);
 		if (!this.props.isClosed) {
 			return (<div style={style.inholeText}>{this.props.data.name}</div>);
 		}
 	}
 
 	outHoleText() {
-		const style = this.styles(this.props.index);
+		const style = this.styles();//this.props.index);
 		if (!this.props.isClosed) {
 			return (<div style={style.outholeText}>{this.props.data.name}</div>);
 		}
 	}
 
 	/// マウスホバーされた
-	onHover(ev) {
-		this.setState({ hover : !this.state.hover })
+	onMouseEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		this.setState({ hover : true })
+		ev.target.style.cursor = "pointer";
+	}
+
+	onMouseLeave(ev) {
+		this.setState({ hover : false })
+		ev.target.style.cursor = "default";
 	}
 
 	content() {
-		const style = this.styles(this.props.index);
-		if (this.props.isInput) {
+        const plugInfo = this.plugInfo();
+		const style = this.styles(plugInfo.data.hole);//this.props.index);
+        if (this.props.isInput) {
 			// 入力端子.
 			return (<div style={style.input}>
 						<div style={style.inhole}
 							onMouseDown={this.onMouseDown.bind(this)}
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
-							onMouseEnter={this.onHover.bind(this)}
-							onMouseLeave={this.onHover.bind(this)}
+							onMouseEnter={this.onMouseEnter.bind(this)}
+							onMouseLeave={this.onMouseLeave.bind(this)}
 						/>
 						{this.inHoleText.bind(this)()}
 					</div>);
@@ -294,8 +303,8 @@ export default class NodeInOut extends React.Component {
 							onMouseDown={this.onMouseDown.bind(this)}
 							onMouseUp={this.onMouseUp2.bind(this)}
 							onClick={this.onClick.bind(this)}
-							onMouseEnter={this.onHover.bind(this)}
-							onMouseLeave={this.onHover.bind(this)}
+							onMouseEnter={this.onMouseEnter.bind(this)}
+							onMouseLeave={this.onMouseLeave.bind(this)}
 						/>
 						{this.outHoleText.bind(this)()}
 					</div>);

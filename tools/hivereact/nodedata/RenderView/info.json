@@ -10,17 +10,18 @@
 		{"name": "up", "type": "vec3", "value": [ 0,1,0]},
 		{"name": "fov", "type": "float", "value": 60},
 		{"name": "screensize", "type": "vec2", "value": [512,512]},
-		{"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
-		{"name": "color_file", "type": "string", "value": ""},
-        {"name": "depth_file", "type": "string", "value": ""},
-        {"name": "ipcpath", "type": "string", "value": ""},		
-        {"name": "Camera",  "type": "RenderObject"},
-		{"name": "RenderObject",  "type": "RenderObject", "array": [
+		{"name": "rendersize", "type": "vec2", "value": [128,128], "hole":false},		
+        {"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
+        {"name": "ipcmode", "type": "bool", "value": false, "hole":false},
+        {"name": "Camera",  "type": "RenderObject"},        		
+        {"name": "RenderObject",  "type": "RenderObject", "array": [
 			{"name": "RenderObject[0]",  "type": "RenderObject"},
 			{"name": "RenderObject[1]",  "type": "RenderObject"},
 			{"name": "RenderObject[2]",  "type": "RenderObject"}
 		]}
 	],
 	"output": [
+        {"name": "Camera",  "type": "RenderObject"},
+        {"name": "Image",  "type": "BufferImageData"}        		
 	]
 }

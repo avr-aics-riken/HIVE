@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import nanomsg from 'nanomsg'
-import buffercopy from 'buffercopy'
+//import nanomsg from 'nanomsg'
+//import buffercopy from 'buffercopy'
 
 class RenderView extends React.Component {
 	constructor(props) {
@@ -30,9 +30,30 @@ class RenderView extends React.Component {
 		this.getInputValue = this.getInputValue.bind(this);
 	}
 
+    progressiveUpdate(param) {
+        let w = param.width;
+        let h = param.height;
+        const varname = this.node.varname;
+        const ssize = this.getInputValue("screensize");
+        if (w < ssize[0] || h < ssize[1]) {
+            w *= 2;
+            h *= 2;
+            //console.log('PROGRESSIVE:', w, h);
+            setTimeout(() => {
+                this.action.changeNodeInput({
+                    varname : varname,
+                    input : {
+                        "rendersize" : [w,h]
+                    }
+                });
+            },0);
+        }
+    }
+
 	imageRecieved(err, param, data) {
 		var buffer;
-		if (param.varname !== this.node.varname) {
+        const varname = this.node.varname;
+		if (param.varname !== varname) {
 			return;
 		}
 		if (param.type === 'jpg') {
@@ -40,18 +61,18 @@ class RenderView extends React.Component {
 		} else {
 			buffer = data;
 		}
-		this.setState({
+        this.setState({
 			param : param,
 			image : buffer
 		});
+
+        // progressive update
+        this.progressiveUpdate(param);
 	}
 
     hasIPCAddress() {
-		//return (this.props.ipc_address && this.props.ipc_address !== "");
-        const r = (this.node.input[8].value !== undefined && this.node.input[8].value !== "");
-        //console.log('IPCCCCC', r, this.node.input[8].value); // ipcpath
-        return r;
-	}
+		return this.getInputValue('ipcmode');
+    }
 
     closeForIPCImageTransfer(){
         if (this.sc === undefined) {
@@ -64,12 +85,13 @@ class RenderView extends React.Component {
     readyForIPCImageTransfer(){
        	// Electron only
         if (this.sc === undefined) {
-            var nano = nanomsg;//require('nanomsg');
+            var nano = require('nanomsg');
+            var buffercopy = require('buffercopy');
             var sc = nano.socket('pair');
             this.sc = sc;
             var meta = require(require("path").resolve('./lib/metabinary')); // path from index.html
             this.meta = meta;
-            var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;// + this.node.ipcpath;
+            var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;
             var ret = sc.bind(ipcAddress);
             console.log('IPC bind = ', ret, ipcAddress);
 
@@ -99,6 +121,8 @@ class RenderView extends React.Component {
                             var imageData = context.createImageData(param.width, param.height);
                             buffercopy.buffercopy(data, imageData.data);
                             context.putImageData(imageData, 0, 0);
+
+                            this.progressiveUpdate(param);
                         }
 	                }
 
@@ -158,6 +182,9 @@ class RenderView extends React.Component {
 		let ay = normalize(cross(az, ax));
 		let rx = rotate(rotx, ax);
 		let ry = rotate(roty, ay);
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
+        let rw = parseInt(ssize[0] / 16);
+        let rh = parseInt(ssize[1] / 16);
 
 		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
@@ -169,7 +196,8 @@ class RenderView extends React.Component {
 				varname : varname,
 				input : {
 					"position" : pos,
-					"target" : target
+					"target" : target,
+                    "rendersize" : [rw, rh]
 				}
 			});
 		}
@@ -186,13 +214,17 @@ class RenderView extends React.Component {
 		let mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));
 		let pos = add(add(position, scale(-tx, ax)), scale(ty, ay));
 		let tar = add(add(target,   scale(-tx, ax)), scale(ty, ay));
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let rw = parseInt(ssize[0] / 16);
+        let rh = parseInt(ssize[1] / 16);
 
 		const varname = this.node.varname;
 		this.action.changeNodeInput({
 			varname : varname,
 			input : {
 				"position" : pos,
-				"target" : tar
+				"target" : tar,
+                "rendersize" : [rw, rh]
 			}
 		});
     }
@@ -200,6 +232,10 @@ class RenderView extends React.Component {
 		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
 		let v = subtract(position, target);
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let rw = parseInt(ssize[0] / 16);
+        let rh = parseInt(ssize[1] / 16);
+
 		let r = 1.0 - (zoom / 1000.0);
 		v = scale(r, v);
 		position = add(target, v);
@@ -207,7 +243,8 @@ class RenderView extends React.Component {
 		this.action.changeNodeInput({
 			varname : varname,
 			input : {
-				"position" : position
+				"position" : position,
+                "rendersize" : [rw, rh]
 			}
 		});
     }
@@ -243,12 +280,18 @@ class RenderView extends React.Component {
     }
 
 	imageRecieveWrap(err, data) {
+		if (data.varname !== this.node.varname) {
+			return;
+		}
 		if (this.hasIPCAddress()) {
 			this.readyForIPCImageTransfer();
 		}
 	}
 
 	onPanelSizeChanged(err, data) {
+		if (data.varname !== this.node.varname) {
+			return;
+		}
 		// イメージサイズの更新.
 		if (this.state) {
 			if (this.props.node.panel.visible) {
@@ -262,7 +305,10 @@ class RenderView extends React.Component {
 					setTimeout( ()=> {
 						this.action.changeNodeInput({
 							varname : this.props.node.varname,
-							input : {"screensize" : [width, height]}
+							input : {
+                                "screensize" : [width, height],
+                                "rendersize" : [parseInt(width/16), parseInt(height/16)]
+                            }
 						});
 					}, 0);
 				}

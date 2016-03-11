@@ -144,6 +144,10 @@ public:
         return m_buffer;
     }
 
+    const float* Pointer() {
+        return m_buffer->GetBuffer();
+    }
+
     /**
      * NonUniformフラグ取得
      * @return NonUniformフラグ値
@@ -299,6 +303,14 @@ int BufferVolumeData::Component() const {
  */
 FloatBuffer *BufferVolumeData::Buffer() const {
     return m_imp->Buffer();
+}
+
+/**
+ * ボリュームバッファ取得
+ * @return FloatBufferボリュームバッファへの参照
+ */
+const float* BufferVolumeData::Pointer() const {
+    return m_imp->Pointer();
 }
 
 /**
