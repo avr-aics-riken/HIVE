@@ -18,18 +18,6 @@ export default class NodeView extends React.Component {
 			globalInHover : false
 		};
 
-		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
-			this.setState({
-				nodes : [].concat(this.props.store.getNodes())
-			});
-		});
-
-		this.props.nodeStore.on(Store.ZOOM_CHANGED, (err, zoom) => {
-			this.setState({
-				zoom : zoom
-			});
-		});
-
 		this.isLeftDown = false;
 		this.isRightDown = false;
 		this.isMiddleDown = false;
@@ -40,6 +28,8 @@ export default class NodeView extends React.Component {
 		this.width = 4000;
 		this.height = 4000;
 
+		this.onNodeCountChanged = this.onNodeCountChanged.bind(this);
+		this.onZoomChanged = this.onZoomChanged.bind(this);
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onKeyUp = this.onKeyUp.bind(this);
 
@@ -65,7 +55,7 @@ export default class NodeView extends React.Component {
 			}
 		};
 	}
-    
+
 	onMouseDown(ev) {
 		if (ev.button === 0) {
 			this.isLeftDown = true;
@@ -190,6 +180,18 @@ export default class NodeView extends React.Component {
 		}
 	}
 
+	onNodeCountChanged(err, data) {
+		this.setState({
+			nodes : [].concat(this.props.store.getNodes())
+		});
+	}
+
+	onZoomChanged(err, zoom) {
+		this.setState({
+			zoom : zoom
+		});
+	}
+
     componentDidMount(){
 		window.addEventListener('mouseup', this.onMouseUp.bind(this));
 		let rect = this.refs.viewport.getBoundingClientRect();
@@ -199,6 +201,8 @@ export default class NodeView extends React.Component {
 		this.refs.viewport.scrollTop = 1700;
 		this.refs.viewport.scrollLeft = 1700;
 
+		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
+		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
 		this.props.store.on(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
@@ -209,6 +213,8 @@ export default class NodeView extends React.Component {
 
     componentWillUnmount(){
 		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
+		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
+		this.props.nodeStore.off(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
 		this.props.store.off(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
