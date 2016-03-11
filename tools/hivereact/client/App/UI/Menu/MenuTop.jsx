@@ -57,7 +57,7 @@ export default class MenuTop extends React.Component {
         }
     }
     exportButton(eve){
-        console.log('"export function" called!');
+        this.props.action.export();
     }
 
     // Edit menu
