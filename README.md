@@ -110,6 +110,7 @@ Use `CXX` and `CC` flag to specify custom compiler. e.g.:
     HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?"
     HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
 
 ### K/FX10
 

@@ -27,7 +27,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(RawVolumeSaver_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Save,const char*,bool)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("RawVolumeSaver",bool,Save,const char*,bool)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,SetVolumeData,BufferVolumeData_Lua*)
     LUA_SCRIPTCLASS_END()
 };

@@ -8,6 +8,7 @@ sudo: required
 before_install:
   - ./scripts/travis_setup.sh
   - git submodule update --init
+  - CXX=mpicxx CC=mpicc ./scripts/build_nanomsg.sh
 
 install:
   - export OMPI_CC=gcc-4.8

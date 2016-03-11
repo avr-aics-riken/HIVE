@@ -1,8 +1,8 @@
 #include "LuaUtil.h"
 #include "ObjLoader_Lua.h"
+#include "Core/Perf.h"
 
 extern "C" {
-
 
 int luaopen_ObjLoader(lua_State* L)
 {

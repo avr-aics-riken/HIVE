@@ -90,7 +90,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("SPHLoader",bool,Load,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_METHOD_ARG0(float,PitchX)
     LUA_SCRIPTCLASS_METHOD_ARG0(float,PitchY)
