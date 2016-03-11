@@ -239,7 +239,11 @@ class ParallelCoordinate extends React.Component {
             setCanvas: this.setCanvas,
             foreground: this.foreground,
             brushed: this.brushed,
-            varname: this.node.varname
+            varname: this.node.varname,
+            maxScale: 255,
+            minScale: 1,
+            extent: null,
+            logScale: true,
         };
         this.linecount = this.dataval.length;
         this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})(ReactDOM.findDOMNode(this.refs.examples))
@@ -302,6 +306,10 @@ class ParallelCoordinate extends React.Component {
                 this.glContext[target].gl.viewport(0, 0, width, height);
                 this.glContext[target].gl.clearColor(0.0, 0.0, 0.0, 0.0);
                 this.glContext[target].gl.clear(this.glContext[target].gl.COLOR_BUFFER_BIT);
+                if(this.prev[target] && this.prev[target].data){
+                    this.prev[target].data = null;
+                    this.prev[target].lines = 0;
+                }
             }
         }
 
