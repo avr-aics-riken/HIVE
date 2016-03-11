@@ -41,6 +41,12 @@ export default class NodePlugView extends React.Component {
 		});
 	}
 
+	onNodeCloseChanged(err, data) {
+		this.setState({
+			plugPosList : [].concat(this.props.nodeStore.getPlugPosList())
+		});
+	}
+
 	onPlugPositionChanged(err, data) {
 		this.setState({
 			plugPosList : [].concat(this.props.nodeStore.getPlugPosList())
@@ -150,6 +156,7 @@ export default class NodePlugView extends React.Component {
 	componentDidMount() {
 		this.props.nodeStore.on(Store.PLUG_COUNT_CHANGED, this.onPlugCountChanged);
 		this.props.nodeStore.on(Store.NODE_COUNT_CHANGED, this.onNodeCountChanged);
+		this.props.nodeStore.on(Store.NODE_CLOSE_CHANGED, this.onNodeCloseChanged);
 		this.props.nodeStore.on(Store.PLUG_POSITION_CHANGED, this.onPlugPositionChanged);
 		this.props.nodeStore.on(Store.PLUG_DRAGGING, this.onPlugDragging);
 		this.props.nodeStore.on(Store.PLUG_DRAG_END, this.onPlugDragEnd);
@@ -162,6 +169,7 @@ export default class NodePlugView extends React.Component {
 	componentWillUnmount() {
 		this.props.nodeStore.off(Store.PLUG_COUNT_CHANGED, this.onPlugCountChanged);
 		this.props.nodeStore.off(Store.NODE_COUNT_CHANGED, this.onNodeCountChanged);
+		this.props.nodeStore.off(Store.NODE_CLOSE_CHANGED, this.onNodeCloseChanged);
 		this.props.nodeStore.off(Store.PLUG_POSITION_CHANGED, this.onPlugPositionChanged);
 		this.props.nodeStore.off(Store.PLUG_DRAGGING, this.onPlugDragging);
 		this.props.nodeStore.off(Store.PLUG_DRAG_END, this.onPlugDragEnd);

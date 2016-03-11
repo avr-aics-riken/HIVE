@@ -5,6 +5,7 @@ module.exports = {
     NODE_CHANGED : "node_changed",
     NODE_INPUT_CHANGED : "node_input_changed",
 	NODE_POSITION_CHANGED : "node_position_changed",
+	NODE_CLOSE_CHANGED : "node_close_changed",
     PLUG_CHANGED : "plug_changed",
     NODE_COUNT_CHANGED : "node_count_changed",
     PLUG_COUNT_CHANGED : "plug_count_changed",
