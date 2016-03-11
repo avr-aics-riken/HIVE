@@ -493,9 +493,12 @@ export default class ActionExecuter {
 					let prePanelSize = JSON.stringify(dstNode.panel.size);
 					let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
+
 					let hasNodeParam = srcNode.hasOwnProperty('node');
 					let preNodePos = JSON.stringify(dstNode.node.pos);
 					let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
+					let preNodeClose = dstNode.node.close;
+					let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
 
 					for (let info in payload.nodeInfo) {
 						if (info !== "uiComponent" && this.store.getNodes()[i].hasOwnProperty(info)) {
@@ -512,6 +515,9 @@ export default class ActionExecuter {
 					}
 					if (hasNodeParam && preNodePos !== postNodePos) {
 						this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode, i);
+					}
+					if (hasNodeParam && preNodeClose !== postNodeClose) {
+						this.store.emit(Constants.NODE_CLOSE_CHANGED, null, dstNode, i);
 					}
 					if (hasPanel && prePanel !== postPanel) {
 						this.store.emit(Constants.PANEL_CHANGED, null, dstNode, i);
