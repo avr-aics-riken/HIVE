@@ -9,7 +9,7 @@ export default class Container extends React.Component {
         this.store = props.store;
         this.action = props.action;
 		let n = this.props.node;
-		n.uiComponent = eval(this.props.node.uiFunc);        
+		n.uiComponent = eval(this.props.node.uiFunc);
         this.state = {
             node: this.props.node,
             closeHover: false
@@ -73,10 +73,18 @@ export default class Container extends React.Component {
     onMouseMove(ev) {
         if (this.isLeftDown) {
             let node = this.state.node;
-            let mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
+            let mv;
             let panel = JSON.parse(JSON.stringify(node.panel));
-            panel.pos[0] = this.offsetLeft + mv.x;
-            panel.pos[1] = this.offsetTop + mv.y;
+			if (this.props.zoom) {
+			// todo
+			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
+	            panel.pos[0] = this.offsetLeft + mv.x;
+	            panel.pos[1] = this.offsetTop + mv.y;
+			} else {
+			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
+	            panel.pos[0] = this.offsetLeft + mv.x;
+	            panel.pos[1] = this.offsetTop + mv.y;
+			}
             this.action.changeNode({
                 varname : node.varname,
                 panel : panel
@@ -238,9 +246,9 @@ export default class Container extends React.Component {
                     this.props.node.uiComponent(dom, this.props.node);
                 }
                 componentWillUnmount() {
-                    //console.log('DIDUNMOUNT');                    
+                    //console.log('DIDUNMOUNT');
                 }
-            } 
+            }
             res = <CustomUI node={node}/>
         }*/
         return (

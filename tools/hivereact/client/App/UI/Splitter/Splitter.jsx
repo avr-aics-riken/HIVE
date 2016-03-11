@@ -95,6 +95,7 @@ exports.default = _react2.default.createClass({
         var ref2 = this.refs.pane2;
         var node1 = _reactDom2.default.findDOMNode(ref1);
         var node2 = _reactDom2.default.findDOMNode(ref2);
+		if (!node1 || !node2) { return; }
         var parentSize = this.props.split === 'vertical' ? node1.parentNode.offsetWidth : node1.parentNode.offsetHeight;
         var newSize = this.props.split === 'vertical' ? node1.offsetWidth : node1.offsetHeight;
         var newSecond = this.props.split === 'vertical' ? node2.offsetWidth : node2.offsetHeight;
