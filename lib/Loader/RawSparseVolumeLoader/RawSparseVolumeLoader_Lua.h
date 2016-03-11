@@ -51,7 +51,7 @@ public:
     //LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     //LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
     //LUA_SCRIPTCLASS_METHOD_ARG6(bool,Load,const char*,int,int,int,int,const char*)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,LoadFromPointer, void*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("RawSparseVolumeLoader",bool,LoadFromPointer, void*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferSparseVolumeData_Lua*,SparseVolumeData)
     LUA_SCRIPTCLASS_END()
 };
