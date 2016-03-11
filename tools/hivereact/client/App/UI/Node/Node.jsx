@@ -21,6 +21,8 @@ export default class Node extends React.Component {
 			isSelected : node.select,
 			zIndex : 1
 		};
+		this.offsetLeft = node.node.pos[0];
+		this.offsetTop = node.node.pos[1];
 
 		this.nodeChanged = this.nodeChanged.bind(this);
 		this.selectChanged = this.selectChanged.bind(this);
