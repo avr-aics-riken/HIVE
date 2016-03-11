@@ -17,6 +17,7 @@ export default class MenuTop extends React.Component {
         this.saveButton = this.saveButton.bind(this);
         this.loadButton = this.loadButton.bind(this);
         this.loadButtonClick = this.loadButtonClick.bind(this);
+        this.exportButton = this.exportButton.bind(this);
 
         this.showConsole = props.consoleShow;
     }
