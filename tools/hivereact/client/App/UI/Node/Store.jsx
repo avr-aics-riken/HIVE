@@ -487,7 +487,8 @@ export default class Store extends EventEmitter {
 				let inputs = this.coreStore.getInput();
 				for (let i = 0; i < inputs.length; i = i + 1) {
 					let input = inputs[i];
-					if (input.varname === plugInfo.data.varname &&
+
+					if (input.nodeVarname === plugInfo.data.nodeVarname &&
 						input.name === plugInfo.data.name) {
 
 						this.emit(Store.GROUP_INPUT_DISCONNECTED, null, input);
@@ -498,7 +499,7 @@ export default class Store extends EventEmitter {
 				let outputs = this.coreStore.getOutput();
 				for (let i = 0; i < outputs.length; i = i + 1) {
 					let output = outputs[i];
-					if (output.varname === plugInfo.data.varname &&
+					if (output.nodeVarname === plugInfo.data.nodeVarname &&
 						output.name === plugInfo.data.name) {
 
 						this.emit(Store.GROUP_OUTPUT_DISCONNECTED, null, output);
