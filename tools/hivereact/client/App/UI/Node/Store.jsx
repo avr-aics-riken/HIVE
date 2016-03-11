@@ -21,6 +21,7 @@ function validatePlugInfo(plug, plugInfo, dataName) {
 export default class Store extends EventEmitter {
 	constructor(dispatcher, coreStore) {
 		super();
+		this.coreStore = coreStore;
 		this.dispatchToken = dispatcher.register(this.actionHandler.bind(this));
 
 		// 以下の形式のプラグ情報のリスト
@@ -61,8 +62,8 @@ export default class Store extends EventEmitter {
 
 		coreStore.on(Core.Constants.NODE_COUNT_CHANGED, (err, data) => {
 			// ノードマップを作り直す.
-			this.regenerateNodeMap(coreStore);
-			this.recalcPlugPosition(coreStore);
+			this.regenerateNodeMap();
+			this.recalcPlugPosition();
 			for (let n in this.nodeSizeMap) {
 				if (!this.nodeMap.hasOwnProperty(n)) {
 					delete this.nodeSizeMap[n];
@@ -73,9 +74,14 @@ export default class Store extends EventEmitter {
 
 		coreStore.on(Core.Constants.PLUG_COUNT_CHANGED, (err, data) => {
 			// ノードマップを作り直す.
-			this.regenerateNodeMap(coreStore);
-			this.recalcPlugPosition(coreStore);
+			this.regenerateNodeMap();
+			this.recalcPlugPosition();
 			this.emit(Store.PLUG_COUNT_CHANGED, err, this.plugPosList);
+		});
+
+		coreStore.on(Core.Constants.NODE_CLOSE_CHANGED, (err, data) => {
+			this.recalcPlugPosition();
+			this.emit(Store.NODE_CLOSE_CHANGED, err, data);
 		});
 
 		coreStore.on(Core.Constants.NODE_POSITION_CHANGED, (err, data) => {
@@ -114,11 +120,10 @@ export default class Store extends EventEmitter {
 		this.isConnected = this.isConnected.bind(this);
 		this.isGroup = coreStore.isGroup;
 
-		this.coreStore = coreStore;
 		this.getCurrentNode = this.getCurrentNode.bind(this);
 	}
 
-	regenerateNodeMap(coreStore) {
+	regenerateNodeMap() {
 		let addNodeToNodeMap = (n) => {
 			if (this.isGroup(n)) {
 				this.nodeMap[n.varname] = n;
@@ -133,8 +138,8 @@ export default class Store extends EventEmitter {
 		}
 		this.nodeMap = {};
 		this.nodeToGroupMap = {};
-		for (let i = 0, size = coreStore.getNodes().length; i < size; i = i + 1) {
-			let n = coreStore.getNodes()[i];
+		for (let i = 0, size = this.coreStore.getNodes().length; i < size; i = i + 1) {
+			let n = this.coreStore.getNodes()[i];
 			this.nodeMap[n.varname] = n;
 			//addNodeToNodeMap(n);
 		}
@@ -238,7 +243,7 @@ export default class Store extends EventEmitter {
 		}
 	}
 
-	recalcPlugPosition(coreStore) {
+	recalcPlugPosition() {
 		this.plugPosList = [];
 		this.recalcPlugs.bind(this)();
 		this.recalcGlobalInputs.bind(this)();
@@ -538,3 +543,4 @@ Store.ZOOM_CHANGED = "zoom_changed";
 Store.NEED_RERENDER = "need_rerender";
 Store.GROUP_INPUT_DISCONNECTED = "group_input_disconnected";
 Store.GROUP_OUTPUT_DISCONNECTED = "group_output_disconnected";
+Store.NODE_CLOSE_CHANGED = "nodestore_node_close_changed";

@@ -178,6 +178,21 @@ export default class Node extends React.Component {
 				backgroundImage : "url(./img/node_close.png)",
 				backgroundRepeat: "no-repeat",
 				backgroundSize: "contain"
+			},
+			unGroupButton : {
+				position : "absolute",
+				right : "30px",
+				top : "0px",
+				margin : "5px",
+				width: "17px",
+				height: "17px",
+				backgroundColor : "rgb(54, 196, 168)",
+				textAlign : "center",
+				borderRadius : "4.5px",
+				opacity : this.state.unGroupHover ? "0.9" : "1.0",
+				backgroundImage : "url(./img/node_close.png)",
+				backgroundRepeat: "no-repeat",
+				backgroundSize: "contain"
 			}
 		}
 	}
@@ -266,6 +281,22 @@ export default class Node extends React.Component {
 
 	onCloseLeave(ev) {
 		this.setState({ closeHover : !this.state.closeHover });
+		ev.target.style.cursor = "default";
+	}
+
+	// グループ解除ボタンが押された
+	onUnGroupClick(ev) {
+		this.props.action.unGroup(this.props.nodeVarname);
+	}
+
+	onUnGroupEnter(ev) {
+		if (ev.button === 1 || ev.button === 2) { return; }
+		this.setState({ unGroupHover : !this.state.unGroupHover });
+		ev.target.style.cursor = "pointer";
+	}
+
+	onUnGroupLeave(ev) {
+		this.setState({ unGroupHover : !this.state.unGroupHover });
 		ev.target.style.cursor = "default";
 	}
 
@@ -427,6 +458,20 @@ export default class Node extends React.Component {
 				</div>)
 	}
 
+	// グループ削除ボタン
+	unGroupElem() {
+		let n = this.state.node;
+		if (this.props.nodeStore.isGroup(n)) {
+			const style = this.styles();
+			return (<div style={style.unGroupButton}
+						onClick={this.onUnGroupClick.bind(this)}
+						onMouseEnter={this.onUnGroupEnter.bind(this)}
+						onMouseLeave={this.onUnGroupLeave.bind(this)}
+					>
+					</div>)
+		}
+	}
+
 	onDoubleClick(ev) {
 		let n = this.state.node;
 		if (this.props.nodeStore.isGroup(n)) {
@@ -446,6 +491,7 @@ export default class Node extends React.Component {
 					{this.titleElem.bind(this)()}
 					{this.inputElem.bind(this)()}
 					{this.outputElem.bind(this)()}
+					{this.unGroupElem.bind(this)()}
 					{this.closeElem.bind(this)()}
 				</div>);
 	}
