@@ -12,19 +12,23 @@
 #include "BufferLineData_Lua.h"
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
- #include "BufferExtraData_Lua.h"
+#include "BufferExtraData_Lua.h"
 #include "ObjLoader.h"
+#include "Core/Perf.h"
+
 /**
  * OBJLoader Luaラッパー
  */
 class OBJLoader_Lua : public OBJLoader
 {
 public:
+
     OBJLoader_Lua(){}
     ~OBJLoader_Lua(){};
 
     bool Load(const char* filename){
-        return OBJLoader::Load(filename);
+        bool ret = OBJLoader::Load(filename);
+        return ret;
     }
 
     BufferMeshData_Lua* MeshData() {
@@ -53,7 +57,7 @@ public:
     }
     
     LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("OBJLoader",bool,Load,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*,   MeshData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferPointData_Lua*,  PointData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*,   LineData)

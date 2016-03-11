@@ -140,7 +140,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionZ)
-    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader",bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 };

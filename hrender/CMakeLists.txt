@@ -147,15 +147,24 @@ IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
 
+# PMlib
+IF(HIVE_BUILD_WITH_PMLIB)
+  #SET(PMLIB_LIBS
+  #  PMmpi
+  #)
+
+  #include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
+ENDIF()
 
 # hrender
 add_executable (hrender ${HRENDER_SOURCES})
+
 
 # HIVE Core
 
 link_directories(${PROJECT_SOURCE_DIR}/../bin)
 target_link_libraries(hrender hiveCore)
-
 
 #
 # For INSTALL

@@ -10,6 +10,7 @@
 #include "Analyzer.h"
 #include "PolygonAnalyzer.h"
 #include "BufferMeshData_Lua.h"
+
 /**
  * PolygonAnalyzer Luaラッパー
  */
@@ -53,7 +54,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxZ)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Execute, BufferMeshData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("PolygonAnalyzer", bool, Execute, BufferMeshData_Lua*)
     LUA_SCRIPTCLASS_END();
 
 };

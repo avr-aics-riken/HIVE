@@ -54,6 +54,13 @@ IF(HIVE_BUILD_WITH_COMPOSITOR)
   ENDIF()
   add_definitions(-DHIVE_WITH_COMPOSITOR)
 ENDIF()
+
+IF(HIVE_BUILD_WITH_PMLIB)
+  IF(NOT HIVE_BUILD_WITH_MPI)
+    message(FATAL_ERROR "HIVE_BUILD_WITH_MPI must be defined when HIVE_BUILD_WITH_PMLIB is enabled")
+  ENDIF()
+  add_definitions(-DHIVE_WITH_PMLIB)
+ENDIF()
 # --------------------------------------
 
 # --------------------------------------
@@ -79,6 +86,16 @@ set(LIBS
         ${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib
 )
 link_directories(${LIBS})
+
+IF(HIVE_BUILD_WITH_PMLIB)
+  #SET(PMLIB_LIBS
+  #  PMmpi
+  #)
+
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
+ENDIF()
+
 
 IF(BUILD_SHARED_LIBS)
   SET(HIVE_LIBRARY_TYPE SHARED)

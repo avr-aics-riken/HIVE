@@ -45,12 +45,12 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(VolumeFilter_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(int,Norm,BufferVolumeData_Lua*);
-    LUA_SCRIPTCLASS_METHOD_ARG1(int,Laplacian,BufferVolumeData_Lua*);
-    LUA_SCRIPTCLASS_METHOD_ARG1(int,Curl,BufferVolumeData_Lua*);
-    LUA_SCRIPTCLASS_METHOD_ARG1(int,Gradient,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeFilter",int,Norm,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeFilter",int,Laplacian,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeFilter",int,Curl,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeFilter",int,Gradient,BufferVolumeData_Lua*);
     LUA_SCRIPTCLASS_METHOD_ARG2(int,CompileOption,const char*,const char*);
-    LUA_SCRIPTCLASS_METHOD_ARG6(int,Expr,BufferVolumeData_Lua*,BufferVolumeData_Lua*,BufferVolumeData_Lua*,BufferVolumeData_Lua*,int,const char*);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG6("VolumeFilter",int,Expr,BufferVolumeData_Lua*,BufferVolumeData_Lua*,BufferVolumeData_Lua*,BufferVolumeData_Lua*,int,const char*);
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*, VolumeData)
     LUA_SCRIPTCLASS_END()
 

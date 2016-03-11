@@ -20,6 +20,7 @@
 
 #include "Core/Path.h"
 #include "Core/sleep.h"
+#include "Core/Perf.h"
 
 
 //#include "../../lib/Network/Connection.h"
@@ -204,6 +205,8 @@ int main(int argc, char* argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     //printf("[MPI] rank = %d\n", rank);
 #endif
+
+    PMon::Init();
     
     char* scenefile = 0;
     std::vector<std::string> sceneargs;
@@ -250,6 +253,8 @@ int main(int argc, char* argv[])
     renderScene(scenefile, sceneargs);
     
     printf("Exit hrender.\n");
+
+    PMon::Report();
     
 #ifdef HIVE_ENABLE_MPI
     printf("[MPI] finalize at rank: %d\n", rank);
