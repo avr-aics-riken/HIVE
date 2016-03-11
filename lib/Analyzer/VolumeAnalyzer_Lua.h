@@ -10,8 +10,6 @@
 #include "Analyzer.h"
 #include "VolumeAnalyzer.h"
 
-#include "Core/Perf.h"
-
 //#include "VolumeModel_Lua.h"
 /**
  * VolumeAnalyzer Luaラッパー

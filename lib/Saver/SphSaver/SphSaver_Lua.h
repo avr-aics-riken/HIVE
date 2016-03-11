@@ -27,7 +27,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(SPHSaver_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Save,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("SPHSaver",bool,Save,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,SetVolumeData,BufferVolumeData_Lua*)
     LUA_SCRIPTCLASS_END()
 };

@@ -90,7 +90,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
-    LUA_SCRIPTCLASS_METHOD_ARG4(bool,Load,const char*,const char*,const char*,bool)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("VTKLoader",bool,Load,const char*,const char*,const char*,bool)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_METHOD_ARG0(float,PitchX)
     LUA_SCRIPTCLASS_METHOD_ARG0(float,PitchY)

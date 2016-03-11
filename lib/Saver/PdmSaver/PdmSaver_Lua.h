@@ -27,7 +27,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(PDMSaver_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Save,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("PDMSaver",bool,Save,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,SetPointData,BufferPointData_Lua*)
     LUA_SCRIPTCLASS_END()
 };

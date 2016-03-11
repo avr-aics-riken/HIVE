@@ -35,7 +35,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(PointToVolume_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferPointData_Lua*)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool,ToVolume,int,int,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("PointToVolume",bool,ToVolume,int,int,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 
