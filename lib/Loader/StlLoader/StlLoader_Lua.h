@@ -30,7 +30,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(STLLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("STLLoader",bool,Load,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
     LUA_SCRIPTCLASS_END()
 };

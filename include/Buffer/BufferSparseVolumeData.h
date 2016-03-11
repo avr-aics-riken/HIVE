@@ -22,7 +22,9 @@ private:
 
 public:
     typedef struct {
-        int offset[3];
+        int offset[3];  ///< Offset in world space(Origin)
+        int extent[3];  ///< Extent in world space
+        int level;
         BufferVolumeData* volume;
     } VolumeBlock;
 
@@ -35,13 +37,17 @@ public:
     static BufferSparseVolumeData* CreateInstance();
     
     void Create(int w, int h, int d, int component);
-    void AddVolume(int offset_x, int offset_y, int offset_z,
+    void AddVolume(int level, int offset_x, int offset_y, int offset_z,
+                   int extent_x, int extent_y, int extent_z,
                    BufferVolumeData* vol);
     void Clear();
     void print();
     const int Width() const;
     const int Height() const;
     const int Depth() const;
+    const int ExtentWidth() const;
+    const int ExtentHeight() const;
+    const int ExtentDepth() const;
     const int Component() const;
     const std::vector<VolumeBlock>& VolumeBlocks() const;
     std::vector<VolumeBlock>& VolumeBlocks();

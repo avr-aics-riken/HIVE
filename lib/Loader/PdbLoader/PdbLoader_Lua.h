@@ -46,7 +46,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(PDBLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,bool)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("PDBLoader",bool,Load,const char*,bool)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferPointData_Lua*, BallData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*, StickData)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,NumAtoms)

@@ -32,7 +32,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(PDMLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG2(bool,Load,const char*,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("PDMLoader",bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG2(BufferPointData_Lua*,PointData,const char*,double)
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua*,ExtraData,const char*)
     LUA_SCRIPTCLASS_END()

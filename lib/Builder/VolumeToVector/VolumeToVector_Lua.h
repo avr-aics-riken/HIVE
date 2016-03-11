@@ -57,7 +57,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(VolumeToVector_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferVolumeData_Lua*);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeToVector",int,Create,BufferVolumeData_Lua*);
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVectorData_Lua*, VectorData)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, DividePitch,   double, double, double)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, DivideNumber,  int, int, int)

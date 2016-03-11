@@ -116,6 +116,13 @@ IF(HIVE_BUILD_WITH_COMPOSITOR)
   ENDIF()
   add_definitions(-DHIVE_WITH_COMPOSITOR)
 ENDIF()
+
+IF(HIVE_BUILD_WITH_PMLIB)
+  IF(NOT HIVE_BUILD_WITH_MPI)
+    message(FATAL_ERROR "HIVE_BUILD_WITH_MPI must be defined when HIVE_BUILD_WITH_PMLIB is enabled")
+  ENDIF()
+  add_definitions(-DHIVE_WITH_PMLIB)
+ENDIF()
 # --------------------------------------
 
 # --------------------------------------
@@ -126,7 +133,7 @@ ENDIF()
 # --------------------------------------
 
 # --------------------------------------
-# MPI
+# OpenGL
 IF(HIVE_BUILD_WITH_OPENGL)
   add_definitions(-DHIVE_BUILD_WITH_OPENGL)
 ENDIF()
@@ -169,6 +176,7 @@ link_directories(${LIBS})
 
 set(HIVECORE_SOURCES
   src/Core/Path.cpp
+  src/Core/Perf.cpp
   src/Buffer/Buffer.cpp
   src/Buffer/BufferMeshData.cpp
   src/Buffer/BufferVolumeData.cpp
@@ -237,6 +245,15 @@ IF(HIVE_BUILD_WITH_COMPOSITOR)
   
 ENDIF()
 
+IF(HIVE_BUILD_WITH_PMLIB)
+  SET(PMLIB_LIBS
+    PMmpi
+  )
+
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
+ENDIF()
+
 IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
@@ -252,7 +269,7 @@ add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
 
 
 # EXT Libs (TODO each modules)
-target_link_libraries(hiveCore ${COMPOSITOR_LIBS})
+target_link_libraries(hiveCore ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
 
 
 # Link

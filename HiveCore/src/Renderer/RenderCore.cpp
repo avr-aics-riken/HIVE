@@ -7,6 +7,10 @@
 #include <mpi.h>
 #endif
 
+#ifdef HIVE_WITH_PMLIB
+#include "Perf.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -52,6 +56,7 @@
 #include "../Image/ImageSaver.h"
 
 #include "../Core/Path.h"
+#include "../Core/Perf.h"
 
 
 #ifdef HIVE_WITH_COMPOSITOR
@@ -358,6 +363,7 @@ public:
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
+                PMon::Start("HiveCore::Render");
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
                 const std::string& depth_outfile = camera->GetDepthOutputFile();
@@ -369,12 +375,20 @@ public:
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects();
-                
+                PMon::Stop("HiveCore::Render");
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
+#if defined(HIVE_WITH_COMPOSITOR)
+                PMon::Start("Compositor");
+#endif
                 readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
+#if defined(HIVE_WITH_COMPOSITOR)
+                PMon::Stop("Compositor");
+#endif
                 const double readbacktm = GetTimeCount();
+
+                PMon::Start("HiveCore::ImageSave");
 
 #ifdef HIVE_ENABLE_MPI
                 int rank = 0;
@@ -392,6 +406,7 @@ public:
 #ifdef HIVE_ENABLE_MPI
                 }
 #endif
+                PMon::Stop("HiveCore::ImageSave");
                 const double savetm = GetTimeCount();
                 //printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }

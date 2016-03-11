@@ -10,6 +10,7 @@
 #include "Analyzer.h"
 #include "VolumeAnalyzer.h"
 #include "BufferVolumeData_Lua.h"
+
 /**
  * VolumeAnalyzer Luaラッパー
  */
@@ -71,7 +72,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxZ)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Execute, BufferVolumeData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeAnalyzer", bool, Execute, BufferVolumeData_Lua*)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetHistgram);
     LUA_SCRIPTCLASS_METHOD_ARG3(LuaTable, GetHistgramInRange, BufferVolumeData_Lua*, double, double);
     LUA_SCRIPTCLASS_END();
