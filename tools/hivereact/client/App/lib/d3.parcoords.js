@@ -31,13 +31,24 @@ d3.parcoords = function(config) {
         __.width = selection[0][0].clientWidth;
         __.height = selection[0][0].clientHeight;
 
-        // canvas data layers
-        ["marks", "foreground", "brushed", "highlight"].forEach(function(layer) {
-            canvas[layer] = selection
-                .append("canvas")
-                .attr("class", layer)[0][0];
-            ctx[layer] = canvas[layer].getContext("2d");
+        // config.usr.xxx には本体からこっちに渡したいパラメータがいろいろ入ってる
+        // foreground to brushed には、varname を加えたカスタム ID 名が入ってる
+        canvas = {};
+        ctx = {};
+        canvas[config.usr.foreground] = document.getElementById(config.usr.foreground);
+        canvas[config.usr.brushed] = document.getElementById(config.usr.brushed);
+        [config.usr.varname + "_marks", config.usr.varname + "+highlight", config.usr.foreground, config.usr.brushed].forEach(function(layer) {
+            if(canvas[layer] === null || canvas[layer] === undefined){
+                canvas[layer] = selection
+                    .append("canvas")
+                    .attr("class", layer)[0][0];
+                canvas[layer].id = layer;
+                if(layer !== config.usr.foreground && layer !== config.usr.brushed){
+                    ctx[layer] = canvas[layer].getContext("2d");
+                }
+            }
         });
+        config.usr.setCanvas(canvas);
 
         // svg tick and brush layers
         pc.svg = selection
@@ -82,15 +93,15 @@ d3.parcoords = function(config) {
     // side effects for setters
     var side_effects = d3.dispatch.apply(this,d3.keys(__))
         .on("composite", function(d) {
-            ctx.foreground.globalCompositeOperation = d.value;
-            ctx.brushed.globalCompositeOperation = d.value;
+            // ctx.foreground.globalCompositeOperation = d.value;
+            // ctx.brushed.globalCompositeOperation = d.value;
         })
     .on("alpha", function(d) {
-        ctx.foreground.globalAlpha = d.value;
-        ctx.brushed.globalAlpha = d.value;
+        // ctx.foreground.globalAlpha = d.value;
+        // ctx.brushed.globalAlpha = d.value;
     })
     .on("brushedColor", function (d) {
-        ctx.brushed.strokeStyle = d.value;
+        // ctx.brushed.strokeStyle = d.value;
     })
     .on("width", function(d) { pc.resize(); })
         .on("height", function(d) { pc.resize(); })
@@ -157,7 +168,7 @@ d3.parcoords = function(config) {
     };
 
     function without(arr, item) {
-        return arr.filter(function(elem) { return item.indexOf(elem) === -1; })
+        return arr.filter(function(elem) { return item.indexOf(elem) === -1; });
     };
     pc.autoscale = function() {
         // yscale
@@ -235,15 +246,15 @@ d3.parcoords = function(config) {
             .attr("height", h()+2);
 
         // default styles, needs to be set when canvas width changes
-        ctx.foreground.strokeStyle = __.color;
-        ctx.foreground.lineWidth = 1.4;
-        ctx.foreground.globalCompositeOperation = __.composite;
-        ctx.foreground.globalAlpha = __.alpha;
-        ctx.brushed.strokeStyle = __.brushedColor;
-        ctx.brushed.lineWidth = 1.4;
-        ctx.brushed.globalCompositeOperation = __.composite;
-        ctx.brushed.globalAlpha = __.alpha;
-        ctx.highlight.lineWidth = 3;
+        // ctx.foreground.strokeStyle = __.color;
+        // ctx.foreground.lineWidth = 1.4;
+        // ctx.foreground.globalCompositeOperation = __.composite;
+        // ctx.foreground.globalAlpha = __.alpha;
+        // ctx.brushed.strokeStyle = __.brushedColor;
+        // ctx.brushed.lineWidth = 1.4;
+        // ctx.brushed.globalCompositeOperation = __.composite;
+        // ctx.brushed.globalAlpha = __.alpha;
+        // ctx.highlight.lineWidth = 3;
 
         return this;
     };
@@ -360,7 +371,7 @@ d3.parcoords = function(config) {
     }
 
     pc.render.default = function() {
-        pc.clear('foreground');
+        // pc.clear('foreground');
         pc.clear('highlight');
 
         pc.renderBrushed.default();
@@ -405,12 +416,12 @@ d3.parcoords = function(config) {
     }
 
     // @@@
-    // var foregroundQueue = d3.renderQueue(path_foreground)
-    //     .rate(pc.ratecount)
-    //     .clear(function() {
-    //         pc.clear('foreground');
-    //         pc.clear('highlight');
-    //     });
+    var foregroundQueue = d3.renderQueue(path_foreground)
+        .rate(pc.ratecount)
+        .clear(function() {
+            pc.clear('foreground');
+            pc.clear('highlight');
+        });
 
         // var foregroundQueue = function(v){
         //     var i = 0 // target array index
@@ -421,7 +432,7 @@ d3.parcoords = function(config) {
         //     }
         // };
     var foregroundQueue = function(v){
-        glData(v, 'glforeground');
+        glData(v, config.usr.foreground);
     };
 
     pc.render.queue = function() {
@@ -431,7 +442,7 @@ d3.parcoords = function(config) {
     };
 
     pc.renderBrushed.default = function() {
-        pc.clear('brushed');
+        // pc.clear('brushed');
 
         if (isBrushed()) {
             __.brushed.forEach(path_brushed);
@@ -439,14 +450,14 @@ d3.parcoords = function(config) {
     };
 
     // @@@
-    // var brushedQueue = d3.renderQueue(path_brushed)
-    //     .rate(pc.ratecount)
-    //     .clear(function() {
-    //         pc.clear('brushed');
-    //     });
+    var brushedQueue = d3.renderQueue(path_brushed)
+        .rate(pc.ratecount)
+        .clear(function() {
+            pc.clear('brushed');
+        });
 
     var brushedQueue = function(v){
-        glData(v, 'glbrush');
+        glData(v, config.usr.brushed);
     };
 
     pc.renderBrushed.queue = function() {
@@ -623,17 +634,17 @@ d3.parcoords = function(config) {
     }
 
     function path_brushed(d, i) {
-        if (__.brushedColor !== null) {
-            ctx.brushed.strokeStyle = d3.functor(__.brushedColor)(d, i);
-        } else {
-            ctx.brushed.strokeStyle = d3.functor(__.color)(d, i);
-        }
-        return color_path(d, ctx.brushed)
+        // if (__.brushedColor !== null) {
+        //     ctx.brushed.strokeStyle = d3.functor(__.brushedColor)(d, i);
+        // } else {
+        //     ctx.brushed.strokeStyle = d3.functor(__.color)(d, i);
+        // }
+        // return color_path(d, ctx.brushed);
     }
 
     function path_foreground(d, i) {
-        ctx.foreground.strokeStyle = d3.functor(__.color)(d, i);
-        return color_path(d, ctx.foreground);
+        // ctx.foreground.strokeStyle = d3.functor(__.color)(d, i);
+        // return color_path(d, ctx.foreground);
     };
 
     function path_highlight(d, i) {
@@ -647,10 +658,10 @@ d3.parcoords = function(config) {
         // without the need for changing the opacity style of the foreground canvas
         // as this would stop the css styling from working
         if(layer === "brushed" && isBrushed()) {
-            ctx.brushed.fillStyle = pc.selection.style("background-color");
-            ctx.brushed.globalAlpha = 1 - __.alphaOnBrushed;
-            ctx.brushed.fillRect(0, 0, w() + 2, h() + 2);
-            ctx.brushed.globalAlpha = __.alpha;
+            // ctx.brushed.fillStyle = pc.selection.style("background-color");
+            // ctx.brushed.globalAlpha = 1 - __.alphaOnBrushed;
+            // ctx.brushed.fillRect(0, 0, w() + 2, h() + 2);
+            // ctx.brushed.globalAlpha = __.alpha;
         }
         return this;
     };
