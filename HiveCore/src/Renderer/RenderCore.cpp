@@ -56,6 +56,7 @@
 #include "../Image/ImageSaver.h"
 
 #include "../Core/Path.h"
+#include "../Core/Perf.h"
 
 
 #ifdef HIVE_WITH_COMPOSITOR
@@ -362,9 +363,7 @@ public:
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
-#ifdef HIVE_WITH_PMLIB
-                GetPM().start(HIVE_PERF_LABEL_RENDERCORE_RENDER);
-#endif
+                PMon::Start("HiveCore::Render");
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
                 const std::string& depth_outfile = camera->GetDepthOutputFile();
@@ -376,20 +375,20 @@ public:
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects();
-#ifdef HIVE_WITH_PMLIB
-                GetPM().stop(HIVE_PERF_LABEL_RENDERCORE_RENDER);
-#endif
+                PMon::Stop("HiveCore::Render");
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
-#if defined(HIVE_WITH_PMLIB) && defined(HIVE_WITH_COMPOSITOR)
-                GetPM().start(HIVE_PERF_LABEL_COMPOSITOR_COMPOSITE);
+#if defined(HIVE_WITH_COMPOSITOR)
+                PMon::Start("Compositor");
 #endif
                 readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
-#if defined(HIVE_WITH_PMLIB) && defined(HIVE_WITH_COMPOSITOR)
-                GetPM().stop(HIVE_PERF_LABEL_COMPOSITOR_COMPOSITE);
+#if defined(HIVE_WITH_COMPOSITOR)
+                PMon::Stop("Compositor");
 #endif
                 const double readbacktm = GetTimeCount();
+
+                PMon::Start("HiveCore::ImageSave");
 
 #ifdef HIVE_ENABLE_MPI
                 int rank = 0;
@@ -397,22 +396,17 @@ public:
                 if (rank == 0) {
 #endif
                 
-#ifdef HIVE_WITH_PMLIB
-                GetPM().start(HIVE_PERF_LABEL_IMAGE_SAVE);
-#endif
                 if (!outfile.empty()) {
                     m_imagesaver.Save(outfile.c_str(), color);
                 }
                 if (!depth_outfile.empty()) {
                     m_imagesaver.Save(depth_outfile.c_str(), depth);
                 }
-#ifdef HIVE_WITH_PMLIB
-                GetPM().stop(HIVE_PERF_LABEL_IMAGE_SAVE);
-#endif
                     
 #ifdef HIVE_ENABLE_MPI
                 }
 #endif
+                PMon::Stop("HiveCore::ImageSave");
                 const double savetm = GetTimeCount();
                 //printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }

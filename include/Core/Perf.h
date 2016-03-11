@@ -4,6 +4,7 @@
 #ifndef HIVE_CORE_PROF_H__
 #define HIVE_CORE_PROF_H__
 
+#if 0
 #ifdef HIVE_WITH_PMLIB
 #include "PerfMonitor.h"
 
@@ -45,10 +46,16 @@
 #define HIVE_PERF_LABEL_SAVER_RAWVOLUMESAVE "Saver::RawVolumeSave"
 #define HIVE_PERF_LABEL_SAVER_SPHSAVE "Saver::SPHSave"
 
+typedef enum
+{
+  PMON_CALC,
+  PMON_COMM,
+} HivePMonType;
+
 typedef struct
 {
   const char* label;
-  pm_lib::PerfMonitor::Type type;
+  int typepm_lib::PerfMonitor::Type type;
   bool exclusive;
 } HIVEPerfLabel;
 
@@ -96,5 +103,42 @@ extern pm_lib::PerfMonitor& GetPM();
 extern void InitPM();
 extern void FinalizePM();
 #endif 
+#endif
+
+///
+/// Performance monitor singleton class(wrapper class for PMlib).
+///
+class
+PMon
+{
+public:
+  typedef enum {
+    PMON_CALC,
+    PMON_COMM,
+  } PMonType;
+
+  static void Init();
+
+  ///< Register measurement point. Valid after Init().
+  static bool Register(const char* label, PMonType type, bool exclusive = false);
+
+  ///< Start measurement. `label` must be registered one in Register()
+  static bool Start(const char* label);
+
+  ///< Stop measurement. `label` must be registered one in Register()
+  static bool Stop(const char* label);
+
+  ///< Reports a profiling result.
+  static void Report();
+
+  /// Singleton interface.
+  //static PMON& GetInstance();
+
+private:
+  PMon() {};
+
+  class Impl;
+  static Impl& getImpl();
+};
 
 #endif // HIVE_CORE_PROF_H__

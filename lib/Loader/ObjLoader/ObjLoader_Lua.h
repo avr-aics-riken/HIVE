@@ -12,12 +12,9 @@
 #include "BufferLineData_Lua.h"
 #include "BufferTetraData_Lua.h"
 #include "BufferVectorData_Lua.h"
- #include "BufferExtraData_Lua.h"
+#include "BufferExtraData_Lua.h"
 #include "ObjLoader.h"
-
-#ifdef HIVE_WITH_PMLIB
-#include "../Core/Perf.h"
-#endif
+#include "Core/Perf.h"
 
 /**
  * OBJLoader Luaラッパー
@@ -29,13 +26,9 @@ public:
     ~OBJLoader_Lua(){};
 
     bool Load(const char* filename){
-#ifdef HIVE_WITH_PMLIB
-        GetPM().start(HIVE_PERF_LABEL_LOADER_OBJLOAD);
-#endif
+        PMon::Start("OBJLoader::Load");
         bool ret = OBJLoader::Load(filename);
-#ifdef HIVE_WITH_PMLIB
-        GetPM().stop(HIVE_PERF_LABEL_LOADER_OBJLOAD);
-#endif
+        PMon::Stop("OBJLoader::Load");
         return ret;
     }
 
