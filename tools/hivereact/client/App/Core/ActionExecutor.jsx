@@ -284,8 +284,13 @@ export default class ActionExecuter {
             if (varname === "") { // ALL
                 //n = this.store.getRootNodes();
                 let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
-                const luasrc = nodeExe.doNodes();
-                console.log('EXPORT>', luasrc); 
+                let luasrc = "package.path = './?.lua;' .. package.path\n";
+                luasrc    += "local BaseComponent = require('BaseComponent')\n";
+                luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";                
+                luasrc = luasrc + nodeExe.doNodes();
+                //console.log('EXPORT>', luasrc);
+          		var blob = new Blob([luasrc], {type: "text/plain"});
+	        	saveAs(blob, "export.lua"); 
             } else { //                       
 			    n = this.store.getNode(varname);
                 if (n) {

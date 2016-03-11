@@ -65,6 +65,10 @@ function RenderView:Do()
         render(temp)
     end
     
+    if network == nil and HIVE_metabin == nil then -- no UI mode        
+        return
+    end 
+    
     local mode = 'jpg'
     -- image save
     local imageBuffer
