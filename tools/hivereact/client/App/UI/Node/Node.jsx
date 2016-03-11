@@ -238,6 +238,7 @@ export default class Node extends React.Component {
 
 	onMouseMove(ev) {
 		if (this.isLeftDown) {
+			if (this.props.nodeAction.dispatcher.isDispatching()) { return; }
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
 
