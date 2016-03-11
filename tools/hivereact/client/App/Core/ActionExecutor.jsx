@@ -571,21 +571,38 @@ export default class ActionExecuter {
 	/**
 	 * ノード間のプラグリストを返す
 	 */
-	getPlugsFromNodes(nodes) {
-		let plugs = [];
+	getPlugsFromNodes(nodes, plugs) {
+		let resultPlugs = [];
 		let varnameToNodes = {};
+		let groups = [];
 		for (let i = 0; i <  nodes.length; i = i + 1) {
 			varnameToNodes[nodes[i].varname] = nodes[i];
-		}
-
-		for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
-			let plug = this.store.getPlugs()[i];
-			if (varnameToNodes.hasOwnProperty(plug.input.nodeVarname) &&
-				varnameToNodes.hasOwnProperty(plug.output.nodeVarname)) {
-				plugs.push(plug);
+			if (this.store.isGroup(nodes[i])) {
+				groups.push(nodes[i]);
 			}
 		}
-		return plugs;
+
+		for (let i = 0; i < plugs.length; i = i + 1) {
+			let plug = plugs[i];
+			let hasInput = false;
+			let hasOutput = false;
+
+			for (let k = 0; k < groups.length; k = k + 1) {
+				if (this.store.findNode(groups[k], plug.input.nodeVarname)) {
+					hasInput = true;
+				}
+				if (this.store.findNode(groups[k], plug.output.nodeVarname)) {
+					hasOutput = true;
+				}
+			}
+			hasInput = hasInput || varnameToNodes.hasOwnProperty(plug.input.nodeVarname);
+			hasOutput = hasOutput || varnameToNodes.hasOwnProperty(plug.output.nodeVarname);
+
+			if (hasInput && hasOutput) {
+				resultPlugs.push(plug);
+			}
+		}
+		return resultPlugs;
 	}
 
 
@@ -677,8 +694,6 @@ export default class ActionExecuter {
 			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 			this.store.emit(Constants.NODE_ADDED, null, group);
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
-
-			console.log("addGroup");
 		}
 	}
 
@@ -754,7 +769,7 @@ export default class ActionExecuter {
 			name : "Group",
 			varname : "group_" + uuid(),
 			nodes : nodeList,
-			plugs : this.getPlugsFromNodes(nodeList),
+			plugs : this.getPlugsFromNodes(nodeList, this.store.getPlugs()),
 			input : inputs,
 			output : outputs
 		};
@@ -840,42 +855,81 @@ export default class ActionExecuter {
 		}
 	}
 
+	// @private
+	makeVarnameConvertTable(convertTable, node) {
+		convertTable[node.varname] = node.funcname + uuid();
+		if (this.store.isGroup(node)) {
+			for (let i = 0; i < node.nodes.length; i = i + 1) {
+				this.makeVarnameConvertTable(convertTable, node.nodes[i]);
+			}
+		}
+	}
+
+	// @private
+	pasteNode(convertTable, node, plugs) {
+		// varname変更.
+		node.varname = convertTable[node.varname];
+
+		// input, outputのvarname変更.
+		for (let i = 0; i < node.input.length; i = i + 1) {
+			if (convertTable.hasOwnProperty(node.input[i].nodeVarname)) {
+				node.input[i].nodeVarname = convertTable[node.input[i].nodeVarname];
+			}
+		}
+		for (let i = 0; i < node.output.length; i = i + 1) {
+			if (convertTable.hasOwnProperty(node.output[i].nodeVarname)) {
+				node.output[i].nodeVarname = convertTable[node.output[i].nodeVarname];
+			}
+		}
+
+		// プラグの接続を新規に作ったノードに変更.
+		for (let i = 0; i < plugs.length; i = i + 1) {
+			if (convertTable.hasOwnProperty(plugs[i].input.nodeVarname)) {
+				plugs[i].input.nodeVarname = convertTable[plugs[i].input.nodeVarname];
+			}
+			if (convertTable.hasOwnProperty(plugs[i].output.nodeVarname)) {
+				plugs[i].output.nodeVarname = convertTable[plugs[i].output.nodeVarname];
+			}
+		}
+
+		// グループの場合再帰.
+		if (this.store.isGroup(node)) {
+			let newplugs = JSON.parse(JSON.stringify(this.getPlugsFromNodes(node.nodes, node.plugs)));
+			let merged = [].concat(plugs).concat(newplugs);
+			for (let i = 0; i < node.nodes.length; i = i + 1) {
+				this.pasteNode.bind(this)(convertTable, node.nodes[i], merged);
+			}
+			node.plugs = newplugs;
+		}
+	}
+
 	/**
 	 * ノードをペーストする.
 	 */
 	pasteNodes(payload) {
  		if (payload.hasOwnProperty('nodeInfoList')) {
 			// ノード間のプラグリストのコピーを取得.
-			let plugs = JSON.parse(JSON.stringify(this.getPlugsFromNodes(payload.nodeInfoList)));
+			let plugs = JSON.parse(JSON.stringify(this.getPlugsFromNodes(payload.nodeInfoList, this.store.getPlugs())));
+
+			let convertTable = {};
+			for (let i = 0; i < payload.nodeInfoList.length; i = i + 1) {
+				let src = payload.nodeInfoList[i];
+				this.makeVarnameConvertTable(convertTable, src);
+			}
 
 			// ノードを追加
 			for (let i = 0; i < payload.nodeInfoList.length; i = i + 1) {
 				let src = payload.nodeInfoList[i];
-				// varnameの変更のため既存のものを削除.
-				let preVarname = src.varname;
-				delete src.varname;
-				// input, outputのvarnameのため既存のものを削除.
-				for (let i = 0; i < src.input.length; i = i + 1) {
-					delete src.input[i].nodeVarname;
-				}
-				for (let i = 0; i < src.output.length; i = i + 1) {
-					delete src.output[i].nodeVarname;
-				}
-				this.addNode({ nodeInfo : src });
-				let node = this.store.getNodes()[this.store.getNodes().length - 1];
 
-				// プラグの接続を新規に作ったノードに変更.
-				for (let k = 0; k < plugs.length; k = k + 1) {
-					if (plugs[k].input.nodeVarname === preVarname) {
-						plugs[k].input.nodeVarname = node.varname;
-					}
-					if (plugs[k].output.nodeVarname === preVarname) {
-						plugs[k].output.nodeVarname = node.varname;
-					}
-				}
+				// varname書き換え
+				this.pasteNode.bind(this)(convertTable, src, plugs);
+
+				// 最上位階層はパネルの位置を設定する必要がある
+				// また,1回はaddNodeしてnodesystemを更新する必要がある
+				this.addNode({ nodeInfo : src });
 			}
 
-			// プラグを追加
+			// 最上位階層のプラグを追加
 			for (let i = 0; i < plugs.length; i = i + 1) {
 				this.addPlug({ plugInfo: plugs[i] });
 			}
