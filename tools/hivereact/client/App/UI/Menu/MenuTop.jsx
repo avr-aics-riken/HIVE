@@ -17,7 +17,8 @@ export default class MenuTop extends React.Component {
         this.saveButton = this.saveButton.bind(this);
         this.loadButton = this.loadButton.bind(this);
         this.loadButtonClick = this.loadButtonClick.bind(this);
-        this.exportButton = this.exportButton.bind(this);
+        this.exportSceneButton = this.exportSceneButton.bind(this);
+        this.exportGroupButton = this.exportGroupButton.bind(this);
 
         this.showConsole = props.consoleShow;
     }
@@ -57,8 +58,12 @@ export default class MenuTop extends React.Component {
             reader.readAsText(eve.currentTarget.files[0]);
         }
     }
-    exportButton(eve){
+    exportSceneButton(eve){
         this.props.action.export();
+    }
+
+    exportGroupButton(eve){
+        console.log('Group export');
     }
 
     // Edit menu
@@ -97,8 +102,11 @@ export default class MenuTop extends React.Component {
                 <SubMenu title={<span>File</span>} key="file">
                     <MenuItem key="loadButtonClick">Load</MenuItem>
                     <MenuItem key="saveButton">Save</MenuItem>
-                    <MenuItem key="exportButton">Export</MenuItem>
                     <MenuItem key="allClearNode">Clear all</MenuItem>
+                    <MenuItem >-----------------------</MenuItem>                    
+                    <MenuItem key="exportSceneButton">Scene Script Export</MenuItem>
+                    <MenuItem key="exportGroupButton">Group Export</MenuItem>
+                    
                 </SubMenu>
                 <SubMenu title={<span>Edit</span>} key="edit">
                     <MenuItem key="editNodeCopy">Copy</MenuItem>
