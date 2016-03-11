@@ -62,7 +62,7 @@ bool RawVolumeLoader::Load(const char* filename, int width, int height, int dept
     size_t n = fread(m_volume->Buffer()->GetBuffer(), 1, len, fp);
 	fclose(fp);
 	if (n != len) {
-        fprintf(stderr,"[RawVolumeLoader] Failed to load raw volume: %llu bytes expected, but %llu bytes read.\n", len, n);
+        fprintf(stderr,"[RawVolumeLoader] Failed to load raw volume: %llu bytes expected, but %llu bytes read.\n", (unsigned long long)len, (unsigned long long)n);
 	}
 
     return true;
