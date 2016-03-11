@@ -1,4 +1,5 @@
 import Constants from "./Constants.jsx"
+import NodeSystem from "../NodeSystem"
 
 function uuid() {
     var uuid = "", i, random;
@@ -280,15 +281,18 @@ export default class ActionExecuter {
         if (payload.hasOwnProperty('varname')) {
             let varname = payload.varname;
             let n;
-            if (varname === "") {
-                n = this.store.getRootNodes();
-            } else {                      
+            if (varname === "") { // ALL
+                //n = this.store.getRootNodes();
+                let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
+                const luasrc = nodeExe.doNodes();
+                console.log('EXPORT>', luasrc); 
+            } else { //                       
 			    n = this.store.getNode(varname);
-            }
-			if (n) {
-                console.log('NODE EXPORT', n);
-				let node = n.node;				
-			}
+                if (n) {
+                    console.log('NODE EXPORT', n);
+                    let node = n.node;
+                }
+            }			
 		}
 	}
 
