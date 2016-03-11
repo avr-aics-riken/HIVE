@@ -59,6 +59,7 @@ export default class ActionExecuter {
 		this.paste = this.paste.bind(this);
 		this.delete = this.delete.bind(this);
 		this.makeGroup = this.makeGroup.bind(this);
+		this.unGroup = this.unGroup.bind(this);
 		this.addGroup = this.addGroup.bind(this);
 		this.digGroup = this.digGroup.bind(this);
 		this.findGroupPath = this.findGroupPath.bind(this);
@@ -781,6 +782,38 @@ export default class ActionExecuter {
 		};
 		this.addGroup({ group : group });
 		this.store.emit(Constants.MAKE_GROUP_CALLED, null);
+	}
+
+	/**
+	 * グループを解除する
+	 */
+	unGroup(payload) {
+		if (payload.hasOwnProperty("groupVarname")) {
+			let groupVarname = payload.groupVarname;
+			let n = this.store.getNode(groupVarname);
+			if (!n) {
+				console.error("group node found ", groupVarname);
+			}
+			// グループノードが保持しているノードとプラグを現在の階層に追加.
+			let group = n.node;
+			let nodes = this.store.getNodes();
+			let plugs = this.store.getPlugs();
+			for (let i = 0; i < group.nodes.length; i = i + 1) {
+				nodes.push(group.nodes[i]);
+			}
+			for (let i = 0; i < group.plugs.length; i = i + 1) {
+				plugs.push(group.plugs[i]);
+			}
+			// グループノードを削除.
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				if (nodes[i].varname === groupVarname) {
+					nodes.splice(i, 1);
+					break;
+				}
+			}
+			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
+			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+		}
 	}
 
 	/// グループのパスを探して返す
