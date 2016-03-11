@@ -38,7 +38,8 @@ export default class ActionExecuter {
         this.showConsoleOutput = this.showConsoleOutput.bind(this);
         this.setLayout = this.setLayout.bind(this);
 		this.addNode = this.addNode.bind(this);
-		this.deleteNode = this.deleteNode.bind(this);
+		this.exportNode = this.exportNode.bind(this);		
+        this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
 		this.clearAll = this.clearAll.bind(this);
 		this.changeNode = this.changeNode.bind(this);
@@ -148,7 +149,7 @@ export default class ActionExecuter {
 				if (payload.nodeInfo.name === "Group") {
 					node = payload.nodeInfo;
 				} else {
-					node = this.store.nodeSystem.CreateNodeInstance(payload.nodeInfo.name);
+					node = this.store.nodeCreator.CreateNodeInstance(payload.nodeInfo.name);
 				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
@@ -269,6 +270,26 @@ export default class ActionExecuter {
 			}
 		}
 		this.store.data.nodePath = origPath;
+	}
+
+
+    /**
+	 * ノードエクスポート
+	 */
+	exportNode(payload) {
+        if (payload.hasOwnProperty('varname')) {
+            let varname = payload.varname;
+            let n;
+            if (varname === "") {
+                n = this.store.getRootNodes();
+            } else {                      
+			    n = this.store.getNode(varname);
+            }
+			if (n) {
+                console.log('NODE EXPORT', n);
+				let node = n.node;				
+			}
+		}
 	}
 
 	/**

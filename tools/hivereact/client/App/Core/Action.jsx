@@ -48,57 +48,26 @@ export default class Action {
 	 * @param varname 特定のvarnameで作成する場合文字列を入れる。通常はnullを入れる。
 	 */
 	addNodeByName(nodeName, varname) {
-/*
-        let node = this.nodeSystem.CreateNodeInstance(nodeName);
-        if (!node) {
-            return false;
-        }
-
-		// create unique varname
-		node.varname += name + uuid();
-        for (let i = 0; true; i = i + 1) {
-			let foundSameName = false;
-			let name = node.varname + "_" + String(i);
-			for (let i = 0; i < this.state.nodes.length; i = i + 1) {
-				if (this.state.nodes[i].varname === name) {
-					foundSameName = true;
-					break;
-				}
-			}
-			if (!foundSameName) {
-				node.varname = name;
-				break;
-			}
-		}
-
-		node.pos = [ 200, 200 ];
-
-        // insert position
-        let x, y;
-        x = node.panel.pos[0];
-        y = node.panel.pos[1];
-        for (let i in nodes) {
-            let panel = nodes[i].panel;
-            while (true) {
-                let f = true;
-                if (Math.abs(x - panel.pos[0]) < 50) {
-                    x += 50; f = false;
-                }
-                if (Math.abs(y - panel.pos[1]) < 50) {
-                    y += 50; f = false;
-                }
-                if (f) {
-                    break;
-                }
-            }
-        }
-        node.panel.pos = [x, y];
-*/
 		if (varname) {
 			this.addNode({name : nodeName, varname : varname});
 		} else {
 			this.addNode({name : nodeName});
 		}
+	}
+
+    /**
+	 * ノードをエクスポートする
+	 * @param varname ノード変数名
+	 */
+	export(varname) {
+        if (!varname) {
+            varname = '';    
+        }
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "exportNode",
+			varname : varname
+		});
 	}
 
 	/**
