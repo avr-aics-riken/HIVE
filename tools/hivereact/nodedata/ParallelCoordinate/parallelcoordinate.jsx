@@ -22,9 +22,6 @@ class prgLocations {
     }
 }
 
-// ============================================================================
-// this.dimensionTitles === 上部に出る項目タイトルを格納した配列（未指定の場合配列インデックス）
-// ============================================================================
 class ParallelCoordinate extends React.Component {
     constructor(props) {
         super(props);
@@ -93,6 +90,9 @@ class ParallelCoordinate extends React.Component {
     imageRecieved(err, param, data){
         var a, buffer;
         const varname = this.node.varname;
+
+        console.log('parallel: imageRecieved!!!');
+
         if(param.varname !== varname){return;}
         if(param.datatype === 'byte'){
             a = new Uint8Array(data);
@@ -221,16 +221,16 @@ class ParallelCoordinate extends React.Component {
         this.props.action.changeNodeInput({
             varname: this.props.node.varname,
             input: {
-                fLow: a[0],
-                fMiddleLow: a[1],
-                fMiddle: a[2],
+                fLow:        a[0],
+                fMiddleLow:  a[1],
+                fMiddle:     a[2],
                 fMiddleHigh: a[3],
-                fHigh: a[4],
-                bLow: a[5],
-                bMiddleLow: a[6],
-                bMiddle: a[7],
+                fHigh:       a[4],
+                bLow:        a[5],
+                bMiddleLow:  a[6],
+                bMiddle:     a[7],
                 bMiddleHigh: a[8],
-                bHigh: a[9],
+                bHigh:       a[9],
             }
         });
         if(this.density){setTimeout(this.redraw, 50);}
@@ -367,18 +367,19 @@ class ParallelCoordinate extends React.Component {
         }
     }
     glInitialColor(){
-        this.glContext[this.foreground].color = this.props.node.input[0].value;
+        this.glContext[this.foreground].color           = this.props.node.input[0].value;
         this.glContext[this.foreground].lowColor        = this.props.node.input[10].value;
         this.glContext[this.foreground].middleLowColor  = this.props.node.input[11].value;
         this.glContext[this.foreground].middleColor     = this.props.node.input[12].value;
         this.glContext[this.foreground].middleHighColor = this.props.node.input[13].value;
         this.glContext[this.foreground].highColor       = this.props.node.input[14].value;
-        this.glContext[this.brushed].color = this.props.node.input[1].value;
-        this.glContext[this.brushed].lowColor        = this.props.node.input[15].value;
-        this.glContext[this.brushed].middleLowColor  = this.props.node.input[16].value;
-        this.glContext[this.brushed].middleColor     = this.props.node.input[17].value;
-        this.glContext[this.brushed].middleHighColor = this.props.node.input[18].value;
-        this.glContext[this.brushed].highColor       = this.props.node.input[19].value;
+
+        this.glContext[this.brushed].color              = this.props.node.input[1].value;
+        this.glContext[this.brushed].lowColor           = this.props.node.input[15].value;
+        this.glContext[this.brushed].middleLowColor     = this.props.node.input[16].value;
+        this.glContext[this.brushed].middleColor        = this.props.node.input[17].value;
+        this.glContext[this.brushed].middleHighColor    = this.props.node.input[18].value;
+        this.glContext[this.brushed].highColor          = this.props.node.input[19].value;
     }
 
     glRender(target, data, lines, left, right){
@@ -572,7 +573,7 @@ class ParallelCoordinate extends React.Component {
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         // gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ONE, gl.ONE);
-        gl.lineWidth(1.5);
+        gl.lineWidth(1.0);
         gl.useProgram(gc.pl.prg);
         gl.viewport(0, 0, width, height);
         gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -688,27 +689,6 @@ class ParallelCoordinate extends React.Component {
     componentDidMount(){
         const Store_IMAGE_RECIEVED = "image_revieved";
         this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
-
-        // state.parse は最初の次元が縦方向にマッピングされる
-        // 横棒の折れ線グラフが描かれるイメージ
-        // 以下のようにすれば、100 本の線が、それぞれ 10 項目をマッピングする形で描画される
-        // this.state.parse = [];
-        // for(let i = 0; i < 100; ++i){
-        //     this.state.parse[i] = [];
-        //     for(let j = 0; j < 10; ++j){
-        //         this.state.parse[i].push(Math.random() * 100.0);
-        //     }
-        // }
-        // this.setState(
-        //     {parse: [
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9]
-        //     ]}
-        // );
-        // setTimeout((()=>{this.imageParse();}), 50);
     }
 
     componentDidUpdate(){
