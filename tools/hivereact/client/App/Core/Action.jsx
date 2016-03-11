@@ -61,7 +61,7 @@ export default class Action {
 	 */
 	export(varname) {
         if (!varname) {
-            varname = '';    
+            varname = '';
         }
 		this.dispatcher.dispatch({
 			id :this.id,
@@ -226,6 +226,17 @@ export default class Action {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "makeGroup"
+		});
+	}
+
+	/**
+	 * グループを解除する
+	 */
+	unGroup(groupVarname) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "unGroup",
+			groupVarname : groupVarname
 		});
 	}
 
