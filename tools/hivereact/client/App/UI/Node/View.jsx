@@ -17,10 +17,8 @@ export default class View extends React.Component {
 
         this.store = this.props.store;
         this.action = this.props.action;
-
-		//var dispatcher =  new Dispatcher();
-		this.nodeStore = new Store(this.props.action.dispatcher, this.props.store);
-		this.nodeAction = new Action(this.props.action.dispatcher, this.nodeStore.getDispatchToken());
+		this.nodeStore = this.props.nodeStore;
+		this.nodeAction = this.props.nodeAction;
     }
 
 

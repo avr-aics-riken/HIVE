@@ -37,6 +37,7 @@ export default class NodeView extends React.Component {
 		this.onCopy = this.onCopy.bind(this);
 		this.onPaste = this.onPaste.bind(this);
 		this.onDelete = this.onDelete.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
 
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
 		this.connectToGlobalIn = this.connectToGlobalIn.bind(this);
@@ -193,7 +194,7 @@ export default class NodeView extends React.Component {
 	}
 
     componentDidMount(){
-		window.addEventListener('mouseup', this.onMouseUp.bind(this));
+		window.addEventListener('mouseup', this.onMouseUp);
 		let rect = this.refs.viewport.getBoundingClientRect();
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
@@ -212,7 +213,7 @@ export default class NodeView extends React.Component {
     }
 
     componentWillUnmount(){
-		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
+		window.removeEventListener('mouseup', this.onMouseUp);
 		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.off(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
