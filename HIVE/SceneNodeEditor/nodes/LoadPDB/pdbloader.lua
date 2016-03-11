@@ -1,6 +1,6 @@
 function LoadPDB(property)
 	local pdbloader
-	pdbloader = PDBLoader()
+	pdbloader = require("PdbLoader")()
 	pdbloader:Load(property.filepath)
 	return pdbloader
 end

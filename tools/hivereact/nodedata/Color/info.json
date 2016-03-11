@@ -1,0 +1,13 @@
+{
+	"name": "Color",
+	"funcname": "Color",
+	"info":"Colorをつくるノード",
+	"customfuncfile":"color.lua",
+	"uifile":"color.jsx",
+    "input": [
+		{"name": "value",  "type": "vec4", "value": [1,1,1,1]}
+	],
+	"output": [
+		{"name": "color",  "type": "vec4"}
+	]
+}

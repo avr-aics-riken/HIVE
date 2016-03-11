@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local sph = SPHLoader()
+local sph = require("SphLoader")()
 sph:Load('fvel_0000001470.sph')
 
 print("origin", sph:OriginX(), sph:OriginY(), sph:OriginZ())
@@ -25,4 +25,20 @@ local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
 volume:SetShader('def_volume_raymarch.frag')
+
+
+local analy = require("Analyzer").VolumeAnalyzer()
+analy:Execute(volumedata)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+local hist = analy:GetHistgramInRange(volumedata, analy:MinX()*0.5, analy:MaxX()*0.5)
+for i,v in pairs(hist) do
+	print('hist['..i..'] = ', v)
+end
+
 render {camera, volume}

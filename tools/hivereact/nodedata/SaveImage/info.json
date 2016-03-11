@@ -1,0 +1,12 @@
+{
+	"name": "SaveImage",
+	"funcname": "SaveImage",
+	"info":"Imageをセーブするノード",
+	"customfuncfile":"saveimage.lua",
+    "input": [
+		{"name": "filepath",  "type": "string", "value": ""},
+        {"name": "image",  "type": "BufferImageData"}
+	],
+	"output": [
+	]
+}
