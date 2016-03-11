@@ -36,6 +36,7 @@ export default class View extends React.Component {
 						action={this.props.action}
 						nodeStore={this.nodeStore}
 						nodeAction={this.nodeAction}
+						isPanelNodeMode={this.props.isPanelNodeMode}
 					/>
 				</div>);
 	}

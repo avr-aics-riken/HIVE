@@ -82,6 +82,7 @@ export default class MenuTop extends React.Component {
     layoutAll() { this.props.action.setLayout('all'); }
     layoutNode() { this.props.action.setLayout('node'); }
     layoutPanel() { this.props.action.setLayout('panel'); }
+    layoutPanelNode() { this.props.action.setLayout('panelnode'); }
 
     // Window menu
     windowToggleConsoleOutput() {
@@ -124,6 +125,7 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="layoutAll">All</MenuItem>
                     <MenuItem key="layoutNode">Node mode</MenuItem>
                     <MenuItem key="layoutPanel">Panel mode</MenuItem>
+					<MenuItem key="layoutPanelNode">Panel Node mode</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>Window</span>} key="Window">
                     <MenuItem key="windowToggleConsoleOutput">Console Output</MenuItem>
