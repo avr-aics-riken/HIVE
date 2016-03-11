@@ -4,12 +4,8 @@
 
 extern "C" {
 
-
 int luaopen_ObjLoader(lua_State* L)
 {
-    // Register profiling point.
-    PMon::Register("OBJLoader::Load", PMon::PMON_CALC);
-
     LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
     lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
     return 1;

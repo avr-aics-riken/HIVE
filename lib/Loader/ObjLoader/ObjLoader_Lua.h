@@ -22,13 +22,12 @@
 class OBJLoader_Lua : public OBJLoader
 {
 public:
+
     OBJLoader_Lua(){}
     ~OBJLoader_Lua(){};
 
     bool Load(const char* filename){
-        PMon::Start("OBJLoader::Load");
         bool ret = OBJLoader::Load(filename);
-        PMon::Stop("OBJLoader::Load");
         return ret;
     }
 
@@ -58,7 +57,7 @@ public:
     }
     
     LUA_SCRIPTCLASS_BEGIN(OBJLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("OBJLoader",bool,Load,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*,   MeshData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferPointData_Lua*,  PointData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*,   LineData)
