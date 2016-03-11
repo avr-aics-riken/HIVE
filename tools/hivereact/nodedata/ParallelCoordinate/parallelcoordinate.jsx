@@ -46,9 +46,10 @@ class ParallelCoordinate extends React.Component {
         this.usr = {glRender: this.glRender};
         this.parcoords;         // from d3.parcoord.js
         this.dataval = null;
-        this.density = false;
+        this.density = this.props.node.input[4].value;
         this.densityRange = 90;
-        this.densityNormalize = false;
+        this.densityNormalize = this.props.node.input[5].value;
+        this.logScale = this.props.node.input[6].value;
         this.weight = [];
         this.linecount = 0;
         this.dimensionTitles = {};
@@ -78,6 +79,7 @@ class ParallelCoordinate extends React.Component {
         // event
         this.onChangeDensity = this.onChangeDensity.bind(this);
         this.onChangeDensityNormalize = this.onChangeDensityNormalize.bind(this);
+        this.onChangeLogScale = this.onChangeLogScale.bind(this);
         this.onColorChange = this.onColorChange.bind(this);
     }
 
@@ -119,13 +121,29 @@ class ParallelCoordinate extends React.Component {
 
     onChangeDensity(){
         this.density = !this.density;
-        this.setState({density: this.density});
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {density: this.density}
+        });
         setTimeout((()=>{this.redraw();}).bind(this), 50);
     }
 
     onChangeDensityNormalize(){
         this.densityNormalize = !this.densityNormalize;
-        this.setState({densityNormalize: this.densityNormalize});
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {densityNormalize: this.densityNormalize}
+        });
+        setTimeout((()=>{this.redraw();}).bind(this), 50);
+    }
+
+    onChangeLogScale(){
+        this.logScale= !this.logScale;
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {logScale: this.logScale}
+        });
+        this.usr.logScale = this.logScale;
         setTimeout((()=>{this.redraw();}).bind(this), 50);
     }
 
@@ -243,7 +261,7 @@ class ParallelCoordinate extends React.Component {
             maxScale: 255,
             minScale: 1,
             extent: null,
-            logScale: true,
+            logScale: this.props.node.input[6].value,
         };
         this.linecount = this.dataval.length;
         this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})(ReactDOM.findDOMNode(this.refs.examples))
@@ -687,6 +705,20 @@ class ParallelCoordinate extends React.Component {
                 <div ref="container" style={styles.container}>
                     <div ref="examples" className="parcoords" style={styles.examples}></div>
                     <div style={styles.uiFrame}>
+                        <div style={styles.flexrow}>
+                            <div style={styles.flexcol}>
+                                <input type="checkbox" checked={this.props.node.input[4].value} id="densityCheck" onChange={this.onChangeDensity} />
+                                <label onClick={this.onChangeDensity}>density mode</label>
+                            </div>
+                            <div style={styles.flexcol}>
+                                <input type="checkbox" checked={this.props.node.input[5].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} />
+                                <label onClick={this.onChangeDensityNormalize}>density normalize</label>
+                            </div>
+                            <div style={styles.flexcol}>
+                                <input type="checkbox" checked={this.props.node.input[6].value} id="logScale" onChange={this.onChangeLogScale} />
+                                <label onClick={this.onChangeLogScale}>log scale</label>
+                            </div>
+                        </div>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
                                 <p style={styles.inputTitle}>line</p>
