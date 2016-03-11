@@ -42,9 +42,10 @@ export default class Store extends EventEmitter {
     // private:
 	initHive(nodePlugData) {
 		this.hive = new Hive();
-		this.nodeSystem = new NodeSystem(nodePlugData, (nodeSystem) => {
-			// initilized.
-            this.hive.connect('ws://localhost:8080');
+		this.hive.connect('ws://localhost:8080', '', true);			
+        
+        this.nodeExecutor = new NodeSystem.NodeExecutor(nodePlugData);
+        this.nodeCreator =new NodeSystem.NodeCreator("http://localhost:8080/nodelist.json", () => {
 			this.emit(Constants.INITIALIZED, null);
 		});
 		this.hive.on(Hive.IMAGE_RECIEVED, (err, param, data) => {
@@ -53,11 +54,11 @@ export default class Store extends EventEmitter {
         this.hive.on(Hive.RENDERER_LOG_RECIEVED, (data) => {
 			this.emit(Constants.RENDERER_LOG_RECIEVED, data);
 		});
-		this.nodeSystem.on(NodeSystem.SCRIPT_SERIALIZED, (script) => {
+		this.nodeExecutor.on(NodeSystem.NodeExecutor.SCRIPT_SERIALIZED, (script) => {
 			//console.warn('SCRIPT>', script);
 			this.hive.runScript(script);
 		});
-		this.nodeSystem.initEmitter(this);
+		this.nodeExecutor.initEmitter(this);
 	}
 
 	/**
@@ -212,7 +213,7 @@ export default class Store extends EventEmitter {
 	 * ノード名リストを返す
 	 */
 	getNodeNameList() {
-		let namelist = this.nodeSystem.GetNodeNameList();
+		let namelist = this.nodeCreator.GetNodeNameList();
 		return namelist;
 	}
 

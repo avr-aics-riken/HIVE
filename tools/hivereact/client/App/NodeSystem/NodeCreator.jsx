@@ -20,11 +20,11 @@ function getData(url, callback) {
 
 export default class NodeCreator {
     
-    constructor(callback) {
+    constructor(url, callback) {
 
         this.initCallback = callback;
         this.nodeList = [];
-        getData("http://localhost:8080/nodelist.json", (err, jsondata) => {
+        getData(url, (err, jsondata) => {
             if (err) {
                 console.error(err);
             }
@@ -82,4 +82,16 @@ export default class NodeCreator {
         return nlist;
     }
     
+    CreateNodeInstance(nodeName) {
+        let srcNode = this.GetNodeInfo(nodeName);
+        if (srcNode === undefined) {
+            console.error('Not found node template >', nodeName);
+            return;
+        }
+
+        let node = JSON.parse(JSON.stringify(srcNode)); // copy
+        node.uiComponent = srcNode.uiComponent; // restore reference
+        return node;
+    }
+
 }
