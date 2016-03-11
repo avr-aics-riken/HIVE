@@ -25,7 +25,7 @@ public:
     }
 
     LUA_SCRIPTCLASS_BEGIN(SparseVolumeToVolume_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG2(int,Create,BufferSparseVolumeData_Lua*,float);
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("SparseVolumeToVolume",int,Create,BufferSparseVolumeData_Lua*,float);
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*, VolumeData)
     LUA_SCRIPTCLASS_END()
 

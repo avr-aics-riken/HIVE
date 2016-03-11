@@ -50,7 +50,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
-    LUA_SCRIPTCLASS_METHOD_ARG6(bool,Load,const char*,int,int,int,int,const char*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG6("RawVolumeLoader", bool,Load,const char*,int,int,int,int,const char*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 };

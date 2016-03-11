@@ -36,7 +36,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(MeshAttribToVolume_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG8(int,Create,BufferMeshData_Lua*,BufferExtraData_Lua*,float,float,float,float,float,float)
-    LUA_SCRIPTCLASS_METHOD_ARG3(bool,ToVolume,int,int,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("MeshAttribToVolume",bool,ToVolume,int,int,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 

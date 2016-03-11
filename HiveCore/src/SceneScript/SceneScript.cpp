@@ -16,6 +16,8 @@
 
 #include "../Renderer/RenderCore.h"
 
+#include "Core/Perf.h"
+
 #define CPP_IMPL_INSTANCE
 #include "BufferMeshData_Lua.h"
 #include "BufferLineData_Lua.h"
@@ -90,6 +92,15 @@ void RegisterSceneClass(lua_State* L)
 // ------------------------
 
 namespace {
+
+void RegisterHiveCoreProfilingPoints()
+{
+    // PMon::Initialize() should be called before calling this this function.
+    // (Usually outside of HiveCore modules, e.g. main())
+    PMon::Register("HiveCore::Render", PMon::PMON_CALC, /* exclusive */true);
+    PMon::Register("HiveCore::ImageSave", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("Compositor", PMon::PMON_CALC, /* exclusive */false);
+}
 
 /*
     Util Functions
@@ -500,6 +511,8 @@ bool SceneScript::Impl::Execute(const char* luascript, const std::vector<std::st
 
 void SceneScript::Impl::Begin(const std::vector<std::string>& sceneargs)
 {
+    RegisterHiveCoreProfilingPoints();
+
     for (size_t i = 0; i < sceneargs.size(); ++i) {
         if (sceneargs[i] == "--opengl") {
             RenderCore::GetInstance(RENDER_OPENGL); // Switch OpenGL mode

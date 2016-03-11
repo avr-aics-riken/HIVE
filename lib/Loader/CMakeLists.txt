@@ -2,6 +2,7 @@
 add_subdirectory(HdmLoader)
 add_subdirectory(PdbLoader)
 add_subdirectory(RawVolumeLoader)
+add_subdirectory(RawSparseVolumeLoader)
 add_subdirectory(StlLoader)
 add_subdirectory(VolLoader)
 add_subdirectory(CdmLoader)
