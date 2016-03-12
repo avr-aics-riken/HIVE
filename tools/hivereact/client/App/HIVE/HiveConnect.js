@@ -129,7 +129,7 @@
 
 		ws.addEventListener('message', (function (self) {
 			return function (event) {
-				var data;
+				var data, par;
 				//console.log('[RECV]', event.data);
 				if (event.data instanceof Blob) {
 					//console.log('[DEBUG] binary data recved.');
@@ -153,7 +153,13 @@
 					} else if (data.method) {
 						if (self.methodFuncs[data.method]) {
 							//console.log('[DEBUG] Call Method=>', data.method);
-							self.methodFuncs[data.method](JSON.parse(data.param), null);
+                            
+                            try {
+                                par = JSON.parse(data.param);
+                            } catch (e) {
+                                par = data.param; // direct
+                            }
+							self.methodFuncs[data.method](par, null);
 						}
 					} else if (data.result) {
 						//console.log('[DEBUG] Result => ', data.result);

@@ -10,7 +10,31 @@ end
 
 function TransferFunction:Do()
     self:UpdateValue()
+    local v = self.value
     
+    -- Analyze min/max
+    if v.volume then
+        local analyzer = require('Analyzer').VolumeAnalyzer()
+        analyzer:Execute(v.volume)
+        minval = analyzer:MinX()
+        maxval = analyzer:MaxX()
+        print('Tranferfunction analyzed: min=', minval, ' max=', maxval)
+        if network then
+            local analyzedInfo = [[{
+                "JSONRPC" : "2.0",
+                "method" : "analyzedInfo",            
+                "to" : ]] .. targetClientId ..[[,
+                "param" : {
+                    "minval" : "]] .. minval .. [[",
+                    "maxval" : "]] .. maxval .. [[",
+                    "varname": "]] .. self.varname .. [["
+                },
+                "id":0
+            }]]
+            network:SendJSON(analyzedInfo);
+        end
+    end
+        
     local rgba = self.value.rgba;
     --print('rgba=', #rgba)
     
@@ -30,4 +54,12 @@ end
 
 function TransferFunction:Image()
     return self.gentex:ImageData()
+end
+
+function TransferFunction:Min()
+    return self.value.minval
+end
+
+function TransferFunction:Max()
+    return self.value.maxval
 end
