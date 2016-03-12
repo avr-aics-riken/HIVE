@@ -22,7 +22,8 @@ function ParallelCoordinate:Do()
     local d = 1
     local c
     local dat
-    local imageBuffer        
+    local imageBuffer
+    local datasize        
     if vol then
         w = vol:Width()
         h = vol:Height()
@@ -33,7 +34,8 @@ function ParallelCoordinate:Do()
             return false
         end
         imageBuffer = vol:Pointer() 
-        datatype = 'float';   
+        datatype = 'float';
+        datasize = 4   
     else
         dat = img        
         w = img:GetWidth()
@@ -45,6 +47,7 @@ function ParallelCoordinate:Do()
         end
         imageBuffer = img:GetBuffer()
         datatype = 'byte';
+        datasize = 1
     end
     
     local json = [[{
@@ -64,7 +67,7 @@ function ParallelCoordinate:Do()
     }]]
         
     print('imagebuffer=', imageBuffer)
-    local imageBufferSize = w * h * d * 4
+    local imageBufferSize = w * h * d * datasize * c
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
     print('send!!!!!!!!!!!', imageBufferSize, self.varname);
