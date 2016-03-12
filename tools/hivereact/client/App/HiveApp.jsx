@@ -264,7 +264,7 @@ export default class HiveApp extends React.Component {
                 return (
                     <div ref="dropTarget3">
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
-                            <Splitter split="vertical" defaultSize="275" dontmove={true}>
+                            <Splitter split="vertical" defaultSize="275" dontmove={true} overflow2="hidden">
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
                                 <div ref="hoverTarget3" style={{position:"absolute",width:"100%",height:"100%"}}>
                                     <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} isPanelNodeMode={true} />
@@ -284,7 +284,7 @@ export default class HiveApp extends React.Component {
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
                             <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
-                                <Splitter split="vertical" minSize="50">
+                                <Splitter split="vertical" minSize="50" overflow1="hidden">
                                     <div ref="hoverTarget2" style={{position:"absolute",width:"100%",height:"100%"}}>
                                         <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} isPanelNodeMode={false} />
                                     </div>
@@ -305,7 +305,7 @@ export default class HiveApp extends React.Component {
                 return (
                     <div ref="dropTarget1">
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
-                            <Splitter split="vertical" defaultSize="275" dontmove={true}>
+                            <Splitter split="vertical" defaultSize="275" dontmove={true} overflow2="hidden">
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
                                 <div ref="hoverTarget1" style={{position:"absolute",width:"100%",height:"100%"}}>
                                     <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} isPanelNodeMode={false} />

@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Core from '../../Core';
 import RcMenu, {SubMenu, Item as MenuItem, Divider} from 'rc-menu';
-import velocity from 'velocity-animate';
+//import velocity from 'velocity-animate';
 
 // class
 export default class MenuTop extends React.Component {
@@ -135,7 +135,7 @@ export default class MenuTop extends React.Component {
             mode: 'horizontal',
             openAnimation: 'slide-up',
             openSubMenuOnMouseEnter: false,
-            closeSubMenuOnMouseLeave: true
+            closeSubMenuOnMouseLeave: false
         });
 
         let style = {
@@ -154,6 +154,7 @@ export default class MenuTop extends React.Component {
     }
 }
 
+/*
 // ユーティリティ類の定義
 const animation = {
     enter(node, done) {
@@ -204,3 +205,4 @@ const animation = {
         };
     },
 };
+*/

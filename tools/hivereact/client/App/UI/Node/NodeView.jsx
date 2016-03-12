@@ -16,7 +16,8 @@ export default class NodeView extends React.Component {
 			nodes : this.props.store.getNodes(),
 			zoom : this.props.nodeStore.getZoom(),
 			globalOutHover : false,
-			globalInHover : false
+			globalInHover : false,
+			offset : [-1700, -1700] //px
 		};
 
 		this.isLeftDown = false;
@@ -85,12 +86,11 @@ export default class NodeView extends React.Component {
 		const px = ev.clientX - this.rect.left;
 		const py = ev.clientY - this.rect.top;
 		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
-            const dx = (px - this.pos.x);
-            const dy = (py - this.pos.y);
-			if (this.refs.viewport) {
-				this.refs.viewport.scrollLeft = this.refs.viewport.scrollLeft - dx;
-				this.refs.viewport.scrollTop = this.refs.viewport.scrollTop - dy;
-			}
+            const dx = (px - this.pos.x) / this.state.zoom;
+            const dy = (py - this.pos.y) / this.state.zoom;
+			this.setState({
+				offset : [this.state.offset[0] + dx, this.state.offset[1] + dy]
+			});
 		} else if (this.isRightDown) {
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
@@ -167,7 +167,7 @@ export default class NodeView extends React.Component {
 				let width = rect.right - rect.left;
 				let height = rect.bottom - rect.top;
 				let n = JSON.parse(JSON.stringify(data.node));
-				n.pos = [this.refs.viewport.scrollLeft + width / 2 - 200, this.refs.viewport.scrollTop + height / 2 - 200];
+				n.pos = [-this.state.offset[0] + width / 2 - 200, -this.state.offset[1] + height / 2 - 200];
 				if (n.pos[0] <= 0) { n.pos[0] = 200; }
 				if (n.pos[1] <= 0) { n.pos[1] = 200; }
 				if (n.pos[0] >= 4000) { n.pos[0] = 3800; }
@@ -199,9 +199,6 @@ export default class NodeView extends React.Component {
 		let rect = this.refs.viewport.getBoundingClientRect();
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
-
-		this.refs.viewport.scrollTop = 1700;
-		this.refs.viewport.scrollLeft = 1700;
 
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
@@ -269,8 +266,8 @@ export default class NodeView extends React.Component {
 			for (let i = 0; i < copyNodes.length; i = i + 1) {
 				let node = copyNodes[i];
 				if (i === 0) {
-					diffPos[0] = this.refs.viewport.scrollLeft + this.pos.x - node.node.pos[0];
-					diffPos[1] = this.refs.viewport.scrollTop + this.pos.y - node.node.pos[1];
+					diffPos[0] = -this.state.offset[0] + this.pos.x - node.node.pos[0];
+					diffPos[1] = -this.state.offset[1] + this.pos.y - node.node.pos[1];
 				}
 				copyNodes[i].node.pos[0] += diffPos[0];
 				copyNodes[i].node.pos[1] += diffPos[1];
@@ -290,12 +287,18 @@ export default class NodeView extends React.Component {
 	origin() {
 		if (this.refs.viewport) {
 			let rect = this.refs.viewport.getBoundingClientRect();
-			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
-			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
+			let x = (rect.right - rect.left) / 2.0;
+			let y = (rect.bottom - rect.top) / 2.0;
 			return String(x) + "px " + String(y) + "px";
 		} else {
 			return "0px 0px";
 		}
+	}
+
+	transform() {
+		let scale = "scale(" + this.state.zoom + ")";
+		let translate = "translate(" + String(this.state.offset[0]) + "px," + String(this.state.offset[1]) + "px)";
+		return scale + " " + translate;
 	}
 
 	nodeList() {
@@ -441,8 +444,7 @@ export default class NodeView extends React.Component {
 						style={{
 							position : "absolute",
 							width:"100%",
-							height:"100%",
-							overflow:"auto"
+							height:"100%"
 						}}
 						ref="viewport"
 						onWheel={this.onWheel.bind(this)}
@@ -452,7 +454,7 @@ export default class NodeView extends React.Component {
 								position : "absolute",
 								width:"4000px",
 								height:"4000px",
-								transform : "scale(" + this.state.zoom + ")",
+								transform : this.transform.bind(this)(),
 								transformOrigin : this.origin.bind(this)(),
 								border : "10px solid",
 								borderColor : "gray"

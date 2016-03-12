@@ -789,7 +789,14 @@ export default class ActionExecuter {
 			for (let k = 0; k < n.input.length; ++k) {
 				let input = n.input[k];
 				if (varnameToInput.hasOwnProperty(input.nodeVarname)) {
-					if (varnameToInput[input.nodeVarname].name === input.name) {
+					if (Array.isArray(input.array)) {
+						let ar = input.array;
+						for (let m = 0; m < ar.length; m = m + 1) {
+							if (varnameToInput[input.nodeVarname].name === ar[m].name) {
+								inputs.push(ar[m]);
+							}
+						}
+					} else if (varnameToInput[input.nodeVarname].name === input.name) {
 						inputs.push(input);
 					}
 				}
