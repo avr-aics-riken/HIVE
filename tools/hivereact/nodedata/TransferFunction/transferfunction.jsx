@@ -117,8 +117,7 @@ class TransferFunction extends React.Component {
      }
      onRecieveAnalyzed(data) {
         //console.error(data);
-        var result = {defaultValMin: data.minval, defaultValMax: data.maxval};
-        this.setAnalyzeResult(result);
+        this.setAnalyzeResult(data);
      }
      onSelectChange(eve){
         var e = eve.target.value;
@@ -190,7 +189,17 @@ class TransferFunction extends React.Component {
         var e = eve.currentTarget;
         console.log(e.value);
         if (parseFloat(this.minInput.value) !== NaN) {
-            this.setState({valMin: parseFloat(this.minInput.value)});
+            const vl = parseFloat(this.minInput.value);
+            this.setState({valMin: vl});
+            
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "minval" : vl                    
+                }
+            });
+            
             this.drawGraph();
             if (this.changeCallback){
                 this.changeCallback(this);
@@ -199,7 +208,17 @@ class TransferFunction extends React.Component {
     }
     maxInputChange(){
         if (parseFloat(this.maxInput.value) !== NaN) {
-            this.setState({valMax: parseFloat(this.maxInput.value)});
+            const vl = parseFloat(this.maxInput.value);            
+            this.setState({valMax: vl});
+            
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "maxval" : vl                    
+                }
+            });
+            
             this.drawGraph();
             if (this.changeCallback){
                 this.changeCallback(this);
@@ -424,17 +443,27 @@ class TransferFunction extends React.Component {
     }
     setAnalyzeResult(result) {
         if (result) {
+            let i;            
             if (result.histgram) {
-                hist = result.histgram;
+                const hist = result.histgram;
                 for (i = 0; i < this.numVals; ++i) {
-                    this.hist[i] = hist[i * componentNum + component];
+                    this.hist[i] = hist[i];
                 }
             }
-            this.defaultValMin = result.defaultValMin;
-            this.defaultValMax = result.defaultValMax;
+            this.defaultValMin = result.minval;
+            this.defaultValMax = result.minval;
             this.setState({
-                valMin: result.defaultValMin,
-                valMax: result.defaultValMax
+                valMin: result.minval,
+                valMax: result.maxval
+            });
+            
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "minval" :result.minval,
+                    "maxval" :result.maxval
+                }
             });
         }
         
