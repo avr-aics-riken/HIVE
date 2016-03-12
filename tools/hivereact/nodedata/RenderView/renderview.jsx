@@ -4,6 +4,10 @@ import ReactDOM from 'react-dom'
 //import nanomsg from 'nanomsg'
 //import buffercopy from 'buffercopy'
 
+const minWidth = 256;
+const minHeight = 256;
+const footerHeight = 25;
+
 class RenderView extends React.Component {
 	constructor(props) {
         super(props);
@@ -20,14 +24,15 @@ class RenderView extends React.Component {
         this.oldmx = 0;
         this.oldmy = 0;
 
-        // View
-
-
-        this.componentDidUpdate = this.componentDidUpdate.bind(this);
+		// View
+		this.componentDidUpdate = this.componentDidUpdate.bind(this);
 		this.imageRecieved = this.imageRecieved.bind(this);
 		this.imageRecieveWrap = this.imageRecieveWrap.bind(this);
 		this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 		this.getInputValue = this.getInputValue.bind(this);
+		this.onEnterCameraButton = this.onEnterCameraButton.bind(this);
+		this.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);
+		this.onClickCameraButton = this.onClickCameraButton.bind(this);
 	}
 
     progressiveUpdate(param) {
@@ -214,7 +219,7 @@ class RenderView extends React.Component {
 		let mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));
 		let pos = add(add(position, scale(-tx, ax)), scale(ty, ay));
 		let tar = add(add(target,   scale(-tx, ax)), scale(ty, ay));
-        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
         let rw = parseInt(ssize[0] / 16);
         let rh = parseInt(ssize[1] / 16);
 
@@ -232,7 +237,7 @@ class RenderView extends React.Component {
 		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
 		let v = subtract(position, target);
-        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));		
+        let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
         let rw = parseInt(ssize[0] / 16);
         let rh = parseInt(ssize[1] / 16);
 
@@ -295,8 +300,8 @@ class RenderView extends React.Component {
 		// イメージサイズの更新.
 		if (this.state) {
 			if (this.props.node.panel.visible) {
-				let width = this.props.node.panel.size[0];
-				let height = this.props.node.panel.size[1];
+				let width = Math.max(this.props.node.panel.size[0], minWidth);
+				let height = Math.max(this.props.node.panel.size[1] - footerHeight, minHeight)
 				if (Number(this.state.param.width) !== width || Number(this.state.param.height) !== height) {
 					console.log("update image size");
 					this.state.param.width = width;
@@ -353,12 +358,16 @@ class RenderView extends React.Component {
 
     styles() {
 		return {
+			bounds : {
+				minWidth : String(minWidth) + "px",
+				minHeight : String(minHeight) + "px",
+			},
 			canvas : {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: String(Math.max(this.props.node.panel.size[0], 256)) + "px",
-                height: String(Math.max(this.props.node.panel.size[1], 256)) + "px",
+                width: String(Math.max(this.props.node.panel.size[0], minWidth)) + "px",
+                height: String(Math.max(this.props.node.panel.size[1], minHeight)) + "px",
                 transform : "scale(1.0,-1.0)",
                 display: (this.hasIPCAddress() ? "block" : "none")
 			},
@@ -366,9 +375,24 @@ class RenderView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: String(Math.max(this.props.node.panel.size[0], 256)) + "px",
-                height: String(Math.max(this.props.node.panel.size[1], 256)) + "px",
+                width: String(Math.max(this.props.node.panel.size[0], minWidth)) + "px",
+                height: String(Math.max(this.props.node.panel.size[1], minHeight)) + "px",
                 display: (this.hasIPCAddress() ? "none" : "block")
+			},
+			cameraButtonArea : {
+				height : "25px",
+				backgroundColor : "rgba(67, 67, 67, 0.9)"
+			},
+			cameraButton : {
+				width : "32px",
+				heigth : "20px",
+				float : "left",
+				backgroundColor : "gray",
+				border : "1px solid darkgray",
+				borderRadius : "3px",
+				margin : "2px",
+				textAlign : "center",
+				fontSize : "11px"
 			}
 		}
 	}
@@ -385,18 +409,143 @@ class RenderView extends React.Component {
         });
     }*/
 
+	onEnterCameraButton(ev) {
+		ev.target.style.backgroundColor = "darkgray";
+		ev.target.style.cursor = "pointer";
+	}
+
+	onLeaveCameraButton(ev) {
+		ev.target.style.backgroundColor = "gray";
+		ev.target.style.cursor = "default";
+	}
+
+	onClickCameraButton(ev) {
+		const varname = this.node.varname;
+		let pos = this.getInputValue('position');
+		let tar = this.getInputValue('target');
+		let up = this.getInputValue('up');
+		let len = length(subtract(tar, pos));
+
+		if (ev.target === this.refs.reset) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [0, 0, 300],
+					"target" : [0, 0, 0],
+					"up" : [0, 1, 0],
+					"fov" : 60
+				}
+			});
+		} else if (ev.target === this.refs.plusX) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [len, tar[1], tar[2]]
+				}
+			});
+		} else if (ev.target === this.refs.minusX) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [-len, tar[1], tar[2]]
+				}
+			});
+		} else if (ev.target === this.refs.plusY) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [tar[0], len, tar[2] + 0.001],
+				}
+			});
+		} else if (ev.target === this.refs.minusY) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [tar[0], -len, tar[2] + 0.001]
+				}
+			});
+		} else if (ev.target === this.refs.plusZ) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [tar[0], tar[1], -len]
+				}
+			});
+		} else if (ev.target === this.refs.minusZ) {
+			this.action.changeNodeInput({
+				varname : varname,
+				input : {
+					"position" : [tar[0], tar[1], len]
+				}
+			});
+		}
+	}
+
+	canvasSize() {
+		if (this.refs.canvas_wrap) {
+			let rect = this.refs.canvas_wrap.getBoundingClientRect();
+			let width = rect.right - rect.left;
+			let height = rect.bottom - rect.top;
+			return [width, height];
+		}
+		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[0], minHeight)];
+	}
+
     content() {
 		const styles = this.styles();
-		if (this.hasIPCAddress()) {
-		} else {
-        }
-        return (<div>
-            <canvas id={this.getCanvasName('canvas')} style={styles.canvas}
-				width={this.props.node.panel.size[0]}
-				height={this.props.node.panel.size[1]} ></canvas>
-            <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
-            </div>);
+        return (<div style={styles.bounds}>
+					<div ref="canvas_wrap">
+						<canvas id={this.getCanvasName('canvas')} style={styles.canvas}
+							width={this.canvasSize.bind(this)()[0]}
+							height={this.canvasSize.bind(this)()[1]} ></canvas>
+					</div>
+					<img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
 
+					<div style={styles.cameraButtonArea}>
+						<div ref="reset"  style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							Reset
+						</div>
+						<div ref="plusX"  style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							+X
+						</div>
+						<div ref="minusX" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							-X
+						</div>
+						<div ref="plusY"  style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							+Y
+						</div>
+						<div ref="minusY" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							-Y
+						</div>
+						<div ref="plusZ" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							+Z
+						</div>
+						<div ref="minusZ" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							-Z
+						</div>
+					</div>
+				</div>);
 	}
 
     getCanvasName(prefix) {
@@ -406,34 +555,7 @@ class RenderView extends React.Component {
 
     render(){
         const styles = this.styles();
-        return this.content()
-
-
-        /*return (
-            <div>
-                <div>
-                <p>R:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
-                    onChange = {this.onChange.bind(this,0)}
-					value={this.node.input[5].value[0]}
-                    defaultValue={this.node.input[5].value[0]}/>
-                </div>
-                <div>
-                <p>G:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
-                    onChange = {this.onChange.bind(this,1)}
-					value={this.node.input[5].value[1]}
-                    defaultValue={this.node.input[5].value[1]}/>
-                </div>
-                <div>
-                <p>B:</p><input type="text" style={{height: 20, borderColor: 'gray', borderWidth: 1}}
-                    onChange = {this.onChange.bind(this,2)}
-					value={this.node.input[5].value[2]}
-                    defaultValue={this.node.input[5].value[2]}/>
-                </div>
-
-               <img id={"aascreen-" + this.varname} style={styles.image} src="" ></img>
-
-            </div>
-        );*/
+        return this.content();
     }
 }
 
