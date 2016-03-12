@@ -425,6 +425,9 @@ class RenderView extends React.Component {
 		let tar = this.getInputValue('target');
 		let up = this.getInputValue('up');
 		let len = length(subtract(tar, pos));
+		const ssize = this.getInputValue("screensize");
+		let rw = parseInt(ssize[0] / 16);
+		let rh = parseInt(ssize[1] / 16);
 
 		if (ev.target === this.refs.reset) {
 			this.action.changeNodeInput({
@@ -433,21 +436,24 @@ class RenderView extends React.Component {
 					"position" : [0, 0, 300],
 					"target" : [0, 0, 0],
 					"up" : [0, 1, 0],
-					"fov" : 60
+					"fov" : 60,
+					"rendersize" : [rw, rh]
 				}
 			});
 		} else if (ev.target === this.refs.plusX) {
 			this.action.changeNodeInput({
 				varname : varname,
 				input : {
-					"position" : [len, tar[1], tar[2]]
+					"position" : [len, tar[1], tar[2]],
+					"rendersize" : [rw, rh]
 				}
 			});
 		} else if (ev.target === this.refs.minusX) {
 			this.action.changeNodeInput({
 				varname : varname,
 				input : {
-					"position" : [-len, tar[1], tar[2]]
+					"position" : [-len, tar[1], tar[2]],
+					"rendersize" : [rw, rh]
 				}
 			});
 		} else if (ev.target === this.refs.plusY) {
@@ -455,27 +461,31 @@ class RenderView extends React.Component {
 				varname : varname,
 				input : {
 					"position" : [tar[0], len, tar[2] + 0.001],
+					"rendersize" : [rw, rh]
 				}
 			});
 		} else if (ev.target === this.refs.minusY) {
 			this.action.changeNodeInput({
 				varname : varname,
 				input : {
-					"position" : [tar[0], -len, tar[2] + 0.001]
+					"position" : [tar[0], -len, tar[2] + 0.001],
+					"rendersize" : [rw, rh]
 				}
 			});
 		} else if (ev.target === this.refs.plusZ) {
 			this.action.changeNodeInput({
 				varname : varname,
 				input : {
-					"position" : [tar[0], tar[1], -len]
+					"position" : [tar[0], tar[1], -len],
+					"rendersize" : [rw, rh]
 				}
 			});
 		} else if (ev.target === this.refs.minusZ) {
 			this.action.changeNodeInput({
 				varname : varname,
 				input : {
-					"position" : [tar[0], tar[1], len]
+					"position" : [tar[0], tar[1], len],
+					"rendersize" : [rw, rh]
 				}
 			});
 		}
