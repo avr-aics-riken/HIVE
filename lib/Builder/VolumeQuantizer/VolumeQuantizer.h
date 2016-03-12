@@ -15,7 +15,7 @@ class VolumeQuantizer : public RefCount
 private:
     RefPtr<BufferVolumeData> m_volume;
     
-    std::vector<std::pair<double, double> > m_minmax;
+    std::vector<std::pair<float, float> > m_minmax;
     int m_quantizeSize;
     
 public:
@@ -24,6 +24,7 @@ public:
     BufferVolumeData*  VolumeData();
 
     bool QuantizeSize(int qsize);
+    const std::vector<std::pair<float, float> >& GetMinMax();
 };
 
 #endif //_VOLUMEQUANTIZER_H_

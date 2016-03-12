@@ -24,11 +24,25 @@ public:
         RefPtr<BufferVolumeData> data = VolumeQuantizer::VolumeData();
         return BufferVolumeData_Lua::CreateInstance(data);
     }
+    
+    LuaTable GetMinMax() {
+        const std::vector<std::pair<float, float> >& minmax = VolumeQuantizer::GetMinMax();
+        LuaTable t;
+        LuaTable mm;
+        for (size_t i = 0; i < minmax.size(); ++i) {
+            mm.map("min", minmax[i].first);
+            mm.map("max", minmax[i].second);
+            t.push(mm);
+        }
+        return t;
+    }
+
 
     LUA_SCRIPTCLASS_BEGIN(VolumeQuantizer_Lua)
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("VolumeQuantizer",int,Create,BufferVolumeData_Lua*);
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*, VolumeData)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, QuantizeSize, int)
+    LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetMinMax)
     LUA_SCRIPTCLASS_END()
 
 };
