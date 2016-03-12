@@ -81,7 +81,7 @@ function ParallelCoordinate:Do()
         "datatype": "]] .. datatype .. [[",
         "varname": "]] .. self.varname .. [[",
         "mode": "]] .. mode ..  [[",
-        "quantsize": "]] .. qsize ..[[",
+        "quantsize": "]] .. qsize ..[["
         },
         "id":0
     }]]

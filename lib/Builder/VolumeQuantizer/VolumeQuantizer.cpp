@@ -64,7 +64,7 @@ int VolumeQuantizer::Create(BufferVolumeData *volume) {
                     float emin = m_minmax[e].first, emax = m_minmax[e].second;
                     const float v = vol->GetBuffer()[c * (x + y * w + z * w * h) + e];
                     const int q = static_cast<int>((v - emin) / (emax - emin) * qsize);
-                    eq |= q << (c * 8); // 32bit x4
+                    eq |= q << (e * 8); // 32bit x4
                     fb[x + y * w/2 + z * w/2 * h/2] = *reinterpret_cast<float*>(&eq);
                 }
             }
