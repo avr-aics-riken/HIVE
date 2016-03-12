@@ -16,9 +16,12 @@ function ParallelCoordinate:Do()
     if vol == nil and img == nil then
         return false
     end
+    local mode = 'raw'
+    local qsize = 1
 
---[[    
+--[[
     local volquant = require('VolumeQuantizer')()
+    self.volquant = volquant
     volquant:Create(vol)
     local minmax = volquant:GetMinMax()
     for i,v in pairs(minmax) do
@@ -27,6 +30,9 @@ function ParallelCoordinate:Do()
         end
     end
     vol = volquant:VolumeData()
+    mode = 'pack'
+    qsize = 8
+    self.vol = vol    
 --]]
     
     local w
@@ -73,7 +79,9 @@ function ParallelCoordinate:Do()
         "depth" : "]] .. d .. [[",
         "component" : "]] .. c .. [[",
         "datatype": "]] .. datatype .. [[",
-        "varname": "]] .. self.varname .. [["
+        "varname": "]] .. self.varname .. [[",
+        "mode": "]] .. mode ..  [[",
+        "quantsize": "]] .. qsize ..[[",
         },
         "id":0
     }]]
@@ -81,7 +89,8 @@ function ParallelCoordinate:Do()
     print('imagebuffer=', imageBuffer)
     local imageBufferSize = w * h * d * datasize * c
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-    network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+    self.bbuffer = HIVE_metabin:BinaryBuffer()
+    network:SendBinary(self.bbuffer, HIVE_metabin:BinaryBufferSize())
     print('send!!!!!!!!!!!', imageBufferSize, self.varname);
     return true
 end

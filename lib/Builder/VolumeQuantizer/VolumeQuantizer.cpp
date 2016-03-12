@@ -12,7 +12,7 @@
 /// コンストラクタ
 VolumeQuantizer::VolumeQuantizer(){
     m_volume      = BufferVolumeData::CreateInstance();
-    m_quantizeSize = 1024;
+    m_quantizeSize = 255;
 }
 
 bool VolumeQuantizer::QuantizeSize(int qsize) {
@@ -52,18 +52,20 @@ int VolumeQuantizer::Create(BufferVolumeData *volume) {
         printf("[%d] min=%f, max=%f\n", e, emin, emax);
     }
     
-    m_volume->Create(qsize, 1, 1, c);
+    m_volume->Create(w/2, h/2, d/2, 1);// 32bit
     float* fb = m_volume->Buffer()->GetBuffer();
     memset(fb, 0, qsize * c * sizeof(float));
     
-    for (int e = 0; e < c; ++e) {
-        double emin = 1e+39, emax = -1e+39;
-        for (int z = 0; z < d; ++z) {
-            for (int y = 0; y < h; ++y) {
-                for (int x = 0; x < w; ++x) {
+    for (int z = 0; z < d/2; ++z) {
+        for (int y = 0; y < h/2; ++y) {
+            for (int x = 0; x < w/2; ++x) {
+                unsigned int eq = 0;
+                for (int e = 0; e < c; ++e) {
+                    float emin = m_minmax[e].first, emax = m_minmax[e].second;
                     const float v = vol->GetBuffer()[c * (x + y * w + z * w * h) + e];
                     const int q = static_cast<int>((v - emin) / (emax - emin) * qsize);
-                    fb[c * q + e] += 1.0;
+                    eq |= q << (c * 8); // 32bit x4
+                    fb[x + y * w/2 + z * w/2 * h/2] = *reinterpret_cast<float*>(&eq);
                 }
             }
         }
