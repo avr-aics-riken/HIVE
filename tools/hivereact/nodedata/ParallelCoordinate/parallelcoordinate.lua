@@ -19,7 +19,6 @@ function ParallelCoordinate:Do()
     local mode = 'raw'
     local qsize = 1
 
---[[
     local volquant = require('VolumeQuantizer')()
     self.volquant = volquant
     volquant:Create(vol)
@@ -33,7 +32,6 @@ function ParallelCoordinate:Do()
     mode = 'pack'
     qsize = 8
     self.vol = vol    
---]]
 
     local w
     local h
