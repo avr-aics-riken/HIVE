@@ -481,63 +481,71 @@ class RenderView extends React.Component {
 		}
 	}
 
+	canvasSize() {
+		if (this.refs.canvas_wrap) {
+			let rect = this.refs.canvas_wrap.getBoundingClientRect();
+			let width = rect.right - rect.left;
+			let height = rect.bottom - rect.top;
+			return [width, height];
+		}
+		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[0], minHeight)];
+	}
+
     content() {
 		const styles = this.styles();
-		if (this.hasIPCAddress()) {
-		} else {
-        }
         return (<div style={styles.bounds}>
-				<canvas id={this.getCanvasName('canvas')} style={styles.canvas}
-					width={this.props.node.panel.size[0]}
-					height={this.props.node.panel.size[1] - footerHeight} ></canvas>
-				<img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+					<div ref="canvas_wrap">
+						<canvas id={this.getCanvasName('canvas')} style={styles.canvas}
+							width={this.canvasSize.bind(this)()[0]}
+							height={this.canvasSize.bind(this)()[1]} ></canvas>
+					</div>
+					<img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
 
-				<div style={styles.cameraButtonArea}>
-					<div ref="reset"  style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						Reset
+					<div style={styles.cameraButtonArea}>
+						<div ref="reset"  style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							Reset
+						</div>
+						<div ref="plusX"  style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							+X
+						</div>
+						<div ref="minusX" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							-X
+						</div>
+						<div ref="plusY"  style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							+Y
+						</div>
+						<div ref="minusY" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							-Y
+						</div>
+						<div ref="plusZ" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							+Z
+						</div>
+						<div ref="minusZ" style={styles.cameraButton}
+							onClick={this.onClickCameraButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							-Z
+						</div>
 					</div>
-					<div ref="plusX"  style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						+X
-					</div>
-					<div ref="minusX" style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						-X
-					</div>
-					<div ref="plusY"  style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						+Y
-					</div>
-					<div ref="minusY" style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						-Y
-					</div>
-					<div ref="plusZ" style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						+Z
-					</div>
-					<div ref="minusZ" style={styles.cameraButton}
-						onClick={this.onClickCameraButton}
-						onMouseEnter={this.onEnterCameraButton}
-						onMouseLeave={this.onLeaveCameraButton}>
-						-Z
-					</div>
-				</div>
-			</div>);
-
+				</div>);
 	}
 
     getCanvasName(prefix) {
