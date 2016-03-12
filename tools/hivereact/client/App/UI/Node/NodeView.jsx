@@ -167,7 +167,7 @@ export default class NodeView extends React.Component {
 				let width = rect.right - rect.left;
 				let height = rect.bottom - rect.top;
 				let n = JSON.parse(JSON.stringify(data.node));
-				n.pos = [this.refs.viewport.scrollLeft + width / 2 - 200, this.refs.viewport.scrollTop + height / 2 - 200];
+				n.pos = [-this.state.offset[0] + width / 2 - 200, -this.state.offset[1] + height / 2 - 200];
 				if (n.pos[0] <= 0) { n.pos[0] = 200; }
 				if (n.pos[1] <= 0) { n.pos[1] = 200; }
 				if (n.pos[0] >= 4000) { n.pos[0] = 3800; }
@@ -200,8 +200,8 @@ export default class NodeView extends React.Component {
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
 
-		//this.refs.viewport.scrollTop = 1700;
-		//this.refs.viewport.scrollLeft = 1700;
+		//-this.state.offset[1] = 1700;
+		//-this.state.offset[0] = 1700;
 
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
@@ -269,8 +269,8 @@ export default class NodeView extends React.Component {
 			for (let i = 0; i < copyNodes.length; i = i + 1) {
 				let node = copyNodes[i];
 				if (i === 0) {
-					diffPos[0] = this.refs.viewport.scrollLeft + this.pos.x - node.node.pos[0];
-					diffPos[1] = this.refs.viewport.scrollTop + this.pos.y - node.node.pos[1];
+					diffPos[0] = -this.state.offset[0] + this.pos.x - node.node.pos[0];
+					diffPos[1] = -this.state.offset[1] + this.pos.y - node.node.pos[1];
 				}
 				copyNodes[i].node.pos[0] += diffPos[0];
 				copyNodes[i].node.pos[1] += diffPos[1];
@@ -290,8 +290,8 @@ export default class NodeView extends React.Component {
 	origin() {
 		if (this.refs.viewport) {
 			let rect = this.refs.viewport.getBoundingClientRect();
-			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
-			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
+			let x = (rect.right - rect.left) / 2.0;
+			let y = (rect.bottom - rect.top) / 2.0;
 			return String(x) + "px " + String(y) + "px";
 		} else {
 			return "0px 0px";
