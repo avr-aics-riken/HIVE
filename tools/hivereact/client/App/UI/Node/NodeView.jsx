@@ -16,7 +16,8 @@ export default class NodeView extends React.Component {
 			nodes : this.props.store.getNodes(),
 			zoom : this.props.nodeStore.getZoom(),
 			globalOutHover : false,
-			globalInHover : false
+			globalInHover : false,
+			offset : [-1700, -1700] //px
 		};
 
 		this.isLeftDown = false;
@@ -85,12 +86,11 @@ export default class NodeView extends React.Component {
 		const px = ev.clientX - this.rect.left;
 		const py = ev.clientY - this.rect.top;
 		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
-            const dx = (px - this.pos.x);
-            const dy = (py - this.pos.y);
-			if (this.refs.viewport) {
-				this.refs.viewport.scrollLeft = this.refs.viewport.scrollLeft - dx;
-				this.refs.viewport.scrollTop = this.refs.viewport.scrollTop - dy;
-			}
+            const dx = (px - this.pos.x) / this.state.zoom;
+            const dy = (py - this.pos.y) / this.state.zoom;
+			this.setState({
+				offset : [this.state.offset[0] + dx, this.state.offset[1] + dy]
+			});
 		} else if (this.isRightDown) {
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
@@ -200,8 +200,8 @@ export default class NodeView extends React.Component {
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
 
-		this.refs.viewport.scrollTop = 1700;
-		this.refs.viewport.scrollLeft = 1700;
+		//this.refs.viewport.scrollTop = 1700;
+		//this.refs.viewport.scrollLeft = 1700;
 
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
@@ -296,6 +296,12 @@ export default class NodeView extends React.Component {
 		} else {
 			return "0px 0px";
 		}
+	}
+
+	transform() {
+		let scale = "scale(" + this.state.zoom + ")";
+		let translate = "translate(" + String(this.state.offset[0]) + "px," + String(this.state.offset[1]) + "px)";
+		return scale + " " + translate;
 	}
 
 	nodeList() {
@@ -441,8 +447,7 @@ export default class NodeView extends React.Component {
 						style={{
 							position : "absolute",
 							width:"100%",
-							height:"100%",
-							overflow:"auto"
+							height:"100%"
 						}}
 						ref="viewport"
 						onWheel={this.onWheel.bind(this)}
@@ -452,7 +457,7 @@ export default class NodeView extends React.Component {
 								position : "absolute",
 								width:"4000px",
 								height:"4000px",
-								transform : "scale(" + this.state.zoom + ")",
+								transform : this.transform.bind(this)(),
 								transformOrigin : this.origin.bind(this)(),
 								border : "10px solid",
 								borderColor : "gray"
