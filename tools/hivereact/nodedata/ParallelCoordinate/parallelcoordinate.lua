@@ -16,7 +16,8 @@ function ParallelCoordinate:Do()
     if vol == nil and img == nil then
         return false
     end
-    
+
+--[[    
     local volquant = require('VolumeQuantizer')()
     volquant:Create(vol)
     local minmax = volquant:GetMinMax()
@@ -26,6 +27,7 @@ function ParallelCoordinate:Do()
         end
     end
     vol = volquant:VolumeData()
+--]]
     
     local w
     local h
