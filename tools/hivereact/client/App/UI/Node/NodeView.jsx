@@ -200,9 +200,6 @@ export default class NodeView extends React.Component {
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
 
-		//-this.state.offset[1] = 1700;
-		//-this.state.offset[0] = 1700;
-
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
