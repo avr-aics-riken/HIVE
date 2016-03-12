@@ -185,6 +185,9 @@ export default class Store extends EventEmitter {
 						nodeRef : outNode
 					}
 				};
+				if (!plugPosition.input.pos || !plugPosition.output.pos) {
+					console.error(inNode, outNode, plugPosition);
+				}
 				//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
 				this.plugPosList.push(plugPosition);
 			}

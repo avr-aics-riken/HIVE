@@ -223,7 +223,7 @@ export default class ActionExecuter {
 
 		// input, outputの削除.
 		let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
-		for (let i = tempPath.length - 1; i >= 0; i = i - 1) {
+		for (let i = tempPath.length; i >= 0; i = i - 1) {
 			let inputs = this.store.getInput(tempPath);
 			for (let k = inputs.length - 1; k >= 0; k = k - 1) {
 				if (inputs[k].nodeVarname === node.varname) {
@@ -236,7 +236,9 @@ export default class ActionExecuter {
 					outputs.splice(k, 1);
 				}
 			}
-			tempPath.splice(i, 1);
+			if (i > 0) {
+				tempPath.splice(i - 1, 1);
+			}
 		}
 
 		// 関連するプラグを全部消す
@@ -713,6 +715,7 @@ export default class ActionExecuter {
 
 		console.log("nodeList", nodeList)
 
+		// ノードリストから外部に出ているプラグを取得.
 		let inplugs = this.getGroupInoutFromNodes(nodeList, true);
 		let outplugs = this.getGroupInoutFromNodes(nodeList, false);
 		let inputs = [];
@@ -723,7 +726,15 @@ export default class ActionExecuter {
 				let plug = inplugs[k];
 				if (n.varname === plug.input.nodeVarname) {
 					for (let j = 0; j < n.input.length; j = j + 1) {
-						if (n.input[j].name === plug.input.name) {
+						let ar = n.input[j].array;
+						if (Array.isArray(ar)) {
+							for (let m = 0; m < ar.length; m = m + 1) {
+								if (ar[m].name === plug.input.name) {
+									inputs.push(ar[m]);
+								}
+							}
+						}
+						else if (n.input[j].name === plug.input.name) {
 							inputs.push(n.input[j]);
 						}
 					}
@@ -807,7 +818,9 @@ export default class ActionExecuter {
 			// グループノードを削除.
 			for (let i = 0; i < nodes.length; i = i + 1) {
 				if (nodes[i].varname === groupVarname) {
+					let node = nodes[i];
 					nodes.splice(i, 1);
+					this.store.emit(Constants.NODE_DELETED, null, node);
 					break;
 				}
 			}
