@@ -17,6 +17,16 @@ function ParallelCoordinate:Do()
         return false
     end
     
+    local volquant = require('VolumeQuantizer')()
+    volquant:Create(vol)
+    local minmax = volquant:GetMinMax()
+    for i,v in pairs(minmax) do
+        for j,k in pairs(v) do    
+            print('VQ:MinMax', i,j,k)
+        end
+    end
+    vol = volquant:VolumeData()
+    
     local w
     local h
     local d = 1
