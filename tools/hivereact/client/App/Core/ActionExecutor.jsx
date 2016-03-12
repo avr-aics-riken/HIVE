@@ -511,7 +511,28 @@ export default class ActionExecuter {
 
 					this.store.emit(Constants.NODE_CHANGED, null, dstNode, i);
 					if (hasInput && preInputs !== postInputs) {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
+						if (this.store.isGroup(dstNode)) {
+							// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
+							let pre = JSON.parse(preInputs);
+							let post = JSON.parse(postInputs);
+							for (let k = 0; k < pre.length; k = k + 1) {
+								if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
+									console.log(pre[k].nodeVarname);
+									let target = this.store.findNode(dstNode, pre[k].nodeVarname);
+									if (!target) {
+										console.error("not found input node")
+									}
+									for (let m = 0; m < target.input.length; m = m + 1) {
+										if (target.input[m].name === post[k].name) {
+											target.input[m].value = post[k].value;
+										}
+									}
+									this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
+								}
+							}
+						} else {
+							this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
+						}
 					}
 					if (hasSelect && preSelect !== postSelect) {
 						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, dstNode, i);
