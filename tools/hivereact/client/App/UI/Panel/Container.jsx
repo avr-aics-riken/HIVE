@@ -59,7 +59,11 @@ export default class Container extends React.Component {
         ev.stopPropagation();
         if(ev.button === 0){
             this.isLeftDown = true;
-            this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
+			if (this.props.zoom) {
+				this.mousePos = {x: ev.clientX  * this.props.zoom - this.state.node.panel.pos[0], y: ev.clientY  * this.props.zoom- this.state.node.panel.pos[1]};
+			} else {
+				this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
+			}
             this.offsetLeft = ev.currentTarget.offsetLeft;
             this.offsetTop = ev.currentTarget.offsetTop;
             this.forwardIndex(this.state.node);
@@ -76,10 +80,9 @@ export default class Container extends React.Component {
             let mv;
             let panel = JSON.parse(JSON.stringify(node.panel));
 			if (this.props.zoom) {
-			// todo
-			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
-	            panel.pos[0] = this.offsetLeft + mv.x;
-	            panel.pos[1] = this.offsetTop + mv.y;
+			 	mv = {x: ev.clientX * this.props.zoom - this.mousePos.x, y: ev.clientY  * this.props.zoom- this.mousePos.y};
+				panel.pos[0] = mv.x;
+				panel.pos[1] = mv.y;
 			} else {
 			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
 	            panel.pos[0] = this.offsetLeft + mv.x;
@@ -252,8 +255,8 @@ export default class Container extends React.Component {
             res = <CustomUI node={node}/>
         }*/
         return (
-            <div style={styles.container}>
-                <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
+            <div style={styles.container}  onMouseDown={this.onMouseDown.bind(this)}>
+                <div style={styles.panelTitleBar}>
                     {this.state.node.name}
                     <div
                         style={styles.panelCloseButton}

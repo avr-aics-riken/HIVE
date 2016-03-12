@@ -336,10 +336,6 @@ export default class NodeView extends React.Component {
 		}
 	}
 
-	onGlobalInMouseUp(ev) {
-
-	}
-
 	onGlobalOutEnter(ev) {
 		if (ev.button === 1 || ev.button === 2) { return; }
 		this.setState({ globalOutHover : true });
