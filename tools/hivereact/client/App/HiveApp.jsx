@@ -220,13 +220,15 @@ export default class HiveApp extends React.Component {
 
     setHoverPosition(){
         let el, pos, x, y, w, h;
-        el = ReactDOM.findDOMNode(this.refs.hoverTarget);
-        pos = el.getBoundingClientRect();
-        w = el.clientWidth;
-        h = el.clientHeight;
-        x = w / 2 + pos.left - 100;
-        y = h / 2 + pos.top - 150;
-        this.setState({listPos: [x, y]});
+		if (this.hoverTarget ) {
+	        el = this.hoverTarget;
+	        pos = el.getBoundingClientRect();
+	        w = el.clientWidth;
+	        h = el.clientHeight;
+	        x = w / 2 + pos.left - 100;
+	        y = h / 2 + pos.top - 150;
+	        this.setState({listPos: [x, y]});
+		}
     }
 
     hoverGenerator(){
