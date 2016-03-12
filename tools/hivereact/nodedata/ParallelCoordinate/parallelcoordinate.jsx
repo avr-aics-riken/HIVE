@@ -91,27 +91,46 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        var a, buffer;
+        var a, buffer, component, parse;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
-        if(param.datatype === 'byte'){
+        if(param.mode === 'pack'){
             a = new Uint8Array(data);
-        }else if(param.datatype === 'float'){
-            a = new Float32Array(data);
-        }
-        let component = parseInt(param.component, 10);
-        if(isNaN(component) || component === null || component === undefined || component < 2){
-            console.log('parse error: invalid component count');
-            return;
-        }
-        let parse = [];
-        for(let i = 0, j = a.length / component; i < j; ++i){
-            let k = i * component;
-            let t = [];
-            for(let l = 0; l < component; ++l){
-                t.push(a[k + l]);
+            component = parseInt(param.component, 10);
+            // if(isNaN(component) || component === null || component === undefined || component < 2){
+            if(isNaN(component) || component === null || component === undefined){
+                console.log('parse error: invalid component count');
+                return;
             }
-            parse.push(t);
+            parse = [];
+            for(let i = 0, j = a.length / 4; i < j; ++i){
+                let k = i * 4;
+                let t = [];
+                for(let l = 0; l < 4; ++l){
+                    t.push(a[k + l]);
+                }
+                parse.push(t);
+            }
+        }else{
+            if(param.datatype === 'byte'){
+                a = new Uint8Array(data);
+            }else if(param.datatype === 'float'){
+                a = new Float32Array(data);
+            }
+            component = parseInt(param.component, 10);
+            if(isNaN(component) || component === null || component === undefined || component < 2){
+                console.log('parse error: invalid component count');
+                return;
+            }
+            parse = [];
+            for(let i = 0, j = a.length / component; i < j; ++i){
+                let k = i * component;
+                let t = [];
+                for(let l = 0; l < component; ++l){
+                    t.push(a[k + l]);
+                }
+                parse.push(t);
+            }
         }
         this.setState({
             parse: parse,
