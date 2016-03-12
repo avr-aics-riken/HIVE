@@ -60,6 +60,11 @@ export default class Hive extends EventEmitter {
 		this.conn.method('updateInfo', (function (core, infoCallback) {
 			console.log('updateInfo');
 		}));
+        
+        this.conn.method('analyzedInfo', (data) => {
+			//console.log('analyzedInfo', data);
+            this.emit(Hive.ANALYZED_DATA_RECIEVED, data);            
+		});
 
         this.conn.method('rendererLog', (data) => {
 		    //console.log('processlog>', data);
@@ -143,3 +148,4 @@ export default class Hive extends EventEmitter {
 Hive.NODE_CHANGED = "core_node_changed";
 Hive.IMAGE_RECIEVED = "core_image_revieved";
 Hive.RENDERER_LOG_RECIEVED = "renderer_log_recieved";
+Hive.ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";

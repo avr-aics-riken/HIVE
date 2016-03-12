@@ -17,9 +17,22 @@ function VolumeObject:Do()
     local pm = VolumeModel(); -- make new Model!
     self.pmodel = pm           -- replace
     
+    local minval = 0.0
+    local maxval = 1.0
     if v.volume then
-	   pm:Create(v.volume)
-    end
+	    pm:Create(v.volume)
+        
+        -- Analyze min/max
+        local analyzer = require('Analyzer').VolumeAnalyzer()
+        analyzer:Execute(v.volume)
+        minval = analyzer:MinX()
+        maxval = analyzer:MaxX()
+        print('analyzer: min=', minval, ' max=', maxval)
+    end    
+    
+    pm:SetFloat('volumemin', minval)
+    pm:SetFloat('volumemax', maxval)
+    
 	pm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])

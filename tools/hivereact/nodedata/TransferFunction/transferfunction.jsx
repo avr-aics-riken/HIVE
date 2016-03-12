@@ -5,6 +5,7 @@ class TransferFunction extends React.Component {
     constructor(props) {
         super(props);
 
+        this.store = props.store;
         this.action  = props.action;
         this.node = props.node;
         
@@ -64,6 +65,7 @@ class TransferFunction extends React.Component {
         };
 
         // methods
+        this.onRecieveAnalyzed   = this.onRecieveAnalyzed.bind(this);        
         this.onSelectChange      = this.onSelectChange.bind(this);
         this.redbtnClick         = this.redbtnClick.bind(this);
         this.greenbtnClick       = this.greenbtnClick.bind(this);
@@ -74,6 +76,7 @@ class TransferFunction extends React.Component {
         this.minInputChange      = this.minInputChange.bind(this);
         this.maxInputChange      = this.maxInputChange.bind(this);
         this.componentDidMount   = this.componentDidMount.bind(this);
+        this.componentWillUnmount= this.componentWillUnmount.bind(this);        
         this.transFunc           = this.transFunc.bind(this);
         this.invTransFunc        = this.invTransFunc.bind(this);
         this.init                = this.init.bind(this);
@@ -112,7 +115,12 @@ class TransferFunction extends React.Component {
             });
         }
      }
-    onSelectChange(eve){
+     onRecieveAnalyzed(data) {
+        //console.error(data);
+        var result = {defaultValMin: data.minval, defaultValMax: data.maxval};
+        this.setAnalyzeResult(result);
+     }
+     onSelectChange(eve){
         var e = eve.target.value;
         var t = parseInt(e);
         this.setState({selValue: t});
@@ -213,6 +221,13 @@ class TransferFunction extends React.Component {
             this.mspress = false;
             document.removeEventListener('mousemove', this.mouseMoveFunc);
         }).bind(this), true);
+    
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";    
+        this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+    }
+    componentWillUnmount() {
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);        
     }
     transFunc(x){return Math.sqrt(x);}
     invTransFunc(x){return x*x;}
@@ -407,13 +422,32 @@ class TransferFunction extends React.Component {
     getNumValues(){
         return this.numVals;
     }
-    setAnalyzeResult(result, component){
+    setAnalyzeResult(result) {
+        if (result) {
+            if (result.histgram) {
+                hist = result.histgram;
+                for (i = 0; i < this.numVals; ++i) {
+                    this.hist[i] = hist[i * componentNum + component];
+                }
+            }
+            this.defaultValMin = result.defaultValMin;
+            this.defaultValMax = result.defaultValMax;
+            this.setState({
+                valMin: result.defaultValMin,
+                valMax: result.defaultValMax
+            });
+        }
+        
+    }
+    /*setAnalyzeResult(result, component){
         var i, hist, componentNum;
         if (result && result.histgram) {
             componentNum = (result.type === "vector" ? 3 : 1);
-            hist = result.histgram;
-            for (i = 0; i < this.numVals; ++i) {
-                this.hist[i] = hist[i * componentNum + component];
+            if (result.histgram) {
+                hist = result.histgram;
+                for (i = 0; i < this.numVals; ++i) {
+                    this.hist[i] = hist[i * componentNum + component];
+                }
             }
 
             this.defaultValMin = result.defaultValMin;
@@ -423,7 +457,7 @@ class TransferFunction extends React.Component {
                 valMax: result.max[component]
             });
         }
-    }
+    }*/
 
     styles(){
         return {
