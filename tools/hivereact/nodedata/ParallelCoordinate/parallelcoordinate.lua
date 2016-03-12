@@ -17,7 +17,7 @@ function ParallelCoordinate:Do()
         return false
     end
 
---[[    
+--[[
     local volquant = require('VolumeQuantizer')()
     volquant:Create(vol)
     local minmax = volquant:GetMinMax()
@@ -28,7 +28,7 @@ function ParallelCoordinate:Do()
     end
     vol = volquant:VolumeData()
 --]]
-    
+
     local w
     local h
     local d = 1
