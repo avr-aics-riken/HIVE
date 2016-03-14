@@ -39,8 +39,25 @@ export default class NodeView extends React.Component {
 		this.onDelete = this.onDelete.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 
+		this.moveNode = this.moveNode.bind(this);
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
 		this.connectToGlobalIn = this.connectToGlobalIn.bind(this);
+	}
+
+	moveNode(err, data) {
+		let nodes = this.props.store.getSelectedNodeList();
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
+			let invzoom = 1.0 / this.props.nodeStore.getZoom();
+			let n = JSON.parse(JSON.stringify(nodes[i].node));
+			let component = this.refs[nodes[i].varname];
+			n.pos = [component.offsetLeft + data.x * invzoom, component.offsetTop + data.y * invzoom];
+
+			this.props.action.changeNode({
+				varname : nodes[i].varname,
+				node : n
+			});
+		}
 	}
 
 	styles(id) {
@@ -198,6 +215,7 @@ export default class NodeView extends React.Component {
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
 
+		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
@@ -208,6 +226,7 @@ export default class NodeView extends React.Component {
 
     componentWillUnmount(){
 		window.removeEventListener('mouseup', this.onMouseUp);
+		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
 		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.off(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
@@ -215,7 +234,7 @@ export default class NodeView extends React.Component {
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
     }
-	
+
 	// メニューまたはショートカットで削除が呼ばれた
 	onDelete(err) {
 		if (!err) {
@@ -285,8 +304,10 @@ export default class NodeView extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						key={nodeData.varname + key}
-						id={nodeData.varname + key}
+						id={nodeData.varname}
+						ref={nodeData.varname}
 						isSimple={isSimple}
+						moveNode={this.moveNode}
 					></Node>);
 		} ));
 		return nodeList;
