@@ -13,7 +13,7 @@ export default class Container extends React.Component {
         this.state = {
             node: this.props.node,
             closeHover: false,
-			containerHover : false
+			containerHover : null // or zindex
         };
         this.isLeftDown = false;
         this.isScaleLeftDown = false;
@@ -65,6 +65,7 @@ export default class Container extends React.Component {
 			} else {
 				this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
 			}
+			this.selectNode(this.state.node);
             this.forwardIndex(this.state.node);
         }
     }
@@ -102,6 +103,7 @@ export default class Container extends React.Component {
             this.scalePos = {x: ev.clientX, y: ev.clientY};
             this.offsetScaleLeft = Math.max(ev.currentTarget.offsetLeft + ev.currentTarget.offsetWidth, 100);
             this.offsetScaleTop  = Math.max(ev.currentTarget.offsetTop + ev.currentTarget.offsetHeight, 100);
+			this.selectNode(this.state.node);
             this.forwardIndex(this.state.node);
         }
     }
@@ -139,40 +141,53 @@ export default class Container extends React.Component {
     }
 
 	onContainerEnter(ev) {
-		this.setState({ containerHover : true });
+		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		panel.zindex = 10000;
+		this.action.changeNode({
+			varname : this.state.node.varname,
+			panel : panel
+		});
+		this.setState({ containerHover : preZIndex });
 	}
 
 	onContainerLeave(ev) {
-		this.setState({ containerHover : false });
+		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		panel.zindex = this.state.containerHover;
+		this.action.changeNode({
+			varname : this.state.node.varname,
+			panel : panel
+		});
+		this.setState({ containerHover : null });
+	}
+
+	selectNode(target) {
+		this.action.unSelectNode([]);
+		let nodes = this.store.getNodes();
+		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		panel.zindex = nodes.length;
+		this.action.changeNode({
+			varname : target.varname,
+			select : true,
+			panel : panel
+		});
 	}
 
     // index を最前面に持ってくる
     // target === ターゲットノード
-    forwardIndex(target){
-        let nodes = this.store.getNodes();
-        let len = nodes.length;
-        let targetIndex = target.panel.zindex;
-        let varnamelist = [];
-        let unvarnamelist = [];
-        for(let i in nodes){
-            if(nodes[i].varname === target.varname){
-                nodes[i].panel.zindex = len;
-                nodes[i].select = true;
-            }else{
-                if(nodes[i].panel.zindex > targetIndex){
-                    --nodes[i].panel.zindex;
-                }
-                nodes[i].select = false;
-            }
-            this.action.changeNode(nodes[i]);
-            if(nodes[i].select){
-                varnamelist.push(nodes[i].varname);
-            }else{
-                unvarnamelist.push(nodes[i].varname);
-            }
-        }
-        this.action.unSelectNode([], varnamelist);
-        this.action.selectNode(varnamelist);
+    forwardIndex(target) {
+		let nodes = this.store.getNodes();
+		let targetIndex = target.panel.zindex;
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			let node = nodes[i];
+			if (node.varname !== target.varname && node.panel.zindex >= targetIndex){
+				let panel = JSON.parse(JSON.stringify(node.panel));
+				panel.zindex = targetIndex - 1;
+				this.action.changeNode({
+					varname : node.varname,
+					panel : panel
+				});
+			}
+		}
     }
 
     styles() {
