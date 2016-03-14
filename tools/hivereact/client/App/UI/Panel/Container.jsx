@@ -64,8 +64,6 @@ export default class Container extends React.Component {
 			} else {
 				this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
 			}
-            this.offsetLeft = ev.currentTarget.offsetLeft;
-            this.offsetTop = ev.currentTarget.offsetTop;
             this.forwardIndex(this.state.node);
         }
     }
@@ -85,8 +83,8 @@ export default class Container extends React.Component {
 				panel.pos[1] = mv.y;
 			} else {
 			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
-	            panel.pos[0] = this.offsetLeft + mv.x;
-	            panel.pos[1] = this.offsetTop + mv.y;
+	            panel.pos[0] = mv.x;
+	            panel.pos[1] = mv.y;
 			}
             this.action.changeNode({
                 varname : node.varname,
