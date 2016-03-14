@@ -216,7 +216,7 @@ export default class ActionExecuter {
 		if (this.store.isGroup(node)) {
 			let nodeList = [];
 			this.getChildNodes(nodeList, node);
-			for (let i = 0; i < nodeList.length; i = i + 1) {
+			for (let i = nodeList.length - 1; i >= 0; i = i - 1) {
 				this.deleteNodeRelatedValues(nodeList[i]);
 			}
 		}
