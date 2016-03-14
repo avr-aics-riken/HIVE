@@ -142,6 +142,7 @@ export default class Container extends React.Component {
 
 	onContainerEnter(ev) {
 		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		let preZIndex = panel.zindex;
 		panel.zindex = 10000;
 		this.action.changeNode({
 			varname : this.state.node.varname,
