@@ -114,8 +114,8 @@ export default class NodeView extends React.Component {
             zoom = zoom + mv;
             if (zoom <= 0.1) {
                 zoom = 0.1;
-            } else if (zoom >= 2.0) {
-                zoom = 2.0;
+            } else if (zoom >= 1.0) {
+                zoom = 1.0;
             }
             this.props.nodeAction.changeZoom(zoom);
 		}

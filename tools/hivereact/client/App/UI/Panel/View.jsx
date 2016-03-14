@@ -21,6 +21,7 @@ export default class View extends React.Component {
 		this.isMiddleDown = false;
 		this.isLeftDown = false;
 		this.isRightDown = false;
+		this.preZoom = 1.0;
 
         this.onMouseDown = this.onMouseDown.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
@@ -73,12 +74,13 @@ export default class View extends React.Component {
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
             const mv = (dx + dy) * 0.005;
+			let preZoom = this.state.zoom;
 			let zoom = this.state.zoom;
             zoom = zoom + mv;
             if (zoom <= 0.1) {
                 zoom = 0.1;
-            } else if (zoom >= 2.0) {
-                zoom = 2.0;
+            } else if (zoom >= 1.0) {
+                zoom = 1.0;
             }
 			this.setState({
 				zoom : zoom
@@ -140,6 +142,7 @@ export default class View extends React.Component {
                 node={node}
                 key={node.varname + key}
 				zoom={1.0 / this.state.zoom}
+				preZoom={1.0 / this.preZoom}
             />
         );
     }
