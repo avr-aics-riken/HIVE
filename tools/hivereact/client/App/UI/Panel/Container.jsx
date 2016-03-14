@@ -12,7 +12,8 @@ export default class Container extends React.Component {
 		n.uiComponent = eval(this.props.node.uiFunc);
         this.state = {
             node: this.props.node,
-            closeHover: false
+            closeHover: false,
+			containerHover : false
         };
         this.isLeftDown = false;
         this.isScaleLeftDown = false;
@@ -137,6 +138,14 @@ export default class Container extends React.Component {
         this.setState({ closeHover : !this.state.closeHover });
     }
 
+	onContainerEnter(ev) {
+		this.setState({ containerHover : true });
+	}
+
+	onContainerLeave(ev) {
+		this.setState({ containerHover : false });
+	}
+
     // index を最前面に持ってくる
     // target === ターゲットノード
     forwardIndex(target){
@@ -181,7 +190,8 @@ export default class Container extends React.Component {
                 top:  this.state.node.panel.pos[1] + "px",
                 left: this.state.node.panel.pos[0] + "px",
                 zIndex: this.state.node.panel.zindex,
-                display: this.state.node.panel.visible ? "block" : "none"
+                display: this.state.node.panel.visible ? "block" : "none",
+				transform : (this.state.containerHover && this.props.zoom) ? "scale(" + this.props.zoom + ")": ""
             },
             panelTitleBar: {
                 fontSize: "12pt",
@@ -253,7 +263,10 @@ export default class Container extends React.Component {
             res = <CustomUI node={node}/>
         }*/
         return (
-            <div style={styles.container}  onMouseDown={this.onMouseDown}>
+            <div style={styles.container}  onMouseDown={this.onMouseDown}
+				onMouseEnter={this.onContainerEnter.bind(this)}
+				onMouseLeave={this.onContainerLeave.bind(this)}
+				>
                 <div style={styles.panelTitleBar}>
                     {this.state.node.name}
                     <div
