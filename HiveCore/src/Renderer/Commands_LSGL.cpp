@@ -549,8 +549,9 @@ namespace {
 
     void printShaderInfoLog(GLuint shader)
     {
+        static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
         int bufSize = 0;
-        glGetShaderiv(shader, GL_INFO_LOG_LENGTH , &bufSize);
+        sgl.glGetShaderiv(shader, GL_INFO_LOG_LENGTH , &bufSize);
         if (bufSize > 1) {
             char* infoLog;
             infoLog = new char[bufSize];
@@ -567,8 +568,9 @@ namespace {
 
     void printProgramInfoLog(GLuint program)
     {
+        static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
         int bufSize;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH , &bufSize);
+        sgl.glGetProgramiv(program, GL_INFO_LOG_LENGTH , &bufSize);
         if (bufSize > 1) {
             char *infoLog;
             infoLog = new char[bufSize];
