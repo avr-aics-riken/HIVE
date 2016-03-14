@@ -25,6 +25,7 @@ export default class NodePlugView extends React.Component {
 		this.onGroupOutputDisconnected = this.onGroupOutputDisconnected.bind(this);
 		this.onPlugHoleSelected = this.onPlugHoleSelected.bind(this);
 		this.onPlugHoleDisconnected = this.onPlugHoleDisconnected.bind(this);
+		this.onNodeCloseChanged = this.onNodeCloseChanged.bind(this);
 
 		this.temporaryPlug = this.temporaryPlug.bind(this);
 	}
