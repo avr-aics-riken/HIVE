@@ -408,7 +408,7 @@ export default class Store extends EventEmitter {
 	/// 入力端子にプラグが繋がっているかどうか返す
 	isConnected(nodeVarname, inputName) {
 		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
-			if (this.plugPosList[i].input.nodeVarname === nodeVarname) {
+			if (this.plugPosList[i].input.nodeRef.varname === nodeVarname) {
 				if (Array.isArray(this.plugPosList[i].input.array)) {
 					for (let k = 0; k < this.plugPosList[i].input.array.length; k = k + 1) {
 						if (this.plugPosList[i].input.array[k].name === inputName) {
