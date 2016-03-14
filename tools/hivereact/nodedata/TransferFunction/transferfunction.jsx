@@ -185,9 +185,9 @@ class TransferFunction extends React.Component {
         });
     }
     minInputChange(eve){
-        var e = eve.currentTarget;
         if (parseFloat(this.minInput.value) !== NaN) {
-            const vl = parseFloat(this.minInput.value);
+            const vl = this.minInput.value;
+            // const vl = parseFloat(this.minInput.value);
             const varname = this.node.varname;
             this.action.changeNodeInput({
                 varname : varname,
@@ -459,6 +459,7 @@ class TransferFunction extends React.Component {
                     valMin: min,
                     valMax: max
                 });
+                this.drawGraph();
             }
         }
     }
