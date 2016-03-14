@@ -16,15 +16,19 @@ export default class ItemView extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.label = this.label.bind(this);
+
 		if (this.props.initialNodeData.panel.hasOwnProperty('visible')) {
 			this.state = {
 				name : this.props.initialNodeData.name,
+				label : this.label(),
 				isShowPanel : this.props.initialNodeData.panel.visible,
 				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
 			};
 		} else {
 			this.state = {
 				name : this.props.initialNodeData.name,
+				label : this.label(),
 				isShowPanel : null,
 				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
 			};
@@ -33,6 +37,10 @@ export default class ItemView extends React.Component {
 		this.inputChanged = this.inputChanged.bind(this);
 		this.panelVisibleChanged = this.panelVisibleChanged.bind(this);
 		this.updateHandle = null;
+	}
+
+	label() {
+		return this.props.initialNodeData.label ? this.props.initialNodeData.label : this.props.initialNodeData.name;
 	}
 
 	styles() {
@@ -105,6 +113,18 @@ export default class ItemView extends React.Component {
 		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value);
 	}
 
+	changeLabelFunc(name, value) {
+		if (name === "label") {
+			this.props.action.changeNode({
+				varname : this.props.initialNodeData.varname,
+				label : value
+			});
+			this.refs.nameInput.setState({
+				value : this.label()
+			})
+		}
+	}
+
 	changeVecFunc(name, index, value) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
 		let inputs = this.state.input;
@@ -169,6 +189,17 @@ export default class ItemView extends React.Component {
 	contents() {
 		const styles = this.styles.bind(this)();
         this.topRowUsed = false;
+
+		let labelParam = {
+			nodeVarname : this.props.initialNodeData.varname,
+			name : "label",
+			value : this.state.label
+		};
+		let labelProp = (<ItemTextInput ref="nameInput"
+					varname={this.props.initialNodeData.varname}
+					store={this.props.store}
+					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc.bind(this)}/>);
+
 		let inputs = this.props.initialNodeData.input.map( ((hole, key) => {
             let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
             let topRow = this.state.isShowPanel === null && !this.topRowUsed && parseInt(key, 10) === 0;
@@ -220,12 +251,13 @@ export default class ItemView extends React.Component {
 				<ItemTitle
 					initialParam={{
 						name : "Node",
-						value : this.state.name
+						value : this.state.label
 					}}
 					key={String(this.props.id + "_title")}
 					id={String(this.props.id + "_title")} />
                 <div style={styles.propertyContainer}>
                     {this.panelCheckbox.bind(this)()}
+					{labelProp}
                     {inputs}
                 </div>
 			</div>
