@@ -21,8 +21,8 @@ VolumeAnalyzer::~VolumeAnalyzer()
 
 /// メンバクリア
 void VolumeAnalyzer::Clear() {
-    m_minVal[0] = m_minVal[1] = m_minVal[2] = 0.0;
-    m_maxVal[0] = m_maxVal[1] = m_maxVal[2] = 0.0;
+    m_minVal[0] = m_minVal[1] = m_minVal[2] = m_minVal[3] = 0.0;
+    m_maxVal[0] = m_maxVal[1] = m_maxVal[2] = m_maxVal[3] = 0.0;
 }
 
 /**
@@ -34,7 +34,7 @@ double VolumeAnalyzer::MinX() {
 }
 
 /**
- * 解析したボリュームデータX軸最小値
+ * 解析したボリュームデータY軸最小値
  * @return X軸最小値
  */
 double VolumeAnalyzer::MinY() {
@@ -42,11 +42,19 @@ double VolumeAnalyzer::MinY() {
 }
 
 /**
- * 解析したボリュームデータX軸最小値
+ * 解析したボリュームデータZ軸最小値
  * @return X軸最小値
  */
 double VolumeAnalyzer::MinZ() {
     return m_minVal[2];
+}
+
+/**
+ * 解析したボリュームデータW軸最小値
+ * @return X軸最小値
+ */
+double VolumeAnalyzer::MinW() {
+    return m_minVal[3];
 }
 
 /**
@@ -71,6 +79,14 @@ double VolumeAnalyzer::MaxY() {
  */
 double VolumeAnalyzer::MaxZ() {
     return m_maxVal[2];
+}
+
+/**
+ * 解析したボリュームデータZ軸最大値
+ * @return W軸最大値
+ */
+double VolumeAnalyzer::MaxW() {
+    return m_maxVal[3];
 }
 
 /**
@@ -151,8 +167,10 @@ bool VolumeAnalyzer::Execute(BufferVolumeData *volume)
         proc.AnalyzeScalar(m_volHist[0], m_minVal[0], m_maxVal[0], buffer, temp_num);
     } else if (volume->Component() == 3) {
         proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
+    } else if (volume->Component() == 4) {
+        proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
     } else {
-        fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
+        fprintf(stderr,"# of components in the volume cell must be 1, 3 or 4.\n");
     }
     return true;
 }

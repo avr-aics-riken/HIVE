@@ -15,9 +15,9 @@ class BufferVolumeData;
 class VolumeAnalyzer : public RefCount
 {
 private:
-    double m_minVal[3];
-    double m_maxVal[3];
-    std::vector<float> m_volHist[3];
+    double m_minVal[4];
+    double m_maxVal[4];
+    std::vector<float> m_volHist[4];
     void Clear();
 public:
     VolumeAnalyzer();
@@ -25,9 +25,11 @@ public:
     double MinX();
     double MinY();
     double MinZ();
+    double MinW();
     double MaxX();
     double MaxY();
     double MaxZ();
+    double MaxW();
     const std::vector<float>& GetHistgram() const;
     const std::vector<float> GetHistgramInRange(BufferVolumeData*, double min, double max) const;
     bool Execute(BufferVolumeData*);
