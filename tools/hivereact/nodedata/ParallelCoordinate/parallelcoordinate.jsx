@@ -138,6 +138,8 @@ class ParallelCoordinate extends React.Component {
             param: param
         });
         setTimeout(this.imageParse, 50);
+        this.onChangeScaleMin({currentTarget: {value: param.min}});
+        this.onChangeScaleMax({currentTarget: {value: param.max}});
     }
 
     imageParse(){
