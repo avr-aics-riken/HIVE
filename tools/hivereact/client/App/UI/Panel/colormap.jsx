@@ -17,7 +17,8 @@ export default class ColorMap extends React.Component {
     }
 
     send_colormap_change_event(color_steps) {
-        this.callback(this.get_colormap_rgba(color_steps, 256, 1));
+        var c = this.get_colormap_rgba(color_steps, 256, 1);
+        this.callback(c);
     }
 
     draw_color_map(context, grad_param, color_steps) {
@@ -81,7 +82,7 @@ export default class ColorMap extends React.Component {
         context.fillRect(0, 0, width, height);
         context.closePath();
         context.fill();
-        return dummy_canvas;
+        return context.getImageData(0, 0, width, height);
         // return context.getImageData(0, 0, width, height).data;
     }
 
