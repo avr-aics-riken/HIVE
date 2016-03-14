@@ -39,7 +39,9 @@ export default class ActionExecuter {
         this.showConsoleOutput = this.showConsoleOutput.bind(this);
         this.setLayout = this.setLayout.bind(this);
 		this.addNode = this.addNode.bind(this);
-		this.exportNode = this.exportNode.bind(this);
+		this.exportSceneScript = this.exportSceneScript.bind(this);
+        this.exportGroupNode = this.exportGroupNode.bind(this);
+        this.importGroupNode = this.importGroupNode.bind(this);        
         this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
 		this.clearAll = this.clearAll.bind(this);
@@ -278,9 +280,9 @@ export default class ActionExecuter {
 
 
     /**
-	 * ノードエクスポート
+	 * エクスポートSceneScript
 	 */
-	exportNode(payload) {
+	exportSceneScript(payload) {
         if (payload.hasOwnProperty('varname')) {
             let varname = payload.varname;
             let n;
@@ -300,6 +302,37 @@ export default class ActionExecuter {
                     console.log('NODE EXPORT', n);
                     let node = n.node;
                 }
+            }
+		}
+	}
+    
+    /**
+	 * インポートグループノード
+	 */
+	importGroupNode(payload) {
+	    if (payload.hasOwnProperty('data')) {
+		    console.log('AAAA', payload.data);
+            this.pasteNodes({nodeInfoList:[payload.data]});
+        }
+    }
+    /**
+	 * エクスポートグループノード
+	 */
+	exportGroupNode(payload) {
+        if (payload.hasOwnProperty('varname')) {            
+            let varname = payload.varname;            
+            let outNode;
+            if (varname === "") { // ALL
+                outNode = this.store.data;
+            } else { //
+            console.log('exportGroupNode', varname);
+			    outNode = this.store.findNode(this.store.data, varname);
+            }
+            
+            if (outNode) {
+                let grpdata = JSON.stringify(outNode, null, "    ");
+                let blob = new Blob([grpdata], {type: "text/plain"});
+              	saveAs(blob, "group.json");                
             }
 		}
 	}

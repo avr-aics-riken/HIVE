@@ -56,17 +56,44 @@ export default class Action {
 	}
 
     /**
-	 * ノードをエクスポートする
+	 * SceneScriptをエクスポートする
 	 * @param varname ノード変数名
 	 */
-	export(varname) {
+	exportSceneScript(varname) {
         if (!varname) {
             varname = '';
         }
 		this.dispatcher.dispatch({
 			id :this.id,
-			actionType: "exportNode",
+			actionType: "exportSceneScript",
 			varname : varname
+		});
+	}
+    
+    /**
+	 * 現在のグループをエクスポートする
+	 * @param varname ノード変数名
+	 */
+	exportGroupNode(varname) {
+        if (!varname) {
+            varname = '';
+        }
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "exportGroupNode",
+			varname : varname
+		});
+	}
+
+    /**
+	 * グループをインポートする
+	 * @param varname ノード変数名
+	 */
+	importGroupNode(data) {
+        this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "importGroupNode",
+            data: data			
 		});
 	}
 

@@ -19,9 +19,12 @@ export default class MenuTop extends React.Component {
         this.loadButtonClick = this.loadButtonClick.bind(this);
         this.exportSceneButton = this.exportSceneButton.bind(this);
         this.exportGroupButton = this.exportGroupButton.bind(this);
+        this.importGroupButton = this.importGroupButton.bind(this);
+        this.importButtonClick = this.importButtonClick.bind(this);
 
 		this.state = {
-			fileValue : ""
+			fileValue : "",
+            importFileValue : ""
 		};
 
         this.showConsole = props.consoleShow;
@@ -101,17 +104,39 @@ export default class MenuTop extends React.Component {
 				this.props.action.load(data);
 				this.setState({
 					fileValue : ""
-				})
+				});
             }.bind(this);
             reader.readAsText(eve.currentTarget.files[0]);
         }
     }
     exportSceneButton(eve){
-        this.props.action.export();
+        this.props.action.exportSceneScript();
     }
 
     exportGroupButton(eve){
-        console.log('Group export');
+        let path = this.store.getNodePath();
+        if (path.length === 0) {
+            this.props.action.exportGroupNode();    
+        } else {
+            console.log('EEEE', path);
+            this.props.action.exportGroupNode(path[path.length - 1]);
+        }
+    }
+
+    importButtonClick(){
+        var e = ReactDOM.findDOMNode(this.refs.importFile);
+        e.click();
+    }
+    importGroupButton(eve){
+        let reader = new FileReader();
+        reader.onload = function(){
+            let data = (JSON.parse(reader.result));
+            this.props.action.importGroupNode(data);
+            this.setState({
+                importFileValue : ""
+            });
+        }.bind(this);
+        reader.readAsText(eve.currentTarget.files[0]);
     }
 
     // Edit menu
@@ -137,9 +162,9 @@ export default class MenuTop extends React.Component {
     // info のなかの key を見て分岐したりする
     handleClick(info){
         let key = parseInt(info.key, 10);
-        try {
+        if (this.hasOwnProperty(info.key)) {        
             this[info.key](info.value);
-        } catch (e) {
+        } else {
             console.error("Unknown menu command", info, e);
         }
     }
@@ -154,8 +179,10 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="saveButton">Save</MenuItem>
                     <MenuItem key="allClearNode">Clear all</MenuItem>
                     <MenuItem >-----------------------</MenuItem>
-                    <MenuItem key="exportSceneButton">Scene Script Export</MenuItem>
-                    <MenuItem key="exportGroupButton">Group Export</MenuItem>
+                    <MenuItem key="importButtonClick">Import group</MenuItem>
+                    <MenuItem key="exportGroupButton">Export Current group</MenuItem>
+                    <MenuItem >-----------------------</MenuItem>                    
+                    <MenuItem key="exportSceneButton">Export Scene Script</MenuItem>                    
 
                 </SubMenu>
                 <SubMenu title={<span>Edit</span>} key="edit">
@@ -193,6 +220,7 @@ export default class MenuTop extends React.Component {
             <div style={{position: "relative", width: "100%", zIndex: "99999"}}>
                 <div style={style}>{horizontalMenu}</div>
                 <input type="file" ref="inputFile" style={{display: "none"}} value={this.state.fileValue} onChange={this.loadButton} />
+                <input type="file" ref="importFile" style={{display: "none"}} value={this.state.importFileValue} onChange={this.importGroupButton} />
             </div>
         );
     }
