@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Core from '../../Core';
 
+const scaleAnimeDuration = 5;
+const scaleAnimeRatio = 6;
+
 export default class Container extends React.Component {
     constructor(props) {
         super(props);
@@ -141,6 +144,8 @@ export default class Container extends React.Component {
     }
 
 	onContainerEnter(ev) {
+		if (this.state.containerHover) { return; }
+
 		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
 		let preZIndex = panel.zindex;
 		panel.zindex = 10000;
@@ -148,16 +153,34 @@ export default class Container extends React.Component {
 			varname : this.state.node.varname,
 			panel : panel
 		});
-		this.setState({ containerHover : preZIndex });
+		this.preZIndex = preZIndex;
+
+		let scaleAnimation = function (maxcount, count) {
+			this.scaleAnimeHandle = setTimeout((i) => {
+				return function () {
+					this.setState({ containerHover : i });
+					if (i < maxcount) {
+						scaleAnimation.bind(this)(maxcount, i + 1)
+					} else {
+						this.scaleAnimeHandle = null;
+					}
+				}.bind(this);
+			}(count), scaleAnimeDuration);
+		};
+		scaleAnimation.bind(this)(scaleAnimeRatio, 0);
 	}
 
 	onContainerLeave(ev) {
+		if (this.scaleAnimeHandle) {
+			clearTimeout(this.scaleAnimeHandle);
+		}
 		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
 		panel.zindex = this.state.containerHover;
 		this.action.changeNode({
 			varname : this.state.node.varname,
 			panel : panel
 		});
+		this.preZIndex = null;
 		this.setState({ containerHover : null });
 	}
 
@@ -177,7 +200,7 @@ export default class Container extends React.Component {
     // target === ターゲットノード
     forwardIndex(target) {
 		let nodes = this.store.getNodes();
-		let targetIndex = this.state.containerHover;
+		let targetIndex = this.preZIndex;
 		if (targetIndex === null) { return; }
 		for (let i = 0; i < nodes.length; i = i + 1) {
 			let node = nodes[i];
@@ -208,7 +231,9 @@ export default class Container extends React.Component {
                 left: this.state.node.panel.pos[0] + "px",
                 zIndex: this.state.node.panel.zindex,
                 display: this.state.node.panel.visible ? "block" : "none",
-				transform : (this.state.containerHover !== null && this.props.zoom) ? "scale(" + this.props.zoom + ")": ""
+				transform : (this.state.preZIndex !== null && this.props.zoom && this.state.containerHover !== null) ?
+					"scale(" + lerp(this.props.preZoom, this.props.zoom, this.state.containerHover / scaleAnimeRatio) + ")"
+					: "scale(1.0)"
             },
             panelTitleBar: {
                 fontSize: "12pt",
