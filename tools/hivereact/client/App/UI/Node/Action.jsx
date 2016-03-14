@@ -24,18 +24,6 @@ export default class Action {
 	}
 
 	/**
-	 * ノードを移動させる
-	 * @param mv 移動量 { x : x移動量, y : y移動量 }
-	 */
-	moveNode(mv) {
-		this.dispatcher.dispatch({
-			id :this.id,
-			actionType: "moveNode",
-			mv : mv
-		});
-	}
-
-	/**
 	 * プラグのドラッグを開始する
 	 * @param id 端子id
 	 * @param inputPos 入力端子側のプラグ位置
