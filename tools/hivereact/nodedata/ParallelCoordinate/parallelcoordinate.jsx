@@ -91,7 +91,6 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        console.log('doxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdox', param);
         var a, buffer, component, parse;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
@@ -542,7 +541,7 @@ class ParallelCoordinate extends React.Component {
             gc.plf.fSource += 'const float high = 0.7;';
             gc.plf.fSource += 'void main(){';
             gc.plf.fSource += '    if(density > 0.0){';
-            gc.plf.fSource += '        vec4 tex = texture2D(colorMap, vec2(0.0));'; // temp
+            gc.plf.fSource += '        vec4 tex = texture2D(colorMap, vec2(gl_FragCoord.xy / 300.0));'; // temp
             gc.plf.fSource += '        vec4 c = color;';
             gc.plf.fSource += '        vec2 texcoord = gl_FragCoord.st / resolution;';
             gc.plf.fSource += '        vec4 smpColor = texture2D(texture, texcoord);';
@@ -561,6 +560,7 @@ class ParallelCoordinate extends React.Component {
             gc.plf.fSource += '        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);';
             gc.plf.fSource += '    }';
             gc.plf.fSource += '}';
+            console.log(gc.plf.fSource);
 
             gc.plf.vs = create_shader(gl, gc.plf.vSource, gl.VERTEX_SHADER);
             gc.plf.fs = create_shader(gl, gc.plf.fSource, gl.FRAGMENT_SHADER);
@@ -610,8 +610,8 @@ class ParallelCoordinate extends React.Component {
         gl.bindTexture(gl.TEXTURE_2D, null);
         gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, gc.texture);
-        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
         gl.activeTexture(gl.TEXTURE0);
 
         gl.enable(gl.BLEND);
