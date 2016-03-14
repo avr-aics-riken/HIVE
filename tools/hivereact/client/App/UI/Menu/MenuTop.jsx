@@ -55,6 +55,9 @@ export default class MenuTop extends React.Component {
 		if (this.isCtrlDown && ev.keyCode === 71) { // "g"
 			this.editNodeMakeGroup();
 		}
+		if (this.isCtrlDown && ev.keyCode === 85) { // "u"
+			this.editNodeUnGroup();
+		}
 		if (this.isCtrlDown && ev.keyCode === 83) { // "s"
 			this.props.action.save();
 		}
@@ -116,6 +119,7 @@ export default class MenuTop extends React.Component {
     editNodePaste() { this.props.action.paste(); }
     editNodeDelete() { this.props.action.delete(); }
     editNodeMakeGroup() { this.props.action.makeGroup(); }
+	editNodeUnGroup() { this.props.action.unGroup(); }
 
     // Layout menu
     layoutAll() { this.props.action.setLayout('all'); }
@@ -159,6 +163,7 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="editNodePaste">Paste</MenuItem>
                     <MenuItem key="editNodeDelete">Delete</MenuItem>
                     <MenuItem key="editNodeMakeGroup">MakeGroup</MenuItem>
+					<MenuItem key="editNodeUnGroup">UnGroup</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>Layout</span>} key="layout">
                     <MenuItem key="layoutAll">All</MenuItem>

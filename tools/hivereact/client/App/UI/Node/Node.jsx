@@ -459,6 +459,7 @@ export default class Node extends React.Component {
 	}
 
 	// グループ削除ボタン
+	/*
 	unGroupElem() {
 		let n = this.state.node;
 		if (this.props.nodeStore.isGroup(n)) {
@@ -471,6 +472,7 @@ export default class Node extends React.Component {
 					</div>)
 		}
 	}
+	*/
 
 	onDoubleClick(ev) {
 		let n = this.state.node;
@@ -491,7 +493,6 @@ export default class Node extends React.Component {
 					{this.titleElem.bind(this)()}
 					{this.inputElem.bind(this)()}
 					{this.outputElem.bind(this)()}
-					{this.unGroupElem.bind(this)()}
 					{this.closeElem.bind(this)()}
 				</div>);
 	}
