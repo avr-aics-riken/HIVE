@@ -231,39 +231,24 @@ export default class Container extends React.Component {
         };
     }
 
+	uiComponent() {
+		let node = this.state.node;
+		if (node.uiComponent === undefined) {
+			return;
+		} else { // if (node.jsx === true) {
+			let UIComponent = this.state.node.uiComponent;
+			return (<UIComponent
+						store={this.store}
+						action={this.action}
+						node={node}
+					/>);
+		}
+	}
+
     render() {
-        // if(!this.state.node.panel.visible){return;}
-        var node, res, styles = this.styles();
-        node = this.state.node;
-        if (node.uiComponent === undefined) {
-            res = "";
-        } else { // if (node.jsx === true) {
-            res = React.createFactory(this.state.node.uiComponent)({
-                store: this.store,
-                action: this.action,
-                node: node
-            });
-        }/* else {
-            class CustomUI extends React.Component{
-                constructor(props) {
-                    super(props);
-                    this.props = props;
-                }
-                render() {
-                    return (<div></div>);
-                }
-                componentDidMount() {
-                    const dom = ReactDOM.findDOMNode(this);
-                    this.props.node.uiComponent(dom, this.props.node);
-                }
-                componentWillUnmount() {
-                    //console.log('DIDUNMOUNT');
-                }
-            }
-            res = <CustomUI node={node}/>
-        }*/
+        var node, styles = this.styles();
         return (
-            <div style={styles.container}  onMouseDown={this.onMouseDown}
+            <div ref="bounds" style={styles.container}  onMouseDown={this.onMouseDown}
 				onMouseEnter={this.onContainerEnter.bind(this)}
 				onMouseLeave={this.onContainerLeave.bind(this)}
 				>
@@ -276,7 +261,9 @@ export default class Container extends React.Component {
                         onMouseLeave={this.onCloseHover.bind(this)}
                     />
                 </div>
-                <div onMouseDown={this.onCancelBubble}>{res}</div>
+                <div onMouseDown={this.onCancelBubble}>
+					{this.uiComponent.bind(this)()}
+				</div>
                 <div style={styles.panelScale} onMouseDown={this.onScaleDown.bind(this)}>
                 </div>
             </div>
