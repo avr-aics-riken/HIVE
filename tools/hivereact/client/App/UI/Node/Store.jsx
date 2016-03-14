@@ -110,7 +110,6 @@ export default class Store extends EventEmitter {
 
 		this.getPlugPosList = this.getPlugPosList.bind(this);
 		this.changePlugPosition = this.changePlugPosition.bind(this);
-		this.moveNode = this.moveNode.bind(this);
 		this.dragPlug = this.dragPlug.bind(this);
 		this.endDragPlug = this.endDragPlug.bind(this);
 		this.selectPlugHole = this.selectPlugHole.bind(this);
@@ -516,13 +515,6 @@ export default class Store extends EventEmitter {
 				}
 			}
 		}
-	}
-
-	/**
-	 * ノードを移動させる.
-	 */
-	moveNode(payload) {
-		this.emit(Store.NODE_MOVED, null, payload.mv);
 	}
 
 	/**
