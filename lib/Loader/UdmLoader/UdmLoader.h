@@ -13,6 +13,7 @@
 
 class BufferMeshData;
 class BufferTetraData;
+class BufferSolidData;
 
 /**
  * UDMデータローダー
@@ -70,6 +71,12 @@ public:
 	/// NULL if the file does not contain tetra primitive. 
 	BufferTetraData* TetraData();
 
+	/// Retrieve solid primitive.
+	/// solidType 5 = pyramid, 6 = prism or 8 = hexa.
+	/// Valid after `Load()`
+	/// NULL if the file does not contain corresponding solid primitive. 
+	BufferSolidData* SolidData(int solidType);
+
 	/// Get solution(custom attribute) data.
 	BufferExtraData* ExtraData(const char *name);
 
@@ -78,6 +85,9 @@ private:
 
 	RefPtr<BufferMeshData> m_mesh;
 	RefPtr<BufferTetraData> m_tetra;
+	RefPtr<BufferSolidData> m_pyramid;
+	RefPtr<BufferSolidData> m_prism;
+	RefPtr<BufferSolidData> m_hexa;
 
 	std::vector<SolutionInfo> m_solutions;
 
@@ -92,4 +102,3 @@ private:
 };
 
 #endif //_UDMLOADER_H_
-
