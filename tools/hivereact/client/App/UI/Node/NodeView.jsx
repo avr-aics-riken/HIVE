@@ -32,8 +32,6 @@ export default class NodeView extends React.Component {
 
 		this.onNodeCountChanged = this.onNodeCountChanged.bind(this);
 		this.onZoomChanged = this.onZoomChanged.bind(this);
-		this.onKeyDown = this.onKeyDown.bind(this);
-		this.onKeyUp = this.onKeyUp.bind(this);
 
 		this.copied = null;
 		this.onCopy = this.onCopy.bind(this);
@@ -206,8 +204,6 @@ export default class NodeView extends React.Component {
 		this.props.store.on(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.on(Core.Constants.DELETE_CALLED, this.onDelete);
-		window.addEventListener('keydown', this.onKeyDown);
-		window.addEventListener('keyup', this.onKeyUp);
     }
 
     componentWillUnmount(){
@@ -218,25 +214,8 @@ export default class NodeView extends React.Component {
 		this.props.store.off(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
-		window.removeEventListener('keydown', this.onKeyDown);
-		window.removeEventListener('keyup', this.onKeyUp);
     }
-
-	onKeyDown(ev) {
-		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
-		let rect = this.refs.bound.getBoundingClientRect();
-		this.isCtrlDown = ev.ctrlKey;
-		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
-			this.onCopy(null);
-		}
-		if (this.isCtrlDown && ev.keyCode === 86) { // "v"
-			this.onPaste(null);
-		}
-		if (ev.keyCode === 46) { // delete
-			this.onDelete(null);
-		}
-	}
-
+	
 	// メニューまたはショートカットで削除が呼ばれた
 	onDelete(err) {
 		if (!err) {
@@ -278,10 +257,6 @@ export default class NodeView extends React.Component {
 			this.copied = null;
 		}
 		console.log("pasteNode");
-	}
-
-	onKeyUp(ev) {
-		this.isCtrlDown = ev.ctrlKey;
 	}
 
 	origin() {
