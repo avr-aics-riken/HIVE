@@ -11,7 +11,8 @@ export default class View extends React.Component {
         this.action = props.action;
         this.state = {
             nodes: [].concat(this.store.getNodes()),
-			offset : [0, 0]
+			offset : [0, 0],
+			zoom : 1.0
         };
 
         this.styles = this.styles.bind(this);
@@ -63,13 +64,27 @@ export default class View extends React.Component {
 		const px = ev.pageX;
 		const py = ev.pageY;
 		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
-            const dx = (px - this.pos.x);
-            const dy = (py - this.pos.y);
+            const dx = (px - this.pos.x) / this.state.zoom;
+            const dy = (py - this.pos.y) / this.state.zoom;
 			this.setState({
 				offset : [this.state.offset[0] + dx, this.state.offset[1] + dy]
 			});
-			console.log("offset")
+		} else if (this.isRightDown) {
+            const dx = (px - this.pos.x);
+            const dy = (py - this.pos.y);
+            const mv = (dx + dy) * 0.005;
+			let zoom = this.state.zoom;
+            zoom = zoom + mv;
+            if (zoom <= 0.1) {
+                zoom = 0.1;
+            } else if (zoom >= 2.0) {
+                zoom = 2.0;
+            }
+			this.setState({
+				zoom : zoom
+			});
 		}
+
 		this.pos = {
 			x : px,
 			y : py
@@ -89,9 +104,20 @@ export default class View extends React.Component {
 	}
 
 	transform() {
-		//let scale = "scale(" + this.state.zoom + ")";
+		let scale = "scale(" + this.state.zoom + ")";
 		let translate = "translate(" + String(this.state.offset[0]) + "px," + String(this.state.offset[1]) + "px)";
-		return translate;
+		return scale + " " + translate;
+	}
+
+	origin() {
+		if (this.refs.viewport) {
+			let rect = this.refs.viewport.getBoundingClientRect();
+			let x = (rect.right - rect.left) / 2.0;
+			let y = (rect.bottom - rect.top) / 2.0;
+			return String(x) + "px " + String(y) + "px";
+		} else {
+			return "0px 0px";
+		}
 	}
 
     styles() {
@@ -113,6 +139,7 @@ export default class View extends React.Component {
                 action={this.action}
                 node={node}
                 key={node.varname + key}
+				zoom={1.0 / this.state.zoom}
             />
         );
     }
@@ -120,8 +147,11 @@ export default class View extends React.Component {
     render() {
         var styles = this.styles();
         var a = (
-            <div style={styles.container} onMouseDown={this.onMouseDown}>
-				<div style={{transform : this.transform.bind(this)()}}>
+            <div ref="viewport" style={styles.container} onMouseDown={this.onMouseDown}>
+				<div style={{
+						transform : this.transform.bind(this)(),
+						transformOrigin : this.origin.bind(this)()}}
+				>
 	                {this.state.nodes.map((value, key)=>{
 	                    return this.generator(value, key);
 	                })}
