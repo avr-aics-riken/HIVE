@@ -177,7 +177,8 @@ export default class Container extends React.Component {
     // target === ターゲットノード
     forwardIndex(target) {
 		let nodes = this.store.getNodes();
-		let targetIndex = target.panel.zindex;
+		let targetIndex = this.state.containerHover;
+		if (targetIndex === null) { return; }
 		for (let i = 0; i < nodes.length; i = i + 1) {
 			let node = nodes[i];
 			if (node.varname !== target.varname && node.panel.zindex >= targetIndex){
@@ -207,7 +208,7 @@ export default class Container extends React.Component {
                 left: this.state.node.panel.pos[0] + "px",
                 zIndex: this.state.node.panel.zindex,
                 display: this.state.node.panel.visible ? "block" : "none",
-				transform : (this.state.containerHover && this.props.zoom) ? "scale(" + this.props.zoom + ")": ""
+				transform : (this.state.containerHover !== null && this.props.zoom) ? "scale(" + this.props.zoom + ")": ""
             },
             panelTitleBar: {
                 fontSize: "12pt",
