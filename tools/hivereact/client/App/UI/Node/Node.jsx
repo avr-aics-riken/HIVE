@@ -342,7 +342,7 @@ export default class Node extends React.Component {
 					>
 						{isClose ? "▶" : "▼"}
 					</span>
-				{this.state.node.name}
+				{this.state.node.label ? this.state.node.label : this.state.node.name}
 				</div>)
 	}
 

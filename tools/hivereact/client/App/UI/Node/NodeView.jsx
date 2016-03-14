@@ -383,7 +383,11 @@ export default class NodeView extends React.Component {
 		let navi = naviPath.map( (varname, index) => {
 			let name = varname;
 			if (index > 0) {
-				name = this.props.store.findNode(this.props.store.data, varname).name;
+				let node = this.props.store.findNode(this.props.store.data, varname);
+				name = node.label;
+				if (!name) {
+					name = node.name;
+				}
 			}
 			return (<div style={{
 						float : "left",

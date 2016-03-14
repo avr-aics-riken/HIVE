@@ -41,7 +41,7 @@ export default class ActionExecuter {
 		this.addNode = this.addNode.bind(this);
 		this.exportSceneScript = this.exportSceneScript.bind(this);
         this.exportGroupNode = this.exportGroupNode.bind(this);
-        this.importGroupNode = this.importGroupNode.bind(this);        
+        this.importGroupNode = this.importGroupNode.bind(this);
         this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
 		this.clearAll = this.clearAll.bind(this);
@@ -305,7 +305,7 @@ export default class ActionExecuter {
             }
 		}
 	}
-    
+
     /**
 	 * インポートグループノード
 	 */
@@ -319,8 +319,8 @@ export default class ActionExecuter {
 	 * エクスポートグループノード
 	 */
 	exportGroupNode(payload) {
-        if (payload.hasOwnProperty('varname')) {            
-            let varname = payload.varname;            
+        if (payload.hasOwnProperty('varname')) {
+            let varname = payload.varname;
             let outNode;
             if (varname === "") { // ALL
                 outNode = this.store.data;
@@ -328,11 +328,11 @@ export default class ActionExecuter {
             console.log('exportGroupNode', varname);
 			    outNode = this.store.findNode(this.store.data, varname);
             }
-            
+
             if (outNode) {
                 let grpdata = JSON.stringify(outNode, null, "    ");
                 let blob = new Blob([grpdata], {type: "text/plain"});
-              	saveAs(blob, "group.json");                
+              	saveAs(blob, "group.json");
             }
 		}
 	}
@@ -1180,6 +1180,7 @@ export default class ActionExecuter {
 
 ActionExecuter.initialData = {
 	"varname": "invalid",
+	"label" : "",
 	"select" : false,
 	"node" : {
 		"close" : false,
