@@ -20,18 +20,33 @@ function ParallelCoordinate:Do()
     local qsize = 1
 
     local volquant = require('VolumeQuantizer')()
+    local minmaxstring = ''
     self.volquant = volquant
     volquant:Create(vol)
     local minmax = volquant:GetMinMax()
     for i,v in pairs(minmax) do
-        for j,k in pairs(v) do    
+        if i == 1 then
+            minmaxstring = minmaxstring .. '{'
+        else
+            minmaxstring = minmaxstring .. ',{'
+        end
+        local flg = false;
+        for j,k in pairs(v) do
+            if not(flg) then
+                minmaxstring = minmaxstring .. '"' .. j .. '":"' .. k .. '"'
+            else
+                minmaxstring = minmaxstring .. ',"' .. j .. '":"' .. k .. '"'
+            end
+            flg = true
             print('VQ:MinMax', i,j,k)
         end
+        minmaxstring = minmaxstring .. "}"
     end
+    print('doxas:', minmaxstring);
     vol = volquant:VolumeData()
     mode = 'pack'
     qsize = 8
-    self.vol = vol    
+    self.vol = vol
 
     local w
     local h
@@ -39,7 +54,7 @@ function ParallelCoordinate:Do()
     local c
     local dat
     local imageBuffer
-    local datasize        
+    local datasize
     if vol then
         w = vol:Width()
         h = vol:Height()
@@ -68,7 +83,7 @@ function ParallelCoordinate:Do()
     
     local json = [[{
         "JSONRPC" : "2.0",
-        "method" : "renderedImage",            
+        "method" : "renderedImage",
         "to" : ]] .. targetClientId ..[[,
         "param" : {
         "type" : "volume",
@@ -79,11 +94,12 @@ function ParallelCoordinate:Do()
         "datatype": "]] .. datatype .. [[",
         "varname": "]] .. self.varname .. [[",
         "mode": "]] .. mode ..  [[",
-        "quantsize": "]] .. qsize ..[["
+        "quantsize": "]] .. qsize ..[[",
+        "minmax":[ ]] .. minmaxstring .. [[ ]
         },
         "id":0
     }]]
-        
+    print(json)
     print('imagebuffer=', imageBuffer)
     local imageBufferSize = w * h * d * datasize * c
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)

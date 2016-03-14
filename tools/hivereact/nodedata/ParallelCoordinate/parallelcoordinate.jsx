@@ -91,6 +91,7 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
+        console.log('doxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdoxdox', param);
         var a, buffer, component, parse;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
@@ -605,9 +606,12 @@ class ParallelCoordinate extends React.Component {
             gc.plp.verticalBuffer = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
         }
 
-        gl.activeTexture(gl.TEXTURE1);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, gc.texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
         gl.activeTexture(gl.TEXTURE0);
 
         gl.enable(gl.BLEND);
@@ -711,7 +715,7 @@ class ParallelCoordinate extends React.Component {
             gl.uniform3fv(gc.plf.uniL.middleColor     , [gc.middleColor[0]     , gc.middleColor[1]     , gc.middleColor[2]]);
             gl.uniform3fv(gc.plf.uniL.middleHighColor , [gc.middleHighColor[0] , gc.middleHighColor[1] , gc.middleHighColor[2]]);
             gl.uniform3fv(gc.plf.uniL.highColor       , [gc.highColor[0]       , gc.highColor[1]       , gc.highColor[2]]);
-            gl.uniform1i(gc.plf.uniL.colorMap, 1);
+            gl.uniform1i(gc.plf.uniL.colorMap, 2);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }else{
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
