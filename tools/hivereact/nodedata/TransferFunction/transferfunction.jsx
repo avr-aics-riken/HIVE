@@ -24,14 +24,14 @@ class TransferFunction extends React.Component {
         this.maxInput  = null;
         this.graphMode = null;
         this.changeCallback = null;
+        this.defaultValMin = 0;
+        this.defaultValMax = 0;
         const numVals = 256;
         this.numVals    = numVals;
         this.valueRed   = [numVals];
         this.valueGreen = [numVals];
         this.valueBlue  = [numVals];
         this.valueAlpha = [numVals];
-        this.defaultValMin = this.props.node.input[2].value;
-        this.defaultValMax = this.props.node.input[3].value;
         this.hist = [numVals];
         for(let i = 0; i < numVals; ++i){
             this.valueRed[i] = i/numVals;
@@ -54,8 +54,8 @@ class TransferFunction extends React.Component {
                 {value: "2", text: "Black and White"},
                 {value: "3", text: "BGR Gradation"}
             ],
-            valMin: this.defaultValMin,
-            valMax: this.defaultValMax,
+            valMin: this.props.node.input[2].value,
+            valMax: this.props.node.input[3].value,
             btnFlags: [],
             redbtnColor: this.disableColor,
             greenbtnColor: this.disableColor,
@@ -188,7 +188,6 @@ class TransferFunction extends React.Component {
         var e = eve.currentTarget;
         if (parseFloat(this.minInput.value) !== NaN) {
             const vl = parseFloat(this.minInput.value);
-            this.setState({valMin: vl});
             const varname = this.node.varname;
             this.action.changeNodeInput({
                 varname : varname,
@@ -196,6 +195,7 @@ class TransferFunction extends React.Component {
                     "minval" : vl
                 }
             });
+            this.setState({valMin: vl});
             this.drawGraph();
             if (this.changeCallback){
                 this.changeCallback(this);
@@ -205,7 +205,6 @@ class TransferFunction extends React.Component {
     maxInputChange(eve){
         if (parseFloat(this.maxInput.value) !== NaN) {
             const vl = parseFloat(this.maxInput.value);
-            this.setState({valMax: vl});
             const varname = this.node.varname;
             this.action.changeNodeInput({
                 varname : varname,
@@ -213,6 +212,7 @@ class TransferFunction extends React.Component {
                     "maxval" : vl
                 }
             });
+            this.setState({valMax: vl});
             this.drawGraph();
             if (this.changeCallback){
                 this.changeCallback(this);
@@ -234,13 +234,13 @@ class TransferFunction extends React.Component {
             this.mspress = false;
             document.removeEventListener('mousemove', this.mouseMoveFunc);
         }).bind(this), true);
-    
-        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";    
+
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
     }
     componentWillUnmount() {
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
-        this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);        
+        this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
     }
     transFunc(x){return Math.sqrt(x);}
     invTransFunc(x){return x*x;}
@@ -444,20 +444,22 @@ class TransferFunction extends React.Component {
             }
             let min = parseFloat(result.minval);
             let max = parseFloat(result.maxval);
-            this.defaultValMin = min;
-            this.defaultValMax = max;
-            this.setState({
-                valMin: min,
-                valMax: max
-            });
             const varname = this.node.varname;
-            this.action.changeNodeInput({
-                varname : varname,
-                input : {
-                    minval :min,
-                    maxval :max
-                }
-            });
+            if(this.defaultValMin !== min || this.defaultValMax !== max){
+                this.defaultValMin = min;
+                this.defaultValMax = max;
+                this.action.changeNodeInput({
+                    varname : varname,
+                    input : {
+                        minval :min,
+                        maxval :max
+                    }
+                });
+                this.setState({
+                    valMin: min,
+                    valMax: max
+                });
+            }
         }
     }
     /*setAnalyzeResult(result, component){
