@@ -283,8 +283,7 @@ export default class Store extends EventEmitter {
 							}
 						}
 					} else {
-						if (node.input[k].nodeVarname === plug.input.nodeVarname &&
-							node.input[k].name === plug.input.name) {
+						if (node.input[k].name === plug.input.name) {
 							if (node.node.pos[0] === null) {
 								console.error(node);
 							}
@@ -308,8 +307,7 @@ export default class Store extends EventEmitter {
 					width = this.nodeSizeMap[node.varname].width;
 				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
-					if (node.output[k].nodeVarname === plug.output.nodeVarname &&
-					 	node.output[k].name === plug.output.name) {
+					if (node.output[k].name === plug.output.name) {
 						return [node.node.pos[0] + width, calcPlugPositionY(node, k)];
 					}
 				}
