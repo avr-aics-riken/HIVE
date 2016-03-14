@@ -182,6 +182,7 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferVolumeData.cpp
   src/Buffer/BufferLineData.cpp
   src/Buffer/BufferSparseVolumeData.cpp
+  src/Buffer/BufferSolidData.cpp
   src/Buffer/BufferPointData.cpp
   src/Buffer/BufferVectorData.cpp
   src/Buffer/BufferTetraData.cpp
