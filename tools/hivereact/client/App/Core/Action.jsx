@@ -230,13 +230,12 @@ export default class Action {
 	}
 
 	/**
-	 * グループを解除する
+	 * 選択中のノードのグループを解除する
 	 */
-	unGroup(groupVarname) {
+	unGroup() {
 		this.dispatcher.dispatch({
 			id :this.id,
-			actionType: "unGroup",
-			groupVarname : groupVarname
+			actionType: "unGroup"
 		});
 	}
 

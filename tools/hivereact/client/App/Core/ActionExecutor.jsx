@@ -827,14 +827,16 @@ export default class ActionExecuter {
 	 * グループを解除する
 	 */
 	unGroup(payload) {
-		if (payload.hasOwnProperty("groupVarname")) {
-			let groupVarname = payload.groupVarname;
-			let n = this.store.getNode(groupVarname);
-			if (!n) {
-				console.error("group node found ", groupVarname);
+		let nodeList = this.store.getSelectedNodeList();
+		let groupList = [];
+		for (let i = 0; i < nodeList.length; i = i + 1) {
+			if (this.store.isGroup(nodeList[i])) {
+				groupList.push(nodeList[i]);
 			}
+		}
+		for (let k = 0; k < groupList.length; k = k + 1) {
 			// グループノードが保持しているノードとプラグを現在の階層に追加.
-			let group = n.node;
+			let group = groupList[k];
 			let nodes = this.store.getNodes();
 			let plugs = this.store.getPlugs();
 			for (let i = 0; i < group.nodes.length; i = i + 1) {
@@ -845,7 +847,7 @@ export default class ActionExecuter {
 			}
 			// グループノードを削除.
 			for (let i = 0; i < nodes.length; i = i + 1) {
-				if (nodes[i].varname === groupVarname) {
+				if (nodes[i].varname === group.varname) {
 					let node = nodes[i];
 					nodes.splice(i, 1);
 					this.store.emit(Constants.NODE_DELETED, null, node);
