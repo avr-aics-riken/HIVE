@@ -23,6 +23,9 @@ export default class HiveApp extends React.Component {
         this.action = new Core.Action(this.store.getDispatchToken());
         this.listVisiblity = false;
 
+		this.nodeStore = new Node.Store(this.action.dispatcher, this.store);
+		this.nodeAction = new Node.Action(this.action.dispatcher, this.nodeStore.getDispatchToken());
+
         this.state = {
             layoutType: 'all',
             consoleOutputVisible: false,
@@ -42,10 +45,13 @@ export default class HiveApp extends React.Component {
         this.hoverHidden = this.hoverHidden.bind(this);
         this.hoverGenerator = this.hoverGenerator.bind(this);
         this.setHoverPosition = this.setHoverPosition.bind(this);
-        
+
+		this.removeEvents = this.removeEvents.bind(this);
+		this.assignEvents = this.assignEvents.bind(this);
+
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
-            
+			this.removeEvents();
             this.setState({"layoutType": val});
         });
         this.store.on(Constants.CONSOLEOUTPUT_SHOW, (val) => {
@@ -54,15 +60,54 @@ export default class HiveApp extends React.Component {
         });
     }
 
-    componentDidMount(){
-        let e = ReactDOM.findDOMNode(this.refs.droptarget);
-        e.addEventListener('dragover', this.onDragOver, false);
-        e.addEventListener('drop', this.onDrop, false);
-        e = ReactDOM.findDOMNode(this.refs.hoverTarget);
-        e.addEventListener('click', this.onClick, false);
-        e.addEventListener('dblclick', this.onDblClick, false);
-        window.addEventListener('keydown', this.onKeyDown, false);
+	removeEvents() {
+		let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+		let dropTarget = ReactDOM.findDOMNode(this.refs["dropTarget" + String(currentMode)]);
+		let hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
+
+		if (dropTarget) {
+			dropTarget.removeEventListener('dragover', this.onDragOver, false);
+			dropTarget.removeEventListener('drop', this.onDrop, false);
+		}
+		if (hoverTarget) {
+			hoverTarget.removeEventListener('click', this.onClick, false);
+			hoverTarget.removeEventListener('dblclick', this.onDblClick, false);
+		}
+		this.dropTarget = null;
+		this.hoverTarget = null;
+	}
+
+	assignEvents() {
+		let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+		if (!this.dropTarget) {
+			this.dropTarget = ReactDOM.findDOMNode(this.refs["dropTarget" + String(currentMode)]);
+			if (this.dropTarget) {
+				this.dropTarget.addEventListener('dragover', this.onDragOver, false);
+				this.dropTarget.addEventListener('drop', this.onDrop, false);
+			}
+		}
+		if (!this.hoverTarget) {
+			this.hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
+			if (this.hoverTarget) {
+				this.hoverTarget.addEventListener('click', this.onClick, false);
+				this.hoverTarget.addEventListener('dblclick', this.onDblClick, false);
+			}
+		}
+	}
+
+    componentDidMount() {
+		this.assignEvents();
+		window.addEventListener('keydown', this.onKeyDown, false);
     }
+
+	componentWillUnmount() {
+		this.removeEvents();
+		window.removeEventListener('keydown', this.onKeyDown, false);
+	}
+
+	componentDidUpdate() {
+		this.assignEvents(this.state.layoutType);
+	}
 
     onDragOver(eve){
         eve.stopPropagation();
@@ -201,22 +246,45 @@ export default class HiveApp extends React.Component {
     }
     // ========================================================================
 
+	layoutMode(layoutType) {
+		if (layoutType === "all") { return 2; }
+		else if (layoutType === "node") { return 1; }
+		else if (layoutType === "panel") { return 0; }
+		else if (layoutType === "panelnode") { return 3; }
+		return 2;
+	}
+
     render() {
-        let layoutMode = 2;
-        if (this.state.layoutType === "all") { layoutMode = 2 }
-        else if (this.state.layoutType === "node") { layoutMode = 1 }
-        else if (this.state.layoutType === "panel") { layoutMode = 0 }        
-        
+        let layoutMode = this.layoutMode.bind(this)(this.state.layoutType);
+
         switch(layoutMode){
+			case 3:
+                return (
+                    <div ref="dropTarget3">
+                        <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
+                            <Splitter split="vertical" defaultSize="275" dontmove={true}>
+                                <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
+                                <div ref="hoverTarget3" style={{position:"absolute",width:"100%",height:"100%"}}>
+                                    <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} isPanelNodeMode={true} />
+                                </div>
+                            </Splitter>
+                            <TimeSlider.View store={this.store} action={this.action} />
+                        </Splitter>
+                        {this.hoverGenerator()}
+                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
+                    </div>
+                );
+                break;
             case 2:
                 return (
-                    <div ref="droptarget">
+                    <div ref="dropTarget2">
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
                             <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
                                 <Splitter split="vertical" minSize="50">
-                                    <div ref="hoverTarget" style={{position:"absolute",width:"100%",height:"100%"}}>
-                                        <Node.View store={this.store} action={this.action} />
+                                    <div ref="hoverTarget2" style={{position:"absolute",width:"100%",height:"100%"}}>
+                                        <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} isPanelNodeMode={false} />
                                     </div>
                                     <div>
                                         <Panel.View store={this.store} action={this.action} />
@@ -233,13 +301,13 @@ export default class HiveApp extends React.Component {
                 break;
             case 1:
                 return (
-                    <div ref="droptarget">
+                    <div ref="dropTarget1">
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
                             <Splitter split="vertical" defaultSize="275" dontmove={true}>
                                 <Menu.View store={this.store} action={this.action} layoutType={layoutMode} />
-                                <div ref="hoverTarget" style={{position:"absolute",width:"100%",height:"100%"}}>
-                                    <Node.View store={this.store} action={this.action} />
-                                </div>                            
+                                <div ref="hoverTarget1" style={{position:"absolute",width:"100%",height:"100%"}}>
+                                    <Node.View store={this.store} action={this.action} nodeStore={this.nodeStore} nodeAction={this.nodeAction} isPanelNodeMode={false} />
+                                </div>
                             </Splitter>
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
@@ -252,7 +320,7 @@ export default class HiveApp extends React.Component {
             case 0:
             default:
                 return (
-                    <div ref="droptarget">
+                    <div ref="dropTarget0">
                         <Splitter split="horizontal" secondPaneSize="150" lockSecondPane={true} dontmove={false} overflow2='hidden'>
                             <Panel.View store={this.store} action={this.action} />
                             <TimeSlider.View store={this.store} action={this.action} />

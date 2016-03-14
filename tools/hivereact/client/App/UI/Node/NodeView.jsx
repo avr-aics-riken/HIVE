@@ -4,6 +4,7 @@ import Core from '../../Core';
 import Node from './Node.jsx';
 import Store from './Store.jsx';
 import NodePlugView from "./NodePlugView.jsx";
+import Panel from "../Panel";
 
 /**
  * ノード(プラグ除く）を全て内包するビュー.
@@ -37,6 +38,7 @@ export default class NodeView extends React.Component {
 		this.onCopy = this.onCopy.bind(this);
 		this.onPaste = this.onPaste.bind(this);
 		this.onDelete = this.onDelete.bind(this);
+		this.onMouseUp = this.onMouseUp.bind(this);
 
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
 		this.connectToGlobalIn = this.connectToGlobalIn.bind(this);
@@ -193,7 +195,7 @@ export default class NodeView extends React.Component {
 	}
 
     componentDidMount(){
-		window.addEventListener('mouseup', this.onMouseUp.bind(this));
+		window.addEventListener('mouseup', this.onMouseUp);
 		let rect = this.refs.viewport.getBoundingClientRect();
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
@@ -212,7 +214,7 @@ export default class NodeView extends React.Component {
     }
 
     componentWillUnmount(){
-		window.removeEventListener('mouseup', this.onMouseUp.bind(this));
+		window.removeEventListener('mouseup', this.onMouseUp);
 		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.off(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
@@ -310,6 +312,25 @@ export default class NodeView extends React.Component {
 					></Node>);
 		} ));
 		return nodeList;
+	}
+
+	panelList() {
+		if (this.props.isPanelNodeMode) {
+			let panelList = this.state.nodes.map((node, key )=> {
+				return (
+					<div style={{transform : "translate(1700px, 1700px)"}} key={"panelnode" + "_" + node.varname + key}>
+						<Panel.Container
+							store={this.props.store}
+							action={this.props.action}
+							node={node}
+							key={node.varname + key}
+							zoom={1.0 / this.state.zoom}
+						/>
+					</div>
+				);
+			});
+			return panelList;
+		}
 	}
 
 	onGlobalInMouseUp(ev) {
@@ -431,7 +452,6 @@ export default class NodeView extends React.Component {
 								position : "absolute",
 								width:"4000px",
 								height:"4000px",
-								//zoom: String(this.state.zoom)
 								transform : "scale(" + this.state.zoom + ")",
 								transformOrigin : this.origin.bind(this)(),
 								border : "10px solid",
@@ -440,6 +460,7 @@ export default class NodeView extends React.Component {
 							ref="view"
 						>
 							{this.nodeList.bind(this)()}
+							{this.panelList.bind(this)()}
 							<NodePlugView
 								style={{zIndex:"1"}}
 								store={this.props.store}

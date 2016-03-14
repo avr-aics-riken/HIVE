@@ -22,9 +22,6 @@ class prgLocations {
     }
 }
 
-// ============================================================================
-// this.dimensionTitles === 上部に出る項目タイトルを格納した配列（未指定の場合配列インデックス）
-// ============================================================================
 class ParallelCoordinate extends React.Component {
     constructor(props) {
         super(props);
@@ -46,10 +43,13 @@ class ParallelCoordinate extends React.Component {
         this.usr = {glRender: this.glRender};
         this.parcoords;         // from d3.parcoord.js
         this.dataval = null;
-        this.density = this.props.node.input[4].value;
-        this.densityRange = 90;
+        this.densityRange = 95;
+        this.density          = this.props.node.input[4].value;
         this.densityNormalize = this.props.node.input[5].value;
-        this.logScale = this.props.node.input[6].value;
+        this.logScale         = this.props.node.input[6].value;
+        this.customScale      = this.props.node.input[7].value;
+        this.min              = this.props.node.input[8].value;
+        this.max              = this.props.node.input[9].value;
         this.weight = [];
         this.linecount = 0;
         this.dimensionTitles = {};
@@ -80,12 +80,19 @@ class ParallelCoordinate extends React.Component {
         this.onChangeDensity = this.onChangeDensity.bind(this);
         this.onChangeDensityNormalize = this.onChangeDensityNormalize.bind(this);
         this.onChangeLogScale = this.onChangeLogScale.bind(this);
+        this.onChangeCustomScale = this.onChangeCustomScale.bind(this);
+        this.onChangeScaleMin = this.onChangeScaleMin.bind(this);
+        this.onChangeScaleMax = this.onChangeScaleMax.bind(this);
         this.onColorChange = this.onColorChange.bind(this);
+        this.onDensityColorChange = this.onDensityColorChange.bind(this);
     }
 
     imageRecieved(err, param, data){
         var a, buffer;
         const varname = this.node.varname;
+
+        console.log('parallel: imageRecieved!!!');
+
         if(param.varname !== varname){return;}
         if(param.datatype === 'byte'){
             a = new Uint8Array(data);
@@ -147,6 +154,36 @@ class ParallelCoordinate extends React.Component {
         setTimeout((()=>{this.redraw();}).bind(this), 50);
     }
 
+    onChangeCustomScale(){
+        this.customScale= !this.customScale;
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {customScale: this.customScale}
+        });
+        this.usr.customScale = this.customScale;
+        setTimeout((()=>{this.redraw();}).bind(this), 50);
+    }
+
+    onChangeScaleMin(eve){
+        this.min = eve.currentTarget.value;
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {min: this.min}
+        });
+        this.usr.min = this.min;
+        setTimeout((()=>{this.redraw();}).bind(this), 50);
+    }
+
+    onChangeScaleMax(eve){
+        this.max = eve.currentTarget.value;
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {max: this.max}
+        });
+        this.usr.max = this.max;
+        setTimeout((()=>{this.redraw();}).bind(this), 50);
+    }
+
     onColorChange(eve){
         var c, e, r, g, b;
         var a = [];
@@ -166,7 +203,37 @@ class ParallelCoordinate extends React.Component {
                 lineColor2: a[1]
             }
         });
-        setTimeout(this.redraw, 50);
+        if(!this.density){setTimeout(this.redraw, 50);}
+    }
+
+    onDensityColorChange(eve){
+        var c, e, r, g, b;
+        var a = [];
+        for(let i = 10; i < 20; ++i){
+            e = ReactDOM.findDOMNode(this.refs["lineColor" + (i - 7)]);
+            c = e.value.match(/[0-9|a-f]{2}/ig);
+            r = parseInt(c[0], 16) / 255;
+            g = parseInt(c[1], 16) / 255;
+            b = parseInt(c[2], 16) / 255;
+            a.push([r, g, b, this.props.node.input[i].value[3]]);
+        }
+        // send action from color input change
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {
+                fLow:        a[0],
+                fMiddleLow:  a[1],
+                fMiddle:     a[2],
+                fMiddleHigh: a[3],
+                fHigh:       a[4],
+                bLow:        a[5],
+                bMiddleLow:  a[6],
+                bMiddle:     a[7],
+                bMiddleHigh: a[8],
+                bHigh:       a[9],
+            }
+        });
+        if(this.density){setTimeout(this.redraw, 50);}
     }
 
     singleConv(color){
@@ -258,10 +325,11 @@ class ParallelCoordinate extends React.Component {
             foreground: this.foreground,
             brushed: this.brushed,
             varname: this.node.varname,
-            maxScale: 255,
-            minScale: 1,
             extent: null,
             logScale: this.props.node.input[6].value,
+            customScale: this.props.node.input[7].value,
+            min: this.props.node.input[8].value,
+            max: this.props.node.input[9].value
         };
         this.linecount = this.dataval.length;
         this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})(ReactDOM.findDOMNode(this.refs.examples))
@@ -299,18 +367,19 @@ class ParallelCoordinate extends React.Component {
         }
     }
     glInitialColor(){
-        this.glContext[this.brushed].color = this.props.node.input[1].value;
-        // this.glContext[this.brushed].lowColor        = this.colors.brush[0];
-        // this.glContext[this.brushed].middleLowColor  = this.colors.brush[1];
-        // this.glContext[this.brushed].middleColor     = this.colors.brush[2];
-        // this.glContext[this.brushed].middleHighColor = this.colors.brush[3];
-        // this.glContext[this.brushed].highColor       = this.colors.brush[4];
-        this.glContext[this.foreground].color = this.props.node.input[0].value;
-        // this.glContext[this.foreground].lowColor        = this.colors.foreground[0];
-        // this.glContext[this.foreground].middleLowColor  = this.colors.foreground[1];
-        // this.glContext[this.foreground].middleColor     = this.colors.foreground[2];
-        // this.glContext[this.foreground].middleHighColor = this.colors.foreground[3];
-        // this.glContext[this.foreground].highColor       = this.colors.foreground[4];
+        this.glContext[this.foreground].color           = this.props.node.input[0].value;
+        this.glContext[this.foreground].lowColor        = this.props.node.input[10].value;
+        this.glContext[this.foreground].middleLowColor  = this.props.node.input[11].value;
+        this.glContext[this.foreground].middleColor     = this.props.node.input[12].value;
+        this.glContext[this.foreground].middleHighColor = this.props.node.input[13].value;
+        this.glContext[this.foreground].highColor       = this.props.node.input[14].value;
+
+        this.glContext[this.brushed].color              = this.props.node.input[1].value;
+        this.glContext[this.brushed].lowColor           = this.props.node.input[15].value;
+        this.glContext[this.brushed].middleLowColor     = this.props.node.input[16].value;
+        this.glContext[this.brushed].middleColor        = this.props.node.input[17].value;
+        this.glContext[this.brushed].middleHighColor    = this.props.node.input[18].value;
+        this.glContext[this.brushed].highColor          = this.props.node.input[19].value;
     }
 
     glRender(target, data, lines, left, right){
@@ -340,6 +409,7 @@ class ParallelCoordinate extends React.Component {
         var height = gl.canvas.height;
         var ext = gc.ext;
         var mat = this.mat;
+        var linecount = lines;
 
         if(gc.pl.prg == null){
             gc.pl.vSource = '';
@@ -503,7 +573,7 @@ class ParallelCoordinate extends React.Component {
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         // gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ONE, gl.ONE);
-        gl.lineWidth(1.5);
+        gl.lineWidth(1.0);
         gl.useProgram(gc.pl.prg);
         gl.viewport(0, 0, width, height);
         gl.clearColor(0.0, 0.0, 0.0, 0.0);
@@ -546,9 +616,9 @@ class ParallelCoordinate extends React.Component {
         mat.multiply(pMatrix, vMatrix, vpMatrix);
 
         if(this.densityNormalize){
-            lines *= (101 - this.densityRange) / 100 * 0.5;
+            linecount *= (101 - this.densityRange) / 100 * 0.5;
         }else{
-            lines = this.linecount * (101 - this.densityRange) / 100 * 0.5;
+            linecount = this.linecount * (101 - this.densityRange) / 100 * 0.5;
         }
 
         if(this.density){
@@ -561,8 +631,7 @@ class ParallelCoordinate extends React.Component {
             set_attribute(gl, vboL, gc.pl.attL, gc.pl.attS);
             gl.uniformMatrix4fv(gc.pl.uniL.matrix, false, vpMatrix);
             gl.uniform4fv(gc.pl.uniL.color, gc.color);
-            // gl.uniform1f(gc.pl.uniL.density, Math.min(lines, 450));
-            gl.uniform1f(gc.pl.uniL.density, lines);
+            gl.uniform1f(gc.pl.uniL.density, linecount);
             gl.drawArrays(gl.LINES, 0, data.length / 2);
 
             // horizon blur
@@ -596,14 +665,13 @@ class ParallelCoordinate extends React.Component {
             gl.uniform4fv(gc.plf.uniL.color, gc.color);
             gl.uniform2fv(gc.plf.uniL.resolution, [width, height]);
             gl.uniform1i(gc.plf.uniL.texture, 0);
-            gl.uniform1f(gc.plf.uniL.density, lines);
-            gl.uniform3fv(gc.plf.uniL.lowColor, gc.lowColor);
-            gl.uniform3fv(gc.plf.uniL.middleLowColor, gc.middleLowColor);
-            gl.uniform3fv(gc.plf.uniL.middleColor, gc.middleColor);
-            gl.uniform3fv(gc.plf.uniL.middleHighColor, gc.middleHighColor);
-            gl.uniform3fv(gc.plf.uniL.highColor, gc.highColor);
+            gl.uniform1f(gc.plf.uniL.density, linecount);
+            gl.uniform3fv(gc.plf.uniL.lowColor        , [gc.lowColor[0]        , gc.lowColor[1]        , gc.lowColor[2]]);
+            gl.uniform3fv(gc.plf.uniL.middleLowColor  , [gc.middleLowColor[0]  , gc.middleLowColor[1]  , gc.middleLowColor[2]]);
+            gl.uniform3fv(gc.plf.uniL.middleColor     , [gc.middleColor[0]     , gc.middleColor[1]     , gc.middleColor[2]]);
+            gl.uniform3fv(gc.plf.uniL.middleHighColor , [gc.middleHighColor[0] , gc.middleHighColor[1] , gc.middleHighColor[2]]);
+            gl.uniform3fv(gc.plf.uniL.highColor       , [gc.highColor[0]       , gc.highColor[1]       , gc.highColor[2]]);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
         }else{
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.viewport(0, 0, width, height);
@@ -621,27 +689,6 @@ class ParallelCoordinate extends React.Component {
     componentDidMount(){
         const Store_IMAGE_RECIEVED = "image_revieved";
         this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
-
-        // state.parse は最初の次元が縦方向にマッピングされる
-        // 横棒の折れ線グラフが描かれるイメージ
-        // 以下のようにすれば、100 本の線が、それぞれ 10 項目をマッピングする形で描画される
-        // this.state.parse = [];
-        // for(let i = 0; i < 100; ++i){
-        //     this.state.parse[i] = [];
-        //     for(let j = 0; j < 10; ++j){
-        //         this.state.parse[i].push(Math.random() * 100.0);
-        //     }
-        // }
-        // this.setState(
-        //     {parse: [
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9],
-        //         [0.1, 0.3, 0.5, 0.7, 0.9]
-        //     ]}
-        // );
-        // setTimeout((()=>{this.imageParse();}), 50);
     }
 
     componentDidUpdate(){
@@ -660,7 +707,7 @@ class ParallelCoordinate extends React.Component {
         return {
             container: {
                 width: "500px",
-                height: "400px",
+                height: "auto",
                 margin: "2px 5px"
             },
             examples: {
@@ -670,7 +717,7 @@ class ParallelCoordinate extends React.Component {
             },
             uiFrame: {
                 width: "100%",
-                height: "80px",
+                height: "125px",
                 display: "flex",
                 flexDirection: "column"
             },
@@ -693,6 +740,10 @@ class ParallelCoordinate extends React.Component {
             },
             inputTitle: {
                 marginRight: "3px",
+            },
+            textInputs: {
+                padding: "1px 2px",
+                height: "20px",
             },
             canvas: {},
         };
@@ -721,9 +772,39 @@ class ParallelCoordinate extends React.Component {
                         </div>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
+                                <input type="checkbox" checked={this.props.node.input[7].value} id="customCheck" onChange={this.onChangeCustomScale} />
+                                <label onClick={this.onChangeCustomScale}>custom scale</label>
+                            </div>
+                            <div style={styles.flexcol}>
+                                <p>min</p>
+                                <input type="text" value={this.props.node.input[8].value} id="customScaleMin" onChange={this.onChangeScaleMin} style={styles.textInputs} />
+                            </div>
+                            <div style={styles.flexcol}>
+                                <p>max</p>
+                                <input type="text" value={this.props.node.input[9].value} id="customScaleMax" onChange={this.onChangeScaleMax} style={styles.textInputs}/>
+                            </div>
+                        </div>
+                        <div style={styles.flexrow}>
+                            <div style={styles.flexcol}>
                                 <p style={styles.inputTitle}>line</p>
                                 <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[0].value)} onChange={this.onColorChange} style={styles.colorInputs} />
                                 <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[1].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                            </div>
+                            <div style={styles.flexcol}>
+                                <p style={styles.inputTitle}>density</p>
+                                <input type="color" id="color3" ref="lineColor3" value={this.singleConv(this.props.node.input[10].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color4" ref="lineColor4" value={this.singleConv(this.props.node.input[11].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color5" ref="lineColor5" value={this.singleConv(this.props.node.input[12].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color6" ref="lineColor6" value={this.singleConv(this.props.node.input[13].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color7" ref="lineColor7" value={this.singleConv(this.props.node.input[14].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                            </div>
+                            <div style={styles.flexcol}>
+                                <p style={styles.inputTitle}>select</p>
+                                <input type="color" id="color8"  ref="lineColor8" value={this.singleConv(this.props.node.input[15].value)}  onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color9"  ref="lineColor9" value={this.singleConv(this.props.node.input[16].value)}  onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color10" ref="lineColor10" value={this.singleConv(this.props.node.input[17].value)}  onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color11" ref="lineColor11" value={this.singleConv(this.props.node.input[18].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color12" ref="lineColor12" value={this.singleConv(this.props.node.input[19].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
                             </div>
                         </div>
                     </div>
@@ -734,46 +815,4 @@ class ParallelCoordinate extends React.Component {
 }
 
 module.exports = ParallelCoordinate;
-
-            // <div>
-            //     <div ref="container" style={styles.container}>
-            //         <div ref="examples" className="parcoords" style={styles.examples}></div>
-            //         <div style={styles.uiFrame}>
-            //             <div style={styles.flexrow}>
-            //                 <div style={styles.flexcol}>
-            //                     <input type="checkbox" checked={this.state.density} id="densityCheck" onChange={this.onChangeDensity} />
-            //                     <label onClick={this.onChangeDensity}>density mode</label>
-            //                 </div>
-            //                 <div style={styles.flexcol}>
-            //                     <input type="checkbox" checked={this.state.densityNormalize} id="densityNormalize" onChange={this.onChangeDensityNormalize} />
-            //                     <label onClick={this.onChangeDensityNormalize}>density normalize</label>
-            //                 </div>
-            //             </div>
-            //             <div style={styles.flexrow}>
-            //                 <div style={styles.flexcol}>
-            //                     <p style={styles.inputTitle}>line</p>
-            //                     <input type="color" id="color0" ref="lineColor1" value={this.state.colorString0} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                     <input type="color" id="color1" ref="lineColor2" value={this.state.colorString1} onChange={this.onColorChange} style={styles.colorInputs} />
-            //                 </div>
-                            // <div style={styles.flexcol}>
-                            //     <p style={styles.inputTitle}>density</p>
-                            //     <input type="color" id="color3" ref="fgColor1" value={this.singleConv(this.props.node.input[2].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color4" ref="fgColor2" value={this.singleConv(this.props.node.input[3].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color5" ref="fgColor3" value={this.singleConv(this.props.node.input[4].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color6" ref="fgColor4" value={this.singleConv(this.props.node.input[5].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color7" ref="fgColor5" value={this.singleConv(this.props.node.input[6].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            // </div>
-                            // <div style={styles.flexcol}>
-                            //     <p style={styles.inputTitle}>select</p>
-                            //     <input type="color" id="color8"  ref="brColor1" value={this.singleConv(this.props.node.input[7].value)}  onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color9"  ref="brColor2" value={this.singleConv(this.props.node.input[8].value)}  onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color10" ref="brColor3" value={this.singleConv(this.props.node.input[9].value)}  onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color11" ref="brColor4" value={this.singleConv(this.props.node.input[10].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            //     <input type="color" id="color12" ref="brColor5" value={this.singleConv(this.props.node.input[11].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                            // </div>
-            //             </div>
-            //         </div>
-            //     </div>
-            // </div>
-            //
 
