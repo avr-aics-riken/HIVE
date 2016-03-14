@@ -253,7 +253,7 @@ export default class Container extends React.Component {
             res = <CustomUI node={node}/>
         }*/
         return (
-            <div style={styles.container}  onMouseDown={this.onMouseDown.bind(this)}>
+            <div style={styles.container}  onMouseDown={this.onMouseDown}>
                 <div style={styles.panelTitleBar}>
                     {this.state.node.name}
                     <div
