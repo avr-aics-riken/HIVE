@@ -89,8 +89,8 @@ export default class NodeInOut extends React.Component {
 
 	styles(holevisible) {
 		let holeSize =  this.props.isClosed ? 10 : 15;
-		let holeSizeW =  this.props.isClosed ? 10 : 27.5;
-		let holeSizeH =  this.props.isClosed ? 10 : 8;
+		let holeSizeW =  27.5;
+		let holeSizeH =  8;
 		return {
 			input : {
 				position : "absolute",

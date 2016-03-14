@@ -207,10 +207,10 @@ export default class ItemView extends React.Component {
 				            varname={this.props.initialNodeData.varname}
 							store={this.props.store}
                             initialParam={hole}
-                            key={id} id={id}                            							
+                            key={id} id={id}
                             top={topRow}
                             bottom={bottom}
-				            changeCheckboxFunc={this.changeFunc.bind(this)} />);                       
+				            changeCheckboxFunc={this.changeFunc.bind(this)} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
 			}
