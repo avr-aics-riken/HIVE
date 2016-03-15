@@ -76,7 +76,17 @@ export default class ItemTextInput extends React.Component {
                 width : "165px",
                 height: "19px",
                 display: "inline-block",
-            }
+            },
+			addkey : {
+				backgroundColor : "white",
+				borderRadius : "6px",
+				width : "8px",
+				height : "8px",
+				marginTop : "6px",
+				marginBottom : "6px",
+				marginRight : "4px",
+				float : "left"
+			}
         };
 	}
 
@@ -116,10 +126,22 @@ export default class ItemTextInput extends React.Component {
 		ev.target.style.border = "2px solid darkgreen";
 	}
 
+	onAddKey(ev) {
+		this.props.changeKeyFunc(this.props.initialParam);
+	}
+
+	addKey() {
+		const styles = this.styles.bind(this)();
+		if (this.props.changeKeyFunc !== undefined) {
+			return (<div style={styles.addkey} onClick={this.onAddKey.bind(this)} />);
+		}
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
+						{this.addKey.bind(this)()}
 						{this.props.initialParam.name}
 					</div>
 					<input style={styles.value}

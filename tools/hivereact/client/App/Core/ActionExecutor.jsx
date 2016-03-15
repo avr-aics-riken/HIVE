@@ -1202,7 +1202,7 @@ export default class ActionExecuter {
 				if (!postKey) { postKey = preKey; }
 				if (preKey && postKey) {
 					let value = prop.data[preKey];
-					if (preKey < postKey) {
+					if (preKey < postKey && (typeof value !== "string")) {
 						// 線形補間.
 						value = lerp(prop.data[preKey], prop.data[postKey], (frame - preKey) / (postKey - preKey));
 					}
