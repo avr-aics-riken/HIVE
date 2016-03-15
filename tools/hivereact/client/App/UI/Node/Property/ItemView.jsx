@@ -273,7 +273,7 @@ export default class ItemView extends React.Component {
 				<ItemTitle
 					initialParam={{
 						name : "Node",
-						value : this.state.label
+						value : this.state.name
 					}}
 					exportButton={exportButton}
 					key={String(this.props.id + "_title")}
