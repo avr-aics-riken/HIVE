@@ -263,6 +263,7 @@ export default class ItemView extends React.Component {
 							store={this.props.store}
 							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
                             bottom={bottom} />);
             } else if (hole.type === 'bool') {
 			    return (<ItemCheckbox

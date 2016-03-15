@@ -94,6 +94,7 @@ export default class Store extends EventEmitter {
 		this.getDataAtPath = this.getDataAtPath.bind(this);
 		this.getOutput = this.getOutput.bind(this);
 		this.getInput = this.getInput.bind(this);
+		this.getRootNode = this.getRootNode.bind(this);
 		this.getRootNodes = this.getRootNodes.bind(this);
 		this.getRootPlugs = this.getRootPlugs.bind(this);
 		this.findNode = this.findNode.bind(this);
@@ -164,6 +165,13 @@ export default class Store extends EventEmitter {
 	 */
 	getRootNodes() {
 		return this.getNodes([]);
+	}
+
+	/**
+	 * ルート階層のノードリストを返す
+	 */
+	getRootNode() {
+		return this.data;
 	}
 
 	/**
