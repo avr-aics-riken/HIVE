@@ -60,7 +60,6 @@ export default class ItemView extends React.Component {
 
 	inputChanged(err, data) {
 		if (data.varname === this.props.initialNodeData.varname) {
-		console.log(data);
 			for (let i = 0; i < data.input.length; i = i + 1) {
 				let hole = data.input[i];
 				let id = hole.nodeVarname + "_" + hole.name;
@@ -241,7 +240,6 @@ export default class ItemView extends React.Component {
 
 		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
             let id = hole.nodeVarname + "_" + hole.name;
-			console.log(id)
             let topRow = this.state.isShowPanel === null && !this.topRowUsed && parseInt(key, 10) === 0;
             let bottom = this.props.initialNodeData.input.length - 1 === parseInt(key, 10);
 			if (Array.isArray(hole.array)) {
