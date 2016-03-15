@@ -13,7 +13,7 @@
         {"name": "customScale"      , "type": "bool"               , "value": false , "hole": false},
         {"name": "min"              , "type": "float"              , "value": [1.0]},
         {"name": "max"              , "type": "float"              , "value": [255.0]},
-        {"name": "imageData"        , "type": "floatarray"         , "value": [] ,"visible": false},
+        {"name": "imageData"        , "type": "floatarray"         , "value": [] ,"visible": false, "funcinput": false},
         {"name": "lineColor1"       , "type": "vec4"               , "value": [0.9, 0.3, 0.5, 0.2]},
         {"name": "lineColor2"       , "type": "vec4"               , "value": [0.3, 0.9, 0.5, 0.2]}
 	],
