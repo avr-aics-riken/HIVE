@@ -408,6 +408,11 @@ class ParallelCoordinate extends React.Component {
             }
         }
 
+        if(data == null){return;}
+        // data をアウトプットに出すとしたらここぽい気がする
+        let canvaselement = document.getElementById(this.brushed);
+        let backgroundDarker = (target.match(/brushed/));
+
         var gc = this.glContext[target];
         var gl = gc.gl;
         var vPosition, vboL;
@@ -568,20 +573,15 @@ class ParallelCoordinate extends React.Component {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
         gl.activeTexture(gl.TEXTURE0);
 
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
-        // gl.blendFuncSeparate(gl.ONE, gl.ONE, gl.ONE, gl.ONE);
         gl.lineWidth(1.0);
         gl.useProgram(gc.pl.prg);
         gl.viewport(0, 0, width, height);
-        gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        gl.clearColor(0.0, 0.0, 0.0, backgroundDarker ? 0.2 : 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-
-        if(data == null){return;}
-        // data をアウトプットに出すとしたらここぽい気がする
 
         var vMatrix = mat.identity(mat.create());
         var pMatrix = mat.identity(mat.create());
@@ -655,11 +655,11 @@ class ParallelCoordinate extends React.Component {
             gl.uniform1i(gc.plp.uniL.horizontal, false);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
-            // first scene to vertical buffer
+            // first scene to canvas
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.bindTexture(gl.TEXTURE_2D, gc.plp.verticalBuffer.texture);
             gl.viewport(0, 0, width, height);
-            gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            gl.clearColor(0.0, 0.0, 0.0, backgroundDarker ? 0.2 : 0.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.useProgram(gc.plf.prg);
             set_attribute(gl, vboPL, gc.plf.attL, gc.plf.attS);
