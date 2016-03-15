@@ -198,6 +198,8 @@ class TransferFunction extends React.Component {
         }
     }
     nodeInputChanged(err, data){
+        const varname = this.node.varname;
+        if(varname !== data.varname){return;}
         this.setState({
             valMin: data.input[2].value,
             valMax: data.input[3].value
