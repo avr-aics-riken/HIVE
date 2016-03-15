@@ -67,6 +67,12 @@ export default class MenuTop extends React.Component {
 		if (this.isCtrlDown && ev.keyCode === 79) { // "o"
 			this.loadButtonClick();
 		}
+		if (ev.keyCode === 39) { // "→"
+			this.props.action.changeFrame(this.props.store.getCurrentFrame() + 1)
+		}
+		if (ev.keyCode === 37) { // "→"
+			this.props.action.changeFrame(this.props.store.getCurrentFrame() - 1)
+		}
 		if (ev.keyCode === 46) { // delete
 			this.editNodeDelete();
 		}
@@ -116,7 +122,7 @@ export default class MenuTop extends React.Component {
     exportGroupButton(eve){
         let path = this.store.getNodePath();
         if (path.length === 0) {
-            this.props.action.exportGroupNode();    
+            this.props.action.exportGroupNode();
         } else {
             console.log('EEEE', path);
             this.props.action.exportGroupNode(path[path.length - 1]);
@@ -162,7 +168,7 @@ export default class MenuTop extends React.Component {
     // info のなかの key を見て分岐したりする
     handleClick(info){
         let key = parseInt(info.key, 10);
-        if (this.hasOwnProperty(info.key)) {        
+        if (this.hasOwnProperty(info.key)) {
             this[info.key](info.value);
         } else {
             console.error("Unknown menu command", info, e);
@@ -181,8 +187,8 @@ export default class MenuTop extends React.Component {
                     <MenuItem >-----------------------</MenuItem>
                     <MenuItem key="importButtonClick">Import group</MenuItem>
                     <MenuItem key="exportGroupButton">Export Current group</MenuItem>
-                    <MenuItem >-----------------------</MenuItem>                    
-                    <MenuItem key="exportSceneButton">Export Scene Script</MenuItem>                    
+                    <MenuItem >-----------------------</MenuItem>
+                    <MenuItem key="exportSceneButton">Export Scene Script</MenuItem>
 
                 </SubMenu>
                 <SubMenu title={<span>Edit</span>} key="edit">

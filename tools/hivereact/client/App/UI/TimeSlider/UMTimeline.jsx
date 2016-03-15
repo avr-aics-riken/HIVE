@@ -61,9 +61,6 @@ export default class UMTimeline extends React.Component {
         if (!this.setting) {
             let d = this.initData();
             this.setting = d.setting;
-            for (var i = 0; i < 1000; i = i + 1) {
-                d.data.contents[0].props[0].data[i] = i;
-            }
             this.setData(d.data);
         }
         this.draw();
@@ -71,6 +68,9 @@ export default class UMTimeline extends React.Component {
         this.resizeDraw();
 
         window.addEventListener('resize', this.resizeDraw.bind(this), false);
+		this.props.store.on(Core.Constants.CHANGE_FRAME, (err, frame) => {
+			this.setCurrentFrame(Number(frame));
+		});
     }
 
     resizeDraw(){
