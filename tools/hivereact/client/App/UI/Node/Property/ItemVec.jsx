@@ -70,7 +70,8 @@ export default class ItemVec extends React.Component {
                 verticalAlign: "middle",
                 display: "inline-block",
                 overflow: "hidden",
-                textShadow: "0px 0px 3px black"
+                textShadow: "0px 0px 3px black",
+				float : "left"
             },
             value : {
                 color : "#333",
@@ -80,6 +81,16 @@ export default class ItemVec extends React.Component {
                 verticalAlign: "middle",
                 display: "inline-block"
             },
+			addkey : {
+				backgroundColor : "white",
+				borderRadius : "6px",
+				width : "8px",
+				height : "8px",
+				marginTop : "6px",
+				marginBottom : "6px",
+				marginRight : "4px",
+				float : "left"
+			},
             flex : {
                 //paddingLeft: "3px"
                 // display: "flex",
@@ -165,10 +176,15 @@ export default class ItemVec extends React.Component {
 		return values;
 	}
 
+	onAddKey(ev) {
+		this.props.changeKeyFunc(this.props.initialParam);
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
+						<div style={styles.addkey} onClick={this.onAddKey.bind(this)} />
 						{this.props.initialParam.name}
 					</div>
                     <div style={styles.value}>

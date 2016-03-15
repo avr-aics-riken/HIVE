@@ -171,6 +171,17 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	changeKeyFunc(hole) {
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		if (node) {
+			this.props.action.addKeyFrame(
+				this.props.store.getCurrentFrame(),
+				node,
+				hole
+			);
+		}
+	}
+
 	panelCheckbox() {
 		if (this.state.isShowPanel !== null) {
             this.topRowUsed = true;
@@ -247,6 +258,7 @@ export default class ItemView extends React.Component {
 							store={this.props.store}
 							initialParam={hole} key={id} id={id}  changeVecFunc={this.changeVecFunc.bind(this)}
                             top={topRow}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
                             bottom={bottom} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
 				return (<ItemTextInput
@@ -263,6 +275,7 @@ export default class ItemView extends React.Component {
                             key={id} id={id}
                             top={topRow}
                             bottom={bottom}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
 				            changeCheckboxFunc={this.changeFunc.bind(this)} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
