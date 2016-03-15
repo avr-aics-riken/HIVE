@@ -54,8 +54,8 @@ class TransferFunction extends React.Component {
                 {value: "2", text: "Black and White"},
                 {value: "3", text: "BGR Gradation"}
             ],
-            valMin: 0,
-            valMax: 0,
+            valMin: this.props.node.input[2].value,
+            valMax: this.props.node.input[3].value,
             btnFlags: [],
             redbtnColor: this.disableColor,
             greenbtnColor: this.disableColor,
