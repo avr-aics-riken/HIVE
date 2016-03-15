@@ -1214,6 +1214,7 @@ export default class ActionExecuter {
 						inputInfo : inputInfo
 					});
 					//console.log("pre post", preKey, postKey, inputInfo);
+					this.store.emit(Constants.CURRENT_FRAME_APPLIED, null, content, prop);
 				}
 			}
 		}
