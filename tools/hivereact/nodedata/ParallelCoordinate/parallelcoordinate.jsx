@@ -150,7 +150,6 @@ class ParallelCoordinate extends React.Component {
                 parse.push(t);
             }
         }
-        console.log(param);
         this.setState({
             parse: parse,
             data: data,

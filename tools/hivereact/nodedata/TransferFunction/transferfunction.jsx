@@ -24,8 +24,8 @@ class TransferFunction extends React.Component {
         this.maxInput  = null;
         this.graphMode = null;
         this.changeCallback = null;
-        this.defaultValMin = 0;
-        this.defaultValMax = 0;
+        this.defaultValMin = this.props.node.input[4].value;
+        this.defaultValMax = this.props.node.input[5].value;
         const numVals = 256;
         this.numVals    = numVals;
         this.valueRed   = [numVals];
@@ -54,8 +54,8 @@ class TransferFunction extends React.Component {
                 {value: "2", text: "Black and White"},
                 {value: "3", text: "BGR Gradation"}
             ],
-            valMin: this.props.node.input[2].value,
-            valMax: this.props.node.input[3].value,
+            valMin: 0,
+            valMax: 0,
             btnFlags: [],
             redbtnColor: this.disableColor,
             greenbtnColor: this.disableColor,
@@ -434,15 +434,15 @@ class TransferFunction extends React.Component {
             if(this.defaultValMin !== min || this.defaultValMax !== max){
                 this.defaultValMin = min;
                 this.defaultValMax = max;
-                if(parseFloat(this.minInput.value) === 0 && parseFloat(this.maxInput.value) === 0){
-                    this.action.changeNodeInput({
-                        varname : varname,
-                        input : {
-                            minval :min,
-                            maxval :max
-                        }
-                    });
-                }
+                this.action.changeNodeInput({
+                    varname : varname,
+                    input : {
+                        minval :min,
+                        maxval :max,
+                        defaultminval :min,
+                        defaultmaxval :max
+                    }
+                });
                 this.drawGraph();
             }
         }
