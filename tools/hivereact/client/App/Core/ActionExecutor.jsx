@@ -1190,6 +1190,7 @@ export default class ActionExecuter {
 			let content = data.contents[i];
 			for (let k = 0; k < content.props.length; k = k + 1) {
 				let prop = content.props[k];
+				// 前後のキーを検索.
 				let preKey = null;
 				let postKey = null;
 				for (let key in prop.data) {
@@ -1324,6 +1325,7 @@ export default class ActionExecuter {
 					content.props[i].nodeVarname === input.nodeVarname) {
 					if (content.props[i].data.hasOwnProperty(frame)) {
 						delete content.props[i].data[frame];
+						this.applyCurrentFrame(this.store.getCurrentFrame());
 						this.store.emit(Constants.KEYFRAME_DELETED, null, content);
 					}
 					return;
