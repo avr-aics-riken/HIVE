@@ -186,6 +186,10 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	onExportGroup(ev) {
+		this.props.action.exportGroupNode(this.props.initialNodeData.varname);
+	}
+
 	contents() {
 		const styles = this.styles.bind(this)();
         this.topRowUsed = false;
@@ -199,6 +203,24 @@ export default class ItemView extends React.Component {
 					varname={this.props.initialNodeData.varname}
 					store={this.props.store}
 					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc.bind(this)}/>);
+
+		let exportButton = "";
+		if (this.props.store.isGroup(this.props.initialNodeData)) {
+			exportButton = (<div
+				style={{
+					border : "solid 1px",
+					borderRadius : "3px",
+					backgroundColor : "rgb(54, 196, 168)",
+					color : "black",
+					width : "60px",
+					height : "22px",
+					textAlign : "center",
+					margin : "1px",
+					float : "right",
+					cursor : "pointer"
+				}}
+				onClick={this.onExportGroup.bind(this)}>Export</div>);
+		}
 
 		let inputs = this.props.initialNodeData.input.map( ((hole, key) => {
             let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
@@ -253,8 +275,10 @@ export default class ItemView extends React.Component {
 						name : "Node",
 						value : this.state.label
 					}}
+					exportButton={exportButton}
 					key={String(this.props.id + "_title")}
-					id={String(this.props.id + "_title")} />
+					id={String(this.props.id + "_title")}>
+				</ItemTitle>
                 <div style={styles.propertyContainer}>
                     {this.panelCheckbox.bind(this)()}
 					{labelProp}
