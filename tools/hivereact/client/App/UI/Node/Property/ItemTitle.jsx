@@ -31,6 +31,7 @@ export default class ItemTitle extends React.Component {
         return (
             <div style={styles.title}>
                 {this.props.initialParam.hasOwnProperty('value') ? this.props.initialParam.value : "(Object)"}
+				{this.props.exportButton}
             </div>
         );
 	}
