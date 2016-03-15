@@ -9,11 +9,43 @@ export default class ItemTextInput extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			value : this.props.initialParam.value
+			value : this.props.initialParam.value,
+			onFrame : false
 		};
 		this.currentEdit = {
 			value : null
 		};
+		this.frameApplied = this.frameApplied.bind(this);
+	}
+
+	keyBackGround() {
+		if (this.state.onFrame) {
+			return "blue";
+		}
+		return "white";
+	}
+
+	frameApplied(err, content, prop) {
+		if (content.nodeVarname === this.props.initialParam.nodeVarname &&
+			prop.name === this.props.initialParam.name) {
+			if (prop.data.hasOwnProperty(this.props.store.getCurrentFrame())) {
+				this.setState({
+					onFrame	: true
+				});
+			} else {
+				this.setState({
+					onFrame	: false
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+	}
+
+	componentWillUnmount() {
+		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
 	}
 
 	styles() {
@@ -78,7 +110,7 @@ export default class ItemTextInput extends React.Component {
                 display: "inline-block",
             },
 			addkey : {
-				backgroundColor : "white",
+				backgroundColor : this.keyBackGround.bind(this)(),
 				borderRadius : "6px",
 				width : "8px",
 				height : "8px",
