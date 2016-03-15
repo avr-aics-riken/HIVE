@@ -9,7 +9,7 @@ export default class ItemVec extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			values : this.props.initialParam.value
+			values : JSON.parse(JSON.stringify(this.props.initialParam.value))
 		};
 		this.currentEdit = {
 			index : -1,
