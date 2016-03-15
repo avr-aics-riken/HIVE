@@ -99,18 +99,12 @@ export default class ItemView extends React.Component {
 	}
 
 	changeFunc(name, value) {
-		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = this.state.input;
-		for (let i = 0; i < inputs.length; i = i + 1) {
-			if (inputs[i].name === name) {
-            	inputs[i].value = value;
-				this.props.action.changeNode({
-					varname : this.props.initialNodeData.varname,
-					input : inputs
-				});
-			}
-		}
-		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value);
+		let input = {};
+		input[name] = JSON.parse(JSON.stringify(value));
+		this.props.action.changeNodeInput({
+			varname : this.props.initialNodeData.varname,
+			input : input
+		});
 	}
 
 	changeLabelFunc(name, value) {
