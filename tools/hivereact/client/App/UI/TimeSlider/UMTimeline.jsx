@@ -368,7 +368,7 @@ export default class UMTimeline extends React.Component {
 	        this.strokeRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
 	        context.fillStyle = this.setting.propTextColor;
 	        context.font = "normal 12px sans-serif";
-	        context.fillText(content.name, pdx + lw2 + cs, ypos + cs - cs / 4);
+	        context.fillText(content.name, pdx + lw2, ypos + cs - cs / 4);
 	        result.height = cs;
 
 	        // value bounds
@@ -468,7 +468,7 @@ export default class UMTimeline extends React.Component {
 		        context.fillStyle = this.setting.keyColor;
 		        for (let k in prop.data) {
 		            if (prop.data.hasOwnProperty(k)) {
-		                this.drawKey(context, splitx + k * scale - offsetX, ypos + cs2, kr, rect);
+		                this.drawKey(context, splitx + k * scale - offsetX, ypos + cs2, kr, valueRect);
 		            }
 		        }
 			}
@@ -714,7 +714,7 @@ export default class UMTimeline extends React.Component {
             textColor     : "rgb(255 , 255 , 255)" ,
             propTextColor : "rgb(200 , 200 , 200)" ,
             seekLineColor : "rgb(255 , 255 , 255)" ,
-            propPaddingX: 5,
+            propPaddingX: 6,
             lineWidth: 0.5,
             split: 200, // px
             headerSize: 50,
