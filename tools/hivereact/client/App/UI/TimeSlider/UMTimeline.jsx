@@ -72,6 +72,7 @@ export default class UMTimeline extends React.Component {
         window.addEventListener('resize', this.resizeDraw, false);
 		this.props.store.on(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
+		this.props.store.on(Core.Constants.KEYFRAME_DELETED, this.onRedraw);
 		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
     }
 
@@ -79,6 +80,7 @@ export default class UMTimeline extends React.Component {
 	    window.removeEventListener('resize', this.resizeDraw);
 		this.props.store.off(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.off(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
+		this.props.store.off(Core.Constants.KEYFRAME_DELETED, this.onRedraw);
 		this.props.store.off(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
 	}
 
