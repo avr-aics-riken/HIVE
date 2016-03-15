@@ -130,12 +130,15 @@ export default class ItemView extends React.Component {
 		let inputs = this.state.input;
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
-				inputs[i].value[index] = value;
-				console.log("UPDATE", inputs);
-				this.props.action.changeNode({
+				let copyVal = JSON.parse(JSON.stringify(inputs[i].value));
+				copyVal[index] = value;
+				let input = {};
+				input[name] = copyVal;
+				this.props.action.changeNodeInput({
 					varname : this.props.initialNodeData.varname,
-					input : inputs
+					input : input
 				});
+				break;
 			}
 		}
 		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value, index);
