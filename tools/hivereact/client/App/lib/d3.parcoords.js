@@ -21,7 +21,8 @@ d3.parcoords = function(config) {
         bundleDimension: null,
         smoothness: 0.0,
         showControlPoints: false,
-        hideAxis : []
+        hideAxis : [],
+        extent: []
     };
 
     extend(__, config);
@@ -198,9 +199,9 @@ d3.parcoords = function(config) {
                    config.usr.max !== null && config.usr.max !== undefined){
                     config.usr.extent = [config.usr.min, config.usr.max];
                     extent = [config.usr.min, config.usr.max];
-                    __.extent = [config.usr.min, config.usr.max];
+                    __.extent[k] = [config.usr.min, config.usr.max];
                 }else{
-                    __.extent = [extent[0], extent[1]];
+                    __.extent[k] = [extent[0], extent[1]];
                 }
 
                 // special case if single value
@@ -425,7 +426,7 @@ d3.parcoords = function(config) {
                 s = v[i][d[l]];
                 x = position(d[l]);
                 y = yscale[d[l]](s);
-                if(s >= __.extent[0] && s <= __.extent[1]){
+                if(s >= __.extent[d[l]][0] && s <= __.extent[d[l]][1]){
                     if(l <= 1){
                         e.push(x, y);
                     }else{
