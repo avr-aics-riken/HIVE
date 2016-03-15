@@ -512,83 +512,82 @@ export default class ActionExecuter {
  	 */
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
- 			for (let i = 0; i < this.store.getNodes().length; i = i + 1) {
-				if (this.store.getNodes()[i].varname === payload.nodeInfo.varname) {
-					let dstNode = this.store.getNodes()[i];
-					let srcNode =  payload.nodeInfo;
+			let node = this.store.findNode(this.store.data, payload.nodeInfo.varname);
+			if (node) {
+				let dstNode = node;
+				let srcNode =  payload.nodeInfo;
 
-					let hasInput = srcNode.hasOwnProperty('input');
-					let preInputs = JSON.stringify(dstNode.input);
-					let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
+				let hasInput = srcNode.hasOwnProperty('input');
+				let preInputs = JSON.stringify(dstNode.input);
+				let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
 
-					let hasSelect = srcNode.hasOwnProperty('select');
-					let preSelect = dstNode.select;
-					let postSelect = hasSelect ? payload.nodeInfo.select : null;
+				let hasSelect = srcNode.hasOwnProperty('select');
+				let preSelect = dstNode.select;
+				let postSelect = hasSelect ? payload.nodeInfo.select : null;
 
-					let hasPanel = srcNode.hasOwnProperty('panel');
-					let prePanel = JSON.stringify(dstNode.panel);
-					let postPanel = hasPanel ? JSON.stringify(payload.nodeInfo.panel) : null;
-					let prePanelVisible = dstNode.panel.visible;
-					let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
-					let prePanelSize = JSON.stringify(dstNode.panel.size);
-					let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
+				let hasPanel = srcNode.hasOwnProperty('panel');
+				let prePanel = JSON.stringify(dstNode.panel);
+				let postPanel = hasPanel ? JSON.stringify(payload.nodeInfo.panel) : null;
+				let prePanelVisible = dstNode.panel.visible;
+				let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
+				let prePanelSize = JSON.stringify(dstNode.panel.size);
+				let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
 
-					let hasNodeParam = srcNode.hasOwnProperty('node');
-					let preNodePos = JSON.stringify(dstNode.node.pos);
-					let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
-					let preNodeClose = dstNode.node.close;
-					let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
+				let hasNodeParam = srcNode.hasOwnProperty('node');
+				let preNodePos = JSON.stringify(dstNode.node.pos);
+				let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
+				let preNodeClose = dstNode.node.close;
+				let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
 
-					for (let info in payload.nodeInfo) {
-						if (info !== "uiComponent" && this.store.getNodes()[i].hasOwnProperty(info)) {
-							dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
-						}
+				for (let info in payload.nodeInfo) {
+					if (info !== "uiComponent" && node.hasOwnProperty(info)) {
+						dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 					}
+				}
 
-					this.store.emit(Constants.NODE_CHANGED, null, dstNode, i);
-					if (hasInput && preInputs !== postInputs) {
-						if (this.store.isGroup(dstNode)) {
-							// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
-							let pre = JSON.parse(preInputs);
-							let post = JSON.parse(postInputs);
-							for (let k = 0; k < pre.length; k = k + 1) {
-								if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
-									console.log(pre[k].nodeVarname);
-									let target = this.store.findNode(dstNode, pre[k].nodeVarname);
-									if (!target) {
-										console.error("not found input node")
-									}
-									for (let m = 0; m < target.input.length; m = m + 1) {
-										if (target.input[m].name === post[k].name) {
-											target.input[m].value = post[k].value;
-										}
-									}
-									this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
+				this.store.emit(Constants.NODE_CHANGED, null, dstNode);
+				if (hasInput && preInputs !== postInputs) {
+					if (this.store.isGroup(dstNode)) {
+						// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
+						let pre = JSON.parse(preInputs);
+						let post = JSON.parse(postInputs);
+						for (let k = 0; k < pre.length; k = k + 1) {
+							if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
+								console.log(pre[k].nodeVarname);
+								let target = this.store.findNode(dstNode, pre[k].nodeVarname);
+								if (!target) {
+									console.error("not found input node")
 								}
+								for (let m = 0; m < target.input.length; m = m + 1) {
+									if (target.input[m].name === post[k].name) {
+										target.input[m].value = post[k].value;
+									}
+								}
+								this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
 							}
-						} else {
-							this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
 						}
+					} else {
+						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
 					}
-					if (hasSelect && preSelect !== postSelect) {
-						this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode, i);
-					}
-					if (hasNodeParam && preNodePos !== postNodePos) {
-						this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode, i);
-					}
-					if (hasNodeParam && preNodeClose !== postNodeClose) {
-						this.store.emit(Constants.NODE_CLOSE_CHANGED, null, dstNode, i);
-					}
-					if (hasPanel && prePanel !== postPanel) {
-						this.store.emit(Constants.PANEL_CHANGED, null, dstNode, i);
-					}
-					if (hasPanel && prePanelVisible !== postPanelVisible) {
-						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, dstNode, i);
-					}
-					if (hasPanel && prePanelSize !== postPanelSize) {
-						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, dstNode, i);
-					}
+				}
+				if (hasSelect && preSelect !== postSelect) {
+					this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode);
+				}
+				if (hasNodeParam && preNodePos !== postNodePos) {
+					this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode);
+				}
+				if (hasNodeParam && preNodeClose !== postNodeClose) {
+					this.store.emit(Constants.NODE_CLOSE_CHANGED, null, dstNode);
+				}
+				if (hasPanel && prePanel !== postPanel) {
+					this.store.emit(Constants.PANEL_CHANGED, null, dstNode);
+				}
+				if (hasPanel && prePanelVisible !== postPanelVisible) {
+					this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, dstNode);
+				}
+				if (hasPanel && prePanelSize !== postPanelSize) {
+					this.store.emit(Constants.PANEL_SIZE_CHANGED, null, dstNode);
 				}
 			}
  		}
@@ -601,9 +600,8 @@ export default class ActionExecuter {
 		if (payload.hasOwnProperty('inputInfo')) {
 			let info = payload.inputInfo;
 			if (info.hasOwnProperty('varname') && info.hasOwnProperty('input')) {
-				let n = this.store.getNode(info.varname);
-				if (n) {
-					let node = n.node;
+				let node = this.store.findNode(this.store.data, info.varname);
+				if (node) {
 					for (let i = 0; i < node.input.length; i = i + 1) {
 						if (info.input.hasOwnProperty(node.input[i].name)) {
 							let copy = JSON.parse(JSON.stringify(node.input));
@@ -1215,7 +1213,7 @@ export default class ActionExecuter {
 					this.changeNodeInput({
 						inputInfo : inputInfo
 					});
-					console.log("pre post", preKey, postKey, inputInfo);
+					//console.log("pre post", preKey, postKey, inputInfo);
 				}
 			}
 		}
