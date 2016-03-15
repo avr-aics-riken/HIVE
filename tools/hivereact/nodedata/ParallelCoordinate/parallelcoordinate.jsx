@@ -45,12 +45,12 @@ class ParallelCoordinate extends React.Component {
         this.parcoords;         // from d3.parcoord.js
         this.dataval = null;
         this.densityRange = 95;
-        this.density          = this.props.node.input[4].value;
-        this.densityNormalize = this.props.node.input[5].value;
-        this.logScale         = this.props.node.input[6].value;
-        this.customScale      = this.props.node.input[7].value;
-        this.min              = this.props.node.input[8].value;
-        this.max              = this.props.node.input[9].value;
+        this.density          = this.props.node.input[2].value;
+        this.densityNormalize = this.props.node.input[3].value;
+        this.logScale         = this.props.node.input[4].value;
+        this.customScale      = this.props.node.input[5].value;
+        this.min              = this.props.node.input[6].value;
+        this.max              = this.props.node.input[7].value;
         this.weight = [];
         this.linecount = 0;
         this.dimensionTitles = {};
@@ -87,7 +87,6 @@ class ParallelCoordinate extends React.Component {
         this.onChangeScaleMin = this.onChangeScaleMin.bind(this);
         this.onChangeScaleMax = this.onChangeScaleMax.bind(this);
         this.onColorChange = this.onColorChange.bind(this);
-        this.onDensityColorChange = this.onDensityColorChange.bind(this);
     }
 
     imageRecieved(err, param, data){
@@ -169,8 +168,12 @@ class ParallelCoordinate extends React.Component {
         }
     }
 
-    onColorMapChange(canvas){
-        this.setState({colormap: canvas});
+    onColorMapChange(data){
+        this.setState({colormap: data.canvas});
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: {colormap: data.imageData}
+        });
         if(this.state.parse !== null){
             setTimeout((()=>{this.redraw();}).bind(this), 50);
         }
@@ -243,7 +246,7 @@ class ParallelCoordinate extends React.Component {
             r = parseInt(c[0], 16) / 255;
             g = parseInt(c[1], 16) / 255;
             b = parseInt(c[2], 16) / 255;
-            a.push([r, g, b, this.props.node.input[i - 1].value[3]]);
+            a.push([r, g, b, this.props.node.input[i + 8].value[3]]);
         }
         // send action from color input change
         this.props.action.changeNodeInput({
@@ -254,36 +257,6 @@ class ParallelCoordinate extends React.Component {
             }
         });
         if(!this.density){setTimeout(this.redraw, 50);}
-    }
-
-    onDensityColorChange(eve){
-        var c, e, r, g, b;
-        var a = [];
-        for(let i = 10; i < 20; ++i){
-            e = ReactDOM.findDOMNode(this.refs["lineColor" + (i - 7)]);
-            c = e.value.match(/[0-9|a-f]{2}/ig);
-            r = parseInt(c[0], 16) / 255;
-            g = parseInt(c[1], 16) / 255;
-            b = parseInt(c[2], 16) / 255;
-            a.push([r, g, b, this.props.node.input[i].value[3]]);
-        }
-        // send action from color input change
-        this.props.action.changeNodeInput({
-            varname: this.props.node.varname,
-            input: {
-                fLow:        a[0],
-                fMiddleLow:  a[1],
-                fMiddle:     a[2],
-                fMiddleHigh: a[3],
-                fHigh:       a[4],
-                bLow:        a[5],
-                bMiddleLow:  a[6],
-                bMiddle:     a[7],
-                bMiddleHigh: a[8],
-                bHigh:       a[9],
-            }
-        });
-        if(this.density){setTimeout(this.redraw, 50);}
     }
 
     singleConv(color){
@@ -376,10 +349,10 @@ class ParallelCoordinate extends React.Component {
             brushed: this.brushed,
             varname: this.node.varname,
             extent: null,
-            logScale: this.props.node.input[6].value,
-            customScale: this.props.node.input[7].value,
-            min: this.props.node.input[8].value,
-            max: this.props.node.input[9].value
+            logScale: this.props.node.input[4].value,
+            customScale: this.props.node.input[5].value,
+            min: this.props.node.input[6].value,
+            max: this.props.node.input[7].value
         };
         let example = ReactDOM.findDOMNode(this.refs.examples);
         this.linecount = this.dataval.length;
@@ -414,8 +387,8 @@ class ParallelCoordinate extends React.Component {
         }
     }
     glInitialColor(){
-        this.glContext[this.foreground].color           = this.props.node.input[0].value;
-        this.glContext[this.brushed].color              = this.props.node.input[1].value;
+        this.glContext[this.foreground].color = this.props.node.input[9].value;
+        this.glContext[this.brushed].color    = this.props.node.input[10].value;
     }
     glRender(target, data, lines, left, right){
         if(!target){return;}
@@ -717,8 +690,8 @@ class ParallelCoordinate extends React.Component {
 
     componentDidUpdate(){
         if(this.glContext.hasOwnProperty(this.foreground)){
-            this.glContext[this.foreground].color = this.props.node.input[0].value;
-            this.glContext[this.brushed].color = this.props.node.input[1].value;
+            this.glContext[this.foreground].color = this.props.node.input[9].value;
+            this.glContext[this.brushed].color = this.props.node.input[10].value;
         }
     }
 
@@ -802,34 +775,34 @@ class ParallelCoordinate extends React.Component {
                     <div style={styles.uiFrame}>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[7].value} id="customCheck" onChange={this.onChangeCustomScale} style={styles.checkInputs} />
+                                <input type="checkbox" checked={this.props.node.input[5].value} id="customCheck" onChange={this.onChangeCustomScale} style={styles.checkInputs} />
                                 <label onClick={this.onChangeCustomScale}>custom scale</label>
                             </div>
                             <div style={styles.flexcol}>
                                 <p>min</p>
-                                <input type="text" value={this.props.node.input[8].value} id="customScaleMin" onChange={this.onChangeScaleMin} style={styles.textInputs} />
+                                <input type="text" value={this.props.node.input[6].value} id="customScaleMin" onChange={this.onChangeScaleMin} style={styles.textInputs} />
                             </div>
                             <div style={styles.flexcol}>
                                 <p>max</p>
-                                <input type="text" value={this.props.node.input[9].value} id="customScaleMax" onChange={this.onChangeScaleMax} style={styles.textInputs}/>
+                                <input type="text" value={this.props.node.input[7].value} id="customScaleMax" onChange={this.onChangeScaleMax} style={styles.textInputs}/>
                             </div>
                             <div style={styles.flexcol}>
                                 <p style={styles.inputTitle}>line</p>
-                                <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[0].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[1].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[9].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[10].value)} onChange={this.onColorChange} style={styles.colorInputs} />
                             </div>
                         </div>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[4].value} id="densityCheck" onChange={this.onChangeDensity} style={styles.checkInputs} />
+                                <input type="checkbox" checked={this.props.node.input[2].value} id="densityCheck" onChange={this.onChangeDensity} style={styles.checkInputs} />
                                 <label onClick={this.onChangeDensity} style={styles.labels}>density mode</label>
                             </div>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[5].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} style={styles.checkInputs} />
+                                <input type="checkbox" checked={this.props.node.input[3].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} style={styles.checkInputs} />
                                 <label onClick={this.onChangeDensityNormalize} style={styles.labels}>density normalize</label>
                             </div>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[6].value} id="logScale" onChange={this.onChangeLogScale} style={styles.checkInputs} />
+                                <input type="checkbox" checked={this.props.node.input[4].value} id="logScale" onChange={this.onChangeLogScale} style={styles.checkInputs} />
                                 <label onClick={this.onChangeLogScale} style={styles.labels}>log scale</label>
                             </div>
                         </div>
