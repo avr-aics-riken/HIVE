@@ -570,7 +570,7 @@ export default class ActionExecuter {
 						}
 					}
 					if (hasSelect && preSelect !== postSelect) {
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, dstNode, i);
+						this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode, i);
 					}
 					if (hasNodeParam && preNodePos !== postNodePos) {
 						this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode, i);
@@ -1062,7 +1062,7 @@ export default class ActionExecuter {
 				let n = this.store.getNode(payload.nodeVarnameList[i]);
 				if (n && !n.nodeselect) {
 					n.node.select = true;
-					this.store.emit(Constants.NODE_SELECTE_CHANGED, null, n.node, n.index);
+					this.store.emit(Constants.NODE_SELECT_CHANGED, null, n.node, n.index);
 				}
 			}
 		}
@@ -1079,7 +1079,7 @@ export default class ActionExecuter {
 					if (n.node.select) {
 						if (!payload.hasOwnProperty('excludeVarname') || payload.excludeVarname !== n.nodevarname) {
 							n.node.select = false;
-							this.store.emit(Constants.NODE_SELECTE_CHANGED, null, n.node, n.index);
+							this.store.emit(Constants.NODE_SELECT_CHANGED, null, n.node, n.index);
 						}
 					}
 				}
@@ -1087,7 +1087,7 @@ export default class ActionExecuter {
 				for (let i = 0; i < this.store.getNodes().length; i = i + 1) {
 					// if (this.store.getNodes()[i].select) {
 						this.store.getNodes()[i].select = false;
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.NODE_SELECT_CHANGED, null, this.store.getNodes()[i], i);
 					// }
 				}
 			}
