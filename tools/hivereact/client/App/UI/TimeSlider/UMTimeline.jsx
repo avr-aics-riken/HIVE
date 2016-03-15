@@ -643,10 +643,19 @@ export default class UMTimeline extends React.Component {
 		let selects = this.props.store.getSelectedNodeList();
 		let contents = [];
 		for (let i = 0; i < selects.length; i = i + 1) {
-			let varname = selects[i].varname;
-			for (let k = 0; k < data.contents.length; k = k + 1) {
-				if (data.contents[k].nodeVarname === varname) {
-					contents.push(data.contents[k]);
+			let node = selects[i];
+			let varname = node.varname;
+			if (this.props.store.isGroup(node)) {
+				for (let k = 0; k < data.contents.length; k = k + 1) {
+					if (this.props.store.findNode(node, data.contents[k].nodeVarname)) {
+						contents.push(data.contents[k]);
+					}
+				}
+			} else {
+				for (let k = 0; k < data.contents.length; k = k + 1) {
+					if (data.contents[k].nodeVarname === varname) {
+						contents.push(data.contents[k]);
+					}
 				}
 			}
 		}
