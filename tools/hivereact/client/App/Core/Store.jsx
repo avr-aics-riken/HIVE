@@ -21,6 +21,7 @@ export default class Store extends EventEmitter {
 			timeline : {
 				frame : 1,
 		        data : {
+				/*
 		            contents: [{
 		                name: "test",
 		                closed: false,
@@ -75,6 +76,7 @@ export default class Store extends EventEmitter {
 		                    }
 		                }]
 		            }]
+					*/
 		        }
 			}
         }
