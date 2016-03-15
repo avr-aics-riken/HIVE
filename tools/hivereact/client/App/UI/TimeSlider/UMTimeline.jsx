@@ -18,7 +18,7 @@ export default class UMTimeline extends React.Component {
         this.setting      = props.setting;
         this.width        = !this.canvas ? 0 : this.canvas.width;
         this.height       = !this.canvas ? 0 : this.canvas.height;
-        this.data         = null;
+        this.data         = { contents : [] };
         this.keyRects     = [];
         this.currentframe = 0;
 
@@ -52,6 +52,7 @@ export default class UMTimeline extends React.Component {
         this.initMouse         = this.initMouse.bind(this);
         this.initData          = this.initData.bind(this);
 		this.onRedraw = this.onRedraw.bind(this);
+		this.onSelectChanged = this.onSelectChanged.bind(this);
     }
 
     componentDidMount(){
@@ -71,12 +72,18 @@ export default class UMTimeline extends React.Component {
         window.addEventListener('resize', this.resizeDraw, false);
 		this.props.store.on(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
+		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
     }
 
 	componentWillUnmount() {
 	    window.removeEventListener('resize', this.resizeDraw);
 		this.props.store.off(Core.Constants.CHANGE_FRAME, this.onFrameChange);
-		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
+		this.props.store.off(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
+		this.props.store.off(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
+	}
+
+	onSelectChanged(err, node) {
+		this.setData(this.props.store.getTimelineData());
 	}
 
 	onFrameChange(err, frame) {
@@ -630,7 +637,19 @@ export default class UMTimeline extends React.Component {
     };
 
     setData(data) {
-        this.data = data;
+		if (!data.hasOwnProperty('contents')) { return; }
+		let selects = this.props.store.getSelectedNodeList();
+		let contents = [];
+		for (let i = 0; i < selects.length; i = i + 1) {
+			let varname = selects[i].varname;
+			for (let k = 0; k < data.contents.length; k = k + 1) {
+				if (data.contents[k].nodeVarname === varname) {
+					contents.push(data.contents[k]);
+				}
+			}
+		}
+		console.log(this.data, contents);
+        this.data.contents = contents;
         this.draw({
             x: 0,
             y: 0,

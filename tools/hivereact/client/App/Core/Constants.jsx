@@ -14,7 +14,7 @@ module.exports = {
     ANALYZED_DATA_RECIEVED: "analyzed_data_recieved",
     NODE_ADDED : "node_added",
     NODE_DELETED : "node_deleted",
-    NODE_SELECTE_CHANGED : "node_selected",
+    NODE_SELECT_CHANGED : "node_selected",
     PLUG_ADDED : "plug_added",
     PLUG_DELETED : "plug_deleted",
 	PANEL_CHANGED : "panel_changed",

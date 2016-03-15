@@ -46,7 +46,7 @@ export default class Container extends React.Component {
         window.addEventListener('mouseup', this.onScaleUp);
         this.store.on(Core.Constants.NODE_INPUT_CHANGED, this.nodeChanged);
         this.store.on(Core.Constants.PANEL_CHANGED, this.nodeChanged);
-        this.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
+        this.store.on(Core.Constants.NODE_SELECT_CHANGED, this.nodeChanged);
     }
 
     componentWillUnmount() {
@@ -56,7 +56,7 @@ export default class Container extends React.Component {
         window.removeEventListener('mouseup', this.onScaleUp);
         this.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.nodeChanged);
         this.store.removeListener(Core.Constants.PANEL_CHANGED, this.nodeChanged);
-        this.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.nodeChanged);
+        this.store.removeListener(Core.Constants.NODE_SELECT_CHANGED, this.nodeChanged);
     }
 
     onMouseDown(ev) {

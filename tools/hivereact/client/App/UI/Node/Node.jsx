@@ -204,7 +204,7 @@ export default class Node extends React.Component {
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
 		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
-		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
 		let rect = this.refs.node.getBoundingClientRect();
 		let invzoom = 1.0 / this.props.nodeStore.getZoom();
 		this.props.nodeStore.setNodeSize(this.props.nodeVarname, (rect.right - rect.left) * invzoom, (rect.bottom - rect.top) * invzoom);
@@ -221,7 +221,7 @@ export default class Node extends React.Component {
 		window.removeEventListener('keydown', this.onKeyDown);
 		window.removeEventListener('keyup', this.onKeyUp);
 		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
-		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.removeListener(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
 
 		this.refs.node.removeEventListener('dblclick', this.onDoubleClick);
 	}
