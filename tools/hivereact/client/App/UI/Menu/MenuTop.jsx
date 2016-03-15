@@ -30,6 +30,16 @@ export default class MenuTop extends React.Component {
         this.showConsole = props.consoleShow;
 		this.onKeyDown = this.onKeyDown.bind(this);
 		this.onKeyUp = this.onKeyUp.bind(this);
+
+	    this.editNodeCopy = this.editNodeCopy.bind(this);
+	    this.editNodePaste = this.editNodePaste.bind(this);
+	    this.editNodeDelete = this.editNodeDelete.bind(this);
+	    this.editNodeMakeGroup = this.editNodeMakeGroup.bind(this);
+		this.editNodeUnGroup = this.editNodeUnGroup.bind(this);
+	    this.layoutAll = this.layoutAll.bind(this);
+	    this.layoutNode = this.layoutNode.bind(this);
+	    this.layoutPanel = this.layoutPanel.bind(this);
+	    this.layoutPanelNode = this.layoutPanelNode.bind(this);
     }
 
 	componentDidMount() {
@@ -171,7 +181,7 @@ export default class MenuTop extends React.Component {
         if (this.hasOwnProperty(info.key)) {
             this[info.key](info.value);
         } else {
-            console.error("Unknown menu command", info, e);
+            console.error("Unknown menu command", info);
         }
     }
 
