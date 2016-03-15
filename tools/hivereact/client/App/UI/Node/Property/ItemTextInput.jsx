@@ -103,7 +103,11 @@ export default class ItemTextInput extends React.Component {
 
 	submit(ev) {
 		if (this.props.initialParam.name === "label" || this.currentEdit.value) {
-			this.props.changeFunc(this.props.initialParam.name, this.currentEdit.value);
+			if (this.props.initialParam.type === "float") {
+				this.props.changeFunc(this.props.initialParam.name, Number(this.currentEdit.value));
+			} else {
+				this.props.changeFunc(this.props.initialParam.name, this.currentEdit.value);
+			}
 		}
 		ev.target.style.border = "none";
 		ev.target.blur();
