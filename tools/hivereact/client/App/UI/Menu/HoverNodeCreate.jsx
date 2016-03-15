@@ -50,6 +50,7 @@ export default class HoverNodeCreate extends React.Component {
                     action={this.props.action}
                     focusFunction={this.props.focusFunction}
                     hiddenFunction={this.props.hiddenFunction}
+                    floating={true}
                     ref="creator"
                 />
                 <MenuNodeList
@@ -62,4 +63,3 @@ export default class HoverNodeCreate extends React.Component {
         );
     }
 }
-

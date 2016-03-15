@@ -136,7 +136,7 @@ export default class ItemSuggest extends React.Component {
                     marginTop: "1px",
                     marginBottom: "1px",
                     padding: "1px",
-                    width: "153px",
+                    width: "165px",
                     height: "19px",
                     verticalAlign: "middle",
                     display: "inline-block"

@@ -46,7 +46,7 @@ export default class ItemView extends React.Component {
 	styles() {
 		return {
 			view : {
-				width : "250px",
+				width : "255px",
 				// backgroundColor : "rgb(80, 80, 80)",
 				// color : "black",
 				display : "table"
@@ -55,7 +55,7 @@ export default class ItemView extends React.Component {
                 backgroundColor: "rgb(133,133,133)",
                 borderRadius: "2px",
                 margin: "2px",
-                width: "246px"
+                width: "255x"
             }
 		};
 	}

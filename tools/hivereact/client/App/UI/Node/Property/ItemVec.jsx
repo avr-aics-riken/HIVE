@@ -17,6 +17,15 @@ export default class ItemVec extends React.Component {
 		};
 	}
 
+	width() {
+		const len = this.props.initialParam.value.length;
+		if (len === 4) {
+			return "39px";
+		} else {
+			return "53px";
+		}
+	}
+
 	styles() {
         let border = ()=>{
             if(this.props.top && this.props.bottom){
@@ -67,7 +76,7 @@ export default class ItemVec extends React.Component {
                 color : "#333",
                 letterSpacing: "normal",
                 //padding: "1px",
-                width : "164px",
+                width : "170px",
                 verticalAlign: "middle",
                 display: "inline-block"
             },
@@ -84,7 +93,7 @@ export default class ItemVec extends React.Component {
 				marginTop: "1px",
 				marginBottom: "1px",
                 verticalAlign: "middle",
-                width: "36px",
+                width: this.width.bind(this)(),
 				height: "19px",
                 float: "left",
 				border : "1px solid rgba(54, 196, 168, 0.0)"
