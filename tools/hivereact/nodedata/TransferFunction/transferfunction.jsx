@@ -73,8 +73,8 @@ class TransferFunction extends React.Component {
         this.alphabtnClick       = this.alphabtnClick.bind(this);
         this.allbtnClick         = this.allbtnClick.bind(this);
         this.allBtnOff           = this.allBtnOff.bind(this);
-        this.minInputChange      = this.minInputChange.bind(this);
-        this.maxInputChange      = this.maxInputChange.bind(this);
+        this.numberInputChange   = this.numberInputChange.bind(this);
+        this.nodeInputChanged    = this.nodeInputChanged.bind(this);
         this.componentDidMount   = this.componentDidMount.bind(this);
         this.componentWillUnmount= this.componentWillUnmount.bind(this);
         this.transFunc           = this.transFunc.bind(this);
@@ -115,7 +115,6 @@ class TransferFunction extends React.Component {
         };
      }
      onRecieveAnalyzed(data) {
-        //console.error(data);
         this.setAnalyzeResult(data);
      }
      onSelectChange(eve){
@@ -184,40 +183,27 @@ class TransferFunction extends React.Component {
             allbtnColor:   this.disableColor
         });
     }
-    minInputChange(eve){
-        if (parseFloat(this.minInput.value) !== NaN) {
-            const vl = this.minInput.value;
-            // const vl = parseFloat(this.minInput.value);
+    numberInputChange(eve){
+        if(!isNaN(parseFloat(this.minInput.value)) || !isNaN(parseFloat(this.maxInput.value))){
             const varname = this.node.varname;
+            const minval = parseFloat(this.minInput.value);
+            const maxval = parseFloat(this.maxInput.value);
             this.action.changeNodeInput({
                 varname : varname,
                 input : {
-                    "minval" : vl
+                    "minval": minval,
+                    "maxval": maxval
                 }
             });
-            this.setState({valMin: vl});
-            this.drawGraph();
-            if (this.changeCallback){
-                this.changeCallback(this);
-            }
         }
     }
-    maxInputChange(eve){
-        if (parseFloat(this.maxInput.value) !== NaN) {
-            const vl = parseFloat(this.maxInput.value);
-            const varname = this.node.varname;
-            this.action.changeNodeInput({
-                varname : varname,
-                input : {
-                    "maxval" : vl
-                }
-            });
-            this.setState({valMax: vl});
-            this.drawGraph();
-            if (this.changeCallback){
-                this.changeCallback(this);
-            }
-        }
+    nodeInputChanged(err, data){
+        this.setState({
+            valMin: data.input[2].value,
+            valMax: data.input[3].value
+        });
+        this.drawGraph();
+        setTimeout((()=>{if(this.changeCallback){this.changeCallback(this);}}).bind(this), 50);
     }
     componentDidMount(){
         this.wrapper = ReactDOM.findDOMNode(this.refs.wrapper);
@@ -236,11 +222,15 @@ class TransferFunction extends React.Component {
         }).bind(this), true);
 
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
     componentWillUnmount() {
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
     transFunc(x){return Math.sqrt(x);}
     invTransFunc(x){return x*x;}
@@ -425,12 +415,6 @@ class TransferFunction extends React.Component {
     getMaxValue(){
         return this.state.valMax;
     }
-    setMinValue(val){
-        this.setState({valMin: val});
-    }
-    setMaxValue(val){
-        this.setState({valMax: val});
-    }
     getNumValues(){
         return this.numVals;
     }
@@ -448,17 +432,15 @@ class TransferFunction extends React.Component {
             if(this.defaultValMin !== min || this.defaultValMax !== max){
                 this.defaultValMin = min;
                 this.defaultValMax = max;
-                this.action.changeNodeInput({
-                    varname : varname,
-                    input : {
-                        minval :min,
-                        maxval :max
-                    }
-                });
-                this.setState({
-                    valMin: min,
-                    valMax: max
-                });
+                if(parseFloat(this.minInput.value) === 0 && parseFloat(this.maxInput.value) === 0){
+                    this.action.changeNodeInput({
+                        varname : varname,
+                        input : {
+                            minval :min,
+                            maxval :max
+                        }
+                    });
+                }
                 this.drawGraph();
             }
         }
@@ -576,11 +558,11 @@ class TransferFunction extends React.Component {
                 <div ref="minmaxframe" style={styles.minmaxframe}>
                     <div style={styles.numberArea}>
                         <div ref="minText" className="KCaption" style={styles.minmaxText}>Min</div>
-                        <input ref="minInput" type="number" step={0.00001} value={this.state.valMin} onChange={this.minInputChange} style={styles.minmaxInput} />
+                        <input ref="minInput" type="number" step={0.00001} value={this.state.valMin} onChange={this.numberInputChange} style={styles.minmaxInput} />
                     </div>
                     <div style={styles.numberArea}>
                         <div ref="maxText" className="KCaption" style={styles.minmaxText}>Max</div>
-                        <input ref="maxInput" type="number" step={0.00001} value={this.state.valMax} onChange={this.maxInputChange} style={styles.minmaxInput} />
+                        <input ref="maxInput" type="number" step={0.00001} value={this.state.valMax} onChange={this.numberInputChange} style={styles.minmaxInput} />
                     </div>
                 </div>
             </div>
