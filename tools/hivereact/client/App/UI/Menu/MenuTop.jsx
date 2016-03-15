@@ -84,6 +84,13 @@ export default class MenuTop extends React.Component {
 		if (ev.keyCode === 37) { // "→"
 			this.props.action.changeFrame(this.props.store.getCurrentFrame() - 1)
 		}
+		if (ev.keyCode == 73) { // "i"
+			let nodes = this.props.store.getSelectedNodeList();
+			if (nodes.length > 0) {
+				let node = nodes[0];
+				this.props.action.addKeyFrame(this.props.store.getCurrentFrame(), node, node.input[0]);
+			}
+		}
 		if (ev.keyCode === 46) { // delete
 			this.editNodeDelete();
 		}

@@ -75,6 +75,7 @@ export default class ActionExecuter {
 		this.save = this.save.bind(this);
 		this.load = this.load.bind(this);
 		this.changeFrame = this.changeFrame.bind(this);
+		this.addKeyFrame = this.addKeyFrame.bind(this);
 	}
 
     /**
@@ -1186,8 +1187,65 @@ export default class ActionExecuter {
 			if (payload.frame < 0) {
 				payload.frame = 0;
 			}
-			this.store.data.timeline.frame = payload.frame;
-			this.store.emit(Constants.CHANGE_FRAME, null, payload.frame);
+			let f = Math.floor(payload.frame + 0.5);
+			this.store.data.timeline.frame = f;
+			this.store.emit(Constants.CHANGE_FRAME, null, f);
+		}
+	}
+
+	/**
+	 * キーフレームを追加する
+	 * @param frame フレーム番号
+	 * @param node ノード
+	 * @param input キーフレームを登録する入力
+	 */
+	addKeyFrame(payload) {
+		if (payload.hasOwnProperty("frame") && payload.hasOwnProperty("node") && payload.hasOwnProperty("input")) {
+			let data = this.store.data.timeline.data;
+			if (!data.hasOwnProperty('contents')) {
+				data.contents = [];
+			}
+			let varnameToContent = {};
+			for (let i = 0; i < data.contents.length; i = i + 1) {
+				if (data.contents[i].hasOwnProperty('nodeVarname')) {
+					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
+				}
+			}
+			let node = payload.node;
+			let frame = payload.frame;
+			let input = payload.input;
+
+			let content;
+			if (!varnameToContent.hasOwnProperty(node.varname)) {
+				content = {
+					name: node.label ? node.label : node.name,
+					nodeVarname : node.varname,
+					color: "rgb(32, 96, 196)",
+					propColor: "rgba(8, 62, 162, 1.0)",
+					props: []
+				};
+				data.contents.push(content);
+			} else {
+			 	content = varnameToContent[node.varname];
+			}
+			let prop = null;
+			for (let i = 0; i < content.props.length; i = i + 1) {
+				if (content.props[i].name === input.name &&
+					content.props[i].nodeVarname === input.nodeVarname) {
+					prop = content.props[i];
+				}
+			}
+			if (!prop) {
+				prop = {
+					name: input.name,
+					nodeVarname : input.nodeVarname,
+					data: {}
+				};
+				content.props.push(prop);
+			}
+			prop.data[frame] = JSON.parse(JSON.stringify(payload.input.value));
+
+			this.store.emit(Constants.KEYFRAME_ADDED, null, content);
 		}
 	}
 }

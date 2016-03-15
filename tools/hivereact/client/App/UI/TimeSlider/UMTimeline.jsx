@@ -51,6 +51,7 @@ export default class UMTimeline extends React.Component {
         this.click             = this.click.bind(this);
         this.initMouse         = this.initMouse.bind(this);
         this.initData          = this.initData.bind(this);
+		this.onRedraw = this.onRedraw.bind(this);
     }
 
     componentDidMount(){
@@ -69,15 +70,23 @@ export default class UMTimeline extends React.Component {
 
         window.addEventListener('resize', this.resizeDraw, false);
 		this.props.store.on(Core.Constants.CHANGE_FRAME, this.onFrameChange);
+		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
     }
 
 	componentWillUnmount() {
 	    window.removeEventListener('resize', this.resizeDraw);
 		this.props.store.off(Core.Constants.CHANGE_FRAME, this.onFrameChange);
+		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
 	}
 
 	onFrameChange(err, frame) {
 		this.setCurrentFrame(Number(frame));
+	}
+
+	onRedraw(err, data) {
+		this.setData(this.props.store.getTimelineData());
+		console.log(this.props.store.getTimelineData())
+		this.draw();
 	}
 
     resizeDraw(){
@@ -343,6 +352,46 @@ export default class UMTimeline extends React.Component {
         return result;
     }
 
+	drawPropBackground(rect, ypos) {
+        var context = this.canvas.getContext('2d'),
+            i,
+            height = 0,
+            cs = this.setting.contentSize,
+            cs2 = cs / 2.0,
+            splitx = this.splitX(),
+            splitx_inv = this.width - splitx,
+            ss = this.setting.spiltterSize,
+            lw = this.setting.lineWidth,
+            lw2 = lw * 2.0,
+            pdx = this.setting.propPaddingX,
+            kr = this.setting.keyRadius,
+            scale = this.setting.scale,
+            offsetX = this.setting.offsetX,
+            offsetY = this.setting.offsetX,
+            result = {
+                x: 0,
+                width: 0,
+                height: 0
+            },
+            valueRect;
+
+        // keys
+        context.fillStyle = this.setting.propColor;
+        this.fillRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
+        context.strokeStyle = this.setting.lineColor;
+        context.lineWidth = lw / 2.0;
+        this.strokeRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
+        result.height = cs;
+
+        // value bounds
+        context.fillStyle = this.setting.propColor;
+        this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
+        context.strokeStyle = this.setting.lineColor;
+        context.lineWidth = lw;
+        this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
+		return result;
+	}
+
     drawProp(rect, ypos, content, prop, index) {
         var context = this.canvas.getContext('2d'),
             i,
@@ -368,22 +417,10 @@ export default class UMTimeline extends React.Component {
 
 		if (index === 0) {
 	        // keys
-	        context.fillStyle = this.setting.propColor;
-	        this.fillRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
-	        context.strokeStyle = this.setting.lineColor;
-	        context.lineWidth = lw / 2.0;
-	        this.strokeRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
 	        context.fillStyle = this.setting.propTextColor;
 	        context.font = "normal 12px sans-serif";
 	        context.fillText(content.name, pdx + lw2, ypos + cs - cs / 4);
 	        result.height = cs;
-
-	        // value bounds
-	        context.fillStyle = this.setting.propColor;
-	        this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
-	        context.strokeStyle = this.setting.lineColor;
-	        context.lineWidth = lw;
-	        this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
 		}
 
         valueRect = JSON.parse(JSON.stringify(rect));
@@ -404,6 +441,41 @@ export default class UMTimeline extends React.Component {
         }
         return result;
     };
+
+	drawContentsBackground(rect, ypos) {
+		var context = this.canvas.getContext('2d'),
+			i,
+			height = 0,
+			offsetX = this.setting.offsetX,
+			offsetY = this.setting.offsetX,
+			scale = this.setting.scale,
+			cs = this.setting.contentSize,
+			cs2 = cs / 2.0,
+			splitx = this.splitX(),
+			splitx_inv = this.width - splitx,
+			ss = this.setting.spiltterSize,
+			lw = this.setting.lineWidth,
+			lw2 = lw * 2.0,
+			kr = this.setting.keyRadius,
+			ar = this.setting.arrowRadius,
+			bounds,
+			valueRect;
+
+		height = height + cs;
+
+		// value bounds
+		context.fillStyle = this.setting.contentColor;
+		this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
+		context.strokeStyle = this.setting.lineColor;
+		context.lineWidth = lw;
+		this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
+
+		valueRect = JSON.parse(JSON.stringify(rect));
+		valueRect.x = splitx;
+
+		this.drawPropBackground(rect, ypos);
+		return height;
+	}
 
     drawContent(rect, ypos, content) {
         var context = this.canvas.getContext('2d'),
@@ -452,12 +524,13 @@ export default class UMTimeline extends React.Component {
         });
 
         // value bounds
+		/*
         context.fillStyle = this.setting.contentColor;
         this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
         context.strokeStyle = this.setting.lineColor;
         context.lineWidth = lw;
         this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
-
+		*/
         valueRect = JSON.parse(JSON.stringify(rect));
         valueRect.x = splitx;
 
@@ -497,12 +570,21 @@ export default class UMTimeline extends React.Component {
     };
 
     drawData(rect) {
-        var i,
-        k,
-        contents = this.data.contents,
-            content,
-            height = this.setting.measureHeight;
+		var i,
+			k,
+			contents = this.data.contents,
+			content,
+			height;
 
+		height = this.setting.measureHeight;
+		for (i = 0; i < 10; i = i + 1) {
+			height = height + this.drawContentsBackground(rect, height)
+		}
+		if (!this.data.hasOwnProperty("contents")) {
+			return;
+		}
+
+		height = this.setting.measureHeight;
         this.keyRects = [];
         for (i = 0; i < contents.length; i = i + 1) {
             content = contents[i];

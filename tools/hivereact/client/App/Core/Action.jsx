@@ -407,4 +407,20 @@ export default class Action {
 			frame : frame
 		});
 	}
+
+	/**
+	 * キーフレームを追加する
+	 * @param frame フレーム番号
+	 * @param node ノード
+	 * @param input キーフレームを登録する入力
+	 */
+	addKeyFrame(frame, node, input) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "addKeyFrame",
+			frame : frame,
+			node : node,
+			input : input
+		});
+	}
 }
