@@ -40,6 +40,7 @@ export default class MenuTop extends React.Component {
 	    this.layoutNode = this.layoutNode.bind(this);
 	    this.layoutPanel = this.layoutPanel.bind(this);
 	    this.layoutPanelNode = this.layoutPanelNode.bind(this);
+		this.windowToggleConsoleOutput = this.windowToggleConsoleOutput.bind(this);
     }
 
 	componentDidMount() {
