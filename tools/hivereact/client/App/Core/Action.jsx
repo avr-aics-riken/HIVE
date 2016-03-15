@@ -423,4 +423,20 @@ export default class Action {
 			input : input
 		});
 	}
+
+	/**
+	 * キーフレームを削除する
+	 * @param frame フレーム番号
+	 * @param node ノード
+	 * @param input キーフレームを登録する入力
+	 */
+	deleteKeyFrame(frame, node, input) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "deleteKeyFrame",
+			frame : frame,
+			node : node,
+			input : input
+		});
+	}
 }

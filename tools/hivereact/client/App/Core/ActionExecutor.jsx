@@ -76,6 +76,7 @@ export default class ActionExecuter {
 		this.load = this.load.bind(this);
 		this.changeFrame = this.changeFrame.bind(this);
 		this.addKeyFrame = this.addKeyFrame.bind(this);
+		this.deleteKeyFrame = this.deleteKeyFrame.bind(this);
 	}
 
     /**
@@ -1201,6 +1202,10 @@ export default class ActionExecuter {
 	 */
 	addKeyFrame(payload) {
 		if (payload.hasOwnProperty("frame") && payload.hasOwnProperty("node") && payload.hasOwnProperty("input")) {
+			let node = payload.node;
+			let frame = payload.frame;
+			let input = payload.input;
+
 			let data = this.store.data.timeline.data;
 			if (!data.hasOwnProperty('contents')) {
 				data.contents = [];
@@ -1211,10 +1216,6 @@ export default class ActionExecuter {
 					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
 				}
 			}
-			let node = payload.node;
-			let frame = payload.frame;
-			let input = payload.input;
-
 			let content;
 			if (!varnameToContent.hasOwnProperty(node.varname)) {
 				content = {
@@ -1233,6 +1234,7 @@ export default class ActionExecuter {
 				if (content.props[i].name === input.name &&
 					content.props[i].nodeVarname === input.nodeVarname) {
 					prop = content.props[i];
+					break;
 				}
 			}
 			if (!prop) {
@@ -1246,6 +1248,43 @@ export default class ActionExecuter {
 			prop.data[frame] = JSON.parse(JSON.stringify(payload.input.value));
 
 			this.store.emit(Constants.KEYFRAME_ADDED, null, content);
+		}
+	}
+
+	/**
+	 * キーフレームを削除する
+	 */
+	deleteKeyFrame(payload) {
+		if (payload.hasOwnProperty("frame") && payload.hasOwnProperty("node") && payload.hasOwnProperty("input")) {
+			let node = payload.node;
+			let frame = payload.frame;
+			let input = payload.input;
+
+			let data = this.store.data.timeline.data;
+			if (!data.hasOwnProperty('contents')) {
+				console.error("not found keyframe for delete");
+			}
+			let varnameToContent = {};
+			for (let i = 0; i < data.contents.length; i = i + 1) {
+				if (data.contents[i].hasOwnProperty('nodeVarname')) {
+					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
+				}
+			}
+			if (!varnameToContent.hasOwnProperty(node.varname)) {
+				console.error("not found keyframe for delete");
+			}
+			let content = varnameToContent[node.varname];
+			for (let i = 0; i < content.props.length; i = i + 1) {
+				if (content.props[i].name === input.name &&
+					content.props[i].nodeVarname === input.nodeVarname) {
+					if (content.props[i].data.hasOwnProperty(frame)) {
+						delete content.props[i].data[frame];
+						this.store.emit(Constants.KEYFRAME_DELETED, null, content);
+					}
+					return;
+				}
+			}
+			console.error("not found keyframe for delete");
 		}
 	}
 }
