@@ -24,6 +24,7 @@ export default class UMTimeline extends React.Component {
 
         this.componentDidMount = this.componentDidMount.bind(this);
         this.resizeDraw        = this.resizeDraw.bind(this);
+		this.onFrameChange     = this.onFrameChange.bind(this);
         this.intersects        = this.intersects.bind(this);
         this.drawLine          = this.drawLine.bind(this);
         this.drawKey           = this.drawKey.bind(this);
@@ -63,15 +64,21 @@ export default class UMTimeline extends React.Component {
             this.setting = d.setting;
             this.setData(d.data);
         }
-        this.draw();
         this.initMouse(this.canvas, this);
         this.resizeDraw();
 
-        window.addEventListener('resize', this.resizeDraw.bind(this), false);
-		this.props.store.on(Core.Constants.CHANGE_FRAME, (err, frame) => {
-			this.setCurrentFrame(Number(frame));
-		});
+        window.addEventListener('resize', this.resizeDraw, false);
+		this.props.store.on(Core.Constants.CHANGE_FRAME, this.onFrameChange);
     }
+
+	componentWillUnmount() {
+	    window.removeEventListener('resize', this.resizeDraw);
+		this.props.store.off(Core.Constants.CHANGE_FRAME, this.onFrameChange);
+	}
+
+	onFrameChange(err, frame) {
+		this.setCurrentFrame(Number(frame));
+	}
 
     resizeDraw(){
         // if (this.width !== this.canvas.clientWidth || this.height !== this.canvas.clientHeight) {
@@ -457,7 +464,6 @@ export default class UMTimeline extends React.Component {
         //if (!content.closed) {
             for (i = 0; i < props.length; i = i + 1) {
                 prop = props[i];
-                console.log(prop.name);
                 bounds = this.drawProp(rect, ypos, content, prop, i);
                 //propRange.min = Math.min(propRange.min, bounds.left);
                 //propRange.max = Math.max(propRange.max, bounds.right);
@@ -552,7 +558,9 @@ export default class UMTimeline extends React.Component {
     };
 
     setCurrentFrame(frame) {
-        this.currentframe = Math.floor(frame + 0.5);
+		let f = Math.floor(frame + 0.5);
+		if (f === this.currentframe) { return; }
+        this.currentframe = f;
         if (frame < 0) {
             this.currentframe = 0;
         }
