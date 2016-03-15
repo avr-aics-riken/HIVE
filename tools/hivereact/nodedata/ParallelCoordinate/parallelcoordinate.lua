@@ -42,7 +42,6 @@ function ParallelCoordinate:Do()
         end
         minmaxstring = minmaxstring .. "}"
     end
-    print('doxas:', minmaxstring);
     vol = volquant:VolumeData()
     mode = 'pack'
     qsize = 8
@@ -58,17 +57,17 @@ function ParallelCoordinate:Do()
     if vol then
         w = vol:Width()
         h = vol:Height()
-        d = vol:Depth()    
-        c = vol:Component()    
+        d = vol:Depth()
+        c = vol:Component()
         if (w == 0 or h == 0 or d == 0) then
             print('Size zero=', w, h, d)
             return false
         end
-        imageBuffer = vol:Pointer() 
+        imageBuffer = vol:Pointer()
         datatype = 'float';
-        datasize = 4   
+        datasize = 4
     else
-        dat = img        
+        dat = img
         w = img:GetWidth()
         h = img:GetHeight()
         c = 4
