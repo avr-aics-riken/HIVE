@@ -19,7 +19,63 @@ export default class Store extends EventEmitter {
 			output : [],  // シーンの出力端子
 			nodePath : [], // 表示しているノード階層のパス
 			timeline : {
-				frame : 1
+				frame : 1,
+		        data : {
+		            contents: [{
+		                name: "test",
+		                closed: false,
+		                color: "rgb(32, 96, 196)",
+		                propColor: "rgba(8, 62, 162, 1.0)",
+		                props: [{
+		                    name: "hogehoge",
+		                    data: {
+		                        10: 100,
+		                        20: 120,
+		                        25: 150
+		                    }
+		                }, {
+		                    name: "piropiro",
+		                    data: {
+		                        30: 100,
+		                        50: 220,
+		                        95: 150
+		                    }
+		                }]
+		            }, {
+		                name: "munimuni",
+		                closed: false,
+		                color: "rgb(196, 32, 64)",
+		                propColor: "rgba(162, 8, 40, 1.0)",
+		                props: [{
+		                    name: "piropiro",
+		                    data: {
+		                        5: 100,
+		                        40: 220,
+		                        60: 150
+		                    }
+		                }, {
+		                    name: "piropiro2",
+		                    data: {
+		                        15: 100,
+		                        42: 220,
+		                        64: 150
+		                    }
+		                }],
+		            }, {
+		                name: "aaa",
+		                closed: true,
+		                color: "rgb(96, 196, 32)",
+		                propColor: "rgba(62, 162, 8, 1.0)",
+		                props: [{
+		                    name: "piropiro",
+		                    data: {
+		                        50: 100,
+		                        80: 220,
+		                        90: 150
+		                    }
+		                }]
+		            }]
+		        }
 			}
         }
 
@@ -249,5 +305,12 @@ export default class Store extends EventEmitter {
 	 */
 	getCurrentFrame() {
 		return this.data.timeline.frame;
+	}
+
+	/**
+	 * タイムラインのデータを返す.
+	 */
+	getTimelineData() {
+		return this.data.timeline.data;
 	}
 }

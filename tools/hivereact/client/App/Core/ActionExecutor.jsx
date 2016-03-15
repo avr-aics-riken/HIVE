@@ -1184,7 +1184,7 @@ export default class ActionExecuter {
 	changeFrame(payload) {
 		if (payload.hasOwnProperty("frame")) {
 			if (payload.frame < 0) {
-				return;
+				payload.frame = 0;
 			}
 			this.store.data.timeline.frame = payload.frame;
 			this.store.emit(Constants.CHANGE_FRAME, null, payload.frame);

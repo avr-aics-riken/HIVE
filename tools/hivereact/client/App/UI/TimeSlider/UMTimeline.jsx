@@ -336,7 +336,7 @@ export default class UMTimeline extends React.Component {
         return result;
     }
 
-    drawProp(rect, ypos, content, prop) {
+    drawProp(rect, ypos, content, prop, index) {
         var context = this.canvas.getContext('2d'),
             i,
             height = 0,
@@ -359,23 +359,25 @@ export default class UMTimeline extends React.Component {
             },
             valueRect;
 
-        // keys
-        context.fillStyle = this.setting.propColor;
-        this.fillRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
-        context.strokeStyle = this.setting.lineColor;
-        context.lineWidth = lw / 2.0;
-        this.strokeRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
-        context.fillStyle = this.setting.propTextColor;
-        context.font = "normal 12px sans-serif";
-        context.fillText(prop.name, pdx + lw2 + cs, ypos + cs - cs / 4);
-        result.height = cs;
+		if (index === 0) {
+	        // keys
+	        context.fillStyle = this.setting.propColor;
+	        this.fillRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
+	        context.strokeStyle = this.setting.lineColor;
+	        context.lineWidth = lw / 2.0;
+	        this.strokeRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
+	        context.fillStyle = this.setting.propTextColor;
+	        context.font = "normal 12px sans-serif";
+	        context.fillText(content.name, pdx + lw2 + cs, ypos + cs - cs / 4);
+	        result.height = cs;
 
-        // value bounds
-        context.fillStyle = this.setting.propColor;
-        this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
-        context.strokeStyle = this.setting.lineColor;
-        context.lineWidth = lw;
-        this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
+	        // value bounds
+	        context.fillStyle = this.setting.propColor;
+	        this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
+	        context.strokeStyle = this.setting.lineColor;
+	        context.lineWidth = lw;
+	        this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
+		}
 
         valueRect = JSON.parse(JSON.stringify(rect));
         valueRect.x = splitx;
@@ -393,14 +395,6 @@ export default class UMTimeline extends React.Component {
             }
             prekey = i;
         }
-
-        context.fillStyle = this.setting.keyColor;
-        for (i in prop.data) {
-            if (prop.data.hasOwnProperty(i)) {
-                this.drawKey(context, splitx + i * scale - offsetX, ypos + cs2, kr, valueRect);
-            }
-        }
-
         return result;
     };
 
@@ -412,6 +406,7 @@ export default class UMTimeline extends React.Component {
             height = 0,
             offsetX = this.setting.offsetX,
             offsetY = this.setting.offsetX,
+            scale = this.setting.scale,
             cs = this.setting.contentSize,
             cs2 = cs / 2.0,
             splitx = this.splitX(),
@@ -419,6 +414,7 @@ export default class UMTimeline extends React.Component {
             ss = this.setting.spiltterSize,
             lw = this.setting.lineWidth,
             lw2 = lw * 2.0,
+            kr = this.setting.keyRadius,
             ar = this.setting.arrowRadius,
             propRange = {
                 min: Number.MAX_VALUE,
@@ -428,6 +424,7 @@ export default class UMTimeline extends React.Component {
             valueRect;
 
         // keys
+		/*
         context.fillStyle = this.setting.contentColor;
         this.fillRect(context, lw2, ypos + lw2, splitx - ss * 2 - lw2, cs, rect);
         context.strokeStyle = this.setting.lineColor;
@@ -436,8 +433,9 @@ export default class UMTimeline extends React.Component {
         context.fillStyle = this.setting.textColor;
         context.font = "normal 12px sans-serif";
         context.fillText(content.name, lw2 + cs, ypos + cs - cs / 4);
+		*/
         height = height + cs;
-        this.drawArrow(context, cs2, ypos + cs2, ar, content.closed, rect);
+        //this.drawArrow(context, cs2, ypos + cs2, ar, content.closed, rect);
 
         this.keyRects.push({
             x: lw2,
@@ -456,15 +454,25 @@ export default class UMTimeline extends React.Component {
         valueRect = JSON.parse(JSON.stringify(rect));
         valueRect.x = splitx;
 
-        if (!content.closed) {
+        //if (!content.closed) {
             for (i = 0; i < props.length; i = i + 1) {
                 prop = props[i];
-                //console.log(height);
-                bounds = this.drawProp(rect, ypos + height, content, prop);
-                propRange.min = Math.min(propRange.min, bounds.left);
-                propRange.max = Math.max(propRange.max, bounds.right);
-                height = height + bounds.height;
+                console.log(prop.name);
+                bounds = this.drawProp(rect, ypos, content, prop, i);
+                //propRange.min = Math.min(propRange.min, bounds.left);
+                //propRange.max = Math.max(propRange.max, bounds.right);
+                //height = height + bounds.height;
             }
+			for (i = 0; i < props.length; i = i + 1) {
+                prop = props[i];
+		        context.fillStyle = this.setting.keyColor;
+		        for (let k in prop.data) {
+		            if (prop.data.hasOwnProperty(k)) {
+		                this.drawKey(context, splitx + k * scale - offsetX, ypos + cs2, kr, rect);
+		            }
+		        }
+			}
+		/*
         } else {
             for (i = 0; i < props.length; i = i + 1) {
                 prop = props[i];
@@ -473,10 +481,11 @@ export default class UMTimeline extends React.Component {
                 propRange.max = Math.max(propRange.max, bounds.right);
             }
         }
+		*/
 
         // prop range
-        context.fillStyle = content.color;
-        this.fillRect(context, propRange.min - offsetX, ypos + lw2, propRange.max - propRange.min, cs - lw2, valueRect);
+        //context.fillStyle = content.color;
+        //this.fillRect(context, propRange.min - offsetX, ypos + lw2, propRange.max - propRange.min, cs - lw2, valueRect);
 
         return height;
     };
@@ -619,8 +628,8 @@ export default class UMTimeline extends React.Component {
             var y = ev.clientY - rect.top;
             timeline.click(x, y);
         });
-        canvas.addEventListener('mousedown', (function(mstate) {
-            return function(ev) {
+        canvas.addEventListener('mousedown', ((mstate) => {
+            return (ev) => {
                 var rect,
                 splitx,
                 x, y;
@@ -631,7 +640,7 @@ export default class UMTimeline extends React.Component {
                     splitx = timeline.splitX();
                     if (x > splitx) {
                         is_key_changing = true;
-                        timeline.setCurrentFrame((x - splitx + timeline.setting.offsetX) / timeline.setting.scale);
+						this.props.action.changeFrame((x - splitx + timeline.setting.offsetX) / timeline.setting.scale);
                     } else if (timeline.isOnSplitter(x, y)) {
                         is_split_moving = true;
                         canvas.style.cursor = "e-resize";
@@ -641,9 +650,9 @@ export default class UMTimeline extends React.Component {
                     is_middle_down = true;
                 }
             };
-        }(mstate)));
-        canvas.addEventListener('mousemove', (function(mstate) {
-            return function(ev) {
+        })(mstate));
+        canvas.addEventListener('mousemove', ((mstate) => {
+            return (ev) => {
                 var splitx;
                 var rect = ev.target.getBoundingClientRect();
                 var x = ev.clientX - rect.left;
@@ -656,7 +665,7 @@ export default class UMTimeline extends React.Component {
                 }
                 if (is_key_changing) {
                     splitx = timeline.splitX();
-                    timeline.setCurrentFrame((x - splitx + timeline.setting.offsetX) / timeline.setting.scale);
+					this.props.action.changeFrame((x - splitx + timeline.setting.offsetX) / timeline.setting.scale);
                 } else if (is_split_moving) {
                     rect = ev.target.getBoundingClientRect();
                     x = ev.clientX - rect.left;
@@ -668,7 +677,7 @@ export default class UMTimeline extends React.Component {
                 }
                 mstate.pre_x = x;
             };
-        }(mstate)));
+        })(mstate));
         canvas.addEventListener('mouseup', function(ev) {
             //is_left_down = false;
             is_key_changing = false;
@@ -717,57 +726,8 @@ export default class UMTimeline extends React.Component {
             offsetX: 0.0,
             offsetY: 0.0,
             measureHeight: 11.0
-        },
-        data = {
-            contents: [{
-                name: "test",
-                closed: false,
-                color: "rgb(32, 96, 196)",
-                propColor: "rgba(32, 96, 196, 0.5)",
-                props: [{
-                    name: "hogehoge",
-                    data: {
-                        10: 100,
-                        20: 120,
-                        25: 150
-                    }
-                }, {
-                    name: "piropiro",
-                    data: {
-                        30: 100,
-                        50: 220,
-                        95: 150
-                    }
-                }]
-            }, {
-                name: "munimuni",
-                closed: false,
-                color: "rgb(196, 32, 64)",
-                propColor: "rgba(196, 32, 64, 0.5)",
-                props: [{
-                    name: "piropiro",
-                    data: {
-                        5: 100,
-                        40: 220,
-                        60: 150
-                    }
-                }]
-            }, {
-                name: "aaa",
-                closed: true,
-                color: "rgb(96, 196, 32)",
-                propColor: "rgba(96, 196, 32, 0.5)",
-                props: [{
-                    name: "piropiro",
-                    data: {
-                        50: 100,
-                        80: 220,
-                        90: 150
-                    }
-                }]
-            }]
         };
-        return {setting: setting, data: data};
+        return {setting: setting, data: this.props.store.getTimelineData()};
     }
 
     render() {
