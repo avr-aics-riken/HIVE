@@ -28,7 +28,8 @@ module.exports = {
     CONSOLEOUTPUT_SHOW: "consoleoutput_show",
 	CHANGE_FRAME : "change_frame",
 	KEYFRAME_ADDED : "keyframe_added",
-	KEYFRAME_DELETED : "keyframe_deleted"
+	KEYFRAME_DELETED : "keyframe_deleted",
+	CURRENT_FRAME_APPLIED : "current_frame_applied"
 };
 
 // color 定数化したい気もする

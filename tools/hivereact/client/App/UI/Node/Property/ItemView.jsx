@@ -22,15 +22,13 @@ export default class ItemView extends React.Component {
 			this.state = {
 				name : this.props.initialNodeData.name,
 				label : this.label(),
-				isShowPanel : this.props.initialNodeData.panel.visible,
-				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
+				isShowPanel : this.props.initialNodeData.panel.visible
 			};
 		} else {
 			this.state = {
 				name : this.props.initialNodeData.name,
 				label : this.label(),
-				isShowPanel : null,
-				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
+				isShowPanel : null
 			};
 		}
         this.topRowUsed = false;
@@ -62,17 +60,28 @@ export default class ItemView extends React.Component {
 
 	inputChanged(err, data) {
 		if (data.varname === this.props.initialNodeData.varname) {
-			var myin = JSON.stringify(this.state.input);
-			var datain = JSON.stringify(data.input);
-
-			if (myin !== datain) {
-				if (!this.updateHandle) {
-					this.updateHandle = setTimeout(() => {
-						this.setState({
-							input : [].concat(data.input)
+		console.log(data);
+			for (let i = 0; i < data.input.length; i = i + 1) {
+				let hole = data.input[i];
+				let id = hole.nodeVarname + "_" + hole.name;
+				if (this.refs.hasOwnProperty(id)) {
+					if (hole.hasOwnProperty('meta') && hole.meta === 'shaderlist') {
+						this.refs[id].setState({
+							value : hole.value
 						});
-						this.updateHandle = null;
-					}, 100);
+					} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
+						this.refs[id].setState({
+							values : hole.value
+						});
+					} else if (hole.type === 'string' || hole.type === 'float') {
+						this.refs[id].setState({
+							value : hole.value
+						});
+					} else if (hole.type === 'bool') {
+						this.refs[id].setState({
+							checked : hole.value
+						});
+					}
 				}
 			}
 		}
@@ -121,7 +130,7 @@ export default class ItemView extends React.Component {
 
 	changeVecFunc(name, index, value) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = this.state.input;
+		let inputs = node.input;
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
 				let copyVal = JSON.parse(JSON.stringify(inputs[i].value));
@@ -140,7 +149,7 @@ export default class ItemView extends React.Component {
 
 	changeLengthFunc(name, length) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = JSON.parse(JSON.stringify(this.state.input));
+		let inputs = JSON.parse(JSON.stringify(node.input));
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
 				for (let k = inputs[i].array.length; k < length; k = k + 1) {
@@ -230,55 +239,56 @@ export default class ItemView extends React.Component {
 				onClick={this.onExportGroup.bind(this)}>Export</div>);
 		}
 
-		let inputs = this.props.initialNodeData.input.map( ((hole, key) => {
-            let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
+		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
+            let id = hole.nodeVarname + "_" + hole.name;
+			console.log(id)
             let topRow = this.state.isShowPanel === null && !this.topRowUsed && parseInt(key, 10) === 0;
             let bottom = this.props.initialNodeData.input.length - 1 === parseInt(key, 10);
 			if (Array.isArray(hole.array)) {
-				return (<ItemArray
+				return (<ItemArray  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
 							changeLengthFunc={this.changeLengthFunc.bind(this)}
-                            initialParam={hole} key={id} id={id}
+                            initialParam={hole} key={id}
                             top={topRow}
                             bottom={bottom} />);
 			} else if (hole.meta === 'shaderlist') {
-				return (<ItemSuggest
+				return (<ItemSuggest  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
                             bottom={bottom} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
-				return (<ItemVec
+				return (<ItemVec  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id}  changeVecFunc={this.changeVecFunc.bind(this)}
+							initialParam={hole} key={id}  changeVecFunc={this.changeVecFunc.bind(this)}
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
                             bottom={bottom} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput
+				return (<ItemTextInput  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
                             bottom={bottom} />);
             } else if (hole.type === 'bool') {
-			    return (<ItemCheckbox
+			    return (<ItemCheckbox ref={id}
 				            varname={this.props.initialNodeData.varname}
 							store={this.props.store}
                             initialParam={hole}
-                            key={id} id={id}
+                            key={id}
                             top={topRow}
                             bottom={bottom}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 				            changeCheckboxFunc={this.changeFunc.bind(this)} />);
 			} else {
-				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
+				return (<ItemText store={this.props.store} initialParam={hole} key={id} top={topRow} bottom={bottom}/>);
 			}
-		}).bind(this));
+		});
 		return (
 			<div>
 				<ItemTitle
