@@ -25,7 +25,8 @@ module.exports = {
 	DELETE_CALLED : "delete_called",
 	MAKE_GROUP_CALLED : "make_group_called",
     LAYOUT_CHANGED : "layout_changed",
-    CONSOLEOUTPUT_SHOW: "consoleoutput_show"
+    CONSOLEOUTPUT_SHOW: "consoleoutput_show",
+	CHANGE_FRAME : "change_frame"
 };
 
 // color 定数化したい気もする

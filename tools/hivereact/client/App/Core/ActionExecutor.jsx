@@ -74,6 +74,7 @@ export default class ActionExecuter {
 		this.getChildPlugs = this.getChildPlugs.bind(this);
 		this.save = this.save.bind(this);
 		this.load = this.load.bind(this);
+		this.changeFrame = this.changeFrame.bind(this);
 	}
 
     /**
@@ -1176,6 +1177,19 @@ export default class ActionExecuter {
 			}
         }
     }
+
+	/**
+	 * フレームを変更する.
+	 */
+	changeFrame(payload) {
+		if (payload.hasOwnProperty("frame")) {
+			if (payload.frame < 0) {
+				return;
+			}
+			this.store.data.timeline.frame = payload.frame;
+			this.store.emit(Constants.CHANGE_FRAME, null, payload.frame);
+		}
+	}
 }
 
 ActionExecuter.initialData = {

@@ -69,7 +69,7 @@ export default class Action {
 			varname : varname
 		});
 	}
-    
+
     /**
 	 * 現在のグループをエクスポートする
 	 * @param varname ノード変数名
@@ -93,7 +93,7 @@ export default class Action {
         this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "importGroupNode",
-            data: data			
+            data: data
 		});
 	}
 
@@ -393,6 +393,18 @@ export default class Action {
 			actionType: "unSelectNode",
 			nodeVarnameList : nodeVarnameList,
 			excludeVarname : excludeVarname
+		});
+	}
+
+	/**
+	 * フレーム番号を変更する.
+	 * @parma keyFrame フレーム番号.
+	 */
+	changeFrame(frame) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "changeFrame",
+			frame : frame
 		});
 	}
 }

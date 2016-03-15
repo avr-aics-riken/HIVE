@@ -17,7 +17,10 @@ export default class Store extends EventEmitter {
             plugs : [],   // 全てのプラグ
 			input : [],   // シーンの入力端子
 			output : [],  // シーンの出力端子
-			nodePath : [] // 表示しているノード階層のパス
+			nodePath : [], // 表示しているノード階層のパス
+			timeline : {
+				frame : 1
+			}
         }
 
 		this.actionExecuter = new ActionExecuter(this);
@@ -42,8 +45,8 @@ export default class Store extends EventEmitter {
     // private:
 	initHive(nodePlugData) {
 		this.hive = new Hive();
-		this.hive.connect('ws://localhost:8080');//, '', true);			
-        
+		this.hive.connect('ws://localhost:8080');//, '', true);
+
         this.nodeExecutor = new NodeSystem.NodeExecutor(nodePlugData);
         this.nodeCreator =new NodeSystem.NodeCreator("http://localhost:8080/nodelist.json", () => {
 			this.emit(Constants.INITIALIZED, null);
@@ -55,7 +58,7 @@ export default class Store extends EventEmitter {
 			this.emit(Constants.RENDERER_LOG_RECIEVED, data);
 		});
         this.hive.on(Hive.ANALYZED_DATA_RECIEVED, (data) => {
-			this.emit(Constants.ANALYZED_DATA_RECIEVED, data);             
+			this.emit(Constants.ANALYZED_DATA_RECIEVED, data);
         });
 		this.nodeExecutor.on(NodeSystem.NodeExecutor.SCRIPT_SERIALIZED, (script) => {
 			//console.warn('SCRIPT>', script);
@@ -239,5 +242,12 @@ export default class Store extends EventEmitter {
 			}
 		}
 		return selected;
+	}
+
+	/**
+	 * 現在のフレーム番号を返す
+	 */
+	getCurrentFrame() {
+		return this.data.timeline.frame;
 	}
 }
