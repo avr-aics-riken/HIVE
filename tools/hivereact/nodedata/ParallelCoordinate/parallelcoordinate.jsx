@@ -91,10 +91,10 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        var a, buffer, component, parse;
+        var a, buffer, component, parse, minmax;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
-        if(param.mode === 'pack'){
+        if(param.mode !== undefined && param.mode === 'pack'){
             a = new Uint8Array(data);
             component = parseInt(param.component, 10);
             // if(isNaN(component) || component === null || component === undefined || component < 2){
@@ -103,14 +103,33 @@ class ParallelCoordinate extends React.Component {
                 return;
             }
             parse = [];
+            minmax = [];
+            if(param.minmax || param.minmax.length > 0){
+                for(let i = 0, j = param.minmax.length; i < j; ++i){
+                    minmax[i] = 1.0 / 255 * (param.minmax[i].max - param.minmax[i].min);
+                }
+            }
             for(let i = 0, j = a.length / 4; i < j; ++i){
                 let k = i * 4;
-                let t = [];
-                for(let l = 0; l < 4; ++l){
-                    t.push(a[k + l]);
-                }
+                let t = [
+                    a[k]     * minmax[0] + parseFloat(param.minmax[0].min),
+                    a[k + 1] * minmax[1] + parseFloat(param.minmax[1].min),
+                    a[k + 2] * minmax[2] + parseFloat(param.minmax[2].min),
+                    a[k + 3]// * minmax[3] + parseFloat(param.minmax[3].min)
+                ];
                 parse.push(t);
             }
+            // for(let i = 0, j = a.length / 4; i < j; ++i){
+            //     let k = i * 4;
+            //     if(a[k + 2] < 10){debugger;}
+            //     let t = [
+            //         a[k],
+            //         a[k + 1],
+            //         a[k + 2],
+            //         a[k + 3]
+            //     ];
+            //     parse.push(t);
+            // }
         }else{
             if(param.datatype === 'byte'){
                 a = new Uint8Array(data);
@@ -132,14 +151,13 @@ class ParallelCoordinate extends React.Component {
                 parse.push(t);
             }
         }
+        console.log(param);
         this.setState({
             parse: parse,
             data: data,
             param: param
         });
         setTimeout(this.imageParse, 50);
-        this.onChangeScaleMin({currentTarget: {value: param.min}});
-        this.onChangeScaleMax({currentTarget: {value: param.max}});
     }
 
     imageParse(){
@@ -562,7 +580,6 @@ class ParallelCoordinate extends React.Component {
             gc.plf.fSource += '        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);';
             gc.plf.fSource += '    }';
             gc.plf.fSource += '}';
-            console.log(gc.plf.fSource);
 
             gc.plf.vs = create_shader(gl, gc.plf.vSource, gl.VERTEX_SHADER);
             gc.plf.fs = create_shader(gl, gc.plf.fSource, gl.FRAGMENT_SHADER);
@@ -613,6 +630,8 @@ class ParallelCoordinate extends React.Component {
         gl.activeTexture(gl.TEXTURE2);
         gl.bindTexture(gl.TEXTURE_2D, gc.texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
         gl.activeTexture(gl.TEXTURE0);
 

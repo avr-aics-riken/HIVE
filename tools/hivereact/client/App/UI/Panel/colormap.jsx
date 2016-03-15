@@ -82,7 +82,7 @@ export default class ColorMap extends React.Component {
         context.fillRect(0, 0, width, height);
         context.closePath();
         context.fill();
-        return context.getImageData(0, 0, width, height);
+        return dummy_canvas;
         // return context.getImageData(0, 0, width, height).data;
     }
 
