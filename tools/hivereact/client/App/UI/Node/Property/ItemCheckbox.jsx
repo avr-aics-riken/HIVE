@@ -56,7 +56,7 @@ export default class ItemCheckbox extends React.Component {
                 letterSpacing: "normal",
                 marginLeft: "1px",
                 padding: "1px",
-                width : "160px",
+                width : "20px",
                 verticalAlign: "middle",
                 display: "inline-block",
             }

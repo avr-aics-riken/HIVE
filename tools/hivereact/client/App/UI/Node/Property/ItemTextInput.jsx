@@ -73,7 +73,7 @@ export default class ItemTextInput extends React.Component {
 				marginBottom: "1px",
                 verticalAlign: "middle",
                 padding: "1px",
-                width : "153px",
+                width : "165px",
                 height: "19px",
                 display: "inline-block",
             }

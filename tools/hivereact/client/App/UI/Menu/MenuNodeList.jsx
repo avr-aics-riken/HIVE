@@ -12,7 +12,7 @@ export default class MenuNodeList extends React.Component {
         };
 
         this.styles = this.styles.bind(this);
-        this.floating = (this.props.floating !== undefined);
+        this.floating = (this.props.floating !== undefined) && this.props.floating;
         this.unFocus = this.unFocus.bind(this);
         this.props.store.on(Core.Constants.INITIALIZED, (()=>{
             this.setState({nodeList: this.props.store.getNodeNameList()});
@@ -32,6 +32,7 @@ export default class MenuNodeList extends React.Component {
     }
 
     styles() {
+	console.log("this.props.floating",this.props.floating)
         if(this.floating){
             return {
                 block: {
@@ -88,7 +89,6 @@ export default class MenuNodeList extends React.Component {
                     fontSize: "large",
                     margin: "0px",
                     padding: "0px",
-                    width: "240px",
                     height: "100%",
                     overflow: "visible"
                 },
@@ -97,16 +97,16 @@ export default class MenuNodeList extends React.Component {
                     backgroundColor: "#444",
                     borderRadius: "3px",
                     color: "rgb(32, 255, 220)",
-                    fontSize: "small",
-                    lineHeight: "24px",
+                    fontSize: "12px",
+                    lineHeight: "20px",
                     margin: "3px",
                     padding: "2px",
-                    width: "238px",
-                    height: "24px",
+                    width: "250px",
+                    height: "20px",
                     overflow: "auto",
                     textShadow: "0px 0px 3px #022",
                     boxShadow: "0px 0px 5px -2px white",
-                    cursor: "pointer"
+                    cursor: "pointer",
                 }
             };
         }

@@ -58,7 +58,7 @@ export default class View extends React.Component {
 		return {
 			view : {
 				//position : "absolute",
-				width : "250px",
+				width : "255px",
                 //height : "100%",
 				//right : "0px",
 				//top : "0px",
