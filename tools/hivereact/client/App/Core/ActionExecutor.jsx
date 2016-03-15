@@ -77,6 +77,7 @@ export default class ActionExecuter {
 		this.changeFrame = this.changeFrame.bind(this);
 		this.addKeyFrame = this.addKeyFrame.bind(this);
 		this.deleteKeyFrame = this.deleteKeyFrame.bind(this);
+		this.applyCurrentFrame = this.applyCurrentFrame.bind(this);
 	}
 
     /**
@@ -1180,6 +1181,45 @@ export default class ActionExecuter {
         }
     }
 
+	/// フレーム番号から現在の補間値を求めて適用する.
+	applyCurrentFrame(frame) {
+		let data = this.store.data.timeline.data;
+		if (!data.hasOwnProperty('contents')) { return; }
+		for (let i = 0; i < data.contents.length; i = i + 1) {
+			// 1content = 1nodeに対応.
+			let content = data.contents[i];
+			for (let k = 0; k < content.props.length; k = k + 1) {
+				let prop = content.props[k];
+				let preKey = null;
+				let postKey = null;
+				for (let key in prop.data) {
+					if (frame < Number(key)) {
+						postKey = Number(key);
+						break;
+					}
+					preKey = Number(key);
+				}
+				if (!preKey) { preKey = postKey; }
+				if (!postKey) { postKey = preKey; }
+				if (preKey && postKey) {
+					let value = prop.data[preKey];
+					if (preKey < postKey) {
+						// 線形補間.
+						value = lerp(prop.data[preKey], prop.data[postKey], (frame - preKey) / (postKey - preKey));
+					}
+					let inputInfo = {};
+					inputInfo.varname = prop.nodeVarname;
+					inputInfo.input = {};
+					inputInfo.input[prop.name] = value;
+					this.changeNodeInput({
+						inputInfo : inputInfo
+					});
+					console.log("pre post", preKey, postKey, inputInfo);
+				}
+			}
+		}
+	}
+
 	/**
 	 * フレームを変更する.
 	 */
@@ -1189,7 +1229,12 @@ export default class ActionExecuter {
 				payload.frame = 0;
 			}
 			let f = Math.floor(payload.frame + 0.5);
-			this.store.data.timeline.frame = f;
+
+			// ここで値の補間を行う.
+			if (this.store.data.timeline.frame !== f) {
+				this.store.data.timeline.frame = f;
+				this.applyCurrentFrame(f);
+			}
 			this.store.emit(Constants.CHANGE_FRAME, null, f);
 		}
 	}
