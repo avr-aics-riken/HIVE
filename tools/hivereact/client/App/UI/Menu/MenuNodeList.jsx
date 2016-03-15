@@ -103,10 +103,10 @@ export default class MenuNodeList extends React.Component {
                     padding: "2px",
                     width: "250px",
                     height: "20px",
-                    overflow: "auto",
+                    overflow: "hidden",
                     textShadow: "0px 0px 3px #022",
                     boxShadow: "0px 0px 5px -2px white",
-                    cursor: "pointer",
+                    cursor: "pointer"
                 }
             };
         }
