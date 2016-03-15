@@ -553,9 +553,9 @@ export default class UMTimeline extends React.Component {
             }
 			for (i = 0; i < props.length; i = i + 1) {
                 prop = props[i];
-		        context.fillStyle = this.setting.keyColor;
 		        for (let k in prop.data) {
 		            if (prop.data.hasOwnProperty(k)) {
+			        	context.fillStyle = (this.currentframe === Number(k)) ? this.setting.keySelectColor : this.setting.keyColor;
 		                this.drawKey(context, splitx + k * scale - offsetX, ypos + cs2, kr, valueRect);
 		            }
 		        }
@@ -831,6 +831,7 @@ export default class UMTimeline extends React.Component {
             contentColor  : "rgb(60  , 60  , 60)"  ,
             propColor     : "rgb(50  , 50  , 50)"  ,
             keyColor      : "rgb(200 , 200 , 200)" ,
+			keySelectColor   : "rgb(54, 196, 168)" ,
             textColor     : "rgb(255 , 255 , 255)" ,
             propTextColor : "rgb(200 , 200 , 200)" ,
             seekLineColor : "rgb(255 , 255 , 255)" ,
