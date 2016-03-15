@@ -30,6 +30,7 @@ deploy:
     secure: EfGFHZxNSoyDmOnfPB87UvvR3zup/JoAzblnNMMlGy8nD0YjJIxif0LDBKb3VrXGKdg35NKOvt+uvmYPiZ11G0BBerprz5gjRewDkjR1i9Nb/eIF8cbB3SV8w4Sp7C8D/6U6nwdNhKd5u7wtDg6UGREwzPV7UwEkmow8s6CAFe81sO2swdSEK4Ap75gllrQrE6C65Zk6HjVi3+PDQPpl4/j15S5vInMgVBE4Tt6XE8J3fgheShWC3ewH7U5gjnNP+LpkVHq9xjpBMmekQHN4WlDejU0Ur1R06GR8aH4MHClzWQJ3oezbeXqptuKjwst/F/CcQK+iA1ZaB8VJQyYcdfB08PYo/ZlJ1UnKdXATlKFrRPDgXd8rS10nP4E+KnksFapQErz+oGw+PqFYJgopD9CXQS9jRaW++JEGH7XUbLzX3/TgU0yZP1WD98a3Mr5xWetPl+8RmJfEFnVB74fg0WdtYVxN7XpxmkXVaxa2UWKo0DtSrP/QODmLDLol9Yr5UotNVQhYid41MtzPaXVE8GSfwrYUdtomeycWSZoR5l+FVw/oRDEmFmAlydp9/ijQ37OJkvuz28Qq8z00HUwFctxl64P2JhmmY1llRBmhvQiX9p4H1LYe/vWZXV7rthZs6sdD+6x6jnCXAS0ALqeKkwaQjDTgNbowODbaIAAiEVU=
   file: "${RELEASE_PKG_FILE}"
   all_branches: true
+  skip_cleanup: true
   on:
     repo: avr-aics-riken/HIVE
     tags: true
