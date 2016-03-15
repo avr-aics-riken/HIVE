@@ -407,11 +407,6 @@ class ParallelCoordinate extends React.Component {
             this.glContext[id].gl              = canvas[id].getContext('webgl');
             this.glContext[id].color           = [0.2, 0.2, 0.2, 0.1];
             this.glContext[id].texture         = this.glContext[id].gl.createTexture();
-            this.glContext[id].lowColor        = [1.0, 1.0, 1.0];
-            this.glContext[id].middleLowColor  = [0.2, 0.2, 0.2];
-            this.glContext[id].middleColor     = [0.1, 0.5, 0.3];
-            this.glContext[id].middleHighColor = [0.6, 0.6, 0.2];
-            this.glContext[id].highColor       = [0.8, 0.2, 0.1];
             this.glContext[id].pl              = new prgLocations();
             this.glContext[id].plp             = new prgLocations();
             this.glContext[id].plf             = new prgLocations();
@@ -420,20 +415,8 @@ class ParallelCoordinate extends React.Component {
     }
     glInitialColor(){
         this.glContext[this.foreground].color           = this.props.node.input[0].value;
-        this.glContext[this.foreground].lowColor        = this.props.node.input[10].value;
-        this.glContext[this.foreground].middleLowColor  = this.props.node.input[11].value;
-        this.glContext[this.foreground].middleColor     = this.props.node.input[12].value;
-        this.glContext[this.foreground].middleHighColor = this.props.node.input[13].value;
-        this.glContext[this.foreground].highColor       = this.props.node.input[14].value;
-
         this.glContext[this.brushed].color              = this.props.node.input[1].value;
-        this.glContext[this.brushed].lowColor           = this.props.node.input[15].value;
-        this.glContext[this.brushed].middleLowColor     = this.props.node.input[16].value;
-        this.glContext[this.brushed].middleColor        = this.props.node.input[17].value;
-        this.glContext[this.brushed].middleHighColor    = this.props.node.input[18].value;
-        this.glContext[this.brushed].highColor          = this.props.node.input[19].value;
     }
-
     glRender(target, data, lines, left, right){
         if(!target){return;}
         if(data){
@@ -550,32 +533,15 @@ class ParallelCoordinate extends React.Component {
             gc.plf.fSource += 'uniform vec2 resolution;';
             gc.plf.fSource += 'uniform sampler2D texture;';
             gc.plf.fSource += 'uniform float density;';
-            gc.plf.fSource += 'uniform vec3 lowColor;';
-            gc.plf.fSource += 'uniform vec3 middleLowColor;';
-            gc.plf.fSource += 'uniform vec3 middleColor;';
-            gc.plf.fSource += 'uniform vec3 middleHighColor;';
-            gc.plf.fSource += 'uniform vec3 highColor;';
             gc.plf.fSource += 'uniform sampler2D colorMap;';
-            gc.plf.fSource += 'const float low = 0.2;';
-            gc.plf.fSource += 'const float middle = 0.4;';
-            gc.plf.fSource += 'const float high = 0.7;';
             gc.plf.fSource += 'void main(){';
             gc.plf.fSource += '    if(density > 0.0){';
-            gc.plf.fSource += '        vec4 tex = texture2D(colorMap, vec2(gl_FragCoord.xy / 300.0));'; // temp
             gc.plf.fSource += '        vec4 c = color;';
             gc.plf.fSource += '        vec2 texcoord = gl_FragCoord.st / resolution;';
             gc.plf.fSource += '        vec4 smpColor = texture2D(texture, texcoord);';
             gc.plf.fSource += '        float range = smpColor.a / density;';
-            gc.plf.fSource += '        if(range < low){';
-            gc.plf.fSource += '            c = vec4(mix(lowColor, middleLowColor, smoothstep(0.0, low, range)) * 1.5, 1.0);';
-            gc.plf.fSource += '        }else if(range < middle){';
-            gc.plf.fSource += '            c = vec4(mix(middleLowColor, middleColor, smoothstep(low, middle, range)) * 1.5, 1.0);';
-            gc.plf.fSource += '        }else if(range < high){';
-            gc.plf.fSource += '            c = vec4(mix(middleColor, middleHighColor, smoothstep(middle, high, range)) * 1.5, 1.0);';
-            gc.plf.fSource += '        }else{';
-            gc.plf.fSource += '            c = vec4(mix(middleHighColor, highColor, smoothstep(high, 1.0, range)) * 1.5, 1.0);';
-            gc.plf.fSource += '        }';
-            gc.plf.fSource += '        gl_FragColor = vec4(c.rgb, range * 2.0);';
+            gc.plf.fSource += '        vec4 tex = texture2D(colorMap, vec2(range, 0.0));'; // temp
+            gc.plf.fSource += '        gl_FragColor = vec4(tex.rgb, range * 3.0);';
             gc.plf.fSource += '    }else{';
             gc.plf.fSource += '        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);';
             gc.plf.fSource += '    }';
@@ -592,11 +558,6 @@ class ParallelCoordinate extends React.Component {
                 resolution: gl.getUniformLocation(gc.plf.prg, 'resolution'),
                 texture: gl.getUniformLocation(gc.plf.prg, 'texture'),
                 density: gl.getUniformLocation(gc.plf.prg, 'density'),
-                lowColor: gl.getUniformLocation(gc.plf.prg, 'lowColor'),
-                middleLowColor: gl.getUniformLocation(gc.plf.prg, 'middleLowColor'),
-                middleColor: gl.getUniformLocation(gc.plf.prg, 'middleColor'),
-                middleHighColor: gl.getUniformLocation(gc.plf.prg, 'middleHighColor'),
-                highColor: gl.getUniformLocation(gc.plf.prg, 'highColor'),
                 colorMap: gl.getUniformLocation(gc.plf.prg, 'colorMap')
             };
 
@@ -632,6 +593,8 @@ class ParallelCoordinate extends React.Component {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
         gl.activeTexture(gl.TEXTURE0);
 
@@ -731,11 +694,6 @@ class ParallelCoordinate extends React.Component {
             gl.uniform2fv(gc.plf.uniL.resolution, [width, height]);
             gl.uniform1i(gc.plf.uniL.texture, 0);
             gl.uniform1f(gc.plf.uniL.density, linecount);
-            gl.uniform3fv(gc.plf.uniL.lowColor        , [gc.lowColor[0]        , gc.lowColor[1]        , gc.lowColor[2]]);
-            gl.uniform3fv(gc.plf.uniL.middleLowColor  , [gc.middleLowColor[0]  , gc.middleLowColor[1]  , gc.middleLowColor[2]]);
-            gl.uniform3fv(gc.plf.uniL.middleColor     , [gc.middleColor[0]     , gc.middleColor[1]     , gc.middleColor[2]]);
-            gl.uniform3fv(gc.plf.uniL.middleHighColor , [gc.middleHighColor[0] , gc.middleHighColor[1] , gc.middleHighColor[2]]);
-            gl.uniform3fv(gc.plf.uniL.highColor       , [gc.highColor[0]       , gc.highColor[1]       , gc.highColor[2]]);
             gl.uniform1i(gc.plf.uniL.colorMap, 2);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }else{
@@ -781,14 +739,14 @@ class ParallelCoordinate extends React.Component {
             examples: {
                 backgroundColor: "white",
                 width: "100%",
-                height: "70%",
+                height: "80%",
                 minWidth: "500px",
-                minHeight: "320px"
+                minHeight: "400px"
             },
             uiFrame: {
                 width: "100%",
-                height: "30%",
-                minHeight: "125px",
+                height: "20%",
+                minHeight: "80px",
                 display: "flex",
                 flexDirection: "column"
             },
@@ -824,7 +782,7 @@ class ParallelCoordinate extends React.Component {
                 borderRadius: "3px",
                 margin: "0px 4px",
                 padding: "1px 2px",
-                width: "100px",
+                width: "50px",
                 height: "20px",
             },
             labels: {
@@ -844,20 +802,6 @@ class ParallelCoordinate extends React.Component {
                     <div style={styles.uiFrame}>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[4].value} id="densityCheck" onChange={this.onChangeDensity} style={styles.checkInputs} />
-                                <label onClick={this.onChangeDensity} style={styles.labels}>density mode</label>
-                            </div>
-                            <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[5].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} style={styles.checkInputs} />
-                                <label onClick={this.onChangeDensityNormalize} style={styles.labels}>density normalize</label>
-                            </div>
-                            <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[6].value} id="logScale" onChange={this.onChangeLogScale} style={styles.checkInputs} />
-                                <label onClick={this.onChangeLogScale} style={styles.labels}>log scale</label>
-                            </div>
-                        </div>
-                        <div style={styles.flexrow}>
-                            <div style={styles.flexcol}>
                                 <input type="checkbox" checked={this.props.node.input[7].value} id="customCheck" onChange={this.onChangeCustomScale} style={styles.checkInputs} />
                                 <label onClick={this.onChangeCustomScale}>custom scale</label>
                             </div>
@@ -869,28 +813,24 @@ class ParallelCoordinate extends React.Component {
                                 <p>max</p>
                                 <input type="text" value={this.props.node.input[9].value} id="customScaleMax" onChange={this.onChangeScaleMax} style={styles.textInputs}/>
                             </div>
-                        </div>
-                        <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
                                 <p style={styles.inputTitle}>line</p>
                                 <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[0].value)} onChange={this.onColorChange} style={styles.colorInputs} />
                                 <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[1].value)} onChange={this.onColorChange} style={styles.colorInputs} />
                             </div>
+                        </div>
+                        <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <p style={styles.inputTitle}>density</p>
-                                <input type="color" id="color3" ref="lineColor3" value={this.singleConv(this.props.node.input[10].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color4" ref="lineColor4" value={this.singleConv(this.props.node.input[11].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color5" ref="lineColor5" value={this.singleConv(this.props.node.input[12].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color6" ref="lineColor6" value={this.singleConv(this.props.node.input[13].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color7" ref="lineColor7" value={this.singleConv(this.props.node.input[14].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="checkbox" checked={this.props.node.input[4].value} id="densityCheck" onChange={this.onChangeDensity} style={styles.checkInputs} />
+                                <label onClick={this.onChangeDensity} style={styles.labels}>density mode</label>
                             </div>
                             <div style={styles.flexcol}>
-                                <p style={styles.inputTitle}>select</p>
-                                <input type="color" id="color8"  ref="lineColor8" value={this.singleConv(this.props.node.input[15].value)}  onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color9"  ref="lineColor9" value={this.singleConv(this.props.node.input[16].value)}  onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color10" ref="lineColor10" value={this.singleConv(this.props.node.input[17].value)}  onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color11" ref="lineColor11" value={this.singleConv(this.props.node.input[18].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color12" ref="lineColor12" value={this.singleConv(this.props.node.input[19].value)} onChange={this.onDensityColorChange} style={styles.colorInputs} />
+                                <input type="checkbox" checked={this.props.node.input[5].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} style={styles.checkInputs} />
+                                <label onClick={this.onChangeDensityNormalize} style={styles.labels}>density normalize</label>
+                            </div>
+                            <div style={styles.flexcol}>
+                                <input type="checkbox" checked={this.props.node.input[6].value} id="logScale" onChange={this.onChangeLogScale} style={styles.checkInputs} />
+                                <label onClick={this.onChangeLogScale} style={styles.labels}>log scale</label>
                             </div>
                         </div>
                     </div>

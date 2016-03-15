@@ -88,9 +88,11 @@ export default class ColorMap extends React.Component {
 
     componentDidMount(){
         var initial_colormap = [
-            {step: 0,   color: 'rgb(255, 0, 0)'},
-            {step: 0.5, color: 'rgb(0, 255, 0)'},
-            {step: 1.0, color: 'rgb(0, 0, 255)'}
+            {step: 0,    color: 'rgb(  0,   0,  50)'},
+            {step: 0.25, color: 'rgb(  0,  50, 200)'},
+            {step: 0.5,  color: 'rgb( 50, 255, 200)'},
+            {step: 0.75, color: 'rgb(200, 255,  50)'},
+            {step: 1.0,  color: 'rgb(255,  50,  50)'}
         ];
         var color_map = ReactDOM.findDOMNode(this.refs.canvas),
             context = color_map.getContext("2d"),
@@ -211,7 +213,7 @@ export default class ColorMap extends React.Component {
             },
             picker: {
                 position: "absolute",
-                top: "36px",
+                top: "50px",
                 right: "12px",
                 opacity: "0.0"
             }
