@@ -24,11 +24,13 @@ export default class Store extends EventEmitter {
 				/*
 		            contents: [{
 		                name: "test",
+			            nodeVarname: "testvarname",
 		                closed: false,
 		                color: "rgb(32, 96, 196)",
 		                propColor: "rgba(8, 62, 162, 1.0)",
 		                props: [{
 		                    name: "hogehoge",
+				            nodeVarname: "testvarname",
 		                    data: {
 		                        10: 100,
 		                        20: 120,
@@ -36,6 +38,7 @@ export default class Store extends EventEmitter {
 		                    }
 		                }, {
 		                    name: "piropiro",
+				            nodeVarname: "testvarname",
 		                    data: {
 		                        30: 100,
 		                        50: 220,
@@ -44,11 +47,13 @@ export default class Store extends EventEmitter {
 		                }]
 		            }, {
 		                name: "munimuni",
+			            nodeVarname: "groupvarname",
 		                closed: false,
 		                color: "rgb(196, 32, 64)",
 		                propColor: "rgba(162, 8, 40, 1.0)",
 		                props: [{
 		                    name: "piropiro",
+				            nodeVarname: "hogevarname",
 		                    data: {
 		                        5: 100,
 		                        40: 220,
@@ -56,25 +61,13 @@ export default class Store extends EventEmitter {
 		                    }
 		                }, {
 		                    name: "piropiro2",
+				            nodeVarname: "piyovarname",
 		                    data: {
 		                        15: 100,
 		                        42: 220,
 		                        64: 150
 		                    }
 		                }],
-		            }, {
-		                name: "aaa",
-		                closed: true,
-		                color: "rgb(96, 196, 32)",
-		                propColor: "rgba(62, 162, 8, 1.0)",
-		                props: [{
-		                    name: "piropiro",
-		                    data: {
-		                        50: 100,
-		                        80: 220,
-		                        90: 150
-		                    }
-		                }]
 		            }]
 					*/
 		        }
