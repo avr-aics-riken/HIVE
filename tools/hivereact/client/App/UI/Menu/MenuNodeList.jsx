@@ -32,7 +32,6 @@ export default class MenuNodeList extends React.Component {
     }
 
     styles() {
-	console.log("this.props.floating",this.props.floating)
         if(this.floating){
             return {
                 block: {

@@ -268,6 +268,9 @@ export default class Store extends EventEmitter {
 					if (Array.isArray(node.input[k].array)) {
 						let inputArray = node.input[k].array;
 						for (let n = 0; n < inputArray.length; n = n + 1) {
+							if (inputArray[n].hasOwnProperty('hole') && !inputArray[n].hole) {
+								continue;
+							}
 							if (inputArray[n].name === plug.input.name) {
 								if (node.node.pos[0] === null) {
 									console.error(node);
@@ -283,6 +286,10 @@ export default class Store extends EventEmitter {
 							}
 						}
 					} else {
+					console.log(node.input[k]);
+						if (node.input[k].hasOwnProperty('hole') && !node.input[k].hole) {
+							continue;
+						}
 						if (node.input[k].name === plug.input.name) {
 							if (node.node.pos[0] === null) {
 								console.error(node);
