@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from "react-dom";
+import ColorMap from "./colormap.jsx";
 
 function zeroPadding(n, c){
     return (new Array(c + 1).join('0') + n).slice(-c);
@@ -58,7 +59,8 @@ class ParallelCoordinate extends React.Component {
         this.state = {
             parse: null,
             data: null,
-            param: null
+            param: null,
+            colormap: null,
         };
 
         // method
@@ -77,6 +79,7 @@ class ParallelCoordinate extends React.Component {
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
 
         // event
+        this.onColorMapChange = this.onColorMapChange.bind(this);
         this.onChangeDensity = this.onChangeDensity.bind(this);
         this.onChangeDensityNormalize = this.onChangeDensityNormalize.bind(this);
         this.onChangeLogScale = this.onChangeLogScale.bind(this);
@@ -88,26 +91,46 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        var a, buffer;
+        var a, buffer, component, parse;
         const varname = this.node.varname;
-
-        console.log('parallel: imageRecieved!!!');
-
         if(param.varname !== varname){return;}
-        if(param.datatype === 'byte'){
+        if(param.mode === 'pack'){
             a = new Uint8Array(data);
-        }else if(param.datatype === 'float'){
-            a = new Float32Array(data);
-        }
-        let component = parseInt(param.component, 10);
-        if(isNaN(component) || component === null || component === undefined || component < 2){
-            console.log('parse error: invalid component count');
-            return;
-        }
-        let parse = [];
-        for(let i = 0, j = a.length / component; i < j; ++i){
-            let k = i * component;
-            parse.push([a[k], a[k + 1], a[k + 2]]);
+            component = parseInt(param.component, 10);
+            // if(isNaN(component) || component === null || component === undefined || component < 2){
+            if(isNaN(component) || component === null || component === undefined){
+                console.log('parse error: invalid component count');
+                return;
+            }
+            parse = [];
+            for(let i = 0, j = a.length / 4; i < j; ++i){
+                let k = i * 4;
+                let t = [];
+                for(let l = 0; l < 4; ++l){
+                    t.push(a[k + l]);
+                }
+                parse.push(t);
+            }
+        }else{
+            if(param.datatype === 'byte'){
+                a = new Uint8Array(data);
+            }else if(param.datatype === 'float'){
+                a = new Float32Array(data);
+            }
+            component = parseInt(param.component, 10);
+            if(isNaN(component) || component === null || component === undefined || component < 2){
+                console.log('parse error: invalid component count');
+                return;
+            }
+            parse = [];
+            for(let i = 0, j = a.length / component; i < j; ++i){
+                let k = i * component;
+                let t = [];
+                for(let l = 0; l < component; ++l){
+                    t.push(a[k + l]);
+                }
+                parse.push(t);
+            }
         }
         this.setState({
             parse: parse,
@@ -123,6 +146,13 @@ class ParallelCoordinate extends React.Component {
             this.useAxes();
         }else{
             console.log('parallel: invalid data');
+        }
+    }
+
+    onColorMapChange(canvas){
+        this.setState({colormap: canvas});
+        if(this.state.parse !== null){
+            setTimeout((()=>{this.redraw();}).bind(this), 50);
         }
     }
 
@@ -145,7 +175,7 @@ class ParallelCoordinate extends React.Component {
     }
 
     onChangeLogScale(){
-        this.logScale= !this.logScale;
+        this.logScale = !this.logScale;
         this.props.action.changeNodeInput({
             varname: this.props.node.varname,
             input: {logScale: this.logScale}
@@ -331,12 +361,13 @@ class ParallelCoordinate extends React.Component {
             min: this.props.node.input[8].value,
             max: this.props.node.input[9].value
         };
+        let example = ReactDOM.findDOMNode(this.refs.examples);
         this.linecount = this.dataval.length;
         this.parcoords = d3.parcoords({dimensionTitles: this.dimensionTitles, usr: this.usr})(ReactDOM.findDOMNode(this.refs.examples))
             .data(this.dataval)   // データの代入
             .mode("queue")        // 描画を WebGL Renderer に
-            .width(500)           // 描画エリアのサイズ（横幅）
-            .height(320);         // 描画エリアのサイズ（縦）
+            .width(example.clientWidth)           // 描画エリアのサイズ（横幅）
+            .height(example.clientHeight);         // 描画エリアのサイズ（縦）
 
         this.glInitialColor();
         this.parcoords.render()   // ラインを描画する
@@ -355,6 +386,7 @@ class ParallelCoordinate extends React.Component {
             this.glContext[id].canvas          = canvas[id];
             this.glContext[id].gl              = canvas[id].getContext('webgl');
             this.glContext[id].color           = [0.2, 0.2, 0.2, 0.1];
+            this.glContext[id].texture         = this.glContext[id].gl.createTexture();
             this.glContext[id].lowColor        = [1.0, 1.0, 1.0];
             this.glContext[id].middleLowColor  = [0.2, 0.2, 0.2];
             this.glContext[id].middleColor     = [0.1, 0.5, 0.3];
@@ -503,11 +535,13 @@ class ParallelCoordinate extends React.Component {
             gc.plf.fSource += 'uniform vec3 middleColor;';
             gc.plf.fSource += 'uniform vec3 middleHighColor;';
             gc.plf.fSource += 'uniform vec3 highColor;';
+            gc.plf.fSource += 'uniform sampler2D colorMap;';
             gc.plf.fSource += 'const float low = 0.2;';
             gc.plf.fSource += 'const float middle = 0.4;';
             gc.plf.fSource += 'const float high = 0.7;';
             gc.plf.fSource += 'void main(){';
             gc.plf.fSource += '    if(density > 0.0){';
+            gc.plf.fSource += '        vec4 tex = texture2D(colorMap, vec2(gl_FragCoord.xy / 300.0));'; // temp
             gc.plf.fSource += '        vec4 c = color;';
             gc.plf.fSource += '        vec2 texcoord = gl_FragCoord.st / resolution;';
             gc.plf.fSource += '        vec4 smpColor = texture2D(texture, texcoord);';
@@ -526,6 +560,7 @@ class ParallelCoordinate extends React.Component {
             gc.plf.fSource += '        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);';
             gc.plf.fSource += '    }';
             gc.plf.fSource += '}';
+            console.log(gc.plf.fSource);
 
             gc.plf.vs = create_shader(gl, gc.plf.vSource, gl.VERTEX_SHADER);
             gc.plf.fs = create_shader(gl, gc.plf.fSource, gl.FRAGMENT_SHADER);
@@ -542,7 +577,8 @@ class ParallelCoordinate extends React.Component {
                 middleLowColor: gl.getUniformLocation(gc.plf.prg, 'middleLowColor'),
                 middleColor: gl.getUniformLocation(gc.plf.prg, 'middleColor'),
                 middleHighColor: gl.getUniformLocation(gc.plf.prg, 'middleHighColor'),
-                highColor: gl.getUniformLocation(gc.plf.prg, 'highColor')
+                highColor: gl.getUniformLocation(gc.plf.prg, 'highColor'),
+                colorMap: gl.getUniformLocation(gc.plf.prg, 'colorMap')
             };
 
             (()=>{
@@ -569,6 +605,14 @@ class ParallelCoordinate extends React.Component {
             gc.plp.horizonBuffer  = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
             gc.plp.verticalBuffer = create_framebuffer(gl, ext, gc.plp.bufferWidth, gc.plp.bufferHeight);
         }
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, gc.texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.state.colormap);
+        // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.FLOAT, this.state.colormap);
+        gl.activeTexture(gl.TEXTURE0);
 
         gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
@@ -671,6 +715,7 @@ class ParallelCoordinate extends React.Component {
             gl.uniform3fv(gc.plf.uniL.middleColor     , [gc.middleColor[0]     , gc.middleColor[1]     , gc.middleColor[2]]);
             gl.uniform3fv(gc.plf.uniL.middleHighColor , [gc.middleHighColor[0] , gc.middleHighColor[1] , gc.middleHighColor[2]]);
             gl.uniform3fv(gc.plf.uniL.highColor       , [gc.highColor[0]       , gc.highColor[1]       , gc.highColor[2]]);
+            gl.uniform1i(gc.plf.uniL.colorMap, 2);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         }else{
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -706,24 +751,31 @@ class ParallelCoordinate extends React.Component {
     styles(){
         return {
             container: {
-                width: "500px",
+                width: "100%",
                 height: "auto",
-                margin: "2px 5px"
+                margin: "0px 0px 5px",
+                minWidth: "500px",
+                minHeight: "450px"
             },
             examples: {
                 backgroundColor: "white",
-                width: "500px",
-                height: "320px"
+                width: "100%",
+                height: "70%",
+                minWidth: "500px",
+                minHeight: "320px"
             },
             uiFrame: {
                 width: "100%",
-                height: "125px",
+                height: "30%",
+                minHeight: "125px",
                 display: "flex",
                 flexDirection: "column"
             },
             flexrow: {
                 flex: "1 0 auto",
+                lineHeight: "24px",
                 padding: "2px",
+                height: "24px",
                 display: "flex",
                 flexDirection: "row"
             },
@@ -733,17 +785,29 @@ class ParallelCoordinate extends React.Component {
                 display: "flex",
                 flexDirection: "row"
             },
+            checkInputs: {
+                margin: "0px 5px",
+                height: "24px",
+            },
             colorInputs: {
                 width: "20px",
                 height: "20px",
+                margin: "2px 0px",
                 padding: "0px"
             },
             inputTitle: {
                 marginRight: "3px",
             },
             textInputs: {
+                border: "none",
+                borderRadius: "3px",
+                margin: "0px 4px",
                 padding: "1px 2px",
+                width: "100px",
                 height: "20px",
+            },
+            labels: {
+                height: "24px",
             },
             canvas: {},
         };
@@ -755,24 +819,25 @@ class ParallelCoordinate extends React.Component {
             <div>
                 <div ref="container" style={styles.container}>
                     <div ref="examples" className="parcoords" style={styles.examples}></div>
+                    <ColorMap callback={this.onColorMapChange} />
                     <div style={styles.uiFrame}>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[4].value} id="densityCheck" onChange={this.onChangeDensity} />
-                                <label onClick={this.onChangeDensity}>density mode</label>
+                                <input type="checkbox" checked={this.props.node.input[4].value} id="densityCheck" onChange={this.onChangeDensity} style={styles.checkInputs} />
+                                <label onClick={this.onChangeDensity} style={styles.labels}>density mode</label>
                             </div>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[5].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} />
-                                <label onClick={this.onChangeDensityNormalize}>density normalize</label>
+                                <input type="checkbox" checked={this.props.node.input[5].value} id="densityNormalize" onChange={this.onChangeDensityNormalize} style={styles.checkInputs} />
+                                <label onClick={this.onChangeDensityNormalize} style={styles.labels}>density normalize</label>
                             </div>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[6].value} id="logScale" onChange={this.onChangeLogScale} />
-                                <label onClick={this.onChangeLogScale}>log scale</label>
+                                <input type="checkbox" checked={this.props.node.input[6].value} id="logScale" onChange={this.onChangeLogScale} style={styles.checkInputs} />
+                                <label onClick={this.onChangeLogScale} style={styles.labels}>log scale</label>
                             </div>
                         </div>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
-                                <input type="checkbox" checked={this.props.node.input[7].value} id="customCheck" onChange={this.onChangeCustomScale} />
+                                <input type="checkbox" checked={this.props.node.input[7].value} id="customCheck" onChange={this.onChangeCustomScale} style={styles.checkInputs} />
                                 <label onClick={this.onChangeCustomScale}>custom scale</label>
                             </div>
                             <div style={styles.flexcol}>

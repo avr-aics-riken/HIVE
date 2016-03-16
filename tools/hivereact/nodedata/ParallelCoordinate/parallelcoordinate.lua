@@ -16,13 +16,45 @@ function ParallelCoordinate:Do()
     if vol == nil and img == nil then
         return false
     end
-    
+    local mode = 'raw'
+    local qsize = 1
+
+    local volquant = require('VolumeQuantizer')()
+    local minmaxstring = ''
+    self.volquant = volquant
+    volquant:Create(vol)
+    local minmax = volquant:GetMinMax()
+    for i,v in pairs(minmax) do
+        if i == 1 then
+            minmaxstring = minmaxstring .. '{'
+        else
+            minmaxstring = minmaxstring .. ',{'
+        end
+        local flg = false;
+        for j,k in pairs(v) do
+            if not(flg) then
+                minmaxstring = minmaxstring .. '"' .. j .. '":"' .. k .. '"'
+            else
+                minmaxstring = minmaxstring .. ',"' .. j .. '":"' .. k .. '"'
+            end
+            flg = true
+            print('VQ:MinMax', i,j,k)
+        end
+        minmaxstring = minmaxstring .. "}"
+    end
+    print('doxas:', minmaxstring);
+    vol = volquant:VolumeData()
+    mode = 'pack'
+    qsize = 8
+    self.vol = vol
+
     local w
     local h
     local d = 1
     local c
     local dat
-    local imageBuffer        
+    local imageBuffer
+    local datasize
     if vol then
         w = vol:Width()
         h = vol:Height()
@@ -33,7 +65,8 @@ function ParallelCoordinate:Do()
             return false
         end
         imageBuffer = vol:Pointer() 
-        datatype = 'float';   
+        datatype = 'float';
+        datasize = 4   
     else
         dat = img        
         w = img:GetWidth()
@@ -45,11 +78,12 @@ function ParallelCoordinate:Do()
         end
         imageBuffer = img:GetBuffer()
         datatype = 'byte';
+        datasize = 1
     end
     
     local json = [[{
         "JSONRPC" : "2.0",
-        "method" : "renderedImage",            
+        "method" : "renderedImage",
         "to" : ]] .. targetClientId ..[[,
         "param" : {
         "type" : "volume",
@@ -58,15 +92,19 @@ function ParallelCoordinate:Do()
         "depth" : "]] .. d .. [[",
         "component" : "]] .. c .. [[",
         "datatype": "]] .. datatype .. [[",
-        "varname": "]] .. self.varname .. [["
+        "varname": "]] .. self.varname .. [[",
+        "mode": "]] .. mode ..  [[",
+        "quantsize": "]] .. qsize ..[[",
+        "minmax":[ ]] .. minmaxstring .. [[ ]
         },
         "id":0
     }]]
-        
+    print(json)
     print('imagebuffer=', imageBuffer)
-    local imageBufferSize = w * h * d * 4
+    local imageBufferSize = w * h * d * datasize * c
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-    network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+    self.bbuffer = HIVE_metabin:BinaryBuffer()
+    network:SendBinary(self.bbuffer, HIVE_metabin:BinaryBufferSize())
     print('send!!!!!!!!!!!', imageBufferSize, self.varname);
     return true
 end

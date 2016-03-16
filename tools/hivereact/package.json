@@ -23,7 +23,6 @@
     "react-autosuggest": "*",
     "react-color": "1.3.7",
     "rc-menu": "*",
-    "velocity-animate": "*",
     "react-slider": "*"
   },
   "window": {

@@ -44,9 +44,9 @@ HDMLoader::~HDMLoader() { Clear(); }
 /// ボリュームクリア
 void HDMLoader::Clear()
 {
-	std::map<std::string, RefPtr<BufferSparseVolumeData>>::iterator it(
+	std::map<std::string, RefPtr<BufferSparseVolumeData> >::iterator it(
 		m_fields.begin());
-	std::map<std::string, RefPtr<BufferSparseVolumeData>>::iterator itEnd(
+	std::map<std::string, RefPtr<BufferSparseVolumeData> >::iterator itEnd(
 		m_fields.end());
 
 	for (; it != itEnd; it++)

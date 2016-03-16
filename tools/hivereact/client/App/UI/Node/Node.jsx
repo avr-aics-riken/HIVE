@@ -26,7 +26,6 @@ export default class Node extends React.Component {
 
 		this.nodeChanged = this.nodeChanged.bind(this);
 		this.selectChanged = this.selectChanged.bind(this);
-		this.moveNode = this.moveNode.bind(this);
 		this.isMinimum = this.isMinimum.bind(this);
 
 		this.componentDidMount = this.componentDidMount.bind(this);
@@ -71,6 +70,7 @@ export default class Node extends React.Component {
 		return this.state.node.node.pos;
 	}
 
+/*
 	moveNode(err, data) {
 		if (this.state.isSelected) {
 			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
@@ -85,6 +85,7 @@ export default class Node extends React.Component {
 			}, 0);
 		}
 	}
+	*/
 
 	nodeRect() {
 		let rect = this.refs.node ? this.refs.node.getBoundingClientRect() : null;
@@ -204,11 +205,10 @@ export default class Node extends React.Component {
 		window.addEventListener('keyup', this.onKeyUp);
 		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
-		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 		let rect = this.refs.node.getBoundingClientRect();
 		let invzoom = 1.0 / this.props.nodeStore.getZoom();
 		this.props.nodeStore.setNodeSize(this.props.nodeVarname, (rect.right - rect.left) * invzoom, (rect.bottom - rect.top) * invzoom);
-		if (this.props.id === String(this.props.nodeVarname + (this.props.store.getNodes().length - 1))) {
+		if (this.props.id === String(this.props.nodeVarname)) {
 			this.props.nodeStore.recalcPlugPosition(this.props.store);
 		}
 
@@ -222,7 +222,6 @@ export default class Node extends React.Component {
 		window.removeEventListener('keyup', this.onKeyUp);
 		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
 		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
-		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
 
 		this.refs.node.removeEventListener('dblclick', this.onDoubleClick);
 	}
@@ -263,7 +262,8 @@ export default class Node extends React.Component {
 			// マウスダウン位置からの差分移動量.
 			let mv = { x : ev.clientX - this.mousePos.x, y : ev.clientY - this.mousePos.y };
 
-			this.props.nodeAction.moveNode(mv);
+			this.props.moveNode(null, mv);
+			//this.props.nodeAction.moveNode(mv);
 		}
 	}
 
@@ -459,6 +459,7 @@ export default class Node extends React.Component {
 	}
 
 	// グループ削除ボタン
+	/*
 	unGroupElem() {
 		let n = this.state.node;
 		if (this.props.nodeStore.isGroup(n)) {
@@ -471,6 +472,7 @@ export default class Node extends React.Component {
 					</div>)
 		}
 	}
+	*/
 
 	onDoubleClick(ev) {
 		let n = this.state.node;
@@ -491,7 +493,6 @@ export default class Node extends React.Component {
 					{this.titleElem.bind(this)()}
 					{this.inputElem.bind(this)()}
 					{this.outputElem.bind(this)()}
-					{this.unGroupElem.bind(this)()}
 					{this.closeElem.bind(this)()}
 				</div>);
 	}

@@ -5,9 +5,10 @@ class TransferFunction extends React.Component {
     constructor(props) {
         super(props);
 
+        this.store = props.store;
         this.action  = props.action;
         this.node = props.node;
-        
+
         // members
         this.wrapper = null;
         this.cw = 300;
@@ -23,14 +24,14 @@ class TransferFunction extends React.Component {
         this.maxInput  = null;
         this.graphMode = null;
         this.changeCallback = null;
+        this.defaultValMin = 0;
+        this.defaultValMax = 0;
         const numVals = 256;
         this.numVals    = numVals;
         this.valueRed   = [numVals];
         this.valueGreen = [numVals];
         this.valueBlue  = [numVals];
         this.valueAlpha = [numVals];
-        this.defaultValMin = 0;
-        this.defaultValMax = 0;
         this.hist = [numVals];
         for(let i = 0; i < numVals; ++i){
             this.valueRed[i] = i/numVals;
@@ -53,8 +54,8 @@ class TransferFunction extends React.Component {
                 {value: "2", text: "Black and White"},
                 {value: "3", text: "BGR Gradation"}
             ],
-            valMin: 0,
-            valMax: 0,
+            valMin: this.props.node.input[2].value,
+            valMax: this.props.node.input[3].value,
             btnFlags: [],
             redbtnColor: this.disableColor,
             greenbtnColor: this.disableColor,
@@ -64,6 +65,7 @@ class TransferFunction extends React.Component {
         };
 
         // methods
+        this.onRecieveAnalyzed   = this.onRecieveAnalyzed.bind(this);
         this.onSelectChange      = this.onSelectChange.bind(this);
         this.redbtnClick         = this.redbtnClick.bind(this);
         this.greenbtnClick       = this.greenbtnClick.bind(this);
@@ -74,6 +76,7 @@ class TransferFunction extends React.Component {
         this.minInputChange      = this.minInputChange.bind(this);
         this.maxInputChange      = this.maxInputChange.bind(this);
         this.componentDidMount   = this.componentDidMount.bind(this);
+        this.componentWillUnmount= this.componentWillUnmount.bind(this);
         this.transFunc           = this.transFunc.bind(this);
         this.invTransFunc        = this.invTransFunc.bind(this);
         this.init                = this.init.bind(this);
@@ -92,27 +95,30 @@ class TransferFunction extends React.Component {
         this.getNumValues        = this.getNumValues.bind(this);
         this.setAnalyzeResult    = this.setAnalyzeResult.bind(this);
         this.styles              = this.styles.bind(this);
-        
+
         this.changeCallback = () => {
-            let rgba = [4*numVals]
+            let rgba = [4*numVals];
             for(let i = 0; i < numVals; ++i){
-                rgba[4*i  ] = parseInt(this.valueRed[i]*255); 
-                rgba[4*i+1] = parseInt(this.valueGreen[i]*255); 
-                rgba[4*i+2] = parseInt(this.valueBlue[i]*255);                 
-                rgba[4*i+3] = parseInt(this.valueAlpha[i]*255); 
+                rgba[4*i  ] = parseInt(this.valueRed[i]*255);
+                rgba[4*i+1] = parseInt(this.valueGreen[i]*255);
+                rgba[4*i+2] = parseInt(this.valueBlue[i]*255);
+                rgba[4*i+3] = parseInt(this.valueAlpha[i]*255);
             }
-            console.log(rgba);            
             //this.node.rgba
             const varname = this.node.varname;
             this.action.changeNodeInput({
                 varname : varname,
                 input : {
-                    "rgba" : rgba                    
+                    "rgba" : rgba
                 }
             });
-        }
+        };
      }
-    onSelectChange(eve){
+     onRecieveAnalyzed(data) {
+        //console.error(data);
+        this.setAnalyzeResult(data);
+     }
+     onSelectChange(eve){
         var e = eve.target.value;
         var t = parseInt(e);
         this.setState({selValue: t});
@@ -180,18 +186,33 @@ class TransferFunction extends React.Component {
     }
     minInputChange(eve){
         var e = eve.currentTarget;
-        console.log(e.value);
         if (parseFloat(this.minInput.value) !== NaN) {
-            this.setState({valMin: parseFloat(this.minInput.value)});
+            const vl = parseFloat(this.minInput.value);
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "minval" : vl
+                }
+            });
+            this.setState({valMin: vl});
             this.drawGraph();
             if (this.changeCallback){
                 this.changeCallback(this);
             }
         }
     }
-    maxInputChange(){
+    maxInputChange(eve){
         if (parseFloat(this.maxInput.value) !== NaN) {
-            this.setState({valMax: parseFloat(this.maxInput.value)});
+            const vl = parseFloat(this.maxInput.value);
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "maxval" : vl
+                }
+            });
+            this.setState({valMax: vl});
             this.drawGraph();
             if (this.changeCallback){
                 this.changeCallback(this);
@@ -213,6 +234,13 @@ class TransferFunction extends React.Component {
             this.mspress = false;
             document.removeEventListener('mousemove', this.mouseMoveFunc);
         }).bind(this), true);
+
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+    }
+    componentWillUnmount() {
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
     }
     transFunc(x){return Math.sqrt(x);}
     invTransFunc(x){return x*x;}
@@ -253,7 +281,6 @@ class TransferFunction extends React.Component {
             this.ctx.lineTo(x,ch);
         }
         for (var y = 0; y <= ch; y += 50){
-            //console.log(Math.sqrt(y/ch)*ch);
             var yv = this.transFunc(y/ch);
             this.ctx.moveTo(0 ,(1.0 - yv)*ch);
             this.ctx.lineTo(cw,(1.0 - yv)*ch);
@@ -300,7 +327,7 @@ class TransferFunction extends React.Component {
         }
         for (var i = 0; i < this.numVals; ++i){
             //this.ctx.lineTo(i / this.numVals *  cw, (1.0 - vals[i]) * ch); // MODE NORMAL
-            this.ctx.lineTo(((i / this.numVals + goffset)  * gscale) *  cw , ch - this.transFunc(vals[i])*ch); // MODE SQRT
+            this.ctx.lineTo(((i / this.numVals + goffset)  * gscale) *  cw, ch - this.transFunc(vals[i]) * ch); // MODE SQRT
         }
         this.ctx.stroke();
         this.ctx.lineWidth = 1;
@@ -407,13 +434,43 @@ class TransferFunction extends React.Component {
     getNumValues(){
         return this.numVals;
     }
-    setAnalyzeResult(result, component){
+    setAnalyzeResult(result) {
+        if (result) {
+            if (result.histgram) {
+                const hist = result.histgram;
+                for (let i = 0; i < this.numVals; ++i) {
+                    this.hist[i] = hist[i];
+                }
+            }
+            let min = parseFloat(result.minval);
+            let max = parseFloat(result.maxval);
+            const varname = this.node.varname;
+            if(this.defaultValMin !== min || this.defaultValMax !== max){
+                this.defaultValMin = min;
+                this.defaultValMax = max;
+                this.action.changeNodeInput({
+                    varname : varname,
+                    input : {
+                        minval :min,
+                        maxval :max
+                    }
+                });
+                this.setState({
+                    valMin: min,
+                    valMax: max
+                });
+            }
+        }
+    }
+    /*setAnalyzeResult(result, component){
         var i, hist, componentNum;
         if (result && result.histgram) {
             componentNum = (result.type === "vector" ? 3 : 1);
-            hist = result.histgram;
-            for (i = 0; i < this.numVals; ++i) {
-                this.hist[i] = hist[i * componentNum + component];
+            if (result.histgram) {
+                hist = result.histgram;
+                for (i = 0; i < this.numVals; ++i) {
+                    this.hist[i] = hist[i * componentNum + component];
+                }
             }
 
             this.defaultValMin = result.defaultValMin;
@@ -423,7 +480,7 @@ class TransferFunction extends React.Component {
                 valMax: result.max[component]
             });
         }
-    }
+    }*/
 
     styles(){
         return {

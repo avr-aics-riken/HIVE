@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import Core from '../../Core';
 import RcMenu, {SubMenu, Item as MenuItem, Divider} from 'rc-menu';
-import velocity from 'velocity-animate';
+//import velocity from 'velocity-animate';
 
 // class
 export default class MenuTop extends React.Component {
@@ -25,7 +25,49 @@ export default class MenuTop extends React.Component {
 		};
 
         this.showConsole = props.consoleShow;
+		this.onKeyDown = this.onKeyDown.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
     }
+
+	componentDidMount() {
+		window.addEventListener('keydown', this.onKeyDown);
+		window.addEventListener('keyup', this.onKeyUp);
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('keydown', this.onKeyDown);
+		window.removeEventListener('keyup', this.onKeyUp);
+	}
+
+	onKeyUp(ev) {
+		this.isCtrlDown = ev.ctrlKey;
+	}
+
+	onKeyDown(ev) {
+		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
+		this.isCtrlDown = ev.ctrlKey;
+		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
+			this.editNodeCopy();
+		}
+		if (this.isCtrlDown && ev.keyCode === 86) { // "v"
+			this.editNodePaste();
+		}
+		if (this.isCtrlDown && ev.keyCode === 71) { // "g"
+			this.editNodeMakeGroup();
+		}
+		if (this.isCtrlDown && ev.keyCode === 85) { // "u"
+			this.editNodeUnGroup();
+		}
+		if (this.isCtrlDown && ev.keyCode === 83) { // "s"
+			this.props.action.save();
+		}
+		if (this.isCtrlDown && ev.keyCode === 79) { // "o"
+			this.loadButtonClick();
+		}
+		if (ev.keyCode === 46) { // delete
+			this.editNodeDelete();
+		}
+	}
 
     allClearNode(disableConfirm){
         var flg = true;
@@ -77,6 +119,7 @@ export default class MenuTop extends React.Component {
     editNodePaste() { this.props.action.paste(); }
     editNodeDelete() { this.props.action.delete(); }
     editNodeMakeGroup() { this.props.action.makeGroup(); }
+	editNodeUnGroup() { this.props.action.unGroup(); }
 
     // Layout menu
     layoutAll() { this.props.action.setLayout('all'); }
@@ -120,6 +163,7 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="editNodePaste">Paste</MenuItem>
                     <MenuItem key="editNodeDelete">Delete</MenuItem>
                     <MenuItem key="editNodeMakeGroup">MakeGroup</MenuItem>
+					<MenuItem key="editNodeUnGroup">UnGroup</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>Layout</span>} key="layout">
                     <MenuItem key="layoutAll">All</MenuItem>
@@ -135,7 +179,7 @@ export default class MenuTop extends React.Component {
             mode: 'horizontal',
             openAnimation: 'slide-up',
             openSubMenuOnMouseEnter: false,
-            closeSubMenuOnMouseLeave: true
+            closeSubMenuOnMouseLeave: false
         });
 
         let style = {
@@ -154,6 +198,7 @@ export default class MenuTop extends React.Component {
     }
 }
 
+/*
 // ユーティリティ類の定義
 const animation = {
     enter(node, done) {
@@ -204,3 +249,4 @@ const animation = {
         };
     },
 };
+*/

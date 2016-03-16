@@ -16,7 +16,8 @@ export default class NodeView extends React.Component {
 			nodes : this.props.store.getNodes(),
 			zoom : this.props.nodeStore.getZoom(),
 			globalOutHover : false,
-			globalInHover : false
+			globalInHover : false,
+			offset : [-1700, -1700] //px
 		};
 
 		this.isLeftDown = false;
@@ -31,8 +32,6 @@ export default class NodeView extends React.Component {
 
 		this.onNodeCountChanged = this.onNodeCountChanged.bind(this);
 		this.onZoomChanged = this.onZoomChanged.bind(this);
-		this.onKeyDown = this.onKeyDown.bind(this);
-		this.onKeyUp = this.onKeyUp.bind(this);
 
 		this.copied = null;
 		this.onCopy = this.onCopy.bind(this);
@@ -40,8 +39,25 @@ export default class NodeView extends React.Component {
 		this.onDelete = this.onDelete.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 
+		this.moveNode = this.moveNode.bind(this);
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
 		this.connectToGlobalIn = this.connectToGlobalIn.bind(this);
+	}
+
+	moveNode(err, data) {
+		let nodes = this.props.store.getSelectedNodeList();
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			// マウスダウン時のoffsetLeft/offsetTopに足し込む.
+			let invzoom = 1.0 / this.props.nodeStore.getZoom();
+			let n = JSON.parse(JSON.stringify(nodes[i].node));
+			let component = this.refs[nodes[i].varname];
+			n.pos = [component.offsetLeft + data.x * invzoom, component.offsetTop + data.y * invzoom];
+
+			this.props.action.changeNode({
+				varname : nodes[i].varname,
+				node : n
+			});
+		}
 	}
 
 	styles(id) {
@@ -85,12 +101,11 @@ export default class NodeView extends React.Component {
 		const px = ev.clientX - this.rect.left;
 		const py = ev.clientY - this.rect.top;
 		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
-            const dx = (px - this.pos.x);
-            const dy = (py - this.pos.y);
-			if (this.refs.viewport) {
-				this.refs.viewport.scrollLeft = this.refs.viewport.scrollLeft - dx;
-				this.refs.viewport.scrollTop = this.refs.viewport.scrollTop - dy;
-			}
+            const dx = (px - this.pos.x) / this.state.zoom;
+            const dy = (py - this.pos.y) / this.state.zoom;
+			this.setState({
+				offset : [this.state.offset[0] + dx, this.state.offset[1] + dy]
+			});
 		} else if (this.isRightDown) {
             const dx = (px - this.pos.x);
             const dy = (py - this.pos.y);
@@ -167,7 +182,7 @@ export default class NodeView extends React.Component {
 				let width = rect.right - rect.left;
 				let height = rect.bottom - rect.top;
 				let n = JSON.parse(JSON.stringify(data.node));
-				n.pos = [this.refs.viewport.scrollLeft + width / 2 - 200, this.refs.viewport.scrollTop + height / 2 - 200];
+				n.pos = [-this.state.offset[0] + width / 2 - 200, -this.state.offset[1] + height / 2 - 200];
 				if (n.pos[0] <= 0) { n.pos[0] = 200; }
 				if (n.pos[1] <= 0) { n.pos[1] = 200; }
 				if (n.pos[0] >= 4000) { n.pos[0] = 3800; }
@@ -200,45 +215,25 @@ export default class NodeView extends React.Component {
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
 
-		this.refs.viewport.scrollTop = 1700;
-		this.refs.viewport.scrollLeft = 1700;
-
+		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.on(Core.Constants.NODE_ADDED, this.onNodeAdded);
 		this.props.store.on(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.on(Core.Constants.DELETE_CALLED, this.onDelete);
-		window.addEventListener('keydown', this.onKeyDown);
-		window.addEventListener('keyup', this.onKeyUp);
     }
 
     componentWillUnmount(){
 		window.removeEventListener('mouseup', this.onMouseUp);
+		this.props.nodeStore.removeListener(Store.NODE_MOVED, this.moveNode);
 		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.off(Store.ZOOM_CHANGED, this.onZoomChanged);
 		this.props.store.off(Core.Constants.NODE_ADDED, this.onNodeAdded);
 		this.props.store.off(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
-		window.removeEventListener('keydown', this.onKeyDown);
-		window.removeEventListener('keyup', this.onKeyUp);
     }
-
-	onKeyDown(ev) {
-		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
-		let rect = this.refs.bound.getBoundingClientRect();
-		this.isCtrlDown = ev.ctrlKey;
-		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
-			this.onCopy(null);
-		}
-		if (this.isCtrlDown && ev.keyCode === 86) { // "v"
-			this.onPaste(null);
-		}
-		if (ev.keyCode === 46) { // delete
-			this.onDelete(null);
-		}
-	}
 
 	// メニューまたはショートカットで削除が呼ばれた
 	onDelete(err) {
@@ -269,8 +264,8 @@ export default class NodeView extends React.Component {
 			for (let i = 0; i < copyNodes.length; i = i + 1) {
 				let node = copyNodes[i];
 				if (i === 0) {
-					diffPos[0] = this.refs.viewport.scrollLeft + this.pos.x - node.node.pos[0];
-					diffPos[1] = this.refs.viewport.scrollTop + this.pos.y - node.node.pos[1];
+					diffPos[0] = -this.state.offset[0] + this.pos.x - node.node.pos[0];
+					diffPos[1] = -this.state.offset[1] + this.pos.y - node.node.pos[1];
 				}
 				copyNodes[i].node.pos[0] += diffPos[0];
 				copyNodes[i].node.pos[1] += diffPos[1];
@@ -283,19 +278,21 @@ export default class NodeView extends React.Component {
 		console.log("pasteNode");
 	}
 
-	onKeyUp(ev) {
-		this.isCtrlDown = ev.ctrlKey;
-	}
-
 	origin() {
 		if (this.refs.viewport) {
 			let rect = this.refs.viewport.getBoundingClientRect();
-			let x = this.refs.viewport.scrollLeft + (rect.right - rect.left) / 2.0;
-			let y = this.refs.viewport.scrollTop + (rect.bottom - rect.top) / 2.0;
+			let x = (rect.right - rect.left) / 2.0;
+			let y = (rect.bottom - rect.top) / 2.0;
 			return String(x) + "px " + String(y) + "px";
 		} else {
 			return "0px 0px";
 		}
+	}
+
+	transform() {
+		let scale = "scale(" + this.state.zoom + ")";
+		let translate = "translate(" + String(this.state.offset[0]) + "px," + String(this.state.offset[1]) + "px)";
+		return scale + " " + translate;
 	}
 
 	nodeList() {
@@ -307,8 +304,10 @@ export default class NodeView extends React.Component {
 						nodeStore={this.props.nodeStore}
 						nodeAction={this.props.nodeAction}
 						key={nodeData.varname + key}
-						id={nodeData.varname + key}
+						id={nodeData.varname}
+						ref={nodeData.varname}
 						isSimple={isSimple}
+						moveNode={this.moveNode}
 					></Node>);
 		} ));
 		return nodeList;
@@ -331,10 +330,6 @@ export default class NodeView extends React.Component {
 			});
 			return panelList;
 		}
-	}
-
-	onGlobalInMouseUp(ev) {
-
 	}
 
 	onGlobalOutEnter(ev) {
@@ -441,8 +436,7 @@ export default class NodeView extends React.Component {
 						style={{
 							position : "absolute",
 							width:"100%",
-							height:"100%",
-							overflow:"auto"
+							height:"100%"
 						}}
 						ref="viewport"
 						onWheel={this.onWheel.bind(this)}
@@ -452,7 +446,7 @@ export default class NodeView extends React.Component {
 								position : "absolute",
 								width:"4000px",
 								height:"4000px",
-								transform : "scale(" + this.state.zoom + ")",
+								transform : this.transform.bind(this)(),
 								transformOrigin : this.origin.bind(this)(),
 								border : "10px solid",
 								borderColor : "gray"

@@ -110,7 +110,6 @@ export default class Store extends EventEmitter {
 
 		this.getPlugPosList = this.getPlugPosList.bind(this);
 		this.changePlugPosition = this.changePlugPosition.bind(this);
-		this.moveNode = this.moveNode.bind(this);
 		this.dragPlug = this.dragPlug.bind(this);
 		this.endDragPlug = this.endDragPlug.bind(this);
 		this.selectPlugHole = this.selectPlugHole.bind(this);
@@ -185,6 +184,9 @@ export default class Store extends EventEmitter {
 						nodeRef : outNode
 					}
 				};
+				if (!plugPosition.input.pos || !plugPosition.output.pos) {
+					console.error(inNode, outNode, plugPosition);
+				}
 				//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
 				this.plugPosList.push(plugPosition);
 			}
@@ -406,7 +408,7 @@ export default class Store extends EventEmitter {
 	/// 入力端子にプラグが繋がっているかどうか返す
 	isConnected(nodeVarname, inputName) {
 		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
-			if (this.plugPosList[i].input.nodeVarname === nodeVarname) {
+			if (this.plugPosList[i].input.nodeRef.varname === nodeVarname) {
 				if (Array.isArray(this.plugPosList[i].input.array)) {
 					for (let k = 0; k < this.plugPosList[i].input.array.length; k = k + 1) {
 						if (this.plugPosList[i].input.array[k].name === inputName) {
@@ -513,13 +515,6 @@ export default class Store extends EventEmitter {
 				}
 			}
 		}
-	}
-
-	/**
-	 * ノードを移動させる.
-	 */
-	moveNode(payload) {
-		this.emit(Store.NODE_MOVED, null, payload.mv);
 	}
 
 	/**

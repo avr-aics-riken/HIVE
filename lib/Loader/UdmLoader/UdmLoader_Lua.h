@@ -9,6 +9,7 @@
 #include "UdmLoader.h"
 #include "BufferMeshData_Lua.h"
 #include "BufferTetraData_Lua.h"
+#include "BufferSolidData_Lua.h"
 /**
  * UDMLoader Luaラッパー
  */
@@ -40,6 +41,10 @@ public:
         return BufferTetraData_Lua::CreateInstance(data);
     }
 
+    BufferSolidData_Lua* SolidData(int solidType) {
+        return new BufferSolidData_Lua(UDMLoader::SolidData(solidType));
+    }
+
     BufferExtraData_Lua* ExtraData(const char *name) {
         RefPtr<BufferExtraData> data = UDMLoader::ExtraData(name);
         return BufferExtraData_Lua::CreateInstance(data);
@@ -51,6 +56,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("UDMLoader",bool,Load,const char*,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferMeshData_Lua*, MeshData)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*, TetraData)
+    LUA_SCRIPTCLASS_METHOD_ARG1(BufferSolidData_Lua*, SolidData, int)
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua*, ExtraData, const char*)
     LUA_SCRIPTCLASS_END()
 };

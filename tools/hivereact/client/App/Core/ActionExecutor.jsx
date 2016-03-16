@@ -216,14 +216,14 @@ export default class ActionExecuter {
 		if (this.store.isGroup(node)) {
 			let nodeList = [];
 			this.getChildNodes(nodeList, node);
-			for (let i = 0; i < nodeList.length; i = i + 1) {
+			for (let i = nodeList.length - 1; i >= 0; i = i - 1) {
 				this.deleteNodeRelatedValues(nodeList[i]);
 			}
 		}
 
 		// input, outputの削除.
 		let tempPath = JSON.parse(JSON.stringify(this.store.data.nodePath));
-		for (let i = tempPath.length - 1; i >= 0; i = i - 1) {
+		for (let i = tempPath.length; i >= 0; i = i - 1) {
 			let inputs = this.store.getInput(tempPath);
 			for (let k = inputs.length - 1; k >= 0; k = k - 1) {
 				if (inputs[k].nodeVarname === node.varname) {
@@ -236,7 +236,9 @@ export default class ActionExecuter {
 					outputs.splice(k, 1);
 				}
 			}
-			tempPath.splice(i, 1);
+			if (i > 0) {
+				tempPath.splice(i - 1, 1);
+			}
 		}
 
 		// 関連するプラグを全部消す
@@ -509,7 +511,28 @@ export default class ActionExecuter {
 
 					this.store.emit(Constants.NODE_CHANGED, null, dstNode, i);
 					if (hasInput && preInputs !== postInputs) {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
+						if (this.store.isGroup(dstNode)) {
+							// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
+							let pre = JSON.parse(preInputs);
+							let post = JSON.parse(postInputs);
+							for (let k = 0; k < pre.length; k = k + 1) {
+								if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
+									console.log(pre[k].nodeVarname);
+									let target = this.store.findNode(dstNode, pre[k].nodeVarname);
+									if (!target) {
+										console.error("not found input node")
+									}
+									for (let m = 0; m < target.input.length; m = m + 1) {
+										if (target.input[m].name === post[k].name) {
+											target.input[m].value = post[k].value;
+										}
+									}
+									this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
+								}
+							}
+						} else {
+							this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
+						}
 					}
 					if (hasSelect && preSelect !== postSelect) {
 						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, dstNode, i);
@@ -713,6 +736,7 @@ export default class ActionExecuter {
 
 		console.log("nodeList", nodeList)
 
+		// ノードリストから外部に出ているプラグを取得.
 		let inplugs = this.getGroupInoutFromNodes(nodeList, true);
 		let outplugs = this.getGroupInoutFromNodes(nodeList, false);
 		let inputs = [];
@@ -723,7 +747,15 @@ export default class ActionExecuter {
 				let plug = inplugs[k];
 				if (n.varname === plug.input.nodeVarname) {
 					for (let j = 0; j < n.input.length; j = j + 1) {
-						if (n.input[j].name === plug.input.name) {
+						let ar = n.input[j].array;
+						if (Array.isArray(ar)) {
+							for (let m = 0; m < ar.length; m = m + 1) {
+								if (ar[m].name === plug.input.name) {
+									inputs.push(ar[m]);
+								}
+							}
+						}
+						else if (n.input[j].name === plug.input.name) {
 							inputs.push(n.input[j]);
 						}
 					}
@@ -757,7 +789,14 @@ export default class ActionExecuter {
 			for (let k = 0; k < n.input.length; ++k) {
 				let input = n.input[k];
 				if (varnameToInput.hasOwnProperty(input.nodeVarname)) {
-					if (varnameToInput[input.nodeVarname].name === input.name) {
+					if (Array.isArray(input.array)) {
+						let ar = input.array;
+						for (let m = 0; m < ar.length; m = m + 1) {
+							if (varnameToInput[input.nodeVarname].name === ar[m].name) {
+								inputs.push(ar[m]);
+							}
+						}
+					} else if (varnameToInput[input.nodeVarname].name === input.name) {
 						inputs.push(input);
 					}
 				}
@@ -788,14 +827,16 @@ export default class ActionExecuter {
 	 * グループを解除する
 	 */
 	unGroup(payload) {
-		if (payload.hasOwnProperty("groupVarname")) {
-			let groupVarname = payload.groupVarname;
-			let n = this.store.getNode(groupVarname);
-			if (!n) {
-				console.error("group node found ", groupVarname);
+		let nodeList = this.store.getSelectedNodeList();
+		let groupList = [];
+		for (let i = 0; i < nodeList.length; i = i + 1) {
+			if (this.store.isGroup(nodeList[i])) {
+				groupList.push(nodeList[i]);
 			}
+		}
+		for (let k = 0; k < groupList.length; k = k + 1) {
 			// グループノードが保持しているノードとプラグを現在の階層に追加.
-			let group = n.node;
+			let group = groupList[k];
 			let nodes = this.store.getNodes();
 			let plugs = this.store.getPlugs();
 			for (let i = 0; i < group.nodes.length; i = i + 1) {
@@ -806,8 +847,10 @@ export default class ActionExecuter {
 			}
 			// グループノードを削除.
 			for (let i = 0; i < nodes.length; i = i + 1) {
-				if (nodes[i].varname === groupVarname) {
+				if (nodes[i].varname === group.varname) {
+					let node = nodes[i];
 					nodes.splice(i, 1);
+					this.store.emit(Constants.NODE_DELETED, null, node);
 					break;
 				}
 			}

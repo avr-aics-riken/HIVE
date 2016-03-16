@@ -12,7 +12,8 @@ export default class Container extends React.Component {
 		n.uiComponent = eval(this.props.node.uiFunc);
         this.state = {
             node: this.props.node,
-            closeHover: false
+            closeHover: false,
+			containerHover : null // or zindex
         };
         this.isLeftDown = false;
         this.isScaleLeftDown = false;
@@ -59,9 +60,12 @@ export default class Container extends React.Component {
         ev.stopPropagation();
         if(ev.button === 0){
             this.isLeftDown = true;
-            this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
-            this.offsetLeft = ev.currentTarget.offsetLeft;
-            this.offsetTop = ev.currentTarget.offsetTop;
+			if (this.props.zoom) {
+				this.mousePos = {x: ev.clientX  * this.props.zoom - this.state.node.panel.pos[0], y: ev.clientY  * this.props.zoom- this.state.node.panel.pos[1]};
+			} else {
+				this.mousePos = {x: ev.clientX - this.state.node.panel.pos[0], y: ev.clientY - this.state.node.panel.pos[1]};
+			}
+			this.selectNode(this.state.node);
             this.forwardIndex(this.state.node);
         }
     }
@@ -76,14 +80,13 @@ export default class Container extends React.Component {
             let mv;
             let panel = JSON.parse(JSON.stringify(node.panel));
 			if (this.props.zoom) {
-			// todo
-			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
-	            panel.pos[0] = this.offsetLeft + mv.x;
-	            panel.pos[1] = this.offsetTop + mv.y;
+			 	mv = {x: ev.clientX * this.props.zoom - this.mousePos.x, y: ev.clientY  * this.props.zoom- this.mousePos.y};
+				panel.pos[0] = mv.x;
+				panel.pos[1] = mv.y;
 			} else {
 			 	mv = {x: ev.clientX - this.mousePos.x, y: ev.clientY - this.mousePos.y};
-	            panel.pos[0] = this.offsetLeft + mv.x;
-	            panel.pos[1] = this.offsetTop + mv.y;
+	            panel.pos[0] = mv.x;
+	            panel.pos[1] = mv.y;
 			}
             this.action.changeNode({
                 varname : node.varname,
@@ -100,6 +103,7 @@ export default class Container extends React.Component {
             this.scalePos = {x: ev.clientX, y: ev.clientY};
             this.offsetScaleLeft = Math.max(ev.currentTarget.offsetLeft + ev.currentTarget.offsetWidth, 100);
             this.offsetScaleTop  = Math.max(ev.currentTarget.offsetTop + ev.currentTarget.offsetHeight, 100);
+			this.selectNode(this.state.node);
             this.forwardIndex(this.state.node);
         }
     }
@@ -136,33 +140,56 @@ export default class Container extends React.Component {
         this.setState({ closeHover : !this.state.closeHover });
     }
 
+	onContainerEnter(ev) {
+		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		let preZIndex = panel.zindex;
+		panel.zindex = 10000;
+		this.action.changeNode({
+			varname : this.state.node.varname,
+			panel : panel
+		});
+		this.setState({ containerHover : preZIndex });
+	}
+
+	onContainerLeave(ev) {
+		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		panel.zindex = this.state.containerHover;
+		this.action.changeNode({
+			varname : this.state.node.varname,
+			panel : panel
+		});
+		this.setState({ containerHover : null });
+	}
+
+	selectNode(target) {
+		this.action.unSelectNode([]);
+		let nodes = this.store.getNodes();
+		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
+		panel.zindex = nodes.length;
+		this.action.changeNode({
+			varname : target.varname,
+			select : true,
+			panel : panel
+		});
+	}
+
     // index を最前面に持ってくる
     // target === ターゲットノード
-    forwardIndex(target){
-        let nodes = this.store.getNodes();
-        let len = nodes.length;
-        let targetIndex = target.panel.zindex;
-        let varnamelist = [];
-        let unvarnamelist = [];
-        for(let i in nodes){
-            if(nodes[i].varname === target.varname){
-                nodes[i].panel.zindex = len;
-                nodes[i].select = true;
-            }else{
-                if(nodes[i].panel.zindex > targetIndex){
-                    --nodes[i].panel.zindex;
-                }
-                nodes[i].select = false;
-            }
-            this.action.changeNode(nodes[i]);
-            if(nodes[i].select){
-                varnamelist.push(nodes[i].varname);
-            }else{
-                unvarnamelist.push(nodes[i].varname);
-            }
-        }
-        this.action.unSelectNode([], varnamelist);
-        this.action.selectNode(varnamelist);
+    forwardIndex(target) {
+		let nodes = this.store.getNodes();
+		let targetIndex = this.state.containerHover;
+		if (targetIndex === null) { return; }
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			let node = nodes[i];
+			if (node.varname !== target.varname && node.panel.zindex >= targetIndex){
+				let panel = JSON.parse(JSON.stringify(node.panel));
+				panel.zindex = targetIndex - 1;
+				this.action.changeNode({
+					varname : node.varname,
+					panel : panel
+				});
+			}
+		}
     }
 
     styles() {
@@ -180,7 +207,8 @@ export default class Container extends React.Component {
                 top:  this.state.node.panel.pos[1] + "px",
                 left: this.state.node.panel.pos[0] + "px",
                 zIndex: this.state.node.panel.zindex,
-                display: this.state.node.panel.visible ? "block" : "none"
+                display: this.state.node.panel.visible ? "block" : "none",
+				transform : (this.state.containerHover !== null && this.props.zoom) ? "scale(" + this.props.zoom + ")": ""
             },
             panelTitleBar: {
                 fontSize: "12pt",
@@ -220,40 +248,28 @@ export default class Container extends React.Component {
         };
     }
 
+	uiComponent() {
+		let node = this.state.node;
+		if (node.uiComponent === undefined) {
+			return;
+		} else { // if (node.jsx === true) {
+			let UIComponent = this.state.node.uiComponent;
+			return (<UIComponent
+						store={this.store}
+						action={this.action}
+						node={node}
+					/>);
+		}
+	}
+
     render() {
-        // if(!this.state.node.panel.visible){return;}
-        var node, res, styles = this.styles();
-        node = this.state.node;
-        if (node.uiComponent === undefined) {
-            res = "";
-        } else { // if (node.jsx === true) {
-            res = React.createFactory(this.state.node.uiComponent)({
-                store: this.store,
-                action: this.action,
-                node: node
-            });
-        }/* else {
-            class CustomUI extends React.Component{
-                constructor(props) {
-                    super(props);
-                    this.props = props;
-                }
-                render() {
-                    return (<div></div>);
-                }
-                componentDidMount() {
-                    const dom = ReactDOM.findDOMNode(this);
-                    this.props.node.uiComponent(dom, this.props.node);
-                }
-                componentWillUnmount() {
-                    //console.log('DIDUNMOUNT');
-                }
-            }
-            res = <CustomUI node={node}/>
-        }*/
+        var node, styles = this.styles();
         return (
-            <div style={styles.container}>
-                <div style={styles.panelTitleBar} onMouseDown={this.onMouseDown.bind(this)}>
+            <div ref="bounds" style={styles.container}  onMouseDown={this.onMouseDown}
+				onMouseEnter={this.onContainerEnter.bind(this)}
+				onMouseLeave={this.onContainerLeave.bind(this)}
+				>
+                <div style={styles.panelTitleBar}>
                     {this.state.node.name}
                     <div
                         style={styles.panelCloseButton}
@@ -262,7 +278,9 @@ export default class Container extends React.Component {
                         onMouseLeave={this.onCloseHover.bind(this)}
                     />
                 </div>
-                <div onMouseDown={this.onCancelBubble}>{res}</div>
+                <div onMouseDown={this.onCancelBubble}>
+					{this.uiComponent.bind(this)()}
+				</div>
                 <div style={styles.panelScale} onMouseDown={this.onScaleDown.bind(this)}>
                 </div>
             </div>
