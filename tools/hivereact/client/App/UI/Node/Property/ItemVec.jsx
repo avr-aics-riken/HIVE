@@ -123,7 +123,8 @@ export default class ItemVec extends React.Component {
 				marginTop : "6px",
 				marginBottom : "6px",
 				marginRight : "4px",
-				float : "left"
+				float : "left",
+				cursor : "pointer"
 			},
             flex : {
                 //paddingLeft: "3px"

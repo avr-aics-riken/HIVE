@@ -117,7 +117,8 @@ export default class ItemTextInput extends React.Component {
 				marginTop : "6px",
 				marginBottom : "6px",
 				marginRight : "4px",
-				float : "left"
+				float : "left",
+				cursor : "pointer"
 			}
         };
 	}
