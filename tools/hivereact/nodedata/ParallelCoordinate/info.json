@@ -1,31 +1,20 @@
 {
-	"name": "ParallelCoordinate",
-	"funcname": "ParallelCoordinate",
-	"info":"ParallelCoordinateをつくるノード",
-	"customfuncfile":"parallelcoordinate.lua",
-	"uifile":"parallelcoordinate.jsx",
+    "name": "ParallelCoordinate",
+    "funcname": "ParallelCoordinate",
+    "info":"ParallelCoordinateをつくるノード",
+    "customfuncfile":"parallelcoordinate.lua",
+    "uifile":"parallelcoordinate.jsx",
     "input": [
-        {"name": "lineColor1"       , "type": "vec4"               , "value": [0.9, 0.3, 0.5, 0.2]},
-        {"name": "lineColor2"       , "type": "vec4"               , "value": [0.3, 0.9, 0.5, 0.2]},
         {"name": "volume"           , "type": "BufferVolumeData" } ,
         {"name": "image"            , "type": "BufferImageData" }  ,
-        {"name": "density"          , "type": "bool"               , "value": false , "hole": false},
-        {"name": "densityNormalize" , "type": "bool"               , "value": true  , "hole": false},
-        {"name": "logScale"         , "type": "bool"               , "value": false , "hole": false},
-        {"name": "customScale"      , "type": "bool"               , "value": false , "hole": false},
-        {"name": "min"              , "type": "float"              , "value": [1.0]},
-        {"name": "max"              , "type": "float"              , "value": [255.0]},
-        {"name": "fLow",        "type": "vec4", "visible": false, "value": [0.1, 0.1, 0.1, 1.0]},
-        {"name": "fMiddleLow",  "type": "vec4", "visible": false, "value": [0.3, 0.1, 0.1, 1.0]},
-        {"name": "fMiddle",     "type": "vec4", "visible": false, "value": [0.6, 0.3, 0.3, 1.0]},
-        {"name": "fMiddleHigh", "type": "vec4", "visible": false, "value": [0.9, 0.5, 0.5, 1.0]},
-        {"name": "fHigh",       "type": "vec4", "visible": false, "value": [1.0, 0.6, 0.6, 1.0]},
-        {"name": "bLow",        "type": "vec4", "visible": false, "value": [0.1, 0.1, 0.1, 1.0]},
-        {"name": "bMiddleLow",  "type": "vec4", "visible": false, "value": [0.1, 0.1, 0.3, 1.0]},
-        {"name": "bMiddle",     "type": "vec4", "visible": false, "value": [0.3, 0.3, 0.6, 1.0]},
-        {"name": "bMiddleHigh", "type": "vec4", "visible": false, "value": [0.5, 0.5, 0.9, 1.0]},
-        {"name": "bHigh",       "type": "vec4", "visible": false, "value": [0.6, 0.6, 1.0, 1.0]}
-	],
-	"output": [
-	]
+        {"name": "density"          , "type": "bool"               , "value": false , "hole": false, "visible": false, "funcinput": false},
+        {"name": "densityNormalize" , "type": "bool"               , "value": true  , "hole": false, "visible": false, "funcinput": false},
+        {"name": "logScale"         , "type": "bool"               , "value": false , "hole": false, "visible": false, "funcinput": false},
+        {"name": "imageData"        , "type": "floatarray"         , "value": []                   , "visible": false, "funcinput": false},
+        {"name": "lineColor1"       , "type": "vec4"               , "value": [0.9, 0.3, 0.5, 0.2] , "visible": false, "funcinput": false},
+        {"name": "lineColor2"       , "type": "vec4"               , "value": [0.3, 0.9, 0.5, 0.2] , "visible": false, "funcinput": false}
+    ],
+    "output": [
+        {"name": "select", "type": "floatarray"}
+    ]
 }

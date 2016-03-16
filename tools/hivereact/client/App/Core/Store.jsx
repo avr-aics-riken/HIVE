@@ -17,7 +17,61 @@ export default class Store extends EventEmitter {
             plugs : [],   // 全てのプラグ
 			input : [],   // シーンの入力端子
 			output : [],  // シーンの出力端子
-			nodePath : [] // 表示しているノード階層のパス
+			nodePath : [], // 表示しているノード階層のパス
+			timeline : {
+				frame : 1,
+		        data : {
+				/*
+		            contents: [{
+		                name: "test",
+			            nodeVarname: "testvarname",
+		                closed: false,
+		                color: "rgb(32, 96, 196)",
+		                propColor: "rgba(8, 62, 162, 1.0)",
+		                props: [{
+		                    name: "hogehoge",
+				            nodeVarname: "testvarname",
+		                    data: {
+		                        10: 100,
+		                        20: 120,
+		                        25: 150
+		                    }
+		                }, {
+		                    name: "piropiro",
+				            nodeVarname: "testvarname",
+		                    data: {
+		                        30: 100,
+		                        50: 220,
+		                        95: 150
+		                    }
+		                }]
+		            }, {
+		                name: "munimuni",
+			            nodeVarname: "groupvarname",
+		                closed: false,
+		                color: "rgb(196, 32, 64)",
+		                propColor: "rgba(162, 8, 40, 1.0)",
+		                props: [{
+		                    name: "piropiro",
+				            nodeVarname: "hogevarname",
+		                    data: {
+		                        5: 100,
+		                        40: 220,
+		                        60: 150
+		                    }
+		                }, {
+		                    name: "piropiro2",
+				            nodeVarname: "piyovarname",
+		                    data: {
+		                        15: 100,
+		                        42: 220,
+		                        64: 150
+		                    }
+		                }],
+		            }]
+					*/
+		        }
+			}
         }
 
 		this.actionExecuter = new ActionExecuter(this);
@@ -33,6 +87,7 @@ export default class Store extends EventEmitter {
 		this.getDataAtPath = this.getDataAtPath.bind(this);
 		this.getOutput = this.getOutput.bind(this);
 		this.getInput = this.getInput.bind(this);
+		this.getRootNode = this.getRootNode.bind(this);
 		this.getRootNodes = this.getRootNodes.bind(this);
 		this.getRootPlugs = this.getRootPlugs.bind(this);
 		this.findNode = this.findNode.bind(this);
@@ -42,8 +97,8 @@ export default class Store extends EventEmitter {
     // private:
 	initHive(nodePlugData) {
 		this.hive = new Hive();
-		this.hive.connect('ws://localhost:8080');//, '', true);			
-        
+		this.hive.connect('ws://localhost:8080');//, '', true);
+
         this.nodeExecutor = new NodeSystem.NodeExecutor(nodePlugData);
         this.nodeCreator =new NodeSystem.NodeCreator("http://localhost:8080/nodelist.json", () => {
 			this.emit(Constants.INITIALIZED, null);
@@ -55,7 +110,7 @@ export default class Store extends EventEmitter {
 			this.emit(Constants.RENDERER_LOG_RECIEVED, data);
 		});
         this.hive.on(Hive.ANALYZED_DATA_RECIEVED, (data) => {
-			this.emit(Constants.ANALYZED_DATA_RECIEVED, data);             
+			this.emit(Constants.ANALYZED_DATA_RECIEVED, data);
         });
 		this.nodeExecutor.on(NodeSystem.NodeExecutor.SCRIPT_SERIALIZED, (script) => {
 			//console.warn('SCRIPT>', script);
@@ -103,6 +158,13 @@ export default class Store extends EventEmitter {
 	 */
 	getRootNodes() {
 		return this.getNodes([]);
+	}
+
+	/**
+	 * ルート階層のノードリストを返す
+	 */
+	getRootNode() {
+		return this.data;
 	}
 
 	/**
@@ -239,5 +301,19 @@ export default class Store extends EventEmitter {
 			}
 		}
 		return selected;
+	}
+
+	/**
+	 * 現在のフレーム番号を返す
+	 */
+	getCurrentFrame() {
+		return this.data.timeline.frame;
+	}
+
+	/**
+	 * タイムラインのデータを返す.
+	 */
+	getTimelineData() {
+		return this.data.timeline.data;
 	}
 }

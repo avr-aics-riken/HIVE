@@ -13,7 +13,8 @@ function TransferFunction:Do()
     local v = self.value
     
     -- Analyze min/max
-    if v.volume then
+    if v.volume and self.vol ~= v.volume then
+        self.vol = v.volume
         local analyzer = require('Analyzer').VolumeAnalyzer()
         analyzer:Execute(v.volume)
         minval = analyzer:MinX()

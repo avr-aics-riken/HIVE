@@ -12,7 +12,7 @@ export default class MenuNodeList extends React.Component {
         };
 
         this.styles = this.styles.bind(this);
-        this.floating = (this.props.floating !== undefined);
+        this.floating = (this.props.floating !== undefined) && this.props.floating;
         this.unFocus = this.unFocus.bind(this);
         this.props.store.on(Core.Constants.INITIALIZED, (()=>{
             this.setState({nodeList: this.props.store.getNodeNameList()});
@@ -46,7 +46,7 @@ export default class MenuNodeList extends React.Component {
                 select: {
                     backgroundColor: "transparent",
                     border: "none",
-                    color: "turquoise",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "large",
                     margin: "0px auto",
                     padding: "0px",
@@ -56,9 +56,9 @@ export default class MenuNodeList extends React.Component {
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                    backgroundColor: "#444",
+                    backgroundColor: "rgb(83, 83, 83)",
                     borderRadius: "3px",
-                    color: "rgb(32, 255, 220)",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "small",
                     textAlign: "left",
                     lineHeight: "24px",
@@ -84,26 +84,25 @@ export default class MenuNodeList extends React.Component {
                 select: {
                     backgroundColor: "transparent",
                     border: "none",
-                    color: "turquoise",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "large",
                     margin: "0px",
                     padding: "0px",
-                    width: "240px",
                     height: "100%",
                     overflow: "visible"
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                    backgroundColor: "#444",
+                    backgroundColor: "rgb(83, 83, 83)",
                     borderRadius: "3px",
-                    color: "rgb(32, 255, 220)",
-                    fontSize: "small",
-                    lineHeight: "24px",
+                    color: "rgb(2, 255, 245)",
+                    fontSize: "12px",
+                    lineHeight: "20px",
                     margin: "3px",
                     padding: "2px",
-                    width: "238px",
-                    height: "24px",
-                    overflow: "auto",
+                    width: "250px",
+                    height: "20px",
+                    overflow: "hidden",
                     textShadow: "0px 0px 3px #022",
                     boxShadow: "0px 0px 5px -2px white",
                     cursor: "pointer"

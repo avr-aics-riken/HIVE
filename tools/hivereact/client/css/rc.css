@@ -58,18 +58,19 @@
   top: 100%;
   left: 0;
   position: absolute;
-  min-width: 160px;
+  min-width: 140px;
   margin-top: 4px;
 }
 .rc-menu-submenu-vertical > .rc-menu {
   top: 0;
   left: 100%;
   position: absolute;
-  min-width: 160px;
+  min-width: 140px;
   margin-left: 4px;
 }
 .rc-menu-item,
 .rc-menu-submenu-title {
+  font-size : 12px;
   margin: 0;
   position: relative;
   display: block;
@@ -94,10 +95,11 @@
 }
 .rc-menu-submenu {
   position: relative;
+  font-size : "10px";
 }
 .rc-menu-submenu > .rc-menu {
   /* background-color: #fff; */
-  background-color: rgb(33, 187, 151); /* サブメニューの背景色 */
+  background-color: rgb(54, 196, 168); /* サブメニューの背景色 */
 }
 .rc-menu .rc-menu-submenu-title .anticon,
 .rc-menu .rc-menu-item .anticon {
@@ -108,7 +110,7 @@
 }
 .rc-menu-horizontal {
   /* background-color: #F3F5F7; */
-  background-color: rgb(33, 187, 151);
+  background-color: rgb(54, 196, 168);
   border: none;
   border-bottom: 1px solid transparent;
   /* border-bottom: 1px solid #d9d9d9; */
@@ -120,9 +122,10 @@
 .rc-menu-horizontal > .rc-menu-submenu > .rc-menu-submenu-title {
   /* padding: 15px 20px; */
   text-align: center;
+  font-size : 12px;
   margin: 3px 0px 0px 0px;
   padding: 0px 20px;
-  min-width: 120px;
+  min-width: 106px;
   border-right: 1px solid #555;
 }
 .rc-menu-horizontal > .rc-menu-submenu,
@@ -154,7 +157,7 @@
 .rc-menu-vertical > .rc-menu-submenu > .rc-menu-submenu-title,
 .rc-menu-inline > .rc-menu-submenu > .rc-menu-submenu-title {
   /* padding: 12px 8px 12px 24px; */
-  padding: 5px 8px 5px 24px;
+  padding: 5px 8px 5px 15px;
 }
 .rc-menu-vertical.rc-menu-sub {
   padding: 0;

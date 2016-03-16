@@ -24,10 +24,10 @@ class Slider extends React.Component {
 		return (<div className={'slider'} style={{margin:'4', minWidth:"250px", height:'70', padding:'2'}}>
 			<ReactSlider
 					ref="slider"
-					value={[ this.props.node.input[0].value]}
-					min={ this.props.node.input[1].value }
-					max={ this.props.node.input[2].value }
-					step={ this.props.node.input[3].value }
+					value={[ Number(this.props.node.input[0].value) ]}
+					min={ Number(this.props.node.input[1].value) }
+					max={ Number(this.props.node.input[2].value) }
+					step={ Number(this.props.node.input[3].value) }
 					onChange={this.onChange.bind(this)}
 					withBars={true}
 				>

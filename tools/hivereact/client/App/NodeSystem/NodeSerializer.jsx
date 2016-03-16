@@ -76,6 +76,9 @@ export default class NodeSerializer {
         let i;
         for (i = 0; i < inputs.length; ++i) {
             let v = inputs[i];
+            if (v.hasOwnProperty('funcinput') && v.funcinput == false) {
+                continue;
+            }
             if (v.type === 'vec4') {
                 script += setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
             } else if (v.type === 'vec3') {

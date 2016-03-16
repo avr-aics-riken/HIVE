@@ -108,9 +108,9 @@ export default class MenuNodeCreate extends React.Component {
                     borderRadius: "3px",
                     border: "none",
                     color: "#666",
-                    width: "232px",
+                    width: (this.props.floating) ? "234px" : "250px",
                     margin: "2px 3px",
-                    padding: "5px 3px"
+                    padding: (this.props.floating) ? "5px 3px" : "2.5px 3px"
                 },
                 suggestionsContainer: {
                     listStyle: "none",
@@ -132,7 +132,7 @@ export default class MenuNodeCreate extends React.Component {
                 },
                 suggestionFocused: {
                     backgroundColor: "rgba(16, 16, 16, 1.0)",
-                    color: "turquoise"
+                    color: "rgb(2, 255, 245)"
                 }
             }
         };
