@@ -286,7 +286,6 @@ export default class Store extends EventEmitter {
 							}
 						}
 					} else {
-					console.log(node.input[k]);
 						if (node.input[k].hasOwnProperty('hole') && !node.input[k].hole) {
 							continue;
 						}
