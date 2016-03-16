@@ -854,7 +854,7 @@ export default class UMTimeline extends React.Component {
             keyRadius: 3.5,
             spiltterSize: 3.0,
             scale: 10.0,
-            offsetX: 0.0,
+            offsetX: -8.0,
             offsetY: 0.0,
             measureHeight: 11.0
         };

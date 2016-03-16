@@ -19,7 +19,7 @@ export default class Store extends EventEmitter {
 			output : [],  // シーンの出力端子
 			nodePath : [], // 表示しているノード階層のパス
 			timeline : {
-				frame : 1,
+				frame : 0,
 		        data : {
 				/*
 		            contents: [{
