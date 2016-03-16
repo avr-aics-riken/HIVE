@@ -47,7 +47,7 @@ export default class MenuNodeList extends React.Component {
                 select: {
                     backgroundColor: "transparent",
                     border: "none",
-                    color: "turquoise",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "large",
                     margin: "0px auto",
                     padding: "0px",
@@ -57,9 +57,9 @@ export default class MenuNodeList extends React.Component {
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                    backgroundColor: "#444",
+                    backgroundColor: "rgb(83, 83, 83)",
                     borderRadius: "3px",
-                    color: "rgb(32, 255, 220)",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "small",
                     textAlign: "left",
                     lineHeight: "24px",
@@ -85,7 +85,7 @@ export default class MenuNodeList extends React.Component {
                 select: {
                     backgroundColor: "transparent",
                     border: "none",
-                    color: "turquoise",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "large",
                     margin: "0px",
                     padding: "0px",
@@ -94,9 +94,9 @@ export default class MenuNodeList extends React.Component {
                 },
                 list: {
                     // backgroundColor: "rgba(128, 128, 128, 0.5)",
-                    backgroundColor: "#444",
+                    backgroundColor: "rgb(83, 83, 83)",
                     borderRadius: "3px",
-                    color: "rgb(32, 255, 220)",
+                    color: "rgb(2, 255, 245)",
                     fontSize: "12px",
                     lineHeight: "20px",
                     margin: "3px",
