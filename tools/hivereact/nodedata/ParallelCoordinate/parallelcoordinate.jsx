@@ -422,6 +422,7 @@ class ParallelCoordinate extends React.Component {
         var ext = gc.ext;
         var mat = this.mat;
         var linecount = lines;
+        var SELECTED_SMOKE = 0.5; // parallel canvas background smoke to brushed
 
         if(gc.pl.prg == null){
             gc.pl.vSource = '';
@@ -579,7 +580,7 @@ class ParallelCoordinate extends React.Component {
         gl.lineWidth(1.0);
         gl.useProgram(gc.pl.prg);
         gl.viewport(0, 0, width, height);
-        gl.clearColor(0.0, 0.0, 0.0, backgroundDarker ? 0.5 : 0.0);
+        gl.clearColor(0.0, 0.0, 0.0, backgroundDarker ? SELECTED_SMOKE : 0.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         var vMatrix = mat.identity(mat.create());
@@ -658,7 +659,7 @@ class ParallelCoordinate extends React.Component {
             gl.bindFramebuffer(gl.FRAMEBUFFER, null);
             gl.bindTexture(gl.TEXTURE_2D, gc.plp.verticalBuffer.texture);
             gl.viewport(0, 0, width, height);
-            gl.clearColor(0.0, 0.0, 0.0, backgroundDarker ? 0.5 : 0.0);
+            gl.clearColor(0.0, 0.0, 0.0, backgroundDarker ? SELECTED_SMOKE : 0.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
             gl.useProgram(gc.plf.prg);
             set_attribute(gl, vboPL, gc.plf.attL, gc.plf.attS);

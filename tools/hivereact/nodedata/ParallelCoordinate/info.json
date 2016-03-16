@@ -7,7 +7,7 @@
     "input": [
         {"name": "volume"           , "type": "BufferVolumeData" } ,
         {"name": "image"            , "type": "BufferImageData" }  ,
-        {"name": "density"          , "type": "bool"               , "value": false , "hole": false},
+        {"name": "density"          , "type": "bool"               , "value": false , "hole": false, "funcinput": false},
         {"name": "densityNormalize" , "type": "bool"               , "value": true  , "hole": false},
         {"name": "logScale"         , "type": "bool"               , "value": false , "hole": false},
         {"name": "customScale"      , "type": "bool"               , "value": false , "hole": false},

@@ -75,7 +75,7 @@ export default class ColorMap extends React.Component {
         context.clearRect(0, 0, width, height);
         grad = context.createLinearGradient(0, 0, width, 0);
         for (i = 0; i < color_steps.length; i = i + 1) {
-            grad.addColorStop(color_steps[i].step, color_steps[i].color);
+            grad.addColorStop(1.0 - color_steps[i].step, color_steps[i].color);
         }
         context.fillStyle = grad;
         context.beginPath();
@@ -92,11 +92,11 @@ export default class ColorMap extends React.Component {
 
     componentDidMount(){
         var initial_colormap = [
-            {step: 0,    color: 'rgb(  0,   0,  50)'},
-            {step: 0.25, color: 'rgb(  0,  50, 200)'},
+            {step: 0.0,  color: 'rgb(255,  50,  50)'},
+            {step: 0.25, color: 'rgb(200, 255,  50)'},
             {step: 0.5,  color: 'rgb( 50, 255, 200)'},
-            {step: 0.75, color: 'rgb(200, 255,  50)'},
-            {step: 1.0,  color: 'rgb(255,  50,  50)'}
+            {step: 0.75, color: 'rgb(  0,  50, 200)'},
+            {step: 1.0,  color: 'rgb(  0,   0,  50)'}
         ];
         var color_map = ReactDOM.findDOMNode(this.refs.canvas),
             context = color_map.getContext("2d"),
@@ -209,7 +209,7 @@ export default class ColorMap extends React.Component {
                 width: "35px",
                 height: "256px",
                 position: "absolute",
-                top: "60px",
+                top: "100px",
                 right : "10px",
             },
             container: {
@@ -217,7 +217,7 @@ export default class ColorMap extends React.Component {
             },
             picker: {
                 position: "absolute",
-                top: "50px",
+                top: "110px",
                 right: "12px",
                 opacity: "0.0"
             }
