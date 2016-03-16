@@ -156,16 +156,16 @@ export default class Container extends React.Component {
 		this.preZIndex = preZIndex;
 
 		let scaleAnimation = function (maxcount, count) {
-			this.scaleAnimeHandle = setTimeout((i) => {
+			this.scaleAnimeHandle = setTimeout(((i) => {
 				return function () {
 					this.setState({ containerHover : i });
 					if (i < maxcount) {
-						scaleAnimation.bind(this)(maxcount, i + 1)
+						scaleAnimation.bind(this)(maxcount, i + 1);
 					} else {
 						this.scaleAnimeHandle = null;
 					}
 				}.bind(this);
-			}(count), scaleAnimeDuration);
+			})(count), scaleAnimeDuration);
 		};
 		scaleAnimation.bind(this)(scaleAnimeRatio, 0);
 	}
@@ -231,6 +231,7 @@ export default class Container extends React.Component {
                 left: this.state.node.panel.pos[0] + "px",
                 zIndex: this.state.node.panel.zindex,
                 display: this.state.node.panel.visible ? "block" : "none",
+                overflow: "hidden",
 				transform : (this.state.preZIndex !== null && this.props.zoom && this.state.containerHover !== null) ?
 					"scale(" + lerp(this.props.preZoom, this.props.zoom, this.state.containerHover / scaleAnimeRatio) + ")"
 					: "scale(1.0)"
