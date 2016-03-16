@@ -36,6 +36,7 @@ export default class MenuTop extends React.Component {
 	    this.editNodeDelete = this.editNodeDelete.bind(this);
 	    this.editNodeMakeGroup = this.editNodeMakeGroup.bind(this);
 		this.editNodeUnGroup = this.editNodeUnGroup.bind(this);
+		this.editNodeSelectAll = this.editNodeSelectAll.bind(this);
 	    this.layoutAll = this.layoutAll.bind(this);
 	    this.layoutNode = this.layoutNode.bind(this);
 	    this.layoutPanel = this.layoutPanel.bind(this);
@@ -61,37 +62,43 @@ export default class MenuTop extends React.Component {
 		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
 		this.isCtrlDown = ev.ctrlKey;
 		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
+			// コピー
 			this.editNodeCopy();
 		}
 		if (this.isCtrlDown && ev.keyCode === 86) { // "v"
+			// 貼り付け
 			this.editNodePaste();
 		}
 		if (this.isCtrlDown && ev.keyCode === 71) { // "g"
+			// グループ化
 			this.editNodeMakeGroup();
 		}
 		if (this.isCtrlDown && ev.keyCode === 85) { // "u"
+			// グループ解除
 			this.editNodeUnGroup();
 		}
 		if (this.isCtrlDown && ev.keyCode === 83) { // "s"
+			// 保存
 			this.props.action.save();
 		}
 		if (this.isCtrlDown && ev.keyCode === 79) { // "o"
+			// 読み込み
 			this.loadButtonClick();
 		}
+		if (this.isCtrlDown && ev.keyCode == 65) { // "a"
+			// 全選択
+			this.editNodeSelectAll();
+		}
 		if (ev.keyCode === 39) { // "→"
+			// 1フレーム進む
 			this.props.action.changeFrame(this.props.store.getCurrentFrame() + 1)
 		}
-		if (ev.keyCode === 37) { // "→"
+		if (ev.keyCode === 37) { // "←"
+			// 1フレーム戻る
 			this.props.action.changeFrame(this.props.store.getCurrentFrame() - 1)
 		}
-		if (ev.keyCode == 73) { // "i"
-			let nodes = this.props.store.getSelectedNodeList();
-			if (nodes.length > 0) {
-				let node = nodes[0];
-				this.props.action.addKeyFrame(this.props.store.getCurrentFrame(), node, node.input[0]);
-			}
-		}
 		if (ev.keyCode == 87) { // "w"
+			// キーフレーム削除
 			let nodes = this.props.store.getSelectedNodeList();
 			if (nodes.length > 0) {
 				let node = nodes[0];
@@ -99,6 +106,7 @@ export default class MenuTop extends React.Component {
 			}
 		}
 		if (ev.keyCode === 46) { // delete
+			// ノード削除
 			this.editNodeDelete();
 		}
 	}
@@ -176,6 +184,16 @@ export default class MenuTop extends React.Component {
     editNodeDelete() { this.props.action.delete(); }
     editNodeMakeGroup() { this.props.action.makeGroup(); }
 	editNodeUnGroup() { this.props.action.unGroup(); }
+	editNodeSelectAll() {
+		let nodes = this.props.store.getNodes();
+		if (nodes.length > 0) {
+			let varnameList = [];
+			for (let i = 0; i < nodes.length; i = i + 1) {
+				varnameList.push(nodes[i].varname);
+			}
+			this.props.action.selectNode(varnameList);
+		}
+	}
 
     // Layout menu
     layoutAll() { this.props.action.setLayout('all'); }
@@ -217,6 +235,7 @@ export default class MenuTop extends React.Component {
 
                 </SubMenu>
                 <SubMenu title={<span>Edit</span>} key="edit">
+					<MenuItem key="editNodeSelectAll">SelectAll</MenuItem>
                     <MenuItem key="editNodeCopy">Copy</MenuItem>
                     <MenuItem key="editNodePaste">Paste</MenuItem>
                     <MenuItem key="editNodeDelete">Delete</MenuItem>
