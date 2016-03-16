@@ -69,6 +69,8 @@ export default class UMTimeline extends React.Component {
         this.initMouse(this.canvas, this);
         this.resizeDraw();
 
+		this.timer = setInterval(this.resizeDraw, 50);
+
         window.addEventListener('resize', this.resizeDraw, false);
 		this.props.store.on(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
@@ -78,6 +80,7 @@ export default class UMTimeline extends React.Component {
     }
 
 	componentWillUnmount() {
+		clearInterval(this.timer);
 	    window.removeEventListener('resize', this.resizeDraw);
 		this.props.store.off(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.off(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
@@ -105,10 +108,10 @@ export default class UMTimeline extends React.Component {
 	}
 
     resizeDraw(){
-        // if (this.width !== this.canvas.clientWidth || this.height !== this.canvas.clientHeight) {
-        if (this.width !== window.innerWidth || this.height !== this.canvas.clientHeight) {
-            // this.width = this.canvas.clientWidth;
-            this.width = window.innerWidth;
+         if (this.width !== this.canvas.clientWidth || this.height !== this.canvas.clientHeight) {
+        //if (this.width !== window.innerWidth || this.height !== this.canvas.clientHeight) {
+             this.width = this.canvas.clientWidth;
+            //this.width = window.innerWidth;
             this.height = this.canvas.clientHeight;
             this.canvas.width = this.width;
             this.canvas.height = this.height;
@@ -587,12 +590,13 @@ export default class UMTimeline extends React.Component {
     drawData(rect) {
 		var i,
 			k,
+			rows = Math.floor(this.height / this.setting.contentSize + 1),
 			contents = this.data.contents,
 			content,
 			height;
 
 		height = this.setting.measureHeight;
-		for (i = 0; i < 10; i = i + 1) {
+		for (i = 0; i < rows; i = i + 1) {
 			height = height + this.drawContentsBackground(rect, height)
 		}
 		if (!this.data.hasOwnProperty("contents")) {
@@ -859,7 +863,7 @@ export default class UMTimeline extends React.Component {
 
     render() {
         return (
-            <canvas style={{display: "none"}} ref="canvas" />
+            <canvas style={{display: "none", width : "100%", height : "100%"}} ref="canvas" />
         );
     }
 }
