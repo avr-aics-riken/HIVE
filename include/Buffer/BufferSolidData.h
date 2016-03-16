@@ -24,6 +24,7 @@ private:
     
 public:
 		typedef enum {
+				SOLID_TETRA	= 4,	 // @todo { Move BufferTetra to BufferSolid }
 				SOLID_PYRAMID	= 5,	
 				SOLID_PRISM	= 6,	
 				SOLID_HEXAHEDRON	= 8,	

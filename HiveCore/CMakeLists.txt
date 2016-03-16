@@ -198,6 +198,7 @@ set(HIVECORE_SOURCES
   src/Renderer/LineBuffer.cpp
   src/Renderer/PointBuffer.cpp
   src/Renderer/TetraBuffer.cpp
+  src/Renderer/SolidBuffer.cpp
   src/Renderer/VectorBuffer.cpp
   src/SceneScript/SceneScript.cpp
   src/RenderObject/Camera.cpp
@@ -208,6 +209,7 @@ set(HIVECORE_SOURCES
   src/RenderObject/LineModel.cpp
   src/RenderObject/PointModel.cpp
   src/RenderObject/TetraModel.cpp
+  src/RenderObject/SolidModel.cpp
   src/RenderObject/VectorModel.cpp
   src/Image/jpge.cpp
   src/Image/jpgd.cpp
