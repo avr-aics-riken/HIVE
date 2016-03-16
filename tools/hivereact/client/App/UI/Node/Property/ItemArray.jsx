@@ -5,6 +5,11 @@ import ItemText from './ItemText.jsx';
 import ItemVec from './ItemVec.jsx';
 import ItemTextInput from './ItemTextInput.jsx';
 
+
+function isHideProperty(input) {
+	return input.hasOwnProperty('visible') && !input.visible;
+}
+
 /**
  * ノードプロパティアイテム(Array)ビュー.
  */
@@ -121,6 +126,8 @@ export default class ItemArray extends React.Component {
 
 	createArrayContents() {
 		let contents = this.props.initialParam.array.map( (hole, key) => {
+			if (isHideProperty(hole)) { return; }
+
 			let id = String(this.props.id + "_out_" + key);
             let bottom = this.props.bottom && (this.props.initialParam.array.length - 1 === parseInt(key, 10));
             let holes = {name: "[" + key + "]", type: hole.type, isArray: true};

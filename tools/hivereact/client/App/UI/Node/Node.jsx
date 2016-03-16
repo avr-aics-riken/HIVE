@@ -4,6 +4,11 @@ import NodeInOut from "./NodeInOut.jsx"
 import Core from '../../Core'
 import Store from './Store.jsx'
 
+function isHideInput(input) {
+	return ( (input.hasOwnProperty('hole') && !input.hole) ||
+			 (input.hasOwnProperty('visible') && !input.visible) );
+}
+
 /**
  * ノード.
  */
@@ -106,7 +111,7 @@ export default class Node extends React.Component {
 				let input = this.state.node.input[i];
 				if (Array.isArray(input.array)) {
 					for (let k = 0; k < input.array.length; k = k + 1) {
-						if (input.array[k].hasOwnProperty('hole') && !input.array[k].hole) { continue; }
+						if (isHideInput(input.array[k])) { continue; }
 						if (this.props.nodeStore.isConnected(this.state.node.varname, input.array[k].name)) {
 							count = count + 1;
 						}
@@ -121,11 +126,11 @@ export default class Node extends React.Component {
 				let input = this.state.node.input[i];
 				if (Array.isArray(input.array)) {
 					for (let k = 0; k < input.array.length; k = k + 1) {
-						if (input.array[k].hasOwnProperty('hole') && !input.array[k].hole) { continue; }
-						count = count + input.array.length;
+						if (isHideInput(input.array[k])) { continue; }
+						count = count + 1;
 					}
 				} else {
-					if (input.hasOwnProperty('hole') && !input.hole) { continue; }
+					if (isHideInput(input)) { continue; }
 					count = count + 1;
 				}
 			}
@@ -367,7 +372,7 @@ export default class Node extends React.Component {
 		let inputs = this.state.node.input.map( (inputData, index) => {
 			if (Array.isArray(inputData.array)) {
 				let arrayInputs = inputData.array.map((data, dataIndex) => {
-					if (data.hasOwnProperty('hole') && !data.hole) { return; }
+					if (isHideInput(data)) { return; }
 					if (isClose) {
 					 	if (this.props.nodeStore.isConnected(this.state.node.varname, data.name)) {
 							// 閉じる表示のときは繋がってるものだけ表示する
@@ -401,7 +406,7 @@ export default class Node extends React.Component {
 			} else {
 				if (isClose) {
 					if (this.props.nodeStore.isConnected(this.state.node.varname, inputData.name)) {
-						if (inputData.hasOwnProperty('hole') && !inputData.hole) { return; }
+						if (isHideInput(inputData)) { return; }
 						// 閉じる表示のときは繋がってるものだけ表示する
 						inoutIndex = inoutIndex + 1;
 						return (<NodeInOut
@@ -416,7 +421,7 @@ export default class Node extends React.Component {
 									index={inoutIndex} />);
 					}
 				} else {
-					if (inputData.hasOwnProperty('hole') && !inputData.hole) { return; }
+					if (isHideInput(inputData)) { return; }
 					inoutIndex = inoutIndex + 1;
 					return (<NodeInOut
 								nodeStore={this.props.nodeStore}

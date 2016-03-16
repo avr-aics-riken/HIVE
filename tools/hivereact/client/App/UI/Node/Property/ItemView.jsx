@@ -9,6 +9,11 @@ import ItemArray from './ItemArray.jsx';
 import ItemTextInput from './ItemTextInput.jsx';
 import ItemSuggest from './ItemSuggest.jsx';
 
+
+function isHideProperty(input) {
+	return input.hasOwnProperty('visible') && !input.visible;
+}
+
 /**
  * ノードプロパティ1ノード分.
  */
@@ -243,6 +248,7 @@ export default class ItemView extends React.Component {
             let id = hole.nodeVarname + "_" + hole.name;
             let topRow = this.state.isShowPanel === null && !this.topRowUsed && parseInt(key, 10) === 0;
             let bottom = this.props.initialNodeData.input.length - 1 === parseInt(key, 10);
+			if (isHideProperty(hole)) { return; }
 			if (Array.isArray(hole.array)) {
 				return (<ItemArray  ref={id}
 							varname={this.props.initialNodeData.varname}
