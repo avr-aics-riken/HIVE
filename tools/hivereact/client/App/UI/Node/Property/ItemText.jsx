@@ -54,7 +54,7 @@ export default class ItemText extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 textAlign: this.textAlign.bind(this)(),
                 padding: "1px",

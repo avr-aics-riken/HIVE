@@ -95,7 +95,7 @@ export default class ItemVec extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",

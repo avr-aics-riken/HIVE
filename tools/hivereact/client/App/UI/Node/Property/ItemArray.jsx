@@ -47,7 +47,7 @@ export default class ItemArray extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 padding: "1px",
 				paddingLeft : "4px",

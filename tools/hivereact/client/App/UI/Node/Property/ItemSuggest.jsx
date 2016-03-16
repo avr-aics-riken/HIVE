@@ -122,7 +122,7 @@ export default class ItemSuggest extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",
@@ -188,7 +188,7 @@ export default class ItemSuggest extends React.Component {
                     borderRight: "1px solid #333",
                     borderBottom: "1px solid #333",
                     color: "#333",
-                    fontSize: "small",
+                    fontSize: "11px",
                     margin: "0px",
                     padding: "2px 5px",
                     overflow: "hidden"
