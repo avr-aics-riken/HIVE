@@ -614,17 +614,21 @@ export default class ActionExecuter {
 			if (info.hasOwnProperty('varname') && info.hasOwnProperty('input')) {
 				let node = this.store.findNode(this.store.data, info.varname);
 				if (node) {
+					let copy = JSON.parse(JSON.stringify(node.input));
+					let isChanged = false;
 					for (let i = 0; i < node.input.length; i = i + 1) {
 						if (info.input.hasOwnProperty(node.input[i].name)) {
-							let copy = JSON.parse(JSON.stringify(node.input));
 							copy[i].value = info.input[node.input[i].name];
-							this.changeNode({
-								nodeInfo : {
-									varname : info.varname,
-									input : copy
-								}
-							})
+							isChanged = true;
 						}
+					}
+					if (isChanged) {
+						this.changeNode({
+							nodeInfo : {
+								varname : info.varname,
+								input : copy
+							}
+						});
 					}
 				}
 			}
