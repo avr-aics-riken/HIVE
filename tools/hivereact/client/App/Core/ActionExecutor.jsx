@@ -215,7 +215,7 @@ export default class ActionExecuter {
 		}
 	};
 
-	/// ノードに参照をもっているplug, input, outputを
+	/// ノードに参照をもっているplug, input, output, timelineを
 	/// シーンから全て検索して削除する。
 	deleteNodeRelatedValues(node) {
 		// グループであれば、グループ以外の有効な子ノード全てに対して実行し直す。
@@ -277,6 +277,18 @@ export default class ActionExecuter {
 			}
 			if (i > 0) {
 				tempPath.splice(i - 1, 1);
+			}
+		}
+
+		// タイムラインのデータを全部消す。
+		let timeData = this.store.data.timeline.data;
+		if (timeData.hasOwnProperty('contents')) {
+			for (let i = timeData.contents.length - 1; i >= 0; i = i - 1) {
+				let content = timeData.contents[i];
+				if (content.hasOwnProperty('nodeVarname') && content.nodeVarname === node.varname) {
+					timeData.contents.splice(i, 1);
+					break;
+				}
 			}
 		}
 		this.store.data.nodePath = origPath;
