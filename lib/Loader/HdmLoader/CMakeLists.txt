@@ -4,12 +4,13 @@ SET(HIVE_BUILD_WITH_BCMTOOLS On)
 add_definitions(-DHIVE_WITH_HDMLIB)
 
   SET(HDMLIB_LIBS
-    HDM TPmpi
+    HDM BCM TPmpi
   )
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/lib)
   
 # Headers
@@ -31,8 +32,8 @@ set(SOURCES
 	LuaEntry.cpp
 )
 add_library(HdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
-target_link_libraries(HdmLoader hiveCore)
 target_link_libraries(HdmLoader ${HDMLIB_LIBS})
+target_link_libraries(HdmLoader hiveCore)
 set_target_properties(HdmLoader PROPERTIES PREFIX "")
 
 

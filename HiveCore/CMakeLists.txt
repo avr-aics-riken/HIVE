@@ -269,8 +269,8 @@ add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
 
 
 
-# EXT Libs (TODO each modules)
-target_link_libraries(hiveCore ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
+# LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
+target_link_libraries(hiveCore LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
 
 
 # Link
@@ -307,8 +307,11 @@ if (HIVE_BUILD_WITH_OPENGL)
 endif()
 
 target_link_libraries(hiveCore pthread)
-target_link_libraries(hiveCore liblua)
 target_link_libraries(hiveCore LSGLES)
+
+# LINK_PUBLIC is required since liblua needs to be linked as a dynamic library.
+target_link_libraries(hiveCore LINK_PUBLIC liblua)
+
 # Additional Libraries
 if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     if(HIVE_BUILD_WITH_BCMTOOLS)
