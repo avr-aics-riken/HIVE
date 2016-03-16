@@ -523,12 +523,12 @@ export default class UMTimeline extends React.Component {
 		context.lineWidth = lw / 5.0;
 		for (i = startFrame; i < endFrame; i = i + step) {
 			let x = splitx + i * scale - offsetX;
-			this.drawLine(context, x, this.setting.measureHeight, x, this.height, rect);
+			this.drawLine(context, x, this.setting.measureHeight, x, this.height, valueRect);
 		}
 		context.lineWidth = lw / 10.0;
 		for (i = startFrame + step * 0.5; i < endFrame; i = i + step) {
 			let x = splitx + i * scale - offsetX;
-			this.drawLine(context, x, this.setting.measureHeight, x, this.height, rect);
+			this.drawLine(context, x, this.setting.measureHeight, x, this.height, valueRect);
 		}
 
 
