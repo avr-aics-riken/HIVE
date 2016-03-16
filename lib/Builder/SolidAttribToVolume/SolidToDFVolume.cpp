@@ -125,7 +125,7 @@ namespace {
         //内部にある場合
         for(int i = 0, n = face_n(sld.type); i < n; i ++){
             d_b[i] = dot(sld.normals[i],
-                         pt - sld.vertexes[ns[i][0]]);
+                         pt - sld.vertices[ns[i][0]]);
             if(d < d_b[i]) d = d_b[i];
         }
         if(d < 0){
@@ -138,26 +138,26 @@ namespace {
                 //面が三角形
                 if(ns[i][3] < 0){
                     
-                    Vec edge0 = sld.vertexes[ns[i][1]] - sld.vertexes[ns[i][0]],
-                    edge1 = sld.vertexes[ns[i][2]] - sld.vertexes[ns[i][1]],
-                    edge2 = sld.vertexes[ns[i][0]] - sld.vertexes[ns[i][2]];
+                    Vec edge0 = sld.vertices[ns[i][1]] - sld.vertices[ns[i][0]],
+                    edge1 = sld.vertices[ns[i][2]] - sld.vertices[ns[i][1]],
+                    edge2 = sld.vertices[ns[i][0]] - sld.vertices[ns[i][2]];
                     
-                    if(dot(cross(sld.normals[i], edge0), pt - sld.vertexes[ns[i][0]]) > 0 &&
-                       dot(cross(sld.normals[i], edge1), pt - sld.vertexes[ns[i][1]]) > 0 &&
-                       dot(cross(sld.normals[i], edge2), pt - sld.vertexes[ns[i][2]]) > 0)
+                    if(dot(cross(sld.normals[i], edge0), pt - sld.vertices[ns[i][0]]) > 0 &&
+                       dot(cross(sld.normals[i], edge1), pt - sld.vertices[ns[i][1]]) > 0 &&
+                       dot(cross(sld.normals[i], edge2), pt - sld.vertices[ns[i][2]]) > 0)
                         return d_b[i];
                 }
                 //面が四角形
                 else{
-                    Vec edge0 = sld.vertexes[ns[i][1]] - sld.vertexes[ns[i][0]],
-                    edge1 = sld.vertexes[ns[i][2]] - sld.vertexes[ns[i][1]],
-                    edge2 = sld.vertexes[ns[i][3]] - sld.vertexes[ns[i][2]],
-                    edge3 = sld.vertexes[ns[i][0]] - sld.vertexes[ns[i][3]];
+                    Vec edge0 = sld.vertices[ns[i][1]] - sld.vertices[ns[i][0]],
+                    edge1 = sld.vertices[ns[i][2]] - sld.vertices[ns[i][1]],
+                    edge2 = sld.vertices[ns[i][3]] - sld.vertices[ns[i][2]],
+                    edge3 = sld.vertices[ns[i][0]] - sld.vertices[ns[i][3]];
                     
-                    if(dot(cross(sld.normals[i], edge0), pt - sld.vertexes[ns[i][0]]) < 0 &&
-                       dot(cross(sld.normals[i], edge1), pt - sld.vertexes[ns[i][1]]) < 0 &&
-                       dot(cross(sld.normals[i], edge2), pt - sld.vertexes[ns[i][2]]) < 0 &&
-                       dot(cross(sld.normals[i], edge3), pt - sld.vertexes[ns[i][3]]) < 0 )
+                    if(dot(cross(sld.normals[i], edge0), pt - sld.vertices[ns[i][0]]) < 0 &&
+                       dot(cross(sld.normals[i], edge1), pt - sld.vertices[ns[i][1]]) < 0 &&
+                       dot(cross(sld.normals[i], edge2), pt - sld.vertices[ns[i][2]]) < 0 &&
+                       dot(cross(sld.normals[i], edge3), pt - sld.vertices[ns[i][3]]) < 0 )
                         return d_b[i];
                 }
             }
@@ -181,15 +181,15 @@ namespace {
                 break;
         }
         for(int i = 0; i < get_edge_n(sld.kind); i ++){
-            Vec pt_ = pt - sld.vertexes[i%xxx];
+            Vec pt_ = pt - sld.vertices[i%xxx];
             float dot_ = dot(edges[i], pt_);
             if(dot_ > 0 && dot_ < edges[i].length_squared())
                 d = min(d ,cross(pt_, edges[i]).length_squared()/edges[i].length_squared());
         }
         
         //点に一番近い場合
-        for(int i = 0; i < sld.vertexes.size(); i ++ )
-            d = min(d, (sld.vertexes[i] - pt ).length_squared());
+        for(int i = 0; i < sld.vertices.size(); i ++ )
+            d = min(d, (sld.vertices[i] - pt ).length_squared());
         
         return sqrt(d);
     }

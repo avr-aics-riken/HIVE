@@ -370,15 +370,15 @@ bool SolidAttribToVolume::ToVolume(int w, int h, int d) {
         bmin_[1] = bmax_[1] = vertices_f[1];
         bmin_[2] = bmax_[2] = vertices_f[2];
         
-        for (int i = 1; i < m_solid->Type(); i++) {
+        for (int j = 1; j < m_solid->Type(); j++) {
             
-            bmin_[0] = (std::min)(bmin_[0], vertices_f[3*i+0]);
-            bmin_[1] = (std::min)(bmin_[1], vertices_f[3*i+1]);
-            bmin_[2] = (std::min)(bmin_[2], vertices_f[3*i+2]);
+            bmin_[0] = (std::min)(bmin_[0], vertices_f[3*j+0]);
+            bmin_[1] = (std::min)(bmin_[1], vertices_f[3*j+1]);
+            bmin_[2] = (std::min)(bmin_[2], vertices_f[3*j+2]);
             
-            bmax_[0] = (std::max)(bmax_[0], vertices_f[3*i+0]);
-            bmax_[1] = (std::max)(bmax_[1], vertices_f[3*i+1]);
-            bmax_[2] = (std::max)(bmax_[2], vertices_f[3*i+2]);
+            bmax_[0] = (std::max)(bmax_[0], vertices_f[3*j+0]);
+            bmax_[1] = (std::max)(bmax_[1], vertices_f[3*j+1]);
+            bmax_[2] = (std::max)(bmax_[2], vertices_f[3*j+2]);
         }
         
         Solid solid(vertices_f, m_solid->Type());
