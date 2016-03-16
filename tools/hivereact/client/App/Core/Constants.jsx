@@ -14,7 +14,7 @@ module.exports = {
     ANALYZED_DATA_RECIEVED: "analyzed_data_recieved",
     NODE_ADDED : "node_added",
     NODE_DELETED : "node_deleted",
-    NODE_SELECTE_CHANGED : "node_selected",
+    NODE_SELECT_CHANGED : "node_selected",
     PLUG_ADDED : "plug_added",
     PLUG_DELETED : "plug_deleted",
 	PANEL_CHANGED : "panel_changed",
@@ -25,7 +25,11 @@ module.exports = {
 	DELETE_CALLED : "delete_called",
 	MAKE_GROUP_CALLED : "make_group_called",
     LAYOUT_CHANGED : "layout_changed",
-    CONSOLEOUTPUT_SHOW: "consoleoutput_show"
+    CONSOLEOUTPUT_SHOW: "consoleoutput_show",
+	CHANGE_FRAME : "change_frame",
+	KEYFRAME_ADDED : "keyframe_added",
+	KEYFRAME_DELETED : "keyframe_deleted",
+	CURRENT_FRAME_APPLIED : "current_frame_applied"
 };
 
 // color 定数化したい気もする

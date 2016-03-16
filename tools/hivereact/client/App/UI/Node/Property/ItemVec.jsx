@@ -8,13 +8,56 @@ import Core from '../../../Core';
 export default class ItemVec extends React.Component {
 	constructor(props) {
 		super(props);
+
 		this.state = {
-			values : this.props.initialParam.value
+			values : JSON.parse(JSON.stringify(this.props.initialParam.value)),
+			onFrame : false
 		};
 		this.currentEdit = {
 			index : -1,
 			value : null
 		};
+		this.frameApplied = this.frameApplied.bind(this);
+		this.keyBackGround = this.keyBackGround.bind(this);
+	}
+
+	width() {
+		const len = this.props.initialParam.value.length;
+		if (len === 4) {
+			return "39px";
+		} else {
+			return "53px";
+		}
+	}
+
+	keyBackGround() {
+		if (this.state.onFrame) {
+			return "blue";
+		}
+		return "white";
+	}
+
+	frameApplied(err, content, prop) {
+		if (content.nodeVarname === this.props.initialParam.nodeVarname &&
+			prop.name === this.props.initialParam.name) {
+			if (prop.data.hasOwnProperty(this.props.store.getCurrentFrame())) {
+				this.setState({
+					onFrame	: true
+				});
+			} else {
+				this.setState({
+					onFrame	: false
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+	}
+
+	componentWillUnmount() {
+		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
 	}
 
 	styles() {
@@ -52,7 +95,7 @@ export default class ItemVec extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",
@@ -61,16 +104,28 @@ export default class ItemVec extends React.Component {
                 verticalAlign: "middle",
                 display: "inline-block",
                 overflow: "hidden",
-                textShadow: "0px 0px 3px black"
+                textShadow: "0px 0px 3px black",
+				float : "left"
             },
             value : {
                 color : "#333",
                 letterSpacing: "normal",
                 //padding: "1px",
-                width : "164px",
+                width : "170px",
                 verticalAlign: "middle",
                 display: "inline-block"
             },
+			addkey : {
+				backgroundColor : this.keyBackGround.bind(this)(),
+				borderRadius : "6px",
+				width : "8px",
+				height : "8px",
+				marginTop : "6px",
+				marginBottom : "6px",
+				marginRight : "4px",
+				float : "left",
+				cursor : "pointer"
+			},
             flex : {
                 //paddingLeft: "3px"
                 // display: "flex",
@@ -84,7 +139,7 @@ export default class ItemVec extends React.Component {
 				marginTop: "1px",
 				marginBottom: "1px",
                 verticalAlign: "middle",
-                width: "36px",
+                width: this.width.bind(this)(),
 				height: "19px",
                 float: "left",
 				border : "1px solid rgba(54, 196, 168, 0.0)"
@@ -156,10 +211,15 @@ export default class ItemVec extends React.Component {
 		return values;
 	}
 
+	onAddKey(ev) {
+		this.props.changeKeyFunc(this.props.initialParam);
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
+						<div style={styles.addkey} onClick={this.onAddKey.bind(this)} />
 						{this.props.initialParam.name}
 					</div>
                     <div style={styles.value}>

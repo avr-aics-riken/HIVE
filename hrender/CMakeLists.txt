@@ -147,6 +147,7 @@ IF(NOT EXECUTABLE_OUTPUT_PATH)
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 ENDIF()
 
+# --------- Ext lib ------------------
 # PMlib
 IF(HIVE_BUILD_WITH_PMLIB)
   #SET(PMLIB_LIBS
@@ -156,6 +157,21 @@ IF(HIVE_BUILD_WITH_PMLIB)
   #include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
 ENDIF()
+
+# Compositor
+
+IF(HIVE_BUILD_WITH_COMPOSITOR)
+
+  SET(COMPOSITOR_LIBS
+    234comp
+  )
+
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/include)
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/lib)
+  
+ENDIF()
+# ---------------------------------------
+
 
 # hrender
 add_executable (hrender ${HRENDER_SOURCES})

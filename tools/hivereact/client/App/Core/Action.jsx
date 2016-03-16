@@ -56,17 +56,44 @@ export default class Action {
 	}
 
     /**
-	 * ノードをエクスポートする
+	 * SceneScriptをエクスポートする
 	 * @param varname ノード変数名
 	 */
-	export(varname) {
+	exportSceneScript(varname) {
         if (!varname) {
             varname = '';
         }
 		this.dispatcher.dispatch({
 			id :this.id,
-			actionType: "exportNode",
+			actionType: "exportSceneScript",
 			varname : varname
+		});
+	}
+
+    /**
+	 * 現在のグループをエクスポートする
+	 * @param varname ノード変数名
+	 */
+	exportGroupNode(varname) {
+        if (!varname) {
+            varname = '';
+        }
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "exportGroupNode",
+			varname : varname
+		});
+	}
+
+    /**
+	 * グループをインポートする
+	 * @param varname ノード変数名
+	 */
+	importGroupNode(data) {
+        this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "importGroupNode",
+            data: data
 		});
 	}
 
@@ -366,6 +393,50 @@ export default class Action {
 			actionType: "unSelectNode",
 			nodeVarnameList : nodeVarnameList,
 			excludeVarname : excludeVarname
+		});
+	}
+
+	/**
+	 * フレーム番号を変更する.
+	 * @parma keyFrame フレーム番号.
+	 */
+	changeFrame(frame) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "changeFrame",
+			frame : frame
+		});
+	}
+
+	/**
+	 * キーフレームを追加する
+	 * @param frame フレーム番号
+	 * @param node ノード
+	 * @param input キーフレームを登録する入力
+	 */
+	addKeyFrame(frame, node, input) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "addKeyFrame",
+			frame : frame,
+			node : node,
+			input : input
+		});
+	}
+
+	/**
+	 * キーフレームを削除する
+	 * @param frame フレーム番号
+	 * @param node ノード
+	 * @param input キーフレームを登録する入力
+	 */
+	deleteKeyFrame(frame, node, input) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "deleteKeyFrame",
+			frame : frame,
+			node : node,
+			input : input
 		});
 	}
 }

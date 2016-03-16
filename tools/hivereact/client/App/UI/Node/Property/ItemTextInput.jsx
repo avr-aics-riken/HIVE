@@ -9,11 +9,43 @@ export default class ItemTextInput extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			value : this.props.initialParam.value
+			value : this.props.initialParam.value,
+			onFrame : false
 		};
 		this.currentEdit = {
 			value : null
 		};
+		this.frameApplied = this.frameApplied.bind(this);
+	}
+
+	keyBackGround() {
+		if (this.state.onFrame) {
+			return "blue";
+		}
+		return "white";
+	}
+
+	frameApplied(err, content, prop) {
+		if (content.nodeVarname === this.props.initialParam.nodeVarname &&
+			prop.name === this.props.initialParam.name) {
+			if (prop.data.hasOwnProperty(this.props.store.getCurrentFrame())) {
+				this.setState({
+					onFrame	: true
+				});
+			} else {
+				this.setState({
+					onFrame	: false
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+	}
+
+	componentWillUnmount() {
+		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
 	}
 
 	styles() {
@@ -51,7 +83,7 @@ export default class ItemTextInput extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",
@@ -73,10 +105,21 @@ export default class ItemTextInput extends React.Component {
 				marginBottom: "1px",
                 verticalAlign: "middle",
                 padding: "1px",
-                width : "153px",
+                width : "165px",
                 height: "19px",
                 display: "inline-block",
-            }
+            },
+			addkey : {
+				backgroundColor : this.keyBackGround.bind(this)(),
+				borderRadius : "6px",
+				width : "8px",
+				height : "8px",
+				marginTop : "6px",
+				marginBottom : "6px",
+				marginRight : "4px",
+				float : "left",
+				cursor : "pointer"
+			}
         };
 	}
 
@@ -92,8 +135,12 @@ export default class ItemTextInput extends React.Component {
 	}
 
 	submit(ev) {
-		if (this.currentEdit.value) {
-			this.props.changeFunc(this.props.initialParam.name, this.currentEdit.value);
+		if (this.props.initialParam.name === "label" || this.currentEdit.value) {
+			if (this.props.initialParam.type === "float") {
+				this.props.changeFunc(this.props.initialParam.name, Number(this.currentEdit.value));
+			} else {
+				this.props.changeFunc(this.props.initialParam.name, this.currentEdit.value);
+			}
 		}
 		ev.target.style.border = "none";
 		ev.target.blur();
@@ -116,10 +163,22 @@ export default class ItemTextInput extends React.Component {
 		ev.target.style.border = "2px solid darkgreen";
 	}
 
+	onAddKey(ev) {
+		this.props.changeKeyFunc(this.props.initialParam);
+	}
+
+	addKey() {
+		const styles = this.styles.bind(this)();
+		if (this.props.changeKeyFunc !== undefined) {
+			return (<div style={styles.addkey} onClick={this.onAddKey.bind(this)} />);
+		}
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
+						{this.addKey.bind(this)()}
 						{this.props.initialParam.name}
 					</div>
 					<input style={styles.value}

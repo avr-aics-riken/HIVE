@@ -25,7 +25,7 @@ export default class HoverNodeCreate extends React.Component {
         return {
             menuArea: {
                 backgroundColor: "rgba(0, 0, 0, 0.8)",
-                border: "3px solid rgb(33, 187, 151)",
+                border: "3px solid rgb(54, 196, 168)",
                 color: "#eee",
                 fontSize: "10pt",
                 margin: "0px",
@@ -50,6 +50,7 @@ export default class HoverNodeCreate extends React.Component {
                     action={this.props.action}
                     focusFunction={this.props.focusFunction}
                     hiddenFunction={this.props.hiddenFunction}
+                    floating={true}
                     ref="creator"
                 />
                 <MenuNodeList
@@ -62,4 +63,3 @@ export default class HoverNodeCreate extends React.Component {
         );
     }
 }
-
