@@ -132,7 +132,7 @@ export default class MenuNodeCreate extends React.Component {
                 },
                 suggestionFocused: {
                     backgroundColor: "rgba(16, 16, 16, 1.0)",
-                    color: "turquoise"
+                    color: "rgb(2, 255, 245)"
                 }
             }
         };
