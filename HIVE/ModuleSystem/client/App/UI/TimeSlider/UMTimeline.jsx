@@ -53,6 +53,9 @@ export default class UMTimeline extends React.Component {
         this.initData          = this.initData.bind(this);
 		this.onRedraw = this.onRedraw.bind(this);
 		this.onSelectChanged = this.onSelectChanged.bind(this);
+		this.startFrame = this.startFrame.bind(this);
+		this.endFrame = this.endFrame.bind(this);
+		this.step = this.step.bind(this);
     }
 
     componentDidMount(){
@@ -303,12 +306,49 @@ export default class UMTimeline extends React.Component {
         //this.drawLine(context, splitx, 1, splitx, this.height - 2);
     };
 
+	step() {
+		var scale = this.setting.scale,
+			step;
+
+		step = 10;
+		if (scale <= 3) {
+		    step = 50;
+		}
+		if (scale <= 0.8) {
+		    step = 100;
+		}
+		if (scale < 0.5) {
+		    step = 500;
+		}
+		return step;
+	}
+
+	startFrame() {
+		var offsetX = this.setting.offsetX,
+			scale = this.setting.scale,
+			step = this.step(),
+			frame = offsetX / scale;
+
+		frame = Math.floor(frame - frame % step);
+		return frame;
+	}
+
+	endFrame() {
+		var offsetX = this.setting.offsetX,
+			scale = this.setting.scale,
+			step = this.step(),
+	 		frame = (this.width + offsetX) / scale;
+
+		return Math.floor(frame - frame % step);
+	}
+
     drawMeasure(rect) {
         var context = this.canvas.getContext('2d'),
             splitx = this.splitX(),
             scale = this.setting.scale,
             offsetX = this.setting.offsetX,
             mh = this.setting.measureHeight,
+            lw = this.setting.lineWidth,
             i,
             x,
             startFrame,
@@ -316,31 +356,20 @@ export default class UMTimeline extends React.Component {
             step,
             valueRect;
 
-        startFrame = offsetX / scale;
-        endFrame = (this.width + offsetX) / scale;
+		step = this.step();
+        startFrame = this.startFrame();
+        endFrame = this.endFrame();
 
-        step = 10;
-        if (scale <= 3) {
-            step = 50;
-        }
-        if (scale <= 0.8) {
-            step = 100;
-        }
-        if (scale < 0.5) {
-            step = 500;
-        }
 
         valueRect = JSON.parse(JSON.stringify(rect));
         valueRect.x = splitx;
-
-        startFrame = Math.floor(startFrame - startFrame % step);
-        endFrame = Math.floor(endFrame - endFrame % step);
 
         for (i = startFrame; i < endFrame; i = i + step) {
             x = splitx + i * scale - offsetX - mh / 2;
             context.fillStyle = this.setting.propTextColor;
             context.font = "normal " + mh + "px sans-serif";
             this.fillText(context, String(i), x, mh, mh, valueRect);
+
         }
     };
 
@@ -407,6 +436,7 @@ export default class UMTimeline extends React.Component {
         context.strokeStyle = this.setting.lineColor;
         context.lineWidth = lw;
         this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
+
 		return result;
 	}
 
@@ -481,17 +511,27 @@ export default class UMTimeline extends React.Component {
 
 		height = height + cs;
 
-		// value bounds
-		context.fillStyle = this.setting.contentColor;
-		this.fillRect(context, splitx, ypos + lw2, splitx_inv - lw, cs, rect);
-		context.strokeStyle = this.setting.lineColor;
-		context.lineWidth = lw;
-		this.drawLine(context, splitx, ypos + lw2 + cs, this.width - lw, ypos + lw2 + cs, rect);
-
 		valueRect = JSON.parse(JSON.stringify(rect));
 		valueRect.x = splitx;
 
 		this.drawPropBackground(rect, ypos);
+
+		let step = this.step();
+		let startFrame = this.startFrame();
+		let endFrame = this.endFrame();
+		context.strokeStyle = this.setting.lineColor;
+		context.lineWidth = lw / 5.0;
+		for (i = startFrame; i < endFrame; i = i + step) {
+			let x = splitx + i * scale - offsetX;
+			this.drawLine(context, x, this.setting.measureHeight, x, this.height, rect);
+		}
+		context.lineWidth = lw / 10.0;
+		for (i = startFrame + step * 0.5; i < endFrame; i = i + step) {
+			let x = splitx + i * scale - offsetX;
+			this.drawLine(context, x, this.setting.measureHeight, x, this.height, rect);
+		}
+
+
 		return height;
 	}
 
