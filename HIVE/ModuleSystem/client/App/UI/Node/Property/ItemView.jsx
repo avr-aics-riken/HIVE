@@ -38,6 +38,14 @@ export default class ItemView extends React.Component {
 		this.inputChanged = this.inputChanged.bind(this);
 		this.panelVisibleChanged = this.panelVisibleChanged.bind(this);
 		this.updateHandle = null;
+		this.isShowPanel = this.isShowPanel.bind(this);
+	}
+
+	isShowPanel() {
+		if (this.props.initialNodeData.panel.hasOwnProperty('visible')) {
+			return this.props.initialNodeData.panel.visible;
+		}
+		return null;
 	}
 
 	label() {
@@ -203,7 +211,7 @@ export default class ItemView extends React.Component {
 	}
 
 	panelCheckbox() {
-		if (this.state.isShowPanel !== null) {
+		if (this.isShowPanel() !== null) {
             this.topRowUsed = true;
 			let id = this.props.initialNodeData.varname + "_panel";
 			return (<ItemCheckbox
@@ -257,7 +265,7 @@ export default class ItemView extends React.Component {
 
 		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
             let id = hole.nodeVarname + "_" + hole.name;
-            let topRow = this.state.isShowPanel === null && !this.topRowUsed && parseInt(key, 10) === 0;
+            let topRow = this.isShowPanel() === null && !this.topRowUsed && parseInt(key, 10) === 0;
             let bottom = this.props.initialNodeData.input.length - 1 === parseInt(key, 10);
 			if (isHideProperty(hole)) { return; }
 			if (Array.isArray(hole.array)) {
