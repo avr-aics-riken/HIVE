@@ -18,7 +18,7 @@ add_definitions(-DHIVE_WITH_CDMLIB)
   ENDIF()
 
   SET(CDMLIB_LIBS
-    CDM TPmpi
+    CDM TPmpi ${NETCDF_LIBS}
   )
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
@@ -43,8 +43,8 @@ set(SOURCES
 	LuaEntry.cpp
 )
 add_library(CdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
-target_link_libraries(CdmLoader hiveCore)
 target_link_libraries(CdmLoader ${CDMLIB_LIBS})
+target_link_libraries(CdmLoader hiveCore)
 set_target_properties(CdmLoader PROPERTIES PREFIX "")
 
 IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.

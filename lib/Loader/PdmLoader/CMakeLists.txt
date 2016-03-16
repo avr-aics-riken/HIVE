@@ -33,8 +33,8 @@ set(SOURCES
 	LuaEntry.cpp
 )
 add_library(PdmLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
+target_link_libraries(PdmLoader ${PDMLIB_LIBS})
 target_link_libraries(PdmLoader hiveCore)
-target_link_libraries(PdmLoader ${PMDLIB_LIBS})
 set_target_properties(PdmLoader PROPERTIES PREFIX "")
 
 ENDIF() # HIVE_BUILD_WITH_PDMLIB
