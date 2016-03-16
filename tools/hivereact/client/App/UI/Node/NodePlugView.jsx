@@ -195,9 +195,11 @@ export default class NodePlugView extends React.Component {
 		}
 	}
 
-	onMouseDown() {
+	onMouseDown(ev) {
 		this.props.nodeAction.unSelectPlugHoles();
-		this.props.action.unSelectNode([], null);
+		if (ev.button === 0) {
+			this.props.action.unSelectNode([], null);
+		}
 	}
 
 	render() {
