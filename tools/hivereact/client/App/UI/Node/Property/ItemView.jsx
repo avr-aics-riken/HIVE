@@ -21,14 +21,12 @@ export default class ItemView extends React.Component {
 		if (this.props.initialNodeData.panel.hasOwnProperty('visible')) {
 			this.state = {
 				name : this.props.initialNodeData.name,
-				label : this.label(),
-				isShowPanel : this.props.initialNodeData.panel.visible
+				label : this.label()
 			};
 		} else {
 			this.state = {
 				name : this.props.initialNodeData.name,
-				label : this.label(),
-				isShowPanel : null
+				label : this.label()
 			};
 		}
         this.topRowUsed = false;
@@ -88,9 +86,10 @@ export default class ItemView extends React.Component {
 
 	panelVisibleChanged(err, data) {
 		if (data.varname === this.props.initialNodeData.varname) {
-			if (this.state.isShowPanel !== data.panel.visible) {
-				this.setState( {
-					isShowPanel : data.panel.visible
+			let id = this.props.initialNodeData.varname + "_panel";
+			if (this.refs.hasOwnProperty(id)) {
+				this.refs[id].setState({
+					checked : data.panel.visible
 				});
 			}
 		}
@@ -165,7 +164,7 @@ export default class ItemView extends React.Component {
 		}
 	}
 
-	changeCheckboxFunc(itemName, value) {
+	panelVisibleChangeFunc(itemName, value) {
 		if (itemName === "show panel") {
 			let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
 			node.panel.visible = value;
@@ -190,15 +189,17 @@ export default class ItemView extends React.Component {
 	panelCheckbox() {
 		if (this.state.isShowPanel !== null) {
             this.topRowUsed = true;
+			let id = this.props.initialNodeData.varname + "_panel";
 			return (<ItemCheckbox
 				initialParam={{
 					name : "show panel",
-					value : this.state.isShowPanel
+					value : this.props.initialNodeData.panel.visible
 				}}
                 top={this.topRowUsed}
-				changeCheckboxFunc={this.changeCheckboxFunc.bind(this)}
-				key={String(this.props.id + "_panel")}
-				id={String(this.props.id + "_panel")} />);
+				changeCheckboxFunc={this.panelVisibleChangeFunc.bind(this)}
+				key={id}
+				ref={id}
+				id={id} />);
 		}
 	}
 
