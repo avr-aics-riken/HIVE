@@ -10,7 +10,7 @@ export default class ItemSuggest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value : JSON.stringify(JSON.parse(this.props.initialParam.value)),
+            value : this.props.initialParam.value,
             suggestions: this.getSuggestions(''),
 			onFrame : false
         };
@@ -214,9 +214,24 @@ export default class ItemSuggest extends React.Component {
     }
 
 	onAddKey(ev) {
-		var hole = this.props.initialParam;
-		hole.value = this.state.value;
-		this.props.changeKeyFunc(hole);
+		if (ev.button === 0) {
+			var hole = this.props.initialParam;
+			hole.value = this.state.value;
+			this.props.changeKeyFunc(hole);
+			this.setState({
+				onFrame : true
+			});
+		}
+	}
+
+	onDeleteKey(ev) {
+		if (ev.button === 2) {
+			console.log("delete")
+			this.props.deleteKeyFunc(this.props.initialParam);
+			this.setState({
+				onFrame : false
+			});
+		}
 	}
 
     render () {
@@ -230,7 +245,7 @@ export default class ItemSuggest extends React.Component {
         return (
             <div style={styles.view}>
                 <div style={styles.key}>
-					<div style={styles.addkey} onClick={this.onAddKey.bind(this)} />
+					<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />
                     {this.props.initialParam.name}
                 </div>
                 <Autosuggest theme={styles.suggestTheme}

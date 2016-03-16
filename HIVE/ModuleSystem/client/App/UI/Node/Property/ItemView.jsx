@@ -191,6 +191,17 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	deleteKeyFunc(hole) {
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		if (node) {
+			this.props.action.deleteKeyFrame(
+				this.props.store.getCurrentFrame(),
+				node,
+				hole
+			);
+		}
+	}
+
 	panelCheckbox() {
 		if (this.state.isShowPanel !== null) {
             this.topRowUsed = true;
@@ -261,6 +272,8 @@ export default class ItemView extends React.Component {
 				return (<ItemSuggest  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
+							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
 							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
                             bottom={bottom} />);
@@ -271,6 +284,7 @@ export default class ItemView extends React.Component {
 							initialParam={hole} key={id}  changeVecFunc={this.changeVecFunc.bind(this)}
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
+							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
                             bottom={bottom} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
 				return (<ItemTextInput  ref={id}
@@ -279,6 +293,7 @@ export default class ItemView extends React.Component {
 							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
+							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
                             bottom={bottom} />);
             } else if (hole.type === 'bool') {
 			    return (<ItemCheckbox ref={id}
@@ -289,6 +304,7 @@ export default class ItemView extends React.Component {
                             top={topRow}
                             bottom={bottom}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
+							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
 				            changeCheckboxFunc={this.changeFunc.bind(this)} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} top={topRow} bottom={bottom}/>);
