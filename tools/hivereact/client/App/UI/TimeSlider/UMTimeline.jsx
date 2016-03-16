@@ -73,7 +73,7 @@ export default class UMTimeline extends React.Component {
 		this.props.store.on(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
 		this.props.store.on(Core.Constants.KEYFRAME_DELETED, this.onRedraw);
-		this.props.store.on(Core.Constants.NODE_DELETED, this.onRedraw);
+		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onRedraw);
 		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
     }
 
@@ -82,7 +82,7 @@ export default class UMTimeline extends React.Component {
 		this.props.store.off(Core.Constants.CHANGE_FRAME, this.onFrameChange);
 		this.props.store.off(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
 		this.props.store.off(Core.Constants.KEYFRAME_DELETED, this.onRedraw);
-		this.props.store.off(Core.Constants.NODE_DELETED, this.onRedraw);
+		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onRedraw);
 		this.props.store.off(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
 	}
 
@@ -96,8 +96,12 @@ export default class UMTimeline extends React.Component {
 
 	onRedraw(err, data) {
 		this.setData(this.props.store.getTimelineData());
-		console.log(this.props.store.getTimelineData())
-		this.draw();
+		console.log(this.props.store.getTimelineData());
+		if (this.currentframe !== this.props.store.getCurrentFrame()) {
+			this.setCurrentFrame(Number(this.props.store.getCurrentFrame()));
+		} else {
+			this.draw();
+		}
 	}
 
     resizeDraw(){

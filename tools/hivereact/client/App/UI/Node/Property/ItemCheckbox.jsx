@@ -119,7 +119,9 @@ export default class ItemCheckbox extends React.Component {
 	}
 
 	onAddKey(ev) {
-		this.props.changeKeyFunc(this.props.initialParam);
+		var hole = this.props.initialParam;
+		hole.value = this.state.checked;
+		this.props.changeKeyFunc(hole);
 	}
 
 	addKeyButton() {

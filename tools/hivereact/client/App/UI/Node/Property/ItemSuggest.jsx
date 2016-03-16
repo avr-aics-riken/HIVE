@@ -10,7 +10,7 @@ export default class ItemSuggest extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value : this.props.initialParam.value,
+            value : JSON.stringify(JSON.parse(this.props.initialParam.value)),
             suggestions: this.getSuggestions(''),
 			onFrame : false
         };
@@ -214,7 +214,9 @@ export default class ItemSuggest extends React.Component {
     }
 
 	onAddKey(ev) {
-		this.props.changeKeyFunc(this.props.initialParam);
+		var hole = this.props.initialParam;
+		hole.value = this.state.value;
+		this.props.changeKeyFunc(hole);
 	}
 
     render () {

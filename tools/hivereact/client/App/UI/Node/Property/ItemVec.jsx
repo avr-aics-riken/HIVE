@@ -212,7 +212,9 @@ export default class ItemVec extends React.Component {
 	}
 
 	onAddKey(ev) {
-		this.props.changeKeyFunc(this.props.initialParam);
+		var hole = this.props.initialParam;
+		hole.value = this.state.values;
+		this.props.changeKeyFunc(hole);
 	}
 
 	render () {

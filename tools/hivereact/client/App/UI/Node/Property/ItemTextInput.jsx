@@ -164,7 +164,9 @@ export default class ItemTextInput extends React.Component {
 	}
 
 	onAddKey(ev) {
-		this.props.changeKeyFunc(this.props.initialParam);
+		var hole = this.props.initialParam;
+		hole.value = this.state.value;
+		this.props.changeKeyFunc(hole);
 	}
 
 	addKey() {
