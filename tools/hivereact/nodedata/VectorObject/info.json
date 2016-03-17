@@ -1,0 +1,21 @@
+{
+	"name": "VectorObject",
+	"funcname": "VectorObject",
+	"info": "ベクターデータを表示させるためのノード",
+	"customfuncfile": "VectorObject.lua",
+    "input": [
+		{"name": "vector", "type": "BufferVectorData"},
+		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
+		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},
+		{"name": "scale", "type": "vec3", "value": [1.0, 1.0, 1.0]},
+		{"name": "shadername", "type": "string", "value": "white.frag", "meta": "shaderlist"},
+		{"name": "Uniform",  "type": "Uniform", "array": [
+			{"name": "Uniform[0]",  "type": "Uniform"},
+			{"name": "Uniform[1]",  "type": "Uniform"},
+			{"name": "Uniform[2]",  "type": "Uniform"}
+		]}
+	],
+	"output": [
+		{"name": "model", "type": "RenderObject"}
+	]
+}

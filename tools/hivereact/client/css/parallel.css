@@ -1,0 +1,49 @@
+#ui_layer {
+    background-color: rgba(0, 0, 0, 0.85);
+    color: white;
+    width: 20%;
+    min-width: 400px;
+    max-width: 500px;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    display: block;
+}
+
+#ui_layer.visible {
+    right: 0px;
+    transition: right ease 0.3s;
+}
+
+#ui_layer.hidden {
+    right: -600px;
+    transition: right ease 0.3s;
+}
+
+#ui_layer h2 {
+	color: goldenrod;
+	margin: 10px;
+}
+
+#ui_layer p {
+	margin: 10px;
+}
+
+#ui_layer .paragraphs {
+	margin: 10px;
+}
+
+#ui_layer .paragraphs .labels {
+	margin: 3px 5px;
+	min-width: 60px;
+	display: inline-block;
+}
+
+.html5lp {
+	margin: 0px 10px;
+	display: inline-block;
+}
+
+.html5jp-cpick {
+	width: 75px;
+}
