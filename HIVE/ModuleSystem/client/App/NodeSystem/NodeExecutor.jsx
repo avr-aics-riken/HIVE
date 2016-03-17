@@ -14,16 +14,28 @@ function visit(node, nodelist) {
     }
 }
 
-function initFrags(nodeGraph) {
+function initVisitFrags(nodeGraph) {
     let i;
-
-    // init flag
     for (i in nodeGraph) {
         if (nodeGraph.hasOwnProperty(i)) {
             nodeGraph[i].visited  = false;
+        }
+    }
+}
+
+function initExecuteFrags(nodeGraph) {
+    let i;
+    for (i in nodeGraph) {
+        if (nodeGraph.hasOwnProperty(i)) {
             nodeGraph[i].executed = false;
         }
     }
+}
+
+function initFrags(nodeGraph) {
+    // init flag
+    initVisitFrags(nodeGraph);
+    initExecuteFrags(nodeGraph);
 }
 
 function topologicalSort(nodeGraph) {
@@ -92,35 +104,6 @@ export default class NodeExecutor extends EventEmitter {
         const plugs = data.plugs;
 
 		this.updateGraphRecursive(data);
-		/*
-        let ng = this.nodeGraph;
-        let i;
-        for (i = 0; i < nodes.length; ++i) {
-            const n = nodes[i];
-            if (!ng.hasOwnProperty(n.varname)) {
-                const nc = {node: n, inputs:[], outputs:[], inPlugs:[], needexecute: true, created: false};
-                ng[n.varname] = nc;
-            } else {
-                // temporary clear
-                ng[n.varname].inputs  = [];
-                ng[n.varname].outputs = [];
-                ng[n.varname].inPlugs = [];
-            }
-        }
-
-        // override all
-        //console.log('AAAAA', plugs);
-        for (i = 0; i < plugs.length; ++i) {
-            const p = plugs[i];
-            const outnode = ng.hasOwnProperty(p.output.nodeVarname) ? ng[p.output.nodeVarname] : null;
-            const inpnode = ng.hasOwnProperty(p.input.nodeVarname) ? ng[p.input.nodeVarname] : null;
-            if (outnode && inpnode) {
-                inpnode.inputs.push(outnode);
-                inpnode.inPlugs.push(p);
-                outnode.outputs.push(inpnode);
-            }
-        }
-		*/
     }
 
     executeNode() {
@@ -164,6 +147,30 @@ export default class NodeExecutor extends EventEmitter {
         return this.executeNode();
     }
 
+    getExecutionOrder() {
+        return this.nodeQueue; // cached order
+        
+        // calc order
+        /*
+        this.updateGraph(this.nodeGraph);        
+        initVisitFrags(this.nodeGraph);
+        return topologicalSort(this.nodeGraph);
+        */
+    }
+    
+    getOrderByVarname(varnameArray) {
+        let nodeQ = this.getExecutionOrder();
+        console.log('Q', nodeQ);
+        let i, order = {};        
+        for (i in nodeQ) {
+            let vname = nodeQ[i].node.varname;
+            let p = varnameArray.indexOf(vname);
+            if (p !== -1) {
+                order[vname] = p;
+            }
+        }
+        return order;
+    }
    
 
     initEmitter(store) {
