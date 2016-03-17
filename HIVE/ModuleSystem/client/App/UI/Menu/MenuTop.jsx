@@ -85,9 +85,36 @@ export default class MenuTop extends React.Component {
 			// 読み込み
 			this.loadButtonClick();
 		}
-		if (this.isCtrlDown && ev.keyCode == 65) { // "a"
+		if (this.isCtrlDown && ev.keyCode === 65) { // "a"
 			// 全選択
 			this.editNodeSelectAll();
+		}
+		if (this.isCtrlDown && ev.keyCode === 73) { // "i"
+			// グループのインポート
+			this.importButtonClick();
+		}
+		if (this.isCtrlDown && ev.keyCode === 69) { // "e"
+			// グループのエクスポート
+			this.exportGroupButton();
+		}
+		if (this.isCtrlDown && ev.keyCode === 80) { // "p"
+			// シーンのエクスポート
+			this.exportSceneButton();
+		}
+		if (this.isCtrlDown && ev.keyCode === 48) { // "0"
+			this.windowToggleConsoleOutput();
+		}
+		if (this.isCtrlDown && ev.keyCode === 49) { // "1"
+			this.layoutAll();
+		}
+		if (this.isCtrlDown && ev.keyCode === 50) { // "2"
+			this.layoutNode();
+		}
+		if (this.isCtrlDown && ev.keyCode === 51) { // "3"
+			this.layoutPanel();
+		}
+		if (this.isCtrlDown && ev.keyCode === 52) { // "4"
+			this.layoutPanelNode();
 		}
 		if (ev.keyCode === 39) { // "→"
 			// 1フレーム進む
@@ -264,7 +291,7 @@ export default class MenuTop extends React.Component {
             // position: "absolute",
             // top: "0px",
             // left: "0px",
-            zIndex: "99999"
+            zIndex: "99"
         };
         return (
             <div style={{position: "relative", width: "100%", zIndex: "99999"}}>
