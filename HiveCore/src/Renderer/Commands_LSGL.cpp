@@ -495,7 +495,9 @@ void DrawSolidArrays_SGL(int solidType, unsigned int vtxnum)
 			sgl.glDrawArrays(GL_PRISMS_EXT, 0, vtxnum);
 		} else if (solidType == 8) {
 			sgl.glDrawArrays(GL_HEXAHEDRONS_EXT, 0, vtxnum);
-		}
+		} else {
+            printf("[Commands_LSGL] ERR: Unknown solidType = %d\n", solidType);
+        }
 }
 
 /**

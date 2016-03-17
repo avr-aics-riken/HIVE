@@ -1,0 +1,27 @@
+-- Tetra
+print('Render UDM')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_udm_hexa.jpg')
+
+camera:LookAt(
+	10,10,10,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local udm = require("UdmLoader")()
+-- Specify .dfi file
+udm:Load('bcm2gf/index.dfi')
+
+local model = SolidModel()
+local hexadata = udm:SolidData(8) -- 8 = HEXA
+print(hexadata)
+model:Create(hexadata)
+model:SetShader('normal.frag')
+print(model)
+
+render {camera, model}
