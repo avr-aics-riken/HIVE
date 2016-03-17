@@ -42,6 +42,8 @@ export default class MenuTop extends React.Component {
 	    this.layoutPanel = this.layoutPanel.bind(this);
 	    this.layoutPanelNode = this.layoutPanelNode.bind(this);
 		this.windowToggleConsoleOutput = this.windowToggleConsoleOutput.bind(this);
+		this.isShiftDown = false;
+		this.isCtrlDown = false;
     }
 
 	componentDidMount() {
@@ -56,11 +58,13 @@ export default class MenuTop extends React.Component {
 
 	onKeyUp(ev) {
 		this.isCtrlDown = ev.ctrlKey;
+		this.isShiftDown = ev.shiftKey;
 	}
 
 	onKeyDown(ev) {
 		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
 		this.isCtrlDown = ev.ctrlKey;
+		this.isShiftDown = ev.shiftKey;
 		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
 			// コピー
 			this.editNodeCopy();
@@ -89,7 +93,7 @@ export default class MenuTop extends React.Component {
 			// 全選択
 			this.editNodeSelectAll();
 		}
-		if (this.isCtrlDown && ev.keyCode === 73) { // "i"
+		if (!this.isShiftDown && this.isCtrlDown && ev.keyCode === 73) { // "i"
 			// グループのインポート
 			this.importButtonClick();
 		}
