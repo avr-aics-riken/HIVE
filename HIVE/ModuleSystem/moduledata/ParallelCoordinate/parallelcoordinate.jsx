@@ -68,6 +68,7 @@ class ParallelCoordinate extends React.Component {
         this.singleConv = this.singleConv.bind(this);
         this.imageRecieved = this.imageRecieved.bind(this);
         this.imageParse = this.imageParse.bind(this);
+        this.setParseData = this.setParseData.bind(this);
         this.setCanvas = this.setCanvas.bind(this);
         this.setContext = this.setContext.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -161,6 +162,26 @@ class ParallelCoordinate extends React.Component {
         }else{
             console.log('parallel: invalid data');
         }
+    }
+
+    setParseData(data){
+        let parseLength = 0;
+        let parseDataCount = 0;
+        let dataLength = data.length;
+        if(this.state.parse !== null && this.state.parse !== undefined){
+            parseLength = this.state.parse.length;
+            parseDataCount = this.state.parse[0].length;
+        }
+        if(parseLength !== dataLength){
+            console.log('invalid data, length is not match!');
+            return;
+        }
+        let dest = [];
+        for(let i = 0, j = parseLength; i < j; ++i){
+            dest[i] = this.state.parse[i];
+            dest[i].push(data[i]);
+        }
+        this.setState({parse: dest});
     }
 
     onColorMapChange(data){
