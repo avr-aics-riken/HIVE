@@ -107,7 +107,7 @@ void SolidBuffer::Render() const
 
     BindSolidVBIB_SGL(getProgram(), m_vtx_id, 0, 0);
 	// Use draw array method.
-    DrawSolidArrays_SGL(m_model->GetType(), m_vtxnum);
+    DrawSolidArrays_SGL(m_model->GetSolid()->Type(), m_vtxnum);
 }
 
 void SolidBuffer::Update()
