@@ -78,6 +78,7 @@ export default class ActionExecuter {
 		this.addKeyFrame = this.addKeyFrame.bind(this);
 		this.deleteKeyFrame = this.deleteKeyFrame.bind(this);
 		this.applyCurrentFrame = this.applyCurrentFrame.bind(this);
+		this.align = this.align.bind(this);
 	}
 
     /**
@@ -1122,6 +1123,13 @@ export default class ActionExecuter {
 				}
 			}
 		}
+	}
+
+	/**
+	 * ノードを整列する
+	 */
+	align(payload) {
+		this.store.emit(Constants.NODE_ALIGN_CALLED, null);
 	}
 
 	/**

@@ -37,6 +37,7 @@ export default class MenuTop extends React.Component {
 	    this.editNodeMakeGroup = this.editNodeMakeGroup.bind(this);
 		this.editNodeUnGroup = this.editNodeUnGroup.bind(this);
 		this.editNodeSelectAll = this.editNodeSelectAll.bind(this);
+		this.editNodeAlign = this.editNodeAlign.bind(this);
 	    this.layoutAll = this.layoutAll.bind(this);
 	    this.layoutNode = this.layoutNode.bind(this);
 	    this.layoutPanel = this.layoutPanel.bind(this);
@@ -107,6 +108,10 @@ export default class MenuTop extends React.Component {
 		}
 		if (this.isCtrlDown && ev.keyCode === 48) { // "0"
 			this.windowToggleConsoleOutput();
+		}
+		if (ev.keyCode === 76) { // "l(L)"
+			// ノードの整列
+			this.editNodeAlign();
 		}
 		if (this.isCtrlDown && ev.keyCode === 49) { // "1"
 			this.layoutAll();
@@ -225,6 +230,7 @@ export default class MenuTop extends React.Component {
 			this.props.action.selectNode(varnameList);
 		}
 	}
+	editNodeAlign() { this.props.action.align(); }
 
     // Layout menu
     layoutAll() { this.props.action.setLayout('all'); }
@@ -272,6 +278,7 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="editNodeDelete">Delete</MenuItem>
                     <MenuItem key="editNodeMakeGroup">MakeGroup</MenuItem>
 					<MenuItem key="editNodeUnGroup">UnGroup</MenuItem>
+					<MenuItem key="editNodeAlign">AlignNode</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>Layout</span>} key="layout">
                     <MenuItem key="layoutAll">All</MenuItem>

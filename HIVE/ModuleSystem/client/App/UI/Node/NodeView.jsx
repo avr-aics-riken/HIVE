@@ -38,6 +38,7 @@ export default class NodeView extends React.Component {
 		this.onPaste = this.onPaste.bind(this);
 		this.onDelete = this.onDelete.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onNodeAlign = this.onNodeAlign.bind(this);
 
 		this.moveNode = this.moveNode.bind(this);
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
@@ -221,6 +222,7 @@ export default class NodeView extends React.Component {
 		this.props.store.on(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.on(Core.Constants.DELETE_CALLED, this.onDelete);
+		this.props.store.on(Core.Constants.NODE_ALIGN_CALLED, this.onNodeAlign);
     }
 
     componentWillUnmount(){
@@ -232,6 +234,7 @@ export default class NodeView extends React.Component {
 		this.props.store.off(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
+		this.props.store.off(Core.Constants.NODE_ALIGN_CALLED, this.onNodeAlign);
     }
 
 	// メニューまたはショートカットで削除が呼ばれた
@@ -275,6 +278,11 @@ export default class NodeView extends React.Component {
 			this.copied = null;
 		}
 		console.log("pasteNode");
+	}
+
+	// メニューまたはショートカットでノードの整列が呼ばれた
+	onNodeAlign(err) {
+		console.log("NodeView onNodeAlign");
 	}
 
 	origin() {

@@ -227,6 +227,16 @@ export default class Action {
 	}
 
 	/**
+	 * ノードを整列する
+	 */
+	align() {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "align"
+		});
+	}
+
+	/**
 	 * 削除する
 	 */
 	delete() {

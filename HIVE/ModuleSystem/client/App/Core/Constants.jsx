@@ -23,6 +23,7 @@ module.exports = {
 	COPY_CALLED : "copy_called",
 	PASTE_CALLED : "paste_called",
 	DELETE_CALLED : "delete_called",
+	NODE_ALIGN_CALLED : "node_align_called",
 	MAKE_GROUP_CALLED : "make_group_called",
     LAYOUT_CHANGED : "layout_changed",
     CONSOLEOUTPUT_SHOW: "consoleoutput_show",
