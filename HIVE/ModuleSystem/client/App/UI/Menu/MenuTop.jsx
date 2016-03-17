@@ -37,11 +37,14 @@ export default class MenuTop extends React.Component {
 	    this.editNodeMakeGroup = this.editNodeMakeGroup.bind(this);
 		this.editNodeUnGroup = this.editNodeUnGroup.bind(this);
 		this.editNodeSelectAll = this.editNodeSelectAll.bind(this);
+		this.editNodeAlign = this.editNodeAlign.bind(this);
 	    this.layoutAll = this.layoutAll.bind(this);
 	    this.layoutNode = this.layoutNode.bind(this);
 	    this.layoutPanel = this.layoutPanel.bind(this);
 	    this.layoutPanelNode = this.layoutPanelNode.bind(this);
 		this.windowToggleConsoleOutput = this.windowToggleConsoleOutput.bind(this);
+		this.isShiftDown = false;
+		this.isCtrlDown = false;
     }
 
 	componentDidMount() {
@@ -56,11 +59,13 @@ export default class MenuTop extends React.Component {
 
 	onKeyUp(ev) {
 		this.isCtrlDown = ev.ctrlKey;
+		this.isShiftDown = ev.shiftKey;
 	}
 
 	onKeyDown(ev) {
 		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
 		this.isCtrlDown = ev.ctrlKey;
+		this.isShiftDown = ev.shiftKey;
 		if (this.isCtrlDown && ev.keyCode === 67) { // "c"
 			// コピー
 			this.editNodeCopy();
@@ -85,9 +90,40 @@ export default class MenuTop extends React.Component {
 			// 読み込み
 			this.loadButtonClick();
 		}
-		if (this.isCtrlDown && ev.keyCode == 65) { // "a"
+		if (this.isCtrlDown && ev.keyCode === 65) { // "a"
 			// 全選択
 			this.editNodeSelectAll();
+		}
+		if (!this.isShiftDown && this.isCtrlDown && ev.keyCode === 73) { // "i"
+			// グループのインポート
+			this.importButtonClick();
+		}
+		if (this.isCtrlDown && ev.keyCode === 69) { // "e"
+			// グループのエクスポート
+			this.exportGroupButton();
+		}
+		if (this.isCtrlDown && ev.keyCode === 80) { // "p"
+			// シーンのエクスポート
+			this.exportSceneButton();
+		}
+		if (this.isCtrlDown && ev.keyCode === 48) { // "0"
+			this.windowToggleConsoleOutput();
+		}
+		if (ev.keyCode === 76) { // "l(L)"
+			// ノードの整列
+			this.editNodeAlign();
+		}
+		if (this.isCtrlDown && ev.keyCode === 49) { // "1"
+			this.layoutAll();
+		}
+		if (this.isCtrlDown && ev.keyCode === 50) { // "2"
+			this.layoutNode();
+		}
+		if (this.isCtrlDown && ev.keyCode === 51) { // "3"
+			this.layoutPanel();
+		}
+		if (this.isCtrlDown && ev.keyCode === 52) { // "4"
+			this.layoutPanelNode();
 		}
 		if (ev.keyCode === 39) { // "→"
 			// 1フレーム進む
@@ -194,6 +230,7 @@ export default class MenuTop extends React.Component {
 			this.props.action.selectNode(varnameList);
 		}
 	}
+	editNodeAlign() { this.props.action.align(); }
 
     // Layout menu
     layoutAll() { this.props.action.setLayout('all'); }
@@ -241,6 +278,7 @@ export default class MenuTop extends React.Component {
                     <MenuItem key="editNodeDelete">Delete</MenuItem>
                     <MenuItem key="editNodeMakeGroup">MakeGroup</MenuItem>
 					<MenuItem key="editNodeUnGroup">UnGroup</MenuItem>
+					<MenuItem key="editNodeAlign">AlignNode</MenuItem>
                 </SubMenu>
                 <SubMenu title={<span>Layout</span>} key="layout">
                     <MenuItem key="layoutAll">All</MenuItem>
@@ -264,7 +302,7 @@ export default class MenuTop extends React.Component {
             // position: "absolute",
             // top: "0px",
             // left: "0px",
-            zIndex: "99999"
+            zIndex: "99"
         };
         return (
             <div style={{position: "relative", width: "100%", zIndex: "99999"}}>

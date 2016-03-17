@@ -78,6 +78,7 @@ export default class ActionExecuter {
 		this.addKeyFrame = this.addKeyFrame.bind(this);
 		this.deleteKeyFrame = this.deleteKeyFrame.bind(this);
 		this.applyCurrentFrame = this.applyCurrentFrame.bind(this);
+		this.align = this.align.bind(this);
 	}
 
     /**
@@ -169,8 +170,9 @@ export default class ActionExecuter {
 				node.node = payload.nodeInfo.node;
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
-				if (payload.nodeInfo.panel.zindex === 0) {
-					payload.nodeInfo.panel.zindex = this.store.getNodes().length + 1;
+				node.panel = payload.nodeInfo.panel;
+				if (node.panel.zindex === 0) {
+					node.panel.zindex = this.store.getNodes().length + 1;
 				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('input')) {
@@ -1000,6 +1002,8 @@ export default class ActionExecuter {
 
 	// @private
 	pasteNode(convertTable, node, plugs) {
+		const oldVarname = node.varname;
+
 		// varname変更.
 		node.varname = convertTable[node.varname];
 
@@ -1023,6 +1027,17 @@ export default class ActionExecuter {
 			if (convertTable.hasOwnProperty(plugs[i].output.nodeVarname)) {
 				plugs[i].output.nodeVarname = convertTable[plugs[i].output.nodeVarname];
 			}
+		}
+
+		// タイムラインの複製
+		let content = this.store.getTimelineContent(oldVarname);
+		if (content) {
+			content = JSON.parse(JSON.stringify(content));
+			content.nodeVarname = node.varname;
+			for (let i = 0; i < content.props.length; i = i + 1) {
+				content.props[i].nodeVarname = convertTable[content.props[i].nodeVarname];
+			}
+			this.store.data.timeline.data.contents.push(content);
 		}
 
 		// グループの場合再帰.
@@ -1054,7 +1069,7 @@ export default class ActionExecuter {
 			for (let i = 0; i < payload.nodeInfoList.length; i = i + 1) {
 				let src = payload.nodeInfoList[i];
 
-				// varname書き換え
+				// varname書き換え, タイムラインのペースト.
 				this.pasteNode.bind(this)(convertTable, src, plugs);
 
 				// 最上位階層はパネルの位置を設定する必要がある
@@ -1108,6 +1123,13 @@ export default class ActionExecuter {
 				}
 			}
 		}
+	}
+
+	/**
+	 * ノードを整列する
+	 */
+	align(payload) {
+		this.store.emit(Constants.NODE_ALIGN_CALLED, null);
 	}
 
 	/**

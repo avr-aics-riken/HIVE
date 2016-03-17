@@ -38,6 +38,7 @@ export default class NodeView extends React.Component {
 		this.onPaste = this.onPaste.bind(this);
 		this.onDelete = this.onDelete.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
+		this.onNodeAlign = this.onNodeAlign.bind(this);
 
 		this.moveNode = this.moveNode.bind(this);
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
@@ -52,7 +53,6 @@ export default class NodeView extends React.Component {
 			let n = JSON.parse(JSON.stringify(nodes[i].node));
 			let component = this.refs[nodes[i].varname];
 			n.pos = [component.offsetLeft + data.x * invzoom, component.offsetTop + data.y * invzoom];
-
 			this.props.action.changeNode({
 				varname : nodes[i].varname,
 				node : n
@@ -182,7 +182,7 @@ export default class NodeView extends React.Component {
 				let width = rect.right - rect.left;
 				let height = rect.bottom - rect.top;
 				let n = JSON.parse(JSON.stringify(data.node));
-				n.pos = [-this.state.offset[0] + width / 2 - 200, -this.state.offset[1] + height / 2 - 200];
+				n.pos = [ -this.state.offset[0] + this.pos.x, -this.state.offset[1] + this.pos.y];
 				if (n.pos[0] <= 0) { n.pos[0] = 200; }
 				if (n.pos[1] <= 0) { n.pos[1] = 200; }
 				if (n.pos[0] >= 4000) { n.pos[0] = 3800; }
@@ -222,6 +222,7 @@ export default class NodeView extends React.Component {
 		this.props.store.on(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.on(Core.Constants.DELETE_CALLED, this.onDelete);
+		this.props.store.on(Core.Constants.NODE_ALIGN_CALLED, this.onNodeAlign);
     }
 
     componentWillUnmount(){
@@ -233,6 +234,7 @@ export default class NodeView extends React.Component {
 		this.props.store.off(Core.Constants.PASTE_CALLED, this.onPaste);
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
+		this.props.store.off(Core.Constants.NODE_ALIGN_CALLED, this.onNodeAlign);
     }
 
 	// メニューまたはショートカットで削除が呼ばれた
@@ -276,6 +278,11 @@ export default class NodeView extends React.Component {
 			this.copied = null;
 		}
 		console.log("pasteNode");
+	}
+
+	// メニューまたはショートカットでノードの整列が呼ばれた
+	onNodeAlign(err) {
+		console.log("NodeView onNodeAlign");
 	}
 
 	origin() {
