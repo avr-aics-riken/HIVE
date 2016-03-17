@@ -50,6 +50,7 @@ function LineObject:Do()
             end
         end
     end
+    return true
 end
 
 function LineObject:model()

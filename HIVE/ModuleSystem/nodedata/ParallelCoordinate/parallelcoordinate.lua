@@ -14,7 +14,7 @@ function ParallelCoordinate:Do()
     local img = self.value.image
     print('vol=', vol, img)
     if vol == nil and img == nil then
-        return false
+        return "Invalid data"
     end
     local mode = 'raw'
     local qsize = 1
@@ -61,7 +61,7 @@ function ParallelCoordinate:Do()
         c = vol:Component()
         if (w == 0 or h == 0 or d == 0) then
             print('Size zero=', w, h, d)
-            return false
+            return "Size zero:" .. w .. ',' .. h .. ',' .. d 
         end
         imageBuffer = vol:Pointer()
         datatype = 'float';
@@ -73,7 +73,7 @@ function ParallelCoordinate:Do()
         c = 4
         if (w == 0 or h == 0) then
             print('Size zero=', w, h)
-            return false
+            return "Size zero:" .. w .. ',' .. h .. ',' .. d 
         end
         imageBuffer = img:GetBuffer()
         datatype = 'byte';

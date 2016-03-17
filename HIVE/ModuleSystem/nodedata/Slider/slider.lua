@@ -10,6 +10,7 @@ end
 function Slider:Do()
     -- nothing to do
     self:UpdateValue()
+    return true
 end
 
 function Slider:fval()

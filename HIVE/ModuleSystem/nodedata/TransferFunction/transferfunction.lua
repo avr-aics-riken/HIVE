@@ -62,6 +62,8 @@ function TransferFunction:Do()
     end
     
 	self.gentex:Create2D(rgba, 1, 256, 1);
+    
+    return true
 end
 
 function TransferFunction:Image()

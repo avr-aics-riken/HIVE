@@ -11,6 +11,7 @@ end
 
 function SphereGenerator:Do()
     self:UpdateValue()
+    return true
 end
 
 function SphereGenerator:PointData()

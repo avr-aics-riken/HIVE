@@ -11,6 +11,6 @@ end
 function SaveImage:Do()
     self:UpdateValue()
     local v = self.value
-	self.saver:Save(v.filepath, v.image)
+	return self.saver:Save(v.filepath, v.image)
 end
 

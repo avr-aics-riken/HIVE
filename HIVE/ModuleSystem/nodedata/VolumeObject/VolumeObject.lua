@@ -63,6 +63,7 @@ function VolumeObject:Do()
             end
         end
     end
+    return true
 end
 
 function VolumeObject:model()

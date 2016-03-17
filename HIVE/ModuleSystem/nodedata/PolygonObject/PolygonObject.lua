@@ -60,6 +60,7 @@ function PolygonObject:Do()
             end
         end
     end
+    return true
 end
 
 function PolygonObject:model()

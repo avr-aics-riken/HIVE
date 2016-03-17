@@ -11,7 +11,7 @@ end
 
 function LoadSPH:Do()
     self:UpdateValue()
-    self.loader:Load(self.value.filepath)
+    return self.loader:Load(self.value.filepath)
 end
 
 function LoadSPH:VolumeData()

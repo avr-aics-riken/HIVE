@@ -11,6 +11,7 @@ end
 
 function CubeGenerator:Do()
     self:UpdateValue()
+    return true
 end
 
 function CubeGenerator:MeshData()

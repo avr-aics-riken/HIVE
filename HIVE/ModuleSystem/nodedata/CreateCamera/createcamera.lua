@@ -33,6 +33,7 @@ function CreateCamera:Do()
         v.up[1],       v.up[2],       v.up[3],
         v.fov
     ) 
+    return true
 end
 
 function CreateCamera:camera()

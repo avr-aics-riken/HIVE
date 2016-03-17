@@ -11,6 +11,7 @@ end
 
 function TeapotGenerator:Do()
     self:UpdateValue()
+    return true
 end
 
 function TeapotGenerator:MeshData()

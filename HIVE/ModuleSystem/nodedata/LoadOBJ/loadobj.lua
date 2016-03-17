@@ -11,7 +11,7 @@ end
 
 function LoadOBJ:Do()
     self:UpdateValue()
-    self.loader:Load(self.value.filepath)
+    return self.loader:Load(self.value.filepath)
 end
 
 function LoadOBJ:MeshData()

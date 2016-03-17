@@ -14,6 +14,7 @@ end
 function UniformVec3:Do()
     -- nothing to do
     self:UpdateValue()
+    return true
 end
 
 function UniformVec3:uniform()

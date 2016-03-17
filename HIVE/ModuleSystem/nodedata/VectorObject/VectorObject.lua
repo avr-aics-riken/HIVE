@@ -50,6 +50,7 @@ function VectorObject:Do()
             end
         end
     end
+    return true
 end
 
 function VectorObject:model()

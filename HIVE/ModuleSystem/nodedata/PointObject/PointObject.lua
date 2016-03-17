@@ -50,6 +50,8 @@ function PointObject:Do()
             end
         end
     end
+    
+    return true
 end
 
 function PointObject:model()

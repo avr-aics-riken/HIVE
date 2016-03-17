@@ -10,6 +10,7 @@ end
 function UniformFloat:Do()
     -- nothing to do
     self:UpdateValue()
+    return true
 end
 
 function UniformFloat:uniform()

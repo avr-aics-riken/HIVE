@@ -16,7 +16,7 @@ function Isosurf:Do()
     
     local v = self.value
     if (v.volume ~= nil) then
-        return false
+        return "Invalid volume"
     end
     
     self.vm:Create(v.volume)

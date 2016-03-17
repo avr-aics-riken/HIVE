@@ -50,6 +50,8 @@ function TetraObject:Do()
             end
         end
     end
+    
+    return true
 end
 
 function TetraObject:model()

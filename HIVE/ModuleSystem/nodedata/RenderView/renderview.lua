@@ -66,7 +66,7 @@ function RenderView:Do()
     end
     
     if network == nil and HIVE_metabin == nil then -- no UI mode        
-        return false
+        return true
     end 
     
     local mode = 'jpg'

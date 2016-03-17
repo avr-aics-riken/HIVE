@@ -11,6 +11,7 @@ end
 
 function QuadGenerator:Do()
     self:UpdateValue()
+    return true
 end
 
 function QuadGenerator:MeshData()

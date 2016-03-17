@@ -50,6 +50,7 @@ function SparseVolumeObject:Do()
             end
         end
     end
+    return true
 end
 
 function SparseVolumeObject:model()

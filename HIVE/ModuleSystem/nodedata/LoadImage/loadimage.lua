@@ -11,7 +11,11 @@ end
 function LoadImage:Do()
     self:UpdateValue()
     local v = self.value
-    self.loader:Load(v.filepath)
+    local b = self.loader:Load(v.filepath)
+    if not b then
+        return "Failed to load Image"
+    end
+    return true
 end
 
 function LoadImage:image()

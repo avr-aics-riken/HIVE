@@ -10,6 +10,7 @@ end
 function UniformTexture:Do()
     -- nothing to do
     self:UpdateValue()
+    return true
 end
 
 function UniformTexture:uniform()
