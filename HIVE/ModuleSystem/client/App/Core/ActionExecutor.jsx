@@ -817,7 +817,7 @@ export default class ActionExecuter {
 					let outputIterator = NodeIterator.makeOutputIterator(this.store, n);
 					for (let v of outputIterator) {
 						if (v.output && v.output.name === plug.output.name) {
-							outputs.push(n.output[j]);
+							outputs.push(v.output);
 						}
 					}
 				}
@@ -838,6 +838,7 @@ export default class ActionExecuter {
 		for (let i = 0; i < nodeList.length; i = i + 1) {
 			let inoutIterator = NodeIterator.makeInputOutputIterator(this.store, nodeList[i]);
 			for (let v of inoutIterator) {
+				console.log(v.input, v.output);
 				if (v.input && varnameToInput.hasOwnProperty(v.input.nodeVarname)) {
 					if (varnameToInput[v.input.nodeVarname].name === v.input.name) {
 						inputs.push(v.input);
@@ -1221,16 +1222,6 @@ export default class ActionExecuter {
 				const order = orders[i];
 				const varname = orderToVarname[order];
 				const bound = nodeSizes[varname];
-				/*
-				if (i === (orders.length - 1)) {
-					// test
-					let inputIterate = NodeIterator.makeInputIterator(this.store, varnameToNode[varname]);
-					for (let aa of inputIterate) {
-						console.log(aa);
-					}
-					return;
-				}
-				*/
 				this.alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, varname, bound, 0);
 			}
 		}
