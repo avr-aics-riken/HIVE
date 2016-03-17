@@ -797,6 +797,7 @@ export default class ActionExecuter {
 		let outplugs = this.getGroupInoutFromNodes(nodeList, false);
 		let inputs = [];
 		let outputs = [];
+
 		for (let i = 0; i < nodeList.length; i = i + 1) {
 			let n = nodeList[i];
 			for (let k = 0; k < inplugs.length; k = k + 1) {
@@ -813,8 +814,9 @@ export default class ActionExecuter {
 			for (let k = 0; k < outplugs.length; k = k + 1) {
 				let plug = outplugs[k];
 				if (n.varname === plug.output.nodeVarname) {
-					for (let j = 0; j < n.output.length; j = j + 1) {
-						if (n.output[j].name === plug.output.name) {
+					let outputIterator = NodeIterator.makeOutputIterator(this.store, n);
+					for (let v of outputIterator) {
+						if (v.output && v.output.name === plug.output.name) {
 							outputs.push(n.output[j]);
 						}
 					}
@@ -834,21 +836,16 @@ export default class ActionExecuter {
 			varnameToOutput[outs[i].nodeVarname] = outs[i];
 		}
 		for (let i = 0; i < nodeList.length; i = i + 1) {
-			let n = nodeList[i];
-
-			let inputIterator = NodeIterator.makeInputIterator(this.store, n);
-			for (let v of inputIterator) {
+			let inoutIterator = NodeIterator.makeInputOutputIterator(this.store, nodeList[i]);
+			for (let v of inoutIterator) {
 				if (v.input && varnameToInput.hasOwnProperty(v.input.nodeVarname)) {
 					if (varnameToInput[v.input.nodeVarname].name === v.input.name) {
 						inputs.push(v.input);
 					}
 				}
-			}
-			for (let k = 0; k < n.output.length; ++k) {
-				let output = n.output[k];
-				if (varnameToOutput.hasOwnProperty(output.nodeVarname)) {
-					if (varnameToOutput[output.nodeVarname].name === output.name) {
-						outputs.push(output);
+				if (v.output && varnameToOutput.hasOwnProperty(v.output.nodeVarname)) {
+					if (varnameToOutput[output.nodeVarname].name === v.output.name) {
+						outputs.push(v.output);
 					}
 				}
 			}

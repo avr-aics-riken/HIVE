@@ -53,5 +53,63 @@ NodeIterator.makeInputIterator = (store, node) => {
 	}
 };
 
+/**
+ * あるノードの出力ノードを列挙するイテレータ.
+ */
+NodeIterator.makeOutputIterator = (store, node) => {
+	return {
+		[Symbol.iterator]() {
+			let currentNode = node;
+			let outputIndex = 0;
+			return {
+				next() {
+					let output = null;
+					if (outputIndex < currentNode.output.length) {
+						output = currentNode.output[outputIndex];
+						++outputIndex;
+						return {
+							value : {
+								output : output
+							},
+							done : false
+						};
+					} else {
+						return {
+							value : {
+								output : null
+							},
+							done : true
+						};
+					}
+				}
+			};
+		}
+	}
+};
+
+/**
+ * あるノードの出力ノードを列挙するイテレータ.
+ */
+NodeIterator.makeInputOutputIterator = (store, node) => {
+	return {
+		[Symbol.iterator]() {
+			let inputIterator = NodeIterator.makeInputIterator(store, node)[Symbol.iterator]();
+			let outputIterator = NodeIterator.makeOutputIterator(store, node)[Symbol.iterator]();
+			return {
+				next() {
+					let input = inputIterator.next();
+					let output = input.done ? outputIterator.next() : null;
+					return {
+						value : {
+							input : input.value.input,
+							output : output ? output.value.output : null
+						},
+						done : input.done && output && output.done
+					};
+				}
+			};
+		}
+	}
+};
 
 export default new NodeIterator();
