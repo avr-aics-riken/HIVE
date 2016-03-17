@@ -169,8 +169,9 @@ export default class ActionExecuter {
 				node.node = payload.nodeInfo.node;
 			}
 			if (payload.nodeInfo.hasOwnProperty('panel')) {
-				if (payload.nodeInfo.panel.zindex === 0) {
-					payload.nodeInfo.panel.zindex = this.store.getNodes().length + 1;
+				node.panel = payload.nodeInfo.panel;
+				if (node.panel.zindex === 0) {
+					node.panel.zindex = this.store.getNodes().length + 1;
 				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('input')) {
@@ -1059,6 +1060,7 @@ export default class ActionExecuter {
 
 				// 最上位階層はパネルの位置を設定する必要がある
 				// また,1回はaddNodeしてnodesystemを更新する必要がある
+
 				this.addNode({ nodeInfo : src });
 			}
 

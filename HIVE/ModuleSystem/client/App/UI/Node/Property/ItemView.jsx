@@ -211,13 +211,14 @@ export default class ItemView extends React.Component {
 	}
 
 	panelCheckbox() {
-		if (this.isShowPanel() !== null) {
+		const isShow = this.isShowPanel();
+		if (isShow !== null) {
             this.topRowUsed = true;
 			let id = this.props.initialNodeData.varname + "_panel";
 			return (<ItemCheckbox
 				initialParam={{
 					name : "show panel",
-					value : this.props.initialNodeData.panel.visible
+					value : isShow
 				}}
                 top={this.topRowUsed}
 				changeCheckboxFunc={this.panelVisibleChangeFunc.bind(this)}
