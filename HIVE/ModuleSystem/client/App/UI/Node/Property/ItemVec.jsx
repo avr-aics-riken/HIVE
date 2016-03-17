@@ -11,7 +11,7 @@ export default class ItemVec extends React.Component {
 
 		this.state = {
 			values : JSON.parse(JSON.stringify(this.props.initialParam.value)),
-			onFrame : false
+			onFrame : this.props.store.hasCurrentKeyFrame(this.props.initialParam)
 		};
 		this.currentEdit = {
 			index : -1,

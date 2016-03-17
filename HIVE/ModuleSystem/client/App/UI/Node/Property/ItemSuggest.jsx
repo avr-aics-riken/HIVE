@@ -12,7 +12,7 @@ export default class ItemSuggest extends React.Component {
         this.state = {
             value : this.props.initialParam.value,
             suggestions: this.getSuggestions(''),
-			onFrame : false
+			onFrame : this.props.store.hasCurrentKeyFrame(this.props.initialParam)
         };
 
         this.getSuggestions = this.getSuggestions.bind(this);

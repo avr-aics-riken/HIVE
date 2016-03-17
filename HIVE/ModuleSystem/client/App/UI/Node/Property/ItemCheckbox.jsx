@@ -11,7 +11,7 @@ export default class ItemCheckbox extends React.Component {
 
 		this.state = {
 			checked : this.props.initialParam.value,
-			onFrame : false
+			onFrame : this.props.hasOwnProperty('store') ? this.props.store.hasCurrentKeyFrame(this.props.initialParam) : false
 		};
 		this.frameApplied = this.frameApplied.bind(this);
 	}
