@@ -91,6 +91,8 @@ export default class Store extends EventEmitter {
 		this.getRootNodes = this.getRootNodes.bind(this);
 		this.getRootPlugs = this.getRootPlugs.bind(this);
 		this.findNode = this.findNode.bind(this);
+		this.hasCurrentKeyFrame = this.hasCurrentKeyFrame.bind(this);
+		this.getTimelineContent = this.getTimelineContent.bind(this);
 		this.initHive(this.data);
 	}
 
@@ -318,17 +320,29 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
+	 * タイムラインのコンテンツを返す.
+	 */
+	getTimelineContent(nodeVarname) {
+		let data = this.data.timeline.data;
+		if (data.hasOwnProperty('contents')) {
+			for (let i = 0; i < data.contents.length; i = i + 1) {
+				if (data.contents[i].nodeVarname  === nodeVarname) {
+					return data.contents[i];
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * inputが現在のフレームでキーを持っているか返す
 	 */
 	hasCurrentKeyFrame(input) {
-		let data = this.data.timeline.data;
-		if (!data.hasOwnProperty('contents')) {
-			return false;
-		}
 		const currentFrame = this.getCurrentFrame();
-		for (let i = 0; i < data.contents.length; i = i + 1) {
-			if (data.contents[i].nodeVarname  === input.nodeVarname) {
-				let props = data.contents[i].props;
+		let content = this.getTimelineContent(input.nodeVarname);
+		if (content) {
+			if (content.nodeVarname  === input.nodeVarname) {
+				let props = content.props;
 				for (let k = 0; k < props.length; k = k + 1) {
 					if (props[k].name === input.name && props[k].data.hasOwnProperty(currentFrame)) {
 						return true;
@@ -338,4 +352,5 @@ export default class Store extends EventEmitter {
 		}
 		return false;
 	}
+
 }

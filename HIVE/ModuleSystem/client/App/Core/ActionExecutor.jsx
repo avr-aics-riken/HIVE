@@ -1001,6 +1001,8 @@ export default class ActionExecuter {
 
 	// @private
 	pasteNode(convertTable, node, plugs) {
+		const oldVarname = node.varname;
+
 		// varname変更.
 		node.varname = convertTable[node.varname];
 
@@ -1024,6 +1026,17 @@ export default class ActionExecuter {
 			if (convertTable.hasOwnProperty(plugs[i].output.nodeVarname)) {
 				plugs[i].output.nodeVarname = convertTable[plugs[i].output.nodeVarname];
 			}
+		}
+
+		// タイムラインの複製
+		let content = this.store.getTimelineContent(oldVarname);
+		if (content) {
+			content = JSON.parse(JSON.stringify(content));
+			content.nodeVarname = node.varname;
+			for (let i = 0; i < content.props.length; i = i + 1) {
+				content.props[i].nodeVarname = convertTable[content.props[i].nodeVarname];
+			}
+			this.store.data.timeline.data.contents.push(content);
 		}
 
 		// グループの場合再帰.
@@ -1055,12 +1068,11 @@ export default class ActionExecuter {
 			for (let i = 0; i < payload.nodeInfoList.length; i = i + 1) {
 				let src = payload.nodeInfoList[i];
 
-				// varname書き換え
+				// varname書き換え, タイムラインのペースト.
 				this.pasteNode.bind(this)(convertTable, src, plugs);
 
 				// 最上位階層はパネルの位置を設定する必要がある
 				// また,1回はaddNodeしてnodesystemを更新する必要がある
-
 				this.addNode({ nodeInfo : src });
 			}
 
