@@ -52,7 +52,6 @@ export default class NodeView extends React.Component {
 			let n = JSON.parse(JSON.stringify(nodes[i].node));
 			let component = this.refs[nodes[i].varname];
 			n.pos = [component.offsetLeft + data.x * invzoom, component.offsetTop + data.y * invzoom];
-
 			this.props.action.changeNode({
 				varname : nodes[i].varname,
 				node : n
@@ -182,7 +181,7 @@ export default class NodeView extends React.Component {
 				let width = rect.right - rect.left;
 				let height = rect.bottom - rect.top;
 				let n = JSON.parse(JSON.stringify(data.node));
-				n.pos = [-this.state.offset[0] + width / 2 - 200, -this.state.offset[1] + height / 2 - 200];
+				n.pos = [ -this.state.offset[0] + this.pos.x, -this.state.offset[1] + this.pos.y];
 				if (n.pos[0] <= 0) { n.pos[0] = 200; }
 				if (n.pos[1] <= 0) { n.pos[1] = 200; }
 				if (n.pos[0] >= 4000) { n.pos[0] = 3800; }
