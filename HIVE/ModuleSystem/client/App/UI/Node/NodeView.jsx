@@ -283,6 +283,31 @@ export default class NodeView extends React.Component {
 	// メニューまたはショートカットでノードの整列が呼ばれた
 	onNodeAlign(err) {
 		console.log("NodeView onNodeAlign");
+		let nodeSizes = {};
+		let nodes = this.state.nodes;
+		let r = this.refs.viewport.getBoundingClientRect();
+		const invzoom = 1.0 / this.state.zoom;
+		let rect = {
+			x : r.left,
+			y : r.top,
+			w : r.right - r.left,
+			h : r.bottom - r.top
+		};
+		let realRect = {
+			x : rect.x * invzoom,
+			y : rect.y * invzoom,
+			w : rect.w * invzoom,
+			h : rect.h * invzoom
+		};
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			let node = nodes[i];
+			let component = this.refs[node.varname];
+			let dom = ReactDOM.findDOMNode(component);
+			nodeSizes[node.varname] = { x : node.node.pos[0], y : node.node.pos[1], w : dom.clientWidth, h : dom.clientHeight};
+		}
+		setTimeout(() => {
+			this.props.action.alignNodes(this.state.zoom, rect, realRect, nodeSizes);
+		}, 0);
 	}
 
 	origin() {

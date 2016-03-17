@@ -116,7 +116,7 @@ export default class Store extends EventEmitter {
         });
 		this.nodeExecutor.on(NodeSystem.NodeExecutor.SCRIPT_SERIALIZED, (script) => {
 			//console.warn('SCRIPT>', script);
-            
+
             /*
             // Node execution order by varname
             let varnames = [];
@@ -126,12 +126,12 @@ export default class Store extends EventEmitter {
             }
             console.log('Order=', this.nodeExecutor.getOrderByVarname(varnames));
             */
-            
+
 			this.hive.runScript(script, (err, data) => {
                 if (err) {
                     return;
                 }
-                this.nodeExecutor.updateExecuteState(data);                
+                this.nodeExecutor.updateExecuteState(data);
             });
 		});
 		this.nodeExecutor.initEmitter(this);
@@ -288,6 +288,8 @@ export default class Store extends EventEmitter {
 					return result;
 				}
 			}
+		} else if (rootNode.varname === varname) {
+			return rootNode;
 		}
 		return null;
 	}
@@ -299,7 +301,7 @@ export default class Store extends EventEmitter {
 		let namelist = this.nodeCreator.GetNodeNameList();
 		return namelist;
 	}
-    
+
     getNodeExecutionState(varname) {
         return this.nodeExecutor.getNodeExecutionState(varname);
     }

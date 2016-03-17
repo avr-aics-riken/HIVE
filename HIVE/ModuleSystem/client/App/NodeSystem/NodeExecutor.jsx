@@ -144,7 +144,7 @@ export default class NodeExecutor extends EventEmitter {
         script += "\nreturn {doState=executedNode}\n";
         return script;
     }
-    
+
     updateExecuteState(data) {
         if (data.hasOwnProperty('doState')) {
             let i;
@@ -154,7 +154,7 @@ export default class NodeExecutor extends EventEmitter {
             //console.log('hoge', this.nodeGraph);
         }
     }
-    
+
     getNodeExecutionState(varname) {
         if (this.nodeGraph.hasOwnproperty(varname)) {
             return this.nodeGraph[varname].exeState;
@@ -162,7 +162,7 @@ export default class NodeExecutor extends EventEmitter {
             return EXECUTE_NOTFOUND;
         }
     }
-    
+
 
     doNodes() {
         this.updateGraph();
@@ -173,29 +173,34 @@ export default class NodeExecutor extends EventEmitter {
 
     getExecutionOrder() {
         return this.nodeQueue; // cached order
-        
+
         // calc order
         /*
-        this.updateGraph(this.nodeGraph);        
+        this.updateGraph(this.nodeGraph);
         initVisitFrags(this.nodeGraph);
         return topologicalSort(this.nodeGraph);
         */
     }
-    
+
     getOrderByVarname(varnameArray) {
         let nodeQ = this.getExecutionOrder();
         console.log('Q', nodeQ);
-        let i, order = {};        
+        let i, order = {};
+		let varnameToIndex = {};
+        for (i = 0; i < nodeQ.length; i = i + 1) {
+			let vname = nodeQ[i].node.varname;
+			varnameToIndex[vname] = i;
+		}
         for (i in nodeQ) {
             let vname = nodeQ[i].node.varname;
-            let p = varnameArray.indexOf(vname);
+            let p = varnameToIndex[vname];
             if (p !== -1) {
                 order[vname] = p;
             }
         }
         return order;
     }
-   
+
 
     initEmitter(store) {
 

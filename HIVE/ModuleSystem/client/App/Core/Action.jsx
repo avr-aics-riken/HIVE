@@ -321,6 +321,24 @@ export default class Action {
 	}
 
 	/**
+	 * ノードを整列させる
+	 * @param zoom ズーム値
+	 * @param rect ビューポートのみためのleft,top,right,bottom
+	 * @param realRect 実際のrect
+	 * @param nodeSizes {nodevarname : [width, height], ..} 形式のノードサイズマップ
+	 */
+	alignNodes(zoom, rect, realRect, nodeSizes) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "alignNodes",
+			zoom : zoom,
+			rect :rect,
+			realRect : realRect,
+			nodeSizes : nodeSizes
+		});
+	};
+
+	/**
 	 * ノードをインポートする
 	 * @param nodeInfo ノード情報
 	 */

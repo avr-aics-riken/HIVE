@@ -79,6 +79,8 @@ export default class ActionExecuter {
 		this.deleteKeyFrame = this.deleteKeyFrame.bind(this);
 		this.applyCurrentFrame = this.applyCurrentFrame.bind(this);
 		this.align = this.align.bind(this);
+		this.alignNodes = this.alignNodes.bind(this);
+		this.alignNode = this.alignNode.bind(this);
 	}
 
     /**
@@ -1131,6 +1133,139 @@ export default class ActionExecuter {
 	align(payload) {
 		this.store.emit(Constants.NODE_ALIGN_CALLED, null);
 	}
+
+	// private
+	alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, varname, pos, depth) {
+		if (!varnameToNode.hasOwnProperty(varname)) { return; }
+		const bound = nodeSizes[varname];
+		if (!aligned.hasOwnProperty(varname)) {
+			const node = varnameToNode[varname];
+			if (!depthToPos.hasOwnProperty(depth)) {
+				const offset = { x : (depth > 0) ? -bound.w - 50 : 0, y : (depth > 0) ? bound.h + 50 : 0 };
+				depthToPos[depth] = { x : pos.x + offset.x, y : pos.y, w : bound.w, h : bound.h};
+			} else {
+				const p = depthToPos[depth];
+				const offset = { x : -p.w - 50, y : p.h + 50 };
+				depthToPos[depth] = { x : p.x, y : p.y + offset.y, w : bound.w, h : bound.h };
+			}
+			pos.x = depthToPos[depth].x;
+			pos.y = depthToPos[depth].y;
+
+			let n = JSON.parse(JSON.stringify(node.node));
+			n.pos[0] = pos.x;
+			n.pos[1] = pos.y;
+			this.changeNode({
+				nodeInfo : {
+					varname : varname,
+					node : n
+				}
+			});
+			aligned[varname] = bound;
+			for (let k = 0; k < node.input.length; k = k + 1) {
+				if (Array.isArray(node.input[k].array)) {
+					const ar = node.input[k].array;
+					for (let n = 0; n < ar.length; n = n + 1) {
+						const key = ar[n].nodeVarname + "_" + ar[n].name;
+						if (inputToParentNode.hasOwnProperty(key)) {
+							let parentNode = inputToParentNode[key];
+							if (parentNode !== undefined) {
+								this.alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, parentNode.varname, pos, depth + 1);
+							}
+						}
+					}
+				} else {
+					const key = node.input[k].nodeVarname + "_" + node.input[k].name;
+					if (inputToParentNode.hasOwnProperty(key)) {
+						let parentNode = inputToParentNode[key];
+						if (parentNode !== undefined) {
+							this.alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, parentNode.varname, pos, depth + 1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * ノードを整列させる
+	 */
+	alignNodes(payload) {
+		if (payload.hasOwnProperty('zoom') &&
+			payload.hasOwnProperty('rect') &&
+			payload.hasOwnProperty('realRect') &&
+			payload.hasOwnProperty('nodeSizes')) {
+
+			console.log("alignNodes", payload.zoom, payload.rect, payload.realRect, payload.nodeSizes);
+
+			const zoom = payload.zoom;
+			const rect = payload.rect;
+			const realRect = payload.realRect;
+			const nodeSizes = payload.nodeSizes;
+
+			const varnameToOrder = this.store.nodeExecutor.getOrderByVarname(Object.keys(payload.nodeSizes));
+			let orderToVarname = {};
+			for (let varname in varnameToOrder) {
+				orderToVarname[varnameToOrder[varname]] = varname;
+			}
+
+			let varnameToNode = {};
+			let plugs = this.store.getPlugs();
+			for (let varname in nodeSizes) {
+				varnameToNode[varname] = this.store.findNode(this.store.getRootNode(), varname);
+			}
+
+			let inputToParentNode = {};
+			for (let varname in varnameToNode) {
+				let node = varnameToNode[varname];
+				for (let k = 0; k < plugs.length; k = k + 1) {
+					const inVarname  = plugs[k].input.nodeVarname;
+					const inName = plugs[k].input.name;
+					const outVarname = plugs[k].output.nodeVarname;
+					const outName = plugs[k].output.name;
+					for (let m = 0; m < node.input.length; m = m + 1) {
+						if (Array.isArray(node.input[m].array)) {
+							const ar = node.input[m].array;
+							for (let n = 0; n < ar.length; n = n + 1) {
+								if (ar[n].nodeVarname === inVarname && ar[n].name === inName) {
+									const key = ar[n].nodeVarname + "_" + ar[n].name;
+									if (varnameToNode.hasOwnProperty(outVarname)) {
+										inputToParentNode[key] = varnameToNode[outVarname];
+									} else {
+										for (let v in varnameToNode) {
+											if (this.store.findNode(varnameToNode[v], outVarname)) {
+												inputToParentNode[key] = varnameToNode[v];
+											}
+										}
+									}
+								}
+							}
+						} else if (node.input[m].nodeVarname === inVarname && node.input[m].name === inName) {
+							const key = node.input[m].nodeVarname + "_" + node.input[m].name;
+							if (varnameToNode.hasOwnProperty(outVarname)) {
+								inputToParentNode[key] = varnameToNode[outVarname];
+							} else {
+								for (let v in varnameToNode) {
+									if (this.store.findNode(varnameToNode[v], outVarname)) {
+										inputToParentNode[key] = varnameToNode[v];
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			let aligned = {};
+			let depthToPos = {};
+			const orders = Object.keys(orderToVarname);
+			for (let i = orders.length - 1; i >= 0; i = i - 1) {
+				const order = orders[i];
+				const varname = orderToVarname[order];
+				const bound = nodeSizes[varname];
+				this.alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, varname, bound, 0);
+			}
+		}
+	};
 
 	/**
 	 * ノードインポート
