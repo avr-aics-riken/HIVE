@@ -48,6 +48,17 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 	id_counter = 0;
 
 //-----------------------------------------------------
+function is_array(value) {
+	return value &&                             
+		typeof value === 'object' &&
+		typeof value.length === 'number' &&
+		typeof value.splice === 'function' &&
+		!(value.propertyIsEnumerable('length'));
+}
+function getExt(filename) {
+    var reg=/(.*)(?:\.([^.]+$))/;
+    return filename.match(reg)[2];
+}
 
 function makeNodeList(callback) {
 	"use strict";
@@ -76,17 +87,29 @@ function makeNodeList(callback) {
 		function loadFunc(nodeDirPath) {
 			return function (err, data) {
 				try {
-					var json = JSON.parse(data);
+					var i,
+                        uifile,
+                        json = JSON.parse(data);
 					if (json.customfuncfile !== undefined) {
 						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
 						json.customfunc = customFuncLua;
                     }
-                    if (json.uifile !== undefined) {
+                    json.uiFunc = '';
+                    if (is_array(json.uifile)) {
+                        uiFunc = ''                            
+                        for(i in json.uifile) {
+                            uifile = json.uifile[i];
+                            if (getExt(uifile) === 'jsx'){ 
+                                uiFunc += babel.transformFileSync(nodeDirPath + "/" + uifile, {ignore:'react'}).code + '\n';
+                            } else {
+                                uiFunc += fs.readFileSync(nodeDirPath + "/" + uifile, 'utf8') + '\n';
+                            }
+                        }
+                        json.uiFunc = uiFunc;
+                    } else if (json.uifile !== undefined) {
                         uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
 						json.uiFunc = uiFunc;
-					} else {
-                        json.uiFunc = '';
-                    }
+					}
 					nodelist.push(json);
 				} catch (e) {
                     var errmsg = '[Error] Failed Load:' + nodeDirPath + "/info.json";

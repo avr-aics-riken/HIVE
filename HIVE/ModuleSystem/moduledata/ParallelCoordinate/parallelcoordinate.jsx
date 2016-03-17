@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from "react-dom";
-import ColorMap from "./colormap.jsx";
 
 function zeroPadding(n, c){
     return (new Array(c + 1).join('0') + n).slice(-c);

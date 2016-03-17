@@ -3,7 +3,11 @@
     "funcname": "ParallelCoordinate",
     "info":"ParallelCoordinateをつくるノード",
     "customfuncfile":"parallelcoordinate.lua",
-    "uifile":"parallelcoordinate.jsx",
+    "uifile":["d3.js",
+        "d3.parcoords.js",
+        "glutil.js",
+        "colormap.jsx",        
+        "parallelcoordinate.jsx"],
     "input": [
         {"name": "volume"           , "type": "BufferVolumeData" } ,
         {"name": "image"            , "type": "BufferImageData" }  ,
