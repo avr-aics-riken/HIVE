@@ -5,7 +5,7 @@
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
   };
-  var _this = global;
+  var _this = window;
   var d3_document = _this.document;
   function d3_documentElement(node) {
     return node && (node.ownerDocument || node.document || node).documentElement;
@@ -9552,5 +9552,5 @@
     return request.responseXML;
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
-  global.d3 = d3;
+  window.d3 = d3;
 }();
