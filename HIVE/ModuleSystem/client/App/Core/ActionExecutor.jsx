@@ -1,5 +1,6 @@
 import Constants from "./Constants.jsx"
 import NodeSystem from "../NodeSystem"
+import {NodeIterator} from "./NodeIterator.jsx"
 
 function uuid() {
     var uuid = "", i, random;
@@ -801,17 +802,10 @@ export default class ActionExecuter {
 			for (let k = 0; k < inplugs.length; k = k + 1) {
 				let plug = inplugs[k];
 				if (n.varname === plug.input.nodeVarname) {
-					for (let j = 0; j < n.input.length; j = j + 1) {
-						let ar = n.input[j].array;
-						if (Array.isArray(ar)) {
-							for (let m = 0; m < ar.length; m = m + 1) {
-								if (ar[m].name === plug.input.name) {
-									inputs.push(ar[m]);
-								}
-							}
-						}
-						else if (n.input[j].name === plug.input.name) {
-							inputs.push(n.input[j]);
+					let inputIterator = NodeIterator.makeInputIterator(this.store, n);
+					for (let v of inputIterator) {
+						if (v.input && v.input.name === plug.input.name) {
+							inputs.push(v.input);
 						}
 					}
 				}
@@ -841,18 +835,12 @@ export default class ActionExecuter {
 		}
 		for (let i = 0; i < nodeList.length; i = i + 1) {
 			let n = nodeList[i];
-			for (let k = 0; k < n.input.length; ++k) {
-				let input = n.input[k];
-				if (varnameToInput.hasOwnProperty(input.nodeVarname)) {
-					if (Array.isArray(input.array)) {
-						let ar = input.array;
-						for (let m = 0; m < ar.length; m = m + 1) {
-							if (varnameToInput[input.nodeVarname].name === ar[m].name) {
-								inputs.push(ar[m]);
-							}
-						}
-					} else if (varnameToInput[input.nodeVarname].name === input.name) {
-						inputs.push(input);
+
+			let inputIterator = NodeIterator.makeInputIterator(this.store, n);
+			for (let v of inputIterator) {
+				if (v.input && varnameToInput.hasOwnProperty(v.input.nodeVarname)) {
+					if (varnameToInput[v.input.nodeVarname].name === v.input.name) {
+						inputs.push(v.input);
 					}
 				}
 			}
@@ -1161,20 +1149,10 @@ export default class ActionExecuter {
 				}
 			});
 			aligned[varname] = bound;
-			for (let k = 0; k < node.input.length; k = k + 1) {
-				if (Array.isArray(node.input[k].array)) {
-					const ar = node.input[k].array;
-					for (let n = 0; n < ar.length; n = n + 1) {
-						const key = ar[n].nodeVarname + "_" + ar[n].name;
-						if (inputToParentNode.hasOwnProperty(key)) {
-							let parentNode = inputToParentNode[key];
-							if (parentNode !== undefined) {
-								this.alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, parentNode.varname, pos, depth + 1);
-							}
-						}
-					}
-				} else {
-					const key = node.input[k].nodeVarname + "_" + node.input[k].name;
+			let inputIterator = NodeIterator.makeInputIterator(this.store, node);
+			for (let v of inputIterator) {
+				if (v.input) {
+					const key = v.input.nodeVarname + "_" + v.input.name;
 					if (inputToParentNode.hasOwnProperty(key)) {
 						let parentNode = inputToParentNode[key];
 						if (parentNode !== undefined) {
@@ -1221,32 +1199,16 @@ export default class ActionExecuter {
 					const inVarname  = plugs[k].input.nodeVarname;
 					const inName = plugs[k].input.name;
 					const outVarname = plugs[k].output.nodeVarname;
-					const outName = plugs[k].output.name;
-					for (let m = 0; m < node.input.length; m = m + 1) {
-						if (Array.isArray(node.input[m].array)) {
-							const ar = node.input[m].array;
-							for (let n = 0; n < ar.length; n = n + 1) {
-								if (ar[n].nodeVarname === inVarname && ar[n].name === inName) {
-									const key = ar[n].nodeVarname + "_" + ar[n].name;
-									if (varnameToNode.hasOwnProperty(outVarname)) {
-										inputToParentNode[key] = varnameToNode[outVarname];
-									} else {
-										for (let v in varnameToNode) {
-											if (this.store.findNode(varnameToNode[v], outVarname)) {
-												inputToParentNode[key] = varnameToNode[v];
-											}
-										}
-									}
-								}
-							}
-						} else if (node.input[m].nodeVarname === inVarname && node.input[m].name === inName) {
-							const key = node.input[m].nodeVarname + "_" + node.input[m].name;
+					let inputIterator = NodeIterator.makeInputIterator(this.store, node);
+					for (let v of inputIterator) {
+						if (v.input && v.input.nodeVarname === inVarname && v.input.name === inName) {
+							const key = v.input.nodeVarname + "_" + v.input.name;
 							if (varnameToNode.hasOwnProperty(outVarname)) {
 								inputToParentNode[key] = varnameToNode[outVarname];
 							} else {
-								for (let v in varnameToNode) {
-									if (this.store.findNode(varnameToNode[v], outVarname)) {
-										inputToParentNode[key] = varnameToNode[v];
+								for (let vn in varnameToNode) {
+									if (this.store.findNode(varnameToNode[vn], outVarname)) {
+										inputToParentNode[key] = varnameToNode[vn];
 									}
 								}
 							}
@@ -1262,6 +1224,16 @@ export default class ActionExecuter {
 				const order = orders[i];
 				const varname = orderToVarname[order];
 				const bound = nodeSizes[varname];
+				/*
+				if (i === (orders.length - 1)) {
+					// test
+					let inputIterate = NodeIterator.makeInputIterator(this.store, varnameToNode[varname]);
+					for (let aa of inputIterate) {
+						console.log(aa);
+					}
+					return;
+				}
+				*/
 				this.alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, varname, bound, 0);
 			}
 		}
