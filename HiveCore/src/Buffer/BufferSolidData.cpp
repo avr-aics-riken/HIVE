@@ -98,6 +98,11 @@ BufferSolidData::~BufferSolidData()
     delete m_imp;
 }
 
+BufferSolidData* BufferSolidData::CreateInstance()
+{
+    return new BufferSolidData();
+}
+
 /**
  * BufferSolidDataの作成
  * @param type Type of the solid
