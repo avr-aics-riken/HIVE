@@ -168,7 +168,11 @@ export default class ActionExecuter {
 			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
 				node.varname = payload.nodeInfo.varname;
 			} else {
-				node.varname = node.funcname + uuid();
+				if (payload.nodeInfo.name === "Group") {
+					node.varname = "group_" + uuid();
+				} else {
+					node.varname = node.funcname + uuid();
+				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('node')) {
 				node.node = payload.nodeInfo.node;
@@ -837,7 +841,7 @@ export default class ActionExecuter {
 					}
 				}
 				if (v.output && varnameToOutput.hasOwnProperty(v.output.nodeVarname)) {
-					if (varnameToOutput[output.nodeVarname].name === v.output.name) {
+					if (varnameToOutput[v.output.nodeVarname].name === v.output.name) {
 						outputs.push(v.output);
 					}
 				}
