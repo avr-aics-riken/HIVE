@@ -316,4 +316,26 @@ export default class Store extends EventEmitter {
 	getTimelineData() {
 		return this.data.timeline.data;
 	}
+
+	/**
+	 * inputが現在のフレームでキーを持っているか返す
+	 */
+	hasCurrentKeyFrame(input) {
+		let data = this.data.timeline.data;
+		if (!data.hasOwnProperty('contents')) {
+			return false;
+		}
+		const currentFrame = this.getCurrentFrame();
+		for (let i = 0; i < data.contents.length; i = i + 1) {
+			if (data.contents[i].nodeVarname  === input.nodeVarname) {
+				let props = data.contents[i].props;
+				for (let k = 0; k < props.length; k = k + 1) {
+					if (props[k].name === input.name && props[k].data.hasOwnProperty(currentFrame)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
 }

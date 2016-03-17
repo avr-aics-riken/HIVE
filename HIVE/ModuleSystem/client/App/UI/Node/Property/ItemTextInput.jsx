@@ -10,7 +10,7 @@ export default class ItemTextInput extends React.Component {
 		super(props);
 		this.state = {
 			value : this.props.initialParam.value,
-			onFrame : false
+			onFrame : this.props.store.hasCurrentKeyFrame(this.props.initialParam)
 		};
 		this.currentEdit = {
 			value : null
