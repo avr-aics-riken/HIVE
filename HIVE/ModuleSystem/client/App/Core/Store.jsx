@@ -299,6 +299,10 @@ export default class Store extends EventEmitter {
 		let namelist = this.nodeCreator.GetNodeNameList();
 		return namelist;
 	}
+    
+    getNodeExecutionState(varname) {
+        return this.nodeExecutor.getNodeExecutionState(varname);
+    }
 
 	/**
 	 * 初期ノード位置(固定)を返す

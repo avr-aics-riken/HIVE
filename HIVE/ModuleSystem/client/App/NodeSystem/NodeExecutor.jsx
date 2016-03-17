@@ -2,9 +2,8 @@ import NodeSerializer from './NodeSerializer.jsx'
 import EventEmitter from 'eventemitter3'
 import Constants from '../Core/Constants.jsx'
 
-const EXECUTE_NOTYET = "notyet"
-const EXECUTE_SUCCEEDED = "succeeded"
-const EXECUTE_FAILED = "faild"
+const EXECUTE_NOTYET = "not yet"
+const EXECUTE_NOTFOUND = "not found"
 
 
 function visit(node, nodelist) {
@@ -150,7 +149,7 @@ export default class NodeExecutor extends EventEmitter {
         if (data.hasOwnProperty('doState')) {
             let i;
             for (i in data.doState) {
-                this.nodeGraph[i].exeState = (data.doState[i] ? EXECUTE_SUCCEEDED : EXECUTE_FAILED);
+                this.nodeGraph[i].exeState = data.doState[i];
             }
             //console.log('hoge', this.nodeGraph);
         }
@@ -160,7 +159,7 @@ export default class NodeExecutor extends EventEmitter {
         if (this.nodeGraph.hasOwnproperty(varname)) {
             return this.nodeGraph[varname].exeState;
         } else {
-            return EXECUTE_NOTYET;
+            return EXECUTE_NOTFOUND;
         }
     }
     
