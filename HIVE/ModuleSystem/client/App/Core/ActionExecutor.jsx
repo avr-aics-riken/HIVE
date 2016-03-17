@@ -82,6 +82,7 @@ export default class ActionExecuter {
 		this.align = this.align.bind(this);
 		this.alignNodes = this.alignNodes.bind(this);
 		this.alignNode = this.alignNode.bind(this);
+		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
 	}
 
     /**
@@ -653,6 +654,17 @@ export default class ActionExecuter {
 		}
 	}
 
+	// @private
+	// 入力ノードの全てのnodevarnameからnodeへのマップを作り返す.
+	// @param isRecursive trueの場合グループノードが含まれる場合は再帰的に作成する.
+	createVarnameToNodeMap(varnameToNodes, nodes, isRecursive) {
+		for (let i = 0; i <  nodes.length; i = i + 1) {
+			varnameToNodes[nodes[i].varname] = nodes[i];
+			if (this.store.isGroup(nodes[i])) {
+				this.createVarnameToNodeMap(varnameToNodes, nodes[i].nodes);
+			}
+		}
+	}
 
 	/**
 	 * ノード間のプラグリストを返す
@@ -661,28 +673,12 @@ export default class ActionExecuter {
 		let resultPlugs = [];
 		let varnameToNodes = {};
 		let groups = [];
-		for (let i = 0; i <  nodes.length; i = i + 1) {
-			varnameToNodes[nodes[i].varname] = nodes[i];
-			if (this.store.isGroup(nodes[i])) {
-				groups.push(nodes[i]);
-			}
-		}
+		this.createVarnameToNodeMap(varnameToNodes, nodes, true);
 
 		for (let i = 0; i < plugs.length; i = i + 1) {
 			let plug = plugs[i];
-			let hasInput = false;
-			let hasOutput = false;
-
-			for (let k = 0; k < groups.length; k = k + 1) {
-				if (this.store.findNode(groups[k], plug.input.nodeVarname)) {
-					hasInput = true;
-				}
-				if (this.store.findNode(groups[k], plug.output.nodeVarname)) {
-					hasOutput = true;
-				}
-			}
-			hasInput = hasInput || varnameToNodes.hasOwnProperty(plug.input.nodeVarname);
-			hasOutput = hasOutput || varnameToNodes.hasOwnProperty(plug.output.nodeVarname);
+			let hasInput = varnameToNodes.hasOwnProperty(plug.input.nodeVarname);
+			let hasOutput = varnameToNodes.hasOwnProperty(plug.output.nodeVarname);
 
 			if (hasInput && hasOutput) {
 				resultPlugs.push(plug);
@@ -691,16 +687,13 @@ export default class ActionExecuter {
 		return resultPlugs;
 	}
 
-
 	/**
 	 * ノードの集合から, ノードの集合外に繋がっている入力の、プラグリストを返す。
 	 */
 	getGroupInoutFromNodes(nodes, isInput) {
 		let plugs = [];
 		let varnameToNodes = {};
-		for (let i = 0; i <  nodes.length; i = i + 1) {
-			varnameToNodes[nodes[i].varname] = nodes[i];
-		}
+		this.createVarnameToNodeMap(varnameToNodes, nodes, true);
 
 		for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
 			let plug = this.store.getPlugs()[i];
@@ -802,7 +795,7 @@ export default class ActionExecuter {
 			let n = nodeList[i];
 			for (let k = 0; k < inplugs.length; k = k + 1) {
 				let plug = inplugs[k];
-				if (n.varname === plug.input.nodeVarname) {
+				if (this.store.findNode(n, plug.input.nodeVarname)) {
 					let inputIterator = NodeIterator.makeInputIterator(this.store, n);
 					for (let v of inputIterator) {
 						if (v.input && v.input.name === plug.input.name) {
@@ -813,7 +806,7 @@ export default class ActionExecuter {
 			}
 			for (let k = 0; k < outplugs.length; k = k + 1) {
 				let plug = outplugs[k];
-				if (n.varname === plug.output.nodeVarname) {
+				if (this.store.findNode(n, plug.output.nodeVarname)) {
 					let outputIterator = NodeIterator.makeOutputIterator(this.store, n);
 					for (let v of outputIterator) {
 						if (v.output && v.output.name === plug.output.name) {

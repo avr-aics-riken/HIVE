@@ -669,7 +669,7 @@ export default class UMTimeline extends React.Component {
     };
 
     draw(rect) {
-        console.time('timeline draw');
+        //console.time('timeline draw');
         if (!rect) {
             rect = {
                 x: 0,
@@ -685,7 +685,7 @@ export default class UMTimeline extends React.Component {
         this.drawSplitter(rect);
         this.drawSeekLine(rect);
 
-        console.timeEnd('timeline draw');
+        //console.timeEnd('timeline draw');
     };
 
     setData(data) {
@@ -709,7 +709,7 @@ export default class UMTimeline extends React.Component {
 				}
 			}
 		}
-		console.log(this.data, contents);
+		//console.log(this.data, contents);
         this.data.contents = contents;
         this.draw({
             x: 0,
