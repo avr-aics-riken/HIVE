@@ -21,6 +21,11 @@ class BufferSolidData : public BufferData
 private:
     class Impl;
     Impl* m_imp;
+
+protected:
+    BufferSolidData(BufferSolidData* inst);
+    BufferSolidData();
+    ~BufferSolidData();
     
 public:
 		typedef enum {
@@ -30,9 +35,8 @@ public:
 				SOLID_HEXAHEDRON	= 8,	
 		} SolidType;
 
-    BufferSolidData(BufferSolidData* inst);
-    BufferSolidData();
-    ~BufferSolidData();
+    static BufferSolidData* CreateInstance();
+
     void Create(SolidType type, int vertexnum, int indexnum);
     void Clear();
     void print();
