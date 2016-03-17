@@ -320,7 +320,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 				}
 			}
 
-			// See UDMlib doc for the ordering of vertex index.
+			// See UDMlib doc for the ordering of vertex indices.
 			if (type == udm::Udm_TRI_3) {
 
 				size_t indexOffset = trianglePoints.size() / 3;
@@ -330,7 +330,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 				trianglePoints.insert(trianglePoints.end(), points.begin(), points.end());
 			} else if (type == udm::Udm_QUAD_4) {
 
-				// Convert to 2 triangles.
+				// Convert to 2 triangles(Assume coplanar quad).
 
 				size_t indexOffset = trianglePoints.size() / 3;
 
@@ -446,13 +446,17 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		index->Create(numIndices);
 		memcpy(index->GetBuffer(), &triangleIndices.at(0), sizeof(unsigned int) * numIndices);
 
-		// @todo { normal, material }
+		// @todo { material }
 
 	}
 
 	if ((tetraPoints.size() > 0) && (tetraIndices.size() > 0)) {
 		int numVertices = tetraPoints.size() / 3;
 		int numIndices = tetraIndices.size();
+
+        printf("[UDMlib] # of tetra verices : %d, # of tetra indices\n", numVertices, numIndices);
+
+        // @todo { Use BufferSolid }
         m_tetra = BufferTetraData::CreateInstance();
 
 		m_tetra->Create(numVertices, numIndices);
@@ -465,14 +469,17 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		index->Create(numIndices);
 		memcpy(index->GetBuffer(), &tetraIndices.at(0), sizeof(unsigned int) * numIndices);
 
-		// @todo { normal, material }
+		// @todo { material }
 	}
 
 	if ((pyramidPoints.size() > 0) && (pyramidIndices.size() > 0)) {
 
 		int numVertices = pyramidPoints.size() / 3;
 		int numIndices = pyramidIndices.size();
-		m_pyramid = new BufferSolidData();
+
+        printf("[UDMlib] # of pyramid verices : %d, # of pyramid indices\n", numVertices, numIndices);
+
+        m_pyramid = BufferSolidData::CreateInstance();
 
 		m_pyramid->Create(BufferSolidData::SOLID_PYRAMID, numVertices, numIndices);
 		Vec3Buffer* pos = m_pyramid->Position();
@@ -484,14 +491,17 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		index->Create(numIndices);
 		memcpy(index->GetBuffer(), &pyramidIndices.at(0), sizeof(unsigned int) * numIndices);
 
-		// @todo { normal, material }
+		// @todo { material }
 	}
 
 	if ((prismPoints.size() > 0) && (prismIndices.size() > 0)) {
 
 		int numVertices = prismPoints.size() / 3;
 		int numIndices = prismIndices.size();
-		m_prism = new BufferSolidData();
+
+        printf("[UDMlib] # of prism verices : %d, # of prism indices\n", numVertices, numIndices);
+
+        m_prism = BufferSolidData::CreateInstance();
 
 		m_prism->Create(BufferSolidData::SOLID_PRISM, numVertices, numIndices);
 		Vec3Buffer* pos = m_prism->Position();
@@ -503,14 +513,17 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		index->Create(numIndices);
 		memcpy(index->GetBuffer(), &prismIndices.at(0), sizeof(unsigned int) * numIndices);
 
-		// @todo { normal, material }
+		// @todo { material }
 	}
 
 	if ((hexaPoints.size() > 0) && (hexaIndices.size() > 0)) {
 
 		int numVertices = hexaPoints.size() / 3;
 		int numIndices = hexaIndices.size();
-		m_hexa = new BufferSolidData();
+
+        printf("[UDMlib] # of hexa verices : %d, # of hexa indices\n", numVertices, numIndices);
+
+        m_hexa = BufferSolidData::CreateInstance();
 
 		m_hexa->Create(BufferSolidData::SOLID_HEXAHEDRON, numVertices, numIndices);
 		Vec3Buffer* pos = m_hexa->Position();
@@ -522,7 +535,7 @@ bool UDMLoader::Load(const char* filename, int timeStepNo)
 		index->Create(numIndices);
 		memcpy(index->GetBuffer(), &hexaIndices.at(0), sizeof(unsigned int) * numIndices);
 
-		// @todo { normal, material }
+		// @todo { material }
 	}
 
 	delete model;
@@ -538,7 +551,11 @@ BufferTetraData* UDMLoader::TetraData() {
 }
 
 BufferSolidData* UDMLoader::SolidData(int solidType) {
-	if (solidType == 5) {
+	if (solidType == 4) {
+        // @todo { }
+        //return m_tetra;
+        return NULL;
+	} else if (solidType == 5) {
 		return m_pyramid;
 	} else if (solidType == 6) {
 		return m_prism;

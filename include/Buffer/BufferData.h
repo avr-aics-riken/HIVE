@@ -24,10 +24,11 @@ public:
 		TYPE_SPHERE,
 		TYPE_VECTOR,
 		TYPE_TETRA,
+		TYPE_SOLID,
 		TYPE_VOLUME,
 		TYPE_SPARSEVOLUME,
 		TYPE_IMAGE,
-        TYPE_EXTRA,
+    TYPE_EXTRA,
 		TYPE_MAX,
 	};
     BufferData(BufferType type) : m_type(type), m_needupdate(true) {}

@@ -40,7 +40,7 @@ public:
      */
     bool Create(BufferSolidData* soliddata)
     {
-        if (!soliddata || soliddata->GetType() != BufferData::TYPE_TETRA) {
+        if (!soliddata || soliddata->GetType() != BufferData::TYPE_SOLID) {
 			return false;
 		}
         
@@ -65,7 +65,7 @@ private:
 };
 
 /// コンストラクタ
-SolidModel::SolidModel() : RenderObject(TYPE_TETRA)
+SolidModel::SolidModel() : RenderObject(TYPE_SOLID)
 {
     m_imp = new Impl();
 }
