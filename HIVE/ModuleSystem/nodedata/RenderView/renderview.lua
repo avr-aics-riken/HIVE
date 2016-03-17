@@ -66,7 +66,7 @@ function RenderView:Do()
     end
     
     if network == nil and HIVE_metabin == nil then -- no UI mode        
-        return
+        return false
     end 
     
     local mode = 'jpg'
@@ -126,6 +126,7 @@ function RenderView:Do()
         print('WEBSOCKET SEND!!!!!!!!!!!')			   
 
     end
+    return true
 end
 
 

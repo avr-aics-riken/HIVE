@@ -12,6 +12,7 @@ end
 
 function Color:Do()
     -- nothing to do
+    return true
 end
 
 function Color:color()

@@ -15,9 +15,14 @@ function Isosurf:Do()
     self:UpdateValue()
     
     local v = self.value
+    if (v.volume ~= nil) then
+        return false
+    end
+    
     self.vm:Create(v.volume)
 	self.vm:SetIsoValue(v.isovalue)
 	self.vm:IsoSurface()
+    return true
 end
 
 function Isosurf:MeshData()
