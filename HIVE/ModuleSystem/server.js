@@ -21,7 +21,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 		if (req.url === '/') {
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
-        } else if (req.url === '/nodelist.json') { // temp
+        } else if (req.url === '/modulelist.json') { // temp
             makeNodeList((function (res) {
                 return function (err, nodelist) {
                     jsondata = {error: err, data:nodelist};
@@ -51,7 +51,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 
 function makeNodeList(callback) {
 	"use strict";
-	var nodeDir = './nodedata';
+	var nodeDir = './moduledata';
 	fs.readdir(nodeDir, function (err, files) {
 		var infofile,
 			nodeDirPath,

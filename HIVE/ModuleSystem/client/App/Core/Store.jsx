@@ -102,7 +102,7 @@ export default class Store extends EventEmitter {
 		this.hive.connect('ws://localhost:8080');//, '', true);
 
         this.nodeExecutor = new NodeSystem.NodeExecutor(nodePlugData);
-        this.nodeCreator =new NodeSystem.NodeCreator("http://localhost:8080/nodelist.json", () => {
+        this.nodeCreator =new NodeSystem.NodeCreator("http://localhost:8080/modulelist.json", () => {
 			this.emit(Constants.INITIALIZED, null);
 		});
 		this.hive.on(Hive.IMAGE_RECIEVED, (err, param, data) => {

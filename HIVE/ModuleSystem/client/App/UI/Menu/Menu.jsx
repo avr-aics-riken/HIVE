@@ -83,7 +83,7 @@ export default class Menu extends React.Component {
             <div style={style.menuArea}>
                 <div style={style.container}>
                     <div style={style.header}>
-                        <div style={style.headerCaption}>Node List</div>
+                        <div style={style.headerCaption}>Module List</div>
                     </div>
                     <MenuNodeCreate
                         store={this.props.store}
