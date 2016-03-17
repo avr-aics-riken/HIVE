@@ -25,7 +25,17 @@ NodeIterator.makeInputIterator = (store, node) => {
 								input = input.array[arrayIndex];
 								++arrayIndex;
 							} else {
-								input = currentNode.input[++inputIndex];
+								++inputIndex;
+								if (inputIndex < currentNode.input.length) {
+									input = currentNode.input[inputIndex];
+								} else {
+									return {
+										value : {
+											input : null
+										},
+										done : true
+									};
+								}
 								arrayIndex = 0;
 							}
 						} else {

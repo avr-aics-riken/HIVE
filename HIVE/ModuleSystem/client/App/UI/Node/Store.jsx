@@ -1,5 +1,6 @@
 import EventEmitter from 'eventemitter3'
 import Core from '../../Core'
+import {NodeIterator} from '../../Core/NodeIterator.jsx'
 
 function calcPlugPositionY(node, inoutIndex) {
 	const holeSize = node.node.close ? 10 : 15;
@@ -264,39 +265,20 @@ export default class Store extends EventEmitter {
 		if (isInput) {
 			if (plug.input.nodeVarname === node.varname || this.isGroup(node)) {
 				let count = 0;
-				for (let k = 0; k < node.input.length; k = k + 1) {
-					if (Array.isArray(node.input[k].array)) {
-						let inputArray = node.input[k].array;
-						for (let n = 0; n < inputArray.length; n = n + 1) {
-							if (inputArray[n].hasOwnProperty('hole') && !inputArray[n].hole) {
-								continue;
-							}
-							if (inputArray[n].name === plug.input.name) {
-								if (node.node.pos[0] === null) {
-									console.error(node);
-								}
-								return [node.node.pos[0], calcPlugPositionY(node, count)];
-							}
-							if (isClosed) {
-								if (this.isConnected(node.varname, inputArray[n].name)) {
-									count = count + 1;
-								}
-							} else {
-								count = count + 1;
-							}
-						}
-					} else {
-						if (node.input[k].hasOwnProperty('hole') && !node.input[k].hole) {
+				let inputIterator = NodeIterator.makeInputIterator(this.store, node);
+				for (let v of inputIterator) {
+					if (v.input) {
+						if (v.input.hasOwnProperty('hole') && !v.input.hole) {
 							continue;
 						}
-						if (node.input[k].name === plug.input.name) {
+						if (v.input.name === plug.input.name) {
 							if (node.node.pos[0] === null) {
 								console.error(node);
 							}
 							return [node.node.pos[0], calcPlugPositionY(node, count)];
 						}
 						if (isClosed) {
-							if (this.isConnected(node.varname, node.input[k].name)) {
+							if (this.isConnected(node.varname, v.input.name)) {
 								count = count + 1;
 							}
 						} else {
@@ -313,6 +295,7 @@ export default class Store extends EventEmitter {
 					width = this.nodeSizeMap[node.varname].width;
 				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
+					//console.log(node.output[k].name, plug.output.name, node.node.pos[0] + width, calcPlugPositionY(node, k));
 					if (node.output[k].name === plug.output.name) {
 						return [node.node.pos[0] + width, calcPlugPositionY(node, k)];
 					}
