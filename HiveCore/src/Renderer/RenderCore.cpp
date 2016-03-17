@@ -35,6 +35,7 @@
 #include "../RenderObject/LineModel.h"
 #include "../RenderObject/VectorModel.h"
 #include "../RenderObject/TetraModel.h"
+#include "../RenderObject/SolidModel.h"
 #include "../RenderObject/VolumeModel.h"
 #include "../RenderObject/SparseVolumeModel.h"
 #include "../RenderObject/Camera.h"
@@ -50,6 +51,7 @@
 #include "SparseVolumeBuffer.h"
 #include "VectorBuffer.h"
 #include "TetraBuffer.h"
+#include "SolidBuffer.h"
 
 #include "../Buffer/Buffer.h"
 #include "../Buffer/BufferImageData.h"
@@ -450,6 +452,10 @@ private:
         } else if (robj->GetType() == RenderObject::TYPE_TETRA) {
             TetraBuffer* tbuf = new TetraBuffer(mode);
             tbuf->Create(static_cast<const TetraModel*>(robj));
+            buffer = tbuf;
+        } else if (robj->GetType() == RenderObject::TYPE_SOLID) {
+            SolidBuffer* tbuf = new SolidBuffer(mode);
+            tbuf->Create(static_cast<const SolidModel*>(robj));
             buffer = tbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VECTOR) {
              VectorBuffer* vbuf = new VectorBuffer(mode);

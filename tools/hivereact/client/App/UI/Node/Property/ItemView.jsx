@@ -16,17 +16,17 @@ export default class ItemView extends React.Component {
 	constructor(props) {
 		super(props);
 
+		this.label = this.label.bind(this);
+
 		if (this.props.initialNodeData.panel.hasOwnProperty('visible')) {
 			this.state = {
 				name : this.props.initialNodeData.name,
-				isShowPanel : this.props.initialNodeData.panel.visible,
-				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
+				label : this.label()
 			};
 		} else {
 			this.state = {
 				name : this.props.initialNodeData.name,
-				isShowPanel : null,
-				input : JSON.parse(JSON.stringify(this.props.initialNodeData.input))
+				label : this.label()
 			};
 		}
         this.topRowUsed = false;
@@ -35,10 +35,14 @@ export default class ItemView extends React.Component {
 		this.updateHandle = null;
 	}
 
+	label() {
+		return this.props.initialNodeData.label ? this.props.initialNodeData.label : this.props.initialNodeData.name;
+	}
+
 	styles() {
 		return {
 			view : {
-				width : "250px",
+				width : "255px",
 				// backgroundColor : "rgb(80, 80, 80)",
 				// color : "black",
 				display : "table"
@@ -47,24 +51,34 @@ export default class ItemView extends React.Component {
                 backgroundColor: "rgb(133,133,133)",
                 borderRadius: "2px",
                 margin: "2px",
-                width: "246px"
+                width: "255x"
             }
 		};
 	}
 
 	inputChanged(err, data) {
 		if (data.varname === this.props.initialNodeData.varname) {
-			var myin = JSON.stringify(this.state.input);
-			var datain = JSON.stringify(data.input);
-
-			if (myin !== datain) {
-				if (!this.updateHandle) {
-					this.updateHandle = setTimeout(() => {
-						this.setState({
-							input : [].concat(data.input)
+			for (let i = 0; i < data.input.length; i = i + 1) {
+				let hole = data.input[i];
+				let id = hole.nodeVarname + "_" + hole.name;
+				if (this.refs.hasOwnProperty(id)) {
+					if (hole.hasOwnProperty('meta') && hole.meta === 'shaderlist') {
+						this.refs[id].setState({
+							value : hole.value
 						});
-						this.updateHandle = null;
-					}, 100);
+					} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
+						this.refs[id].setState({
+							values : hole.value
+						});
+					} else if (hole.type === 'string' || hole.type === 'float') {
+						this.refs[id].setState({
+							value : hole.value
+						});
+					} else if (hole.type === 'bool') {
+						this.refs[id].setState({
+							checked : hole.value
+						});
+					}
 				}
 			}
 		}
@@ -72,9 +86,10 @@ export default class ItemView extends React.Component {
 
 	panelVisibleChanged(err, data) {
 		if (data.varname === this.props.initialNodeData.varname) {
-			if (this.state.isShowPanel !== data.panel.visible) {
-				this.setState( {
-					isShowPanel : data.panel.visible
+			let id = this.props.initialNodeData.varname + "_panel";
+			if (this.refs.hasOwnProperty(id)) {
+				this.refs[id].setState({
+					checked : data.panel.visible
 				});
 			}
 		}
@@ -91,31 +106,40 @@ export default class ItemView extends React.Component {
 	}
 
 	changeFunc(name, value) {
-		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = this.state.input;
-		for (let i = 0; i < inputs.length; i = i + 1) {
-			if (inputs[i].name === name) {
-            	inputs[i].value = value;
-				this.props.action.changeNode({
-					varname : this.props.initialNodeData.varname,
-					input : inputs
-				});
-			}
+		let input = {};
+		input[name] = JSON.parse(JSON.stringify(value));
+		this.props.action.changeNodeInput({
+			varname : this.props.initialNodeData.varname,
+			input : input
+		});
+	}
+
+	changeLabelFunc(name, value) {
+		if (name === "label") {
+			this.props.action.changeNode({
+				varname : this.props.initialNodeData.varname,
+				label : value
+			});
+			this.refs.nameInput.setState({
+				value : this.label()
+			})
 		}
-		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value);
 	}
 
 	changeVecFunc(name, index, value) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = this.state.input;
+		let inputs = node.input;
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
-				inputs[i].value[index] = value;
-				console.log("UPDATE", inputs);
-				this.props.action.changeNode({
+				let copyVal = JSON.parse(JSON.stringify(inputs[i].value));
+				copyVal[index] = value;
+				let input = {};
+				input[name] = copyVal;
+				this.props.action.changeNodeInput({
 					varname : this.props.initialNodeData.varname,
-					input : inputs
+					input : input
 				});
+				break;
 			}
 		}
 		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value, index);
@@ -123,7 +147,7 @@ export default class ItemView extends React.Component {
 
 	changeLengthFunc(name, length) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = JSON.parse(JSON.stringify(this.state.input));
+		let inputs = JSON.parse(JSON.stringify(node.input));
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
 				for (let k = inputs[i].array.length; k < length; k = k + 1) {
@@ -140,7 +164,7 @@ export default class ItemView extends React.Component {
 		}
 	}
 
-	changeCheckboxFunc(itemName, value) {
+	panelVisibleChangeFunc(itemName, value) {
 		if (itemName === "show panel") {
 			let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
 			node.panel.visible = value;
@@ -151,70 +175,119 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	changeKeyFunc(hole) {
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		if (node) {
+			this.props.action.addKeyFrame(
+				this.props.store.getCurrentFrame(),
+				node,
+				hole
+			);
+		}
+	}
+
 	panelCheckbox() {
 		if (this.state.isShowPanel !== null) {
             this.topRowUsed = true;
+			let id = this.props.initialNodeData.varname + "_panel";
 			return (<ItemCheckbox
 				initialParam={{
 					name : "show panel",
-					value : this.state.isShowPanel
+					value : this.props.initialNodeData.panel.visible
 				}}
                 top={this.topRowUsed}
-				changeCheckboxFunc={this.changeCheckboxFunc.bind(this)}
-				key={String(this.props.id + "_panel")}
-				id={String(this.props.id + "_panel")} />);
+				changeCheckboxFunc={this.panelVisibleChangeFunc.bind(this)}
+				key={id}
+				ref={id}
+				id={id} />);
 		}
+	}
+
+	onExportGroup(ev) {
+		this.props.action.exportGroupNode(this.props.initialNodeData.varname);
 	}
 
 	contents() {
 		const styles = this.styles.bind(this)();
         this.topRowUsed = false;
-		let inputs = this.props.initialNodeData.input.map( ((hole, key) => {
-            let id = String(this.props.id + "_in_" + key + String(Math.random() * 1000));
+
+		let labelParam = {
+			nodeVarname : this.props.initialNodeData.varname,
+			name : "label",
+			value : this.state.label
+		};
+		let labelProp = (<ItemTextInput ref="nameInput"
+					varname={this.props.initialNodeData.varname}
+					store={this.props.store}
+					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc.bind(this)}/>);
+
+		let exportButton = "";
+		if (this.props.store.isGroup(this.props.initialNodeData)) {
+			exportButton = (<div
+				style={{
+					border : "solid 1px",
+					borderRadius : "3px",
+					backgroundColor : "rgb(54, 196, 168)",
+					color : "black",
+					width : "60px",
+					height : "22px",
+					textAlign : "center",
+					margin : "1px",
+					float : "right",
+					cursor : "pointer"
+				}}
+				onClick={this.onExportGroup.bind(this)}>Export</div>);
+		}
+
+		let inputs = this.props.initialNodeData.input.map( (hole, key) => {
+            let id = hole.nodeVarname + "_" + hole.name;
             let topRow = this.state.isShowPanel === null && !this.topRowUsed && parseInt(key, 10) === 0;
             let bottom = this.props.initialNodeData.input.length - 1 === parseInt(key, 10);
 			if (Array.isArray(hole.array)) {
-				return (<ItemArray
+				return (<ItemArray  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
 							changeLengthFunc={this.changeLengthFunc.bind(this)}
-                            initialParam={hole} key={id} id={id}
+                            initialParam={hole} key={id}
                             top={topRow}
                             bottom={bottom} />);
 			} else if (hole.meta === 'shaderlist') {
-				return (<ItemSuggest
+				return (<ItemSuggest  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
                             bottom={bottom} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
-				return (<ItemVec
+				return (<ItemVec  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id}  changeVecFunc={this.changeVecFunc.bind(this)}
+							initialParam={hole} key={id}  changeVecFunc={this.changeVecFunc.bind(this)}
                             top={topRow}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
                             bottom={bottom} />);
 			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput
+				return (<ItemTextInput  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} id={id} changeFunc={this.changeFunc.bind(this)}
+							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
                             top={topRow}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
                             bottom={bottom} />);
             } else if (hole.type === 'bool') {
-			    return (<ItemCheckbox
+			    return (<ItemCheckbox ref={id}
 				            varname={this.props.initialNodeData.varname}
 							store={this.props.store}
                             initialParam={hole}
-                            key={id} id={id}
+                            key={id}
                             top={topRow}
                             bottom={bottom}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
 				            changeCheckboxFunc={this.changeFunc.bind(this)} />);
 			} else {
-				return (<ItemText store={this.props.store} initialParam={hole} key={id} id={id} top={topRow} bottom={bottom}/>);
+				return (<ItemText store={this.props.store} initialParam={hole} key={id} top={topRow} bottom={bottom}/>);
 			}
-		}).bind(this));
+		});
 		return (
 			<div>
 				<ItemTitle
@@ -222,10 +295,13 @@ export default class ItemView extends React.Component {
 						name : "Node",
 						value : this.state.name
 					}}
+					exportButton={exportButton}
 					key={String(this.props.id + "_title")}
-					id={String(this.props.id + "_title")} />
+					id={String(this.props.id + "_title")}>
+				</ItemTitle>
                 <div style={styles.propertyContainer}>
                     {this.panelCheckbox.bind(this)()}
+					{labelProp}
                     {inputs}
                 </div>
 			</div>

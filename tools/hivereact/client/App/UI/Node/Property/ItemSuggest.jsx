@@ -11,7 +11,8 @@ export default class ItemSuggest extends React.Component {
         super(props);
         this.state = {
             value : this.props.initialParam.value,
-            suggestions: this.getSuggestions('')
+            suggestions: this.getSuggestions(''),
+			onFrame : false
         };
 
         this.getSuggestions = this.getSuggestions.bind(this);
@@ -19,7 +20,40 @@ export default class ItemSuggest extends React.Component {
         this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
         this.renderSuggestion = this.renderSuggestion.bind(this);
         this.onChange = this.onChange.bind(this);
+		this.frameApplied = this.frameApplied.bind(this);
     }
+
+	keyBackGround() {
+		if (this.state.onFrame) {
+			return "blue";
+		}
+		return "white";
+	}
+
+	frameApplied(err, content, prop) {
+		if (content.nodeVarname === this.props.initialParam.nodeVarname &&
+			prop.name === this.props.initialParam.name) {
+			if (prop.data.hasOwnProperty(this.props.store.getCurrentFrame())) {
+				this.setState({
+					onFrame	: true
+				});
+			} else {
+				this.setState({
+					onFrame	: false
+				});
+			}
+		}
+	}
+
+	componentDidMount() {
+		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+	}
+
+	componentWillUnmount() {
+		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+	}
+
+
     getSuggestions(value) {
         var pathList = this.props.store.getShaderList();
         var path = [];
@@ -88,7 +122,7 @@ export default class ItemSuggest extends React.Component {
             key : {
                 backgroundColor: "rgb(84,84,84)",
                 color : "white",
-                fontSize: "smaller",
+                fontSize: "11px",
                 letterSpacing: "normal",
                 textAlign: this.props.initialParam.name.match(/^\[\d\]$/) ? "right" : "left",
                 padding: "1px",
@@ -136,7 +170,7 @@ export default class ItemSuggest extends React.Component {
                     marginTop: "1px",
                     marginBottom: "1px",
                     padding: "1px",
-                    width: "153px",
+                    width: "165px",
                     height: "19px",
                     verticalAlign: "middle",
                     display: "inline-block"
@@ -154,7 +188,7 @@ export default class ItemSuggest extends React.Component {
                     borderRight: "1px solid #333",
                     borderBottom: "1px solid #333",
                     color: "#333",
-                    fontSize: "small",
+                    fontSize: "11px",
                     margin: "0px",
                     padding: "2px 5px",
                     overflow: "hidden"
@@ -164,9 +198,24 @@ export default class ItemSuggest extends React.Component {
                     color: "teal",
                     textShadow: "0px 0px 1px turquoise"
                 }
-            }
+            },
+			addkey : {
+				backgroundColor : this.keyBackGround.bind(this)(),
+				borderRadius : "6px",
+				width : "8px",
+				height : "8px",
+				marginTop : "6px",
+				marginBottom : "6px",
+				marginRight : "4px",
+				float : "left",
+				cursor : "pointer"
+			}
         };
     }
+
+	onAddKey(ev) {
+		this.props.changeKeyFunc(this.props.initialParam);
+	}
 
     render () {
         const styles = this.styles.bind(this)();
@@ -179,6 +228,7 @@ export default class ItemSuggest extends React.Component {
         return (
             <div style={styles.view}>
                 <div style={styles.key}>
+					<div style={styles.addkey} onClick={this.onAddKey.bind(this)} />
                     {this.props.initialParam.name}
                 </div>
                 <Autosuggest theme={styles.suggestTheme}

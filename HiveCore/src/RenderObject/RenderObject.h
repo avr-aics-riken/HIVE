@@ -31,6 +31,7 @@ public:
         TYPE_LINE,
         TYPE_POINT,
         TYPE_TETRA,
+        TYPE_SOLID,
         TYPE_VECTOR,
         TYPE_MAX,
     };

@@ -21,17 +21,22 @@ class BufferSolidData : public BufferData
 private:
     class Impl;
     Impl* m_imp;
+
+protected:
+    BufferSolidData(BufferSolidData* inst);
+    BufferSolidData();
+    ~BufferSolidData();
     
 public:
 		typedef enum {
+				SOLID_TETRA	= 4,	 // @todo { Move BufferTetra to BufferSolid }
 				SOLID_PYRAMID	= 5,	
 				SOLID_PRISM	= 6,	
 				SOLID_HEXAHEDRON	= 8,	
 		} SolidType;
 
-    BufferSolidData(BufferSolidData* inst);
-    BufferSolidData();
-    ~BufferSolidData();
+    static BufferSolidData* CreateInstance();
+
     void Create(SolidType type, int vertexnum, int indexnum);
     void Clear();
     void print();

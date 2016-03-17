@@ -39,7 +39,9 @@ export default class ActionExecuter {
         this.showConsoleOutput = this.showConsoleOutput.bind(this);
         this.setLayout = this.setLayout.bind(this);
 		this.addNode = this.addNode.bind(this);
-		this.exportNode = this.exportNode.bind(this);
+		this.exportSceneScript = this.exportSceneScript.bind(this);
+        this.exportGroupNode = this.exportGroupNode.bind(this);
+        this.importGroupNode = this.importGroupNode.bind(this);
         this.deleteNode = this.deleteNode.bind(this);
 		this.deleteNodes = this.deleteNodes.bind(this);
 		this.clearAll = this.clearAll.bind(this);
@@ -72,6 +74,10 @@ export default class ActionExecuter {
 		this.getChildPlugs = this.getChildPlugs.bind(this);
 		this.save = this.save.bind(this);
 		this.load = this.load.bind(this);
+		this.changeFrame = this.changeFrame.bind(this);
+		this.addKeyFrame = this.addKeyFrame.bind(this);
+		this.deleteKeyFrame = this.deleteKeyFrame.bind(this);
+		this.applyCurrentFrame = this.applyCurrentFrame.bind(this);
 	}
 
     /**
@@ -209,7 +215,7 @@ export default class ActionExecuter {
 		}
 	};
 
-	/// ノードに参照をもっているplug, input, outputを
+	/// ノードに参照をもっているplug, input, output, timelineを
 	/// シーンから全て検索して削除する。
 	deleteNodeRelatedValues(node) {
 		// グループであれば、グループ以外の有効な子ノード全てに対して実行し直す。
@@ -273,14 +279,26 @@ export default class ActionExecuter {
 				tempPath.splice(i - 1, 1);
 			}
 		}
+
+		// タイムラインのデータを全部消す。
+		let timeData = this.store.data.timeline.data;
+		if (timeData.hasOwnProperty('contents')) {
+			for (let i = timeData.contents.length - 1; i >= 0; i = i - 1) {
+				let content = timeData.contents[i];
+				if (content.hasOwnProperty('nodeVarname') && content.nodeVarname === node.varname) {
+					timeData.contents.splice(i, 1);
+					break;
+				}
+			}
+		}
 		this.store.data.nodePath = origPath;
 	}
 
 
     /**
-	 * ノードエクスポート
+	 * エクスポートSceneScript
 	 */
-	exportNode(payload) {
+	exportSceneScript(payload) {
         if (payload.hasOwnProperty('varname')) {
             let varname = payload.varname;
             let n;
@@ -300,6 +318,37 @@ export default class ActionExecuter {
                     console.log('NODE EXPORT', n);
                     let node = n.node;
                 }
+            }
+		}
+	}
+
+    /**
+	 * インポートグループノード
+	 */
+	importGroupNode(payload) {
+	    if (payload.hasOwnProperty('data')) {
+		    console.log('AAAA', payload.data);
+            this.pasteNodes({nodeInfoList:[payload.data]});
+        }
+    }
+    /**
+	 * エクスポートグループノード
+	 */
+	exportGroupNode(payload) {
+        if (payload.hasOwnProperty('varname')) {
+            let varname = payload.varname;
+            let outNode;
+            if (varname === "") { // ALL
+                outNode = this.store.data;
+            } else { //
+            console.log('exportGroupNode', varname);
+			    outNode = this.store.findNode(this.store.data, varname);
+            }
+
+            if (outNode) {
+                let grpdata = JSON.stringify(outNode, null, "    ");
+                let blob = new Blob([grpdata], {type: "text/plain"});
+              	saveAs(blob, "group.json");
             }
 		}
 	}
@@ -475,83 +524,82 @@ export default class ActionExecuter {
  	 */
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
- 			for (let i = 0; i < this.store.getNodes().length; i = i + 1) {
-				if (this.store.getNodes()[i].varname === payload.nodeInfo.varname) {
-					let dstNode = this.store.getNodes()[i];
-					let srcNode =  payload.nodeInfo;
+			let node = this.store.findNode(this.store.data, payload.nodeInfo.varname);
+			if (node) {
+				let dstNode = node;
+				let srcNode =  payload.nodeInfo;
 
-					let hasInput = srcNode.hasOwnProperty('input');
-					let preInputs = JSON.stringify(dstNode.input);
-					let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
+				let hasInput = srcNode.hasOwnProperty('input');
+				let preInputs = JSON.stringify(dstNode.input);
+				let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
 
-					let hasSelect = srcNode.hasOwnProperty('select');
-					let preSelect = dstNode.select;
-					let postSelect = hasSelect ? payload.nodeInfo.select : null;
+				let hasSelect = srcNode.hasOwnProperty('select');
+				let preSelect = dstNode.select;
+				let postSelect = hasSelect ? payload.nodeInfo.select : null;
 
-					let hasPanel = srcNode.hasOwnProperty('panel');
-					let prePanel = JSON.stringify(dstNode.panel);
-					let postPanel = hasPanel ? JSON.stringify(payload.nodeInfo.panel) : null;
-					let prePanelVisible = dstNode.panel.visible;
-					let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
-					let prePanelSize = JSON.stringify(dstNode.panel.size);
-					let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
+				let hasPanel = srcNode.hasOwnProperty('panel');
+				let prePanel = JSON.stringify(dstNode.panel);
+				let postPanel = hasPanel ? JSON.stringify(payload.nodeInfo.panel) : null;
+				let prePanelVisible = dstNode.panel.visible;
+				let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
+				let prePanelSize = JSON.stringify(dstNode.panel.size);
+				let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
 
-					let hasNodeParam = srcNode.hasOwnProperty('node');
-					let preNodePos = JSON.stringify(dstNode.node.pos);
-					let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
-					let preNodeClose = dstNode.node.close;
-					let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
+				let hasNodeParam = srcNode.hasOwnProperty('node');
+				let preNodePos = JSON.stringify(dstNode.node.pos);
+				let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
+				let preNodeClose = dstNode.node.close;
+				let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
 
-					for (let info in payload.nodeInfo) {
-						if (info !== "uiComponent" && this.store.getNodes()[i].hasOwnProperty(info)) {
-							dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
-						}
+				for (let info in payload.nodeInfo) {
+					if (info !== "uiComponent" && node.hasOwnProperty(info)) {
+						dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 					}
+				}
 
-					this.store.emit(Constants.NODE_CHANGED, null, dstNode, i);
-					if (hasInput && preInputs !== postInputs) {
-						if (this.store.isGroup(dstNode)) {
-							// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
-							let pre = JSON.parse(preInputs);
-							let post = JSON.parse(postInputs);
-							for (let k = 0; k < pre.length; k = k + 1) {
-								if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
-									console.log(pre[k].nodeVarname);
-									let target = this.store.findNode(dstNode, pre[k].nodeVarname);
-									if (!target) {
-										console.error("not found input node")
-									}
-									for (let m = 0; m < target.input.length; m = m + 1) {
-										if (target.input[m].name === post[k].name) {
-											target.input[m].value = post[k].value;
-										}
-									}
-									this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
+				this.store.emit(Constants.NODE_CHANGED, null, dstNode);
+				if (hasInput && preInputs !== postInputs) {
+					if (this.store.isGroup(dstNode)) {
+						// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
+						let pre = JSON.parse(preInputs);
+						let post = JSON.parse(postInputs);
+						for (let k = 0; k < pre.length; k = k + 1) {
+							if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
+								console.log(pre[k].nodeVarname);
+								let target = this.store.findNode(dstNode, pre[k].nodeVarname);
+								if (!target) {
+									console.error("not found input node")
 								}
+								for (let m = 0; m < target.input.length; m = m + 1) {
+									if (target.input[m].name === post[k].name) {
+										target.input[m].value = post[k].value;
+									}
+								}
+								this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
 							}
-						} else {
-							this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode, i);
 						}
+					} else {
+						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
 					}
-					if (hasSelect && preSelect !== postSelect) {
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, dstNode, i);
-					}
-					if (hasNodeParam && preNodePos !== postNodePos) {
-						this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode, i);
-					}
-					if (hasNodeParam && preNodeClose !== postNodeClose) {
-						this.store.emit(Constants.NODE_CLOSE_CHANGED, null, dstNode, i);
-					}
-					if (hasPanel && prePanel !== postPanel) {
-						this.store.emit(Constants.PANEL_CHANGED, null, dstNode, i);
-					}
-					if (hasPanel && prePanelVisible !== postPanelVisible) {
-						this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, dstNode, i);
-					}
-					if (hasPanel && prePanelSize !== postPanelSize) {
-						this.store.emit(Constants.PANEL_SIZE_CHANGED, null, dstNode, i);
-					}
+				}
+				if (hasSelect && preSelect !== postSelect) {
+					this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode);
+				}
+				if (hasNodeParam && preNodePos !== postNodePos) {
+					this.store.emit(Constants.NODE_POSITION_CHANGED, null, dstNode);
+				}
+				if (hasNodeParam && preNodeClose !== postNodeClose) {
+					this.store.emit(Constants.NODE_CLOSE_CHANGED, null, dstNode);
+				}
+				if (hasPanel && prePanel !== postPanel) {
+					this.store.emit(Constants.PANEL_CHANGED, null, dstNode);
+				}
+				if (hasPanel && prePanelVisible !== postPanelVisible) {
+					this.store.emit(Constants.PANEL_VISIBLE_CHANGED, null, dstNode);
+				}
+				if (hasPanel && prePanelSize !== postPanelSize) {
+					this.store.emit(Constants.PANEL_SIZE_CHANGED, null, dstNode);
 				}
 			}
  		}
@@ -564,20 +612,23 @@ export default class ActionExecuter {
 		if (payload.hasOwnProperty('inputInfo')) {
 			let info = payload.inputInfo;
 			if (info.hasOwnProperty('varname') && info.hasOwnProperty('input')) {
-				let n = this.store.getNode(info.varname);
-				if (n) {
-					let node = n.node;
+				let node = this.store.findNode(this.store.data, info.varname);
+				if (node) {
+					let copy = JSON.parse(JSON.stringify(node.input));
+					let isChanged = false;
 					for (let i = 0; i < node.input.length; i = i + 1) {
 						if (info.input.hasOwnProperty(node.input[i].name)) {
-							let copy = JSON.parse(JSON.stringify(node.input));
 							copy[i].value = info.input[node.input[i].name];
-							this.changeNode({
-								nodeInfo : {
-									varname : info.varname,
-									input : copy
-								}
-							})
+							isChanged = true;
 						}
+					}
+					if (isChanged) {
+						this.changeNode({
+							nodeInfo : {
+								varname : info.varname,
+								input : copy
+							}
+						});
 					}
 				}
 			}
@@ -1027,7 +1078,7 @@ export default class ActionExecuter {
 				let n = this.store.getNode(payload.nodeVarnameList[i]);
 				if (n && !n.nodeselect) {
 					n.node.select = true;
-					this.store.emit(Constants.NODE_SELECTE_CHANGED, null, n.node, n.index);
+					this.store.emit(Constants.NODE_SELECT_CHANGED, null, n.node, n.index);
 				}
 			}
 		}
@@ -1044,7 +1095,7 @@ export default class ActionExecuter {
 					if (n.node.select) {
 						if (!payload.hasOwnProperty('excludeVarname') || payload.excludeVarname !== n.nodevarname) {
 							n.node.select = false;
-							this.store.emit(Constants.NODE_SELECTE_CHANGED, null, n.node, n.index);
+							this.store.emit(Constants.NODE_SELECT_CHANGED, null, n.node, n.index);
 						}
 					}
 				}
@@ -1052,7 +1103,7 @@ export default class ActionExecuter {
 				for (let i = 0; i < this.store.getNodes().length; i = i + 1) {
 					// if (this.store.getNodes()[i].select) {
 						this.store.getNodes()[i].select = false;
-						this.store.emit(Constants.NODE_SELECTE_CHANGED, null, this.store.getNodes()[i], i);
+						this.store.emit(Constants.NODE_SELECT_CHANGED, null, this.store.getNodes()[i], i);
 					// }
 				}
 			}
@@ -1143,10 +1194,166 @@ export default class ActionExecuter {
 			}
         }
     }
+
+	/// フレーム番号から現在の補間値を求めて適用する.
+	applyCurrentFrame(frame) {
+		let data = this.store.data.timeline.data;
+		if (!data.hasOwnProperty('contents')) { return; }
+		for (let i = 0; i < data.contents.length; i = i + 1) {
+			// 1content = 1nodeに対応.
+			let content = data.contents[i];
+			for (let k = 0; k < content.props.length; k = k + 1) {
+				let prop = content.props[k];
+				// 前後のキーを検索.
+				let preKey = null;
+				let postKey = null;
+				for (let key in prop.data) {
+					if (frame < Number(key)) {
+						postKey = Number(key);
+						break;
+					}
+					preKey = Number(key);
+				}
+				if (!preKey) { preKey = postKey; }
+				if (!postKey) { postKey = preKey; }
+				if (preKey && postKey) {
+					let value = prop.data[preKey];
+					if (preKey < postKey && (typeof value !== "string")) {
+						// 線形補間.
+						value = lerp(prop.data[preKey], prop.data[postKey], (frame - preKey) / (postKey - preKey));
+					}
+					let inputInfo = {};
+					inputInfo.varname = prop.nodeVarname;
+					inputInfo.input = {};
+					inputInfo.input[prop.name] = value;
+					this.changeNodeInput({
+						inputInfo : inputInfo
+					});
+					//console.log("pre post", preKey, postKey, inputInfo);
+					this.store.emit(Constants.CURRENT_FRAME_APPLIED, null, content, prop);
+				}
+			}
+		}
+	}
+
+	/**
+	 * フレームを変更する.
+	 */
+	changeFrame(payload) {
+		if (payload.hasOwnProperty("frame")) {
+			if (payload.frame < 0) {
+				payload.frame = 0;
+			}
+			let f = Math.floor(payload.frame + 0.5);
+
+			// ここで値の補間を行う.
+			if (this.store.data.timeline.frame !== f) {
+				this.store.data.timeline.frame = f;
+				this.applyCurrentFrame(f);
+			}
+			this.store.emit(Constants.CHANGE_FRAME, null, f);
+		}
+	}
+
+	/**
+	 * キーフレームを追加する
+	 * @param frame フレーム番号
+	 * @param node ノード
+	 * @param input キーフレームを登録する入力
+	 */
+	addKeyFrame(payload) {
+		if (payload.hasOwnProperty("frame") && payload.hasOwnProperty("node") && payload.hasOwnProperty("input")) {
+			let node = payload.node;
+			let frame = payload.frame;
+			let input = payload.input;
+
+			let data = this.store.data.timeline.data;
+			if (!data.hasOwnProperty('contents')) {
+				data.contents = [];
+			}
+			let varnameToContent = {};
+			for (let i = 0; i < data.contents.length; i = i + 1) {
+				if (data.contents[i].hasOwnProperty('nodeVarname')) {
+					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
+				}
+			}
+			let content;
+			if (!varnameToContent.hasOwnProperty(node.varname)) {
+				content = {
+					name: node.label ? node.label : node.name,
+					nodeVarname : node.varname,
+					color: "rgb(32, 96, 196)",
+					propColor: "rgba(8, 62, 162, 1.0)",
+					props: []
+				};
+				data.contents.push(content);
+			} else {
+			 	content = varnameToContent[node.varname];
+			}
+			let prop = null;
+			for (let i = 0; i < content.props.length; i = i + 1) {
+				if (content.props[i].name === input.name &&
+					content.props[i].nodeVarname === input.nodeVarname) {
+					prop = content.props[i];
+					break;
+				}
+			}
+			if (!prop) {
+				prop = {
+					name: input.name,
+					nodeVarname : input.nodeVarname,
+					data: {}
+				};
+				content.props.push(prop);
+			}
+			prop.data[frame] = JSON.parse(JSON.stringify(payload.input.value));
+
+			this.store.emit(Constants.KEYFRAME_ADDED, null, content);
+		}
+	}
+
+	/**
+	 * キーフレームを削除する
+	 */
+	deleteKeyFrame(payload) {
+		if (payload.hasOwnProperty("frame") && payload.hasOwnProperty("node") && payload.hasOwnProperty("input")) {
+			let node = payload.node;
+			let frame = payload.frame;
+			let input = payload.input;
+
+			let data = this.store.data.timeline.data;
+			if (!data.hasOwnProperty('contents')) {
+				console.error("not found keyframe for delete");
+			}
+			let varnameToContent = {};
+			for (let i = 0; i < data.contents.length; i = i + 1) {
+				if (data.contents[i].hasOwnProperty('nodeVarname')) {
+					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
+				}
+			}
+			if (!varnameToContent.hasOwnProperty(node.varname)) {
+				console.error("not found keyframe for delete");
+			}
+			let content = varnameToContent[node.varname];
+			for (let i = 0; i < content.props.length; i = i + 1) {
+				if (content.props[i].name === input.name &&
+					content.props[i].nodeVarname === input.nodeVarname) {
+					if (content.props[i].data.hasOwnProperty(frame)) {
+						delete content.props[i].data[frame];
+						this.applyCurrentFrame(this.store.getCurrentFrame());
+						this.store.emit(Constants.KEYFRAME_DELETED, null, content);
+					}
+					return;
+				}
+			}
+			console.error("not found keyframe for delete");
+		}
+	}
 }
 
 ActionExecuter.initialData = {
 	"varname": "invalid",
+	"label" : "",
 	"select" : false,
 	"node" : {
 		"close" : false,

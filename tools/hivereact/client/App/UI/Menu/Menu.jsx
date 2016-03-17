@@ -43,7 +43,7 @@ export default class Menu extends React.Component {
                 fontSize: "10pt",
                 margin: "0px",
                 padding: "0px",
-                width: "250px",
+                width: "265px",
                 height: "100%",
                 position: this.layoutType !== 2 ? "fixed" : "static",
                 top: "0px",
@@ -51,26 +51,25 @@ export default class Menu extends React.Component {
                 zIndex: "9999",
                 transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)",
                 float: "left",
-                // overflow: "auto" // temp
+                overflow: "auto" // temp
             },
             header: {
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                textAlign: "30px",
-                margin: "0px 0px 0px -20px",
+                textAlign: "25px",
+                margin: "0px",
                 padding: "0px",
-                width: "270px",
-                minHeight: "30px"
+                width: "100%",
+                minHeight: "25px"
             },
             headerCaption: {
                 color: "whitesmoke",
                 fontWeight: "bold",
-                letterSpacing: "1.25px",
-                padding: "5px 10px"
+				fontSize : "14px",
+                padding: "2.5px 5px"
             },
             container: {
                 margin: "0px",
                 padding: "0px",
-                width: "250px",
+                width: "265px",
                 position: "relative",
                 // left: this.state.visible ? "0px" : "-200px",
                 // transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)"
@@ -84,7 +83,7 @@ export default class Menu extends React.Component {
             <div style={style.menuArea}>
                 <div style={style.container}>
                     <div style={style.header}>
-                        <div style={style.headerCaption}>Node</div>
+                        <div style={style.headerCaption}>Node List</div>
                     </div>
                     <MenuNodeCreate
                         store={this.props.store}

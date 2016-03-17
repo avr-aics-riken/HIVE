@@ -14,7 +14,7 @@ class BufferSolidData::Impl
 private:
     RefPtr<Vec3Buffer >  m_pos;
     RefPtr<UintBuffer >  m_index;
-		SolidType            m_type;
+    SolidType            m_type;
 
 public:
     /// コンストラクタ
@@ -28,7 +28,7 @@ public:
     {
         this->m_pos      = inst->Position();
         this->m_index    = inst->Index();
-				this->m_type     = inst->Type();
+        this->m_type     = inst->Type();
     }
     
     /// デストラクタ
@@ -48,7 +48,7 @@ public:
     {
         m_pos->Create(vertexnum);
         m_index->Create(indexnum);
-				m_type = type;
+        m_type = type;
     }
     
     /// メンバクリア
@@ -77,17 +77,17 @@ public:
      */
     UintBuffer  *Index()    { return m_index;    }
 
-		SolidType Type() const { return m_type; }
+    SolidType Type() const { return m_type; }
 };
 
 /// constructor
-BufferSolidData::BufferSolidData() : BufferData(TYPE_TETRA)
+BufferSolidData::BufferSolidData() : BufferData(TYPE_SOLID)
 {
     m_imp = new BufferSolidData::Impl();
 }
 
 /// constructor
-BufferSolidData::BufferSolidData(BufferSolidData* inst) : BufferData(TYPE_TETRA)
+BufferSolidData::BufferSolidData(BufferSolidData* inst) : BufferData(TYPE_SOLID)
 {
     m_imp = new BufferSolidData::Impl(inst);
 }
@@ -96,6 +96,11 @@ BufferSolidData::BufferSolidData(BufferSolidData* inst) : BufferData(TYPE_TETRA)
 BufferSolidData::~BufferSolidData()
 {
     delete m_imp;
+}
+
+BufferSolidData* BufferSolidData::CreateInstance()
+{
+    return new BufferSolidData();
 }
 
 /**

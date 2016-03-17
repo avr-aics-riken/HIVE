@@ -29,12 +29,12 @@ export default class View extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.store.on(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.nodeCountChanged);
 	}
 
 	componentWillUnmount() {
-		this.props.store.removeListener(Core.Constants.NODE_SELECTE_CHANGED, this.selectChanged);
+		this.props.store.removeListener(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
 		this.props.store.removeListener(Core.Constants.NODE_COUNT_CHANGED, this.nodeCountChanged);
 	}
 
@@ -58,7 +58,7 @@ export default class View extends React.Component {
 		return {
 			view : {
 				//position : "absolute",
-				width : "250px",
+				width : "255px",
                 //height : "100%",
 				//right : "0px",
 				//top : "0px",

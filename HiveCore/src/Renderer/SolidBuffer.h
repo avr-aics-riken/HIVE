@@ -20,7 +20,7 @@ private:
     unsigned int m_material_id;
 
     //SOLID DATA
-    unsigned int m_tetranum;
+    unsigned int m_solidnum;
     RefPtr<const SolidModel> m_model;
     
 public:
