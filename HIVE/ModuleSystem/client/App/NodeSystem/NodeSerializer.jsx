@@ -59,7 +59,7 @@ export default class NodeSerializer {
     }
     
     doNode(nodeinfo) {
-        const doInstance = nodeinfo.varname + ":Do()\n"
+        const doInstance = 'executedNode["' + nodeinfo.varname + '"] = ' + nodeinfo.varname + ":Do()\n"
         const com = 'print("Do!>' + nodeinfo.varname + '")\n'
         const src = com + doInstance
         return src;

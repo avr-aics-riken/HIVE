@@ -94,12 +94,18 @@ export default class Hive extends EventEmitter {
 		});
 	}
 
-    runScript(script) {
+    runScript(script, callback) {
         runScriptInternal(this.conn, script, (err, data) => {
             if (err) {
                 console.error("runScript error:", err, '\nscript:', script);
+                if (callback) {
+                    callback(err, null);
+                }
             } else {
-                console.log("runScript result:", data);
+                //console.log("runScript result:", data);
+                if (callback) {
+                    callback(null, data);
+                }
             }
         });
     }

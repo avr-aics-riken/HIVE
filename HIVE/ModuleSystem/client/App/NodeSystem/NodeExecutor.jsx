@@ -2,6 +2,10 @@ import NodeSerializer from './NodeSerializer.jsx'
 import EventEmitter from 'eventemitter3'
 import Constants from '../Core/Constants.jsx'
 
+const EXECUTE_NOTYET = "notyet"
+const EXECUTE_SUCCEEDED = "succeeded"
+const EXECUTE_FAILED = "faild"
+
 
 function visit(node, nodelist) {
     let i;
@@ -75,7 +79,8 @@ export default class NodeExecutor extends EventEmitter {
 				this.updateGraphRecursive(n);
 			} else {
 				if (!ng.hasOwnProperty(n.varname)) {
-					const nc = {node: n, inputs:[], outputs:[], inPlugs:[], needexecute: true, created: false};
+                    // node node
+					const nc = {node: n, inputs:[], outputs:[], inPlugs:[], needexecute: true, created: false, exeState: EXECUTE_NOTYET};
 					ng[n.varname] = nc;
 				} else {
 					// temporary clear
@@ -107,7 +112,7 @@ export default class NodeExecutor extends EventEmitter {
     }
 
     executeNode() {
-        let script = '';
+        let script = 'local executedNode = {}\n';
         this.nodeQueue.forEach((nd) => {
             let inputUpdate = false;
             let i
@@ -137,8 +142,28 @@ export default class NodeExecutor extends EventEmitter {
                 nd.executed = true;
             }
         });
+        script += "\nreturn {doState=executedNode}\n";
         return script;
     }
+    
+    updateExecuteState(data) {
+        if (data.hasOwnProperty('doState')) {
+            let i;
+            for (i in data.doState) {
+                this.nodeGraph[i].exeState = (data.doState[i] ? EXECUTE_SUCCEEDED : EXECUTE_FAILED);
+            }
+            //console.log('hoge', this.nodeGraph);
+        }
+    }
+    
+    getNodeExecutionState(varname) {
+        if (this.nodeGraph.hasOwnproperty(varname)) {
+            return this.nodeGraph[varname].exeState;
+        } else {
+            return EXECUTE_NOTYET;
+        }
+    }
+    
 
     doNodes() {
         this.updateGraph();
@@ -213,8 +238,6 @@ export default class NodeExecutor extends EventEmitter {
             console.log('NS catched:NODE_ADDED', err, data);
 
             const node = data;
-            //let script = this.nodeSerializer.newNode(node);
-            //script += this.doNodes();
             let script = this.doNodes();
             this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
         });
@@ -222,8 +245,6 @@ export default class NodeExecutor extends EventEmitter {
             console.log('NS catched:NODE_DELETED', err, data);
 
             let node = data;
-            //let script = this.nodeSerializer.deleteNode(node);
-            //script += this.doNodes();
             let script = this.doNodes();
             this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
         });
