@@ -5,6 +5,8 @@
 #ifdef HIVE_WITH_PMLIB
 #include "PerfMonitor.h" // PMlib
 
+#include <map>
+
 class PMon::Impl
 {
 public:
@@ -18,9 +20,23 @@ public:
 
     bool Register(const char* label, PMon::PMonType type, bool exclusive) {
         if (!m_initialized) {
-            fprintf(stderr, "Register should be called after Init() call\n");
+            fprintf(stderr, "[PMon] WARN: Register should be called after Init() call\n");
             return false;
         }
+
+        if (label == NULL) {
+            fprintf(stderr, "[PMon] WARN: Null label\n");
+            return false;
+        }
+
+        // Don't register same label
+        if (m_properties.find(label) != m_properties.end()) {
+            fprintf(stderr, "[PMon] WARN: Trying to re-register label %s\n", label);
+            return false;
+        } else {
+            m_properties[label]++;
+        }
+
         pm_lib::PerfMonitor::Type ty = pm_lib::PerfMonitor::COMM;
         if (type == PMon::PMON_COMM) {
             ty = pm_lib::PerfMonitor::COMM;
@@ -66,6 +82,7 @@ public:
 private:
     pm_lib::PerfMonitor m_pm;
     bool m_initialized;
+    std::map<std::string, int> m_properties;
 };
 
 #else
