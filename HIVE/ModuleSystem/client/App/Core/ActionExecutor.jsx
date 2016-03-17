@@ -838,7 +838,6 @@ export default class ActionExecuter {
 		for (let i = 0; i < nodeList.length; i = i + 1) {
 			let inoutIterator = NodeIterator.makeInputOutputIterator(this.store, nodeList[i]);
 			for (let v of inoutIterator) {
-				console.log(v.input, v.output);
 				if (v.input && varnameToInput.hasOwnProperty(v.input.nodeVarname)) {
 					if (varnameToInput[v.input.nodeVarname].name === v.input.name) {
 						inputs.push(v.input);
@@ -996,9 +995,10 @@ export default class ActionExecuter {
 		node.varname = convertTable[node.varname];
 
 		// input, outputのvarname変更.
-		for (let i = 0; i < node.input.length; i = i + 1) {
-			if (convertTable.hasOwnProperty(node.input[i].nodeVarname)) {
-				node.input[i].nodeVarname = convertTable[node.input[i].nodeVarname];
+		let inputIterator = NodeIterator.makeInputIterator(this.store, node);
+		for (let v of inputIterator) {
+			if (v.input && convertTable.hasOwnProperty(v.input.nodeVarname)) {
+				v.input.nodeVarname = convertTable[v.input.nodeVarname];
 			}
 		}
 		for (let i = 0; i < node.output.length; i = i + 1) {
@@ -1147,6 +1147,27 @@ export default class ActionExecuter {
 				}
 			});
 			aligned[varname] = bound;
+
+			// 出力端子から繋がっているノードがあるか調べる.
+			let plugs = this.store.getPlugs();
+			let hasOutputConnection = false;
+			for (let i = 0; i < node.output.length; i = i + 1) {
+				for (let k = 0; k < plugs.length; k = k + 1) {
+					if (plugs[k].output.nodeVarname === node.output[i].nodeVarname) {
+						hasOutputConnection = true;
+						break;
+					}
+				}
+			}
+			if (!hasOutputConnection) {
+				// 葉ノードであるので、depthToPosをリセット
+				let temp = depthToPos[depth];
+				depthToPos = {};
+				depthToPos[depth] = temp;
+				console.log("depthToPos")
+			}
+
+			// 入力端子から親ノードへ再帰.
 			let inputIterator = NodeIterator.makeInputIterator(this.store, node);
 			for (let v of inputIterator) {
 				if (v.input) {
