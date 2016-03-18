@@ -58,6 +58,7 @@ class ParallelCoordinate extends React.Component {
             data: null,
             param: null,
             colormap: null,
+            colormapData: this.props.node.input[7].value
         };
 
         // method
@@ -72,6 +73,7 @@ class ParallelCoordinate extends React.Component {
         this.joinParseData = this.joinParseData.bind(this);
         this.setCanvas = this.setCanvas.bind(this);
         this.setContext = this.setContext.bind(this);
+        this.initialColormap = this.initialColormap.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
@@ -178,11 +180,20 @@ class ParallelCoordinate extends React.Component {
         this.setState({parse: dest});
     }
 
+    initialColormap(data){
+        this.setState({
+            colormap: data,
+        });
+    }
+
     onColorMapChange(data){
-        this.setState({colormap: data.canvas});
+        this.setState({
+            colormap: data.canvas,
+            colormapData: data.colormapData
+        });
         this.props.action.changeNodeInput({
             varname: this.props.node.varname,
-            input: {colormap: data.imageData}
+            input: {colormapData: data.colormapData}
         });
         if(this.state.parse !== null){
             setTimeout((()=>{this.redraw();}).bind(this), 50);
@@ -386,19 +397,19 @@ class ParallelCoordinate extends React.Component {
     setContext(canvas, id){
         if(this.glContext[id] === null || this.glContext[id] === undefined){
             this.glContext[id] = {};
-            this.glContext[id].canvas          = canvas[id];
-            this.glContext[id].gl              = canvas[id].getContext('webgl');
-            this.glContext[id].color           = [0.2, 0.2, 0.2, 0.1];
-            this.glContext[id].texture         = this.glContext[id].gl.createTexture();
-            this.glContext[id].pl              = new prgLocations();
-            this.glContext[id].plp             = new prgLocations();
-            this.glContext[id].plf             = new prgLocations();
-            this.glContext[id].ext             = this.glContext[id].gl.getExtension('OES_texture_float');
+            this.glContext[id].canvas  = canvas[id];
+            this.glContext[id].gl      = canvas[id].getContext('webgl');
+            this.glContext[id].color   = [0.2, 0.2, 0.2, 0.1];
+            this.glContext[id].texture = this.glContext[id].gl.createTexture();
+            this.glContext[id].pl      = new prgLocations();
+            this.glContext[id].plp     = new prgLocations();
+            this.glContext[id].plf     = new prgLocations();
+            this.glContext[id].ext     = this.glContext[id].gl.getExtension('OES_texture_float');
         }
     }
     glInitialColor(){
-        this.glContext[this.foreground].color = this.props.node.input[6].value;
-        this.glContext[this.brushed].color    = this.props.node.input[7].value;
+        this.glContext[this.foreground].color = this.props.node.input[5].value;
+        this.glContext[this.brushed].color    = this.props.node.input[6].value;
     }
     glRender(target, data, lines, left, right, indices){
         if(!target){return;}
@@ -706,8 +717,8 @@ class ParallelCoordinate extends React.Component {
 
     componentDidUpdate(){
         if(this.glContext.hasOwnProperty(this.foreground)){
-            this.glContext[this.foreground].color = this.props.node.input[6].value;
-            this.glContext[this.brushed].color = this.props.node.input[7].value;
+            this.glContext[this.foreground].color = this.props.node.input[5].value;
+            this.glContext[this.brushed].color = this.props.node.input[6].value;
         }
     }
 
@@ -805,7 +816,7 @@ class ParallelCoordinate extends React.Component {
             <div>
                 <div ref="container" style={styles.container}>
                     <div ref="examples" className="parcoords" style={styles.examples}></div>
-                    <ColorMap callback={this.onColorMapChange} />
+                    <ColorMap callback={this.onColorMapChange} colormapData={this.state.colormapData} initialFunc={this.initialColormap}/>
                     <div style={styles.uiFrame}>
                         <div style={styles.flexrow}>
                             <div style={styles.flexcol}>
@@ -822,8 +833,8 @@ class ParallelCoordinate extends React.Component {
                             </div>
                             <div style={styles.flexcol}>
                                 <p style={styles.inputTitle}>line</p>
-                                <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[6].value)} onChange={this.onColorChange} style={styles.colorInputs} />
-                                <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[7].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color1" ref="lineColor1" value={this.singleConv(this.props.node.input[5].value)} onChange={this.onColorChange} style={styles.colorInputs} />
+                                <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.props.node.input[6].value)} onChange={this.onColorChange} style={styles.colorInputs} />
                             </div>
                         </div>
                     </div>
