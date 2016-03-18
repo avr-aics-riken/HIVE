@@ -402,6 +402,7 @@ class ParallelCoordinate extends React.Component {
     }
     glRender(target, data, lines, left, right, indices){
         if(!target){return;}
+        if(data === null || data === undefined){return;}
         if(data){
             this.prev.prevType = target;
             this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right, indices: indices};
@@ -417,12 +418,11 @@ class ParallelCoordinate extends React.Component {
                 }
             }
         }
-        if(indices){
+        if(indices && false){
             this.props.action.changeNodeInput({
                 varname: this.props.node.varname,
-                input: {colormap: data.imageData}
+                input: {brushedIndex: indices}
             });
-            
         }
 
         let canvaselement = document.getElementById(this.brushed);
