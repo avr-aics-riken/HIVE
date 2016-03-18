@@ -302,6 +302,9 @@ export default class Store extends EventEmitter {
 		return namelist;
 	}
 
+	/**
+	 * ノードの実行状態を返す
+	 */
     getNodeExecutionState(varname) {
         return this.nodeExecutor.getNodeExecutionState(varname);
     }

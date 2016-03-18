@@ -338,6 +338,8 @@ export default class Node extends React.Component {
 
 	/// タイトル.
 	titleElem() {
+		let status = this.props.store.getNodeExecutionState(this.state.node.varname);
+		console.log("status:", status);
 		const style = this.styles();
 		const isClose = this.isClosed();
 		return (<div style={style.title}>

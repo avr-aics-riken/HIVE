@@ -1128,7 +1128,7 @@ export default class ActionExecuter {
 				depthToPos[depth] = { x : pos.x + offset.x, y : pos.y, w : bound.w, h : bound.h};
 			} else {
 				const p = depthToPos[depth];
-				const offset = { x : -p.w - 50, y : p.h + 50 };
+				const offset = { x : -p.w - 50, y : p.h + 30 };
 				depthToPos[depth] = { x : p.x, y : p.y + offset.y, w : bound.w, h : bound.h };
 			}
 			pos.x = depthToPos[depth].x;

@@ -156,7 +156,7 @@ export default class NodeExecutor extends EventEmitter {
     }
 
     getNodeExecutionState(varname) {
-        if (this.nodeGraph.hasOwnproperty(varname)) {
+        if (this.nodeGraph.hasOwnProperty(varname)) {
             return this.nodeGraph[varname].exeState;
         } else {
             return EXECUTE_NOTFOUND;
