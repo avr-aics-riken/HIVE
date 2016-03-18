@@ -33,6 +33,7 @@ class RenderView extends React.Component {
 		this.onEnterCameraButton = this.onEnterCameraButton.bind(this);
 		this.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);
 		this.onClickCameraButton = this.onClickCameraButton.bind(this);
+		this.onClickCameraRegisterButton = this.onClickCameraRegisterButton.bind(this);
 
 		this.presets = {}
 		this.updatePreset = this.updatePreset.bind(this);
