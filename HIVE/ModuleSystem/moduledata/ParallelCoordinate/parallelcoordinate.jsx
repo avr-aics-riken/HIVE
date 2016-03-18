@@ -94,7 +94,6 @@ class ParallelCoordinate extends React.Component {
         if(param.mode !== undefined && param.mode === 'pack'){
             a = new Uint8Array(data);
             component = parseInt(param.component, 10);
-            // if(isNaN(component) || component === null || component === undefined || component < 2){
             if(isNaN(component) || component === null || component === undefined){
                 console.log('parse error: invalid component count');
                 return;
@@ -116,17 +115,6 @@ class ParallelCoordinate extends React.Component {
                 ];
                 parse.push(t);
             }
-            // for(let i = 0, j = a.length / 4; i < j; ++i){
-            //     let k = i * 4;
-            //     if(a[k + 2] < 10){debugger;}
-            //     let t = [
-            //         a[k],
-            //         a[k + 1],
-            //         a[k + 2],
-            //         a[k + 3]
-            //     ];
-            //     parse.push(t);
-            // }
         }else{
             if(param.datatype === 'byte'){
                 a = new Uint8Array(data);
@@ -429,9 +417,14 @@ class ParallelCoordinate extends React.Component {
                 }
             }
         }
+        if(indices){
+            this.props.action.changeNodeInput({
+                varname: this.props.node.varname,
+                input: {colormap: data.imageData}
+            });
+            
+        }
 
-        if(data == null){return;}
-        // data をアウトプットに出すとしたらここぽい気がする
         let canvaselement = document.getElementById(this.brushed);
         let backgroundDarker = (target.match(/brushed/));
 
