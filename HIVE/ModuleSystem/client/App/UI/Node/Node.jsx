@@ -24,7 +24,8 @@ export default class Node extends React.Component {
 			node : node,
 			closeHover : false,
 			isSelected : node.select,
-			zIndex : 1
+			zIndex : 1,
+			status : this.props.store.getNodeExecutionState(node.varname)
 		};
 		this.offsetLeft = node.node.pos[0];
 		this.offsetTop = node.node.pos[1];
@@ -45,6 +46,7 @@ export default class Node extends React.Component {
 		this.nodeRect = this.nodeRect.bind(this);
 		this.getNodePos = this.getNodePos.bind(this);
 		this.isClosed = this.isClosed.bind(this);
+		this.scriptExecuted = this.scriptExecuted.bind(this);
 	}
 
 	nodeChanged(err, data) {
@@ -69,6 +71,12 @@ export default class Node extends React.Component {
 				});
 			}
 		}
+	}
+
+	scriptExecuted(err) {
+		this.setState({
+			status : this.props.store.getNodeExecutionState(this.props.nodeVarname)
+		});
 	}
 
 	getNodePos() {
@@ -215,6 +223,7 @@ export default class Node extends React.Component {
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
 		this.props.store.on(Core.Constants.NODE_CHANGED, this.nodeChanged);
+		this.props.store.on(Core.Constants.SCRIPT_STATUS_CHANGED, this.scriptExecuted);
 		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
 		let rect = this.refs.node.getBoundingClientRect();
 		let invzoom = 1.0 / this.props.nodeStore.getZoom();
@@ -231,8 +240,9 @@ export default class Node extends React.Component {
 		window.removeEventListener('mouseup', this.onMouseUp);
 		window.removeEventListener('keydown', this.onKeyDown);
 		window.removeEventListener('keyup', this.onKeyUp);
-		this.props.store.removeListener(Core.Constants.NODE_CHANGED, this.nodeChanged);
-		this.props.store.removeListener(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
+		this.props.store.off(Core.Constants.SCRIPT_STATUS_CHANGED, this.scriptExecuted);
+		this.props.store.off(Core.Constants.NODE_CHANGED, this.nodeChanged);
+		this.props.store.off(Core.Constants.NODE_SELECT_CHANGED, this.selectChanged);
 
 		this.refs.node.removeEventListener('dblclick', this.onDoubleClick);
 	}
@@ -336,26 +346,56 @@ export default class Node extends React.Component {
 		ev.target.style.cursor = "default";
 	}
 
+	statusElem() {
+		const status = this.state.status;
+		if (!this.props.store.isGroup(this.state.node)) {
+			return (
+				<div style={{
+						width : "12px",
+						height : "20px",
+						float : "left"
+					}}
+					title={status === true ? "executed" : status}
+				>
+					<div style={{
+							width : "10px",
+							height : "10px",
+							backgroundColor : (status  === true) ? "rgb(54, 196, 168)" : "gray",
+							borderRadius : "12px",
+							border : "solid 0px",
+							marginTop : "4px"
+						}}
+					></div>
+				</div>);
+		}
+	}
+
 	/// タイトル.
 	titleElem() {
-		let status = this.props.store.getNodeExecutionState(this.state.node.varname);
-		console.log("status:", status);
 		const style = this.styles();
 		const isClose = this.isClosed();
 		return (<div style={style.title}>
-					<span
+					<div
 						onClick={this.onOpenCloseButtonClick.bind(this)}
 						style={{
 							fontSize : isClose ? "12px" : "16px",
 							marginLeft : isClose ? "4px" : "0px",
-							marginRight : isClose ? "4px" : "0px"
+							marginRight : isClose ? "4px" : "0px",
+							float : "left"
 						}}
 						onMouseEnter={this.onTitleEnter.bind(this)}
 						onMouseLeave={this.onTitleLeave.bind(this)}
 					>
 						{isClose ? "▶" : "▼"}
-					</span>
-				{this.state.node.label ? this.state.node.label : this.state.node.name}
+					</div>
+					{this.statusElem.bind(this)()}
+					<div style={{
+							float : "left",
+							marginLeft : "3px"
+						}}
+					>
+						{this.state.node.label ? this.state.node.label : this.state.node.name}
+					</div>
 				</div>)
 	}
 

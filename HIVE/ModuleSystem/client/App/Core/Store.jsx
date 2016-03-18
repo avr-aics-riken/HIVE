@@ -126,12 +126,14 @@ export default class Store extends EventEmitter {
             }
             console.log('Order=', this.nodeExecutor.getOrderByVarname(varnames));
             */
+			this.emit(Constants.SCRIPT_STATUS_CHANGED, null);
 
 			this.hive.runScript(script, (err, data) => {
                 if (err) {
                     return;
                 }
                 this.nodeExecutor.updateExecuteState(data);
+				this.emit(Constants.SCRIPT_STATUS_CHANGED, null);
             });
 		});
 		this.nodeExecutor.initEmitter(this);
