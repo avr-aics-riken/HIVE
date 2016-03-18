@@ -68,7 +68,7 @@ class ParallelCoordinate extends React.Component {
         this.singleConv = this.singleConv.bind(this);
         this.imageRecieved = this.imageRecieved.bind(this);
         this.imageParse = this.imageParse.bind(this);
-        this.setParseData = this.setParseData.bind(this);
+        this.joinParseData = this.joinParseData.bind(this);
         this.setCanvas = this.setCanvas.bind(this);
         this.setContext = this.setContext.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
@@ -164,7 +164,7 @@ class ParallelCoordinate extends React.Component {
         }
     }
 
-    setParseData(data){
+    joinParseData(data){
         let parseLength = 0;
         let parseDataCount = 0;
         let dataLength = data.length;
@@ -178,7 +178,7 @@ class ParallelCoordinate extends React.Component {
         }
         let dest = [];
         for(let i = 0, j = parseLength; i < j; ++i){
-            dest[i] = this.state.parse[i];
+            dest[i] = [].concat(this.state.parse[i]);
             dest[i].push(data[i]);
         }
         this.setState({parse: dest});

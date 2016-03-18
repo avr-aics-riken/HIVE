@@ -19,33 +19,35 @@ function ParallelCoordinate:Do()
     local mode = 'raw'
     local qsize = 1
 
-    local volquant = require('VolumeQuantizer')()
     local minmaxstring = ''
-    self.volquant = volquant
-    volquant:Create(vol)
-    local minmax = volquant:GetMinMax()
-    for i,v in pairs(minmax) do
-        if i == 1 then
-            minmaxstring = minmaxstring .. '{'
-        else
-            minmaxstring = minmaxstring .. ',{'
-        end
-        local flg = false;
-        for j,k in pairs(v) do
-            if not(flg) then
-                minmaxstring = minmaxstring .. '"' .. j .. '":"' .. k .. '"'
+    if vol then
+        local volquant = require('VolumeQuantizer')()
+        self.volquant = volquant
+        volquant:Create(vol)
+        local minmax = volquant:GetMinMax()
+        for i,v in pairs(minmax) do
+            if i == 1 then
+                minmaxstring = minmaxstring .. '{'
             else
-                minmaxstring = minmaxstring .. ',"' .. j .. '":"' .. k .. '"'
+                minmaxstring = minmaxstring .. ',{'
             end
-            flg = true
-            print('VQ:MinMax', i,j,k)
+            local flg = false;
+            for j,k in pairs(v) do
+                if not(flg) then
+                    minmaxstring = minmaxstring .. '"' .. j .. '":"' .. k .. '"'
+                else
+                    minmaxstring = minmaxstring .. ',"' .. j .. '":"' .. k .. '"'
+                end
+                flg = true
+                print('VQ:MinMax', i,j,k)
+            end
+            minmaxstring = minmaxstring .. "}"
         end
-        minmaxstring = minmaxstring .. "}"
+        vol = volquant:VolumeData()
+        mode = 'pack'
+        qsize = 8
+        self.vol = vol
     end
-    vol = volquant:VolumeData()
-    mode = 'pack'
-    qsize = 8
-    self.vol = vol
 
     local w
     local h
