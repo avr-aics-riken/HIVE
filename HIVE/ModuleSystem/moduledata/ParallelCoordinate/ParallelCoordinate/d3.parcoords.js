@@ -22,7 +22,8 @@ d3.parcoords = function(config) {
         smoothness: 0.0,
         showControlPoints: false,
         hideAxis : [],
-        extent: []
+        extent: [],
+        firstDraw: null
     };
 
     extend(__, config);
@@ -136,8 +137,6 @@ d3.parcoords = function(config) {
     });
 
     // expose the state of the chart
-    pc.state = __;
-    pc.flags = flags;
 
     // create getter/setters
     getset(pc, __, events);
@@ -400,9 +399,16 @@ d3.parcoords = function(config) {
 
     function glData(v, target){
         if(v == null || v.length === 0){pc.glRender(target, null); return;}
+
+        if(config.usr.dimensions === __.dimensions.length){
+            var keys = __.dimensions[__.dimensions.length - 1];
+            if(keys){side_effects["hideAxis"].call(pc, {"value": keys});}
+        }
+
         var a, b, c, d, e, f, i, j, k, l, m, s, x, y, left, right;
+        var indices = [];
         a = [];
-        k = v[0].length;
+        k = v[0].length - 1;
         for(i = 0, j = v.length; i < j; ++i){
             b = a.length;
             c = [];
@@ -439,10 +445,11 @@ d3.parcoords = function(config) {
                 }
             }
             if(f){
+                indices.push(v[i][k]);
                 e.map(function(val){a.push(val);});
             }
         }
-        pc.glRender(target, a, v.length, left, right);
+        pc.glRender(target, a, v.length, left, right, indices);
     }
 
     // @@@
@@ -727,7 +734,6 @@ d3.parcoords = function(config) {
 
     pc.createAxes = function() {
         if (g) pc.removeAxes();
-
         // Add a group element for each dimension.
         g = pc.svg.selectAll(".dimension")
             .data(__.dimensions, function(d) { return d; })

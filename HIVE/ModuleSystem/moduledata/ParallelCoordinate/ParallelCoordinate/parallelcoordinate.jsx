@@ -50,6 +50,7 @@ class ParallelCoordinate extends React.Component {
         this.weight = [];
         this.linecount = 0;
         this.dimensionTitles = {};
+        this.component = 0;
 
         // state
         this.state = {
@@ -111,7 +112,7 @@ class ParallelCoordinate extends React.Component {
                     a[k]     * minmax[0] + parseFloat(param.minmax[0].min),
                     a[k + 1] * minmax[1] + parseFloat(param.minmax[1].min),
                     a[k + 2] * minmax[2] + parseFloat(param.minmax[2].min),
-                    a[k + 3]// * minmax[3] + parseFloat(param.minmax[3].min)
+                    i // * minmax[3] + parseFloat(param.minmax[3].min)
                 ];
                 parse.push(t);
             }
@@ -144,8 +145,12 @@ class ParallelCoordinate extends React.Component {
                 for(let l = 0; l < component; ++l){
                     t.push(a[k + l]);
                 }
+                t.push(i);
                 parse.push(t);
             }
+        }
+        if(parse.length > 0){
+            this.component = parse[0].length;
         }
         this.setState({
             parse: parse,
@@ -181,6 +186,7 @@ class ParallelCoordinate extends React.Component {
             dest[i] = [].concat(this.state.parse[i]);
             dest[i].push(data[i]);
         }
+        this.component = parseLength + 1;
         this.setState({parse: dest});
     }
 
@@ -292,7 +298,8 @@ class ParallelCoordinate extends React.Component {
                     this.prev[this.brushed].data,
                     this.prev[this.brushed].lines,
                     this.prev[this.brushed].left,
-                    this.prev[this.brushed].right
+                    this.prev[this.brushed].right,
+                    this.prev[this.brushed].indices
                 );
             }
             if(this.prev.glforeground != null && this.prev.glforeground.data != null){
@@ -302,7 +309,8 @@ class ParallelCoordinate extends React.Component {
                     this.prev[this.foreground].data,
                     this.prev[this.foreground].lines,
                     this.prev[this.foreground].left,
-                    this.prev[this.foreground].right
+                    this.prev[this.foreground].right,
+                    this.prev[this.foreground].indices
                 );
             }
         }
@@ -366,6 +374,7 @@ class ParallelCoordinate extends React.Component {
             varname: this.node.varname,
             extent: null,
             logScale: this.props.node.input[4].value,
+            dimensions: this.component
         };
         let example = ReactDOM.findDOMNode(this.refs.examples);
         this.linecount = this.dataval.length;
@@ -403,11 +412,11 @@ class ParallelCoordinate extends React.Component {
         this.glContext[this.foreground].color = this.props.node.input[6].value;
         this.glContext[this.brushed].color    = this.props.node.input[7].value;
     }
-    glRender(target, data, lines, left, right){
+    glRender(target, data, lines, left, right, indices){
         if(!target){return;}
         if(data){
             this.prev.prevType = target;
-            this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right};
+            this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right, indices: indices};
             if(this.glContext[target].gl == null){return;}
         }else{
             if(this.glContext[target].gl !== null && this.glContext[target].gl !== undefined){
