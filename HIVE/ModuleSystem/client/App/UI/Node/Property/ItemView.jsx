@@ -128,21 +128,21 @@ export default class ItemView extends React.Component {
 			let input = {};
 			input[hole.name] = JSON.parse(JSON.stringify(value));
 			this.props.action.changeNodeInput({
-				varname : this.props.initialNodeData.varname,
+				varname : hole.nodeVarname,
 				input : input
 			});
 		}
 	}
 
-	changeLabelFunc(name, value) {
-		if (name === "label") {
+	changeLabelFunc(hole) {
+		return (value) => {
 			this.props.action.changeNode({
-				varname : this.props.initialNodeData.varname,
+				varname : hole.nodeVarname,
 				label : value
 			});
 			this.refs.nameInput.setState({
 				value : this.label()
-			})
+			});
 		}
 	}
 
@@ -252,7 +252,7 @@ export default class ItemView extends React.Component {
 		let labelProp = (<ItemTextInput ref="nameInput"
 					varname={this.props.initialNodeData.varname}
 					store={this.props.store}
-					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc.bind(this)}/>);
+					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc()}/>);
 
 		let exportButton = "";
 		if (this.props.store.isGroup(this.props.initialNodeData)) {
