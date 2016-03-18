@@ -381,6 +381,7 @@ class ParallelCoordinate extends React.Component {
             .reorderable()        // 軸の並び替え有効化
             .brushMode("1D-axes") // 抽出のやり方
             .interactive();       // 常時更新
+        this.parcoords.on("hideAxis", "3");
     }
     setCanvas(canvas){
         this.setContext(canvas, this.foreground);
