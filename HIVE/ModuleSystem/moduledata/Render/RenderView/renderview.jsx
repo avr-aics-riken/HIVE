@@ -305,7 +305,6 @@ class RenderView extends React.Component {
 		if (data.varname !== this.node.varname) {
 			return;
 		}
-		this.updatePreset();
 		if (this.hasIPCAddress()) {
 			this.readyForIPCImageTransfer();
 		}
@@ -439,7 +438,7 @@ class RenderView extends React.Component {
 			},
 			cameraButton : {
 				width : "32px",
-				heigth : "20px",
+				height : "20px",
 				float : "left",
 				backgroundColor : "gray",
 				border : "1px solid darkgray",
@@ -447,6 +446,17 @@ class RenderView extends React.Component {
 				margin : "2px",
 				textAlign : "center",
 				fontSize : "11px"
+			},
+			registerButton: {
+				width : "50px",
+				height : "20px",
+				backgroundColor : "gray",
+				border : "1px solid darkgray",
+				borderRadius : "3px",
+				marginLeft : "2px",
+				textAlign : "center",
+				fontSize : "11px",
+				position : "absolute"
 			},
 			presetArea : {
 				height : "25px",
@@ -481,6 +491,10 @@ class RenderView extends React.Component {
 	onLeaveCameraButton(ev) {
 		ev.target.style.backgroundColor = "gray";
 		ev.target.style.cursor = "default";
+	}
+
+	onClickCameraRegisterButton(ev) {
+		this.updatePreset();
 	}
 
 	onClickCameraButton(ev) {
@@ -633,6 +647,12 @@ class RenderView extends React.Component {
 							<option>9</option>
 							<option>10</option>
 						</select>
+						<span ref="registerButton" style={styles.registerButton}
+							onClick={this.onClickCameraRegisterButton}
+							onMouseEnter={this.onEnterCameraButton}
+							onMouseLeave={this.onLeaveCameraButton}>
+							Register
+						</span>
 					</div>
 				</div>);
 	}
