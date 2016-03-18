@@ -36,15 +36,15 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
                     };
                 }(res)));
             }
-		} else {
-			try {
-				fname = req.url.substr(1, req.url.length); // remove '/'
-				file = fs.readFileSync(HTTP_ROOT_DIR + fname);
-				res.end(file);
-			} catch (e) {
-				res.writeHead(404, {'Content-Type': 'text/plain'});
-				res.end('not found\n');
-			}
+        } else {
+            fname = req.url.substr(1, req.url.length); // remove '/'
+            fs.readFile(HTTP_ROOT_DIR + fname, function(err, file){
+                if (err) {
+                   	res.writeHead(404, {'Content-Type': 'text/plain'});
+			    	res.end('not found\n');
+                }
+                res.end(file);                    
+            } );
 		}
 	}).listen(port),
 	websocket = require('websocket'),
