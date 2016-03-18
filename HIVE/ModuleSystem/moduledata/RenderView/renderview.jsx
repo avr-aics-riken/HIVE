@@ -33,6 +33,9 @@ class RenderView extends React.Component {
 		this.onEnterCameraButton = this.onEnterCameraButton.bind(this);
 		this.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);
 		this.onClickCameraButton = this.onClickCameraButton.bind(this);
+
+		this.presets = {}
+		this.updatePreset = this.updatePreset.bind(this);
 	}
 
     progressiveUpdate(param) {
@@ -208,6 +211,20 @@ class RenderView extends React.Component {
 		}
     }
 
+
+	updatePreset() {
+		let layer = Number(this.refs.presetSelect.value);
+		let preset;
+		if (!this.presets.hasOwnProperty(layer)) {
+			this.presets[layer] = {};
+		}
+		preset = this.presets[layer];
+		preset.position = JSON.parse(JSON.stringify(this.getInputValue("position")));
+		preset.target = JSON.parse(JSON.stringify(this.getInputValue("target")));
+		preset.up = JSON.parse(JSON.stringify(this.getInputValue("up")));
+		preset.fov = this.getInputValue("fov");
+	}
+
     viewTrans(tx, ty, tz) {
 		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
@@ -288,6 +305,7 @@ class RenderView extends React.Component {
 		if (data.varname !== this.node.varname) {
 			return;
 		}
+		this.updatePreset();
 		if (this.hasIPCAddress()) {
 			this.readyForIPCImageTransfer();
 		}
@@ -318,6 +336,42 @@ class RenderView extends React.Component {
 					}, 0);
 				}
 			}
+		}
+	}
+
+	onPresetChange(ev) {
+		let number = Number(ev.target.value);
+		if (number === null || number === undefined) { console.error("invalid camera layer"); return; }
+		const ssize = this.getInputValue("screensize");
+		let rw = parseInt(ssize[0] / 16);
+		let rh = parseInt(ssize[1] / 16);
+		if (this.presets.hasOwnProperty(number)) {
+			let preset = this.presets[number];
+			if (preset.hasOwnProperty("position") &&
+				preset.hasOwnProperty("target") &&
+				preset.hasOwnProperty("up") &&
+				preset.hasOwnProperty("fov")) {
+				this.action.changeNodeInput({
+					varname : this.props.node.varname,
+					input : {
+						position : preset.position,
+						target : preset.target,
+						up : preset.up,
+						fov : preset.fov
+					}
+				})
+			}
+		} else {
+			this.action.changeNodeInput({
+				varname : this.props.node.varname,
+				input : {
+					"position" : [0, 0, 300],
+					"target" : [0, 0, 0],
+					"up" : [0, 1, 0],
+					"fov" : 60,
+					"rendersize" : [rw, rh]
+				}
+			});
 		}
 	}
 
@@ -393,6 +447,10 @@ class RenderView extends React.Component {
 				margin : "2px",
 				textAlign : "center",
 				fontSize : "11px"
+			},
+			presetsSelect : {
+				height : "20px",
+				backgroundColor : "white"
 			}
 		}
 	}
@@ -554,6 +612,21 @@ class RenderView extends React.Component {
 							onMouseLeave={this.onLeaveCameraButton}>
 							-Z
 						</div>
+					</div>
+					<div style={styles.cameraButtonArea}>
+						<span style={{marginLeft : "3px", fontSize : "11px"}}>Layer:</span>
+						<select ref="presetSelect" style={styles.presetSelect} onChange={this.onPresetChange.bind(this)}>
+							<option>1</option>
+							<option>2</option>
+							<option>3</option>
+							<option>4</option>
+							<option>5</option>
+							<option>6</option>
+							<option>7</option>
+							<option>8</option>
+							<option>9</option>
+							<option>10</option>
+						</select>
 					</div>
 				</div>);
 	}
