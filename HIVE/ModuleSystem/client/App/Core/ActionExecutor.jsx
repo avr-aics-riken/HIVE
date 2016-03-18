@@ -1413,17 +1413,17 @@ export default class ActionExecuter {
 				}
 			}
 			let content;
-			if (!varnameToContent.hasOwnProperty(node.varname)) {
+			if (!varnameToContent.hasOwnProperty(input.nodeVarname)) {
 				content = {
 					name: node.label ? node.label : node.name,
-					nodeVarname : node.varname,
+					nodeVarname : input.nodeVarname,
 					color: "rgb(32, 96, 196)",
 					propColor: "rgba(8, 62, 162, 1.0)",
 					props: []
 				};
 				data.contents.push(content);
 			} else {
-			 	content = varnameToContent[node.varname];
+			 	content = varnameToContent[input.nodeVarname];
 			}
 			let prop = null;
 			for (let i = 0; i < content.props.length; i = i + 1) {
@@ -1466,10 +1466,10 @@ export default class ActionExecuter {
 					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
 				}
 			}
-			if (!varnameToContent.hasOwnProperty(node.varname)) {
+			if (!varnameToContent.hasOwnProperty(input.nodeVarname)) {
 				console.error("not found keyframe for delete");
 			}
-			let content = varnameToContent[node.varname];
+			let content = varnameToContent[input.nodeVarname];
 			for (let i = 0; i < content.props.length; i = i + 1) {
 				if (content.props[i].name === input.name &&
 					content.props[i].nodeVarname === input.nodeVarname) {
