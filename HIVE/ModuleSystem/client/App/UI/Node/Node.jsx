@@ -360,7 +360,7 @@ export default class Node extends React.Component {
 					<div style={{
 							width : "10px",
 							height : "10px",
-							backgroundColor : (status  === true) ? "rgb(54, 196, 168)" : "gray",
+							backgroundColor : (status  === true) ? "rgb(54, 196, 168)" : "red",
 							borderRadius : "12px",
 							border : "solid 0px",
 							marginTop : "4px"

@@ -112,7 +112,7 @@ export default class ItemCheckbox extends React.Component {
     }
 
 	onChange(ev) {
-		this.props.changeCheckboxFunc(this.props.initialParam.name, ev.target.checked);
+		this.props.changeCheckboxFunc(ev.target.checked);
 		this.setState({
 			checked : ev.target.checked
 		});

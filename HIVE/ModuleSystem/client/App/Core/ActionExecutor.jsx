@@ -582,7 +582,7 @@ export default class ActionExecuter {
 									console.error("not found input node")
 								}
 								for (let m = 0; m < target.input.length; m = m + 1) {
-									if (target.input[m].name === post[k].name) {
+									if (target.input[m].nodeVarname === post[k].nodeVarname && target.input[m].name === post[k].name) {
 										target.input[m].value = post[k].value;
 									}
 								}
