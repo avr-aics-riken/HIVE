@@ -29,6 +29,7 @@ export default class NodeView extends React.Component {
 		this.onNodeAdded = this.onNodeAdded.bind(this);
 		this.width = 4000;
 		this.height = 4000;
+		this.preZoom = 1.0;
 
 		this.onNodeCountChanged = this.onNodeCountChanged.bind(this);
 		this.onZoomChanged = this.onZoomChanged.bind(this);
@@ -204,6 +205,7 @@ export default class NodeView extends React.Component {
 	}
 
 	onZoomChanged(err, zoom) {
+		this.preZoom = this.state.zoom;
 		this.setState({
 			zoom : zoom
 		});
@@ -356,6 +358,7 @@ export default class NodeView extends React.Component {
 							node={node}
 							key={node.varname + key}
 							zoom={1.0 / this.state.zoom}
+							preZoom={1.0 / this.preZoom}
 						/>
 					</div>
 				);
