@@ -66,9 +66,10 @@ export default class ColorMap extends React.Component {
     }
 
     get_colormap_rgba(color_steps, width, height) {
-        var i,
+        var i, j, k,
             grad,
             dummy_canvas = document.createElement('canvas'),
+            dummy_color = [],
             context = dummy_canvas.getContext("2d");
         dummy_canvas.width = width;
         dummy_canvas.height = height;
@@ -76,6 +77,14 @@ export default class ColorMap extends React.Component {
         grad = context.createLinearGradient(0, 0, width, 0);
         for (i = 0; i < color_steps.length; i = i + 1) {
             grad.addColorStop(1.0 - color_steps[i].step, color_steps[i].color);
+            if(color_steps[i].color.match(/^#/)){
+                j = color_steps[i].color.match(/([a-z]|[A-Z]|[0-9]){2}/g);
+                k = 16;
+            }else{
+                j = color_steps[i].color.match(/\d+/g);
+                k = 10;
+            }
+            dummy_color.push(color_steps[i].step, parseInt(j[0], k), parseInt(j[1], k), parseInt(j[2], k));
         }
         context.fillStyle = grad;
         context.beginPath();
@@ -85,19 +94,21 @@ export default class ColorMap extends React.Component {
         return {
             canvas: dummy_canvas,
             context: context,
-            imageData: context.getImageData(0, 0, width, height).data
+            imageData: context.getImageData(0, 0, width, height).data,
+            colormapData: dummy_color
         };
         // return context.getImageData(0, 0, width, height).data;
     }
 
     componentDidMount(){
-        var initial_colormap = [
-            {step: 0.0,  color: 'rgb(255,  50,  50)'},
-            {step: 0.25, color: 'rgb(200, 255,  50)'},
-            {step: 0.5,  color: 'rgb( 50, 255, 200)'},
-            {step: 0.75, color: 'rgb(  0,  50, 200)'},
-            {step: 1.0,  color: 'rgb(  0,   0,  50)'}
-        ];
+        var colormap = this.props.colormapData;
+        var initial_colormap = [];
+        for(let i = 0, j = colormap.length; i < j; i += 4){
+            initial_colormap.push({
+                step: colormap[i],
+                color: 'rgb(' + colormap[i + 1] + ',' + colormap[i + 2] + ',' + colormap[i + 3] + ')'
+            });
+        }
         var color_map = ReactDOM.findDOMNode(this.refs.canvas),
             context = color_map.getContext("2d"),
             width = 30, // カラーマップ全体の幅（矢印含む
@@ -197,7 +208,7 @@ export default class ColorMap extends React.Component {
         }).bind(this));
 
         // 初回に1回イベントを投げる。
-        this.send_colormap_change_event(color_steps);
+        this.props.initialFunc(this.get_colormap_rgba(color_steps, 256, 1).canvas);
     }
 
     componentWillUnmount(){
