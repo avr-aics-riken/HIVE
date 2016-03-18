@@ -139,6 +139,7 @@ export default class NodeExecutor extends EventEmitter {
                 script += this.nodeSerializer.doNode(nd.node);
                 nd.needexecute = false;
                 nd.executed = true;
+                nd.exeState = "running";
             }
         });
         script += "\nreturn {doState=executedNode}\n";

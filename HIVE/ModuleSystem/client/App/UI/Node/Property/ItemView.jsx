@@ -39,6 +39,9 @@ export default class ItemView extends React.Component {
 		this.panelVisibleChanged = this.panelVisibleChanged.bind(this);
 		this.updateHandle = null;
 		this.isShowPanel = this.isShowPanel.bind(this);
+		this.changeFunc = this.changeFunc.bind(this);
+		this.changeVecFunc = this.changeVecFunc.bind(this);
+		this.changeLabelFunc = this.changeLabelFunc.bind(this);
 	}
 
 	isShowPanel() {
@@ -70,7 +73,10 @@ export default class ItemView extends React.Component {
 	}
 
 	inputChanged(err, data) {
-		if (data.varname === this.props.initialNodeData.varname) {
+		let isGroupInput = this.props.store.isGroup(this.props.initialNodeData) &&
+							this.props.store.findNode(this.props.initialNodeData, data.varname);
+
+		if (isGroupInput || data.varname === this.props.initialNodeData.varname) {
 			for (let i = 0; i < data.input.length; i = i + 1) {
 				let hole = data.input[i];
 				let id = hole.nodeVarname + "_" + hole.name;
@@ -118,44 +124,47 @@ export default class ItemView extends React.Component {
 		this.props.store.removeListener(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
 	}
 
-	changeFunc(name, value) {
-		let input = {};
-		input[name] = JSON.parse(JSON.stringify(value));
-		this.props.action.changeNodeInput({
+	changeFunc(hole) {
+		return (value) => {
+			let input = {};
+			input[hole.name] = JSON.parse(JSON.stringify(value));
+			this.props.action.changeNodeInput({
+				varname : hole.nodeVarname,
+				input : input
+			});
+		}
+	}
+
+	changeLabelFunc(value) {
+		this.props.action.changeNode({
 			varname : this.props.initialNodeData.varname,
-			input : input
+			label : value
+		});
+		this.refs.nameInput.setState({
+			value : this.label()
 		});
 	}
 
-	changeLabelFunc(name, value) {
-		if (name === "label") {
-			this.props.action.changeNode({
-				varname : this.props.initialNodeData.varname,
-				label : value
-			});
-			this.refs.nameInput.setState({
-				value : this.label()
-			})
-		}
-	}
-
-	changeVecFunc(name, index, value) {
-		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-		let inputs = node.input;
-		for (let i = 0; i < inputs.length; i = i + 1) {
-			if (inputs[i].name === name) {
-				let copyVal = JSON.parse(JSON.stringify(inputs[i].value));
-				copyVal[index] = value;
-				let input = {};
-				input[name] = copyVal;
-				this.props.action.changeNodeInput({
-					varname : this.props.initialNodeData.varname,
-					input : input
-				});
-				break;
+	changeVecFunc(hole) {
+		return (index, value) => {
+			let node = this.props.store.findNode(this.props.initialNodeData, hole.nodeVarname);
+			let inputs = node.input;
+			for (let i = 0; i < inputs.length; i = i + 1) {
+				if (inputs[i].name === hole.name) {
+					let copyVal = JSON.parse(JSON.stringify(inputs[i].value));
+					copyVal[index] = value;
+					let input = {};
+					input[hole.name] = copyVal;
+					console.log("changenodeinput", hole, input, value)
+					this.props.action.changeNodeInput({
+						varname : hole.nodeVarname,
+						input : input
+					});
+					break;
+				}
 			}
+			//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value, index);
 		}
-		//this.props.action.changeNodeInput(this.props.initialNodeData.varname, name, value, index);
 	}
 
 	changeLengthFunc(name, length) {
@@ -177,15 +186,13 @@ export default class ItemView extends React.Component {
 		}
 	}
 
-	panelVisibleChangeFunc(itemName, value) {
-		if (itemName === "show panel") {
-			let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
-			node.panel.visible = value;
-			this.props.action.changePanelVisible(
-				this.props.initialNodeData.varname,
-				value
-			);
-		}
+	panelVisibleChangeFunc(value) {
+		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+		node.panel.visible = value;
+		this.props.action.changePanelVisible(
+			this.props.initialNodeData.varname,
+			value
+		);
 	}
 
 	changeKeyFunc(hole) {
@@ -244,7 +251,7 @@ export default class ItemView extends React.Component {
 		let labelProp = (<ItemTextInput ref="nameInput"
 					varname={this.props.initialNodeData.varname}
 					store={this.props.store}
-					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc.bind(this)}/>);
+					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc}/>);
 
 		let exportButton = "";
 		if (this.props.store.isGroup(this.props.initialNodeData)) {
@@ -283,14 +290,14 @@ export default class ItemView extends React.Component {
 							store={this.props.store}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
-							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
+							initialParam={hole} key={id} changeFunc={this.changeFunc(hole)}
                             top={topRow}
                             bottom={bottom} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id}  changeVecFunc={this.changeVecFunc.bind(this)}
+							initialParam={hole} key={id}  changeVecFunc={this.changeVecFunc(hole)}
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
@@ -299,7 +306,7 @@ export default class ItemView extends React.Component {
 				return (<ItemTextInput  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
-							initialParam={hole} key={id} changeFunc={this.changeFunc.bind(this)}
+							initialParam={hole} key={id} changeFunc={this.changeFunc(hole)}
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
@@ -314,7 +321,7 @@ export default class ItemView extends React.Component {
                             bottom={bottom}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
-				            changeCheckboxFunc={this.changeFunc.bind(this)} />);
+				            changeCheckboxFunc={this.changeFunc(hole)} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} top={topRow} bottom={bottom}/>);
 			}
