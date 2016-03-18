@@ -41,6 +41,7 @@ export default class ItemView extends React.Component {
 		this.isShowPanel = this.isShowPanel.bind(this);
 		this.changeFunc = this.changeFunc.bind(this);
 		this.changeVecFunc = this.changeVecFunc.bind(this);
+		this.changeLabelFunc = this.changeLabelFunc.bind(this);
 	}
 
 	isShowPanel() {
@@ -134,16 +135,14 @@ export default class ItemView extends React.Component {
 		}
 	}
 
-	changeLabelFunc(hole) {
-		return (value) => {
-			this.props.action.changeNode({
-				varname : hole.nodeVarname,
-				label : value
-			});
-			this.refs.nameInput.setState({
-				value : this.label()
-			});
-		}
+	changeLabelFunc(value) {
+		this.props.action.changeNode({
+			varname : this.props.initialNodeData.varname,
+			label : value
+		});
+		this.refs.nameInput.setState({
+			value : this.label()
+		});
 	}
 
 	changeVecFunc(hole) {
@@ -252,7 +251,7 @@ export default class ItemView extends React.Component {
 		let labelProp = (<ItemTextInput ref="nameInput"
 					varname={this.props.initialNodeData.varname}
 					store={this.props.store}
-					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc()}/>);
+					initialParam={labelParam} key={-100} id={-100} changeFunc={this.changeLabelFunc}/>);
 
 		let exportButton = "";
 		if (this.props.store.isGroup(this.props.initialNodeData)) {
