@@ -19,6 +19,9 @@ function ParallelCoordinate:Do()
     local mode = 'raw'
     local qsize = 1
 
+    print('volvolvolvolvolvolvolvolvolvolvolvolvol', self.vol, vol)
+    if self.vol == vol then return true end
+
     local minmaxstring = ''
     if vol then
         local volquant = require('VolumeQuantizer')()

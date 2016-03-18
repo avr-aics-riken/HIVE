@@ -429,7 +429,7 @@ class ParallelCoordinate extends React.Component {
                 }
             }
         }
-        if(indices && false){
+        if(indices){
             this.props.action.changeNodeInput({
                 varname: this.props.node.varname,
                 input: {brushedIndex: indices}

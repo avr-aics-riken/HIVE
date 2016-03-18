@@ -14,7 +14,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
     babel = require('babel-core'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
-    moduleListCache = true, 
+    moduleListCache = true,
     cacheData = null,
 	seserver = http.createServer(function (req, res) {
 		'use strict';
