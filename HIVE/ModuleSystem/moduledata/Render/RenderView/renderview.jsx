@@ -620,7 +620,7 @@ class RenderView extends React.Component {
 						</div>
 					</div>
 					<div style={styles.presetArea}>
-						<span style={{marginLeft : "3px", fontSize : "11px"}}>Layer:</span>
+						<span style={{marginLeft : "3px", marginRight: "3px", fontSize : "11px"}}>Camera:</span>
 						<select ref="presetSelect" style={styles.presetSelect} onChange={this.onPresetChange.bind(this)}>
 							<option>1</option>
 							<option>2</option>

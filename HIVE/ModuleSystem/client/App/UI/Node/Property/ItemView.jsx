@@ -8,7 +8,7 @@ import ItemCheckbox from './ItemCheckbox.jsx';
 import ItemArray from './ItemArray.jsx';
 import ItemTextInput from './ItemTextInput.jsx';
 import ItemSuggest from './ItemSuggest.jsx';
-
+import ItemObject from './ItemObject.jsx';
 
 function isHideProperty(input) {
 	return input.hasOwnProperty('visible') && !input.visible;
@@ -97,6 +97,8 @@ export default class ItemView extends React.Component {
 						this.refs[id].setState({
 							checked : hole.value
 						});
+					} else if (hole.type === 'floatarray') {
+						this.refs[id].value = hole.value;
 					}
 				}
 			}
@@ -322,6 +324,16 @@ export default class ItemView extends React.Component {
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
 				            changeCheckboxFunc={this.changeFunc(hole)} />);
+			} else if (hole.type === 'floatarray') {
+				return (<ItemObject ref={id}
+							store={this.props.store}
+							initialParam={hole}
+							key={id}
+							top={topRow}
+							bottom={bottom}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
+							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
+						/>);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} top={topRow} bottom={bottom}/>);
 			}

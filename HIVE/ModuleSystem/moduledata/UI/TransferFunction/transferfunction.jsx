@@ -54,8 +54,8 @@ class TransferFunction extends React.Component {
                 {value: "2", text: "Black and White"},
                 {value: "3", text: "BGR Gradation"}
             ],
-            valMin: this.props.node.input[2].value,
-            valMax: this.props.node.input[3].value,
+            valMin: null,//this.props.node.input[2].value,
+            valMax: null,//this.props.node.input[3].value,
             btnFlags: [],
             redbtnColor: this.disableColor,
             greenbtnColor: this.disableColor,
@@ -199,19 +199,33 @@ class TransferFunction extends React.Component {
     }
     nodeInputChanged(err, data){
         const varname = this.node.varname;
-        if(varname !== data.varname){return;}
-        this.setState({
-            valMin: data.input[2].value,
-            valMax: data.input[3].value
-        });
+        if (varname !== data.varname){return;}
+
+		if (data.input[0].value.length >= this.numVals * 4) {
+			for (let i = 0; i < this.numVals; ++i) {
+				this.valueRed[i]   = data.input[0].value[i * 4 + 0] / 0xFF;
+				this.valueGreen[i] = data.input[0].value[i * 4 + 1] / 0xFF;
+				this.valueBlue[i]  = data.input[0].value[i * 4 + 2] / 0xFF;
+				this.valueAlpha[i] = data.input[0].value[i * 4 + 3] / 0xFF;
+			}
+		}
+
+		this.setState({
+			valMin: data.input[2].value,
+			valMax: data.input[3].value
+		});
+
+		if (this.state.valMin !== data.input[2].value || this.state.valMax !== data.input[3].value) {
+	        setTimeout((()=>{if(this.changeCallback){this.changeCallback(this);}}).bind(this), 50);
+		}
+		this.state.valMin = data.input[2].value;
+		this.state.valMax = data.input[3].value;
         this.drawGraph();
-        setTimeout((()=>{if(this.changeCallback){this.changeCallback(this);}}).bind(this), 50);
     }
     componentDidMount(){
         this.wrapper = ReactDOM.findDOMNode(this.refs.wrapper);
         this.graphMode = (1|2|4);
         this.init();
-        this.drawGraph();
         this.canvas.addEventListener('mousedown', ((eve)=>{
             this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;
             this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;
@@ -254,6 +268,7 @@ class TransferFunction extends React.Component {
         this.canvas.width  = this.cw;
         this.canvas.height = this.cw;
         this.ctx = this.canvas.getContext ('2d');
+		this.nodeInputChanged(null, this.props.node);
     }
     drawGraph(){
         var cw = this.cw;
@@ -443,8 +458,8 @@ class TransferFunction extends React.Component {
                         defaultmaxval :max
                     }
                 });
-                this.drawGraph();
             }
+			this.drawGraph();
         }
     }
     /*setAnalyzeResult(result, component){
@@ -590,4 +605,3 @@ module.exports = TransferFunction;
 //     }
 // };
 //
-
