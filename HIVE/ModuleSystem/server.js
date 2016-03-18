@@ -14,6 +14,8 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
     babel = require('babel-core'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
+    moduleListCache = true, 
+    cacheData = null,
 	seserver = http.createServer(function (req, res) {
 		'use strict';
 		console.log('REQ>', req.url);
@@ -22,13 +24,18 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
         } else if (req.url === '/modulelist.json') { // temp
-            makeNodeList((function (res) {
-                return function (err, nodelist) {
-                    jsondata = {error: err, data:nodelist};
-                    file = JSON.stringify(jsondata);
-                    res.end(file);
-                };
-            }(res)));
+            if (cacheData) {
+                res.end(cacheData);
+            } else {
+                makeNodeList((function (res) {
+                    return function (err, nodelist) {
+                        jsondata = {error: err, data:nodelist};
+                        file = JSON.stringify(jsondata);
+                        cacheData = file;
+                        res.end(file);
+                    };
+                }(res)));
+            }
 		} else {
 			try {
 				fname = req.url.substr(1, req.url.length); // remove '/'
