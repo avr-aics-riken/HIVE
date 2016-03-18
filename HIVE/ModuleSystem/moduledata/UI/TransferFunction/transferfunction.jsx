@@ -218,8 +218,6 @@ class TransferFunction extends React.Component {
 		if (this.state.valMin !== data.input[2].value || this.state.valMax !== data.input[3].value) {
 	        setTimeout((()=>{if(this.changeCallback){this.changeCallback(this);}}).bind(this), 50);
 		}
-		this.state.valMin = data.input[2].value;
-		this.state.valMax = data.input[3].value;
         this.drawGraph();
     }
     componentDidMount(){
