@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom'
 
 const minWidth = 256;
 const minHeight = 256;
-const footerHeight = 25;
+const footerHeight = 50;
 
 class RenderView extends React.Component {
 	constructor(props) {
@@ -435,7 +435,7 @@ class RenderView extends React.Component {
 			},
 			cameraButtonArea : {
 				height : "25px",
-				backgroundColor : "rgba(67, 67, 67, 0.9)"
+				backgroundColor : "rgba(67, 67, 67, 0.9)",
 			},
 			cameraButton : {
 				width : "32px",
@@ -448,7 +448,13 @@ class RenderView extends React.Component {
 				textAlign : "center",
 				fontSize : "11px"
 			},
+			presetArea : {
+				height : "25px",
+			padding : "2px",
+				backgroundColor : "rgba(67, 67, 67, 0.9)",
+			},
 			presetsSelect : {
+				width : "100px",
 				height : "20px",
 				backgroundColor : "white"
 			}
@@ -613,7 +619,7 @@ class RenderView extends React.Component {
 							-Z
 						</div>
 					</div>
-					<div style={styles.cameraButtonArea}>
+					<div style={styles.presetArea}>
 						<span style={{marginLeft : "3px", fontSize : "11px"}}>Layer:</span>
 						<select ref="presetSelect" style={styles.presetSelect} onChange={this.onPresetChange.bind(this)}>
 							<option>1</option>
