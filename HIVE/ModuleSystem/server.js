@@ -24,7 +24,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
         } else if (req.url === '/modulelist.json') { // temp
-            if (cacheData) {
+            if (moduleListCache === true && cacheData) {
                 res.end(cacheData);
             } else {
                 makeNodeList((function (res) {
