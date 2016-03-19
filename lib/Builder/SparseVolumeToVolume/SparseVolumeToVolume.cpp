@@ -24,10 +24,15 @@ int SparseVolumeToVolume::Create(BufferSparseVolumeData *sparseVolume, float res
         return 0;
     }
 
+    if (sparseVolume->VolumeBlocks().empty()) {
+        return 0;
+    }
+
 	int width  = sparseVolume->Width();
 	int height = sparseVolume->Height();
 	int depth  = sparseVolume->Depth();
-	size_t components = sparseVolume->Component();
+    // Use component info in first volume block, and assume all volume blocks have same # of components;
+	size_t components = sparseVolume->VolumeBlocks()[0].isRaw ? sparseVolume->VolumeBlocks()[0].components : sparseVolume->VolumeBlocks()[0].volume->Component();
 
 	size_t destWidth  = width * resamplingRate;
 	size_t destHeight = height * resamplingRate;
@@ -45,6 +50,8 @@ int SparseVolumeToVolume::Create(BufferSparseVolumeData *sparseVolume, float res
 	if (!sparseVolume->IsBuilt()) {
 		sparseVolume->Build();
 	}
+
+    int numChannels = (components > 16) ? 16 : components; // Up to 16 channels.
 
 	// Resample sparse voxel and create voxel data.
 	#ifdef _OPENMP

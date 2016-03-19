@@ -81,8 +81,8 @@ bool RawSparseVolumeLoader::Load(const char* filename, int width, int height, in
  */
 bool RawSparseVolumeLoader::LoadFromPointer(void *ptr)
 {
-    printf("RawSparseVol ptr = %p\n", ptr);
     if (ptr == NULL) {
+        printf("[RawSparseVolumeLoader] WARN: NULL input for LoadFromPointer\n");
         return false;
     }
     
@@ -123,36 +123,25 @@ bool RawSparseVolumeLoader::LoadFromPointer(void *ptr)
 
     int globalDim[3] = {-1, -1, -1};
 
+    m_sparseVolume->Create();
+
     for (int i = 0; i < sparseVolume->numBlocks; i++) {
         HIVEVolumeBlock &vb = sparseVolume->blocks[i];
 
-        // @todo { Don't create intermediate BufferVolumeData to save memory. }
-        BufferVolumeData *vol = BufferVolumeData::CreateInstance();
-        vol->Create(vb.size[0], vb.size[1], vb.size[2], sparseVolume->components);
-
-        // Convert voxel data to float precision if input is double.
+        BufferSparseVolumeData::VolumeBlockFormat format = BufferSparseVolumeData::FORMAT_FLOAT;
         if (isDouble) {
-            const double* ptr = reinterpret_cast<const double*>(vb.data);
-            for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * sparseVolume->components; i++) {
-                vol->Buffer()->GetBuffer()[i] = ptr[i];
-            }
-        } else {
-            const float* ptr = reinterpret_cast<const float*>(vb.data);
-            for (size_t i = 0; i < vb.size[0] * vb.size[1] * vb.size[2] * sparseVolume->components; i++) {
-                vol->Buffer()->GetBuffer()[i] = ptr[i];
-            }
+            format = BufferSparseVolumeData::FORMAT_DOUBLE;
         }
 
-        m_sparseVolume->AddVolume(vb.level, vb.offset[0], vb.offset[1], vb.offset[2],
-            vb.extent[0], vb.extent[1], vb.extent[2], vol);
+        // Just pass pointer of raw volume data.
+        m_sparseVolume->AddRAWVolumeBlock(vb.level, vb.offset[0], vb.offset[1], vb.offset[2],
+            vb.extent[0], vb.extent[1], vb.extent[2], vb.size[0], vb.size[1], vb.size[2], sparseVolume->components, format, vb.data);
 
         // Ignore sparseVolume->globalDim and compute globalDim from volume blocks.
         globalDim[0] = std::max(vb.offset[0] + vb.extent[0], globalDim[0]);
         globalDim[1] = std::max(vb.offset[1] + vb.extent[1], globalDim[1]);
         globalDim[2] = std::max(vb.offset[2] + vb.extent[2], globalDim[2]);
     }
-
-    m_sparseVolume->Create(globalDim[0], globalDim[1], globalDim[2], sparseVolume->components);
 
     return true;
 }

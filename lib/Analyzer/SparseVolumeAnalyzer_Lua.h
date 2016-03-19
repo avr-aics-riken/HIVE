@@ -9,7 +9,7 @@
 #include "LuaUtil.h"
 #include "Analyzer.h"
 #include "SparseVolumeAnalyzer.h"
-//#include "SparseVolumeModel_Lua.h"
+#include "BufferSparseVolumeData_Lua.h"
 /**
  * SparseVolumeAnalyzer Luaラッパー
  */

@@ -6,7 +6,164 @@
 #include "SparseVolumeAnalyzer.h"
 #include "Analyzer.h"
 #include "../Buffer/BufferSparseVolumeData.h"
+#include "../Buffer/BufferVolumeData.h"
 #include "Buffer.h"
+
+namespace {
+
+void FindMinMax(double minVal[3], double maxVal[3], BufferSparseVolumeData* volume)
+{
+    // First find min/max
+    minVal[0] = minVal[1] = minVal[2] = std::numeric_limits<double>::max();
+    maxVal[0] = maxVal[1] = maxVal[2] = -std::numeric_limits<double>::max();
+
+    for (size_t i = 0; i < volume->VolumeBlocks().size(); i++) {
+
+        BufferSparseVolumeData::VolumeBlock& block = volume->VolumeBlocks()[i];
+
+        if (block.isRaw) {
+            if (block.format == BufferSparseVolumeData::FORMAT_FLOAT) {
+                const float* buffer = reinterpret_cast<const float*>(block.rawData);
+                if (block.components == 1) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        minVal[0] = std::min(minVal[0], (double)buffer[i]);
+                        maxVal[0] = std::max(maxVal[0], (double)buffer[i]);
+                    }
+                } else if (block.components == 3) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        minVal[0] = std::min(minVal[0], (double)buffer[3*i+0]);
+                        maxVal[0] = std::max(maxVal[0], (double)buffer[3*i+0]);
+                        minVal[1] = std::min(minVal[1], (double)buffer[3*i+1]);
+                        maxVal[1] = std::max(maxVal[1], (double)buffer[3*i+1]);
+                        minVal[2] = std::min(minVal[2], (double)buffer[3*i+2]);
+                        maxVal[2] = std::max(maxVal[2], (double)buffer[3*i+2]);
+                    }
+                } else {
+                    // not supported.
+                }
+
+            } else if (block.format == BufferSparseVolumeData::FORMAT_DOUBLE) {
+                const double* buffer = reinterpret_cast<const double*>(block.rawData);
+                if (block.components == 1) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        minVal[0] = std::min(minVal[0], buffer[i]);
+                        maxVal[0] = std::max(maxVal[0], buffer[i]);
+                    }
+                } else if (block.components == 3) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        minVal[0] = std::min(minVal[0], buffer[3*i+0]);
+                        maxVal[0] = std::max(maxVal[0], buffer[3*i+0]);
+                        minVal[1] = std::min(minVal[1], buffer[3*i+1]);
+                        maxVal[1] = std::max(maxVal[1], buffer[3*i+1]);
+                        minVal[2] = std::min(minVal[2], buffer[3*i+2]);
+                        maxVal[2] = std::max(maxVal[2], buffer[3*i+2]);
+                    }
+                } else {
+                    // not supported.
+                }
+            }
+
+        } else {
+            const float* buffer = static_cast<const float*>(block.volume->Buffer()->GetBuffer());
+            const int temp_num[3] = {
+                block.volume->Width(),
+                block.volume->Height(),
+                block.volume->Depth()
+            };
+
+            const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
+            if (temp_num[0] == 0 || temp_num[1] == 0 || temp_num[2] == 0 || fnum <= 0) {
+                fprintf(stderr,"Volume data empty\n");
+                return;
+            }
+
+            if (block.volume->Component() == 1) {
+                for (size_t i = 0; i < temp_num[0] * temp_num[1] * temp_num[2]; i++) {
+                    minVal[0] = std::min(minVal[0], (double)buffer[i]);
+                    maxVal[0] = std::max(maxVal[0], (double)buffer[i]);
+                }
+            } else if (block.volume->Component() == 3) {
+                for (size_t i = 0; i < temp_num[0] * temp_num[1] * temp_num[2]; i++) {
+                    minVal[0] = std::min(minVal[0], (double)buffer[3*i+0]);
+                    maxVal[0] = std::max(maxVal[0], (double)buffer[3*i+0]);
+                    minVal[1] = std::min(minVal[1], (double)buffer[3*i+1]);
+                    maxVal[1] = std::max(maxVal[1], (double)buffer[3*i+1]);
+                    minVal[2] = std::min(minVal[2], (double)buffer[3*i+2]);
+                    maxVal[2] = std::max(maxVal[2], (double)buffer[3*i+2]);
+                }
+            } else {
+                fprintf(stderr,"# of components in the volume cell must be 1, 3.\n");
+            }
+        }
+    }
+}
+
+// Support scalar or vector(3) only.
+void HistogramContribute(Histogram* hist, int channel, BufferSparseVolumeData* volume)
+{
+    for (size_t i = 0; i < volume->VolumeBlocks().size(); i++) {
+
+        BufferSparseVolumeData::VolumeBlock& block = volume->VolumeBlocks()[i];
+
+        if (block.isRaw) {
+            if (block.format == BufferSparseVolumeData::FORMAT_FLOAT) {
+                const float* buffer = reinterpret_cast<const float*>(block.rawData);
+                if (block.components == 1) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        hist->Contribute(buffer[i]);
+                    }
+                } else if (block.components == 3) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        hist->Contribute(buffer[3*i+channel]);
+                    }
+                } else {
+                    // not supported.
+                }
+
+            } else if (block.format == BufferSparseVolumeData::FORMAT_DOUBLE) {
+                const double* buffer = reinterpret_cast<const double*>(block.rawData);
+                if (block.components == 1) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        hist->Contribute(buffer[i]);
+                    }
+                } else if (block.components == 3) {
+                    for (size_t i = 0; i < block.size[0] * block.size[1] * block.size[2]; i++) {
+                        hist->Contribute(buffer[3*i+channel]);
+                    }
+                } else {
+                    // not supported.
+                }
+            }
+
+        } else {
+            const float* buffer = static_cast<const float*>(block.volume->Buffer()->GetBuffer());
+            const int temp_num[3] = {
+                block.volume->Width(),
+                block.volume->Height(),
+                block.volume->Depth()
+            };
+
+            const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
+            if (temp_num[0] == 0 || temp_num[1] == 0 || temp_num[2] == 0 || fnum <= 0) {
+                return;
+            }
+
+            if (block.volume->Component() == 1) {
+                for (size_t i = 0; i < temp_num[0] * temp_num[1] * temp_num[2]; i++) {
+                    hist->Contribute(buffer[i]);
+                }
+            } else if (block.volume->Component() == 3) {
+                for (size_t i = 0; i < temp_num[0] * temp_num[1] * temp_num[2]; i++) {
+                    hist->Contribute(buffer[3*i+channel]);
+                }
+            } else {
+                // not supported
+            }
+        }
+    }
+}
+
+}   // namespace
 
 /// コンストラクタ
 SparseVolumeAnalyzer::SparseVolumeAnalyzer()
@@ -86,40 +243,42 @@ const std::vector<float>& SparseVolumeAnalyzer::GetHistgram() const
  * 最小最大を指定し, ヒストグラムを返す
  * @return ヒストグラム
  */
-const std::vector<float> SparseVolumeAnalyzer::GetHistgramInRange(SparseVolumeModel *model, double min, double max) const
+const std::vector<float> SparseVolumeAnalyzer::GetHistgramInRange(BufferSparseVolumeData *svolume, double minVal, double maxVal) const
 {
-    SparseVolumeAnalyzerProc proc;
+    VolumeAnalyzerProc proc;
     std::vector<float> histgram[3];
     
-    // TODO!
-    /*if(model->GetSparseVolume()) {
-        BufferSparseVolumeData *volume = model->GetSparseVolume();
-        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
-        int temp_num[3] = {
-            volume->Width(),
-            volume->Height(),
-            volume->Depth()
-        };
+    if (!svolume || svolume->GetType() != BufferData::TYPE_SPARSEVOLUME) {
+        fprintf(stderr,"Invalid volume data\n");
+        return histgram[0];
+    }
+
+    if (svolume->VolumeBlocks().empty()) {
+        return histgram[0];
+    }
+
+    // 2. compute hisrogram with a specified range.
+    int components = svolume->VolumeBlocks()[0].isRaw ? svolume->VolumeBlocks()[0].components : svolume->VolumeBlocks()[0].volume->Component();
+    if (components == 1 || components == 3) {
+        // OK
+    } else {
+        return histgram[0];
+    }
+
+    int numBins = 256;
+    if (components == 1) {
+        Histogram hist(numBins, minVal, maxVal);
+        HistogramContribute(&hist, 0, svolume);
+        hist.GetNormalizedHistogram(histgram[0]);
+    } else {
+        for (int c = 0; c < components; c++) {
+            Histogram hist(numBins, minVal, maxVal);
+            HistogramContribute(&hist, c, svolume);
+            hist.GetNormalizedHistogram(histgram[c]);
+        }
+    }
         
-        const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
-        if(fnum <= 0)
-        {
-            fprintf(stderr,"SparseVolume data empty\n");
-        }
-        else
-        {
-            if (volume->Component() == 1) {
-                proc.AnalyzeScalarInRange(histgram[0], min, max, buffer, temp_num);
-            } else if (volume->Component() == 3) {
-                double temp_min[3] = { min, min, min };
-                double temp_max[3] = { min, min, min };
-                proc.AnalyzeVectorInRange(histgram, temp_min, temp_max, buffer, temp_num);
-            } else {
-                fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
-            }
-        }
-    }*/
-    return histgram[0];
+    return histgram[0]; // @fixme { Only returns histgram of first volume component. }
 }
 
 /**
@@ -128,38 +287,44 @@ const std::vector<float> SparseVolumeAnalyzer::GetHistgramInRange(SparseVolumeMo
  * @retval true 成功
  * @retval false 失敗
  */
-bool SparseVolumeAnalyzer::Execute(SparseVolumeModel *model)
+bool SparseVolumeAnalyzer::Execute(BufferSparseVolumeData *svolume)
 {
-    SparseVolumeAnalyzerProc proc;
-    
-    // TODO!
-    /*if(model->GetSparseVolume()) {
-        BufferSparseVolumeData *volume = model->GetSparseVolume();
-        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+    if (!svolume || svolume->GetType() != BufferData::TYPE_VOLUME) {
+        fprintf(stderr,"Invalid volume data.");
+        return false;
+    }
 
-        int temp_num[3] = {
-            volume->Width(),
-            volume->Height(),
-            volume->Depth()
-        };
+    if (svolume->VolumeBlocks().empty()) {
+        return false;
+    }
+   
+    // 1. first find min/max
+    m_minVal[0] = m_minVal[1] = m_minVal[2] = std::numeric_limits<double>::max();
+    m_maxVal[0] = m_maxVal[1] = m_maxVal[2] = -std::numeric_limits<double>::max();
 
-        const int fnum = temp_num[0] + temp_num[1] + temp_num[2];
-        if(fnum <= 0)
-        {
-            fprintf(stderr,"SparseVolume data empty\n");
-            return false;
-        }
-        
-        if (volume->Component() == 1) {
-            proc.AnalyzeScalar(m_volHist[0], m_minVal[0], m_maxVal[0], buffer, temp_num);
-        } else if (volume->Component() == 3) {
-            proc.AnalyzeVector(m_volHist, m_minVal, m_maxVal, buffer, temp_num);
-        } else {
-            fprintf(stderr,"# of components in the volume cell must be 1 or 3.\n");
-        }
+    FindMinMax(m_minVal, m_maxVal, svolume);
+
+    // 2. compute hisrogram.
+    int components = svolume->VolumeBlocks()[0].isRaw ? svolume->VolumeBlocks()[0].components : svolume->VolumeBlocks()[0].volume->Component();
+    if (components == 1 || components == 3) {
+        // OK
     } else {
-        fprintf(stderr,"SparseVolume data not found.");
-    }*/
+        return false;
+    }
+
+    int numBins = 256;
+    if (components == 1) {
+        Histogram hist(numBins, m_minVal[0], m_maxVal[0]);
+        HistogramContribute(&hist, 0, svolume);
+        hist.GetNormalizedHistogram(m_volHist[0]);
+    } else {
+        for (int c = 0; c < components; c++) {
+            Histogram hist(numBins, m_minVal[c], m_maxVal[c]);
+            HistogramContribute(&hist, c, svolume);
+            hist.GetNormalizedHistogram(m_volHist[c]);
+        }
+    }
+
     return true;
 }
 
