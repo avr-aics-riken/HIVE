@@ -597,7 +597,7 @@ export default class ActionExecuter {
 									}
 								}
 							}
-							this.store.emit(Constants.NODE_INPUT_PROPERTY_CHANGED, null, dstNode, dstNode.input[postInputList[i].index]);
+							this.store.emit(Constants.NODE_INPUT_PROPERTY_CHANGED, null, dstNode, dstNode.input[i])
 							isInputChanged = true;
 						}
 					}
