@@ -1,8 +1,8 @@
 UniformTexture = {}
-setmetatable(UniformTexture, {__index = BaseComponent})
+setmetatable(UniformTexture, {__index = HiveBaseModule})
 
 UniformTexture.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=UniformTexture})
     return this
 end

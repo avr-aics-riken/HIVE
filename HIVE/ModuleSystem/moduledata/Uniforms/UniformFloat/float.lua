@@ -1,8 +1,8 @@
 UniformFloat = {}
-setmetatable(UniformFloat, {__index = BaseComponent})
+setmetatable(UniformFloat, {__index = HiveBaseModule})
 
 UniformFloat.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=UniformFloat})
     return this
 end

@@ -1,9 +1,9 @@
 
 CubeGenerator = {}
-setmetatable(CubeGenerator, {__index = BaseComponent})
+setmetatable(CubeGenerator, {__index = HiveBaseModule})
 
 CubeGenerator.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.gen = PrimitiveGenerator()
     setmetatable(this, {__index=CubeGenerator})
     return this

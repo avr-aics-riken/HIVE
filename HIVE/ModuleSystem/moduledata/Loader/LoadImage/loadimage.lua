@@ -1,8 +1,8 @@
 LoadImage = {}
-setmetatable(LoadImage, {__index = BaseComponent})
+setmetatable(LoadImage, {__index = HiveBaseModule})
 
 LoadImage.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=LoadImage})
     this.loader = ImageLoader()
     return this

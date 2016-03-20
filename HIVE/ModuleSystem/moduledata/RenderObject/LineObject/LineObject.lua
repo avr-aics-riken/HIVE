@@ -1,8 +1,8 @@
 LineObject = {}
-setmetatable(LineObject, {__index = BaseComponent})
+setmetatable(LineObject, {__index = HiveBaseModule})
 
 LineObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
     

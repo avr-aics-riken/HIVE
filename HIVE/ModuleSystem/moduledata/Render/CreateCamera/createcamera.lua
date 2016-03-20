@@ -1,9 +1,9 @@
 
 CreateCamera = {}
-setmetatable(CreateCamera, {__index = BaseComponent})
+setmetatable(CreateCamera, {__index = HiveBaseModule})
 
 CreateCamera.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.cam = Camera()
     this.property = {
         screensize = {512, 512},

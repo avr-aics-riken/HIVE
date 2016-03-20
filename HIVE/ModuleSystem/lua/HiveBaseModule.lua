@@ -1,17 +1,17 @@
 
-local BaseComponent = {}
+local HiveBaseModule = {}
 
-BaseComponent.new = function (varname)
+HiveBaseModule.new = function (varname)
     local this = {}
     this.varname = varname
     this.property = {}
     this.connection = {}
     this.value = {}
-    setmetatable(this, {__index = BaseComponent})
+    setmetatable(this, {__index = HiveBaseModule})
     return this;
 end
 
-function BaseComponent:ClearConnect()
+function HiveBaseModule:ClearConnect()
     self.connection = {}
 end
 
@@ -25,7 +25,7 @@ local function checkArray(name)
       return true, arrayName, idx
 end
 
-function BaseComponent:Connect(propname, value)
+function HiveBaseModule:Connect(propname, value)
     local r, arrayname, index
     r, arrayname, index = checkArray(propname)
     if r == false then
@@ -40,15 +40,15 @@ function BaseComponent:Connect(propname, value)
     end        
 end
 
-function BaseComponent:Set(propname, value)
+function HiveBaseModule:Set(propname, value)
     self.property[propname] = value
 end
 
-function BaseComponent:Do()    
-    print('[Warning:BaseComponent][LUA] Need to override Do() method.')
+function HiveBaseModule:Do()    
+    print('[Warning:HiveBaseModule][LUA] Need to override Do() method.')
 end
 
-function BaseComponent:UpdateValue()
+function HiveBaseModule:UpdateValue()
     self.value = {}
     for i, v in pairs(self.property) do
         self.value[i] = v;
@@ -58,7 +58,7 @@ function BaseComponent:UpdateValue()
     end
 end
 
-function BaseComponent:PrintValue()
+function HiveBaseModule:PrintValue()
     for i, v in pairs(self.property) do
         print('property['..i..']=',v)
     end
@@ -67,4 +67,4 @@ function BaseComponent:PrintValue()
     end
 end
 
-return BaseComponent
+return HiveBaseModule

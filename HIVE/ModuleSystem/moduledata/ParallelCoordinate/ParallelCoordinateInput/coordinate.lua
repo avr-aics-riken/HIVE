@@ -1,8 +1,8 @@
 ParallelCoordinateVolumeInput = {}
-setmetatable(ParallelCoordinateVolumeInput, {__index = BaseComponent})
+setmetatable(ParallelCoordinateVolumeInput, {__index = HiveBaseModule})
 
 ParallelCoordinateVolumeInput.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordinateVolumeInput})
     return this
 end

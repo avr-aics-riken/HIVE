@@ -1,8 +1,8 @@
 TransferFunction = {}
-setmetatable(TransferFunction, {__index = BaseComponent})
+setmetatable(TransferFunction, {__index = HiveBaseModule})
 
 TransferFunction.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=TransferFunction})
     this.gentex = GenTexture()
     return this

@@ -1,9 +1,9 @@
 
 LoadSTL = {}
-setmetatable(LoadSTL, {__index = BaseComponent})
+setmetatable(LoadSTL, {__index = HiveBaseModule})
 
 LoadSTL.new = function (varname)
-    local this = BaseComponent.new(varname);
+    local this = HiveBaseModule.new(varname);
     this.loader = require('StlLoader')()
     setmetatable(this, {__index=LoadSTL})
     return this

@@ -1,9 +1,9 @@
 
 QuadGenerator = {}
-setmetatable(QuadGenerator, {__index = BaseComponent})
+setmetatable(QuadGenerator, {__index = HiveBaseModule})
 
 QuadGenerator.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.gen = PrimitiveGenerator()
     setmetatable(this, {__index=QuadGenerator})
     return this

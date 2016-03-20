@@ -1,8 +1,8 @@
 UniformVec4 = {}
-setmetatable(UniformVec4, {__index = BaseComponent})
+setmetatable(UniformVec4, {__index = HiveBaseModule})
 
 UniformVec4.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.property = {
         name = 'univec4',
         value = {0,0,0,0}               

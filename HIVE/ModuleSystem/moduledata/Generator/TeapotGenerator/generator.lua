@@ -1,9 +1,9 @@
 
 TeapotGenerator = {}
-setmetatable(TeapotGenerator, {__index = BaseComponent})
+setmetatable(TeapotGenerator, {__index = HiveBaseModule})
 
 TeapotGenerator.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.gen = PrimitiveGenerator()    
     setmetatable(this, {__index=TeapotGenerator})
     return this

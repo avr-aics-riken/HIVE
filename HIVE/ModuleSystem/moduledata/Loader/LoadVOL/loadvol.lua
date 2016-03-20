@@ -1,9 +1,9 @@
 
 LoadVOL = {}
-setmetatable(LoadVOL, {__index = BaseComponent})
+setmetatable(LoadVOL, {__index = HiveBaseModule})
 
 LoadVOL.new = function (varname)
-    local this = BaseComponent.new(varname);
+    local this = HiveBaseModule.new(varname);
     this.loader = require('VolLoader')()
     setmetatable(this, {__index=LoadVOL})
     return this

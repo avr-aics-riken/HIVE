@@ -1,9 +1,9 @@
 
 LoadOBJ = {}
-setmetatable(LoadOBJ, {__index = BaseComponent})
+setmetatable(LoadOBJ, {__index = HiveBaseModule})
 
 LoadOBJ.new = function (varname)
-    local this = BaseComponent.new(varname);
+    local this = HiveBaseModule.new(varname);
     this.loader = require('ObjLoader')()
     setmetatable(this, {__index=LoadOBJ})
     return this

@@ -1,9 +1,9 @@
 
 LoadSPH = {}
-setmetatable(LoadSPH, {__index = BaseComponent})
+setmetatable(LoadSPH, {__index = HiveBaseModule})
 
 LoadSPH.new = function (varname)
-    local this = BaseComponent.new(varname);
+    local this = HiveBaseModule.new(varname);
     this.loader = require('SphLoader')()
     setmetatable(this, {__index=LoadSPH})
     return this

@@ -316,7 +316,7 @@ export default class ActionExecuter {
                 //n = this.store.getRootNodes();
                 let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
                 let luasrc = "package.path = './?.lua;' .. package.path\n";
-                luasrc    += "local BaseComponent = require('BaseComponent')\n";
+                luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
                 luasrc = luasrc + nodeExe.doNodes();
                 //console.log('EXPORT>', luasrc);

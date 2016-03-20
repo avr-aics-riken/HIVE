@@ -1,15 +1,93 @@
 ParallelCoordinate = {}
-setmetatable(ParallelCoordinate, {__index = BaseComponent})
+setmetatable(ParallelCoordinate, {__index = HiveBaseModule})
 
 ParallelCoordinate.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordinate})
+    this.volQ = require('VolumeQuantizer')()
     return this
 end
 
-function ParallelCoordinate:Do()
-    self:UpdateValue()
 
+function sendData(voldata, w, h, d, c, qbit)
+    local minmaxstring = ''
+    local mode = 'raw'
+    local datatype = 'float'    
+    local json = [[{
+        "JSONRPC" : "2.0",
+        "method" : "renderedImage",
+        "to" : ]] .. targetClientId ..[[,
+        "param" : {
+        "type" : "volume",
+        "width" : "]] .. w .. [[",
+        "height" : "]] .. h .. [[",
+        "depth" : "]] .. d .. [[",
+        "component" : "]] .. c .. [[",
+        "datatype": "]] .. datatype .. [[",
+        "varname": "]] .. self.varname .. [[",
+        "mode": "]] .. mode ..  [[",
+        "quantsize": "]] .. qbit ..[[",
+        "minmax":[ ]] .. minmaxstring .. [[ ]
+        },
+        "id":0
+    }]]
+    --print(json)
+    local imageBufferSize = w * h * d * datasize * c
+    HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+    self.bbuffer = HIVE_metabin:BinaryBuffer()
+    network:SendBinary(self.bbuffer, HIVE_metabin:BinaryBufferSize())
+    print('send!!!!!!!!!!!', imageBufferSize, self.varname);
+end
+
+function ParallelCoordinate:Do()    
+    self:UpdateValue()
+    self:PrintValue()
+    
+    if self.value.coordinate == nil then
+        return 'No coordiante input'
+    end
+    for i,v in pairs(self.value.coordinate) do -- dump
+        print('coordinate:', i, v)
+        for j,k in pairs(v) do
+            print(j,k)
+        end
+    end
+    
+    local qbit = self.value.quantizeBit
+    local sdiv = self.value.sampleingDiv
+    local c = 0
+--  self:volQ:Clear()
+--  self:volQ:SetQuantize(qbit)
+--  self:volQ:SetSamplingDiv(sdiv[1], sdiv[2], sdiv[3])
+
+    local voldim = {}           
+    for i,v in pairs(self.value.coordinate) do
+        --print('coordinate:', i, v)
+        if v.volume then
+            c = c + 1
+--            self:volQ:AddVolume(v.volume, v.min, v.max);
+        end
+    end
+    
+    if (c == 0) then
+        return 'No coordinate input(invalid VolumeInput)'
+    end
+    
+    local r = self.volQ:Create(vol)
+    if r == false then
+        return "Faild to create data."
+    end
+    
+--    voldata = volQ:GetData()
+    
+    --send
+    sendData(voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit)    
+    
+    if true then
+        return true
+    end
+    ---------------------------------
+    
     local vol = self.value.volume
     local img = self.value.image
     print('vol=', vol, img)
@@ -19,8 +97,11 @@ function ParallelCoordinate:Do()
     local mode = 'raw'
     local qsize = 1
 
-    print('volvolvolvolvolvolvolvolvolvolvolvolvol', self.vol, vol)
-    if self.vol == vol then return true end
+    print('volvolvolvolvolvolvolvolvolvolvolvolvol', self.oldvol, vol)
+    if self.oldvol == vol then
+        return true
+    end
+    self.oldvol = vol
 
     local minmaxstring = ''
     if vol then

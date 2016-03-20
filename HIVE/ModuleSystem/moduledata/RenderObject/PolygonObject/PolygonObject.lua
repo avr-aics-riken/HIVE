@@ -1,8 +1,8 @@
 PolygonObject = {}
-setmetatable(PolygonObject, {__index = BaseComponent})
+setmetatable(PolygonObject, {__index = HiveBaseModule})
 
 PolygonObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.property = {
         mesh = nil,
         translate = {0,0,0},

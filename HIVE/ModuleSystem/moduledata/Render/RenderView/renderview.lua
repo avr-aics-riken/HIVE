@@ -1,9 +1,9 @@
 
 RenderView = {}
-setmetatable(RenderView, {__index = BaseComponent})
+setmetatable(RenderView, {__index = HiveBaseModule})
 
 RenderView.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.cam = Camera()    
     this.property = {
         screensize = {512, 512},

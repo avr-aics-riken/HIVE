@@ -1,8 +1,8 @@
 Slider = {}
-setmetatable(Slider, {__index = BaseComponent})
+setmetatable(Slider, {__index = HiveBaseModule})
 
 Slider.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=Slider})
     return this
 end

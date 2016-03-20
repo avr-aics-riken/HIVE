@@ -1,8 +1,8 @@
 SparseVolumeObject = {}
-setmetatable(SparseVolumeObject, {__index = BaseComponent})
+setmetatable(SparseVolumeObject, {__index = HiveBaseModule})
 
 SparseVolumeObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
     

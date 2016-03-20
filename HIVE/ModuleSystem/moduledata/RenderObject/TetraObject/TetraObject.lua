@@ -1,8 +1,8 @@
 TetraObject = {}
-setmetatable(TetraObject, {__index = BaseComponent})
+setmetatable(TetraObject, {__index = HiveBaseModule})
 
 TetraObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
     

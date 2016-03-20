@@ -1,8 +1,8 @@
 SaveImage = {}
-setmetatable(SaveImage, {__index = BaseComponent})
+setmetatable(SaveImage, {__index = HiveBaseModule})
 
 SaveImage.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=SaveImage})
     this.saver = ImageSaver()
     return this

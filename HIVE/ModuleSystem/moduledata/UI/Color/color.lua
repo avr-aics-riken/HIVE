@@ -1,8 +1,8 @@
 Color = {}
-setmetatable(Color, {__index = BaseComponent})
+setmetatable(Color, {__index = HiveBaseModule})
 
 Color.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     this.property = {
         value = {1,1,1,1}
     }

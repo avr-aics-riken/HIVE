@@ -1,8 +1,8 @@
 VolumeObject = {}
-setmetatable(VolumeObject, {__index = BaseComponent})
+setmetatable(VolumeObject, {__index = HiveBaseModule})
 
 VolumeObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
     

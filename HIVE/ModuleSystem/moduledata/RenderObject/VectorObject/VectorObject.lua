@@ -1,8 +1,8 @@
 VectorObject = {}
-setmetatable(VectorObject, {__index = BaseComponent})
+setmetatable(VectorObject, {__index = HiveBaseModule})
 
 VectorObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
     

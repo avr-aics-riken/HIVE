@@ -1,8 +1,8 @@
 PointObject = {}
-setmetatable(PointObject, {__index = BaseComponent})
+setmetatable(PointObject, {__index = HiveBaseModule})
 
 PointObject.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
     

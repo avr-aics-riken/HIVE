@@ -1,10 +1,10 @@
 
 
 Isosurf = {}
-setmetatable(Isosurf, {__index = BaseComponent})
+setmetatable(Isosurf, {__index = HiveBaseModule})
 
 Isosurf.new = function (varname)
-    local this = BaseComponent.new(varname)
+    local this = HiveBaseModule.new(varname)
     local vm = require("VolumeToMeshData")();
 	this.vm = vm
     setmetatable(this, {__index=Isosurf})
