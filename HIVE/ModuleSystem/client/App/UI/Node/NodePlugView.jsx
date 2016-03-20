@@ -28,6 +28,7 @@ export default class NodePlugView extends React.Component {
 		this.onNodeCloseChanged = this.onNodeCloseChanged.bind(this);
 
 		this.temporaryPlug = this.temporaryPlug.bind(this);
+		this.hasSameGlobalInout = this.hasSameGlobalInout.bind(this);
 	}
 
 	onPlugCountChanged(err) {
@@ -85,37 +86,67 @@ export default class NodePlugView extends React.Component {
 		}, 0);
 	}
 
+	hasSameGlobalInout(isInput, inout) {
+		if (isInput) {
+			let inputs = this.props.store.getInput();
+			for (let i = 0; i < inputs.length; i = i + 1) {
+				if (inout.name === inputs[i].name && inout.nodeVarname === inputs[i].nodeVarname) {
+					return true;
+				}
+			}
+		} else {
+			let outputs = this.props.store.getOutput();
+			for (let i = 0; i < outputs.length; i = i + 1) {
+				if (inout.name === outputs[i].name && inout.nodeVarname === outputs[i].nodeVarname) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	onPlugHoleSelected(err, data) {
 		if (data.length >= 2) {
 			if (data[0].isInput !== data[1].isInput) {
 				if (data[0].data.type !== data[1].data.type &&
 					data[0].data.type === "all" || data[1].data.type === "all") {
-					console.log("外部に公開する端子へ接続された", data);
+
 					let input = data[0].isInput ? data[0] : data[1];
 					let output = data[0].isInput ? data[1] : data[0];
 					if (data[0].data.type === "all") {
 						if (data[0].isInput) {
-							setTimeout(() => {
-								this.props.action.publishOutput(output.data);
-							}, 0);
+							if (!this.hasSameGlobalInout(false, output.data)) {
+								setTimeout(() => {
+									this.props.action.publishOutput(output.data);
+								}, 0);
+								console.log("外部に公開する端子へ接続された", data);
+							}
 						} else {
-							setTimeout(() => {
-								this.props.action.publishInput(input.data);
-							}, 0);
+							if (!this.hasSameGlobalInout(true, input.data)) {
+								setTimeout(() => {
+									this.props.action.publishInput(input.data);
+								}, 0);
+								console.log("外部に公開する端子へ接続された", data);
+							}
 						}
 					} else if (data[1].data.type === "all") {
 						if (data[1].isInput) {
-							setTimeout(() => {
-								this.props.action.publishOutput(output.data);
-							}, 0);
+							if (!this.hasSameGlobalInout(false, output.data)) {
+								setTimeout(() => {
+									this.props.action.publishOutput(output.data);
+								}, 0);
+								console.log("外部に公開する端子へ接続された", data);
+							}
 						} else {
-							setTimeout(() => {
-								this.props.action.publishInput(input.data);
-							}, 0);
+							if (!this.hasSameGlobalInout(true, input.data)) {
+								setTimeout(() => {
+									this.props.action.publishInput(input.data);
+								}, 0);
+								console.log("外部に公開する端子へ接続された", data);
+							}
 						}
 					}
 				} else if (data[0].data.type === data[1].data.type) {
-					console.log("プラグが接続された", data);
 					let input = data[0].isInput ? data[0] : data[1];
 					let output = data[0].isInput ? data[1] : data[0];
 					setTimeout(() => {
@@ -129,6 +160,7 @@ export default class NodePlugView extends React.Component {
 								name : input.data.name
 							}
 						})
+						console.log("プラグが接続された", data);
 					}, 0);
 				}
 			}
