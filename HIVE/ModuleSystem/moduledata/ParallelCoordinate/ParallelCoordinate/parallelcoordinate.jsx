@@ -93,13 +93,15 @@ class ParallelCoordinate extends React.Component {
         var a, buffer, component, parse, minmax;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
-        if(param.mode !== undefined && param.mode === 'pack'){
-            a = new Uint8Array(data);
+            console.log('image recieved parameter: ', param);
+        if(param.mode !== undefined && param.mode === 'raw'){
+            a = new Uint32Array(data);
             component = parseInt(param.component, 10);
-            if(isNaN(component) || component === null || component === undefined){
-                console.log('parse error: invalid component count');
+            if(isNaN(component) || component === null || component === undefined || component < 2){
+                console.log('invalid component count');
                 return;
             }
+            debugger;
             parse = [];
             minmax = [];
             if(param.minmax || param.minmax.length > 0){
@@ -107,15 +109,15 @@ class ParallelCoordinate extends React.Component {
                     minmax[i] = 1.0 / 255 * (param.minmax[i].max - param.minmax[i].min);
                 }
             }
-            for(let i = 0, j = a.length / 4; i < j; ++i){
-                let k = i * 4;
-                let t = [
-                    a[k]     * minmax[0] + parseFloat(param.minmax[0].min),
-                    a[k + 1] * minmax[1] + parseFloat(param.minmax[1].min),
-                    a[k + 2] * minmax[2] + parseFloat(param.minmax[2].min),
-                    i // * minmax[3] + parseFloat(param.minmax[3].min)
-                ];
-                parse.push(t);
+            for(let i = 0, j = a.length; i < j; ++i){
+                let v = a[i];
+                let w = [];
+                let l = (component - 1) * 8;
+                for(let k = 0; k < component; ++k){
+                    let x = (v >>> l - k * 8) & 0xFF;
+                    w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
+                }
+                parse.push(w);
             }
         }else{
             if(param.datatype === 'byte'){

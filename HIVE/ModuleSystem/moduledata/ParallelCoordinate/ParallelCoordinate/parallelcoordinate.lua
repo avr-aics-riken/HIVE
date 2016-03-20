@@ -10,8 +10,7 @@ ParallelCoordinate.new = function (varname)
 end
 
 
-function sendData(varname, voldata, w, h, d, c, qbit, datasize)
-    local minmaxstring = ''
+function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring)
     local mode = 'raw'
     local datatype = 'float'    
     local json = [[{
@@ -64,7 +63,7 @@ function ParallelCoordinate:Do()
     self.volQ:QuantizeSize(qbit)
     self.volQ:SamplingNum(sdiv[1], sdiv[2], sdiv[3])
 
-    local voldim = {}           
+    local voldim = {}
     for i,v in pairs(self.value.coordinate) do
         --print('coordinate:', i, v, v.userMinmax)
         if v.volume then
@@ -86,12 +85,33 @@ function ParallelCoordinate:Do()
         return "Faild to create data."
     end
     print('CREATE=', r)
+
+    local minmax = self.volQ:GetMinMax()
+    local minmaxstring = ''
+    for i,v in pairs(minmax) do
+        if i == 1 then
+            minmaxstring = minmaxstring .. '{'
+        else
+            minmaxstring = minmaxstring .. ',{'
+        end
+        local flg = false;
+        for j,k in pairs(v) do
+            if not(flg) then
+                minmaxstring = minmaxstring .. '"' .. j .. '":"' .. k .. '"'
+            else
+                minmaxstring = minmaxstring .. ',"' .. j .. '":"' .. k .. '"'
+            end
+            flg = true
+            print('VQ:MinMax', i,j,k)
+        end
+        minmaxstring = minmaxstring .. "}"
+    end
     
     voldata = self.volQ:VolumeData()
     
     --print('volsize =', voldata:GetNum() )
     --send
-    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, 4)    
+    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, 4, minmaxstring)
     
     if true then
         return true
