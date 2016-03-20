@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include <string>
+#include <fstream>
 
 #include "HdmLoader.h"
 //#include "SimpleVOL.h"
@@ -547,6 +548,22 @@ bool HDMLoader::Init(const char *cellidFilename, const char *dataFilename)
 {
 	m_initialized = false;
 
+	{
+		std::ifstream ifs(cellidFilename);
+		if (!ifs) {
+			printf("[HDMLoader] CellID file not found : %s\n", cellidFilename);
+			return false;
+		}
+	}
+
+	{
+		std::ifstream ifs(dataFilename);
+		if (!ifs) {
+			printf("[HDMLoader] DATA file not found : %s\n", dataFilename);
+			return false;
+		}
+	}
+
 	// cellid.bcm
 	BoundaryConditionSetter *bcsetter = new BoundaryConditionSetter;
 	m_loader = new BCMFileIO::BCMFileLoader(cellidFilename, bcsetter);
@@ -554,6 +571,11 @@ bool HDMLoader::Init(const char *cellidFilename, const char *dataFilename)
 
 	BlockManager &blockManager = BlockManager::getInstance();
 	blockManager.printBlockLayoutInfo();
+
+	printf("[HDMLoader] Num blocks = %d\n", blockManager.getNumBlock());
+	if (blockManager.getNumBlock() < 1) {
+		return false;
+	}
 
 	// data.bcm
 	if (!m_loader->LoadAdditionalIndex(dataFilename))
@@ -583,6 +605,10 @@ BufferSparseVolumeData *HDMLoader::LoadField(const char *fieldName,
 											 int virtualCells)
 {
 	// Clear();
+	if (!m_initialized) {
+		fprintf(stderr, "[HDMLoader] Loader is not initialized.\n");
+		return NULL;
+	}
 
 	if (fieldName == NULL)
 	{
@@ -635,7 +661,16 @@ BufferSparseVolumeData *HDMLoader::LoadField(const char *fieldName,
 		int level = blockManager.getBlock(id)->getLevel();
 		maxLevel = (level > maxLevel) ? level : maxLevel;
 	}
+	if (maxLevel == -1) {
+		fprintf(stderr, "[HDMLoader] Failed to find maxLevel.\n");
+		return NULL;
+	}
 	// printf("maxLevel = %d\n", maxLevel);
+
+	if (!m_loader->GetOctree()) {
+		fprintf(stderr, "[HDMLoader] Null input for Octree.\n");
+		return NULL;
+	}
 
 	//
 	const BCMOctree *octree = m_loader->GetOctree();
@@ -663,7 +698,7 @@ BufferSparseVolumeData *HDMLoader::LoadField(const char *fieldName,
 
 	// Prepare SparseVolume
 	//m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
-    RefPtr<BufferSparseVolumeData> sparseVolume = BufferSparseVolumeData::CreateInstance();
+  RefPtr<BufferSparseVolumeData> sparseVolume = BufferSparseVolumeData::CreateInstance();
 	sparseVolume->Create(dim[0], dim[1], dim[2], components);
 
 	{
