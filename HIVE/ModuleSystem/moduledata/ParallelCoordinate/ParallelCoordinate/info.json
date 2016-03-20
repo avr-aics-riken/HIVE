@@ -11,8 +11,12 @@
     "input": [
         {"name": "volume"           , "type": "BufferVolumeData" } ,
         {"name": "sampleingDiv", "type":"vec3", "value":[20,20,20]},
-        {"name": "quantizeBit", "type":"vec3", "value":8},        
-        
+        {"name": "quantizeBit", "type":"float", "value":8},
+        {"name": "coordinate",  "type": "CoordinateData", "array": [
+            {"name": "coordinate[0]",  "type": "CoordinateData"},
+            {"name": "coordinate[1]",  "type": "CoordinateData"},
+            {"name": "coordinate[2]",  "type": "CoordinateData"}
+        ]},
         {"name": "density"          , "type": "bool"               , "value": false , "hole": false, "visible": false, "funcinput": false},
         {"name": "densityNormalize" , "type": "bool"               , "value": true  , "hole": false, "visible": false, "funcinput": false},
         {"name": "logScale"         , "type": "bool"               , "value": false , "hole": false, "visible": false, "funcinput": false},
@@ -25,13 +29,7 @@
             0.75,   0,  50, 200,
             1.0 ,   0,   0,  50
         ], "visible": false, "funcinput": false},
-        {"name": "brushedIndex", "type": "floatarray", "value": [], "visible": false},
-        {"name": "coordinate",  "type": "CoordinateData", "array": [
-			{"name": "coordinate[0]",  "type": "CoordinateData"},
-			{"name": "coordinate[1]",  "type": "CoordinateData"},
-			{"name": "coordinate[2]",  "type": "CoordinateData"}
-		]}
-        
+        {"name": "brushedIndex", "type": "floatarray", "value": [], "visible": false}
     ],
     "output": [
         {"name": "select", "type": "floatarray"}
