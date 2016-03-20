@@ -122,8 +122,8 @@ export default class ItemView extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.store.removeListener(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
-		this.props.store.removeListener(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
+		this.props.store.off(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
+		this.props.store.off(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
 	}
 
 	changeFunc(hole) {

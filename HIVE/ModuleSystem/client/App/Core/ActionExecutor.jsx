@@ -1357,13 +1357,16 @@ export default class ActionExecuter {
 				for (let key in prop.data) {
 					if (frame < Number(key)) {
 						postKey = Number(key);
+						if (preKey === null) {
+							preKey = Number(key);
+						}
 						break;
 					}
 					preKey = Number(key);
 				}
-				if (!preKey) { preKey = postKey; }
-				if (!postKey) { postKey = preKey; }
-				if (preKey && postKey) {
+				if (postKey === null) { postKey = preKey; }
+				if (preKey === null) { preKey = postKey; }
+				if (preKey !== null && postKey !== null) {
 					let value = prop.data[preKey];
 					if (preKey < postKey && (typeof value !== "string") && (typeof value !== "boolean")) {
 						// 線形補間.
