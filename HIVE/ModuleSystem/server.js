@@ -14,7 +14,7 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
     babel = require('babel-core'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
-    moduleListCache = true,
+    moduleListCache = false,
     cacheData = null,
 	seserver = http.createServer(function (req, res) {
 		'use strict';
@@ -118,7 +118,7 @@ function makeNodeList(callback) {
                                 }
                                 json.uiFunc = '';
                                 if (is_array(json.uifile)) {
-                                    uiFunc = ''                            
+                                    uiFunc = '';
                                     for(i in json.uifile) {
                                         uifile = json.uifile[i];
                                         if (getExt(uifile) === 'jsx'){ 
