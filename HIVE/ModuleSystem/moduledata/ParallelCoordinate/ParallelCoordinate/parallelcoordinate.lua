@@ -69,7 +69,11 @@ function ParallelCoordinate:Do()
         print('coordinate:', i, v)
         if v.volume then
             c = c + 1
-            self.volQ:Add(v.volume) --, v.min, v.max);
+            --if (v.userMinmax) then
+            --    self.volQ:AddCustom(v.volume, v.min, v.max);
+            --else
+                self.volQ:Add(v.volume)
+            --end
         end
     end
     
