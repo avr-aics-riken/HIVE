@@ -95,7 +95,7 @@ public:
     {
         m_dim[0] = m_dim[1] = m_dim[2] = 0;
         m_comp   = 0;
-        m_buffer = 0;
+        m_buffer = new FloatBuffer();
         m_isNonUniform = false;
     }
     
