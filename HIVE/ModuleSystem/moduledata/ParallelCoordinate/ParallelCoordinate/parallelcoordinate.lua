@@ -33,7 +33,10 @@ function sendData(varname, voldata, w, h, d, c, qbit, datasize)
         "id":0
     }]]
     --print(json)
+    local imageBuffer = voldata:Pointer()
+    print('ImageBuffer=', imageBuffer)
     local imageBufferSize = w * h * d * datasize * c
+    print('imageBufferSize=', imageBufferSize)
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     local bbuffer = HIVE_metabin:BinaryBuffer()
     network:SendBinary(bbuffer, HIVE_metabin:BinaryBufferSize())
@@ -78,6 +81,7 @@ function ParallelCoordinate:Do()
     if r == false then
         return "Faild to create data."
     end
+    print('CREATE=', r)
     
     voldata = self.volQ:VolumeData()
     
@@ -89,7 +93,7 @@ function ParallelCoordinate:Do()
         return true
     end
     ---------------------------------
-    
+--[[    
     local vol = self.value.volume
     local img = self.value.image
     print('vol=', vol, img)
@@ -167,7 +171,7 @@ function ParallelCoordinate:Do()
         datatype = 'byte';
         datasize = 1
     end
-    
+--]]    
     local json = [[{
         "JSONRPC" : "2.0",
         "method" : "renderedImage",
@@ -186,13 +190,14 @@ function ParallelCoordinate:Do()
         },
         "id":0
     }]]
-    print(json)
+--[[    print(json)
     print('imagebuffer=', imageBuffer)
     local imageBufferSize = w * h * d * datasize * c
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     self.bbuffer = HIVE_metabin:BinaryBuffer()
     network:SendBinary(self.bbuffer, HIVE_metabin:BinaryBufferSize())
     print('send!!!!!!!!!!!', imageBufferSize, self.varname);
+    --]]
     return true
 end
 
