@@ -11,7 +11,7 @@
     "input": [
         {"name": "volume"           , "type": "BufferVolumeData" } ,
         {"name": "sampleingDiv", "type":"vec3", "value":[20,20,20]},
-        {"name": "quantizeBit", "type":"vec3", "value":8},
+        {"name": "quantizeBit", "type":"float", "value":8},
         {"name": "coordinate",  "type": "CoordinateData", "array": [
             {"name": "coordinate[0]",  "type": "CoordinateData"},
             {"name": "coordinate[1]",  "type": "CoordinateData"},

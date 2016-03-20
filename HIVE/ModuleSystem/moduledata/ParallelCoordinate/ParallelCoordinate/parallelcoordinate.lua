@@ -9,7 +9,7 @@ ParallelCoordinate.new = function (varname)
 end
 
 
-function sendData(voldata, w, h, d, c, qbit)
+function sendData(varname, voldata, w, h, d, c, qbit, datasize)
     local minmaxstring = ''
     local mode = 'raw'
     local datatype = 'float'    
@@ -24,7 +24,7 @@ function sendData(voldata, w, h, d, c, qbit)
         "depth" : "]] .. d .. [[",
         "component" : "]] .. c .. [[",
         "datatype": "]] .. datatype .. [[",
-        "varname": "]] .. self.varname .. [[",
+        "varname": "]] .. varname .. [[",
         "mode": "]] .. mode ..  [[",
         "quantsize": "]] .. qbit ..[[",
         "minmax":[ ]] .. minmaxstring .. [[ ]
@@ -34,9 +34,9 @@ function sendData(voldata, w, h, d, c, qbit)
     --print(json)
     local imageBufferSize = w * h * d * datasize * c
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-    self.bbuffer = HIVE_metabin:BinaryBuffer()
-    network:SendBinary(self.bbuffer, HIVE_metabin:BinaryBufferSize())
-    print('send!!!!!!!!!!!', imageBufferSize, self.varname);
+    local bbuffer = HIVE_metabin:BinaryBuffer()
+    network:SendBinary(bbuffer, HIVE_metabin:BinaryBufferSize())
+    print('send!!!!!!!!!!!', imageBufferSize, varname);
 end
 
 function ParallelCoordinate:Do()    
@@ -81,7 +81,7 @@ function ParallelCoordinate:Do()
 --    voldata = volQ:GetData()
     
     --send
-    sendData(voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit)    
+    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, 4)    
     
     if true then
         return true
