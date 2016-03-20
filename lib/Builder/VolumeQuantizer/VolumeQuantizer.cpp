@@ -115,7 +115,7 @@ int VolumeQuantizer::Create()
     const int comp   = getComponentSize(bits, m_inputs.size());
 
     // alloc new buffer
-    m_volume->Create(width / step_w, height / step_h, depth / step_d, comp);
+    m_volume->Create(m_sampling[0], m_sampling[1], m_sampling[2], comp);
     const int tarW = m_volume->Width();
     const int tarH = m_volume->Height();
     const int tarD = m_volume->Depth();
