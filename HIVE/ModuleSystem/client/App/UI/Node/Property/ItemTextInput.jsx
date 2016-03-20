@@ -186,6 +186,7 @@ export default class ItemTextInput extends React.Component {
 
 	addKey() {
 		const styles = this.styles.bind(this)();
+		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
 		if (this.props.changeKeyFunc !== undefined) {
 			return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
 		}

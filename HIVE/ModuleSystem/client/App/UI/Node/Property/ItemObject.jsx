@@ -133,7 +133,7 @@ export default class ItemObject extends React.Component {
 		}
 	}
 
-	addKeyButton() {
+	addKeyElem() {
 		if (this.props.hasOwnProperty('store')) {
 			const styles = this.styles.bind(this)();
 			return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
@@ -144,7 +144,7 @@ export default class ItemObject extends React.Component {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						{this.addKeyButton.bind(this)()}
+						{this.addKeyElem.bind(this)()}
 						{this.props.initialParam.name}
 					</div>
 					<div style={styles.value}>

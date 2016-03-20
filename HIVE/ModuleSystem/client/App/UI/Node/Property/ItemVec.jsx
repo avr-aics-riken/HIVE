@@ -232,11 +232,17 @@ export default class ItemVec extends React.Component {
 		}
 	}
 
+	addKeyElem() {
+		const styles = this.styles.bind(this)();
+		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
+		return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />
+						{this.addKeyElem.bind(this)()}
 						{this.props.initialParam.name}
 					</div>
                     <div style={styles.value}>
