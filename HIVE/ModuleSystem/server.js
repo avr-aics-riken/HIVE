@@ -29,7 +29,18 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
             } else {
                 makeNodeList((function (res) {
                     return function (err, nodelist) {
-                        jsondata = {error: err, data:nodelist};
+                        // sort node list
+                        var arr = [], dest = [];
+                        var temp = {};
+                        for(var i = 0; i < nodelist.length; ++i){
+                            arr.push(nodelist[i].name);
+                            temp[nodelist[i].name] = nodelist[i];
+                        }
+                        arr.sort();
+                        for(var i = 0; i < arr.length; ++i){
+                            dest[i] = temp[arr[i]];
+                        }
+                        jsondata = {error: err, data:dest};
                         file = JSON.stringify(jsondata);
                         cacheData = file;
                         res.end(file);
