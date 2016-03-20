@@ -217,6 +217,10 @@ export default class NodeView extends React.Component {
 		this.width = rect.right - rect.left;
 		this.height = rect.bottom - rect.top;
 
+		this.pos = {
+			x : this.width / 2,
+			y : this.height / 2
+		};
 		this.props.nodeStore.on(Store.NODE_MOVED, this.moveNode);
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onNodeCountChanged);
 		this.props.nodeStore.on(Store.ZOOM_CHANGED, this.onZoomChanged);
@@ -296,8 +300,8 @@ export default class NodeView extends React.Component {
 			h : r.bottom - r.top
 		};
 		let realRect = {
-			x : rect.x * invzoom,
-			y : rect.y * invzoom,
+			x : this.state.offset[0],
+			y : this.state.offset[1],
 			w : rect.w * invzoom,
 			h : rect.h * invzoom
 		};
