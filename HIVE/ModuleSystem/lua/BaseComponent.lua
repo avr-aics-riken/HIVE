@@ -58,4 +58,13 @@ function BaseComponent:UpdateValue()
     end
 end
 
+function BaseComponent:PrintValue()
+    for i, v in pairs(self.property) do
+        print('property['..i..']=',v)
+    end
+    for i, v in pairs(self.connection) do
+        print('connect['..i..']=',v)
+    end
+end
+
 return BaseComponent
