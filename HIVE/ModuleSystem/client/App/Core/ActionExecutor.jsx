@@ -83,6 +83,7 @@ export default class ActionExecuter {
 		this.alignNodes = this.alignNodes.bind(this);
 		this.alignNode = this.alignNode.bind(this);
 		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
+		this.findGroup = this.findGroup.bind(this);
 	}
 
     /**
@@ -529,19 +530,32 @@ export default class ActionExecuter {
 		this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 	}
 
+	// @private
+	// あるvarnameのノードを含む現在の階層のグループを返す. なければnullを返す
+	findGroup(varname) {
+		let nodes = this.store.getNodes();
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			if (this.store.isGroup(nodes[i]) && this.store.findNode(nodes[i], varname)) {
+				return nodes[i];
+			}
+		}
+		return null;
+	}
+
 	/**
  	 * ノード変更.
  	 */
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
 			let node = this.store.findNode(this.store.data, payload.nodeInfo.varname);
+			let group = this.findGroup(payload.nodeInfo.varname);
 			if (node) {
 				let dstNode = node;
 				let srcNode =  payload.nodeInfo;
 
 				let hasInput = srcNode.hasOwnProperty('input');
-				let preInputs = JSON.stringify(dstNode.input);
-				let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
+				let preInputList = dstNode.input;
+				let postInputList = hasInput ? payload.nodeInfo.input : null;
 
 				let hasSelect = srcNode.hasOwnProperty('select');
 				let preSelect = dstNode.select;
@@ -563,35 +577,33 @@ export default class ActionExecuter {
 				let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
 
 				for (let info in payload.nodeInfo) {
-					if (info !== "uiComponent" && node.hasOwnProperty(info)) {
+					if (info !== "uiComponent" && info !== "input" && node.hasOwnProperty(info)) {
 						dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 					}
 				}
-
 				this.store.emit(Constants.NODE_CHANGED, null, dstNode);
-				if (hasInput && preInputs !== postInputs) {
-					if (this.store.isGroup(dstNode)) {
-						// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
-						let pre = JSON.parse(preInputs);
-						let post = JSON.parse(postInputs);
-						for (let k = 0; k < pre.length; k = k + 1) {
-							if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
-								console.log(pre[k].nodeVarname);
-								let target = this.store.findNode(dstNode, pre[k].nodeVarname);
-								if (!target) {
-									console.error("not found input node")
-								}
-								for (let m = 0; m < target.input.length; m = m + 1) {
-									if (target.input[m].nodeVarname === post[k].nodeVarname && target.input[m].name === post[k].name) {
-										target.input[m].value = post[k].value;
+
+				let isInputChanged = false;
+				if (hasInput) {
+					for (let i = 0; i < preInputList.length; i = i + 1) {
+						if (JSON.stringify(preInputList[i]) !== JSON.stringify(postInputList[i])) {
+							let postInput = postInputList[i];
+							dstNode.input[i] = JSON.parse(JSON.stringify(postInput));
+							if (group) {
+								// グループの入力が変更された場合は、groupの入力も変更する。
+								for (let m = 0; m < group.input.length; m = m + 1) {
+									if (group.input[m].nodeVarname === postInput.nodeVarname && group.input[m].name === postInput.name) {
+										group.input[m] = JSON.parse(JSON.stringify(postInput));
 									}
 								}
-								this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
 							}
+							this.store.emit(Constants.NODE_INPUT_PROPERTY_CHANGED, null, dstNode, dstNode.input[postInputList[i].index]);
+							isInputChanged = true;
 						}
-					} else {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
 					}
+				}
+				if (isInputChanged) {
+					this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
 				}
 				if (hasSelect && preSelect !== postSelect) {
 					this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode);

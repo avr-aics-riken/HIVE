@@ -175,21 +175,28 @@ export default class Store extends EventEmitter {
 					input : {
 						nodeVarname : plug.input.nodeVarname,
 						name : plug.input.name,
-						pos : this.calcPlugPosition(true, plug, inNode),
+						//pos : this.calcPlugPosition(true, plug, inNode),
 						nodeRef : inNode
 					},
 					output : {
 						nodeVarname : plug.output.nodeVarname,
 						name : plug.output.name,
-						pos : this.calcPlugPosition(false, plug, outNode),
+						//pos : this.calcPlugPosition(false, plug, outNode),
 						nodeRef : outNode
 					}
 				};
-				if (!plugPosition.input.pos || !plugPosition.output.pos) {
-					console.error(inNode, outNode, plugPosition);
-				}
 				//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
 				this.plugPosList.push(plugPosition);
+			}
+		}
+		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
+			let plug = this.plugPosList[i];
+			let inNode = this.plugPosList[i].input.nodeRef;
+			let outNode = this.plugPosList[i].output.nodeRef;
+			plug.input.pos = this.calcPlugPosition(true, plug, inNode);
+			plug.output.pos = this.calcPlugPosition(false, plug, outNode);
+			if (!plug.input.pos || !plug.output.pos) {
+				console.error(inNode, outNode, plug);
 			}
 		}
 	}

@@ -35,7 +35,6 @@ class RenderView extends React.Component {
 		this.onClickCameraButton = this.onClickCameraButton.bind(this);
 		this.onClickCameraRegisterButton = this.onClickCameraRegisterButton.bind(this);
 
-		this.presets = {}
 		this.updatePreset = this.updatePreset.bind(this);
 	}
 
@@ -215,15 +214,25 @@ class RenderView extends React.Component {
 
 	updatePreset() {
 		let layer = Number(this.refs.presetSelect.value);
-		let preset;
-		if (!this.presets.hasOwnProperty(layer)) {
-			this.presets[layer] = {};
+		let presets = this.getInputValue("presets");
+		if (!presets) {
+			presets = {};
 		}
-		preset = this.presets[layer];
+		if (!presets.hasOwnProperty(layer)) {
+			presets[layer] = {};
+		}
+		let preset = presets[layer];
 		preset.position = JSON.parse(JSON.stringify(this.getInputValue("position")));
 		preset.target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		preset.up = JSON.parse(JSON.stringify(this.getInputValue("up")));
 		preset.fov = this.getInputValue("fov");
+
+		this.action.changeNodeInput({
+			varname : this.node.varname,
+			input : {
+				"presets" : presets
+			}
+		});
 	}
 
     viewTrans(tx, ty, tz) {
@@ -343,10 +352,15 @@ class RenderView extends React.Component {
 		let number = Number(ev.target.value);
 		if (number === null || number === undefined) { console.error("invalid camera layer"); return; }
 		const ssize = this.getInputValue("screensize");
+		let presets = this.getInputValue("presets");
+		if (!presets) {
+			return;
+		}
+		presets.currentPreset =  number;
 		let rw = parseInt(ssize[0] / 16);
 		let rh = parseInt(ssize[1] / 16);
-		if (this.presets.hasOwnProperty(number)) {
-			let preset = this.presets[number];
+		if (presets.hasOwnProperty(number)) {
+			let preset = presets[number];
 			if (preset.hasOwnProperty("position") &&
 				preset.hasOwnProperty("target") &&
 				preset.hasOwnProperty("up") &&
@@ -357,7 +371,8 @@ class RenderView extends React.Component {
 						position : preset.position,
 						target : preset.target,
 						up : preset.up,
-						fov : preset.fov
+						fov : preset.fov,
+						presets : presets
 					}
 				})
 			}
@@ -369,7 +384,8 @@ class RenderView extends React.Component {
 					"target" : [0, 0, 0],
 					"up" : [0, 1, 0],
 					"fov" : 60,
-					"rendersize" : [rw, rh]
+					"rendersize" : [rw, rh],
+					"presets" : presets
 				}
 			});
 		}
@@ -393,6 +409,11 @@ class RenderView extends React.Component {
 		this.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);
 
 		this.store.on("panel_size_changed", this.onPanelSizeChanged);
+
+		let presets = this.getInputValue("presets");
+		if (presets && presets.hasOwnProperty("currentPreset")) {
+			this.refs.presetSelect.selectedIndex = presets.currentPreset - 1;
+		}
 	}
 
 	componentWillUnmount() {

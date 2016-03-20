@@ -465,7 +465,6 @@ d3.parcoords = function(config) {
         //     var j = 0 // target array num
         //     for(var k = 0; k < 4; ++k){
         //         var l = i + k;
-        //         console.log(position(l), yscale[l](v[j][l]));
         //     }
         // };
     var foregroundQueue = function(v){
@@ -666,7 +665,6 @@ d3.parcoords = function(config) {
             } else {
                 ctx.lineTo(position(p), yscale[p](d[p]));
             }
-            console.log(position(p) + ':' + yscale[p](d[p]));
         });
     }
 
