@@ -181,6 +181,7 @@ class ParallelCoordinate extends React.Component {
     }
 
     initialColormap(data){
+        this.colormap = data;
         this.setState({
             colormap: data,
         });
@@ -429,15 +430,16 @@ class ParallelCoordinate extends React.Component {
                 }
             }
         }
-        if(indices){
+
+        let canvaselement = document.getElementById(this.brushed);
+        let backgroundDarker = (target.match(/brushed/));
+
+        if(backgroundDarker && indices){
             this.props.action.changeNodeInput({
                 varname: this.props.node.varname,
                 input: {brushedIndex: indices}
             });
         }
-
-        let canvaselement = document.getElementById(this.brushed);
-        let backgroundDarker = (target.match(/brushed/));
 
         var gc = this.glContext[target];
         var gl = gc.gl;
