@@ -529,6 +529,31 @@ export default class ActionExecuter {
 		this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 	}
 
+	// @private
+	retrieveWithoutFuncInput(input) {
+		let dst = [];
+		for (let i = 0; i < input.length; i = i + 1) {
+			if (input[i].hasOwnProperty("funcinput") && !input[i].funcinput) {
+				continue;
+			}
+			dst.push({ index : i, value : input[i] });
+		}
+		return dst;
+	}
+
+	// @private
+	copyInputWithoutFuncInput(input) {
+		let dst = [];
+		for (let i = 0; i < input.length; i = i + 1) {
+			if (input[i].hasOwnProperty("funcinput") && !input[i].funcinput) {
+				dst.push(input[i]);
+			} else {
+				dst.push(JSON.parse(JSON.stringify(input[i])));
+			}
+		}
+		return dst;
+	}
+
 	/**
  	 * ノード変更.
  	 */
@@ -540,8 +565,8 @@ export default class ActionExecuter {
 				let srcNode =  payload.nodeInfo;
 
 				let hasInput = srcNode.hasOwnProperty('input');
-				let preInputs = JSON.stringify(dstNode.input);
-				let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
+				let preInputList = this.retrieveWithoutFuncInput(dstNode.input);
+				let postInputList = hasInput ? this.retrieveWithoutFuncInput(payload.nodeInfo.input) : null;
 
 				let hasSelect = srcNode.hasOwnProperty('select');
 				let preSelect = dstNode.select;
@@ -563,35 +588,44 @@ export default class ActionExecuter {
 				let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
 
 				for (let info in payload.nodeInfo) {
-					if (info !== "uiComponent" && node.hasOwnProperty(info)) {
+					if (info !== "uiComponent" && info !== "input" && node.hasOwnProperty(info)) {
 						dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 					}
 				}
-
 				this.store.emit(Constants.NODE_CHANGED, null, dstNode);
-				if (hasInput && preInputs !== postInputs) {
+
+				let isInputChanged = false;
+				if (hasInput) {
 					if (this.store.isGroup(dstNode)) {
 						// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
-						let pre = JSON.parse(preInputs);
-						let post = JSON.parse(postInputs);
-						for (let k = 0; k < pre.length; k = k + 1) {
-							if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
-								console.log(pre[k].nodeVarname);
-								let target = this.store.findNode(dstNode, pre[k].nodeVarname);
+						for (let i = 0; i < preInputList.length; i = i + 1) {
+							let pre = JSON.stringify(preInputList[i]);
+							let post = JSON.stringify(postInputList[i]);
+							if (pre !== post) {
+								let target = this.store.findNode(dstNode, preInputList[k].value.nodeVarname);
 								if (!target) {
 									console.error("not found input node")
 								}
 								for (let m = 0; m < target.input.length; m = m + 1) {
-									if (target.input[m].nodeVarname === post[k].nodeVarname && target.input[m].name === post[k].name) {
-										target.input[m].value = post[k].value;
+									if (target.input[m].nodeVarname === postInputList[i].value.nodeVarname && target.input[m].name === postInputList[i].value.name) {
+										target.input[m].value = JSON.parse(JSON.stringify(postInputList[i].value));
+										this.store.emit(Constants.NODE_INPUT_PROPERTY_CHANGED, null, dstNode, target.input[m]);
 									}
 								}
-								this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
 							}
 						}
 					} else {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
+						for (let i = 0; i < preInputList.length; i = i + 1) {
+							if (JSON.stringify(preInputList[i]) !== JSON.stringify(postInputList[i])) {
+								dstNode.input[postInputList[i].index] = JSON.parse(JSON.stringify(postInputList[i].value));
+								this.store.emit(Constants.NODE_INPUT_PROPERTY_CHANGED, null, dstNode, dstNode.input[postInputList[i].index]);
+								isInputChanged = true;
+							}
+						}
 					}
+				}
+				if (isInputChanged) {
+					this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
 				}
 				if (hasSelect && preSelect !== postSelect) {
 					this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode);
@@ -624,7 +658,7 @@ export default class ActionExecuter {
 			if (info.hasOwnProperty('varname') && info.hasOwnProperty('input')) {
 				let node = this.store.findNode(this.store.data, info.varname);
 				if (node) {
-					let copy = JSON.parse(JSON.stringify(node.input));
+					let copy = this.copyInputWithoutFuncInput(node.input);
 					let isChanged = false;
 					for (let i = 0; i < node.input.length; i = i + 1) {
 						if (info.input.hasOwnProperty(node.input[i].name)) {
