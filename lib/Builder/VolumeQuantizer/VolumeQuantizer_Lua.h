@@ -40,6 +40,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(VolumeQuantizer_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Add,BufferVolumeData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_ARG3(bool,AddCustomMinMax,BufferVolumeData_Lua*,float,float)
     LUA_SCRIPTCLASS_METHOD_ARG0(bool,Clear)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*, VolumeData)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, QuantizeSize, int)
@@ -47,6 +48,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetMinMax)
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG0("VolumeQuantizer",int,Create)
 
+    
     LUA_SCRIPTCLASS_END()
 
 };

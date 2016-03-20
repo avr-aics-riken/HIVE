@@ -40,6 +40,7 @@ bool VolumeQuantizer::SamplingNum(int widthDiv, int heightDiv, int depthDiv) {
 
 bool VolumeQuantizer::Clear()
 {
+    m_custom_minmax.clear();
     m_inputs.clear();
     return true;
 }
@@ -59,6 +60,18 @@ bool VolumeQuantizer::Add(BufferVolumeData *volume)
     m_inputs.push_back(volume);
     return true;
 }
+
+bool VolumeQuantizer::AddCustomMinMax(BufferVolumeData *volume, float minval, float maxval)
+{
+    bool r = Add(volume);
+    if (!r) {
+        return false;
+    }
+    
+    m_custom_minmax[volume] = std::make_pair(minval, maxval);
+    return true;
+}
+
 
 namespace {
     int getComponentSize(int bits, int comp) {
@@ -91,15 +104,22 @@ int VolumeQuantizer::Create()
     // calc min/max
     m_minmax.clear();
     for (int i = 0; i < datanum; ++i) {
-        int c = m_inputs[i]->Component();
-        FloatBuffer* vol = m_inputs[i]->Buffer();
+        BufferVolumeData* v = m_inputs[i];
+        std::map< BufferVolumeData*,std::pair<float,float> >::iterator it = m_custom_minmax.find(v);
         double emin = 1e+39, emax = -1e+39;
-        for (int z = 0; z < depth; ++z) {
-            for (int y = 0; y < height; ++y) {
-                for (int x = 0; x < width; ++x) {
-                    const float v = vol->GetBuffer()[c * (x + y * width + z * width * height)];
-                    emin = emin > v ? v : emin;
-                    emax = emax < v ? v : emax;
+        if (it != m_custom_minmax.end()) {
+            emin = it->second.first;
+            emax = it->second.second;
+        } else {
+            int c = m_inputs[i]->Component();
+            FloatBuffer* vol = m_inputs[i]->Buffer();
+            for (int z = 0; z < depth; ++z) {
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        const float v = vol->GetBuffer()[c * (x + y * width + z * width * height)];
+                        emin = emin > v ? v : emin;
+                        emax = emax < v ? v : emax;
+                    }
                 }
             }
         }

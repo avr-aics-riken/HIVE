@@ -61,7 +61,7 @@ function ParallelCoordinate:Do()
     local sdiv = self.value.sampleingDiv
     local c = 0
     self.volQ:Clear()
-    --self.volQ:QuantizeSize(qbit)
+    self.volQ:QuantizeSize(qbit)
     self.volQ:SamplingNum(sdiv[1], sdiv[2], sdiv[3])
 
     local voldim = {}           
@@ -69,11 +69,11 @@ function ParallelCoordinate:Do()
         print('coordinate:', i, v)
         if v.volume then
             c = c + 1
-            --if (v.userMinmax) then
-            --    self.volQ:AddCustom(v.volume, v.min, v.max);
-            --else
+            if (self.value.userMinmax) then
+                self.volQ:AddCustomMinMax(v.volume, v.min, v.max);
+            else
                 self.volQ:Add(v.volume)
-            --end
+            end
         end
     end
     

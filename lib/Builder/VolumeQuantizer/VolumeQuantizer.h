@@ -8,6 +8,7 @@
 #include "Ref.h"
 #include "Buffer.h"
 #include <vector>
+#include <map>
 #include "BufferVolumeData.h"
 
 class VolumeQuantizer : public RefCount
@@ -17,6 +18,7 @@ private:
     std::vector<RefPtr< BufferVolumeData> > m_inputs;
     
     std::vector<std::pair<float, float> > m_minmax;
+    std::map<BufferVolumeData*, std::pair<float, float> > m_custom_minmax;
     int m_quantizeSize;
     int m_sampling[3];
     
@@ -25,6 +27,7 @@ public:
     int Create();
     bool Clear();
     bool Add(BufferVolumeData *volume);
+    bool AddCustomMinMax(BufferVolumeData *volume, float minval, float maxval);
 
     BufferVolumeData*  VolumeData();
 
