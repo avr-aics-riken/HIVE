@@ -5,6 +5,7 @@
 	"customfuncfile":"coordinate.lua",
     "input": [
 		{"name": "volume", "type": "BufferVolumeData"},
+        {"name": "userMinmax", "type":"bool", "value": false},
 		{"name": "minval", "type": "float", "value":0.0},
 		{"name": "maxval", "type": "float", "value":0.0}
 	],

@@ -66,10 +66,10 @@ function ParallelCoordinate:Do()
 
     local voldim = {}           
     for i,v in pairs(self.value.coordinate) do
-        print('coordinate:', i, v)
+        --print('coordinate:', i, v, v.userMinmax)
         if v.volume then
             c = c + 1
-            if (self.value.userMinmax) then
+            if (v.userMinmax) then
                 self.volQ:AddCustomMinMax(v.volume, v.min, v.max);
             else
                 self.volQ:Add(v.volume)

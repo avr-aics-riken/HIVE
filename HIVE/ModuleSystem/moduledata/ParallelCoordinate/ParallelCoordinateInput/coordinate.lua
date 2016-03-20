@@ -28,5 +28,5 @@ end
 
 function ParallelCoordinateVolumeInput:coordinate()
     local v = self.value
-    return {volume=v.volume, min=v.minval, max=v.maxval}
+    return {volume=v.volume, min=v.minval, max=v.maxval, userMinmax=v.userMinmax}
 end
