@@ -116,7 +116,6 @@ export default class ItemObject extends React.Component {
 		if (ev.button === 0) {
 			var hole = this.props.initialParam;
 			hole.value = this.value;
-			console.log("hogehoge", hole)
 			this.props.changeKeyFunc(hole);
 			this.setState({
 				onFrame : true
