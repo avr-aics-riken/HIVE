@@ -153,9 +153,10 @@ int VolumeQuantizer::Create()
                     FloatBuffer* fb = m_inputs[i]->Buffer();
                     const int c = m_inputs[i]->Component();
                     const float v = fb->GetBuffer()[(x + y * width + z * width * height) * c];
-                    const float emin = m_minmax[c].first;
-                    const float emax = m_minmax[c].second;
+                    const float emin = m_minmax[i].first;
+                    const float emax = m_minmax[i].second;
                     const int q = static_cast<int>((v - emin) / (emax - emin) * bitVal);
+                    //printf("Q=%d\n",q);
                     pack |= q << (i * bits); // 32bit x4
                     tarBuf[p] = *reinterpret_cast<float*>(&pack);
                     ++p;
