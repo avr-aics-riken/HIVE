@@ -1133,6 +1133,12 @@ export default class ActionExecuter {
 	alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, varname, pos, depth) {
 		if (!varnameToNode.hasOwnProperty(varname)) { return; }
 		const bound = nodeSizes[varname];
+
+		let group = this.findGroup(varname);
+		if (group) {
+			varname = group.varname;
+		}
+
 		if (!aligned.hasOwnProperty(varname)) {
 			const node = varnameToNode[varname];
 			if (!depthToPos.hasOwnProperty(depth)) {
