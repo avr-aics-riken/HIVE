@@ -216,13 +216,13 @@ export default class NodeExecutor extends EventEmitter {
             //script += this.nodeSerializer.updateNodeInput(node);
             //script += this.doNodes();
 
-//            this.nodeGraph[node.varname].needexecute = true;
+            this.nodeGraph[node.varname].needexecute = true;
 
             let script = this.doNodes();
             this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
         });
 
-        store.on(Constants.NODE_INPUT_PROPERTY_CHANGED, (err, data, prop) => {
+/*        store.on(Constants.NODE_INPUT_PROPERTY_CHANGED, (err, data, prop) => {
             console.log('NS catched:NODE_INPUT_PROPERTY_CHANGED', err, data, prop);
             let node = data;
             let p = prop;
@@ -234,7 +234,7 @@ export default class NodeExecutor extends EventEmitter {
             //let script = this.doNodes();
             //this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
         });
-
+*/
         /*
         store.on(Constants.NODE_CHANGED, (err, data) => {
             // not need now.

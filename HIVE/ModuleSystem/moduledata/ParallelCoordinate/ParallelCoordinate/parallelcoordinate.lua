@@ -5,6 +5,7 @@ ParallelCoordinate.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordinate})
     this.volQ = require('VolumeQuantizer')()
+    print('VVVVVVVVVVVV', this.volQ)
     return this
 end
 
@@ -56,16 +57,16 @@ function ParallelCoordinate:Do()
     local qbit = self.value.quantizeBit
     local sdiv = self.value.sampleingDiv
     local c = 0
---  self:volQ:Clear()
---  self:volQ:SetQuantize(qbit)
---  self:volQ:SetSamplingDiv(sdiv[1], sdiv[2], sdiv[3])
+    self.volQ:Clear()
+    --self.volQ:QuantizeSize(qbit)
+    self.volQ:SamplingNum(sdiv[1], sdiv[2], sdiv[3])
 
     local voldim = {}           
     for i,v in pairs(self.value.coordinate) do
-        --print('coordinate:', i, v)
+        print('coordinate:', i, v)
         if v.volume then
             c = c + 1
---            self:volQ:AddVolume(v.volume, v.min, v.max);
+            self.volQ:Add(v.volume) --, v.min, v.max);
         end
     end
     
@@ -78,8 +79,9 @@ function ParallelCoordinate:Do()
         return "Faild to create data."
     end
     
---    voldata = volQ:GetData()
+    voldata = self.volQ:VolumeData()
     
+    --print('volsize =', voldata:GetNum() )
     --send
     sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, 4)    
     
