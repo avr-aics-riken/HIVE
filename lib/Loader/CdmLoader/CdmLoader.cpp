@@ -39,7 +39,7 @@ CDMLoader::~CDMLoader()
 /// ボリュームクリア
 void CDMLoader::Clear()
 {
-    m_volume->Clear();
+    m_volume = 0;
 }
 
 /**
@@ -51,7 +51,8 @@ void CDMLoader::Clear()
  */
 bool CDMLoader::Load(const char* filename, int timeSliceIndex)
 {
-    Clear();
+    //Clear();
+		m_volume = BufferVolumeData::CreateInstance();
 
     //
     // NOTE: Assume MPI_Init() was already called in hrender::main()
