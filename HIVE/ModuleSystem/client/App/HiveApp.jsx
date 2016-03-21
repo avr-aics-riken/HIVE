@@ -185,20 +185,7 @@ export default class HiveApp extends React.Component {
         var reader = new FileReader();
         reader.onload = function(){
             let data = (JSON.parse(reader.result));
-            if(data.nodes && data.nodes.length > 0){
-                for(let i in data.nodes){
-                    this.action.importNode(data.nodes[i]);
-                }
-            }else{
-                console.log('import failed: nodes.length === 0');
-            }
-            if(data.plugs && data.plugs.length > 0){
-                for(let i in data.plugs){
-                    this.action.addPlug(data.plugs[i]);
-                }
-            }else{
-                console.log('import failed: plugs.length === 0');
-            }
+			this.action.load(data);
         }.bind(this);
         reader.readAsText(file);
     }
