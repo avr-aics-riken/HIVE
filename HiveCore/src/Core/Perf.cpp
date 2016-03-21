@@ -111,7 +111,7 @@ public:
     }
 
     void Report() {
-        printf("PMlib is not avaiable in this build, thus no profing report.\n");
+        printf("[PMon] PMlib is not avaiable in this build, thus no profing report.\n");
     }
 
 private:

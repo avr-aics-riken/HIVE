@@ -83,7 +83,7 @@ int VolumeFilter::Laplacian(BufferVolumeData *volume) {
 		return 0;
 	}
 
-	Clear();
+	//Clear();
 
     const ssize_t width  = volume->Width();
     const ssize_t height = volume->Height();
@@ -137,7 +137,7 @@ int VolumeFilter::Norm(BufferVolumeData *volume) {
         return 0;
     }
 
-	Clear();
+	//Clear();
 
     const ssize_t width  = volume->Width();
     const ssize_t height = volume->Height();
@@ -189,7 +189,7 @@ int VolumeFilter::Expr(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
         return 0;
     }
 
-	Clear();
+	//Clear();
 
 	m_cutil.SetCompiler(m_compiler, m_compilerOpts);
 
@@ -248,6 +248,7 @@ int VolumeFilter::Expr(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
     m_cutil.SetSource(ss.str());
     bool ret = m_cutil.Compile("filter");
     if (!ret) {
+				printf("[VolumeFilter] Failed to compile\n");
         return 0;
     }
 

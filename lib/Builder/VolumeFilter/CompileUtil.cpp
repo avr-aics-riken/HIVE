@@ -189,7 +189,7 @@ bool CompileUtil::SetCompiler(const std::string& compilerName, const std::string
 #ifdef __APPLE__
     compilerFlags_ += " -flat_namespace -bundle -undefined suppress ";
 #elif __linux__
-    compilerFlags_ += " -shared -g ";
+    compilerFlags_ += " -shared -g -v ";
 #elif _WIN32
     // Assume MinGW compiler
     compilerFlags_ += " -shared -g ";
@@ -228,10 +228,10 @@ bool CompileUtil::Compile(const std::string& methodName)
   std::string tempFilename = std::string(tempFilenameStr);
   tempFilename += std::string(".c"); // add suffix
 
-  int status = unlink(tempFilenameStr);
-  if (status == -1) {
-    perror("unlink");
-  }
+  //int status = unlink(tempFilenameStr);
+  //if (status == -1) {
+  //  perror("unlink");
+  //}
   free(tempFilenameStr);
 
   FILE *fp = fopen(tempFilename.c_str(), "w");
@@ -255,9 +255,21 @@ bool CompileUtil::Compile(const std::string& methodName)
 #ifdef HIVE_ENABLE_MPI
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+#ifdef __linux__
+	// It looks on linux system it failed to compile .so into current directory through popen from dynamic module?
+	// Force write .so to /tmp
+  sprintf(outputFilename, "/tmp/hivefilter_%04d_%08d.so", sCounter, rank);
+#else
   sprintf(outputFilename, "hivefilter_%04d_%08d.so", sCounter, rank);
+#endif
+#else
+#ifdef __linux__
+	// It looks on linux system it failed to compile .so into current directory through popen from dynamic module?
+	// Force write .so to /tmp
+  sprintf(outputFilename, "/tmp/hivefilter_%04d.so", sCounter);
 #else
   sprintf(outputFilename, "hivefilter_%04d.so", sCounter);
+#endif
 #endif
 
   sCounter++;
@@ -282,7 +294,7 @@ bool CompileUtil::Compile(const std::string& methodName)
     fprintf(stderr, "[CompileUtil] Failed to open pipe.\n");
     perror("popen");
 
-    status = unlink(tempFilename.c_str());
+    int status = unlink(tempFilename.c_str());
     if (status == -1) {
       perror("unlink");
     }
@@ -292,10 +304,10 @@ bool CompileUtil::Compile(const std::string& methodName)
 
   char buf[4096];
   while (fgets(buf, 4095, pfp) != NULL) {
-    printf("[glslc] %s", buf);
+    printf("[compiler] %s", buf);
   }
 
-  status = unlink(tempFilename.c_str());
+  int status = unlink(tempFilename.c_str());
   if (status == -1) {
     perror("unlink");
   }
@@ -308,6 +320,7 @@ bool CompileUtil::Compile(const std::string& methodName)
   }
 #else
   status = pclose(pfp);
+	printf("pclose = %d\n", status);
   if (status == -1) {
     fprintf(stderr, "[CompileUtil] Failed to close pipe.\n");
     return false;
