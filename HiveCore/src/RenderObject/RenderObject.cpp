@@ -32,6 +32,7 @@ public:
             "LINE",
             "POINT",
             "TETRA",
+            "SOLID",
             "VECTOR"
         };
         return std::string(modeString[m_type]);

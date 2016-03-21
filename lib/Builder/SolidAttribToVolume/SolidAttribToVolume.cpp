@@ -174,11 +174,11 @@ namespace {
             {{0,3,2,1}, {4,5,6,7}, {0,1,5,4}, {1,2,6,5}, {2,3,7,6}, {0,4,7,3}, },  //hexa
         };
         
-        float weight[sld.type];
+        float weight[16]; // Alloc enough size. sld.type
         const float kEPS = 0.1;     //@fixme
         
-        bool cw_f[2][sld.edges.size()];
-        float ws[sld.edges.size()];
+        bool cw_f[2][16]; // Alloc enough size. sld.edges.size()
+        float ws[16]; // Alloc enough size. sld.edges.size()
         
         for(int v = 0; v < sld.type; v++){
             

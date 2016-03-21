@@ -19,8 +19,8 @@ public:
     SolidModel_Lua(){}
     ~SolidModel_Lua(){}
 
-    bool Create(BufferSolidData_Lua *tetra) {
-        return SolidModel::Create(tetra);
+    bool Create(BufferSolidData_Lua *solid) {
+        return SolidModel::Create(solid);
     }
 
     // RenderObject interface implementation

@@ -1,0 +1,44 @@
+/*
+ * UDMlib - Unstructured Data Management Library
+ * Copyright (C) 2012-2015 Institute of Industrial Science, The University of Tokyo.
+ * All rights reserved.
+ */
+FileInfo {
+    DFIType = "Uns"
+    DirectoryPath = "./"
+    FieldFilenameFormat = "step_rank"
+    Prefix = "cgns_hexa"
+    FileFormat = "cgns"
+    FileCompositionType = ("IncludeGrid", "EachStep")
+}
+FilePath {
+    Process = "proc.dfi"
+}
+UnitList {
+    Length {
+        Unit = "m"
+        Reference = 3.000000e-03
+    }
+    Pressure {
+        Unit = "Pa"
+        Reference = 0.000000e+00
+        Difference = 5.100000e+02
+    }
+    Temperature {
+        Unit = "C"
+        Reference = 1.000000e+01
+        Difference = 1.000000e-01
+    }
+    Velocity {
+        Unit = "m/s"
+        Reference = 3.400000e+00
+    }
+}
+TimeSlice {
+    Slice[@] {
+        Step = 0
+        Time = 0.000000e+00
+    }
+}
+FlowSolutionList {
+}
