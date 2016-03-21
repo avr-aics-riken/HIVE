@@ -24,7 +24,6 @@ function PointObject:Do()
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
 	pm:SetShader(v.shadername)
-	pm:SetFloat("lsgl_PointSize", v.pointsize)
 
 	local uniforms = self.connection.Uniform
     if uniforms ~= nil then
