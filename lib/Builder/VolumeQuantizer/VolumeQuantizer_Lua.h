@@ -42,6 +42,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Add,BufferVolumeData_Lua*)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool,AddCustomMinMax,BufferVolumeData_Lua*,float,float)
     LUA_SCRIPTCLASS_METHOD_ARG0(bool,Clear)
+    LUA_SCRIPTCLASS_METHOD_ARG0(int,DataElementSize)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*, VolumeData)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, QuantizeSize, int)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SamplingNum, int, int, int)

@@ -21,6 +21,7 @@ private:
     std::map<BufferVolumeData*, std::pair<float, float> > m_custom_minmax;
     int m_quantizeSize;
     int m_sampling[3];
+    int m_elementSize;
     
 public:
     VolumeQuantizer();
@@ -33,6 +34,7 @@ public:
 
     bool QuantizeSize(int qsize);
     bool SamplingNum(int widthDiv, int heightDiv, int depthDiv);
+    int  DataElementSize();
 
     const std::vector<std::pair<float, float> >& GetMinMax();
 };

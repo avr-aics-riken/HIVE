@@ -142,6 +142,7 @@ export default class NodeExecutor extends EventEmitter {
                 nd.exeState = "running";
             }
         });
+        script += "collectgarbage('collect')\n";
         script += "\nreturn {doState=executedNode}\n";
         return script;
     }

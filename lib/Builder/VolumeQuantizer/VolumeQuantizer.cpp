@@ -16,6 +16,7 @@ VolumeQuantizer::VolumeQuantizer(){
     m_sampling[0] = 10;
     m_sampling[1] = 10;
     m_sampling[2] = 10;
+    m_elementSize = 0;
 }
 
 bool VolumeQuantizer::QuantizeSize(int qsize) {
@@ -133,6 +134,7 @@ int VolumeQuantizer::Create()
     int step_h = height / m_sampling[1]; step_h = step_h <= 0 ? 1 : step_h;
     int step_d = depth  / m_sampling[2]; step_d = step_d <= 0 ? 1 : step_d;
     const int comp   = getComponentSize(bits, m_inputs.size());
+    m_elementSize = comp;
 
     // alloc new buffer
     m_volume->Create(m_sampling[0], m_sampling[1], m_sampling[2], comp);
@@ -229,3 +231,7 @@ const std::vector<std::pair<float, float> >& VolumeQuantizer::GetMinMax()
     return m_minmax;
 }
 
+int VolumeQuantizer::DataElementSize()
+{
+    return m_elementSize;
+}

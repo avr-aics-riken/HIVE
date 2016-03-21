@@ -34,7 +34,7 @@ function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring)
     --print(json)
     local imageBuffer = voldata:Pointer()
     print('ImageBuffer=', imageBuffer)
-    local imageBufferSize = w * h * d * datasize * c
+    local imageBufferSize = w * h * d * datasize
     print('imageBufferSize=', imageBufferSize)
     HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
     local bbuffer = HIVE_metabin:BinaryBuffer()
@@ -108,10 +108,11 @@ function ParallelCoordinate:Do()
     end
     
     voldata = self.volQ:VolumeData()
+    local datasize = self.volQ:DataElementSize()
     
     --print('volsize =', voldata:GetNum() )
     --send
-    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, 4, minmaxstring)
+    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, datasize, minmaxstring)
     
     if true then
         return true
