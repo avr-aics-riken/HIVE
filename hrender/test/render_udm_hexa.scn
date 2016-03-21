@@ -6,7 +6,7 @@ camera:SetScreenSize(1024, 1024)
 camera:SetFilename('image_udm_hexa.jpg')
 
 camera:LookAt(
-	10,10,10,
+	6,6,6,
 	0,0,0,
 	0,1,0,
 	60
