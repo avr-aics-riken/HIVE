@@ -23,6 +23,7 @@ public:
   //  bool Load(const char* filename, int width, int height, int depth, int components, const char* format);
 
 	/// Loads raw sparse volume data from memory(pointer).
+  /// Assume opaque pointer `volumeData` is represented as `HIVESparseVolume`.
   bool LoadFromPointer(void* volumeData);
 
 	//int Width();

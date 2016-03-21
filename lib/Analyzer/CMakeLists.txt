@@ -17,6 +17,7 @@ include_directories(${INCLUDES})
 set(SOURCES
 	PolygonAnalyzer.cpp
 	VolumeAnalyzer.cpp
+	SparseVolumeAnalyzer.cpp
 	LuaEntry.cpp
 )
 

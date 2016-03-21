@@ -91,14 +91,18 @@ bool SparseVolumeBuffer::MakeBox(float width, float height, float depth)
  */
 bool SparseVolumeBuffer::CreateSparseTexture3D(const BufferSparseVolumeData* volume, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
-    printf("CreateSparseTexture3D(%d,%d,%d,%d)\n", volume->Width(), volume->Height(), volume->Depth(), volume->Component());
+    printf("CreateSparseTexture3D(%d,%d,%d)\n", volume->Width(), volume->Height(), volume->Depth());
     GenTextures_SGL(1, &m_sgl_voltex);
     BindTexture3D_SGL(m_sgl_voltex);
 
 	for (size_t i = 0; i < volume->VolumeBlocks().size(); i++) {
 		const BufferSparseVolumeData::VolumeBlock& block = volume->VolumeBlocks()[i];
 
-    	SparseTexImage3DPointer_SGL(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.volume->Width(), block.volume->Height(), block.volume->Depth(), volume->Component(), block.volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+        if (block.isRaw) {
+            SparseTexImage3DPointer_SGL(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.size[0], block.size[1], block.size[2], block.components, reinterpret_cast<const float*>(block.rawData), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+        } else {
+            SparseTexImage3DPointer_SGL(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.volume->Width(), block.volume->Height(), block.volume->Depth(), block.volume->Component(), block.volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+        }
 	}
     m_voldim[0] = volume->Width();
     m_voldim[1] = volume->Height();

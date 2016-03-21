@@ -21,11 +21,24 @@ private:
     Impl* m_imp;
 
 public:
+    typedef enum {
+      FORMAT_FLOAT,
+      FORMAT_DOUBLE,
+    } VolumeBlockFormat;
+
     typedef struct {
-        int offset[3];  ///< Offset in world space(Origin)
-        int extent[3];  ///< Extent in world space
-        int level;
-        BufferVolumeData* volume;
+        int level;                ///< LoD level
+        int offset[3];            ///< Offset in world space(Origin)
+        int extent[3];            ///< Extent in world space
+
+        bool isRaw;               ///< RAW flag(true = use rawData, false = use BufferVolumeData)
+
+        int size[3];              ///< Cell size(actual voxel size) (isRaw only)
+        int components;           ///< # of components in the voxel(isRaw only).
+        VolumeBlockFormat format; ///< Data format(isRaw only)
+        const unsigned char *rawData;   ///< Pointer to volume data(isRaw only)
+
+        BufferVolumeData* volume; ///< NULL when isRaw = true
     } VolumeBlock;
 
 protected:
@@ -36,19 +49,27 @@ protected:
 public:
     static BufferSparseVolumeData* CreateInstance();
     
-    void Create(int w, int h, int d, int component);
-    void AddVolume(int level, int offset_x, int offset_y, int offset_z,
+    void Create();
+    void AddVolumeBlock(int level, int offset_x, int offset_y, int offset_z,
                    int extent_x, int extent_y, int extent_z,
                    BufferVolumeData* vol);
+    // In-Situ version. Memory of volume block is maintained by the external app,
+    // and don't create volume object in HIVE.
+    void AddRAWVolumeBlock(int level, int offset_x, int offset_y, int offset_z,
+                   int extent_x, int extent_y, int extent_z,
+                   int size_x, int size_y, int size_z,
+                   int components, VolumeBlockFormat format, const void *data);
     void Clear();
     void print();
+
+    // Width(), Height() and Depth() are valid after adding all volume blocks.
     const int Width() const;
     const int Height() const;
     const int Depth() const;
-    const int ExtentWidth() const;
-    const int ExtentHeight() const;
-    const int ExtentDepth() const;
-    const int Component() const;
+    //const int CellWidth() const;
+    //const int CellHeight() const;
+    //const int CellDepth() const;
+    //const int Component() const;
     const std::vector<VolumeBlock>& VolumeBlocks() const;
     std::vector<VolumeBlock>& VolumeBlocks();
 

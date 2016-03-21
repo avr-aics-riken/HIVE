@@ -7,8 +7,8 @@
 
 #include <vector>
 #include "Ref.h"
-//#include "SparseVolumeModel.h"
-class SparseVolumeModel;
+
+class BufferSparseVolumeData;
 
 /**
  * ボリュームデータ解析クラス
@@ -30,8 +30,8 @@ public:
     double MaxY();
     double MaxZ();
     const std::vector<float>& GetHistgram() const;
-    const std::vector<float> GetHistgramInRange(SparseVolumeModel*, double min, double max) const;
-    bool Execute(SparseVolumeModel*);
+    const std::vector<float> GetHistgramInRange(BufferSparseVolumeData*, double min, double max) const;
+    bool Execute(BufferSparseVolumeData*);
 };
 
 

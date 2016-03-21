@@ -170,7 +170,8 @@ function build_udmlib {
 	tar -zxvf cgnslib_3.2.1.tar.gz
 	mkdir cgnslib_build
 	cd cgnslib_build
-	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_ENABLE_64BIT=On ../cgnslib_3.2.1 && make && make install
+	# Create .a only(disable .dylib build)
+	CXX=${cxx_compiler} CC=${c_compiler} ${cmake_bin} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_ENABLE_64BIT=On -DCGNS_BUILD_SHARED=Off ../cgnslib_3.2.1 && make VERBOSE=1 && make install
 	cd ${topdir}
 
 	cd third_party/

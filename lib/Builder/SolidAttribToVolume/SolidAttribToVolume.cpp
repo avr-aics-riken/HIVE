@@ -54,7 +54,7 @@ namespace {
         std::vector<VX::Math::vec3> edges;
         std::vector<VX::Math::vec3> edge_pcs;
         
-        Solid( float *verts_, int type_) : type((SolidType)type_){
+        Solid (float *verts_, int type_) : type((SolidType)type_){
             verts.resize(type);
             for(int i = 0; i < type; i++)
                 verts[i] = VX::Math::vec3(verts_ + i*3);
@@ -94,8 +94,8 @@ namespace {
                     edges[4] = verts[5]-verts[4];
                     edges[5] = verts[3]-verts[5];
                     edges[6] = verts[3]-verts[0];
-                    edges[7] = verts[5]-verts[1];
-                    edges[8] = verts[4]-verts[2];
+                    edges[7] = verts[4]-verts[1];
+                    edges[8] = verts[5]-verts[2];
                     edge_pcs.reserve(9);
                     for (int i = 0; i < 9; i++)
                         edge_pcs.push_back(cross(edges[i],verts[i%6]));
@@ -111,9 +111,9 @@ namespace {
                     edges[6] = verts[7]-verts[6];
                     edges[7] = verts[4]-verts[7];
                     edges[8] = verts[4]-verts[0];
-                    edges[9] = verts[7]-verts[1];
+                    edges[9] = verts[5]-verts[1];
                     edges[10] = verts[6]-verts[2];
-                    edges[11] = verts[5]-verts[3];
+                    edges[11] = verts[7]-verts[3];
                     edge_pcs.reserve(12);
                     for (int i = 0; i < 12; i++)
                         edge_pcs.push_back(cross(edges[i],verts[i%8]));
@@ -156,15 +156,22 @@ namespace {
     }
     
     // kEPSの値は要検証. modeについて 0 : 0次連続, 1 ; 1次連続, 2 : n次連続
+    // 各頂点から補間点 p に向かってRayを飛ばし,
+    // そのRayが多面体が出るまでの長さと頂点,補間点間の距離の比で各頂点の要素の比重を決める.
+    // 頂点と補間点の距離 d, 頂点とrayが出るまでの距離 d0, とすると
+    // 各頂点の比率 = (d0 - d) / d0   mode:0
+    //              = (d^2 / d0^2 * (d / d0 - 1.5) - 0.5 )   mode:1
+    //              = (cos(π * d / d0) - 1)   mode:2
+    // なお比率の合計は1にならないので, 最後に比率の和で割る.
     float interpolate(const VX::Math::vec3 &p, const Solid &sld, const float *scalars, int mode = 1) {
         using namespace VX::Math;
         static const int faces[][6][4] = {
             {{}}, {{}}, {{}}, {{}},        // 0,1,2,3
-            { {0,1,2,-1}, {1,3,2,-1}, {0,2,3,-1}, {0,3,1,-1} },  //tetra
-            {{0,1,2,3}, {0,4,1,-1}, {1,4,2,-1}, {2,4,3,-1}, {3,4,0,-1} },  //pyramid
-            {{0,1,2,-1}, {3,4,5,-1}, {0,3,5,1}, {0,2,4,3}, {1,5,4,2} },   //prism
+            {{0,2,1,-1}, {1,2,3,-1}, {0,3,2,-1}, {0,1,3,-1} },  //tetra
+            {{0,3,2,1}, {0,1,4,-1}, {1,2,4,-1}, {2,3,4,-1}, {0,4,3,-1} },  //pyramid
+            {{0,2,1,-1}, {3,4,5,-1}, {0,3,5,2}, {0,1,4,3}, {1,2,5,4} },   //prism
             {{}},       // 7
-            {{0,1,2,3}, {4,5,6,7}, {0,4,7,1}, {1,7,6,2}, {2,6,5,3}, {0,3,5,4} },  //hexa
+            {{0,3,2,1}, {4,5,6,7}, {0,1,5,4}, {1,2,6,5}, {2,3,7,6}, {0,4,7,3}, },  //hexa
         };
         
         float weight[16]; // Alloc enough size. sld.type
@@ -173,7 +180,7 @@ namespace {
         bool cw_f[2][16]; // Alloc enough size. sld.edges.size()
         float ws[16]; // Alloc enough size. sld.edges.size()
         
-        for(int v = 0; v < sld.type; v ++){
+        for(int v = 0; v < sld.type; v++){
             
             vec3 rayorg(sld.verts[v]);
             vec3 raydir(normalize(p - sld.verts[v]));
@@ -193,94 +200,104 @@ namespace {
             
             switch(sld.type){
                 case Solid::SOLID_TETRA:
-                    if( cw_f[1][0] && cw_f[1][1] && cw_f[1][2] && !contain(v, faces[sld.type][0]) )
+                    if( cw_f[0][0] && cw_f[0][1] && cw_f[0][2] && !contain(v, faces[sld.type][0]) )
                         cp = (sld.verts[2]*ws[0] + sld.verts[0]*ws[1] + sld.verts[1]*ws[2])
-                            / (ws[0]+ws[1]+ws[2]);
-                    else if( cw_f[0][1] && cw_f[1][4] && cw_f[0][5] && !contain(v, faces[sld.type][1]) )
+                        / (ws[0]+ws[1]+ws[2]);
+                    else if( cw_f[1][1] && cw_f[0][4] && cw_f[1][5] && !contain(v, faces[sld.type][1]) )
                         cp = (sld.verts[3]*ws[1] + sld.verts[1]*ws[5] - sld.verts[2]*ws[4])
-                            / (ws[5]+ws[1]-ws[4]);
-                    else if( cw_f[0][2] && cw_f[0][3] && cw_f[1][5] && !contain(v, faces[sld.type][2]) )
+                        / (ws[5]+ws[1]-ws[4]);
+                    else if( cw_f[1][2] && cw_f[1][3] && cw_f[0][5] && !contain(v, faces[sld.type][2]) )
                         cp = (sld.verts[3]*ws[2] + sld.verts[2]*ws[3] - sld.verts[0]*ws[5])
-                            / (ws[2]+ws[3]-ws[5]);
-                    else if( cw_f[0][0] && cw_f[1][3] && cw_f[0][4] && !contain(v, faces[sld.type][3]) )
+                        / (ws[2]+ws[3]-ws[5]);
+                    else if( cw_f[1][0] && cw_f[0][3] && cw_f[1][4] && !contain(v, faces[sld.type][3]) )
                         cp = (sld.verts[3]*ws[0] + sld.verts[0]*ws[4] - sld.verts[1]*ws[3])
-                            / (ws[0]+ws[4]-ws[3]);
+                        / (ws[0]+ws[4]-ws[3]);
                     else {
                         weight[v] = 0;
                         continue;
                     }
                     break;
                 case Solid::SOLID_PYRAMID:
-                    if(cw_f[1][0] && cw_f[1][1] && cw_f[1][2] && cw_f[1][3] &&
-                       !contain(v, faces[sld.type][0]))
+                    if(cw_f[0][0] && cw_f[0][1] && cw_f[0][2] && cw_f[0][3] &&
+                       !contain(v, faces[sld.type][0])){
                         cp = getCP_sq(sld.verts[0], sld.verts[1], sld.verts[2],
                                       ws[0], ws[1], ws[2], ws[3], sld.edges[2], sld.edges[3], raydir);
-                    else if (cw_f[0][0] && cw_f[1][4] && cw_f[0][5] && !contain(v, faces[sld.type][1]))
+                    }else if (cw_f[1][0] && cw_f[1][5] && cw_f[0][4] &&
+                              !contain(v, faces[sld.type][1])){
                         cp = (sld.verts[4]*-ws[0] + sld.verts[1]*ws[4] + sld.verts[0]*-ws[5])
-                                / (-ws[0]+ws[4]-ws[5]);
-                    else if (cw_f[0][1] && cw_f[1][5] && cw_f[0][6] && !contain(v, faces[sld.type][2]))
+                        / (-ws[0]+ws[4]-ws[5]);
+                    }else if (cw_f[1][1] && cw_f[1][6] && cw_f[0][5] &&
+                              !contain(v, faces[sld.type][2])){
                         cp = (sld.verts[4]*-ws[1] + sld.verts[2]*ws[5] + sld.verts[1]*-ws[6])
-                                / (-ws[1]+ws[5]-ws[6]);
-                    else if (cw_f[0][2] && cw_f[1][6] && cw_f[0][7] && !contain(v, faces[sld.type][3]))
+                        / (-ws[1]+ws[5]-ws[6]);
+                    }else if (cw_f[1][2] && cw_f[1][7] && cw_f[0][6] &&
+                              !contain(v, faces[sld.type][3])){
                         cp = (sld.verts[4]*-ws[2] + sld.verts[3]*ws[6] + sld.verts[2]*-ws[7])
-                                / (-ws[2]+ws[6]-ws[7]);
-                    else if (cw_f[0][3] && cw_f[1][7] && cw_f[0][4] && !contain(v, faces[sld.type][4]))
+                        / (-ws[2]+ws[6]-ws[7]);
+                    }else if (cw_f[1][3] && cw_f[1][4] && cw_f[0][7] &&
+                              !contain(v, faces[sld.type][4])){
                         cp = (sld.verts[4]*-ws[3] + sld.verts[0]*ws[7] + sld.verts[3]*-ws[4])
-                                / (-ws[3]+ws[7]-ws[4]);
-                    else {
+                        / (-ws[3]+ws[7]-ws[4]);
+                    }else{
                         weight[v] = 0;
                         continue;
                     }
                     break;
                 case Solid::SOLID_PRISM:
-                    if(cw_f[1][0] && cw_f[1][1] && cw_f[1][2] && !contain(v, faces[sld.type][0]) )
+                    if(cw_f[0][0] && cw_f[0][1] && cw_f[0][2] &&
+                       !contain(v, faces[sld.type][0])){
                         cp = (sld.verts[2]*ws[0] + sld.verts[0]*ws[1] + sld.verts[1]*ws[2])
-                            / (ws[0]+ws[1]+ws[2]);
-                    else if(cw_f[1][3] && cw_f[1][4] && cw_f[1][5] && !contain(v, faces[sld.type][1]) )
-                        cp = (sld.verts[5]*ws[3] + sld.verts[3]*ws[4] + sld.verts[4]*ws[5])
-                            / (ws[3]+ws[4]+ws[5]);
-                    else if(cw_f[0][0] && cw_f[1][6] && cw_f[0][5] && cw_f[0][7] &&
-                            !contain(v, faces[sld.type][2])){
-                        cp = getCP_sq(sld.verts[1], sld.verts[0], sld.verts[3],
-                                      -ws[0], ws[6], -ws[5], -ws[7], sld.edges[5], sld.edges[7], raydir);
-                    }else if(cw_f[0][2] && cw_f[1][8] && cw_f[0][3] && cw_f[0][6] &&
+                        / (ws[0]+ws[1]+ws[2]);
+                    }else if(cw_f[1][3] && cw_f[1][4] && cw_f[1][5] &&
+                             !contain(v, faces[sld.type][1])){
+                        cp = (sld.verts[5]*ws[3] + sld.verts[3]*ws[4] + sld.verts[4]*ws[5]) / (ws[3]+ws[4]+ws[5]);
+                    }else if(cw_f[1][2] && cw_f[1][6] && cw_f[0][5] && cw_f[0][8] &&
+                             !contain(v, faces[sld.type][2])){
+                        cp = getCP_sq(sld.verts[2], sld.verts[0], sld.verts[3],
+                                      ws[2], ws[6], -ws[5], -ws[8], sld.edges[5], sld.edges[8], raydir);
+                    }else if(cw_f[1][0] && cw_f[1][7] && cw_f[0][3] && cw_f[0][6] &&
                              !contain(v, faces[sld.type][3])){
-                        cp = getCP_sq(sld.verts[0], sld.verts[2], sld.verts[4],
-                                      -ws[2], ws[8], -ws[3], -ws[6], sld.edges[3], sld.edges[6], raydir);
-                    }else if(cw_f[0][1] && cw_f[1][7] && cw_f[0][4] && cw_f[0][8] &&
+                        cp = getCP_sq(sld.verts[0], sld.verts[1], sld.verts[4],
+                                      ws[0], ws[7], -ws[3], -ws[6], sld.edges[3], sld.edges[6], raydir);
+                    }else if(cw_f[1][1] && cw_f[1][8] && cw_f[0][4] && cw_f[0][7] &&
                              !contain(v, faces[sld.type][4])){
-                        cp = getCP_sq(sld.verts[2], sld.verts[1], sld.verts[5],
-                                      -ws[1], ws[7], -ws[4], -ws[8], sld.edges[4], sld.edges[8], raydir);
-                    }else {
+                        cp = getCP_sq(sld.verts[1], sld.verts[2], sld.verts[5],
+                                      ws[1], ws[8], -ws[4], -ws[7], sld.edges[4], sld.edges[7], raydir);
+                    }else{
                         weight[v] = 0;
                         continue;
                     }
                     break;
                 case Solid::SOLID_HEXAHEDRON:
-                    if     (cw_f[1][0] && cw_f[1][1] && cw_f[1][2] && cw_f[1][3] &&
-                            !contain(v, faces[sld.type][0]))
+                    if     (cw_f[0][0] && cw_f[0][1] && cw_f[0][2] && cw_f[0][3] &&
+                            !contain(v, faces[sld.type][0])){
                         cp = getCP_sq(sld.verts[0], sld.verts[1], sld.verts[2],
                                       ws[0], ws[1], ws[2], ws[3], sld.edges[2], sld.edges[3],raydir);
-                    else if(cw_f[1][4] && cw_f[1][5] && cw_f[1][6] && cw_f[1][7] &&
-                            !contain(v, faces[sld.type][1]))
+                    }else if(cw_f[1][4] && cw_f[1][5] && cw_f[1][6] && cw_f[1][7] &&
+                             !contain(v, faces[sld.type][1])){
                         cp = getCP_sq(sld.verts[4], sld.verts[5], sld.verts[6],
                                       ws[4], ws[5], ws[6], ws[7], sld.edges[6], sld.edges[7],raydir);
-                    else if(cw_f[0][0] && cw_f[1][8] && cw_f[0][7] && cw_f[0][9] &&
-                            !contain(v, faces[sld.type][2]))
-                        cp = getCP_sq(sld.verts[1], sld.verts[0], sld.verts[4],
-                                      -ws[0], ws[8], -ws[7], -ws[9], sld.edges[7], sld.edges[9],raydir);
-                    else if(cw_f[0][1] && cw_f[1][9] && cw_f[0][6] && cw_f[0][10] &&
-                            !contain(v, faces[sld.type][3]))
-                        cp = getCP_sq(sld.verts[2], sld.verts[1], sld.verts[7],
-                                      -ws[1], ws[9], -ws[6], -ws[10], sld.edges[6], sld.edges[10],raydir);
-                    else if(cw_f[0][2] && cw_f[1][10] && cw_f[0][5] && cw_f[0][11] &&
-                            !contain(v, faces[sld.type][4]))
-                        cp = getCP_sq(sld.verts[3], sld.verts[2], sld.verts[6],
-                                      -ws[2], ws[10], -ws[5], -ws[11], sld.edges[5], sld.edges[11],raydir);
-                    else if(cw_f[0][3] && cw_f[1][11] && cw_f[0][4] && cw_f[0][8] &&
-                            !contain(v, faces[sld.type][5]))
-                        cp = getCP_sq(sld.verts[0], sld.verts[3], sld.verts[5],
-                                      -ws[3], ws[11], -ws[4], -ws[8], sld.edges[4], sld.edges[8],raydir);
+                    }else if(cw_f[1][0] && cw_f[1][9] && cw_f[0][4] && cw_f[0][8] &&
+                             !contain(v, faces[sld.type][2])){
+                        cp = getCP_sq(sld.verts[0], sld.verts[1], sld.verts[5],
+                                      ws[0], ws[9], -ws[4], -ws[8], sld.edges[4], sld.edges[8],raydir);
+                    }else if(cw_f[1][1] && cw_f[1][10] && cw_f[0][5] && cw_f[0][9] &&
+                             !contain(v, faces[sld.type][3])){
+                        cp = getCP_sq(sld.verts[1], sld.verts[2], sld.verts[6],
+                                      ws[1], ws[10], -ws[5], -ws[9], sld.edges[5], sld.edges[9],raydir);
+                    }else if(cw_f[1][2] && cw_f[1][11] && cw_f[0][6] && cw_f[0][10] &&
+                             !contain(v, faces[sld.type][4])){
+                        cp = getCP_sq(sld.verts[2], sld.verts[3], sld.verts[7],
+                                      ws[2], ws[11], -ws[6], -ws[10], sld.edges[6], sld.edges[10],raydir);
+                    }else if(cw_f[1][3] && cw_f[1][8] && cw_f[0][7] && cw_f[0][11] &&
+                             !contain(v, faces[sld.type][5])){
+                        cp = getCP_sq(sld.verts[3], sld.verts[0], sld.verts[4],
+                                      ws[3], ws[8], -ws[7], -ws[11], sld.edges[7], sld.edges[11],raydir);
+                        
+                    }else{
+                        weight[v] = 0;
+                        continue;
+                    }
                     break;
             }
             
@@ -311,11 +328,11 @@ namespace {
     bool isPointInSolid (VX::Math::vec3 p, const Solid &solid){
         static const int faces[][6][4] = {
             {{}}, {{}}, {{}}, {{}},        // 0,1,2,3
-            { {0,1,2,-1}, {1,3,2,-1}, {0,2,3,-1}, {0,3,1,-1} },  //tetra
-            {{0,1,2,3}, {0,4,1,-1}, {1,4,2,-1}, {2,4,3,-1}, {3,4,0,-1} },  //pyramid
-            {{0,1,2,-1}, {3,4,5,-1}, {0,3,5,1}, {0,2,4,3}, {1,5,4,2} },   //prism
+            {{0,2,1,-1}, {1,2,3,-1}, {0,3,2,-1}, {0,1,3,-1} },  //tetra
+            {{0,3,2,1}, {0,1,4,-1}, {1,2,4,-1}, {2,3,4,-1}, {0,4,3,-1} },  //pyramid
+            {{0,2,1,-1}, {3,4,5,-1}, {0,3,5,2}, {0,1,4,3}, {1,2,5,4} },   //prism
             {{}},       // 7
-            {{0,1,2,3}, {4,5,6,7}, {0,4,7,1}, {1,7,6,2}, {2,6,5,3}, {0,3,5,4} },  //hexa
+            {{0,3,2,1}, {4,5,6,7}, {0,1,5,4}, {1,2,6,5}, {2,3,7,6}, {0,4,7,3}, },  //hexa
         };
         float d = -1;
         for(int i = 0; i < face_n(solid.type); i ++)

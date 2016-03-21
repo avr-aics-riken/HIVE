@@ -429,7 +429,7 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		//printf("extent : %d, %d, %d\n", vb.extent[0], vb.extent[1],
 		//	   vb.extent[2]);
 		//printf("sz     : %d, %d, %d\n", vb.size[0], vb.size[1], vb.size[2]);
-		sparseVolume.AddVolume(vb.level, vb.offset[0], vb.offset[1],
+		sparseVolume.AddVolumeBlock(vb.level, vb.offset[0], vb.offset[1],
 							   vb.offset[2], vb.extent[0], vb.extent[1],
 							   vb.extent[2], vol);
 	}
@@ -483,7 +483,7 @@ void ConvertCellIDBlock(BufferSparseVolumeData &sparseVolume, const int dcid,
 		//printf("extent : %d, %d, %d\n", vb.extent[0], vb.extent[1],
 		//	   vb.extent[2]);
 		//printf("sz     : %d, %d, %d\n", vb.size[0], vb.size[1], vb.size[2]);
-		sparseVolume.AddVolume(vb.level, vb.offset[0], vb.offset[1],
+		sparseVolume.AddVolumeBlock(vb.level, vb.offset[0], vb.offset[1],
 							   vb.offset[2], vb.extent[0], vb.extent[1],
 							   vb.extent[2], vol);
 	}
@@ -530,7 +530,7 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 			vol->Buffer()->GetBuffer()[i] = vb.data[i];
 		}
 
-		sparseVolume.AddVolume(vb.level, vb.offset[0], vb.offset[1],
+		sparseVolume.AddVolumeBlock(vb.level, vb.offset[0], vb.offset[1],
 							   vb.offset[2], vb.extent[0], vb.extent[1],
 							   vb.extent[2], vol);
 	}
@@ -698,8 +698,8 @@ BufferSparseVolumeData *HDMLoader::LoadField(const char *fieldName,
 
 	// Prepare SparseVolume
 	//m_sparseVolume.Create(dim[0], dim[1], dim[2], components);
-  RefPtr<BufferSparseVolumeData> sparseVolume = BufferSparseVolumeData::CreateInstance();
-	sparseVolume->Create(dim[0], dim[1], dim[2], components);
+    RefPtr<BufferSparseVolumeData> sparseVolume = BufferSparseVolumeData::CreateInstance();
+	sparseVolume->Create();
 
 	{
 		// Treat 'CellID' as a special case.
