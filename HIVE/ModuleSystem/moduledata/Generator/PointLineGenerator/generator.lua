@@ -25,7 +25,6 @@ end
 
 function PointLineGenerator:PointData()
     local v = self.value
-	print(self.gen)
     return self.gen:PointList(v.vertices, #v.vertices / 3, v.radius);
 end
 
