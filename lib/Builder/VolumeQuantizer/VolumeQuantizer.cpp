@@ -79,7 +79,7 @@ namespace {
         int outbit = 0;
         const int alignBit = 32;
         for (int c = 0; c < comp; ++c) {
-            if (outbit / alignBit < (outbit + bits) / alignBit ) {
+            if (outbit / alignBit < (outbit + bits - 1) / alignBit ) {
                 outbit = (outbit / alignBit + 1) * alignBit;
             }
             outbit += bits;
