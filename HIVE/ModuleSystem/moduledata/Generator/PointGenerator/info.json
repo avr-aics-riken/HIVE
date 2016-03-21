@@ -1,0 +1,13 @@
+{
+	"name": "Point Generator",
+	"funcname": "PointGenerator",
+	"info":"Pointを生成するためのノード",
+	"customfuncfile":"generator.lua",
+    "input": [
+		{"name": "radius", "type": "float", "value": [30.0]},
+		{"name": "vertices", "type": "floatarray", "value":[]}
+	],
+	"output": [
+		{"name": "PointData",  "type": "BufferPointData"}
+	]
+}
