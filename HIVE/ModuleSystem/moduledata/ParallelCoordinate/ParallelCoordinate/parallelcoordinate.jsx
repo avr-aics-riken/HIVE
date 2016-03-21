@@ -122,7 +122,7 @@ class ParallelCoordinate extends React.Component {
             arr = new Uint32Array(data);
             console.log('recieved volume data length: ', arr.length);
             var quantSize = parseInt(param.quantsize, 10);           // ひとつのデータあたりのビット長（たとえば 8bit とか）
-            if(quantSize > 32){
+            if(quantSize > 32 || quantSize < 2){
                 console.log('invalid quantsize: ', quantSize);
                 return;
             }
@@ -137,7 +137,7 @@ class ParallelCoordinate extends React.Component {
                 for(let m = 0; m < blocks; ++m){
                     let v = arr[i + m];
                     let l = Math.min((component - m * inBlock), inBlock);
-                    // ここでのループで、たとえば 32bit のブロックならそこから 8bit ずつ引っこ抜いてる
+                    // ここでのループで、たとえば 32bit のブロックならその下位ビットから 8bit ずつ抜く
                     for(let k = 0; k < l; ++k){
                         let x = ((v >>> k * quantSize) & mask) / mask;
                         w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
