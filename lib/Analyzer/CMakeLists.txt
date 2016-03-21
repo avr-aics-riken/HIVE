@@ -18,6 +18,7 @@ set(SOURCES
 	PolygonAnalyzer.cpp
 	VolumeAnalyzer.cpp
 	SparseVolumeAnalyzer.cpp
+	SolidAnalyzer.cpp
 	LuaEntry.cpp
 )
 
