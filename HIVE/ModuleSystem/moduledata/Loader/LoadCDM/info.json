@@ -4,7 +4,8 @@
 	"info":"CDMファイルを読み込むためのノード",
 	"customfuncfile":"cdmloader.lua",
 	"input": [
-		{"name": "filepath", "type": "string", "value": ""}
+		{"name": "filepath", "type": "string", "value": ""},
+        {"name": "time", "type": "float", "value": 0}
 	],
 	"output": [
 		{"name": "VolumeData", "type": "BufferVolumeData"},
