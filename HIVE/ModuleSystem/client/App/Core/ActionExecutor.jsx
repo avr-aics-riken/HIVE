@@ -856,6 +856,7 @@ export default class ActionExecuter {
 		let group = {
 			name : "Group",
 			varname : "group_" + uuid(),
+			type : "group",
 			nodes : nodeList,
 			plugs : this.getPlugsFromNodes(nodeList, this.store.getPlugs()),
 			input : inputs,

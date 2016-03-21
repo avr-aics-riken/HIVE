@@ -13,6 +13,7 @@ export default class Store extends EventEmitter {
         this.data = {
 			name : "",    //シーン名
 			varname : "Root",
+			type : "scene",
             nodes : [],   // 全てのノード
             plugs : [],   // 全てのプラグ
 			input : [],   // シーンの入力端子
