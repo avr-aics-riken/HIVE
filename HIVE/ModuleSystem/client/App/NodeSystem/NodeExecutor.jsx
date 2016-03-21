@@ -139,6 +139,7 @@ export default class NodeExecutor extends EventEmitter {
                 script += this.nodeSerializer.doNode(nd.node);
                 nd.needexecute = false;
                 nd.executed = true;
+                nd.exeState = "running";
             }
         });
         script += "\nreturn {doState=executedNode}\n";
@@ -156,7 +157,7 @@ export default class NodeExecutor extends EventEmitter {
     }
 
     getNodeExecutionState(varname) {
-        if (this.nodeGraph.hasOwnproperty(varname)) {
+        if (this.nodeGraph.hasOwnProperty(varname)) {
             return this.nodeGraph[varname].exeState;
         } else {
             return EXECUTE_NOTFOUND;
@@ -221,6 +222,19 @@ export default class NodeExecutor extends EventEmitter {
             this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
         });
 
+/*        store.on(Constants.NODE_INPUT_PROPERTY_CHANGED, (err, data, prop) => {
+            console.log('NS catched:NODE_INPUT_PROPERTY_CHANGED', err, data, prop);
+            let node = data;
+            let p = prop;
+
+            if (p.funcinput !== false) {
+                this.nodeGraph[node.varname].needexecute = true;
+            }
+
+            //let script = this.doNodes();
+            //this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        });
+*/
         /*
         store.on(Constants.NODE_CHANGED, (err, data) => {
             // not need now.
@@ -236,6 +250,7 @@ export default class NodeExecutor extends EventEmitter {
             // TODO
         });
         */
+        
 
         store.on(Constants.NODE_ADDED, (err, data) => {
             // create new / delete instance

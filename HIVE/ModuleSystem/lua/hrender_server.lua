@@ -16,7 +16,8 @@ else
 end
 --]]
 
-BaseComponent = require('BaseComponent')
+HiveBaseModule = require('HiveBaseModule')
+BaseComponent = HiveBaseModule -- for compatibility
 
 local connectAddress = 'ws://localhost:8080/'
 local ipcAddress = nil --'ipc:///tmp/HIVE_server_ipc'

@@ -82,6 +82,7 @@ export default class ActionExecuter {
 		this.align = this.align.bind(this);
 		this.alignNodes = this.alignNodes.bind(this);
 		this.alignNode = this.alignNode.bind(this);
+		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
 	}
 
     /**
@@ -167,7 +168,11 @@ export default class ActionExecuter {
 			if (payload.nodeInfo.hasOwnProperty('varname') && node.varname !== payload.nodeInfo.varname) {
 				node.varname = payload.nodeInfo.varname;
 			} else {
-				node.varname = node.funcname + uuid();
+				if (payload.nodeInfo.name === "Group") {
+					node.varname = "group_" + uuid();
+				} else {
+					node.varname = node.funcname + uuid();
+				}
 			}
 			if (payload.nodeInfo.hasOwnProperty('node')) {
 				node.node = payload.nodeInfo.node;
@@ -311,7 +316,7 @@ export default class ActionExecuter {
                 //n = this.store.getRootNodes();
                 let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
                 let luasrc = "package.path = './?.lua;' .. package.path\n";
-                luasrc    += "local BaseComponent = require('BaseComponent')\n";
+                luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
                 luasrc = luasrc + nodeExe.doNodes();
                 //console.log('EXPORT>', luasrc);
@@ -530,17 +535,22 @@ export default class ActionExecuter {
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
 			let node = this.store.findNode(this.store.data, payload.nodeInfo.varname);
+			let group = this.store.findGroup(payload.nodeInfo.varname);
 			if (node) {
 				let dstNode = node;
 				let srcNode =  payload.nodeInfo;
 
 				let hasInput = srcNode.hasOwnProperty('input');
-				let preInputs = JSON.stringify(dstNode.input);
-				let postInputs = hasInput ? JSON.stringify(payload.nodeInfo.input) : null;
+				let preInputList = dstNode.input;
+				let postInputList = hasInput ? payload.nodeInfo.input : null;
 
 				let hasSelect = srcNode.hasOwnProperty('select');
 				let preSelect = dstNode.select;
 				let postSelect = hasSelect ? payload.nodeInfo.select : null;
+
+				let hasLabel = srcNode.hasOwnProperty('label');
+				let preLabel = dstNode.label;
+				let postLabel = hasLabel ? payload.nodeInfo.label : null;
 
 				let hasPanel = srcNode.hasOwnProperty('panel');
 				let prePanel = JSON.stringify(dstNode.panel);
@@ -550,7 +560,6 @@ export default class ActionExecuter {
 				let prePanelSize = JSON.stringify(dstNode.panel.size);
 				let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
 
-
 				let hasNodeParam = srcNode.hasOwnProperty('node');
 				let preNodePos = JSON.stringify(dstNode.node.pos);
 				let postNodePos = hasNodeParam ? JSON.stringify(payload.nodeInfo.node.pos) : null;
@@ -558,35 +567,36 @@ export default class ActionExecuter {
 				let postNodeClose = hasNodeParam ? payload.nodeInfo.node.close : null;
 
 				for (let info in payload.nodeInfo) {
-					if (info !== "uiComponent" && node.hasOwnProperty(info)) {
+					if (info !== "uiComponent" && info !== "input" && node.hasOwnProperty(info)) {
 						dstNode[info] = JSON.parse(JSON.stringify(payload.nodeInfo[info]));
 					}
 				}
-
 				this.store.emit(Constants.NODE_CHANGED, null, dstNode);
-				if (hasInput && preInputs !== postInputs) {
-					if (this.store.isGroup(dstNode)) {
-						// グループの入力が変更された場合は、入力に対応するノードの入力も変更する。
-						let pre = JSON.parse(preInputs);
-						let post = JSON.parse(postInputs);
-						for (let k = 0; k < pre.length; k = k + 1) {
-							if (JSON.stringify(pre[k].value) !== JSON.stringify(post[k].value)) {
-								console.log(pre[k].nodeVarname);
-								let target = this.store.findNode(dstNode, pre[k].nodeVarname);
-								if (!target) {
-									console.error("not found input node")
-								}
-								for (let m = 0; m < target.input.length; m = m + 1) {
-									if (target.input[m].name === post[k].name) {
-										target.input[m].value = post[k].value;
+
+				let isInputChanged = false;
+				if (hasInput) {
+					for (let i = 0; i < preInputList.length; i = i + 1) {
+						if (JSON.stringify(preInputList[i]) !== JSON.stringify(postInputList[i])) {
+							let postInput = postInputList[i];
+							dstNode.input[i] = JSON.parse(JSON.stringify(postInput));
+							if (group) {
+								// グループの入力が変更された場合は、groupの入力も変更する。
+								for (let m = 0; m < group.input.length; m = m + 1) {
+									if (group.input[m].nodeVarname === postInput.nodeVarname && group.input[m].name === postInput.name) {
+										group.input[m] = JSON.parse(JSON.stringify(postInput));
 									}
 								}
-								this.store.emit(Constants.NODE_INPUT_CHANGED, null, target, -1);
 							}
+							this.store.emit(Constants.NODE_INPUT_PROPERTY_CHANGED, null, dstNode, dstNode.input[i])
+							isInputChanged = true;
 						}
-					} else {
-						this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
 					}
+				}
+				if (isInputChanged) {
+					this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
+				}
+				if (hasLabel && preLabel !== postLabel) {
+					this.store.emit(Constants.NODE_LABEL_CHANGED, null, dstNode);
 				}
 				if (hasSelect && preSelect !== postSelect) {
 					this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode);
@@ -653,6 +663,17 @@ export default class ActionExecuter {
 		}
 	}
 
+	// @private
+	// 入力ノードの全てのnodevarnameからnodeへのマップを作り返す.
+	// @param isRecursive trueの場合グループノードが含まれる場合は再帰的に作成する.
+	createVarnameToNodeMap(varnameToNodes, nodes, isRecursive) {
+		for (let i = 0; i <  nodes.length; i = i + 1) {
+			varnameToNodes[nodes[i].varname] = nodes[i];
+			if (this.store.isGroup(nodes[i])) {
+				this.createVarnameToNodeMap(varnameToNodes, nodes[i].nodes);
+			}
+		}
+	}
 
 	/**
 	 * ノード間のプラグリストを返す
@@ -661,28 +682,12 @@ export default class ActionExecuter {
 		let resultPlugs = [];
 		let varnameToNodes = {};
 		let groups = [];
-		for (let i = 0; i <  nodes.length; i = i + 1) {
-			varnameToNodes[nodes[i].varname] = nodes[i];
-			if (this.store.isGroup(nodes[i])) {
-				groups.push(nodes[i]);
-			}
-		}
+		this.createVarnameToNodeMap(varnameToNodes, nodes, true);
 
 		for (let i = 0; i < plugs.length; i = i + 1) {
 			let plug = plugs[i];
-			let hasInput = false;
-			let hasOutput = false;
-
-			for (let k = 0; k < groups.length; k = k + 1) {
-				if (this.store.findNode(groups[k], plug.input.nodeVarname)) {
-					hasInput = true;
-				}
-				if (this.store.findNode(groups[k], plug.output.nodeVarname)) {
-					hasOutput = true;
-				}
-			}
-			hasInput = hasInput || varnameToNodes.hasOwnProperty(plug.input.nodeVarname);
-			hasOutput = hasOutput || varnameToNodes.hasOwnProperty(plug.output.nodeVarname);
+			let hasInput = varnameToNodes.hasOwnProperty(plug.input.nodeVarname);
+			let hasOutput = varnameToNodes.hasOwnProperty(plug.output.nodeVarname);
 
 			if (hasInput && hasOutput) {
 				resultPlugs.push(plug);
@@ -691,16 +696,13 @@ export default class ActionExecuter {
 		return resultPlugs;
 	}
 
-
 	/**
 	 * ノードの集合から, ノードの集合外に繋がっている入力の、プラグリストを返す。
 	 */
 	getGroupInoutFromNodes(nodes, isInput) {
 		let plugs = [];
 		let varnameToNodes = {};
-		for (let i = 0; i <  nodes.length; i = i + 1) {
-			varnameToNodes[nodes[i].varname] = nodes[i];
-		}
+		this.createVarnameToNodeMap(varnameToNodes, nodes, true);
 
 		for (let i = 0; i < this.store.getPlugs().length; i = i + 1) {
 			let plug = this.store.getPlugs()[i];
@@ -802,7 +804,7 @@ export default class ActionExecuter {
 			let n = nodeList[i];
 			for (let k = 0; k < inplugs.length; k = k + 1) {
 				let plug = inplugs[k];
-				if (n.varname === plug.input.nodeVarname) {
+				if (this.store.findNode(n, plug.input.nodeVarname)) {
 					let inputIterator = NodeIterator.makeInputIterator(this.store, n);
 					for (let v of inputIterator) {
 						if (v.input && v.input.name === plug.input.name) {
@@ -813,7 +815,7 @@ export default class ActionExecuter {
 			}
 			for (let k = 0; k < outplugs.length; k = k + 1) {
 				let plug = outplugs[k];
-				if (n.varname === plug.output.nodeVarname) {
+				if (this.store.findNode(n, plug.output.nodeVarname)) {
 					let outputIterator = NodeIterator.makeOutputIterator(this.store, n);
 					for (let v of outputIterator) {
 						if (v.output && v.output.name === plug.output.name) {
@@ -844,7 +846,7 @@ export default class ActionExecuter {
 					}
 				}
 				if (v.output && varnameToOutput.hasOwnProperty(v.output.nodeVarname)) {
-					if (varnameToOutput[output.nodeVarname].name === v.output.name) {
+					if (varnameToOutput[v.output.nodeVarname].name === v.output.name) {
 						outputs.push(v.output);
 					}
 				}
@@ -1124,6 +1126,12 @@ export default class ActionExecuter {
 	alignNode(varnameToNode, inputToParentNode, depthToPos, nodeSizes, aligned, varname, pos, depth) {
 		if (!varnameToNode.hasOwnProperty(varname)) { return; }
 		const bound = nodeSizes[varname];
+
+		let group = this.store.findGroup(varname);
+		if (group) {
+			varname = group.varname;
+		}
+
 		if (!aligned.hasOwnProperty(varname)) {
 			const node = varnameToNode[varname];
 			if (!depthToPos.hasOwnProperty(depth)) {
@@ -1131,7 +1139,7 @@ export default class ActionExecuter {
 				depthToPos[depth] = { x : pos.x + offset.x, y : pos.y, w : bound.w, h : bound.h};
 			} else {
 				const p = depthToPos[depth];
-				const offset = { x : -p.w - 50, y : p.h + 50 };
+				const offset = { x : -p.w - 50, y : p.h + 30 };
 				depthToPos[depth] = { x : p.x, y : p.y + offset.y, w : bound.w, h : bound.h };
 			}
 			pos.x = depthToPos[depth].x;
@@ -1348,13 +1356,16 @@ export default class ActionExecuter {
 				for (let key in prop.data) {
 					if (frame < Number(key)) {
 						postKey = Number(key);
+						if (preKey === null) {
+							preKey = Number(key);
+						}
 						break;
 					}
 					preKey = Number(key);
 				}
-				if (!preKey) { preKey = postKey; }
-				if (!postKey) { postKey = preKey; }
-				if (preKey && postKey) {
+				if (postKey === null) { postKey = preKey; }
+				if (preKey === null) { preKey = postKey; }
+				if (preKey !== null && postKey !== null) {
 					let value = prop.data[preKey];
 					if (preKey < postKey && (typeof value !== "string") && (typeof value !== "boolean")) {
 						// 線形補間.
@@ -1416,17 +1427,17 @@ export default class ActionExecuter {
 				}
 			}
 			let content;
-			if (!varnameToContent.hasOwnProperty(node.varname)) {
+			if (!varnameToContent.hasOwnProperty(input.nodeVarname)) {
 				content = {
 					name: node.label ? node.label : node.name,
-					nodeVarname : node.varname,
+					nodeVarname : input.nodeVarname,
 					color: "rgb(32, 96, 196)",
 					propColor: "rgba(8, 62, 162, 1.0)",
 					props: []
 				};
 				data.contents.push(content);
 			} else {
-			 	content = varnameToContent[node.varname];
+			 	content = varnameToContent[input.nodeVarname];
 			}
 			let prop = null;
 			for (let i = 0; i < content.props.length; i = i + 1) {
@@ -1469,10 +1480,10 @@ export default class ActionExecuter {
 					varnameToContent[data.contents[i].nodeVarname] = data.contents[i];
 				}
 			}
-			if (!varnameToContent.hasOwnProperty(node.varname)) {
+			if (!varnameToContent.hasOwnProperty(input.nodeVarname)) {
 				console.error("not found keyframe for delete");
 			}
-			let content = varnameToContent[node.varname];
+			let content = varnameToContent[input.nodeVarname];
 			for (let i = 0; i < content.props.length; i = i + 1) {
 				if (content.props[i].name === input.name &&
 					content.props[i].nodeVarname === input.nodeVarname) {

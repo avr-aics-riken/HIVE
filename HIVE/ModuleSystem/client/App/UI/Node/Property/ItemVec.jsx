@@ -164,7 +164,7 @@ export default class ItemVec extends React.Component {
 
 	submit(ev) {
 		if (this.currentEdit.value !== null && !isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {
-			this.props.changeVecFunc(this.props.initialParam.name, this.currentEdit.index, this.currentEdit.value);
+			this.props.changeVecFunc(this.currentEdit.index, this.currentEdit.value);
 		} else if (isNaN(this.currentEdit.value) && this.currentEdit.index >= 0) {
 			this.state.values[this.currentEdit.index] = 0;
 			this.setState({
@@ -232,11 +232,17 @@ export default class ItemVec extends React.Component {
 		}
 	}
 
+	addKeyElem() {
+		const styles = this.styles.bind(this)();
+		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
+		return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />
+						{this.addKeyElem.bind(this)()}
 						{this.props.initialParam.name}
 					</div>
                     <div style={styles.value}>

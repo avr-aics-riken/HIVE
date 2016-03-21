@@ -29,7 +29,10 @@ public:
     
     bool Create(const std::string& json, const Buffer binary, int binarySize)
     {
-        if (!binary) { return false; }
+        if (!binary) {
+            printf("[Error] Metabin::Create. Buffer is nil.\n");
+            return false;
+        }
         
         m_byteBuffer = new ByteBuffer();
         if (m_byteBuffer) {

@@ -175,21 +175,28 @@ export default class Store extends EventEmitter {
 					input : {
 						nodeVarname : plug.input.nodeVarname,
 						name : plug.input.name,
-						pos : this.calcPlugPosition(true, plug, inNode),
+						//pos : this.calcPlugPosition(true, plug, inNode),
 						nodeRef : inNode
 					},
 					output : {
 						nodeVarname : plug.output.nodeVarname,
 						name : plug.output.name,
-						pos : this.calcPlugPosition(false, plug, outNode),
+						//pos : this.calcPlugPosition(false, plug, outNode),
 						nodeRef : outNode
 					}
 				};
-				if (!plugPosition.input.pos || !plugPosition.output.pos) {
-					console.error(inNode, outNode, plugPosition);
-				}
 				//this.emit(Store.PLUG_POSITION_CHANGED, null,  plugPosition);
 				this.plugPosList.push(plugPosition);
+			}
+		}
+		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
+			let plug = this.plugPosList[i];
+			let inNode = this.plugPosList[i].input.nodeRef;
+			let outNode = this.plugPosList[i].output.nodeRef;
+			plug.input.pos = this.calcPlugPosition(true, plug, inNode);
+			plug.output.pos = this.calcPlugPosition(false, plug, outNode);
+			if (!plug.input.pos || !plug.output.pos) {
+				console.error(inNode, outNode, plug);
 			}
 		}
 	}
@@ -205,7 +212,7 @@ export default class Store extends EventEmitter {
 			let plugPosition = {
 				input : {
 					name : data.name,
-					nodeVarname : node.varname,
+					nodeVarname : data.nodeVarname,
 					nodeRef : node
 				},
 				output : {
@@ -236,7 +243,7 @@ export default class Store extends EventEmitter {
 				},
 				output : {
 					name : data.name,
-					nodeVarname : node.varname,
+					nodeVarname : data.nodeVarname,
 					nodeRef : node
 				}
 			};
@@ -271,7 +278,7 @@ export default class Store extends EventEmitter {
 						if (v.input.hasOwnProperty('hole') && !v.input.hole) {
 							continue;
 						}
-						if (v.input.name === plug.input.name) {
+						if (v.input.name === plug.input.name && v.input.nodeVarname === plug.input.nodeVarname) {
 							if (node.node.pos[0] === null) {
 								console.error(node);
 							}
@@ -296,7 +303,7 @@ export default class Store extends EventEmitter {
 				}
 				for (let k = 0; k < node.output.length; k = k + 1) {
 					//console.log(node.output[k].name, plug.output.name, node.node.pos[0] + width, calcPlugPositionY(node, k));
-					if (node.output[k].name === plug.output.name) {
+					if (node.output[k].name === plug.output.name && node.output[k].nodeVarname === plug.output.nodeVarname) {
 						return [node.node.pos[0] + width, calcPlugPositionY(node, k)];
 					}
 				}
@@ -397,7 +404,7 @@ export default class Store extends EventEmitter {
 	/// 入力端子にプラグが繋がっているかどうか返す
 	isConnected(nodeVarname, inputName) {
 		for (let i = 0; i < this.plugPosList.length; i = i + 1) {
-			if (this.plugPosList[i].input.nodeRef.varname === nodeVarname) {
+			if (this.plugPosList[i].input.hasOwnProperty('nodeRef') && this.plugPosList[i].input.nodeRef.varname === nodeVarname) {
 				if (Array.isArray(this.plugPosList[i].input.array)) {
 					for (let k = 0; k < this.plugPosList[i].input.array.length; k = k + 1) {
 						if (this.plugPosList[i].input.array[k].name === inputName) {

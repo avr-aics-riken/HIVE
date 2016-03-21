@@ -73,9 +73,9 @@ export default class ItemSuggest extends React.Component {
     onSuggestionsUpdateRequested({value}){
         this.setState({suggestions: this.getSuggestions(value)});
         if(value !== '' && value.match(/.+\.frag$/)){
-            this.props.changeFunc(this.props.initialParam.name, value);
+            this.props.changeFunc(value);
             // fs.exists(__dirname + '/../../../../' + value, ((ex)=>{
-                // if(ex){this.props.changeFunc(this.props.initialParam.name, value);}
+                // if(ex){this.props.changeFunc(value);}
             // }).bind(this));
         }
     }
@@ -234,6 +234,12 @@ export default class ItemSuggest extends React.Component {
 		}
 	}
 
+	addKeyElem() {
+		const styles = this.styles.bind(this)();
+		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
+		return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+	}
+
     render () {
         const styles = this.styles.bind(this)();
         const {value, suggestions} = this.state;
@@ -245,7 +251,7 @@ export default class ItemSuggest extends React.Component {
         return (
             <div style={styles.view}>
                 <div style={styles.key}>
-					<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />
+					{this.addKeyElem.bind(this)()}
                     {this.props.initialParam.name}
                 </div>
                 <Autosuggest theme={styles.suggestTheme}

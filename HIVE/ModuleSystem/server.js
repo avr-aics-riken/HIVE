@@ -14,6 +14,8 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
     babel = require('babel-core'),
 	fs = require('fs'),
 	spawn = require('child_process').spawn,
+    moduleListCache = false,
+    cacheData = null,
 	seserver = http.createServer(function (req, res) {
 		'use strict';
 		console.log('REQ>', req.url);
@@ -22,22 +24,38 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
 			res.end(file);
         } else if (req.url === '/modulelist.json') { // temp
-            makeNodeList((function (res) {
-                return function (err, nodelist) {
-                    jsondata = {error: err, data:nodelist};
-                    file = JSON.stringify(jsondata);
-                    res.end(file);
-                };
-            }(res)));
-		} else {
-			try {
-				fname = req.url.substr(1, req.url.length); // remove '/'
-				file = fs.readFileSync(HTTP_ROOT_DIR + fname);
-				res.end(file);
-			} catch (e) {
-				res.writeHead(404, {'Content-Type': 'text/plain'});
-				res.end('not found\n');
-			}
+            if (moduleListCache === true && cacheData) {
+                res.end(cacheData);
+            } else {
+                makeNodeList((function (res) {
+                    return function (err, nodelist) {
+                        // sort node list
+                        var arr = [], dest = [];
+                        var temp = {};
+                        for(var i = 0; i < nodelist.length; ++i){
+                            arr.push(nodelist[i].name);
+                            temp[nodelist[i].name] = nodelist[i];
+                        }
+                        arr.sort();
+                        for(var i = 0; i < arr.length; ++i){
+                            dest[i] = temp[arr[i]];
+                        }
+                        jsondata = {error: err, data:dest};
+                        file = JSON.stringify(jsondata);
+                        cacheData = file;
+                        res.end(file);
+                    };
+                }(res)));
+            }
+        } else {
+            fname = req.url.substr(1, req.url.length); // remove '/'
+            fs.readFile(HTTP_ROOT_DIR + fname, function(err, file){
+                if (err) {
+                   	res.writeHead(404, {'Content-Type': 'text/plain'});
+			    	res.end('not found\n');
+                }
+                res.end(file);                    
+            } );
 		}
 	}).listen(port),
 	websocket = require('websocket'),
@@ -62,75 +80,93 @@ function getExt(filename) {
 
 function makeNodeList(callback) {
 	"use strict";
-	var nodeDir = './moduledata';
-	fs.readdir(nodeDir, function (err, files) {
-		var infofile,
-			nodeDirPath,
-			fileCounter,
-            readError,
-			customFuncLua,
-            uiFunc,
-			nodelist = [],
-			i;
-		if (err) {
-			return;
-		}
+	var rootNodeDir = './moduledata',
+        nodelist = [],
+        fileCounter,
+        readError;
+                
+    fs.readdir(rootNodeDir, function (err, files) {
+        if (err) {
+            return;
+        }
 
-		fileCounter = 0;
+        fileCounter = 0;
         readError = '';
-		function finishLoad() {
-			fileCounter = fileCounter - 1;
-			if (fileCounter === 0) {
-				callback((readError.length === 0 ? null : readError), nodelist);
-			}
-		}
-		function loadFunc(nodeDirPath) {
-			return function (err, data) {
-				try {
-					var i,
-                        uifile,
-                        json = JSON.parse(data);
-					if (json.customfuncfile !== undefined) {
-						customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
-						json.customfunc = customFuncLua;
+            
+        var i, nodeDir;
+        for (i in files) {
+	        nodeDir = rootNodeDir + "/" + files[i];
+            fs.readdir(nodeDir, function (nodeDir) {
+                return function (err, files) {
+                    if (err) {
+                        return;
                     }
-                    json.uiFunc = '';
-                    if (is_array(json.uifile)) {
-                        uiFunc = ''                            
-                        for(i in json.uifile) {
-                            uifile = json.uifile[i];
-                            if (getExt(uifile) === 'jsx'){ 
-                                uiFunc += babel.transformFileSync(nodeDirPath + "/" + uifile, {ignore:'react'}).code + '\n';
-                            } else {
-                                uiFunc += fs.readFileSync(nodeDirPath + "/" + uifile, 'utf8') + '\n';
-                            }
+
+                    var infofile,
+                        nodeDirPath,
+                        customFuncLua,
+                        uiFunc,
+                        i;
+                    if (err) {
+                        return;
+                    }
+
+                    function finishLoad() {
+                        fileCounter = fileCounter - 1;
+                        if (fileCounter === 0) {
+                            callback((readError.length === 0 ? null : readError), nodelist);
                         }
-                        json.uiFunc = uiFunc;
-                    } else if (json.uifile !== undefined) {
-                        uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
-						json.uiFunc = uiFunc;
-					}
-					nodelist.push(json);
-				} catch (e) {
-                    var errmsg = '[Error] Failed Load:' + nodeDirPath + "/info.json";
-					console.error(errmsg, e);
-                    readError += errmsg + '\n' + e.toString() + '\n';
-				}
-				finishLoad();
-			};
-		}
-		for (i in files) {
-			if (files.hasOwnProperty(i)) {
-				if (files[i].substr(0, 1) !== '.') {
-					nodeDirPath = nodeDir + "/" + files[i];
-					infofile = nodeDirPath + "/info.json";
-					//console.log(infofile);
-					fileCounter = fileCounter + 1;
-					fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
-				}
-			}
-		}
-	});
+                    }
+                    function loadFunc(nodeDirPath) {
+                        return function (err, data) {
+                            try {
+                                var i,
+                                    uifile,
+                                    json = JSON.parse(data);
+                                if (json.customfuncfile !== undefined) {
+                                    customFuncLua = fs.readFileSync(nodeDirPath + "/" + json.customfuncfile, 'utf8');
+                                    json.customfunc = customFuncLua;
+                                }
+                                json.uiFunc = '';
+                                if (is_array(json.uifile)) {
+                                    uiFunc = '';
+                                    for(i in json.uifile) {
+                                        uifile = json.uifile[i];
+                                        if (getExt(uifile) === 'jsx'){ 
+                                            uiFunc += babel.transformFileSync(nodeDirPath + "/" + uifile, {ignore:'react'}).code + '\n';
+                                        } else {
+                                            uiFunc += fs.readFileSync(nodeDirPath + "/" + uifile, 'utf8') + '\n';
+                                        }
+                                    }
+                                    json.uiFunc = uiFunc;
+                                } else if (json.uifile !== undefined) {
+                                    uiFunc = babel.transformFileSync(nodeDirPath + "/" + json.uifile, {ignore:'react'}).code;
+                                    json.uiFunc = uiFunc;
+                                }
+                                nodelist.push(json);
+                            } catch (e) {
+                                var errmsg = '[Error] Failed Load:' + nodeDirPath + "/info.json";
+                                console.error(errmsg, e);
+                                readError += errmsg + '\n' + e.toString() + '\n';
+                            }
+                            finishLoad();
+                        };
+                    }
+                    for (i in files) {
+                        if (files.hasOwnProperty(i)) {
+                            if (files[i].substr(0, 1) !== '.') {
+                                nodeDirPath = nodeDir + "/" + files[i];
+                                infofile = nodeDirPath + "/info.json";
+                                //console.log(infofile);
+                                fileCounter = fileCounter + 1;
+                                fs.readFile(infofile, 'utf8', loadFunc(nodeDirPath));
+                            }
+                        }                    
+                    }
+                };
+            }(nodeDir));
+        }
+    });
 }
 
 //---------------
@@ -543,80 +579,6 @@ ws.on('request', function (request) {
 		};
 	}(connection));
 });
-
-function captureThumbnail() {
-	'use strict';
-	var shaderdir = path.resolve(__dirname, './shader'),
-		files,
-		thumbnailCount = 0,
-		captureCount = 0,
-		i,
-		iterateFrags = function (index, callback) {
-			var outdir = path.resolve(__dirname, './root/shader'),
-				fullpath,
-				filename,
-				outpath,
-				jsonpath,
-				json;
-
-			if (files.hasOwnProperty(index)) {
-				fullpath = path.join(shaderdir, files[index]);
-				if (path.extname(fullpath) === ".frag") {
-					captureCount = captureCount + 1;
-					console.log("[CaptureThumbnail]  " + captureCount + "/" + thumbnailCount);
-					filename = path.basename(fullpath, path.extname(fullpath));
-					outpath = path.join(outdir, path.basename(fullpath, path.extname(fullpath)) + '.jpg');
-					jsonpath = path.join(path.dirname(fullpath), filename + '.json');
-
-					//json = fs.readFileSync(jsonpath);
-					if (!fs.existsSync(outpath) && fs.existsSync(jsonpath)) {
-						callback(index, fullpath, outpath, jsonpath);
-					} else {
-						iterateFrags(index + 1, callback);
-					}
-				} else {
-					iterateFrags(index + 1, callback);
-				}
-			}
-		},
-		executeFunc = function (index, fragpath, outpath, json) {
-			var process = spawn(HRENDER, [HRENDER_THUMBNAIL_ARG, fragpath, outpath, json]);
-
-			console.log("fragpath:" + fragpath);
-			console.log("outpath:" + outpath);
-
-			process.stdout.on('data', function (data) {
-				console.log('stdout: ' + data);
-			});
-			process.stderr.on('data', function (data) {
-				console.error('stderr: ' + data);
-			});
-			process.on('exit', function (code) {
-				console.log('exit code: ' + code);
-				iterateFrags(index + 1, executeFunc);
-			});
-			process.on('error', function (err) {
-				console.log('process error', err);
-			});
-		};
-
-	try {
-		files = fs.readdirSync(shaderdir);
-		// search valid frags for progress
-		for (i in files) {
-			if (files.hasOwnProperty(i)) {
-				if (path.extname(path.join(shaderdir, files[i])) === ".frag") {
-					thumbnailCount = thumbnailCount + 1;
-				}
-			}
-		}
-		console.log("captureThumbnail");
-		iterateFrags(0, executeFunc);
-	} catch (e) {
-		console.log('process error', e);
-	}
-}
-//captureThumbnail();
 
 
 var spawnProcesses = [];

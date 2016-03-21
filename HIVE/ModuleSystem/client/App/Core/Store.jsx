@@ -94,6 +94,8 @@ export default class Store extends EventEmitter {
 		this.hasCurrentKeyFrame = this.hasCurrentKeyFrame.bind(this);
 		this.getTimelineContent = this.getTimelineContent.bind(this);
 		this.initHive(this.data);
+		this.findGroup = this.findGroup.bind(this);
+		this.getTimelineName = this.getTimelineName.bind(this);
 	}
 
     // private:
@@ -126,12 +128,14 @@ export default class Store extends EventEmitter {
             }
             console.log('Order=', this.nodeExecutor.getOrderByVarname(varnames));
             */
+			this.emit(Constants.SCRIPT_STATUS_CHANGED, null);
 
 			this.hive.runScript(script, (err, data) => {
                 if (err) {
                     return;
                 }
                 this.nodeExecutor.updateExecuteState(data);
+				this.emit(Constants.SCRIPT_STATUS_CHANGED, null);
             });
 		});
 		this.nodeExecutor.initEmitter(this);
@@ -179,7 +183,7 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
-	 * ルート階層のノードリストを返す
+	 * ルートノードを返す
 	 */
 	getRootNode() {
 		return this.data;
@@ -295,6 +299,19 @@ export default class Store extends EventEmitter {
 	}
 
 	/**
+	 * あるvarnameのノードを含む現在の階層のグループを返す. なければnullを返す
+	 */
+	findGroup(varname) {
+		let nodes = this.getNodes();
+		for (let i = 0; i < nodes.length; i = i + 1) {
+			if (this.isGroup(nodes[i]) && this.findNode(nodes[i], varname)) {
+				return nodes[i];
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * ノード名リストを返す
 	 */
 	getNodeNameList() {
@@ -302,6 +319,9 @@ export default class Store extends EventEmitter {
 		return namelist;
 	}
 
+	/**
+	 * ノードの実行状態を返す
+	 */
     getNodeExecutionState(varname) {
         return this.nodeExecutor.getNodeExecutionState(varname);
     }
@@ -354,6 +374,25 @@ export default class Store extends EventEmitter {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * タイムラインの名前を返す
+	 */
+	getTimelineName(content) {
+		let n = this.getNode(content.nodeVarname);
+		if (n) {
+			return n.node.label ? n.node.label : n.node.name;
+		} else {
+			let group = this.findGroup(content.nodeVarname);
+			let node = this.findNode(group, content.nodeVarname);
+			if (node) {
+				let gname = group.label ? group.label : group.name;
+				let nname = node.label ? node.label : node.name;
+				return gname + " - " + nname;
+			}
+		}
+		return ""
 	}
 
 	/**

@@ -34,7 +34,7 @@ app.on('ready', function () {
         "autoHideMenuBar": true,
         "width": 1280,
         "height": 800,
-        "title": "HIVE UI2"/*,
+        "title": "HIVE Module System"/*,
 		"titleBarStyle": "hidden",*/
 	});
 

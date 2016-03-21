@@ -1,0 +1,28 @@
+{
+	"name": "RenderView",
+	"funcname": "RenderView",
+	"info":"レンダリングを行うためのノード",
+	"customfuncfile":"renderview.lua",
+	"uifile":"renderview.jsx",
+	"input": [
+		{"name": "position", "type": "vec3", "value": [ 0,0,300]},
+		{"name": "target", "type": "vec3", "value": [ 0,0,0]},
+		{"name": "up", "type": "vec3", "value": [ 0,1,0]},
+		{"name": "fov", "type": "float", "value": 60},
+		{"name": "presets", "type" : "CameraPreset", "value" : null, "visible" : false, "hole" : false },
+		{"name": "screensize", "type": "vec2", "value": [512,512]},
+		{"name": "rendersize", "type": "vec2", "value": [128,128], "hole":false},
+        {"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
+        {"name": "ipcmode", "type": "bool", "value": false, "hole":false},
+        {"name": "Camera",  "type": "RenderObject"},
+        {"name": "RenderObject",  "type": "RenderObject", "array": [
+			{"name": "RenderObject[0]",  "type": "RenderObject"},
+			{"name": "RenderObject[1]",  "type": "RenderObject"},
+			{"name": "RenderObject[2]",  "type": "RenderObject"}
+		]}
+	],
+	"output": [
+        {"name": "Camera",  "type": "RenderObject"},
+        {"name": "Image",  "type": "BufferImageData"}
+	]
+}

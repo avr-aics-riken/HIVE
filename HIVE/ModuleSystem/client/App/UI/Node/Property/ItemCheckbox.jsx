@@ -112,7 +112,7 @@ export default class ItemCheckbox extends React.Component {
     }
 
 	onChange(ev) {
-		this.props.changeCheckboxFunc(this.props.initialParam.name, ev.target.checked);
+		this.props.changeCheckboxFunc(ev.target.checked);
 		this.setState({
 			checked : ev.target.checked
 		});
@@ -139,8 +139,9 @@ export default class ItemCheckbox extends React.Component {
 		}
 	}
 
-	addKeyButton() {
+	addKeyElem() {
 		if (this.props.hasOwnProperty('store')) {
+			if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
 			const styles = this.styles.bind(this)();
 			return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
 		}
@@ -150,7 +151,7 @@ export default class ItemCheckbox extends React.Component {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						{this.addKeyButton.bind(this)()}
+						{this.addKeyElem.bind(this)()}
 						{this.props.initialParam.name}
 					</div>
 					<input type="checkbox"

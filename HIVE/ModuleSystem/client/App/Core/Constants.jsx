@@ -5,7 +5,9 @@ module.exports = {
     NODE_CHANGED : "node_changed",
     NODE_INPUT_CHANGED : "node_input_changed",
 	NODE_POSITION_CHANGED : "node_position_changed",
+	NODE_INPUT_PROPERTY_CHANGED : "node_input_property_changed",
 	NODE_CLOSE_CHANGED : "node_close_changed",
+	NODE_LABEL_CHANGED : "node_label_changed",
     PLUG_CHANGED : "plug_changed",
     NODE_COUNT_CHANGED : "node_count_changed",
     PLUG_COUNT_CHANGED : "plug_count_changed",
@@ -30,7 +32,8 @@ module.exports = {
 	CHANGE_FRAME : "change_frame",
 	KEYFRAME_ADDED : "keyframe_added",
 	KEYFRAME_DELETED : "keyframe_deleted",
-	CURRENT_FRAME_APPLIED : "current_frame_applied"
+	CURRENT_FRAME_APPLIED : "current_frame_applied",
+	SCRIPT_STATUS_CHANGED : "script_status_changed"
 };
 
 // color 定数化したい気もする
