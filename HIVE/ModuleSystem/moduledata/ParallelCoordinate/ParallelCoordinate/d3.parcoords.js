@@ -400,9 +400,8 @@ d3.parcoords = function(config) {
     function glData(v, target){
         if(v == null || v.length === 0){pc.glRender(target, null); return;}
 
-        if(config.usr.dimensions === __.dimensions.length){
-            var keys = __.dimensions[__.dimensions.length - 1];
-            if(keys){side_effects["hideAxis"].call(pc, {"value": keys});}
+        if(config.usr.hideDimensions !== '' && !target.match(/brush/)){
+            side_effects["hideAxis"].call(pc, {"value": config.usr.hideDimensions});
         }
 
         var a, b, c, d, e, f, i, j, k, l, m, s, x, y, left, right;

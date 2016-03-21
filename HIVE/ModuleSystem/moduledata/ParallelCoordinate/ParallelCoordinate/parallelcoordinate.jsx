@@ -51,6 +51,7 @@ class ParallelCoordinate extends React.Component {
         this.linecount = 0;
         this.dimensionTitles = {};
         this.component = 0;
+        this.hideDimNumber = '';
 
         // state
         this.state = {
@@ -200,6 +201,7 @@ class ParallelCoordinate extends React.Component {
         if(parse.length > 0){
             this.component = parse[0].length;
         }
+        this.hideDimNumber = '' + param.component;
         this.setState({
             parse: parse,
             data: data,
@@ -411,7 +413,7 @@ class ParallelCoordinate extends React.Component {
             varname: this.node.varname,
             extent: null,
             logScale: this.getInputValue('logScale'),
-            dimensions: this.component
+            hideDimensions: this.hideDimNumber
         };
         let example = ReactDOM.findDOMNode(this.refs.examples);
         this.linecount = this.dataval.length;
