@@ -161,8 +161,8 @@ int VolumeQuantizer::Create()
                     //printf("Q=%d\n",q);
                     pack |= q << (i * bits); // 32bit x4
                     tarBuf[p] = *reinterpret_cast<float*>(&pack);
-                    ++p;
                 }
+                ++p;
             }
         }
     }
