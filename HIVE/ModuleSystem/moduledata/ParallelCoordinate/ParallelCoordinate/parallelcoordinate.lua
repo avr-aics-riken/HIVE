@@ -225,6 +225,36 @@ function ParallelCoordinate:Do()
     return true
 end
 
-function ParallelCoordinate:color()
-    return {0,0,0,0}
+function ParallelCoordinate:select()
+    self:UpdateValue()
+    local sel = self.value.brushedIndex
+
+    local w, h, d    
+    local v = self.value
+    if #v.coordinate > 0 then
+        local vol = v.coordiante[1].volume
+        w = v.volume:Width()
+        h = v.volume:Height()
+        d = v.volume:Depth()
+    else
+        retrun {}    
+    end
+    
+    local sdiv = self.value.sampleingDiv    
+    local sw = w / sdiv[1]
+    local sh = h / sdiv[2]
+    local sd = d / sdiv[3]    
+    local array = {}
+    for i, v in pairs(sel) do
+        local z = Math.floor(v / (sdiv[1] * sdiv[2]))
+        local y = Math.floor((v - z*sdiv[1]*sdiv[2]) / sdiv[1])
+        local x = v % sdiv[1]
+        local x2 = v - (z*sdiv[1]*sdiv[2] + y*sdiv[1])
+        print(x,'=?',x2)
+        array[#array + 1] = x*sw
+        array[#array + 1] = y*sy
+        array[#array + 1] = z*sd
+    end 
+    
+    return array
 end

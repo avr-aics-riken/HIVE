@@ -9,7 +9,6 @@
         "colormap.jsx",
         "parallelcoordinate.jsx"],
     "input": [
-        {"name": "volume"           , "type": "BufferVolumeData" } ,
         {"name": "sampleingDiv", "type":"vec3", "value":[20,20,20]},
         {"name": "quantizeBit", "type":"float", "value":8},
         {"name": "coordinate",  "type": "CoordinateData", "array": [
