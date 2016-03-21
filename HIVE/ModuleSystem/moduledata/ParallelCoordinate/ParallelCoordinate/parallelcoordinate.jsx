@@ -120,7 +120,7 @@ class ParallelCoordinate extends React.Component {
                 }
             }
             arr = new Uint32Array(data);
-            console.log('get data length(float 32 array): ', arr.length);
+            console.log('recieved volume data length: ', arr.length);
             var quantSize = parseInt(param.quantsize, 10);           // ひとつのデータあたりのビット長（たとえば 8bit とか）
             var inBlock = Math.floor(32 / quantSize);                // 1 ブロックに何件のデータが入ってるか（8bit なら 4 件入る）
             var blocks = Math.floor(quantSize * component / 32) + 1; // レコードあたり 32 ビットデータを何ブロック使うか
