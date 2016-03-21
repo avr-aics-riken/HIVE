@@ -182,7 +182,7 @@ export default class ItemView extends React.Component {
 			if (inputs[i].name === name) {
 				for (let k = inputs[i].array.length; k < length; k = k + 1) {
 					inputs[i].array.push(
-						{"name": name + "[" + String(k) + "]",  "type": inputs[i].type }
+						{"name": name + "[" + String(k) + "]",  "nodeVarname" : inputs[i].nodeVarname, "type": inputs[i].type }
 					);
 				}
 				inputs[i].array.length = length;
@@ -190,6 +190,7 @@ export default class ItemView extends React.Component {
 					varname : this.props.initialNodeData.varname,
 					input : inputs
 				});
+				this.props.action.rreefreshPlugPosition();
 			}
 		}
 	}
