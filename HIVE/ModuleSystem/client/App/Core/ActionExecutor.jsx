@@ -856,6 +856,7 @@ export default class ActionExecuter {
 		let group = {
 			name : "Group",
 			varname : "group_" + uuid(),
+			type : "group",
 			nodes : nodeList,
 			plugs : this.getPlugsFromNodes(nodeList, this.store.getPlugs()),
 			input : inputs,
@@ -951,9 +952,14 @@ export default class ActionExecuter {
 	 */
 	load(payload) {
 		if (payload.hasOwnProperty('data')) {
-			this.clearAll();
 			// this.store.dataはnodesystemが参照しているため代入してはいけない.
 			let data = payload.data;
+			if (data.hasOwnProperty('type') && data.type === "group") {
+				this.importGroupNode({data : data});
+				return;
+			}
+
+			this.clearAll();
 			for (let i in data) {
 				if (data.hasOwnProperty(i)) {
 					this.store.data[i] = data[i];

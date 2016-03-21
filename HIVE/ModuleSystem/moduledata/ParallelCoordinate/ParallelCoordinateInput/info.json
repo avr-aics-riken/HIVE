@@ -7,7 +7,8 @@
 		{"name": "volume", "type": "BufferVolumeData"},
         {"name": "userMinmax", "type":"bool", "value": false},
 		{"name": "minval", "type": "float", "value":0.0},
-		{"name": "maxval", "type": "float", "value":0.0}
+		{"name": "maxval", "type": "float", "value":0.0},
+        {"name": "label", "type": "string", "value": "data"}
 	],
 	"output": [
       	{"name": "coordinate",  "type": "CoordinateData"}	

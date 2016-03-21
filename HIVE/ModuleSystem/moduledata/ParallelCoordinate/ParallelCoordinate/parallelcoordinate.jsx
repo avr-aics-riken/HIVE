@@ -51,6 +51,7 @@ class ParallelCoordinate extends React.Component {
         this.linecount = 0;
         this.dimensionTitles = {};
         this.component = 0;
+        this.hideDimNumber = '';
 
         // state
         this.state = {
@@ -98,7 +99,7 @@ class ParallelCoordinate extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        var arr, parse, minmax;
+        var arr, parse, minmax, label, labelkey;
         var component, quantSize;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
@@ -114,9 +115,33 @@ class ParallelCoordinate extends React.Component {
             // param.minmax.length は理論上、上記 component とイコールにならないといけない
             parse = [];
             minmax = [];
-            if(param.minmax || param.minmax.length > 0){
+            label = [];
+            labelkey = {};
+            if(param.minmax && param.minmax.length > 0){
                 for(let i = 0, j = param.minmax.length; i < j; ++i){
                     minmax[i] = 1.0 / 255 * (param.minmax[i].max - param.minmax[i].min);
+                }
+            }
+            // ラベルが重複していないか確認
+            if(param.label && param.label.length > 0){
+                for(let i = 0, j = param.label.length; i < j; ++i){
+                    let k = '';
+                    while(true){
+                        let s = param.label[i] + k;
+                        if(!labelkey[s]){
+                            label[i] = s;
+                            labelkey[s] = true;
+                            break;
+                        }else{
+                            if(k === ''){
+                                k = '_1';
+                            }else{
+                                let l = parseInt(k.match(/\d+/), 10) + 1;
+                                k = '_' + l;
+                            }
+                            continue;
+                        }
+                    }
                 }
             }
             arr = new Uint32Array(data);
@@ -132,7 +157,8 @@ class ParallelCoordinate extends React.Component {
                                                                      // 1 レコードが 5 件を超えると 2 ブロック使わないと表現できない
             // Uint32Array の length 分ループするが、ループあたりのカウントアップ量は場合により変わる
             for(let i = 0, j = arr.length; i < j; i += blocks){
-                let w = [];
+                let w = {};
+                let c = 0;
                 // 1 レコードあたりでいくつのブロックを使うか不定なのでここでもループ構造が必要
                 for(let m = 0; m < blocks; ++m){
                     let v = arr[i + m];
@@ -140,10 +166,13 @@ class ParallelCoordinate extends React.Component {
                     // ここでのループで、たとえば 32bit のブロックならその下位ビットから 8bit ずつ抜く
                     for(let k = 0; k < l; ++k){
                         let x = ((v >>> k * quantSize) & mask) / mask;
-                        w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
+                        // w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
+                        w[label[c]] = x * minmax[k] + parseFloat(param.minmax[k].min);
+                        c++;
                     }
                 }
-                w.push(parseInt(i / blocks, 10));
+                // w.push(parseInt(i / blocks, 10));
+                w._indexnumber = parseInt(i / blocks, 10);
                 parse.push(w);
             }
         }else{
@@ -172,6 +201,7 @@ class ParallelCoordinate extends React.Component {
         if(parse.length > 0){
             this.component = parse[0].length;
         }
+        this.hideDimNumber = '' + param.component;
         this.setState({
             parse: parse,
             data: data,
@@ -182,7 +212,7 @@ class ParallelCoordinate extends React.Component {
 
     imageParse(){
         if(this.state.parse === null || this.state.parse === undefined){return;}
-        if(this.state.parse[0].length > 2){
+        if(this.state.parse[0].length > 2 || Object.keys(this.state.parse[0]).length > 2){
             this.useAxes();
         }else{
             console.log('parallel: invalid data');
@@ -383,7 +413,7 @@ class ParallelCoordinate extends React.Component {
             varname: this.node.varname,
             extent: null,
             logScale: this.getInputValue('logScale'),
-            dimensions: this.component
+            hideDimensions: this.hideDimNumber
         };
         let example = ReactDOM.findDOMNode(this.refs.examples);
         this.linecount = this.dataval.length;

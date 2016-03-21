@@ -206,7 +206,7 @@ export default class MenuTop extends React.Component {
         let reader = new FileReader();
         reader.onload = function(){
             let data = (JSON.parse(reader.result));
-            this.props.action.importGroupNode(data);
+            this.props.action.load(data);
             this.setState({
                 importFileValue : ""
             });

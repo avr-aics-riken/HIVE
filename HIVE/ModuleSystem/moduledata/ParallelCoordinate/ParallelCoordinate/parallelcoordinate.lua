@@ -11,7 +11,7 @@ ParallelCoordinate.new = function (varname)
 end
 
 
-function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring)
+function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring, label)
     local mode = 'raw'
     local datatype = 'float'    
     local json = [[{
@@ -28,6 +28,7 @@ function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring)
         "varname": "]] .. varname .. [[",
         "mode": "]] .. mode ..  [[",
         "quantsize": "]] .. qbit ..[[",
+        "label":[ ]] .. label ..[[ ],
         "minmax":[ ]] .. minmaxstring .. [[ ]
         },
         "id":0
@@ -91,6 +92,7 @@ function ParallelCoordinate:Do()
     self.volQ:SamplingNum(sdiv[1], sdiv[2], sdiv[3])
 
     local voldim = {}
+    local label = {}
     for i,v in pairs(self.value.coordinate) do
         --print('coordinate:', i, v, v.userMinmax)
         if v.volume then
@@ -100,6 +102,9 @@ function ParallelCoordinate:Do()
             else
                 self.volQ:Add(v.volume)
             end
+        end
+        if v.label then
+            table.insert(label, v.label)
         end
     end
     
@@ -133,13 +138,21 @@ function ParallelCoordinate:Do()
         end
         minmaxstring = minmaxstring .. "}"
     end
+    local labelstring = ''
+    for i,v in pairs(label) do
+        if i == 1 then
+            labelstring = labelstring .. '"' .. v .. '"'
+        else
+            labelstring = labelstring .. ',"' .. v .. '"'
+        end
+    end
     
     voldata = self.volQ:VolumeData()
     local datasize = self.volQ:DataElementSize()
     
     --print('volsize =', voldata:GetNum() )
     --send
-    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, datasize, minmaxstring)
+    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, datasize, minmaxstring, labelstring)
     
     if true then
         return true

@@ -89,6 +89,7 @@ export default class Action {
 	 * グループをインポートする
 	 * @param varname ノード変数名
 	 */
+	 /* loadでできるようになった
 	importGroupNode(data) {
         this.dispatcher.dispatch({
 			id :this.id,
@@ -96,6 +97,7 @@ export default class Action {
             data: data
 		});
 	}
+	*/
 
 	/**
 	 * ノードを削除する
