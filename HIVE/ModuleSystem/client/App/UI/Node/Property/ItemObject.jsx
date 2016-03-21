@@ -19,7 +19,7 @@ export default class ItemObject extends React.Component {
 
 	keyBackGround() {
 		if (this.state.onFrame) {
-			return "blue";
+			return "rgb(19, 154, 165)";
 		}
 		return "white";
 	}
