@@ -190,7 +190,6 @@ export default class ItemView extends React.Component {
 					varname : this.props.initialNodeData.varname,
 					input : inputs
 				});
-				this.props.action.rreefreshPlugPosition();
 			}
 		}
 	}
