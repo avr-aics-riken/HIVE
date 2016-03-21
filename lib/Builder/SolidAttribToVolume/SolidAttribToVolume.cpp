@@ -156,6 +156,13 @@ namespace {
     }
     
     // kEPSの値は要検証. modeについて 0 : 0次連続, 1 ; 1次連続, 2 : n次連続
+    // 各頂点から補間点 p に向かってRayを飛ばし,
+    // そのRayが多面体が出るまでの長さと頂点,補間点間の距離の比で各頂点の要素の比重を決める.
+    // 頂点と補間点の距離 d, 頂点とrayが出るまでの距離 d0, とすると
+    // 各頂点の比率 = (d0 - d) / d0   mode:0
+    //              = (d^2 / d0^2 * (d / d0 - 1.5) - 0.5 )   mode:1
+    //              = (cos(π * d / d0) - 1)   mode:2
+    // なお比率の合計は1にならないので, 最後に比率の和で割る.
     float interpolate(const VX::Math::vec3 &p, const Solid &sld, const float *scalars, int mode = 1) {
         using namespace VX::Math;
         static const int faces[][6][4] = {
