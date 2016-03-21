@@ -10,6 +10,7 @@
 #include "Analyzer.h"
 #include "SparseVolumeAnalyzer.h"
 #include "BufferSparseVolumeData_Lua.h"
+
 /**
  * SparseVolumeAnalyzer Luaラッパー
  */
@@ -42,10 +43,9 @@ public:
         return SparseVolumeAnalyzer::MaxZ();
     }
 
-/*    bool Execute(SparseVolumeModel_Lua *model) {
-        SparseVolumeAnalyzer::Execute(model);
-        return true;
-    }*/
+    bool Execute(BufferSparseVolumeData_Lua *vol) {
+        return SparseVolumeAnalyzer::Execute(vol);
+    }
     
     LuaTable GetHistgram() {
         const std::vector<float>& histgram = SparseVolumeAnalyzer::GetHistgram();
@@ -56,14 +56,14 @@ public:
         return t;
     }
     
-/*    LuaTable GetHistgramInRange(SparseVolumeModel_Lua *model, double min, double max) {
-        const std::vector<float> histgram = SparseVolumeAnalyzer::GetHistgramInRange(model, min, max);
+    LuaTable GetHistgramInRange(BufferSparseVolumeData_Lua *vol, double min, double max) {
+        const std::vector<float> histgram = SparseVolumeAnalyzer::GetHistgramInRange(vol, min, max);
         LuaTable t;
         for (int i = 0, size = static_cast<int>(histgram.size()); i < size; ++i) {
             t.push(histgram[i]);
         }
         return t;
-    }*/
+    }
 
     LUA_SCRIPTCLASS_BEGIN(SparseVolumeAnalyzer_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MinX)
@@ -72,9 +72,9 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxX)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxY)
     LUA_SCRIPTCLASS_METHOD_ARG0(double, MaxZ)
-//    LUA_SCRIPTCLASS_METHOD_ARG1(bool, Execute, SparseVolumeModel_Lua*) // TODO
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("SparseVolumeAnalyzer", bool, Execute, BufferSparseVolumeData_Lua*)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetHistgram);
-//    LUA_SCRIPTCLASS_METHOD_ARG3(LuaTable, GetHistgramInRange, SparseVolumeModel_Lua*, double, double); //TODO
+    LUA_SCRIPTCLASS_METHOD_ARG3(LuaTable, GetHistgramInRange, BufferSparseVolumeData_Lua*, double, double);
     LUA_SCRIPTCLASS_END();
 
 };
