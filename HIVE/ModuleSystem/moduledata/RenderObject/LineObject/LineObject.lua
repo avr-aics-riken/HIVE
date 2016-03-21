@@ -5,18 +5,18 @@ LineObject.new = function (varname)
     local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
-    
+
     setmetatable(this, {__index=LineObject})
     return this
 end
 
-function LineObject:Do()    
-    
+function LineObject:Do()
+
     self:UpdateValue()
-    local v = self.value    
+    local v = self.value
     local pm = LineModel(); -- make new Model!
     self.pmodel = pm           -- replace
-    
+
     if v.line then
 	   pm:Create(v.line)
     end
@@ -24,9 +24,10 @@ function LineObject:Do()
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
 	pm:SetShader(v.shadername)
+	pm:SetLineWidth(v.width)
 
 	local uniforms = self.connection.Uniform
-    if uniforms ~= nil then    
+    if uniforms ~= nil then
         for i,v in pairs(uniforms) do
             if v.type == 'vec4' then
                 print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
