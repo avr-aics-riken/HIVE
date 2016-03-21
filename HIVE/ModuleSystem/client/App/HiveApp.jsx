@@ -39,7 +39,6 @@ export default class HiveApp extends React.Component {
         this.onDblClick = this.onDblClick.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
-        this.allClearNode = this.allClearNode.bind(this);
         this.loadFile = this.loadFile.bind(this);
         this.setFocusTarget = this.setFocusTarget.bind(this);
         this.hoverHidden = this.hoverHidden.bind(this);
@@ -176,12 +175,7 @@ export default class HiveApp extends React.Component {
         }
     }
 
-    allClearNode(){
-		this.action.clearAll();
-    }
-
     loadFile(file){
-        this.allClearNode();
         var reader = new FileReader();
         reader.onload = function(){
             let data = (JSON.parse(reader.result));
