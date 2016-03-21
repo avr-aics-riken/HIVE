@@ -91,17 +91,15 @@ class ParallelCoordinate extends React.Component {
 
     imageRecieved(err, param, data){
         var a, buffer, component, parse, minmax;
+        var quantSize;
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
-            console.log('image recieved parameter: ', param);
         if(param.mode !== undefined && param.mode === 'raw'){
-            a = new Uint32Array(data);
             component = parseInt(param.component, 10);
             if(isNaN(component) || component === null || component === undefined || component < 2){
                 console.log('invalid component count');
                 return;
             }
-            debugger;
             parse = [];
             minmax = [];
             if(param.minmax || param.minmax.length > 0){
@@ -109,14 +107,26 @@ class ParallelCoordinate extends React.Component {
                     minmax[i] = 1.0 / 255 * (param.minmax[i].max - param.minmax[i].min);
                 }
             }
-            for(let i = 0, j = a.length; i < j; ++i){
-                let v = a[i];
+            a = new Uint32Array(data);
+            debugger;
+            var quantSize = parseInt(param.quantsize, 10);           // ひとつのデータあたりのビット長（たとえば 8bit とか）
+            var inBlock = Math.floor(32 / quantSize);                // 1 ブロックに何件のデータが入ってるか（8bit なら 4 件入る）
+            var blocks = Math.floor(quantSize * component / 32) + 1; // レコードあたり 32 ビットデータを何ブロック使うか
+            var mask = Math.pow(2, quantSize) - 1;                   // たとえば 8bit データなら 4 件まではひとつのブロックでまかなえるが
+                                                                     // 1 レコードが 5 件を超えると 2 ブロック使わないと表現できない
+            // Uint32Array の length 分ループするが、ループあたりのカウントアップ量は場合により変わる
+            for(let i = 0, j = a.length; i < j; i += blocks){
                 let w = [];
-                let l = (component - 1) * 8;
-                for(let k = 0; k < component; ++k){
-                    let x = (v >>> l - k * 8) & 0xFF;
-                    w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
+                // 1 レコードあたりでいくつのブロックを使うか不定なのでここでもループ構造が必要
+                for(let m = 0; m < blocks; ++m){
+                    let v = a[i + m];
+                    let l = Math.min((component - m * inBlock), inBlock);
+                    for(let k = 0; k < l; ++k){
+                        let x = (v >>> k * quantSize) & mask;
+                        w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
+                    }
                 }
+                w.push(i);
                 parse.push(w);
             }
         }else{
