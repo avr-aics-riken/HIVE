@@ -147,7 +147,7 @@ export default class ItemArray extends React.Component {
 		return (<div>
 					<div style={styles.view}>
 						<div style={styles.key}>
-							{this.props.initialParam.name}
+						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
 						</div>
 						<input style={styles.inputs}
 							defaultValue={this.state.value}

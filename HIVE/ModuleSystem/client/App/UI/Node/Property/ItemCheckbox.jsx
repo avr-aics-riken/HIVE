@@ -91,7 +91,7 @@ export default class ItemCheckbox extends React.Component {
             value : {
                 color : "#333",
                 letterSpacing: "normal",
-                marginLeft: "1px",
+                marginLeft: "12px",
                 padding: "1px",
                 width : "20px",
                 verticalAlign: "middle",
@@ -105,8 +105,8 @@ export default class ItemCheckbox extends React.Component {
 				marginTop : "6px",
 				marginBottom : "6px",
 				marginRight : "4px",
-				float : "left",
-				cursor : "pointer"
+				cursor : "pointer",
+				position : "absolute"
 			}
         };
     }
@@ -143,7 +143,7 @@ export default class ItemCheckbox extends React.Component {
 		if (this.props.hasOwnProperty('store')) {
 			if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
 			const styles = this.styles.bind(this)();
-			return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+			return (<span style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
 		}
 	}
 
@@ -152,7 +152,7 @@ export default class ItemCheckbox extends React.Component {
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.addKeyElem.bind(this)()}
-						{this.props.initialParam.name}
+						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
 					</div>
 					<input type="checkbox"
 					 	style={styles.value}

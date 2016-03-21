@@ -123,8 +123,8 @@ export default class ItemVec extends React.Component {
 				marginTop : "6px",
 				marginBottom : "6px",
 				marginRight : "4px",
-				float : "left",
-				cursor : "pointer"
+				cursor : "pointer",
+				position : "absolute"
 			},
             flex : {
                 //paddingLeft: "3px"
@@ -235,7 +235,7 @@ export default class ItemVec extends React.Component {
 	addKeyElem() {
 		const styles = this.styles.bind(this)();
 		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
-		return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+		return (<span style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
 	}
 
 	render () {
@@ -243,7 +243,7 @@ export default class ItemVec extends React.Component {
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.addKeyElem.bind(this)()}
-						{this.props.initialParam.name}
+						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
 					</div>
                     <div style={styles.value}>
                         <div style={styles.flex}>

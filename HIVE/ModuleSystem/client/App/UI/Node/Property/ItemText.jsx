@@ -86,7 +86,7 @@ export default class ItemText extends React.Component {
 		const initialParam = this.props.initialParam;
 		return (<div style={styles.view}>
 					<div style={styles.key}>
-						{initialParam.name}
+					<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
 					</div>
 					<div style={styles.value}>
 						{initialParam.hasOwnProperty('value') ? this.props.initialParam.value : "(Object)"}
