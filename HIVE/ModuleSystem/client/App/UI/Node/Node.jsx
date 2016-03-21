@@ -374,6 +374,7 @@ export default class Node extends React.Component {
 	titleElem() {
 		const style = this.styles();
 		const isClose = this.isClosed();
+		const status = this.state.status;
 		return (<div style={style.title}>
 					<div
 						onClick={this.onOpenCloseButtonClick.bind(this)}
@@ -388,15 +389,17 @@ export default class Node extends React.Component {
 					>
 						{isClose ? "▶" : "▼"}
 					</div>
-					{this.statusElem.bind(this)()}
 					<div style={{
 							float : "left",
-							marginLeft : "3px"
+							marginLeft : "3px",
+							color : (status === true) ? "rgb(54, 196, 168)" : (status === "running" ? "yellow" : "red")
 						}}
+						title={status === true ? "executed" : status}
 					>
 						{this.state.node.label ? this.state.node.label : this.state.node.name}
 					</div>
 				</div>)
+		//{this.statusElem.bind(this)()}
 	}
 
 	/// ノードが閉じているかどうか返す

@@ -3,20 +3,20 @@ setmetatable(PointObject, {__index = HiveBaseModule})
 
 PointObject.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    local pm = PolygonModel();
+    local pm = PointModel();
     this.pmodel = pm
-    
+
     setmetatable(this, {__index=PointObject})
     return this
 end
 
-function PointObject:Do()    
-    
+function PointObject:Do()
+
     self:UpdateValue()
-    local v = self.value    
+    local v = self.value
     local pm = PointModel(); -- make new Model!
     self.pmodel = pm           -- replace
-    
+
     if v.point then
 	   pm:Create(v.point)
     end
@@ -26,7 +26,7 @@ function PointObject:Do()
 	pm:SetShader(v.shadername)
 
 	local uniforms = self.connection.Uniform
-    if uniforms ~= nil then    
+    if uniforms ~= nil then
         for i,v in pairs(uniforms) do
             if v.type == 'vec4' then
                 print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
@@ -50,7 +50,7 @@ function PointObject:Do()
             end
         end
     end
-    
+
     return true
 end
 

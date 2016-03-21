@@ -1432,7 +1432,7 @@ export default class ActionExecuter {
 					name: node.label ? node.label : node.name,
 					nodeVarname : input.nodeVarname,
 					color: "rgb(32, 96, 196)",
-					propColor: "rgba(8, 62, 162, 1.0)",
+					propColor: "rgb(19, 154, 165)",
 					props: []
 				};
 				data.contents.push(content);
