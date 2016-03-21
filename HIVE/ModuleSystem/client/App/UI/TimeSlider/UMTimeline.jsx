@@ -79,6 +79,7 @@ export default class UMTimeline extends React.Component {
 		this.props.store.on(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
 		this.props.store.on(Core.Constants.KEYFRAME_DELETED, this.onRedraw);
 		this.props.store.on(Core.Constants.NODE_COUNT_CHANGED, this.onRedraw);
+		this.props.store.on(Core.Constants.NODE_LABEL_CHANGED, this.onRedraw);
 		this.props.store.on(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
     }
 
@@ -89,6 +90,7 @@ export default class UMTimeline extends React.Component {
 		this.props.store.off(Core.Constants.KEYFRAME_ADDED, this.onRedraw);
 		this.props.store.off(Core.Constants.KEYFRAME_DELETED, this.onRedraw);
 		this.props.store.off(Core.Constants.NODE_COUNT_CHANGED, this.onRedraw);
+		this.props.store.off(Core.Constants.NODE_LABEL_CHANGED, this.onRedraw);
 		this.props.store.off(Core.Constants.NODE_SELECT_CHANGED, this.onSelectChanged);
 	}
 
@@ -467,7 +469,7 @@ export default class UMTimeline extends React.Component {
 	        // keys
 	        context.fillStyle = this.setting.propTextColor;
 	        context.font = "normal 12px sans-serif";
-	        context.fillText(content.name, pdx + lw2, ypos + cs - cs / 4);
+	        context.fillText(this.props.store.getTimelineName(content), pdx + lw2, ypos + cs - cs / 4);
 	        result.height = cs;
 		}
 

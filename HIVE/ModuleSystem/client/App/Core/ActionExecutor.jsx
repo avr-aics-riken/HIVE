@@ -83,7 +83,6 @@ export default class ActionExecuter {
 		this.alignNodes = this.alignNodes.bind(this);
 		this.alignNode = this.alignNode.bind(this);
 		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
-		this.findGroup = this.findGroup.bind(this);
 	}
 
     /**
@@ -530,25 +529,13 @@ export default class ActionExecuter {
 		this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
 	}
 
-	// @private
-	// あるvarnameのノードを含む現在の階層のグループを返す. なければnullを返す
-	findGroup(varname) {
-		let nodes = this.store.getNodes();
-		for (let i = 0; i < nodes.length; i = i + 1) {
-			if (this.store.isGroup(nodes[i]) && this.store.findNode(nodes[i], varname)) {
-				return nodes[i];
-			}
-		}
-		return null;
-	}
-
 	/**
  	 * ノード変更.
  	 */
  	changeNode(payload) {
  		if (payload.hasOwnProperty('nodeInfo')) {
 			let node = this.store.findNode(this.store.data, payload.nodeInfo.varname);
-			let group = this.findGroup(payload.nodeInfo.varname);
+			let group = this.store.findGroup(payload.nodeInfo.varname);
 			if (node) {
 				let dstNode = node;
 				let srcNode =  payload.nodeInfo;
@@ -561,6 +548,10 @@ export default class ActionExecuter {
 				let preSelect = dstNode.select;
 				let postSelect = hasSelect ? payload.nodeInfo.select : null;
 
+				let hasLabel = srcNode.hasOwnProperty('label');
+				let preLabel = dstNode.label;
+				let postLabel = hasLabel ? payload.nodeInfo.label : null;
+
 				let hasPanel = srcNode.hasOwnProperty('panel');
 				let prePanel = JSON.stringify(dstNode.panel);
 				let postPanel = hasPanel ? JSON.stringify(payload.nodeInfo.panel) : null;
@@ -568,7 +559,6 @@ export default class ActionExecuter {
 				let postPanelVisible = hasPanel ? payload.nodeInfo.panel.visible : null;
 				let prePanelSize = JSON.stringify(dstNode.panel.size);
 				let postPanelSize = hasPanel ? JSON.stringify(payload.nodeInfo.panel.size) : null;
-
 
 				let hasNodeParam = srcNode.hasOwnProperty('node');
 				let preNodePos = JSON.stringify(dstNode.node.pos);
@@ -604,6 +594,9 @@ export default class ActionExecuter {
 				}
 				if (isInputChanged) {
 					this.store.emit(Constants.NODE_INPUT_CHANGED, null, dstNode);
+				}
+				if (hasLabel && preLabel !== postLabel) {
+					this.store.emit(Constants.NODE_LABEL_CHANGED, null, dstNode);
 				}
 				if (hasSelect && preSelect !== postSelect) {
 					this.store.emit(Constants.NODE_SELECT_CHANGED, null, dstNode);
@@ -1134,7 +1127,7 @@ export default class ActionExecuter {
 		if (!varnameToNode.hasOwnProperty(varname)) { return; }
 		const bound = nodeSizes[varname];
 
-		let group = this.findGroup(varname);
+		let group = this.store.findGroup(varname);
 		if (group) {
 			varname = group.varname;
 		}

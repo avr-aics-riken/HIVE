@@ -42,6 +42,7 @@ export default class ItemView extends React.Component {
 		this.changeFunc = this.changeFunc.bind(this);
 		this.changeVecFunc = this.changeVecFunc.bind(this);
 		this.changeLabelFunc = this.changeLabelFunc.bind(this);
+		this.onLabelChanged = this.onLabelChanged.bind(this);
 	}
 
 	isShowPanel() {
@@ -116,14 +117,22 @@ export default class ItemView extends React.Component {
 		}
 	}
 
+	onLabelChanged(err, node) {
+		this.refs.nameInput.setState({
+			value : this.label()
+		});
+	}
+
 	componentDidMount() {
 		this.props.store.on(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
 		this.props.store.on(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
+		this.props.store.on(Core.Constants.NODE_LABEL_CHANGED, this.onLabelChanged);
 	}
 
 	componentWillUnmount() {
 		this.props.store.off(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
 		this.props.store.off(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
+		this.props.store.off(Core.Constants.NODE_LABEL_CHANGED, this.onLabelChanged);
 	}
 
 	changeFunc(hole) {
@@ -141,9 +150,6 @@ export default class ItemView extends React.Component {
 		this.props.action.changeNode({
 			varname : this.props.initialNodeData.varname,
 			label : value
-		});
-		this.refs.nameInput.setState({
-			value : this.label()
 		});
 	}
 
