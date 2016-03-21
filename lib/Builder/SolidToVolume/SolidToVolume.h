@@ -19,11 +19,13 @@ class SolidToVolume : public RefCount
 private:
     BufferSolidData*  m_solid;
     BufferVolumeData* m_volume;
+    float             m_bmin[3];
+    float             m_bmax[3];
     
 public:
     SolidToVolume();
     ~SolidToVolume();
-    int Create(BufferSolidData *point);
+    int Create(BufferSolidData *point, float bmin[3], float bmax[3]);
     
     /// Convert particles to volume. Resultion of volume is set by resX, resY and resZ.
     /// @todo { ROI }

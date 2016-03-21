@@ -100,9 +100,9 @@ And SceneScript.
 
 The pointer passed to In-Situ data strucure is not free'ed or overwritten by HiveCore/SceneScript. 
 
-And the pointer must be valid until the rendering finishes in HiveCore, i.e. the pointer must be valid just after calling `render()` method in SceneScript. 
+And the pointer must be valid until the rendering finishes in HiveCore, i.e. the pointer must be valid just before calling `render()` method in SceneScript. 
 
-Users manually frees memory after the rendering finishes if required.
+Users manually frees memory or overwrite data(e.g. the result of next timestep) after the rendering finishes if required.
  
 ## Example
 

@@ -31,9 +31,8 @@ namespace {
         return k * dim[0] * dim[1] + j * dim[0] + i;
     }
     
-    
-    
-    struct Solid{
+    class Solid{
+    public:
         typedef enum {
             SOLID_TETRA = 4,
             SOLID_PYRAMID = 5,
@@ -41,7 +40,7 @@ namespace {
             SOLID_HEXAHEDRON = 8,
         } SolidType;
         
-        const SolidType type;
+        SolidType type;
         
         std::vector<VX::Math::vec3> verts;
         std::vector<VX::Math::vec3> edges;
@@ -444,7 +443,7 @@ namespace {
 }
 
 /**
- * 多面体データからVolumeDataへの変換
+ * 多面体データから distance field VolumeDataへの変換
  * @param w Width
  * @param h Height
  * @retval true 変換成功

@@ -57,6 +57,7 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
     assert(m_solid->Position());
     assert(m_solid->Position()->GetNum() > 0);
     
+#if 0 
     // Compute bounding box.
     float *position = m_solid->Position()->GetBuffer();
     bmin[0] = bmax[0] = position[0];
@@ -71,6 +72,16 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
         bmax[1] = (std::max)(bmax[1], position[3*i+1]);
         bmax[2] = (std::max)(bmax[2], position[3*i+2]);
     }
+#else
+    // Use user-supplied bbox at Create()
+    bmin[0] = m_bmin[0];
+    bmin[1] = m_bmin[1];
+    bmin[2] = m_bmin[2];
+
+    bmax[0] = m_bmax[0];
+    bmax[1] = m_bmax[1];
+    bmax[2] = m_bmax[2];
+#endif
     
     printf("bmin: %f, %f, %f\n", bmin[0], bmin[1], bmin[2]);
     printf("bmax: %f, %f, %f\n", bmax[0], bmax[1], bmax[2]);
@@ -84,7 +95,7 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
     
     size_t dim[3] = { w, h, d };
     
-    int faces[2][6];
+    int faces[6][4];
     int face_n = 0;
     
     switch (m_solid->Type()) {
@@ -169,11 +180,17 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
             faces[5][2] = 5;
             faces[5][3] = 4;
             break;
+        default:
+            // ???
+            assert(0);
+            break;
     }
+
     for (size_t i = 1; i < m_solid->Index()->GetNum(); i++) {
-        float *vertices_f =  m_solid->Position()[i*m_solid->Type()].GetBuffer();
+        float *vertices_f =  &(m_solid->Position()->GetBuffer()[i*m_solid->Type()]);
         float bmax_[3], bmin_[3];
         
+        // @todo { scale vertex poisition according to volume cell size. }
         bmin_[0] = bmax_[0] = vertices_f[0];
         bmin_[1] = bmax_[1] = vertices_f[1];
         bmin_[2] = bmax_[2] = vertices_f[2];
@@ -225,7 +242,7 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
  * @retval 1 変換成功
  * @retval 0 変換失敗
  */
-int SolidToVolume::Create(BufferSolidData *solid) {
+int SolidToVolume::Create(BufferSolidData *solid, float bmin[3], float bmax[3]) {
     if (!solid) {
         return 0;
     }
@@ -233,8 +250,16 @@ int SolidToVolume::Create(BufferSolidData *solid) {
     if (solid->Position()->GetNum() < 1) {
         return 0;
     }
-    
+
     m_solid = solid; // just copy a pointer.
+
+    m_bmin[0] = bmin[0];
+    m_bmin[1] = bmin[1];
+    m_bmin[2] = bmin[2];
+
+    m_bmax[0] = bmax[0];
+    m_bmax[1] = bmax[1];
+    m_bmax[2] = bmax[2];
     
     return 1;
 }
@@ -250,6 +275,12 @@ BufferVolumeData* SolidToVolume::VolumeData()
 
 /// コンストラクタ
 SolidToVolume::SolidToVolume() : m_volume(0), m_solid(0) {
+    m_bmin[0] = 0.0f;
+    m_bmin[1] = 0.0f;
+    m_bmin[2] = 0.0f;
+    m_bmax[0] = 0.0f;
+    m_bmax[1] = 0.0f;
+    m_bmax[2] = 0.0f;
 }
 
 /// デストラクタ

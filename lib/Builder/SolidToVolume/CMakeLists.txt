@@ -12,12 +12,12 @@ include_directories(${INCLUDES})
 
 # Source files
 set(SOURCES
-	SolidAttribToVolume.cpp
+	SolidToVolume.cpp
 	LuaEntry.cpp
 )
 
-add_library(SolidAttribToVolume ${HIVE_LIBRARY_TYPE} ${SOURCES})
+add_library(SolidToVolume ${HIVE_LIBRARY_TYPE} ${SOURCES})
 
-target_link_libraries(SolidAttribToVolume hiveCore)
-set_target_properties(SolidAttribToVolume PROPERTIES PREFIX "")
+target_link_libraries(SolidToVolume hiveCore)
+set_target_properties(SolidToVolume PROPERTIES PREFIX "")
  

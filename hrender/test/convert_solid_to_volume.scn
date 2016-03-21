@@ -1,0 +1,42 @@
+-- Tetra
+print('Convert solid model(Hexa) to volume')
+
+local outfilename = 'image_hexa_to_volume.jpg'
+local camera = Camera()
+camera:SetScreenSize(512, 512)
+camera:SetFilename(outfilename)
+
+camera:LookAt(
+	6,6,6,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+
+local udm = require("UdmLoader")()
+-- Specify .dfi file
+udm:Load('bcm2gf/index.dfi')
+
+local model = SolidModel()
+local hexadata = udm:SolidData(8) -- 8 = HEXA
+print(hexadata)
+
+local analy = require("Analyzer").SolidAnalyzer()
+analy:Execute(hexadata)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+local s2v = require("SolidToVolume")()
+s2v:Create(hexadata, analy:MinX(), analy:MinY(), analy:MinZ(), analy:MaxX(), analy:MaxY(), analy:MaxZ())
+s2v:ToVolume(128, 128, 128)
+
+-- model:Create(hexadata)
+-- model:SetShader('normal.frag')
+-- print(model)
+-- 
+-- render {camera, model}
