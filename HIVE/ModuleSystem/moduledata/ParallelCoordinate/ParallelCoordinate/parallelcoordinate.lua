@@ -5,7 +5,8 @@ ParallelCoordinate.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordinate})
     this.volQ = require('VolumeQuantizer')()
-    print('VVVVVVVVVVVV', this.volQ)
+    this.volCache = {}
+    --print('VVVVVVVVVVVV', this.volQ)
     return this
 end
 
@@ -42,6 +43,14 @@ function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring)
     print('send!!!!!!!!!!!', imageBufferSize, varname);
 end
 
+
+function findTable(tbl, item)
+    for key, value in pairs(tbl) do
+        if value == item then return key end
+    end
+    return false
+end
+
 function ParallelCoordinate:Do()    
     self:UpdateValue()
     self:PrintValue()
@@ -56,6 +65,24 @@ function ParallelCoordinate:Do()
         end
     end
     
+    if #self.volCache == #self.value.coordinate then
+        local newvol = false
+        for i,v in pairs(self.value.coordinate) do
+            if findTable(self.volCache, v.volume) == false then
+                newvol = true
+            end 
+        end
+        if newvol == false then
+            return true    
+        end
+    end
+    
+    self.volCache = {} -- clear
+    for i,v in pairs(self.value.coordinate) do
+        self.volCache[#self.volCache + 1] = v.volume
+    end
+    
+        
     local qbit = self.value.quantizeBit
     local sdiv = self.value.sampleingDiv
     local c = 0
@@ -229,14 +256,17 @@ end
 function ParallelCoordinate:select()
     self:UpdateValue()
     local sel = self.value.brushedIndex
-
+    if sel == nil then
+        return {}
+    end
+    
     local w, h, d    
     local v = self.value
     if #v.coordinate > 0 then
-        local vol = v.coordiante[1].volume
-        w = v.volume:Width()
-        h = v.volume:Height()
-        d = v.volume:Depth()
+        local vol = v.coordinate[1].volume
+        w = vol:Width()
+        h = vol:Height()
+        d = vol:Depth()
     else
         retrun {}    
     end
@@ -247,13 +277,13 @@ function ParallelCoordinate:select()
     local sd = d / sdiv[3]    
     local array = {}
     for i, v in pairs(sel) do
-        local z = Math.floor(v / (sdiv[1] * sdiv[2]))
-        local y = Math.floor((v - z*sdiv[1]*sdiv[2]) / sdiv[1])
-        local x = v % sdiv[1]
-        local x2 = v - (z*sdiv[1]*sdiv[2] + y*sdiv[1])
-        print(x,'=?',x2)
+        local z = math.floor(v / (sdiv[1] * sdiv[2])) -- sdiv[3]*0.5
+        local y = math.floor((v - z*sdiv[1]*sdiv[2]) / sdiv[1]) -- sdiv[2]*0.5
+        local x = (v % sdiv[1]) -- sdiv[1]*0.5
+        --local x2 = v - (z*sdiv[1]*sdiv[2] + y*sdiv[1])
+        --print(x,'=?',x2)
         array[#array + 1] = x*sw
-        array[#array + 1] = y*sy
+        array[#array + 1] = y*sh
         array[#array + 1] = z*sd
     end 
     

@@ -28,7 +28,7 @@
             0.75,   0,  50, 200,
             1.0 ,   0,   0,  50
         ], "visible": false, "funcinput": false},
-        {"name": "brushedIndex", "type": "floatarray", "value": [], "visible": false, "funcinput": false}
+        {"name": "brushedIndex", "type": "floatarray", "value": [], "visible": false}
     ],
     "output": [
         {"name": "select", "type": "floatarray"}
