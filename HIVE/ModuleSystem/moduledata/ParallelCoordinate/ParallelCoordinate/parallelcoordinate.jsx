@@ -122,8 +122,12 @@ class ParallelCoordinate extends React.Component {
             arr = new Uint32Array(data);
             console.log('recieved volume data length: ', arr.length);
             var quantSize = parseInt(param.quantsize, 10);           // ひとつのデータあたりのビット長（たとえば 8bit とか）
+            if(quantSize > 32){
+                console.log('invalid quantsize: ', quantSize);
+                return;
+            }
             var inBlock = Math.floor(32 / quantSize);                // 1 ブロックに何件のデータが入ってるか（8bit なら 4 件入る）
-            var blocks = Math.floor(quantSize * component / 32) + 1; // レコードあたり 32 ビットデータを何ブロック使うか
+            var blocks = Math.ceil(component / inBlock);             // レコードあたり 32 ビットデータを何ブロック使うか
             var mask = Math.pow(2, quantSize) - 1;                   // たとえば 8bit データなら 4 件まではひとつのブロックでまかなえるが
                                                                      // 1 レコードが 5 件を超えると 2 ブロック使わないと表現できない
             // Uint32Array の length 分ループするが、ループあたりのカウントアップ量は場合により変わる
@@ -135,7 +139,7 @@ class ParallelCoordinate extends React.Component {
                     let l = Math.min((component - m * inBlock), inBlock);
                     // ここでのループで、たとえば 32bit のブロックならそこから 8bit ずつ引っこ抜いてる
                     for(let k = 0; k < l; ++k){
-                        let x = (v >>> k * quantSize) & mask;
+                        let x = ((v >>> k * quantSize) & mask) / mask;
                         w.push(x * minmax[k] + parseFloat(param.minmax[k].min));
                     }
                 }

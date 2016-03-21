@@ -106,8 +106,8 @@ export default class ItemObject extends React.Component {
 				marginTop : "6px",
 				marginBottom : "6px",
 				marginRight : "4px",
-				float : "left",
-				cursor : "pointer"
+				cursor : "pointer",
+				position : "absolute"
 			}
         };
     }
@@ -136,7 +136,7 @@ export default class ItemObject extends React.Component {
 	addKeyElem() {
 		if (this.props.hasOwnProperty('store')) {
 			const styles = this.styles.bind(this)();
-			return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+			return (<span style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
 		}
 	}
 
@@ -145,7 +145,7 @@ export default class ItemObject extends React.Component {
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.addKeyElem.bind(this)()}
-						{this.props.initialParam.name}
+						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
 					</div>
 					<div style={styles.value}>
 						{"(Object)"}

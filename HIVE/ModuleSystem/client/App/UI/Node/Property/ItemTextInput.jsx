@@ -117,8 +117,8 @@ export default class ItemTextInput extends React.Component {
 				marginTop : "6px",
 				marginBottom : "6px",
 				marginRight : "4px",
-				float : "left",
-				cursor : "pointer"
+				cursor : "pointer",
+				position : "absolute"
 			}
         };
 	}
@@ -188,7 +188,7 @@ export default class ItemTextInput extends React.Component {
 		const styles = this.styles.bind(this)();
 		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
 		if (this.props.changeKeyFunc !== undefined) {
-			return (<div style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+			return (<span style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
 		}
 	}
 
@@ -197,7 +197,7 @@ export default class ItemTextInput extends React.Component {
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.addKey.bind(this)()}
-						{this.props.initialParam.name}
+						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
 					</div>
 					<input style={styles.value}
 						type="text"

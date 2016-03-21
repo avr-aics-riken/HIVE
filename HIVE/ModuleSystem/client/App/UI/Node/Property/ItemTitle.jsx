@@ -29,7 +29,9 @@ export default class ItemTitle extends React.Component {
 		const styles = this.styles.bind(this)();
         return (
             <div style={styles.title}>
+				<span style={{marginLeft : "12px"}} title={this.props.initialParam.hasOwnProperty('value') ? this.props.initialParam.value : "(Object)"}>
                 {this.props.initialParam.hasOwnProperty('value') ? this.props.initialParam.value : "(Object)"}
+				</span>
 				{this.props.exportButton}
             </div>
         );
