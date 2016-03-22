@@ -192,7 +192,7 @@ export default class FileBrowser extends React.Component {
 		} else if (type === "file_icon") {
 			return {
 				position : "absolute",
-				left : "-2px"
+				left : "0.5px"
 			}
 		} else if (type === "dir_icon") {
 			return {
