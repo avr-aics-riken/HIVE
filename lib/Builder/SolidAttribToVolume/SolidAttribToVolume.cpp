@@ -354,7 +354,7 @@ namespace {
  * @retval true 変換成功
  * @retval false 変換失敗
  */
-bool SolidAttribToVolume::ToVolume(int w, int h, int d) {
+bool SolidAttribToVolume::ToVolume(int w, int h, int d, int mode) {
     
     m_volume = BufferVolumeData::CreateInstance();
     
@@ -407,7 +407,7 @@ bool SolidAttribToVolume::ToVolume(int w, int h, int d) {
               if(isPointInSolid(p, solid)){
                   size_t loc = findLoc(x, y, z, m_bmin, m_bmax, dim);
                   voxels[loc] += interpolate(p, solid,
-                                             attrib + i * m_solid->Type());
+                                             attrib + i * m_solid->Type(), mode);
                   countBuf[loc]++;
               }
             

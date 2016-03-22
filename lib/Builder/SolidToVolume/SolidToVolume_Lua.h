@@ -16,13 +16,13 @@ class SolidToVolume_Lua : public SolidToVolume
 public:
     SolidToVolume_Lua(){}
 
-    int Create(BufferSolidData_Lua* mesh, float bminX, float bminY, float bminZ, float bmaxX, float bmaxY, float bmaxZ) {
+    int Create(BufferSolidData_Lua* solid, float bminX, float bminY, float bminZ, float bmaxX, float bmaxY, float bmaxZ) {
         float bmin[3] = { bminX, bminY, bminZ };
         float bmax[3] = { bmaxX, bmaxY, bmaxZ };
-        return SolidToVolume::Create(mesh, bmin, bmax);
+        return SolidToVolume::Create(solid, bmin, bmax);
     }
 
-    /// Generate volume representation of mesh attribute.
+    /// Generate volume representation of solids.
     bool ToVolume(int w, int h, int d) {
         return SolidToVolume::ToVolume(w, h, d);
     }

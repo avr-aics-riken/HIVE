@@ -12,7 +12,7 @@
 #include "BufferVolumeData.h"
 
 /**
- * SolidデータからVolumeDataへ変換するクラス (in_out)
+ * SolidデータからVolumeDataへ変換するクラス
  */
 class SolidToVolume : public RefCount
 {
@@ -27,7 +27,7 @@ public:
     ~SolidToVolume();
     int Create(BufferSolidData *point, float bmin[3], float bmax[3]);
     
-    /// Convert particles to volume. Resultion of volume is set by resX, resY and resZ.
+    /// Convert solid to volume. Resolution of volume is set by resX, resY and resZ.
     /// @todo { ROI }
     bool ToVolume(int resX, int resY, int resZ);
     

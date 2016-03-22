@@ -94,100 +94,23 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
     // @todo { Consider particle radius. }
     
     size_t dim[3] = { w, h, d };
+    float scale[3] = { bmax[0]/w, bmax[1]/h, bmax[2]/d };
     
-    int faces[6][4];
     int face_n = 0;
     
-    switch (m_solid->Type()) {
-        case 5: //Pyramid
-            face_n = 5;
-            faces[0][0] = 0;
-            faces[0][1] = 1;
-            faces[0][2] = 2;
-            faces[0][3] = 3;
-            
-            faces[1][0] = 0;
-            faces[1][1] = 4;
-            faces[1][2] = 1;
-            
-            faces[2][0] = 1;
-            faces[2][1] = 4;
-            faces[2][2] = 2;
-            
-            faces[3][0] = 2;
-            faces[3][1] = 4;
-            faces[3][2] = 3;
-            
-            faces[4][0] = 3;
-            faces[4][1] = 4;
-            faces[4][2] = 0;
-            
-            break;
-        case 6: //Prism
-            face_n = 5;
-            faces[0][0] = 0;
-            faces[0][1] = 1;
-            faces[0][2] = 2;
-            
-            faces[1][0] = 3;
-            faces[1][1] = 4;
-            faces[1][2] = 5;
-            
-            faces[2][0] = 0;
-            faces[2][1] = 3;
-            faces[2][2] = 5;
-            faces[2][3] = 1;
-            
-            faces[3][0] = 0;
-            faces[3][1] = 2;
-            faces[3][2] = 4;
-            faces[3][3] = 3;
-            
-            faces[4][0] = 1;
-            faces[4][1] = 5;
-            faces[4][2] = 4;
-            faces[4][3] = 2;
-            break;
-        case 8: //Hexahedron
-            face_n = 6;
-            faces[0][0] = 0;
-            faces[0][1] = 1;
-            faces[0][2] = 2;
-            faces[0][3] = 3;
-            
-            faces[1][0] = 4;
-            faces[1][1] = 5;
-            faces[1][2] = 6;
-            faces[1][3] = 7;
-            
-            faces[2][0] = 0;
-            faces[2][1] = 4;
-            faces[2][2] = 7;
-            faces[2][3] = 1;
-            
-            faces[3][0] = 1;
-            faces[3][1] = 7;
-            faces[3][2] = 6;
-            faces[3][3] = 2;
-            
-            faces[4][0] = 2;
-            faces[4][1] = 6;
-            faces[4][2] = 5;
-            faces[4][3] = 3;
-            
-            faces[5][0] = 0;
-            faces[5][1] = 3;
-            faces[5][2] = 5;
-            faces[5][3] = 4;
-            break;
-        default:
-            // ???
-            assert(0);
-            break;
-    }
-
-    for (size_t i = 1; i < m_solid->Index()->GetNum(); i++) {
-        float *vertices_f =  &(m_solid->Position()->GetBuffer()[i*m_solid->Type()]);
+    static const int faces[][6][4] = {
+        {{}}, {{}}, {{}}, {{}},        // 0,1,2,3
+        {{0,2,1,-1}, {1,2,3,-1}, {0,3,2,-1}, {0,1,3,-1} },  //tetra
+        {{0,3,2,1}, {0,1,4,-1}, {1,2,4,-1}, {2,3,4,-1}, {0,4,3,-1} },  //pyramid
+        {{0,2,1,-1}, {3,4,5,-1}, {0,3,5,2}, {0,1,4,3}, {1,2,5,4} },   //prism
+        {{}},       // 7
+        {{0,3,2,1}, {4,5,6,7}, {0,1,5,4}, {1,2,6,5}, {2,3,7,6}, {0,4,7,3}, },  //hexa
+    };
+    int type = m_solid->GetType();
+    
+    for (size_t i = 1; i < m_solid->Position()->GetNum()/type; i++) {
+        
+        float *vertices_f =  &(m_solid->Position()->GetBuffer()[i*type]);
         float bmax_[3], bmin_[3];
         
         // @todo { scale vertex poisition according to volume cell size. }
@@ -195,34 +118,36 @@ bool SolidToVolume::ToVolume(int w, int h, int d) {
         bmin_[1] = bmax_[1] = vertices_f[1];
         bmin_[2] = bmax_[2] = vertices_f[2];
         
-        for (int i = 1; i < m_solid->Type(); i++) {
+        for (int j = 1; j < type; j++) {
             
-            bmin_[0] = (std::min)(bmin_[0], vertices_f[3*i+0]);
-            bmin_[1] = (std::min)(bmin_[1], vertices_f[3*i+1]);
-            bmin_[2] = (std::min)(bmin_[2], vertices_f[3*i+2]);
+            bmin_[0] = (std::min)(bmin_[0], vertices_f[3*j+0]);
+            bmin_[1] = (std::min)(bmin_[1], vertices_f[3*j+1]);
+            bmin_[2] = (std::min)(bmin_[2], vertices_f[3*j+2]);
             
-            bmax_[0] = (std::max)(bmax_[0], vertices_f[3*i+0]);
-            bmax_[1] = (std::max)(bmax_[1], vertices_f[3*i+1]);
-            bmax_[2] = (std::max)(bmax_[2], vertices_f[3*i+2]);
+            bmax_[0] = (std::max)(bmax_[0], vertices_f[3*j+0]);
+            bmax_[1] = (std::max)(bmax_[1], vertices_f[3*j+1]);
+            bmax_[2] = (std::max)(bmax_[2], vertices_f[3*j+2]);
         }
         VX::Math::vec3 verts[12] = {};
        
-        for (int i = 0; i < m_solid->Type(); i++) {
-            verts[i].x = vertices_f[i*3];
-            verts[i].y = vertices_f[i*3 + 1];
-            verts[i].z = vertices_f[i*3 + 2];
+        for (int j = 0; j < type; j++) {
+            verts[j].x = vertices_f[j*3];
+            verts[j].y = vertices_f[j*3 + 1];
+            verts[j].z = vertices_f[j*3 + 2];
         }
         
-        for (int x = bmin_[0]; x <= bmax_[0]; x++)
-            for (int y = bmin_[1]; y <= bmax_[1]; y++)
-                for (int z = bmin_[2]; z <= bmax_[2]; z++){
+        for (float x = bmin_[0]; x <= bmax_[0]; x += scale[0])
+            for (float y = bmin_[1]; y <= bmax_[1]; y += scale[1])
+                for (float z = bmin_[2]; z <= bmax_[2]; z += scale[2]){
                     float d = -1e16;
                     VX::Math::vec3 p(x, y, z);
                     
-                    for(int i = 0; i < face_n; i ++)
-                        d = std::max(d, dot(normalize(cross(verts[faces[i][1]] - verts[faces[i][0]],
-                                                            verts[faces[i][2]] - verts[faces[i][1]])),
-                                            p - verts[faces[i][0]] ) );
+                    for (int f = 0; f < face_n; f++)
+                        d = std::max(d, dot(normalize(cross(verts[faces[type][f][1]]
+                                                            - verts[faces[type][f][0]],
+                                                            verts[faces[type][f][2]]
+                                                            - verts[faces[type][f][1]])),
+                                            p - verts[faces[type][f][0]] ) );
                     
                     if(d < 0){
                         size_t loc = findLoc(x, y, z, bmin, bmax, dim);

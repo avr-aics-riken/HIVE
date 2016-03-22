@@ -17,15 +17,15 @@ class SolidAttribToVolume_Lua : public SolidAttribToVolume
 public:
     SolidAttribToVolume_Lua(){}
 
-    int Create(BufferSolidData_Lua* mesh, BufferExtraData_Lua* attrib, float bminX, float bminY, float bminZ, float bmaxX, float bmaxY, float bmaxZ) {
+    int Create(BufferSolidData_Lua* solid, BufferExtraData_Lua* attrib, float bminX, float bminY, float bminZ, float bmaxX, float bmaxY, float bmaxZ) {
         float bmin[3] = { bminX, bminY, bminZ };
         float bmax[3] = { bmaxX, bmaxY, bmaxZ };
-        return SolidAttribToVolume::Create(mesh, attrib, bmin, bmax);
+        return SolidAttribToVolume::Create(solid, attrib, bmin, bmax);
     }
 
-    /// Generate volume representation of mesh attribute.
-    bool ToVolume(int w, int h, int d) {
-        return SolidAttribToVolume::ToVolume(w, h, d);
+    /// Generate volume from solids by interpolating attributes assigned to the vertex of solid.
+    bool ToVolume(int w, int h, int d, int mode) {
+        return SolidAttribToVolume::ToVolume(w, h, d, mode);
     }
 
     /// Retrieve volume data.
@@ -36,7 +36,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(SolidAttribToVolume_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG8(int,Create,BufferSolidData_Lua*,BufferExtraData_Lua*,float,float,float,float,float,float)
-    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("SolidAttribToVolume",bool,ToVolume,int,int,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("SolidAttribToVolume",bool,ToVolume,int,int,int,int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 
