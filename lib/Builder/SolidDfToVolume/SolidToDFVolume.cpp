@@ -474,7 +474,7 @@ namespace {
  * @retval true 変換成功
  * @retval false 変換失敗
  */
-bool SolidDfToVolume::ToVolume(int w, int h, int d) {
+bool SolidDfToVolume::ToVolume(int w, int h, int d, int mode) {
     
     m_volume = BufferVolumeData::CreateInstance();
     

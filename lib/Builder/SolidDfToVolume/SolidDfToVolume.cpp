@@ -1,9 +1,10 @@
 /**
- * @file SolidToDFVolume.cpp
+ * @file SolidDfToVolume.cpp
  * 点データからVolumeDataへ変換するモジュール
  */
 #include "SolidDfToVolume.h"
-#include "../Core/vxmath.h"
+//#include "../Core/vxmath.h"
+#include "vxmath.h"
 #include <string.h>
 #include <algorithm>
 #include <vector>
@@ -39,7 +40,7 @@ namespace {
             SOLID_PYRAMID = 5,
             SOLID_PRISM = 6,
             SOLID_HEXAHEDRON = 8,
-        } SolidType;
+        }SolidType;
         
         SolidType type;
         
@@ -502,10 +503,11 @@ bool SolidDfToVolume::ToVolume(int w, int h, int d) {
     const int solid_n = m_solid->Position()->GetNum()/m_solid->GetType();
     const int solid_type = m_solid->GetType();
     
-    std::vector<Solid> solids(solid_n);
+    std::vector<Solid> solids;
+    solids.reserve(solid_n);
     
     for (int i = 0; i < solid_n; i++) {
-        solids[i] = Solid(position + solid_type * 3 * i, solid_type);
+        solids.push_back( Solid(position + solid_type * 3 * i, solid_type));
     }
     
     BVH bvh;

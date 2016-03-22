@@ -32,7 +32,7 @@ public:
     
     /// Convert particles to volume. Resultion of volume is set by resX, resY and resZ.
     /// @todo { ROI }
-    bool ToVolume(int resX, int resY, int resZ);
+    bool ToVolume(int resX, int resY, int resZ, int mode);
     
     /// Valid after ToVolume()
     BufferVolumeData*  VolumeData();
