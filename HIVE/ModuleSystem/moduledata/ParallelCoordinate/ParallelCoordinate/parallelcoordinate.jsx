@@ -107,6 +107,7 @@ class ParallelCoordinate extends React.Component {
             // ここに入ってくる場合はボリュームデータ
             // component == 入力データとして刺さってるプラグの本数
             component = parseInt(param.component, 10);
+            this.hideDimNumber = '';
             // component が 2 より少ない場合はパラレルコーディネートとしては表示しない
             if(isNaN(component) || component === null || component === undefined || component < 2){
                 console.log('invalid component count');
@@ -175,31 +176,6 @@ class ParallelCoordinate extends React.Component {
                 w._indexnumber = parseInt(i / blocks, 10);
                 parse.push(w);
             }
-        }else{
-            // こっちに来る場合はボリュームデータではない
-            if(param.datatype === 'byte'){
-                a = new Uint8Array(data);
-            }else if(param.datatype === 'float'){
-                a = new Float32Array(data);
-            }
-            component = parseInt(param.component, 10);
-            if(isNaN(component) || component === null || component === undefined || component < 2){
-                console.log('parse error: invalid component count');
-                return;
-            }
-            parse = [];
-            for(let i = 0, j = a.length / component; i < j; ++i){
-                let k = i * component;
-                let t = [];
-                for(let l = 0; l < component; ++l){
-                    t.push(a[k + l]);
-                }
-                t.push(i);
-                parse.push(t);
-            }
-        }
-        if(parse.length > 0){
-            this.component = parse[0].length;
         }
         this.hideDimNumber = '' + param.component;
         this.setState({
@@ -413,7 +389,8 @@ class ParallelCoordinate extends React.Component {
             varname: this.node.varname,
             extent: null,
             logScale: this.getInputValue('logScale'),
-            hideDimensions: this.hideDimNumber
+            hideDimensions: this.hideDimNumber,
+            hidden: false
         };
         let example = ReactDOM.findDOMNode(this.refs.examples);
         this.linecount = this.dataval.length;
