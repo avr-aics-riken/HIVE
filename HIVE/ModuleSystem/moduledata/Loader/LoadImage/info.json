@@ -4,9 +4,9 @@
 	"info":"Imageをロードするノード",
 	"customfuncfile":"loadimage.lua",
     "input": [
-		{"name": "filepath",  "type": "string", "value": ""}
+		{"name": "filepath",  "type": "string", "value": "", "meta": "filebrowser"}
 	],
 	"output": [
-      	{"name": "image",  "type": "BufferImageData"}	
+      	{"name": "image",  "type": "BufferImageData"}
 	]
 }

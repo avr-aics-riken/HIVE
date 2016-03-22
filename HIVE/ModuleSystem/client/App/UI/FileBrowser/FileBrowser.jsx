@@ -67,7 +67,7 @@ export default class FileBrowser extends React.Component {
 				top : "50%",
 				transform : "translate(-50%, -50%)",
 				width : "505px",
-				height : "420px",
+				paddingBottom : "12px",
 				backgroundColor : "rgb(83,83,83)",
 				borderRadius : "5px",
 				zIndex : "100000",
@@ -90,7 +90,7 @@ export default class FileBrowser extends React.Component {
 			},
 			pathview : {
 				width : "378px",
-				height : "30px",
+				/*height : "30px",}*/
 				paddingTop: "10px",
 				paddingLeft : "5px"
 			},
@@ -117,7 +117,8 @@ export default class FileBrowser extends React.Component {
 			},
 			path : {
 				color : "white",
-				fontSize : "16px"
+				fontSize : "16px",
+				wordWrap : "break-word"
 			},
 			buttonarea : {
 				width : "101px",
