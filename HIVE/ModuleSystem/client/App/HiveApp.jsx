@@ -13,7 +13,7 @@ import Splitter from "./UI/Splitter";
 import HoverNodeCreate from "./UI/Menu/HoverNodeCreate.jsx";
 import Constants from "./Core/Constants.jsx"
 import ConsoleOutput from "./UI/ConsoleOutput";
-
+import FileBrowser from "./UI/FileBrowser"
 
 export default class HiveApp extends React.Component {
     constructor (props) {
@@ -30,7 +30,8 @@ export default class HiveApp extends React.Component {
             layoutType: 'all',
             consoleOutputVisible: false,
             listVisible: false,
-            listPos: [window.innerWidth / 2, window.innerHeight / 2 - 150]
+            listPos: [window.innerWidth / 2, window.innerHeight / 2 - 150],
+			filebrowser : false
         };
 
         this.onDragOver = this.onDragOver.bind(this);
@@ -47,6 +48,9 @@ export default class HiveApp extends React.Component {
 
 		this.removeEvents = this.removeEvents.bind(this);
 		this.assignEvents = this.assignEvents.bind(this);
+
+		this.onFilebrowserOK = this.onFilebrowserOK.bind(this);
+		this.onFilebrowserCancel = this.onFilebrowserCancel.bind(this);
 
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
@@ -97,6 +101,10 @@ export default class HiveApp extends React.Component {
     componentDidMount() {
 		this.assignEvents();
 		window.addEventListener('keydown', this.onKeyDown, false);
+		this.store.on(Constants.OPEN_FILE_BROWSER, (err, key) => {
+			this.filebrowserKey = key;
+			this.setState({ filebrowser: true});
+		});
     }
 
 	componentWillUnmount() {
@@ -229,6 +237,19 @@ export default class HiveApp extends React.Component {
     }
     // ========================================================================
 
+	onFilebrowserOK(value) {
+		this.action.okFileBrowser(this.filebrowserKey, value);
+		this.setState({
+			filebrowser : false
+		});
+	}
+
+	onFilebrowserCancel(value) {
+		this.setState({
+			filebrowser : false
+		});
+	}
+
 	layoutMode(layoutType) {
 		if (layoutType === "all") { return 2; }
 		else if (layoutType === "node") { return 1; }
@@ -254,7 +275,13 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+						<FileBrowser.View
+							display={this.state.filebrowser}
+							okFunc={this.onFilebrowserOK}
+							cancelFunc={this.onFilebrowserCancel}
+							store={this.store}
+							action={this.action} />
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -277,7 +304,13 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+						<FileBrowser.View
+							display={this.state.filebrowser}
+							okFunc={this.onFilebrowserOK}
+							cancelFunc={this.onFilebrowserCancel}
+							store={this.store}
+							action={this.action} />
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -295,7 +328,13 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+						<FileBrowser.View
+							display={this.state.filebrowser}
+							okFunc={this.state.onFilebrowserOK}
+							cancelFunc={this.state.onFilebrowserCancel}
+							store={this.store}
+							action={this.action} />
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -309,7 +348,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );

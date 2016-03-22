@@ -4,7 +4,7 @@
 	"info":"UDMファイルを読み込むためのノード",
 	"customfuncfile":"udmloader.lua",
 	"input": [
-		{"name": "filepath", "type": "string", "value": "data.dfi"},
+		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
 		{"name": "step", "type": "float", "value": "0.0"},
 		{"name": "solidtype", "type": "float", "value": "0.0"},
 		{"name": "extraname", "type": "string", "value": ""}

@@ -43,6 +43,8 @@ export default class ItemView extends React.Component {
 		this.changeVecFunc = this.changeVecFunc.bind(this);
 		this.changeLabelFunc = this.changeLabelFunc.bind(this);
 		this.onLabelChanged = this.onLabelChanged.bind(this);
+		this.openFilebrowser = this.openFilebrowser.bind(this);
+		this.okFileBrowser = this.okFileBrowser.bind(this);
 	}
 
 	isShowPanel() {
@@ -71,6 +73,20 @@ export default class ItemView extends React.Component {
                 width: "255x"
             }
 		};
+	}
+
+	okFileBrowser(err, key, value) {
+		if (key !== undefined && value !== undefined) {
+			let input = {};
+			input[key.inputName] = value;
+			setTimeout(() => {
+				this.props.action.changeNodeInput({
+					varname : key.varname,
+					input : input
+				});
+			}, 0);
+		}
+		console.log("okFileBrowser", key, value);
 	}
 
 	inputChanged(err, data) {
@@ -127,12 +143,14 @@ export default class ItemView extends React.Component {
 		this.props.store.on(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
 		this.props.store.on(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
 		this.props.store.on(Core.Constants.NODE_LABEL_CHANGED, this.onLabelChanged);
+		this.props.store.on(Core.Constants.OK_FILE_BROWSER, this.okFileBrowser);
 	}
 
 	componentWillUnmount() {
 		this.props.store.off(Core.Constants.NODE_INPUT_CHANGED, this.inputChanged);
 		this.props.store.off(Core.Constants.PANEL_VISIBLE_CHANGED, this.panelVisibleChanged);
 		this.props.store.off(Core.Constants.NODE_LABEL_CHANGED, this.onLabelChanged);
+		this.props.store.off(Core.Constants.OK_FILE_BROWSER, this.okFileBrowser);
 	}
 
 	changeFunc(hole) {
@@ -247,6 +265,15 @@ export default class ItemView extends React.Component {
 		this.props.action.exportGroupNode(this.props.initialNodeData.varname);
 	}
 
+	openFilebrowser(hole) {
+		return () => {
+			this.props.action.openFilebrowser({
+				varname : hole.nodeVarname,
+				inputName : hole.name
+			});
+		};
+	}
+
 	contents() {
 		const styles = this.styles.bind(this)();
         this.topRowUsed = false;
@@ -318,6 +345,8 @@ export default class ItemView extends React.Component {
                             top={topRow}
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
+							filebrowser={hole.meta==='filebrowser'}
+							openFilebrowserFunc={this.openFilebrowser(hole)}
                             bottom={bottom} />);
             } else if (hole.type === 'bool') {
 			    return (<ItemCheckbox ref={id}

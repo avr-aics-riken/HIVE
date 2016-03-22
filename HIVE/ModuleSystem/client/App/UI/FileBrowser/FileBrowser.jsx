@@ -61,15 +61,29 @@ export default class FileBrowser extends React.Component {
 
 	styles() {
 		return {
+			lock : {
+				backgroundColor: "rgba(0, 0, 0, 0.1)",
+				zIndex: "99999",
+				left: "0",
+				top: "0",
+				width: "100%",
+				minHeight: "100%",
+				minWidth: "800px",
+				height: "auto",
+				position: "fixed",
+				display: this.props.display ? "block" : "none"
+			},
 			filebrowser : {
 				position : "absolute",
-				left : "300px",
-				top : "200px",
+				left : "50%",
+				top : "50%",
+				transform : "translate(-50%, -50%)",
 				width : "505px",
-				height : "420px",
+				paddingBottom : "12px",
 				backgroundColor : "rgb(83,83,83)",
 				borderRadius : "5px",
-				zIndex : "100000"
+				zIndex : "100000",
+				display : this.props.display ? "block" : "none"
 			},
 			title : {
 				color : "white",
@@ -88,7 +102,7 @@ export default class FileBrowser extends React.Component {
 			},
 			pathview : {
 				width : "378px",
-				height : "30px",
+				/*height : "30px",}*/
 				paddingTop: "10px",
 				paddingLeft : "5px"
 			},
@@ -109,12 +123,14 @@ export default class FileBrowser extends React.Component {
 				borderRadius : "5px",
 				backgroundColor : "rgb(50, 50, 50)",
 				float : "left",
-				overflow : "auto",
-				paddingLeft : "5px"
+				overflowY : "auto",
+				paddingLeft : "5px",
+				position : "absolute"
 			},
 			path : {
 				color : "white",
-				fontSize : "16px"
+				fontSize : "16px",
+				wordWrap : "break-word"
 			},
 			buttonarea : {
 				width : "101px",
@@ -169,18 +185,32 @@ export default class FileBrowser extends React.Component {
 		};
 	}
 
-	fileStyle(isDir) {
-		if (isDir) {
+	fileStyle(type) {
+		if (type === "dir") {
 			return {
 				color : "white",
 				width : "100%",
-				backgroundColor : "rgb(50, 50, 50)"
+				backgroundColor : "rgb(50, 50, 50)",
+				cursor : "pointer",
+				left : "20px"
 			}
-		} else {
+		} else if (type === "file"){
 			return {
 				color : "white",
 				width : "100%",
-				backgroundColor : "rgb(50, 50, 50)"
+				backgroundColor : "rgb(50, 50, 50)",
+				cursor : "pointer",
+				left : "20px"
+			}
+		} else if (type === "file_icon") {
+			return {
+				position : "absolute",
+				left : "0.5px"
+			}
+		} else if (type === "dir_icon") {
+			return {
+				position : "absolute",
+				left : "-5px"
 			}
 		}
 	}
@@ -234,24 +264,31 @@ export default class FileBrowser extends React.Component {
 		const style = this.styles();
 		let elems = [];
 		if (this.state.currentPath && this.state.currentPath !== "/") {
-			elems.push(<div key={"back"} style={this.fileStyle(true)}
-						onMouseEnter={this.onItemEnter.bind(this)}
-						onMouseLeave={this.onItemLeave.bind(this)}
-						onClick={this.onBackClick.bind(this)}
-						> .. </div>);
+			elems.push(<div key={"back"} >
+						<span style={this.fileStyle("icon")} className="back" />
+							<div style={this.fileStyle("dir")}
+							onMouseEnter={this.onItemEnter.bind(this)}
+							onMouseLeave={this.onItemLeave.bind(this)}
+							onClick={this.onBackClick.bind(this)}
+							> .. </div>
+						</div>);
 		}
 		Array.prototype.push.apply(elems,
 			this.fileList
 				.filter( (a) => { return a.name.indexOf(this.state.filter) >= 0; })
 				.filter( (b) => { return b.name[0] !== '.' })
 				.map( (fileobj, index) => {
-				return (<div key={fileobj.path + "_" + index} style={this.fileStyle(fileobj.type === 'dir')}
-							onMouseEnter={this.onItemEnter.bind(this)}
-							onMouseLeave={this.onItemLeave.bind(this)}
-							onClick={this.onItemClick.bind(this)(fileobj, index)}
-							>
-							{fileobj.name}
-						</div>);
+				return (<div style={{paddingLeft : "22px"}} key={fileobj.path + "_" + index} >
+							<span style={this.fileStyle(fileobj.type + "_icon")} className={fileobj.type} />
+							<div style={this.fileStyle(fileobj.type)}
+								onMouseEnter={this.onItemEnter.bind(this)}
+								onMouseLeave={this.onItemLeave.bind(this)}
+								onClick={this.onItemClick.bind(this)(fileobj, index)}
+								>
+								{fileobj.name}
+							</div>
+						</div>
+						);
 		}));
 		return elems;
 	}
@@ -305,47 +342,54 @@ export default class FileBrowser extends React.Component {
 
 	onCancelClick(ev) {
 		this.props.cancelFunc();
+		this.state.file = "";
+		this.state.filter = "";
 	}
 
 	onOpenClick(ev) {
-		//this.props.action.open()
+		this.props.okFunc(this.state.currentPath + "/" + this.state.file)
+		this.state.file = "";
+		this.state.filter = "";
 	}
 
 	render () {
 		const style = this.styles();
-		return (<div style={style.filebrowser}
-					action={this.props.action}
-					store={this.props.store}
-				>
-					<div style={style.title}>File Browser</div>
-					<div style={{paddingLeft : "18px"}}>
-						<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file}></input>
-						<div style={style.pathview}>
-							<div style={style.path}>{this.state.currentPath}</div>
-						</div>
-						<input style={style.filterview} placeholder="filter" value={this.state.filter} onChange={this.onFilterChange.bind(this)}></input>
-						<div style={style.contentwrap}>
-							<div style={style.contentsview}>
-								{this.filelistElem.bind(this)()}
+		return (<div>
+					<div style={style.filebrowser}
+						action={this.props.action}
+						store={this.props.store}
+					>
+						<div style={style.title}>File Browser</div>
+						<div style={{paddingLeft : "18px"}}>
+							<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file}></input>
+							<div style={style.pathview}>
+								<div style={style.path}>{this.state.currentPath}</div>
 							</div>
-							<div style={style.buttonarea}>
-								<div style={style.buttonareaInner}>
-									<div style={style.openbutton}
-										onClick={this.onOpenClick.bind(this)}
-										onMouseEnter={this.onOpenEnter.bind(this)}
-										onMouseLeave={this.onOpenLeave.bind(this)} >Open</div>
-									<div style={style.cancelbutton}
-										onClick={this.onCancelClick.bind(this)}
-										onMouseEnter={this.onCancelEnter.bind(this)}
-										onMouseLeave={this.onCancelLeave.bind(this)} >Cancel</div>
+							<input style={style.filterview} placeholder="filter" value={this.state.filter} onChange={this.onFilterChange.bind(this)}></input>
+							<div style={style.contentwrap}>
+								<div style={style.contentsview}>
+									{this.filelistElem.bind(this)()}
+								</div>
+								<div style={style.buttonarea}>
+									<div style={style.buttonareaInner}>
+										<div style={style.openbutton}
+											onClick={this.onOpenClick.bind(this)}
+											onMouseEnter={this.onOpenEnter.bind(this)}
+											onMouseLeave={this.onOpenLeave.bind(this)} >Open</div>
+										<div style={style.cancelbutton}
+											onClick={this.onCancelClick.bind(this)}
+											onMouseEnter={this.onCancelEnter.bind(this)}
+											onMouseLeave={this.onCancelLeave.bind(this)} >Cancel</div>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div style={style.closeButton}
+							onClick={this.onCancelClick.bind(this)}
+							onMouseEnter={this.onCloseEnter.bind(this)}
+							onMouseLeave={this.onCloseLeave.bind(this)} />
 					</div>
-					<div style={style.closeButton}
-						onClick={this.onCancelClick.bind(this)}
-						onMouseEnter={this.onCloseEnter.bind(this)}
-						onMouseLeave={this.onCloseLeave.bind(this)} />
+					<div style={style.lock} />
 				</div>);
 	}
 }

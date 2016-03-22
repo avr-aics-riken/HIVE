@@ -105,7 +105,7 @@ export default class ItemTextInput extends React.Component {
 				marginBottom: "1px",
                 verticalAlign: "middle",
                 padding: "1px",
-                width : "165px",
+                width : this.props.filebrowser ? "145px" : "165px",
                 height: "19px",
                 display: "inline-block",
             },
@@ -192,6 +192,24 @@ export default class ItemTextInput extends React.Component {
 		}
 	}
 
+	onFilebrowserClick() {
+		this.props.openFilebrowserFunc();
+	}
+
+	filebrowser() {
+		if (this.props.filebrowser) {
+			return (
+				<span style={{
+						position : "absolute",
+						cursor : "pointer",
+						right : "15px"}}
+					onClick={this.onFilebrowserClick.bind(this)}
+					className={"dir2"}
+				>
+				</span>);
+		}
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
@@ -207,7 +225,9 @@ export default class ItemTextInput extends React.Component {
 						onKeyPress={this.onKeyPress.bind(this)}
 						onBlur={this.onBlur.bind(this)}
 						onFocus={this.onFocus.bind(this)}
-					></input>
+					>
+					</input>
+					{this.filebrowser.bind(this)()}
 				</div>);
 	}
 }

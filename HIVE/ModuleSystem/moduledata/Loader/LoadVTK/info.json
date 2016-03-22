@@ -5,7 +5,7 @@
 	"customfuncfile":"vtkloader.lua",
 	"input": [
 		{"name": "filename", "type": "string", "value": "data.pvti"},
-		{"name": "dirpath", "type": "string", "value": "/path/to/datadir/"},
+		{"name": "dirpath", "type": "string", "value": "/path/to/datadir/", "meta": "filebrowser"},
 		{"name": "fieldname", "type": "string", "value": "p"}
 	],
 	"output": [

@@ -63,6 +63,7 @@ export default class MenuTop extends React.Component {
 	}
 
 	onKeyDown(ev) {
+		if (this.props.hasOwnProperty("lock") && this.props.lock) { return; }
 		if (ev.target && ev.target.tagName.toLowerCase() === "input") { return; }
 		this.isCtrlDown = ev.ctrlKey;
 		this.isShiftDown = ev.shiftKey;

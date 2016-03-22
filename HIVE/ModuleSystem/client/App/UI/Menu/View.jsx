@@ -23,6 +23,7 @@ export default class View extends React.Component {
                     layoutType={this.props.layoutType}
                     menuStore={this.menuStore}
                     menuAction={this.menuAction}
+					lock={this.props.lock} 
                 />
             </div>
         );

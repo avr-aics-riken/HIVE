@@ -392,7 +392,9 @@ export default class Node extends React.Component {
 					<div style={{
 							float : "left",
 							marginLeft : "3px",
-							color : (status === true) ? "rgb(54, 196, 168)" : (status === "running" ? "yellow" : "red")
+							color : (this.props.store.isGroup(this.state.node)) ? "white" :
+										(status === true) ? "rgb(54, 196, 168)" :
+											(status === "running" ? "yellow" : "red")
 						}}
 						title={status === true ? "executed" : status}
 					>

@@ -83,6 +83,8 @@ export default class ActionExecuter {
 		this.alignNodes = this.alignNodes.bind(this);
 		this.alignNode = this.alignNode.bind(this);
 		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
+		this.openFilebrowser = this.openFilebrowser.bind(this);
+		this.okFileBrowser = this.okFileBrowser.bind(this);
 	}
 
     /**
@@ -1502,6 +1504,19 @@ export default class ActionExecuter {
 				}
 			}
 			console.error("not found keyframe for delete");
+		}
+	}
+
+
+	openFilebrowser(payload) {
+		if (payload.hasOwnProperty('key')) {
+			this.store.emit(Constants.OPEN_FILE_BROWSER, null, payload.key);
+		}
+	}
+
+	okFileBrowser(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('value')) {
+			this.store.emit(Constants.OK_FILE_BROWSER, null, payload.key, payload.value);
 		}
 	}
 }
