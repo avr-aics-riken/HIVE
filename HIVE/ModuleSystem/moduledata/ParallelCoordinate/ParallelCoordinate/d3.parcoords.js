@@ -401,7 +401,10 @@ d3.parcoords = function(config) {
         if(v == null || v.length === 0){pc.glRender(target, null); return;}
 
         if(config.usr.hideDimensions !== '' && !target.match(/brush/)){
-            side_effects["hideAxis"].call(pc, {"value": config.usr.hideDimensions});
+            if(!config.usr.hidden){
+                config.usr.hidden = true;
+                side_effects["hideAxis"].call(pc, {"value": config.usr.hideDimensions});
+            }
         }
 
         var a, b, c, d, e, f, i, j, k, l, m, s, x, y, left, right;
