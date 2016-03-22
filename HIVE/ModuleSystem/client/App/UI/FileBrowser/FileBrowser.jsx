@@ -61,6 +61,18 @@ export default class FileBrowser extends React.Component {
 
 	styles() {
 		return {
+			lock : {
+				backgroundColor: "rgba(0, 0, 0, 0.1)",
+				zIndex: "99999",
+				left: "0",
+				top: "0",
+				width: "100%",
+				minHeight: "100%",
+				minWidth: "800px",
+				height: "auto",
+				position: "fixed",
+				display: this.props.display ? "block" : "none"
+			},
 			filebrowser : {
 				position : "absolute",
 				left : "50%",
@@ -342,39 +354,42 @@ export default class FileBrowser extends React.Component {
 
 	render () {
 		const style = this.styles();
-		return (<div style={style.filebrowser}
-					action={this.props.action}
-					store={this.props.store}
-				>
-					<div style={style.title}>File Browser</div>
-					<div style={{paddingLeft : "18px"}}>
-						<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file}></input>
-						<div style={style.pathview}>
-							<div style={style.path}>{this.state.currentPath}</div>
-						</div>
-						<input style={style.filterview} placeholder="filter" value={this.state.filter} onChange={this.onFilterChange.bind(this)}></input>
-						<div style={style.contentwrap}>
-							<div style={style.contentsview}>
-								{this.filelistElem.bind(this)()}
+		return (<div>
+					<div style={style.filebrowser}
+						action={this.props.action}
+						store={this.props.store}
+					>
+						<div style={style.title}>File Browser</div>
+						<div style={{paddingLeft : "18px"}}>
+							<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file}></input>
+							<div style={style.pathview}>
+								<div style={style.path}>{this.state.currentPath}</div>
 							</div>
-							<div style={style.buttonarea}>
-								<div style={style.buttonareaInner}>
-									<div style={style.openbutton}
-										onClick={this.onOpenClick.bind(this)}
-										onMouseEnter={this.onOpenEnter.bind(this)}
-										onMouseLeave={this.onOpenLeave.bind(this)} >Open</div>
-									<div style={style.cancelbutton}
-										onClick={this.onCancelClick.bind(this)}
-										onMouseEnter={this.onCancelEnter.bind(this)}
-										onMouseLeave={this.onCancelLeave.bind(this)} >Cancel</div>
+							<input style={style.filterview} placeholder="filter" value={this.state.filter} onChange={this.onFilterChange.bind(this)}></input>
+							<div style={style.contentwrap}>
+								<div style={style.contentsview}>
+									{this.filelistElem.bind(this)()}
+								</div>
+								<div style={style.buttonarea}>
+									<div style={style.buttonareaInner}>
+										<div style={style.openbutton}
+											onClick={this.onOpenClick.bind(this)}
+											onMouseEnter={this.onOpenEnter.bind(this)}
+											onMouseLeave={this.onOpenLeave.bind(this)} >Open</div>
+										<div style={style.cancelbutton}
+											onClick={this.onCancelClick.bind(this)}
+											onMouseEnter={this.onCancelEnter.bind(this)}
+											onMouseLeave={this.onCancelLeave.bind(this)} >Cancel</div>
+									</div>
 								</div>
 							</div>
 						</div>
+						<div style={style.closeButton}
+							onClick={this.onCancelClick.bind(this)}
+							onMouseEnter={this.onCloseEnter.bind(this)}
+							onMouseLeave={this.onCloseLeave.bind(this)} />
 					</div>
-					<div style={style.closeButton}
-						onClick={this.onCancelClick.bind(this)}
-						onMouseEnter={this.onCloseEnter.bind(this)}
-						onMouseLeave={this.onCloseLeave.bind(this)} />
+					<div style={style.lock} />
 				</div>);
 	}
 }

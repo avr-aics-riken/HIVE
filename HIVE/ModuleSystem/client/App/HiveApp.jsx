@@ -275,7 +275,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -304,7 +304,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -328,7 +328,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.state.onFilebrowserOK}
@@ -348,7 +348,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
