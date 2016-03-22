@@ -328,15 +328,15 @@ export default class FileBrowser extends React.Component {
 	}
 
 	onCancelClick(ev) {
+		this.props.cancelFunc();
 		this.state.file = "";
 		this.state.filter = "";
-		this.props.cancelFunc();
 	}
 
 	onOpenClick(ev) {
+		this.props.okFunc(this.state.currentPath + "/" + this.state.file)
 		this.state.file = "";
 		this.state.filter = "";
-		this.props.okFunc(this.state.currentPath + "/" + this.state.file)
 	}
 
 	render () {
