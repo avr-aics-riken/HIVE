@@ -15,6 +15,9 @@ export default class View extends React.Component {
 
 	render () {
 		return (<FileBrowser
+					display={this.props.display}
+					okFunc={this.props.okFunc}
+					cancelFunc={this.props.cancelFunc}
 					action={this.props.action}
 					store={this.props.store}
 				/>);

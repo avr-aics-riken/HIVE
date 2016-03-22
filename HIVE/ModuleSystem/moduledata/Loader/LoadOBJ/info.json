@@ -4,13 +4,13 @@
 	"info":"OBJをロードするためのノード",
 	"customfuncfile":"loadobj.lua",
     "input": [
-		{"name": "filepath", "type": "string", "value": ""}
+		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"}
 	],
 	"output": [
 		{"name": "MeshData",  "type": "BufferMeshData"},
-		{"name": "NormalData",  "type": "BufferVectorData"},		
+		{"name": "NormalData",  "type": "BufferVectorData"},
         {"name": "PointData",  "type": "BufferPointData"},
 		{"name": "LineData",  "type": "BufferLineData"},
-		{"name": "TetraData",  "type": "BufferTetraData"}        
+		{"name": "TetraData",  "type": "BufferTetraData"}
 	]
 }

@@ -105,7 +105,7 @@ export default class ItemTextInput extends React.Component {
 				marginBottom: "1px",
                 verticalAlign: "middle",
                 padding: "1px",
-                width : "165px",
+                width : this.props.filebrowser ? "145px" : "165px",
                 height: "19px",
                 display: "inline-block",
             },
@@ -192,6 +192,52 @@ export default class ItemTextInput extends React.Component {
 		}
 	}
 
+	onFilebrowserClick() {
+		this.props.openFilebrowserFunc();
+	}
+
+	filebrowser() {
+		if (this.props.filebrowser) {
+			return (
+				<span style={{
+						position : "absolute",
+						width : "18px",
+						height : "20px",
+						margin : "1px",
+						marginLeft : "2px",
+						marginRight : "1px",
+						borderRadius : "3px"}}
+					onClick={this.onFilebrowserClick.bind(this)}
+				>
+					<span style={{
+							position : "absolute",
+							width : "18px",
+							height : "4px",
+							top : "2px",
+							marginBottom : "2.5px",
+							borderRadius : "2px",
+							backgroundColor : "white"}}
+					/>
+					<span style={{
+							position : "absolute",
+							width : "18px",
+							height : "4px",
+							top : "8px",
+							borderRadius : "2px",
+							backgroundColor : "white"}}
+					/>
+					<span style={{
+							position : "absolute",
+							width : "18px",
+							height : "4px",
+							top : "14px",
+							borderRadius : "2px",
+							backgroundColor : "white"}}
+					/>
+				</span>);
+		}
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
@@ -207,7 +253,9 @@ export default class ItemTextInput extends React.Component {
 						onKeyPress={this.onKeyPress.bind(this)}
 						onBlur={this.onBlur.bind(this)}
 						onFocus={this.onFocus.bind(this)}
-					></input>
+					>
+					</input>
+					{this.filebrowser.bind(this)()}
 				</div>);
 	}
 }

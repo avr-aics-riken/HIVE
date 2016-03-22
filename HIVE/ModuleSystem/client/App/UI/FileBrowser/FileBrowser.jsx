@@ -63,13 +63,15 @@ export default class FileBrowser extends React.Component {
 		return {
 			filebrowser : {
 				position : "absolute",
-				left : "300px",
-				top : "200px",
+				left : "50%",
+				top : "50%",
+				transform : "translate(-50%, -50%)",
 				width : "505px",
 				height : "420px",
 				backgroundColor : "rgb(83,83,83)",
 				borderRadius : "5px",
-				zIndex : "100000"
+				zIndex : "100000",
+				display : this.props.display ? "block" : "none"
 			},
 			title : {
 				color : "white",
@@ -304,11 +306,15 @@ export default class FileBrowser extends React.Component {
 	}
 
 	onCancelClick(ev) {
+		this.state.file = "";
+		this.state.filter = "";
 		this.props.cancelFunc();
 	}
 
 	onOpenClick(ev) {
-		//this.props.action.open()
+		this.state.file = "";
+		this.state.filter = "";
+		this.props.okFunc(this.state.currentPath + "/" + this.state.file)
 	}
 
 	render () {

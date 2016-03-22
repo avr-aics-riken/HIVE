@@ -33,7 +33,10 @@ module.exports = {
 	KEYFRAME_ADDED : "keyframe_added",
 	KEYFRAME_DELETED : "keyframe_deleted",
 	CURRENT_FRAME_APPLIED : "current_frame_applied",
-	SCRIPT_STATUS_CHANGED : "script_status_changed"
+	SCRIPT_STATUS_CHANGED : "script_status_changed",
+	NEED_REFRESH_PLUG_POSITION : "need_refresh_plug_position",
+	OPEN_FILE_BROWSER : "open_file_browser",
+	OK_FILE_BROWSER : "ok_file_browser"
 };
 
 // color 定数化したい気もする

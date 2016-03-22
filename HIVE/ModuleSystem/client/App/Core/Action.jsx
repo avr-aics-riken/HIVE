@@ -469,4 +469,30 @@ export default class Action {
 			input : input
 		});
 	}
+
+	/**
+	 * ファイルブラウザを開く.
+	 * @param key 任意のキー. FILE_SELECTEDイベントで返される
+	 */
+	openFilebrowser(key) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "openFilebrowser",
+			key : key
+		});
+	}
+
+	/**
+	 * ファイルブラウザでOKされた通知を送る.
+	 * @param key 任意のキー. openFilebrowserの引数のキー
+	 * @param value 選択されたパス
+	 */
+	okFileBrowser(key, value) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "okFileBrowser",
+			key : key,
+			value : value
+		});
+	}
 }
