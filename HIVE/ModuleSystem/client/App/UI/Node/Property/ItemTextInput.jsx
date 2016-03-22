@@ -206,7 +206,8 @@ export default class ItemTextInput extends React.Component {
 						margin : "1px",
 						marginLeft : "2px",
 						marginRight : "1px",
-						borderRadius : "3px"}}
+						borderRadius : "3px",
+						cursor : "pointer"}}
 					onClick={this.onFilebrowserClick.bind(this)}
 				>
 					<span style={{
