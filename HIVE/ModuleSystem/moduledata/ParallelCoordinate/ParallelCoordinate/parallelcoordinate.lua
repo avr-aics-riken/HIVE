@@ -290,14 +290,14 @@ function ParallelCoordinate:select()
     local sd = d / sdiv[3]    
     local array = {}
     for i, v in pairs(sel) do
-        local z = math.floor(v / (sdiv[1] * sdiv[2])) -- sdiv[3]*0.5
-        local y = math.floor((v - z*sdiv[1]*sdiv[2]) / sdiv[1]) -- sdiv[2]*0.5
-        local x = (v % sdiv[1]) -- sdiv[1]*0.5
+        local z = math.floor(v / (sdiv[1] * sdiv[2]))
+        local y = math.floor((v - z*sdiv[1]*sdiv[2]) / sdiv[1])
+        local x = (v % sdiv[1])
         --local x2 = v - (z*sdiv[1]*sdiv[2] + y*sdiv[1])
         --print(x,'=?',x2)
-        array[#array + 1] = (x / sdiv[1] - 0.5) * w --x*sw
-        array[#array + 1] = (y / sdiv[2] - 0.5) * h --y*sh
-        array[#array + 1] = (z / sdiv[3] - 0.5) * d --z*sd
+        array[#array + 1] = (x / sdiv[1] - 0.5) * w -- x*sw
+        array[#array + 1] = (y / sdiv[2] - 0.5) * h -- y*sh
+        array[#array + 1] = (z / sdiv[3] - 0.5) * d -- z*sd
     end 
     
     return array
