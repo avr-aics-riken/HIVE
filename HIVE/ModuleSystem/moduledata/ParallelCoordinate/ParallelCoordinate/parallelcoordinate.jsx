@@ -59,7 +59,8 @@ class ParallelCoordinate extends React.Component {
             data: null,
             param: null,
             colormap: null,
-            colormapData: this.getInputValue('colormapData')
+            colormapData: this.getInputValue('colormapData'),
+            console: ''
         };
 
         // method
@@ -111,6 +112,7 @@ class ParallelCoordinate extends React.Component {
             // component が 2 より少ない場合はパラレルコーディネートとしては表示しない
             if(isNaN(component) || component === null || component === undefined || component < 2){
                 console.log('invalid component count');
+                this.setState({console: 'needs a multiple coordinate input.'});
                 if(this.glContext){
                     for(let target in this.glContext){
                         this.glRender(target);
@@ -186,7 +188,8 @@ class ParallelCoordinate extends React.Component {
         this.setState({
             parse: parse,
             data: data,
-            param: param
+            param: param,
+            console: ''
         });
         setTimeout(this.imageParse, 50);
     }
@@ -246,7 +249,8 @@ class ParallelCoordinate extends React.Component {
             input: {logScale: this.logScale}
         });
         this.usr.logScale = this.logScale;
-        setTimeout((()=>{this.redraw();}).bind(this), 50);
+        setTimeout((()=>{this.useAxes();}).bind(this), 50);
+        // setTimeout((()=>{this.redraw();}).bind(this), 50);
     }
 
     onChangeCustomScale(){
@@ -322,7 +326,7 @@ class ParallelCoordinate extends React.Component {
                     this.prev[this.brushed].indices
                 );
             }
-            if(this.prev.glforeground != null && this.prev.glforeground.data != null){
+            if(this.prev[this.foreground] != null && this.prev[this.foreground].data != null){
                 f = true;
                 this.glRender(
                     this.foreground,
@@ -836,6 +840,10 @@ class ParallelCoordinate extends React.Component {
             labels: {
                 height: "24px",
             },
+            console: {
+                color: "yellow",
+                margin: "0px 10px"
+            },
             canvas: {},
         };
     }
@@ -867,7 +875,9 @@ class ParallelCoordinate extends React.Component {
                                 <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.getInputValue('lineColor2'))} onChange={this.onColorChange} style={styles.colorInputs} />
                             </div>
                         </div>
-                        <div style={styles.flexrow}></div>
+                        <div style={styles.flexrow}>
+                            <div style={styles.console}>{this.state.console}</div>
+                        </div>
                     </div>
                 </div>
             </div>
