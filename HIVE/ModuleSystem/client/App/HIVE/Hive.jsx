@@ -29,6 +29,13 @@ function getShaderList(conn, callback) {
 	conn.masterMethod('requestShaderList', {}, callback || defaultCallback(src));
 }
 
+/**
+ * filelistを取得
+ */
+function getFileListInternal(conn, dir, callback) {
+	conn.masterMethod('requestFileList', { path : dir }, callback || defaultCallback(src));
+}
+
 export default class Hive extends EventEmitter {
 	constructor() {
 		super();
@@ -38,18 +45,18 @@ export default class Hive extends EventEmitter {
 
 	connect(wsurl, ipcAddress, ogl) {
 		this.conn = new window.HiveConnect({url:wsurl, ipc:'', opengl:ogl});
-        
+
 		this.conn.method('registerRender', (res) => {
-            
+
             this.shaderlist = [];
-            getShaderList(this.conn, (err, shaderlist) => {                
+            getShaderList(this.conn, (err, shaderlist) => {
                 var i;
                 for (i in shaderlist) {
                     //console.log(shaderlist[i].path);
-                    this.shaderlist.push(shaderlist[i].path); // relative path 
+                    this.shaderlist.push(shaderlist[i].path); // relative path
                 }
             });
-        
+
 			console.log('registerRender!!!!!', res);
 			// HiveConnectにレンダラが関連付けられた
 			var rendererId = res.id;
@@ -60,10 +67,10 @@ export default class Hive extends EventEmitter {
 		this.conn.method('updateInfo', (function (core, infoCallback) {
 			console.log('updateInfo');
 		}));
-        
+
         this.conn.method('analyzedInfo', (data) => {
 			//console.log('analyzedInfo', data);
-            this.emit(Hive.ANALYZED_DATA_RECIEVED, data);            
+            this.emit(Hive.ANALYZED_DATA_RECIEVED, data);
 		});
 
         this.conn.method('rendererLog', (data) => {
@@ -109,10 +116,15 @@ export default class Hive extends EventEmitter {
             }
         });
     }
-    
+
     getShaderList() {
         return this.shaderlist;
     }
+
+	getFileList(dir, callback) {
+		getFileListInternal(this.conn, dir, callback);
+	}
+
 	/*testRender() {
 		runScriptInternal(this.conn,
 			`

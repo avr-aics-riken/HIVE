@@ -689,7 +689,9 @@ d3.parcoords = function(config) {
         return color_path(d, ctx.highlight);
     };
     pc.clear = function(layer) {
-        ctx[layer].clearRect(0, 0, w() + 2, h() + 2);
+        if(ctx[layer]){
+            ctx[layer].clearRect(0, 0, w() + 2, h() + 2);
+        }
 
         // This will make sure that the foreground items are transparent
         // without the need for changing the opacity style of the foreground canvas
@@ -745,7 +747,9 @@ d3.parcoords = function(config) {
         g.append("svg:g")
             .attr("class", "axis")
             .attr("transform", "translate(0,0)")
-            .each(function(d) { d3.select(this).call(axis.scale(yscale[d])); })
+            .each(function(d) {
+                d3.select(this).call(axis.scale(yscale[d]));
+            })
             .append("svg:text")
             .attr({
                 "text-anchor": "middle",

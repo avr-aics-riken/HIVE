@@ -97,6 +97,7 @@ export default class Store extends EventEmitter {
 		this.initHive(this.data);
 		this.findGroup = this.findGroup.bind(this);
 		this.getTimelineName = this.getTimelineName.bind(this);
+		this.getFileList = this.getFileList.bind(this);
 	}
 
     // private:
@@ -394,6 +395,15 @@ export default class Store extends EventEmitter {
 			}
 		}
 		return ""
+	}
+
+	/**
+	 * ファイルリストを取得.
+	 */
+	getFileList(dir, callback) {
+		if (this.hive !== undefined && this.hive) {
+			this.hive.getFileList(dir, callback);
+		}
 	}
 
 	/**
