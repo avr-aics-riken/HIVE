@@ -10,8 +10,8 @@
 		{"name": "fov", "type": "float", "value": 60},
 		{"name": "screensize", "type": "vec2", "value": [512,512]},
 		{"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
-		{"name": "color_file", "type": "string", "value": "output.jpg"},
-		{"name": "depth_file", "type": "string", "value": ""}
+		{"name": "color_file", "type": "string", "value": "output.jpg", "meta": "filebrowser"},
+		{"name": "depth_file", "type": "string", "value": "", "meta": "filebrowser"}
 	],
 	"output": [
 		{"name": "camera", "type": "RenderObject"}
