@@ -295,9 +295,9 @@ function ParallelCoordinate:select()
         local x = (v % sdiv[1]) -- sdiv[1]*0.5
         --local x2 = v - (z*sdiv[1]*sdiv[2] + y*sdiv[1])
         --print(x,'=?',x2)
-        array[#array + 1] = x*sw
-        array[#array + 1] = y*sh
-        array[#array + 1] = z*sd
+        array[#array + 1] = (x / sdiv[1] - 0.5) * w --x*sw
+        array[#array + 1] = (y / sdiv[2] - 0.5) * h --y*sh
+        array[#array + 1] = (z / sdiv[3] - 0.5) * d --z*sd
     end 
     
     return array
