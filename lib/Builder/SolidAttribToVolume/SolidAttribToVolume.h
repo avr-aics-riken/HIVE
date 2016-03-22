@@ -33,8 +33,9 @@ public:
     int Create(BufferSolidData* solid, BufferExtraData* attrib, float bmin[3], float bmax[3]);
     
     /// Convert particles to volume. Resultion of volume is set by resX, resY and resZ.
+    /// mode ... 0 : 0 order continuous , 1 : Primary succession , 2 n order continuous
     /// @todo { ROI }
-    bool ToVolume(int resX, int resY, int resZ);
+    bool ToVolume(int resX, int resY, int resZ, int mode);
     
     /// Valid after ToVolume()
     BufferVolumeData*  VolumeData();
