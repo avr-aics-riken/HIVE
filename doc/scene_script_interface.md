@@ -999,7 +999,7 @@ ToVolume メソッドにはボリュームの解像度を指定する.
 (バウンディングボックスは PolygonAnalyzer で計算することができる)
 ToVolume メソッドにはボリュームの解像度を指定する.
 
-    local ma2v = PointToVolume()
+    local ma2v = MeshAttribToVolume()
     ma2v:Create(mesh, attrib, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
     
     ma2v:ToVolume(128,128,128)
@@ -1014,6 +1014,18 @@ Create メソッドにはリサンプリングレートを指定する.
     local s2v = SparseVolumeToVolume()
     local resampleRate = 0.25
     s2v:Create(volumedata, resampleRate)
+    
+## SolidAttribToVolume()	
+
+Solid モデルの頂点アトリビュートを(一様)ボリュームデータに変換する.
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
+(バウンディングボックスは SolidAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度を指定する.
+
+    local sa2v = SolidAttribToVolume()
+    sa2v:Create(solid, attrib, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+   
+    sa2v:ToVolume(128,128,128)
     
 
 ## VolumeFilter()
