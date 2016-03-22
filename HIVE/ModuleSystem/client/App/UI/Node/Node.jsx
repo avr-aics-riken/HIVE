@@ -416,6 +416,8 @@ export default class Node extends React.Component {
 		}
 		let inoutIndex = -1;
 		const isClose = this.isClosed();
+		const isGroup = this.props.store.isGroup(this.state.node);
+
 		let inputs = this.state.node.input.map( (inputData, index) => {
 			if (Array.isArray(inputData.array)) {
 				let arrayInputs = inputData.array.map((data, dataIndex) => {
@@ -431,6 +433,7 @@ export default class Node extends React.Component {
 										nodeVarname={this.props.nodeVarname}
 										isInput={true} data={data}
 										isClosed={isClose}
+										isGroup={isGroup}
 										key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
 										id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
 										index={inoutIndex} />);
@@ -444,6 +447,7 @@ export default class Node extends React.Component {
 									nodeVarname={this.props.nodeVarname}
 									isInput={true} data={data}
 									isClosed={isClose}
+									isGroup={isGroup}
 									key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
 									id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
 									index={inoutIndex} />);
@@ -477,6 +481,7 @@ export default class Node extends React.Component {
 								nodeVarname={this.props.nodeVarname}
 								isInput={true} data={inputData}
 								isClosed={isClose}
+								isGroup={isGroup}
 								key={this.props.nodeVarname + "_" + inputData.name + "_" + index}
 								id={this.props.nodeVarname + "_" + inputData.name + "_" + index}
 								index={inoutIndex} />);
@@ -489,6 +494,7 @@ export default class Node extends React.Component {
 	/// 出力端子.
 	outputElem() {
 		const isClose = this.isClosed();
+		const isGroup = this.props.store.isGroup(this.state.node);
 		if (this.isMinimum()) {
 			return <div/>;
 		}
@@ -501,6 +507,7 @@ export default class Node extends React.Component {
 						isInput={false}
 						data={outputData}
 						isClosed={isClose}
+						isGroup={isGroup}
 						key={this.props.nodeVarname + "_" + outputData.name + "_" + index}
 						id={this.props.nodeVarname + "_" + outputData.name + "_" + index}
 						index={index} />)

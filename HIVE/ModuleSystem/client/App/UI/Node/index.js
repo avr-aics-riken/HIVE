@@ -4,4 +4,5 @@ module.exports = {
 	Property : require('./Property/View.jsx'),
 	Store : require('./Store.jsx'),
 	Action : require('./Action.jsx'),
+	LabelDialog : require('./LabelDialog.jsx'),
 };

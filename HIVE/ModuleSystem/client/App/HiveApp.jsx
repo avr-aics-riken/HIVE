@@ -31,7 +31,8 @@ export default class HiveApp extends React.Component {
             consoleOutputVisible: false,
             listVisible: false,
             listPos: [window.innerWidth / 2, window.innerHeight / 2 - 150],
-			filebrowser : false
+			filebrowser : false,
+			labeldialog : false
         };
 
         this.onDragOver = this.onDragOver.bind(this);
@@ -51,6 +52,8 @@ export default class HiveApp extends React.Component {
 
 		this.onFilebrowserOK = this.onFilebrowserOK.bind(this);
 		this.onFilebrowserCancel = this.onFilebrowserCancel.bind(this);
+		this.onLabelDialogOK = this.onLabelDialogOK.bind(this);
+		this.onLabelDialogCancel = this.onLabelDialogCancel.bind(this);
 
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
@@ -104,6 +107,17 @@ export default class HiveApp extends React.Component {
 		this.store.on(Constants.OPEN_FILE_BROWSER, (err, key) => {
 			this.filebrowserKey = key;
 			this.setState({ filebrowser: true});
+		});
+
+		this.store.on(Constants.OPEN_LABEL_DIALOG, (err, key, callback) => {
+			this.labeldialogKey = key;
+			let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+			let dialog = "labelDialog" + String(currentMode);
+			if (this.refs.hasOwnProperty(dialog)) {
+				this.refs[dialog].setState({label : key})
+			}
+			this.labeldialogCallback = callback;
+			this.setState({ labeldialog: true});
 		});
     }
 
@@ -250,6 +264,20 @@ export default class HiveApp extends React.Component {
 		});
 	}
 
+	onLabelDialogOK(value) {
+		this.labeldialogCallback(null, value);
+		this.action.okLabelDialog(this.labeldialogKey, value);
+		this.setState({
+			labeldialog : false
+		});
+	}
+
+	onLabelDialogCancel(value) {
+		this.setState({
+			labeldialog : false
+		});
+	}
+
 	layoutMode(layoutType) {
 		if (layoutType === "all") { return 2; }
 		else if (layoutType === "node") { return 1; }
@@ -275,13 +303,21 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
 							cancelFunc={this.onFilebrowserCancel}
 							store={this.store}
 							action={this.action} />
+						<Node.LabelDialog ref="labelDialog3"
+							store={this.store}
+							action={this.action}
+							display={this.state.labeldialog}
+							okFunc={this.onLabelDialogOK}
+							cancelFunc={this.onLabelDialogCancel}
+							initialValue={this.labeldialogKey}
+							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -304,13 +340,21 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
 							cancelFunc={this.onFilebrowserCancel}
 							store={this.store}
 							action={this.action} />
+						<Node.LabelDialog ref="labelDialog2"
+							store={this.store}
+							action={this.action}
+							display={this.state.labeldialog}
+							okFunc={this.onLabelDialogOK}
+							cancelFunc={this.onLabelDialogCancel}
+							initialValue={this.labeldialogKey}
+							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -328,13 +372,21 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
-							okFunc={this.state.onFilebrowserOK}
-							cancelFunc={this.state.onFilebrowserCancel}
+							okFunc={this.onFilebrowserOK}
+							cancelFunc={this.onFilebrowserCancel}
 							store={this.store}
 							action={this.action} />
+						<Node.LabelDialog ref="labelDialog1"
+							store={this.store}
+							action={this.action}
+							display={this.state.labeldialog}
+							okFunc={this.onLabelDialogOK}
+							cancelFunc={this.onLabelDialogCancel}
+							initialValue={this.labeldialogKey}
+							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -348,7 +400,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );

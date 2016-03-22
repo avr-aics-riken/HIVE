@@ -85,6 +85,8 @@ export default class ActionExecuter {
 		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
 		this.openFilebrowser = this.openFilebrowser.bind(this);
 		this.okFileBrowser = this.okFileBrowser.bind(this);
+		this.openLabelDialog = this.openLabelDialog.bind(this);
+		this.okLabelDialog = this.okLabelDialog.bind(this);
 	}
 
     /**
@@ -1519,6 +1521,28 @@ export default class ActionExecuter {
 			this.store.emit(Constants.OK_FILE_BROWSER, null, payload.key, payload.value);
 		}
 	}
+
+	/**
+	 * ラベルダイアログを開く.
+	 * @param key 任意のキー. OK_LABEL_DIALOGイベントで返される
+	 */
+	openLabelDialog(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('callback')) {
+			this.store.emit(Constants.OPEN_LABEL_DIALOG, null, payload.key, payload.callback);
+		}
+	}
+
+	/**
+	 * ラベルダイアログがOKされた通知を送る.
+	 * @param key 任意のキー. openLabelDialogの引数のキー
+	 * @param value 選択されたパス
+	 */
+	okLabelDialog(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('value')) {
+			this.store.emit(Constants.OK_LABEL_DIALOG, null, payload.key, payload.value);
+		}
+	}
+
 }
 
 ActionExecuter.initialData = {

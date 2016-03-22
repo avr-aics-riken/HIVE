@@ -472,7 +472,7 @@ export default class Action {
 
 	/**
 	 * ファイルブラウザを開く.
-	 * @param key 任意のキー. FILE_SELECTEDイベントで返される
+	 * @param key 任意のキー. OK_FILE_BROWSERイベントで返される
 	 */
 	openFilebrowser(key) {
 		this.dispatcher.dispatch({
@@ -491,6 +491,33 @@ export default class Action {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "okFileBrowser",
+			key : key,
+			value : value
+		});
+	}
+
+	/**
+	 * ラベルダイアログを開く.
+	 * @param key 任意のキー. OK_LABEL_DIALOGイベントで返される
+	 */
+	openLabelDialog(key, callback) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "openLabelDialog",
+			key : key,
+			callback : callback
+		});
+	}
+
+	/**
+	 * ラベルダイアログがOKされた通知を送る.
+	 * @param key 任意のキー. openLabelDialogの引数のキー
+	 * @param value 選択されたパス
+	 */
+	okLabelDialog(key, value) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "okLabelDialog",
 			key : key,
 			value : value
 		});
