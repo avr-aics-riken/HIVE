@@ -111,6 +111,11 @@ class ParallelCoordinate extends React.Component {
             // component が 2 より少ない場合はパラレルコーディネートとしては表示しない
             if(isNaN(component) || component === null || component === undefined || component < 2){
                 console.log('invalid component count');
+                if(this.glContext){
+                    for(let target in this.glContext){
+                        this.glRender(target);
+                    }
+                }
                 return;
             }
             // param.minmax.length は理論上、上記 component とイコールにならないといけない
@@ -430,6 +435,7 @@ class ParallelCoordinate extends React.Component {
     }
     glRender(target, data, lines, left, right, indices){
         if(!target){return;}
+        let backgroundDarker = (target.match(/brushed/));
         if(data === null || data === undefined){
             if(this.glContext[target].gl !== null && this.glContext[target].gl !== undefined){
                 this.glContext[target].gl.viewport(0, 0, width, height);
@@ -440,14 +446,22 @@ class ParallelCoordinate extends React.Component {
                 this.prev[target].data = null;
                 this.prev[target].lines = 0;
             }
+            if(this.parcoords && !backgroundDarker){
+                this.parcoords.clear(target);
+                this.parcoords.brushReset();
+                this.parcoords.removeAxes();
+            }
+            if(!indices){
+                this.props.action.changeNodeInput({
+                    varname: this.props.node.varname,
+                    input: {brushedIndex: []}
+                });
+            }
             return;
         }
         this.prev.prevType = target;
         this.prev[target] = {target: target, data: data, lines: lines, left: left, right: right, indices: indices};
         if(this.glContext[target].gl == null){return;}
-
-        let canvaselement = document.getElementById(this.brushed);
-        let backgroundDarker = (target.match(/brushed/));
 
         if(backgroundDarker && indices){
             this.props.action.changeNodeInput({
@@ -768,10 +782,9 @@ class ParallelCoordinate extends React.Component {
                 flexDirection: "column"
             },
             flexrow: {
-                flex: "1 0 auto",
                 lineHeight: "24px",
                 padding: "2px",
-                height: "24px",
+                height: "30px",
                 display: "flex",
                 flexDirection: "row"
             },
@@ -854,6 +867,7 @@ class ParallelCoordinate extends React.Component {
                                 <input type="color" id="color2" ref="lineColor2" value={this.singleConv(this.getInputValue('lineColor2'))} onChange={this.onColorChange} style={styles.colorInputs} />
                             </div>
                         </div>
+                        <div style={styles.flexrow}></div>
                     </div>
                 </div>
             </div>
