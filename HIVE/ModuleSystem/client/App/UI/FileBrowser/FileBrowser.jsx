@@ -111,8 +111,9 @@ export default class FileBrowser extends React.Component {
 				borderRadius : "5px",
 				backgroundColor : "rgb(50, 50, 50)",
 				float : "left",
-				overflow : "auto",
-				paddingLeft : "5px"
+				overflowY : "auto",
+				paddingLeft : "5px",
+				position : "absolute"
 			},
 			path : {
 				color : "white",
@@ -171,18 +172,32 @@ export default class FileBrowser extends React.Component {
 		};
 	}
 
-	fileStyle(isDir) {
-		if (isDir) {
+	fileStyle(type) {
+		if (type === "dir") {
 			return {
 				color : "white",
 				width : "100%",
-				backgroundColor : "rgb(50, 50, 50)"
+				backgroundColor : "rgb(50, 50, 50)",
+				cursor : "pointer",
+				left : "20px"
 			}
-		} else {
+		} else if (type === "file"){
 			return {
 				color : "white",
 				width : "100%",
-				backgroundColor : "rgb(50, 50, 50)"
+				backgroundColor : "rgb(50, 50, 50)",
+				cursor : "pointer",
+				left : "20px"
+			}
+		} else if (type === "file_icon") {
+			return {
+				position : "absolute",
+				left : "-2px"
+			}
+		} else if (type === "dir_icon") {
+			return {
+				position : "absolute",
+				left : "-5px"
 			}
 		}
 	}
@@ -236,24 +251,31 @@ export default class FileBrowser extends React.Component {
 		const style = this.styles();
 		let elems = [];
 		if (this.state.currentPath && this.state.currentPath !== "/") {
-			elems.push(<div key={"back"} style={this.fileStyle(true)}
-						onMouseEnter={this.onItemEnter.bind(this)}
-						onMouseLeave={this.onItemLeave.bind(this)}
-						onClick={this.onBackClick.bind(this)}
-						> .. </div>);
+			elems.push(<div key={"back"} >
+						<span style={this.fileStyle("icon")} className="back" />
+							<div style={this.fileStyle("dir")}
+							onMouseEnter={this.onItemEnter.bind(this)}
+							onMouseLeave={this.onItemLeave.bind(this)}
+							onClick={this.onBackClick.bind(this)}
+							> .. </div>
+						</div>);
 		}
 		Array.prototype.push.apply(elems,
 			this.fileList
 				.filter( (a) => { return a.name.indexOf(this.state.filter) >= 0; })
 				.filter( (b) => { return b.name[0] !== '.' })
 				.map( (fileobj, index) => {
-				return (<div key={fileobj.path + "_" + index} style={this.fileStyle(fileobj.type === 'dir')}
-							onMouseEnter={this.onItemEnter.bind(this)}
-							onMouseLeave={this.onItemLeave.bind(this)}
-							onClick={this.onItemClick.bind(this)(fileobj, index)}
-							>
-							{fileobj.name}
-						</div>);
+				return (<div style={{paddingLeft : "22px"}} key={fileobj.path + "_" + index} >
+							<span style={this.fileStyle(fileobj.type + "_icon")} className={fileobj.type} />
+							<div style={this.fileStyle(fileobj.type)}
+								onMouseEnter={this.onItemEnter.bind(this)}
+								onMouseLeave={this.onItemLeave.bind(this)}
+								onClick={this.onItemClick.bind(this)(fileobj, index)}
+								>
+								{fileobj.name}
+							</div>
+						</div>
+						);
 		}));
 		return elems;
 	}
