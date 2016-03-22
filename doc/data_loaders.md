@@ -43,9 +43,13 @@ UDMLoader uses `UDMlib` to load unstructured data.
 * Polygon(TRI_3, QUAD_4)
   * QUAD_4 is converted to 2 triangles.
 * Tetra(TETRA_4)
+  * Representad as BufferTetraData.
 * Prism(PENTA_6)
+  * Representad as BufferSolidData.
 * Pyramid(PYRA_5)
+  * Representad as BufferSolidData.
 * Hexa(HEXA_8)
+  * Representad as BufferSolidData.
 
 Tetra, Prism, Pyramid and Hexa are represented as Solid primitive.
 
