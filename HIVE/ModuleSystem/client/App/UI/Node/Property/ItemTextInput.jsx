@@ -201,40 +201,11 @@ export default class ItemTextInput extends React.Component {
 			return (
 				<span style={{
 						position : "absolute",
-						width : "18px",
-						height : "20px",
-						margin : "1px",
-						marginLeft : "2px",
-						marginRight : "1px",
-						borderRadius : "3px",
-						cursor : "pointer"}}
+						cursor : "pointer",
+						right : "15px"}}
 					onClick={this.onFilebrowserClick.bind(this)}
+					className={"dir2"}
 				>
-					<span style={{
-							position : "absolute",
-							width : "18px",
-							height : "4px",
-							top : "2px",
-							marginBottom : "2.5px",
-							borderRadius : "2px",
-							backgroundColor : "white"}}
-					/>
-					<span style={{
-							position : "absolute",
-							width : "18px",
-							height : "4px",
-							top : "8px",
-							borderRadius : "2px",
-							backgroundColor : "white"}}
-					/>
-					<span style={{
-							position : "absolute",
-							width : "18px",
-							height : "4px",
-							top : "14px",
-							borderRadius : "2px",
-							backgroundColor : "white"}}
-					/>
 				</span>);
 		}
 	}

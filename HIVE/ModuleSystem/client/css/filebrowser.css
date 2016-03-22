@@ -46,3 +46,30 @@
 	border-radius: 2px;
 	background: #cbcbcb;
 }
+
+
+.dir2 {
+	margin: 6px 0px 0px 10px;
+	font-size: 12px;
+	width: 16px;
+	height: 12px;
+	background: #cbcbcb;
+	border-radius: 2px;
+	position: absolute;
+}
+.dir2::before {
+	position:absolute;
+	content: "";
+	bottom: 10px;
+	width: 6px;
+	height: 5px;
+	border-radius: 2px;
+	background: #cbcbcb;
+}
+.dir2:hover::before {
+	background : #eee
+}
+
+.dir2:hover {
+	background : #eee
+}
