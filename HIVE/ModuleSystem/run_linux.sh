@@ -1,3 +1,3 @@
 #!/bin/sh
 
-../../../tools/electron/linux/electron .
+../electron/linux/electron .
