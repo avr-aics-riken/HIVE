@@ -159,7 +159,7 @@ ENDIF(UNIX)
 
 # Extract Electron
 execute_process(
-	COMMAND cmake -E tar xvf ${CMAKE_SOURCE_DIR}/third_party/electron.tar.gz
+	COMMAND cmake -E tar xvf ${CMAKE_SOURCE_DIR}/third_party/electron.zip
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
 ADD_DEPENDENCIES(hrender version)
