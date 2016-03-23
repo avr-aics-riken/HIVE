@@ -87,6 +87,7 @@ export default class NodePlugView extends React.Component {
 	}
 
 	hasSameGlobalInout(isInput, inout) {
+		if (inout.type === "all") { return true; }
 		if (isInput) {
 			let inputs = this.props.store.getInput();
 			for (let i = 0; i < inputs.length; i = i + 1) {
