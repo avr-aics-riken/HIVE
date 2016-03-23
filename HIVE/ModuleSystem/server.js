@@ -1,8 +1,8 @@
 /*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
-var	HRENDER = __dirname + '/../../build/bin/hrender',
-//var	HRENDER = __dirname + '/../hrender',
+//var	HRENDER = __dirname + '/../../build/bin/hrender',
+var	HRENDER = __dirname + '/../hrender',
     HRENDER_CWD = __dirname +'/lua/',
 	HRENDER_ARG = [HRENDER_CWD + 'hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
