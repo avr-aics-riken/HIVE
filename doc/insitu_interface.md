@@ -23,7 +23,7 @@ HIVE supports In-Situ visualization through dedicated memory-based data structur
 
 Data structure is defined in C which is used both for user application(C/C++) and HiveCore are defined in `include/InSitu` directory.
 
-Actual data(e.g. volume data) is passed using C/C++ pointer, thus no intermediate buffer is required for In-Situ visualization.  
+Actual data(e.g. volume data) is passed using C/C++ opaque pointer, thus no intermediate buffer is required for In-Situ visualization.  
 
 ## Supported data type.
 
@@ -57,11 +57,9 @@ Corresponding data loader is implemented in `lib/Loader/RawSparseVolumeLoader`.
 
 ## Usage
 
-Here is the pseudo code of how to use InSitu API in C/C++ application.
+Here is the pseudo code of how to use HIVE In-Situ API in C/C++ application and SceneScript.
 
- and SceneScript
-
-    // ==== C/C++ side. =====
+    // ==== C/C++ world =====
     SceneScript script;
     
     HIVESparseVolume *sparseVolume = new HIVESparseVolume;
@@ -80,9 +78,9 @@ Here is the pseudo code of how to use InSitu API in C/C++ application.
     // delete data struct.
     delete sparseVolume;
 
-And SceneScript.
+And SceneScript side.
 
-    -- ==== Lua side. ====
+    -- ==== Lua world. ====
     
     -- Lookup memory object.
     local name = 'SparseVolumeScalar'
@@ -110,6 +108,6 @@ Users manually frees memory or overwrite data(e.g. the result of next timestep) 
 
 ## Extending In-Situ visualization
 
-* Define data structure both used for an user application and HiveCore in `include/InSitu`
-* Implement custom data loader in `lib/Loader`
+* Define data structure in `include/InSitu`
+* Implement corresnponding custom data loader in `lib/Loader`
 * Write lua binding of custom data loader.
