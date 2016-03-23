@@ -1,3 +1,3 @@
 #!/bin/sh
 
-node server.js
+node server.js $1
