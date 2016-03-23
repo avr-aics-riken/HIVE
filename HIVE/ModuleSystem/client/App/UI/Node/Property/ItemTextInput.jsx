@@ -210,12 +210,16 @@ export default class ItemTextInput extends React.Component {
 		}
 	}
 
+	title() {
+		return this.props.initialParam.hasOwnProperty('label') ? this.props.initialParam.label : this.props.initialParam.name;
+	}
+
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.addKey.bind(this)()}
-						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
+						<span style={{marginLeft : "12px"}} title={this.title.bind(this)()}>{this.title.bind(this)()}</span>
 					</div>
 					<input style={styles.value}
 						type="text"
