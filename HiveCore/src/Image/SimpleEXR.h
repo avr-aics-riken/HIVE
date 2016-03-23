@@ -1,8 +1,8 @@
-//
-//  SimpleEXR.h
-//  for OpenEXR format
-//
-//
+/**
+ * @file SimpleEXR.h
+ *  for OpenEXR format
+ *
+ */
 
 #ifndef INCLUDE_SimpleEXR_h
 #define INCLUDE_SimpleEXR_h

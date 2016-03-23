@@ -1,5 +1,5 @@
 /**
- * @file CdmLoader.h
+ * @file UdmLoader.h
  * UDMデータローダー
  */
 #ifndef _UDMLOADER_H_

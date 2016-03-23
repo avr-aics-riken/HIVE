@@ -1,7 +1,8 @@
-//
-// Portable and simple runtime C compile/eval utilty.
-// This utility class calls external C compiler(such like gcc) and create dll/so, then evaluate C code by calling dll method. 
-//
+/**
+* @file CompileUtil.h
+* Portable and simple runtime C compile/eval utilty.
+* This utility class calls external C compiler(such like gcc) and create dll/so, then evaluate C code by calling dll method. 
+*/
 #ifndef __COMPILE_UTIL_H__
 #define __COMPILE_UTIL_H__
 
