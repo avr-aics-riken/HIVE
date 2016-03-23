@@ -157,5 +157,9 @@ EXECUTE_PROCESS(COMMAND cpack -G TGZ --config CPackSourceConfig.cmake
     )
 ENDIF(UNIX)
 
-ADD_DEPENDENCIES(hrender version)
+# Extract Electron
+execute_process(
+	COMMAND cmake -E tar xvf ${CMAKE_SOURCE_DIR}/third_party/electron.tar.gz
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 
+ADD_DEPENDENCIES(hrender version)
