@@ -89,7 +89,8 @@ RenderObjectは以下の種類がある。
 - LineMode
 - SparseVolumeModel
 - TetraModel
-- VectorModel
+- SolidModel(多面体. PYRA_5, PENTA_6, HEXA_8 に対応. Tetra も Solid に統合予定)
+- VectorModel(Vector arrow)
 
 レンダリングし、画像を保存するには１つ以上のCameraが必要となる。
 以下は何もないシーンをレンダリングし、image.jpgに保存する例
@@ -489,10 +490,30 @@ RenderObjectは共通のインターフェースを持つ
 
         string GetShader()
 
-- tetraデータからポリゴンモデルを作成する
+- tetraデータからモデルを作成する
 
         boolean Create(BufferTetraData)
 
+
+## SolidModel
+
+Solid構造のデータをレンダリングするためのオブジェクト.
+(CGNS の TETRA_4, PYRA_5, PENTA_6, HEXA_8 相当)
+
+     local model = SolidModel()
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- solidデータからモデルを作成する
+
+        boolean Create(BufferTetraData)
 
 ## VectorModel
 
@@ -743,15 +764,20 @@ HDMlib の制約により, 1 シーン内で 1 HDMlib 形式のファイルし�
 ## UDMLoader()
 
 UDMファイルを読み込むローダークラス. hrender が UDMlib とリンクされているときのみ利用可能.
-非構造プリミティブ(三角形, テトラ, 六面体)が取得可能.
-六面体はポリゴンへと変換される.
+非構造プリミティブ((TRI_3, QUAD_4)(MeshData), TETRA_4(TetraData), (PYRA_5, PENTA_6, HEXA_8)(SolidData))が取得可能.
 
     local loader = UDMLoader()
     loader:Load('index.dfi')
 
+    local mesh = loader:MeshData() -- Meshプリミティブを取得
     local tetra = loader:TetraData() -- テトラプリミティブを取得
+    local hexa =  loader:SolidData(8) -- Hexaプリミティブを取得
+
+頂点アトリビュート(ソリューションデータ)については, ExtraData() で取得が可能(float, vec2, vec3, vec4, uint に対応).
+
 
 [render_udm_tetra.scn](hrender/test/render_udm_tetra.scn) 参考例
+[render_udm_hexa.scn](hrender/test/render_udm_hexa.scn) 参考例
 
 ## ImageLoader()
 
@@ -1018,15 +1044,42 @@ Create メソッドにはリサンプリングレートを指定する.
 ## SolidAttribToVolume()	
 
 Solid モデルの頂点アトリビュートを(一様)ボリュームデータに変換する.
+Solid 内部に対応する Voxel は頂点アトリビュートが補間されてボクセライズされる.
 (bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
 (バウンディングボックスは SolidAnalyzer で計算することができる)
-ToVolume メソッドにはボリュームの解像度を指定する.
+ToVolume メソッドにはボリュームの解像度と補間のモード(3 パターン)を指定する.
 
     local sa2v = SolidAttribToVolume()
     sa2v:Create(solid, attrib, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
    
-    sa2v:ToVolume(128,128,128)
+    local mode = 0 -- 0 : 0 order continuous , 1 : primary succession , 2 n order continuous
+    sa2v:ToVolume(128,128,128, mode)
     
+## SolidToVolume()	
+
+Solid モデルを(一様)ボリュームデータに変換する.
+Solid 内部に対応する Voxel は Solid が覆う回数でボクセライズされる(つまり, 重なり合う Solid が 2 つあると 2 になる).
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
+(バウンディングボックスは SolidAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度を指定する.
+
+    local s2v = SolidToVolume()
+    s2v:Create(solid, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+   
+    s2v:ToVolume(128,128,128)
+
+## SolidDfToVolume()	
+
+Solid モデルを(一様)ボリュームデータに変換する.
+Solid 内部に対応する Voxel は Solid の distance field 値でボクセライズされる.
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
+(バウンディングボックスは SolidAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度を指定する.
+
+    local sd2v = SolidDfToVolume()
+    sd2v:Create(solid, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+   
+    sd2v:ToVolume(128,128,128)
 
 ## VolumeFilter()
 
