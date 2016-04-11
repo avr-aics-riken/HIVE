@@ -28,6 +28,10 @@ public:
         VolumeModel::SetClampToEdge(s, t, r);
         return true;
     }
+    
+    BufferVolumeData_Lua* GetVolume() {
+        return new BufferVolumeData_Lua(VolumeModel::GetVolume());
+    }
 
     // RenderObject interface implementation
     IMPLEMENTATION_RENDEROBJECT_LUA()
@@ -36,6 +40,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, SetShader, const std::string&)
     LUA_SCRIPTCLASS_METHOD_ARG3(bool, SetClampToEdge,bool,bool,bool)
     LUA_SCRIPTCLASS_METHOD_ARG0(std::string, GetShader)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua, GetVolume)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, Create, BufferVolumeData_Lua*)
     
     // RenderObject interface
