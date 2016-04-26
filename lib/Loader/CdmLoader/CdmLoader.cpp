@@ -355,9 +355,9 @@ bool CDMLoader::Load(const char* filename, int timeSliceIndex)
                     if (interleaved) {
                       // size_t srcIdx =  (z + virtualCells/2) * sy * sx + (y + virtualCells/2) * sx + (x + virtualCells/2);
                       // float val = d_v[numVariables * srcIdx + c];
-                      srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables, GVoxel[0], GVoxel[1], GVoxel[2], virtualCells);
+                      srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables, GVoxel[0], GVoxel[1], GVoxel[2], virtualCells/2);
                     } else {
-                      srcIdx = _CDM_IDX_IJKN(x, y, z, c, GVoxel[0], GVoxel[1], GVoxel[2], virtualCells);
+                      srcIdx = _CDM_IDX_IJKN(x, y, z, c, GVoxel[0], GVoxel[1], GVoxel[2], virtualCells/2);
                     }
                     size_t dstIdx = z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
                     float val = d_v[srcIdx];
