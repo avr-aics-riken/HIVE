@@ -444,6 +444,7 @@ export default class Store extends EventEmitter {
 		}
 		let maxFrame = 0;
 		let minFrame = Infinity;
+		let hasFrame = false;
 		if (!data.hasOwnProperty('contents')) {
 			data.contents = [];
 		}
@@ -457,13 +458,21 @@ export default class Store extends EventEmitter {
 					if (keys.length > 0) {
 						maxFrame = Math.max(maxFrame, keys[keys.length - 1]);
 						minFrame = Math.min(minFrame, keys[0]);	
+						hasFrame = true;
 					}
 				}
 			}
 		}
-		return {
-			min : minFrame,
-			max : maxFrame
-		};
+		if (hasFrame) {
+			return {
+				min : minFrame,
+				max : maxFrame
+			};	
+		} else {
+			return {
+				min : 0,
+				max : 0
+			};
+		}
 	}
 }
