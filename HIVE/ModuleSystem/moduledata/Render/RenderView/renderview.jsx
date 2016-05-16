@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 //import buffercopy from 'buffercopy'
 
 const minWidth = 256;
-const minHeight = 256;
+const minHeight = 100;
 const footerHeight = 50;
 
 class RenderView extends React.Component {
@@ -19,10 +19,15 @@ class RenderView extends React.Component {
 
         this.varname = this.node.varname;
 
+		this.state = {
+			width : minWidth,
+			height : minHeight
+		};
+		
         // Mouse
         this.mouseState = 0;
         this.oldmx = 0;
-        this.oldmy = 0;
+        this.oldmy = 0; 
 
 		// View
 		this.componentDidUpdate = this.componentDidUpdate.bind(this);
@@ -70,7 +75,6 @@ class RenderView extends React.Component {
 			buffer = data;
 		}
         this.setState({
-			param : param,
 			image : buffer
 		});
 
@@ -260,6 +264,7 @@ class RenderView extends React.Component {
 			}
 		});
     }
+	
     viewZoom(zoom) {
 		let target = JSON.parse(JSON.stringify(this.getInputValue("target")));
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
@@ -315,6 +320,28 @@ class RenderView extends React.Component {
 		if (data.varname !== this.node.varname) {
 			return;
 		}
+		
+		let screensize = this.getInputValue("screensize");
+		let panelsize = data.panel.size;
+		if (screensize[0] !== panelsize[0] || (screensize[1] + footerHeight) !== panelsize[1]) {
+			let panel = data.panel;
+			panel.size[0] = screensize[0];
+			panel.size[1] = screensize[1] + footerHeight;
+			setTimeout( ()=> {
+				this.action.changeNode({
+					panel : panel,
+					input : {
+					}
+				});
+				this.action.changeNodeInput({
+					varname : this.props.node.varname,
+					input : {
+						"rendersize" : [parseInt(screensize[0]/16), parseInt(screensize[1]/16)]
+					}
+				});
+			}, 0);
+		}
+		
 		if (this.hasIPCAddress()) {
 			this.readyForIPCImageTransfer();
 		}
@@ -324,30 +351,31 @@ class RenderView extends React.Component {
 		if (data.varname !== this.node.varname) {
 			return;
 		}
-		// イメージサイズの更新.
-		if (this.state) {
-			if (this.props.node.panel.visible) {
-				let width = Math.max(this.props.node.panel.size[0], minWidth);
-				let height = Math.max(this.props.node.panel.size[1] - footerHeight, minHeight)
-				if (Number(this.state.param.width) !== width || Number(this.state.param.height) !== height) {
-					console.log("update image size");
-					this.state.param.width = width;
-					this.state.param.height = height;
-
-					setTimeout( ()=> {
-						this.action.changeNodeInput({
-							varname : this.props.node.varname,
-							input : {
-                                "screensize" : [width, height],
-                                "rendersize" : [parseInt(width/16), parseInt(height/16)]
-                            }
-						});
-					}, 0);
-				}
+		if (this.props.node.panel.visible) {
+			let width = Math.max(this.props.node.panel.size[0], minWidth);
+			let height = Math.max(this.props.node.panel.size[1] - footerHeight, minHeight)
+			if (Number(this.state.width) !== width || Number(this.state.height) !== height) {
+				this.setState({
+					width : width,
+					height : height
+				});
+				
+				setTimeout( ()=> {
+					let width = Math.max(this.props.node.panel.size[0], minWidth);
+					let height = Math.max(this.props.node.panel.size[1] - footerHeight, minHeight)
+					
+					this.action.changeNodeInput({
+						varname : this.props.node.varname,
+						input : {
+							"screensize" : [width, height],
+							"rendersize" : [parseInt(width/16), parseInt(height/16)]
+						}
+					});
+				}, 0);
 			}
 		}
 	}
-
+	
 	onPresetChange(ev) {
 		let number = Number(ev.target.value);
 		if (number === null || number === undefined) { console.error("invalid camera layer"); return; }
@@ -435,14 +463,14 @@ class RenderView extends React.Component {
 		return {
 			bounds : {
 				minWidth : String(minWidth) + "px",
-				minHeight : String(minHeight) + "px",
+				minHeight : String(minHeight) + "px"
 			},
 			canvas : {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: String(Math.max(this.props.node.panel.size[0], minWidth)) + "px",
-                height: String(Math.max(this.props.node.panel.size[1], minHeight)) + "px",
+                width: String(this.canvasSize.bind(this)()[0]) + "px",
+                height: String(this.canvasSize.bind(this)()[1]) + "px",
                 transform : "scale(1.0,-1.0)",
                 display: (this.hasIPCAddress() ? "block" : "none")
 			},
@@ -450,8 +478,8 @@ class RenderView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-                width: String(Math.max(this.props.node.panel.size[0], minWidth)) + "px",
-                height: String(Math.max(this.props.node.panel.size[1], minHeight)) + "px",
+                width: String(this.canvasSize.bind(this)()[0]) + "px",
+                height: String(this.canvasSize.bind(this)()[1]) + "px",
                 display: (this.hasIPCAddress() ? "none" : "block")
 			},
 			cameraButtonArea : {
@@ -593,12 +621,10 @@ class RenderView extends React.Component {
 
 	canvasSize() {
 		if (this.refs.canvas_wrap) {
-			let rect = this.refs.canvas_wrap.getBoundingClientRect();
-			let width = rect.right - rect.left;
-			let height = rect.bottom - rect.top;
-			return [width, height];
+			let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
+			return [Math.max(ssize[0], minWidth), Math.max(ssize[1], minHeight)];
 		}
-		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[0], minHeight)];
+		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[1], minHeight)];
 	}
 
     content() {
