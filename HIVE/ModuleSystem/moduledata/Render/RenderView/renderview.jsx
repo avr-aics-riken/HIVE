@@ -180,7 +180,6 @@ class RenderView extends React.Component {
 	}
 	
 	reRender() {
-		console.error("rerender");
 		let screensize = this.getInputValue("screensize");
 		this.action.changeNodeInput({
 			varname : this.props.node.varname,
@@ -335,24 +334,22 @@ class RenderView extends React.Component {
 			return;
 		}
 		
+		if (this.hasIPCAddress()) {
+			this.readyForIPCImageTransfer();
+		}
+		
 		let screensize = this.getInputValue("screensize");
 		let panelsize = data.panel.size;
 		if (screensize[0] !== panelsize[0] || (screensize[1] + footerHeight) !== panelsize[1]) {
-			let panel = data.panel;
-			panel.size[0] = screensize[0];
-			panel.size[1] = screensize[1] + footerHeight;
+			let panel = JSON.parse(JSON.stringify(data.panel));
+			panel.size[0] = Number(screensize[0]);
+			panel.size[1] = Number(screensize[1] + footerHeight);
 			setTimeout( ()=> {
 				this.action.changeNode({
-					panel : panel,
-					input : {
-					}
+					varname : this.node.varname,
+					panel : panel
 				});
-				this.reRender();
 			}, 0);
-		}
-		
-		if (this.hasIPCAddress()) {
-			this.readyForIPCImageTransfer();
 		}
 	}
 
@@ -634,7 +631,7 @@ class RenderView extends React.Component {
 	canvasSize() {
 		if (this.refs.canvas_wrap) {
 			let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
-			return [Math.max(ssize[0], minWidth), Math.max(ssize[1], minHeight)];
+			return [Math.max(Number(ssize[0]), minWidth), Math.max(Number(ssize[1]), minHeight)];
 		}
 		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[1], minHeight)];
 	}
