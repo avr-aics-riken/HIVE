@@ -315,15 +315,25 @@ export default class ActionExecuter {
 	exportSceneScript(payload) {
         if (payload.hasOwnProperty('varname')) {
             let varname = payload.varname;
-            let n;
+            let n, frm, minFrame, maxFrame;
             if (varname === "") { // ALL
                 //n = this.store.getRootNodes();
                 let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
+				nodeExe.initEmitter(this.store);
                 let luasrc = "package.path = './?.lua;' .. package.path\n";
                 luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
                 luasrc = luasrc + nodeExe.doNodes();
                 //console.log('EXPORT>', luasrc);
+				let minmax = this.store.getFrameRange(); 
+				minFrame = minmax.min;				
+				maxFrame = minmax.max;
+				for (frm = minFrame; frm <= maxFrame; ++frm) {
+					this.changeFrame({frame:frm})
+					luasrc = luasrc + nodeExe.doNodes();
+				}
+				nodeExe.offEmitter(this.store);
+					
           		var blob = new Blob([luasrc], {type: "text/plain"});
 	        	saveAs(blob, "export.lua");
             } else { //
