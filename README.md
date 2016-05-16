@@ -7,6 +7,7 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 ## Requirements
 
 * cmake 2.8 or later
+* Autotools
 * MPI compiler(optional for macosx and linux x64 environment)
 * Zoltan v.3.81(Required when you build HIVE with PDMlib support)
 * fpzip 1.0.1(Required when you build HIVE with PDMlib support)
