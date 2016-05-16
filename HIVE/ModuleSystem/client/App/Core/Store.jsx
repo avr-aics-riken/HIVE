@@ -98,6 +98,7 @@ export default class Store extends EventEmitter {
 		this.findGroup = this.findGroup.bind(this);
 		this.getTimelineName = this.getTimelineName.bind(this);
 		this.getFileList = this.getFileList.bind(this);
+		this.getFrameRange = this.getFrameRange.bind(this);
 	}
 
     // private:
@@ -428,5 +429,41 @@ export default class Store extends EventEmitter {
 		}
 		return false;
 	}
-
+	
+	/**
+	 * すべてのタイムラインを総合した最小フレーム番号と最大フレーム番号を返す
+	 */
+	getFrameRange() {
+		console.log("getFrameRange")
+		let data = this.data.timeline.data;
+		if (!data) {
+			return {
+				min : 0,
+				max : 0
+			}
+		}
+		let maxFrame = 0;
+		let minFrame = Infinity;
+		if (!data.hasOwnProperty('contents')) {
+			data.contents = [];
+		}
+		for (let i = 0; i < data.contents.length; i = i + 1) {
+			let content = data.contents[i];
+			for (let k = 0; k < content.props.length; k = k + 1) {
+				let prop = content.props[k];
+				if (prop.hasOwnProperty('data')) {
+					let propData = prop.data;
+					let keys = Object.keys(propData);
+					if (keys.length > 0) {
+						maxFrame = Math.max(maxFrame, keys[keys.length - 1]);
+						minFrame = Math.min(minFrame, keys[0]);	
+					}
+				}
+			}
+		}
+		return {
+			min : minFrame,
+			max : maxFrame
+		};
+	}
 }
