@@ -415,7 +415,7 @@ export default class NodeView extends React.Component {
 	onNaviClick(varname) {
 		return (ev) => {
 			console.log("onNaviClick")
-			this.props.action.digGroup(varname);
+			this.props.action.changeGroup(varname);
 		}
 	}
 

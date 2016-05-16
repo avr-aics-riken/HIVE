@@ -279,12 +279,12 @@ export default class Action {
 	}
 
 	/**
-	 * グループを移動する
+	 * グループを変更(移動)する
 	 */
-	digGroup(groupVarname) {
+	changeGroup(groupVarname) {
 		this.dispatcher.dispatch({
 			id :this.id,
-			actionType: "digGroup",
+			actionType: "changeGroup",
 			groupVarname : groupVarname
 		});
 	}

@@ -545,7 +545,7 @@ export default class Node extends React.Component {
 	onDoubleClick(ev) {
 		let n = this.state.node;
 		if (this.props.nodeStore.isGroup(n)) {
-			this.props.action.digGroup(n.varname);
+			this.props.action.changeGroup(n.varname);
 		}
 		ev.preventDefault();
 		ev.stopPropagation();

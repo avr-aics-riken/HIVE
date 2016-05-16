@@ -39,8 +39,11 @@ class RenderView extends React.Component {
 		this.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);
 		this.onClickCameraButton = this.onClickCameraButton.bind(this);
 		this.onClickCameraRegisterButton = this.onClickCameraRegisterButton.bind(this);
+		this.reRender = this.reRender.bind(this);
 
 		this.updatePreset = this.updatePreset.bind(this);
+		
+		this.reRender();
 	}
 
     progressiveUpdate(param) {
@@ -174,6 +177,17 @@ class RenderView extends React.Component {
                 //console.log(imgElem);
 			}
 		}
+	}
+	
+	reRender() {
+		console.error("rerender");
+		let screensize = this.getInputValue("screensize");
+		this.action.changeNodeInput({
+			varname : this.props.node.varname,
+			input : {
+				"rendersize" : [parseInt(screensize[0]/16), parseInt(screensize[1]/16)]
+			}
+		});
 	}
 
 	getInputValue(key) {
@@ -315,7 +329,7 @@ class RenderView extends React.Component {
     onImgMouseUp(event) {
         this.mouseState = 0;
     }
-
+	
 	imageRecieveWrap(err, data) {
 		if (data.varname !== this.node.varname) {
 			return;
@@ -333,12 +347,7 @@ class RenderView extends React.Component {
 					input : {
 					}
 				});
-				this.action.changeNodeInput({
-					varname : this.props.node.varname,
-					input : {
-						"rendersize" : [parseInt(screensize[0]/16), parseInt(screensize[1]/16)]
-					}
-				});
+				this.reRender();
 			}, 0);
 		}
 		
@@ -454,7 +463,10 @@ class RenderView extends React.Component {
 		window.removeEventListener('mousemove', this.onImgMouseMove.bind(this));
 		const Store_IMAGE_RECIEVED = "image_revieved";
 		this.store.off(Store_IMAGE_RECIEVED, this.imageRecieved);
-		this.store.off("node_input_changed", this.imageRecieveWrap);
+		
+        const NODE_INPUT_CHANGED = "node_input_changed"
+		this.store.off(NODE_INPUT_CHANGED, this.imageRecieveWrap);
+		
 		this.store.off("panel_size_changed", this.onPanelSizeChanged);
 		this.closeForIPCImageTransfer();
 	}

@@ -64,7 +64,7 @@ export default class ActionExecuter {
 		this.makeGroup = this.makeGroup.bind(this);
 		this.unGroup = this.unGroup.bind(this);
 		this.addGroup = this.addGroup.bind(this);
-		this.digGroup = this.digGroup.bind(this);
+		this.changeGroup = this.changeGroup.bind(this);
 		this.findGroupPath = this.findGroupPath.bind(this);
 		this.publishOutput = this.publishOutput.bind(this);
 		this.publishInput = this.publishInput.bind(this);
@@ -928,9 +928,9 @@ export default class ActionExecuter {
 	}
 
 	/**
-	 * グループを移動する
+	 * グループを変更(移動）する
 	 */
-	digGroup(payload) {
+	changeGroup(payload) {
 		if (payload.hasOwnProperty('groupVarname')) {
 			let groupPath = this.findGroupPath(this.store.data, payload.groupVarname, []);
 			if (groupPath && groupPath.length > 0) {
@@ -938,6 +938,7 @@ export default class ActionExecuter {
 				this.store.data.nodePath = groupPath;
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+				this.store.emit(Constants.GROUP_CHANGED, null, payload.groupVarname);
 			}
 		}
 	}
