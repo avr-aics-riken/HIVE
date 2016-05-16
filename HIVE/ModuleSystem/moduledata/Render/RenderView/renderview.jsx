@@ -8,6 +8,10 @@ const minWidth = 256;
 const minHeight = 100;
 const footerHeight = 50;
 
+function progressiveMin(val) {
+	return parseInt(val / 16.0, 10);
+}
+
 class RenderView extends React.Component {
 	constructor(props) {
         super(props);
@@ -184,7 +188,7 @@ class RenderView extends React.Component {
 		this.action.changeNodeInput({
 			varname : this.props.node.varname,
 			input : {
-				"rendersize" : [parseInt(screensize[0]/16), parseInt(screensize[1]/16)]
+				"rendersize" : [progressiveMin(screensize[0]), progressiveMin(screensize[1])]
 			}
 		});
 	}
@@ -208,8 +212,8 @@ class RenderView extends React.Component {
 		let rx = rotate(rotx, ax);
 		let ry = rotate(roty, ay);
         let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
-        let rw = parseInt(ssize[0] / 16);
-        let rh = parseInt(ssize[1] / 16);
+        let rw = progressiveMin(ssize[0]);
+        let rh = progressiveMin(ssize[1]);
 
 		v = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);
 		v = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));
@@ -264,8 +268,8 @@ class RenderView extends React.Component {
 		let pos = add(add(position, scale(-tx, ax)), scale(ty, ay));
 		let tar = add(add(target,   scale(-tx, ax)), scale(ty, ay));
         let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
-        let rw = parseInt(ssize[0] / 16);
-        let rh = parseInt(ssize[1] / 16);
+        let rw = progressiveMin(ssize[0]);
+        let rh = progressiveMin(ssize[1]);
 
 		const varname = this.node.varname;
 		this.action.changeNodeInput({
@@ -283,8 +287,8 @@ class RenderView extends React.Component {
 		let position = JSON.parse(JSON.stringify(this.getInputValue("position")));
 		let v = subtract(position, target);
         let ssize = JSON.parse(JSON.stringify(this.getInputValue("screensize")));
-        let rw = parseInt(ssize[0] / 16);
-        let rh = parseInt(ssize[1] / 16);
+        let rw = progressiveMin(ssize[0]);
+        let rh = progressiveMin(ssize[1]);
 
 		let r = 1.0 - (zoom / 1000.0);
 		v = scale(r, v);
@@ -374,7 +378,7 @@ class RenderView extends React.Component {
 						varname : this.props.node.varname,
 						input : {
 							"screensize" : [width, height],
-							"rendersize" : [parseInt(width/16), parseInt(height/16)]
+							"rendersize" : [progressiveMin(width), progressiveMin(height)]
 						}
 					});
 				}, 0);
@@ -391,8 +395,8 @@ class RenderView extends React.Component {
 			return;
 		}
 		presets.currentPreset =  number;
-		let rw = parseInt(ssize[0] / 16);
-		let rh = parseInt(ssize[1] / 16);
+		let rw = progressiveMin(ssize[0]);
+		let rh = progressiveMin(ssize[1]);
 		if (presets.hasOwnProperty(number)) {
 			let preset = presets[number];
 			if (preset.hasOwnProperty("position") &&
@@ -563,8 +567,8 @@ class RenderView extends React.Component {
 		let up = this.getInputValue('up');
 		let len = length(subtract(tar, pos));
 		const ssize = this.getInputValue("screensize");
-		let rw = parseInt(ssize[0] / 16);
-		let rh = parseInt(ssize[1] / 16);
+		let rw = progressiveMin(ssize[0]);
+		let rh = progressiveMin(ssize[1]);
 
 		if (ev.target === this.refs.reset) {
 			this.action.changeNodeInput({
