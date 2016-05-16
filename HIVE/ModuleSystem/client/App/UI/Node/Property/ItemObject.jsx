@@ -112,23 +112,17 @@ export default class ItemObject extends React.Component {
         };
     }
 
-	onAddKey(ev) {
-		if (ev.button === 0) {
+	onChangeKey(ev) {
+		if (ev.button === 0 || ev.button === 2) {
 			var hole = this.props.initialParam;
 			hole.value = this.value;
-			this.props.changeKeyFunc(hole);
+			if (!this.state.onFrame === false) {
+				this.props.deleteKeyFunc(this.props.initialParam);
+			} else {
+				this.props.changeKeyFunc(hole);
+			}
 			this.setState({
-				onFrame : true
-			});
-		}
-	}
-
-	onDeleteKey(ev) {
-		if (ev.button === 2) {
-			console.log("delete")
-			this.props.deleteKeyFunc(this.props.initialParam);
-			this.setState({
-				onFrame : false
+				onFrame : !this.state.onFrame
 			});
 		}
 	}
@@ -136,7 +130,7 @@ export default class ItemObject extends React.Component {
 	addKeyElem() {
 		if (this.props.hasOwnProperty('store')) {
 			const styles = this.styles.bind(this)();
-			return (<span style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+			return (<span style={styles.addkey} onMouseDown={this.onChangeKey.bind(this)} />);
 		}
 	}
 
