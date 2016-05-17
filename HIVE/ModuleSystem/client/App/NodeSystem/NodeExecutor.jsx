@@ -121,7 +121,7 @@ export default class NodeExecutor extends EventEmitter {
 		this.updateGraphRecursive(data);
     }
 
-    executeNode() {
+    executeNode(noReturn) {
         let script = 'local executedNode = {}\n';
         this.nodeQueue.forEach((nd) => {
             let inputUpdate = false;
@@ -154,7 +154,9 @@ export default class NodeExecutor extends EventEmitter {
             }
         });
         script += "collectgarbage('collect')\n";
-        script += "\nreturn {doState=executedNode}\n";
+        if (!noReturn) {
+            script += "\nreturn {doState=executedNode}\n";
+        }
         return script;
     }
 
@@ -177,11 +179,11 @@ export default class NodeExecutor extends EventEmitter {
     }
 
 
-    doNodes() {
+    doNodes(noReturn) {
         this.updateGraph();
         initFrags(this.nodeGraph);
         this.nodeQueue = topologicalSort(this.nodeGraph);
-        return this.executeNode();
+        return this.executeNode(noReturn);
     }
 
     getExecutionOrder() {
