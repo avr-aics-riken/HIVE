@@ -70,7 +70,7 @@ export default class NodeExecutor extends EventEmitter {
         this.eventNodePropertyChanged = this.eventNodePropertyChanged.bind(this);
         this.eventNodeAdded = this.eventNodeAdded.bind(this);
         this.eventNodeDeleted = this.eventNodeDeleted.bind(this);
-        this.eventPlugAdded = this.eventNodeDeleted.bind(this);
+        this.eventPlugAdded = this.eventPlugAdded.bind(this);
         this.eventPlugDeleted = this.eventPlugDeleted.bind(this);
     }
 
