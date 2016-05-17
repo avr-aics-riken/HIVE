@@ -103,7 +103,7 @@ class RenderView extends React.Component {
     }
     readyForIPCImageTransfer(){
        	// Electron only
-        if (this.sc === undefined) {
+        if (this.sc === undefined && window && window.process && window.process.type) {
             var nano = process.mainModule.require('nanomsg');
             var buffercopy = process.mainModule.require('buffercopy');
             var sc = nano.socket('pair');
