@@ -185,12 +185,14 @@ class RenderView extends React.Component {
 	
 	reRender() {
 		let screensize = this.getInputValue("screensize");
-		this.action.changeNodeInput({
-			varname : this.props.node.varname,
-			input : {
-				"rendersize" : [progressiveMin(screensize[0]), progressiveMin(screensize[1])]
-			}
-		});
+		setTimeout( () => {
+			this.action.changeNodeInput({
+				varname : this.props.node.varname,
+				input : {
+					"rendersize" : [progressiveMin(screensize[0]), progressiveMin(screensize[1])]
+				}
+			});
+		}, 0);
 	}
 
 	getInputValue(key) {
