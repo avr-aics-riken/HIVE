@@ -86,7 +86,8 @@ d3.parcoords = function(config) {
     yscale = {},
     dragging = {},
     line = d3.svg.line(),
-    axis = d3.svg.axis().orient("left").ticks(5),
+    // axis = d3.svg.axis().orient("left").ticks(5),
+    axis = d3.svg.axis().orient("left").ticks(10, 0),
     g, // groups for axes, brushes
     ctx = {},
     canvas = {},
@@ -213,7 +214,8 @@ d3.parcoords = function(config) {
                 // log scale するとしたらここ（真偽値で厳密チェックする
                 if(config.usr.logScale === true){
                     return d3.scale.log()
-                    .domain(extent)
+                    .domain([0.001, 1000])
+                    // .domain(extent)
                     .range([h()+1, 1]);
                 }else{
                     return d3.scale.linear()
