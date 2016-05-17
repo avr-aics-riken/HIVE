@@ -326,7 +326,7 @@ export default class ActionExecuter {
                 let luasrc = "package.path = './?.lua;' .. package.path\n";
                 luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
-				luasrc    += "local HIVE_FRAMETIME=0";
+				luasrc    += "local HIVE_FRAMETIME=0\n";
                 luasrc = luasrc + nodeExe.doNodes();
                 //console.log('EXPORT>', luasrc);
 				let minmax = this.store.getFrameRange(); 
@@ -334,7 +334,7 @@ export default class ActionExecuter {
 				maxFrame = minmax.max;
 				for (frm = minFrame; frm <= maxFrame; ++frm) {
 					this.changeFrame({frame:frm});
-					luasrc = luasrc + "HIVE_FRAMETIME=" + frm;
+					luasrc = luasrc + "HIVE_FRAMETIME=" + frm + "\n";
 					luasrc = luasrc + nodeExe.doNodes();
 				}
 				nodeExe.offEmitter(this.store); // remove exporter event
