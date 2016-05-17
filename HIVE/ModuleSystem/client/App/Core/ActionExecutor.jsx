@@ -317,22 +317,30 @@ export default class ActionExecuter {
             let varname = payload.varname;
             let n, frm, minFrame, maxFrame;
             if (varname === "") { // ALL
-                //n = this.store.getRootNodes();
+								
+				this.store.nodeExecutor.offEmitter(this.store); // remove main event
+				
                 let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
-				nodeExe.initEmitter(this.store);
+				nodeExe.setInteractiveMode(false);
+				nodeExe.initEmitter(this.store); // set exporter event
                 let luasrc = "package.path = './?.lua;' .. package.path\n";
                 luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
+				luasrc    += "local HIVE_FRAMETIME=0";
                 luasrc = luasrc + nodeExe.doNodes();
                 //console.log('EXPORT>', luasrc);
 				let minmax = this.store.getFrameRange(); 
 				minFrame = minmax.min;				
 				maxFrame = minmax.max;
 				for (frm = minFrame; frm <= maxFrame; ++frm) {
-					this.changeFrame({frame:frm})
+					this.changeFrame({frame:frm});
+					luasrc = luasrc + "HIVE_FRAMETIME=" + frm;
 					luasrc = luasrc + nodeExe.doNodes();
 				}
-				nodeExe.offEmitter(this.store);
+				nodeExe.offEmitter(this.store); // remove exporter event
+				
+				this.store.nodeExecutor.initEmitter(this.store); // restore main event				
+				this.changeFrame({frame:minFrame}); // reset frame				
 					
           		var blob = new Blob([luasrc], {type: "text/plain"});
 	        	saveAs(blob, "export.lua");

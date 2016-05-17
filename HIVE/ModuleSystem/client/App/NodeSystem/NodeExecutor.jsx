@@ -65,6 +65,7 @@ export default class NodeExecutor extends EventEmitter {
         this.nodeGraph = {};
         this.nodeQueue = [];
 		this.updateGraphRecursive = this.updateGraphRecursive.bind(this);
+        this.interactiveMode = true;
 
         this.eventNodeInputChanged = this.eventNodeInputChanged.bind(this);
         this.eventNodePropertyChanged = this.eventNodePropertyChanged.bind(this);
@@ -74,6 +75,9 @@ export default class NodeExecutor extends EventEmitter {
         this.eventPlugDeleted = this.eventPlugDeleted.bind(this);
     }
 
+    setInteractiveMode(interactiveMode) {
+        this.interactiveMode = interactiveMode; 
+    }
 	updateGraphRecursive(root) {
 		let ng = this.nodeGraph;
 		const nodes = root.nodes;
@@ -210,23 +214,19 @@ export default class NodeExecutor extends EventEmitter {
         return order;
     }
 
+    eventExecute() {
+        if (this.interactiveMode) {            
+            let script = this.doNodes();
+            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        }
+    }
 
     /* ------- emitter  event functions ------------- */    
     eventNodeInputChanged (err, data) {
         console.log('NS catched:NODE_INPUT_CHANGED', err, data);
         let node = data;
 
-        // set to instance
-        //console.log('CHANGENODE->', node);
-        //let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";
-
-        //script += this.nodeSerializer.updateNodeInput(node);
-        //script += this.doNodes();
-
-//            this.nodeGraph[node.varname].needexecute = true;
-
-        let script = this.doNodes();
-        this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        this.eventExecute();        
     }
 
     eventNodePropertyChanged (err, data, prop) {
@@ -238,24 +238,20 @@ export default class NodeExecutor extends EventEmitter {
             this.nodeGraph[node.varname].needexecute = true;
         }
 
-        //let script = this.doNodes();
-        //this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        // !! don't execute here.
+        //// this.eventExecute();
     }
 
     eventNodeAdded(err, data) {
         // create new / delete instance
         console.log('NS catched:NODE_ADDED', err, data);
 
-        const node = data;
-        let script = this.doNodes();
-        this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        this.eventExecute();        
     }
     eventNodeDeleted(err, data) {
         console.log('NS catched:NODE_DELETED', err, data);
 
-        let node = data;
-        let script = this.doNodes();
-        this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        this.eventExecute();        
     }
     eventPlugAdded(err, data) {
         console.log('NS catched:PLUG_ADDED', err, data);
@@ -263,8 +259,7 @@ export default class NodeExecutor extends EventEmitter {
         const plug = data;
         this.nodeGraph[plug.input.nodeVarname].needexecute = true;
 
-        const script = this.doNodes();
-        this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        this.eventExecute();        
     }
     eventPlugDeleted(err, data) {
         console.log('NS catched:PLUG_DELETED', err, data);
@@ -272,8 +267,7 @@ export default class NodeExecutor extends EventEmitter {
         const plug = data;
         this.nodeGraph[plug.input.nodeVarname].needexecute = true;
 
-        const script = this.doNodes();
-        this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        this.eventExecute();        
     }
     /*-----------------------*/
     
