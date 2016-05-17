@@ -104,11 +104,11 @@ class RenderView extends React.Component {
     readyForIPCImageTransfer(){
        	// Electron only
         if (this.sc === undefined) {
-            var nano = require('nanomsg');
-            var buffercopy = require('buffercopy');
+            var nano = process.mainModule.require('nanomsg');
+            var buffercopy = process.mainModule.require('buffercopy');
             var sc = nano.socket('pair');
             this.sc = sc;
-            var meta = require(require("path").resolve('./lib/metabinary')); // path from index.html
+            var meta = process.mainModule.require(process.mainModule.require("path").resolve('./lib/metabinary')); // path from index.html
             this.meta = meta;
             var ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;
             var ret = sc.bind(ipcAddress);
