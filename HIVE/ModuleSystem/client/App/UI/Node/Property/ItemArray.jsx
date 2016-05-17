@@ -102,6 +102,9 @@ export default class ItemArray extends React.Component {
 	submit(ev) {
 		if (this.currentEdit.value) {
 			this.props.changeLengthFunc(this.props.initialParam.name, this.currentEdit.value);
+			this.setState({
+				value : this.currentEdit.value
+			});
 		}
 		ev.target.style.border = "none";
 		ev.target.blur();
@@ -137,14 +140,20 @@ export default class ItemArray extends React.Component {
 			if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec initialParam={holes} key={id} bottom={bottom}/>);
 			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput initialParam={holes} key={id} bottom={bottom}/>);
+				/*
+				return (<ItemTextInput
+							initialParam={holes}
+							key={id}
+							bottom={bottom}/>);
+							*/
+				return (<ItemText initialParam={holes} key={id} bottom={bottom}/>);
 			} else {
 				return (<ItemText initialParam={holes} key={id} bottom={bottom}/>);
 			}
 		});
 		return contents;
 	}
-
+	
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div>
