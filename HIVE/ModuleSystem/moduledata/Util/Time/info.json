@@ -1,0 +1,13 @@
+{
+	"name": "Time",
+	"funcname": "Time",
+	"info":"Timeをつくるノード",
+	"customfuncfile":"time.lua",
+	"uifile":"time.jsx",
+    "input": [
+		{"name": "value",  "type": "float", "value": 0, "visible" : false, "hole":false}
+	],
+	"output": [
+		{"name": "time",  "type": "float"}
+	]
+}
