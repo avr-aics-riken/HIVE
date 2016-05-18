@@ -1,0 +1,11 @@
+{
+	"name": "MPIMemoryDataNames",
+	"funcname": "MPIMemoryDataNames",
+	"info":"MPIMemoryDataNamesノード",
+	"customfuncfile":"memorydatanames.lua",
+    "input": [
+	],
+	"output": [
+		{"name": "datanames", "type" : "table" }
+	]
+}
