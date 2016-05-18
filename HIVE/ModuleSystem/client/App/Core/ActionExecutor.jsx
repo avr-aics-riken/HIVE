@@ -327,6 +327,7 @@ export default class ActionExecuter {
                 luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
 				luasrc    += "local HIVE_FRAMETIME=0\n";
+				luasrc    += "local HIVE_EXPORTMODE=true\n";				
                 luasrc = luasrc + nodeExe.doNodes(true);
                 //console.log('EXPORT>', luasrc);
 				let minmax = this.store.getFrameRange(); 
