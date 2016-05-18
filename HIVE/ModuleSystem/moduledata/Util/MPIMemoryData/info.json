@@ -7,6 +7,6 @@
 		{"name": "dataname", "type": "string", "value": "" }
 	],
 	"output": [
-		{"name": "data", "type" : "table" }
+		{"name": "data", "type" : "string" }
 	]
 }

@@ -6,6 +6,6 @@
     "input": [
 	],
 	"output": [
-		{"name": "datanames", "type" : "table" }
+		{"name": "datanames", "type" : "string" }
 	]
 }

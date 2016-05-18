@@ -15,5 +15,10 @@ function MPIMemoryDataNames:Do()
 end
 
 function MPIMemoryDataNames:datanames()
-    return getMemoryDataNames()
+    JSON = require('dkjson')
+    local names = getMemoryDataNames()
+    if names ~= nil then
+        return JSON.encode(names)
+    end
+    return nil 
 end

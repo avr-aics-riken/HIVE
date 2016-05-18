@@ -18,7 +18,11 @@ function MPIMemoryData:Do()
 end
 
 function MPIMemoryData:data()
-    self:UpdateValue()
+    JSON = require('dkjson')
     local v = self.value
-    return getMemoryData(v.dataname)
+    local data = getMemoryData(v.dataname)
+    if data ~= nil then
+        return JSON.encode(data)
+    end
+    return nil
 end
