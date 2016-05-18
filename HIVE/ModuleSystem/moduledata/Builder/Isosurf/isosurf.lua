@@ -15,7 +15,7 @@ function Isosurf:Do()
     self:UpdateValue()
     
     local v = self.value
-    if (v.volume ~= nil) then
+    if (v.volume == nil) then
         return "Invalid volume"
     end
     
