@@ -25,15 +25,3 @@ end
 function MPI:mpisize()
     return mpiSize()
 end
-
-function MPI:platform()
-    return platform()
-end
-
-function MPI:dllextension()
-    return dllExtension()
-end
-
-function MPI:endian()
-    return endian()
-end

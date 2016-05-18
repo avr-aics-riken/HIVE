@@ -9,9 +9,6 @@
 	"output": [
 		{"name": "mpimode",  "type": "bool" },
 		{"name": "mpirank",  "type": "float" },
-		{"name": "mpisize",  "type": "float" },
-		{"name": "platform",  "type": "string" },
-		{"name": "dllextension",  "type": "string" },
-		{"name": "endian",  "type": "string" }
+		{"name": "mpisize",  "type": "float" }
 	]
 }

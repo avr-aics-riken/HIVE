@@ -1,0 +1,13 @@
+{
+	"name": "Platform",
+	"funcname": "Platform",
+	"info":"Platformノード",
+	"customfuncfile":"platform.lua",
+    "input": [
+	],
+	"output": [
+		{"name": "platform",  "type": "string" },
+		{"name": "dllextension",  "type": "string" },
+		{"name": "endian",  "type": "string" }
+	]
+}
