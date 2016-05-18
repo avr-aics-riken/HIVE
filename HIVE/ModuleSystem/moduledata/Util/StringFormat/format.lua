@@ -13,8 +13,8 @@ end
 function StringFormat:Do()
     self:UpdateValue()
     local v = self.value
-    print (v.input)
-    print (v.format)
+    --print (v.input)
+    --print (v.format)
 	local fmt = v.format
 	local inputlist = {}
 	local cnt = 1
@@ -40,6 +40,6 @@ function StringFormat:Do()
 end
 
 function StringFormat:String()
-    print(self.outstr)
+    --print(self.outstr)
     return self.outstr
 end

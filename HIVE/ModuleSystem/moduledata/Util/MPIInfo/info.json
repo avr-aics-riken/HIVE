@@ -1,7 +1,7 @@
 {
-	"name": "MPI",
-	"funcname": "MPI",
-	"info":"MPIノード",
+	"name": "MPIInfo",
+	"funcname": "MPIInfo",
+	"info":"MPIInfoノード",
 	"customfuncfile":"mpi.lua",
     "input": [
 		{"name": "parallelrendering", "type": "bool", "value": false}

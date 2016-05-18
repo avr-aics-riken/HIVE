@@ -142,6 +142,7 @@ export default class ItemArray extends React.Component {
 			} else if (hole.type === 'string' || hole.type === 'float') {
 				/*
 				return (<ItemTextInput
+							changeFunc={this.props.changeArrayTextFunc(key)}
 							initialParam={holes}
 							key={id}
 							bottom={bottom}/>);

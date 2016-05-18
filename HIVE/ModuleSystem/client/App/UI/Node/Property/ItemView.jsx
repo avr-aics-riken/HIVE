@@ -40,6 +40,7 @@ export default class ItemView extends React.Component {
 		this.updateHandle = null;
 		this.isShowPanel = this.isShowPanel.bind(this);
 		this.changeFunc = this.changeFunc.bind(this);
+		this.changeArrayTextFunc = this.changeArrayTextFunc.bind(this);
 		this.changeVecFunc = this.changeVecFunc.bind(this);
 		this.changeLabelFunc = this.changeLabelFunc.bind(this);
 		this.onLabelChanged = this.onLabelChanged.bind(this);
@@ -161,6 +162,26 @@ export default class ItemView extends React.Component {
 				varname : hole.nodeVarname,
 				input : input
 			});
+		}
+	}
+	
+	// TODO
+	changeArrayTextFunc(hole) {
+		return (key) => {
+			return (value) => {
+				let input = {};
+				console.log(hole);
+				if (!hole.hasOwnProperty('array')) {
+					return;
+				}
+				input['array'] = JSON.parse(JSON.stringify(hole.array));
+				input.array[key] = JSON.parse(JSON.stringify(value));
+				console.log(input);
+				this.props.action.changeNodeInput({
+					varname : hole.nodeVarname,
+					input : input
+				});
+			}
 		}
 	}
 
@@ -316,6 +337,7 @@ export default class ItemView extends React.Component {
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
 							changeLengthFunc={this.changeLengthFunc.bind(this)}
+							changeArrayTextFunc={this.changeArrayTextFunc(hole)}
                             initialParam={hole} key={id}
                             top={topRow}
                             bottom={bottom} />);
