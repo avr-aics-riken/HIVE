@@ -5,7 +5,8 @@
 	"customfuncfile":"saveimage.lua",
     "input": [
 		{"name": "filepath",  "type": "string", "value": "", "meta": "filebrowser"},
-        {"name": "image",  "type": "BufferImageData"}
+        {"name": "image",  "type": "BufferImageData"},
+		{"name": "only_export",  "type": "bool", "value": true }
 	],
 	"output": [
 	]

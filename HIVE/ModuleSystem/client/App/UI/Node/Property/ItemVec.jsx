@@ -11,7 +11,7 @@ export default class ItemVec extends React.Component {
 
 		this.state = {
 			values : JSON.parse(JSON.stringify(this.props.initialParam.value)),
-			onFrame : this.props.store.hasCurrentKeyFrame(this.props.initialParam)
+			onFrame : this.props.hasOwnProperty('store') ? this.props.store.hasCurrentKeyFrame(this.props.initialParam) : false
 		};
 		this.currentEdit = {
 			index : -1,
@@ -53,11 +53,15 @@ export default class ItemVec extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		if (this.props.hasOwnProperty('store')) {
+			this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		}
 	}
 
 	componentWillUnmount() {
-		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		if (this.props.hasOwnProperty('store')) {
+			this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		}
 	}
 
 	styles() {

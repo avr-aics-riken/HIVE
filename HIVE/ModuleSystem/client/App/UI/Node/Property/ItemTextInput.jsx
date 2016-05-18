@@ -10,7 +10,7 @@ export default class ItemTextInput extends React.Component {
 		super(props);
 		this.state = {
 			value : this.props.initialParam.value,
-			onFrame : this.props.store.hasCurrentKeyFrame(this.props.initialParam)
+			onFrame : this.props.hasOwnProperty('store') ? this.props.store.hasCurrentKeyFrame(this.props.initialParam) : false
 		};
 		this.currentEdit = {
 			value : null
@@ -41,11 +41,15 @@ export default class ItemTextInput extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		if (this.props.hasOwnProperty('store')) {
+			this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		}
 	}
 
 	componentWillUnmount() {
-		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		if (this.props.hasOwnProperty('store')) {
+			this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		}
 	}
 
 	styles() {
