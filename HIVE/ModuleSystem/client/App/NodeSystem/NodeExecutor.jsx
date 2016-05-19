@@ -65,8 +65,19 @@ export default class NodeExecutor extends EventEmitter {
         this.nodeGraph = {};
         this.nodeQueue = [];
 		this.updateGraphRecursive = this.updateGraphRecursive.bind(this);
+        this.interactiveMode = true;
+
+        this.eventNodeInputChanged = this.eventNodeInputChanged.bind(this);
+        this.eventNodePropertyChanged = this.eventNodePropertyChanged.bind(this);
+        this.eventNodeAdded = this.eventNodeAdded.bind(this);
+        this.eventNodeDeleted = this.eventNodeDeleted.bind(this);
+        this.eventPlugAdded = this.eventPlugAdded.bind(this);
+        this.eventPlugDeleted = this.eventPlugDeleted.bind(this);
     }
 
+    setInteractiveMode(interactiveMode) {
+        this.interactiveMode = interactiveMode; 
+    }
 	updateGraphRecursive(root) {
 		let ng = this.nodeGraph;
 		const nodes = root.nodes;
@@ -110,7 +121,7 @@ export default class NodeExecutor extends EventEmitter {
 		this.updateGraphRecursive(data);
     }
 
-    executeNode() {
+    executeNode(noReturn) {
         let script = 'local executedNode = {}\n';
         this.nodeQueue.forEach((nd) => {
             let inputUpdate = false;
@@ -143,7 +154,9 @@ export default class NodeExecutor extends EventEmitter {
             }
         });
         script += "collectgarbage('collect')\n";
-        script += "\nreturn {doState=executedNode}\n";
+        if (!noReturn) {
+            script += "\nreturn {doState=executedNode}\n";
+        }
         return script;
     }
 
@@ -166,11 +179,11 @@ export default class NodeExecutor extends EventEmitter {
     }
 
 
-    doNodes() {
+    doNodes(noReturn) {
         this.updateGraph();
         initFrags(this.nodeGraph);
         this.nodeQueue = topologicalSort(this.nodeGraph);
-        return this.executeNode();
+        return this.executeNode(noReturn);
     }
 
     getExecutionOrder() {
@@ -203,89 +216,78 @@ export default class NodeExecutor extends EventEmitter {
         return order;
     }
 
+    eventExecute() {
+        if (this.interactiveMode) {            
+            let script = this.doNodes();
+            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
+        }
+    }
 
+    /* ------- emitter  event functions ------------- */    
+    eventNodeInputChanged (err, data) {
+        console.log('NS catched:NODE_INPUT_CHANGED', err, data);
+        let node = data;
+
+        this.eventExecute();        
+    }
+
+    eventNodePropertyChanged (err, data, prop) {
+        console.log('NS catched:NODE_INPUT_PROPERTY_CHANGED', err, data, prop);
+        let node = data;
+        let p = prop;
+
+        if (p.funcinput !== false) {
+            this.nodeGraph[node.varname].needexecute = true;
+        }
+
+        // !! don't execute here.
+        //// this.eventExecute();
+    }
+
+    eventNodeAdded(err, data) {
+        // create new / delete instance
+        console.log('NS catched:NODE_ADDED', err, data);
+
+        this.eventExecute();        
+    }
+    eventNodeDeleted(err, data) {
+        console.log('NS catched:NODE_DELETED', err, data);
+
+        this.eventExecute();        
+    }
+    eventPlugAdded(err, data) {
+        console.log('NS catched:PLUG_ADDED', err, data);
+
+        const plug = data;
+        this.nodeGraph[plug.input.nodeVarname].needexecute = true;
+
+        this.eventExecute();        
+    }
+    eventPlugDeleted(err, data) {
+        console.log('NS catched:PLUG_DELETED', err, data);
+
+        const plug = data;
+        this.nodeGraph[plug.input.nodeVarname].needexecute = true;
+
+        this.eventExecute();        
+    }
+    /*-----------------------*/
+    
     initEmitter(store) {
-
-        store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
-            console.log('NS catched:NODE_INPUT_CHANGED', err, data);
-            let node = data;
-
-            // set to instance
-            //console.log('CHANGENODE->', node);
-            //let script = "print('NODE INPUT CHANGED!!', 'inst='," + node.varname + ")\n";
-
-            //script += this.nodeSerializer.updateNodeInput(node);
-            //script += this.doNodes();
-
-//            this.nodeGraph[node.varname].needexecute = true;
-
-            let script = this.doNodes();
-            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
-        });
-
-        store.on(Constants.NODE_INPUT_PROPERTY_CHANGED, (err, data, prop) => {
-            console.log('NS catched:NODE_INPUT_PROPERTY_CHANGED', err, data, prop);
-            let node = data;
-            let p = prop;
-
-            if (p.funcinput !== false) {
-                this.nodeGraph[node.varname].needexecute = true;
-            }
-
-            //let script = this.doNodes();
-            //this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
-        });
-
-        /*
-        store.on(Constants.NODE_CHANGED, (err, data) => {
-            // not need now.
-        });
-        store.on(Constants.PLUG_CHANGED, (err, data) => {
-            // not need now.
-        });
-        store.on(Constants.NODE_COUNT_CHANGED, (err, data) => {
-            console.log('NS catched:NODE_COUNT_CHANGED', err, data);
-            // not need now.
-        });
-        store.on(Constants.NODE_INPUT_CHANGED, (err, data) => {
-            // TODO
-        });
-        */
-        
-
-        store.on(Constants.NODE_ADDED, (err, data) => {
-            // create new / delete instance
-            console.log('NS catched:NODE_ADDED', err, data);
-
-            const node = data;
-            let script = this.doNodes();
-            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
-        });
-        store.on(Constants.NODE_DELETED, (err, data) => {
-            console.log('NS catched:NODE_DELETED', err, data);
-
-            let node = data;
-            let script = this.doNodes();
-            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
-        });
-        store.on(Constants.PLUG_ADDED, (err, data) => {
-            console.log('NS catched:PLUG_ADDED', err, data);
-
-            const plug = data;
-            this.nodeGraph[plug.input.nodeVarname].needexecute = true;
-
-            const script = this.doNodes();
-            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
-        });
-        store.on(Constants.PLUG_DELETED, (err, data) => {
-            console.log('NS catched:PLUG_DELETED', err, data);
-
-            const plug = data;
-            this.nodeGraph[plug.input.nodeVarname].needexecute = true;
-
-            const script = this.doNodes();
-            this.emit(NodeExecutor.SCRIPT_SERIALIZED, script);
-        });
+        store.on(Constants.NODE_INPUT_CHANGED, this.eventNodeInputChanged);
+        store.on(Constants.NODE_INPUT_PROPERTY_CHANGED, this.eventNodePropertyChanged);
+        store.on(Constants.NODE_ADDED, this.eventNodeAdded);
+        store.on(Constants.NODE_DELETED, this.eventNodeDeleted);
+        store.on(Constants.PLUG_ADDED, this.eventPlugAdded);
+        store.on(Constants.PLUG_DELETED, this.eventPlugDeleted);
+    }
+    offEmitter(store) {
+        store.off(Constants.NODE_INPUT_CHANGED, this.eventNodeInputChanged);
+        store.off(Constants.NODE_INPUT_PROPERTY_CHANGED, this.eventNodePropertyChanged);
+        store.off(Constants.NODE_ADDED, this.eventNodeAdded);
+        store.off(Constants.NODE_DELETED, this.eventNodeDeleted);
+        store.off(Constants.PLUG_ADDED, this.eventPlugAdded);
+        store.off(Constants.PLUG_DELETED, this.eventPlugDeleted);
     }
 }
 NodeExecutor.SCRIPT_SERIALIZED = "nodesystem_script_serialized";

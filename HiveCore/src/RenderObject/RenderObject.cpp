@@ -52,14 +52,14 @@ public:
     {
         return m_mat;
     }
-    
+
     /// 変換行列を計算する
     const VX::Math::matrix calcMatrix() const {
         return VX::Math::Translation(m_trans[0], m_trans[1], m_trans[2])
          * VX::Math::RotationYawPitchRoll(m_rotat[1], m_rotat[0], m_rotat[2])
          * VX::Math::Scaling(m_scale[0], m_scale[1], m_scale[2]); // Y,X,Z
     }
-    
+
     typedef std::map<std::string, VX::Math::vec4> Vec4Map;
     typedef std::map<std::string, VX::Math::vec3> Vec3Map;
     typedef std::map<std::string, VX::Math::vec2> Vec2Map;
@@ -97,7 +97,7 @@ public:
         m_mat = calcMatrix();
         return true;
     }
-    
+
     /**
      * 回転量の設定
      * @param x x(radian)
@@ -111,7 +111,7 @@ public:
         m_mat = calcMatrix();
         return true;
     }
-    
+
     /**
      * スケールの設定
      * @param x x
@@ -149,7 +149,7 @@ public:
         m_vec4s[name] = VX::Math::vec4(x,y,z,w);
         return true;
     }
-    
+
     /**
      * Unifrom値の設定
      * @param name Uniform名
@@ -161,7 +161,7 @@ public:
         m_vec3s[name] = VX::Math::vec3(x,y,z);
         return true;
     }
-    
+
     /**
      * Unifrom値の設定
      * @param name Uniform名
@@ -172,7 +172,7 @@ public:
         m_vec2s[name] = VX::Math::vec2(x,y);
         return true;
     }
-    
+
     /**
      * Unifrom値の設定
      * @param name Uniform名
@@ -182,13 +182,14 @@ public:
         m_floats[name] = x;
         return true;
     }
-    
+
     /**
      * テクスチャの設定
      * @param name Uniform名
      * @param img イメージデータ
      */
     bool SetTexture(const std::string& name, const BufferImageData* img) {
+		if (!img) { return false; }
         if (img->Bytes() <= 0) {
             return false;
         }
@@ -246,7 +247,7 @@ public:
         }
         return false;
     }
-    
+
     /**
      * 拡張バッファの取得
      */
@@ -254,8 +255,8 @@ public:
     {
         return m_extrabuffers;
     }
-    
-    
+
+
     /// コンストラクタ
     Impl(MODE_TYPE t) : m_type(t)
     {
@@ -264,10 +265,10 @@ public:
         m_scale =  VX::Math::vec3(1, 1, 1);
         m_mat   =  VX::Math::Identity();
     };
-    
+
     /// デストラクタ
     ~Impl() {};
-    
+
 private:
     // Transform↲
     VX::Math::vec3 m_trans;
@@ -284,14 +285,14 @@ private:
     std::map<std::string, RefPtr<const BufferImageData> > m_imgs;
     std::map<std::string, bool>           m_filteringParams;
     std::map<std::string, std::vector<bool> >  m_wrappingParams;
-    
+
     //mode type
     RenderObject::MODE_TYPE m_type;
-    
+
 
     // Extra buffer
     ExtraBufferMap m_extrabuffers;
-    
+
 };
 
 /// コンストラクタ
@@ -431,5 +432,3 @@ const RenderObject::ExtraBufferMap& RenderObject::GetExtraBuffers() const
 {
     return m_imp->GetExtraBuffers();
 }
-
-

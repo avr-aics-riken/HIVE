@@ -47,3 +47,8 @@ add_subdirectory(HiveCore)
 add_subdirectory(lib)
 add_subdirectory(hrender)
 add_subdirectory(HIVE)
+
+# Extract Electron
+execute_process(
+	COMMAND cmake -E tar xvf ${CMAKE_SOURCE_DIR}/third_party/electron.zip
+	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)

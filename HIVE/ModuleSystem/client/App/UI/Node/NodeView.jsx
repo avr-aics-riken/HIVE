@@ -44,6 +44,9 @@ export default class NodeView extends React.Component {
 		this.moveNode = this.moveNode.bind(this);
 		this.connectToGlobalOut = this.connectToGlobalOut.bind(this);
 		this.connectToGlobalIn = this.connectToGlobalIn.bind(this);
+		this.onKeyDown = this.onKeyDown.bind(this);
+		this.onKeyUp = this.onKeyUp.bind(this);
+		this.isShiftDown = false;
 	}
 
 	moveNode(err, data) {
@@ -101,7 +104,7 @@ export default class NodeView extends React.Component {
 		this.rect = ev.currentTarget.getBoundingClientRect();
 		const px = ev.clientX - this.rect.left;
 		const py = ev.clientY - this.rect.top;
-		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown)) {
+		if (this.isMiddleDown || (this.isLeftDown && this.isRightDown) || (this.isLeftDown && this.isShiftDown)) {
             const dx = (px - this.pos.x) / this.state.zoom;
             const dy = (py - this.pos.y) / this.state.zoom;
 			this.setState({
@@ -229,6 +232,7 @@ export default class NodeView extends React.Component {
 		this.props.store.on(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.on(Core.Constants.DELETE_CALLED, this.onDelete);
 		this.props.store.on(Core.Constants.NODE_ALIGN_CALLED, this.onNodeAlign);
+		window.addEventListener('keydown', this.onKeyDown);
     }
 
     componentWillUnmount(){
@@ -241,6 +245,7 @@ export default class NodeView extends React.Component {
 		this.props.store.off(Core.Constants.COPY_CALLED, this.onCopy);
 		this.props.store.off(Core.Constants.DELETE_CALLED, this.onDelete);
 		this.props.store.off(Core.Constants.NODE_ALIGN_CALLED, this.onNodeAlign);
+		window.addEventListener('keyup', this.onKeyUp);
     }
 
 	// メニューまたはショートカットで削除が呼ばれた
@@ -410,7 +415,7 @@ export default class NodeView extends React.Component {
 	onNaviClick(varname) {
 		return (ev) => {
 			console.log("onNaviClick")
-			this.props.action.digGroup(varname);
+			this.props.action.changeGroup(varname);
 		}
 	}
 
@@ -443,6 +448,14 @@ export default class NodeView extends React.Component {
 					</div>)
 		});
 		return navi;
+	}
+
+	onKeyDown(ev) {
+		this.isShiftDown = ev.shiftKey;
+	}
+
+	onKeyUp(ev) {
+		this.isShiftDown = false;
 	}
 
 	render() {

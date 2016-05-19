@@ -73,7 +73,8 @@ class TransferFunction extends React.Component {
         this.alphabtnClick       = this.alphabtnClick.bind(this);
         this.allbtnClick         = this.allbtnClick.bind(this);
         this.allBtnOff           = this.allBtnOff.bind(this);
-        this.numberInputChange   = this.numberInputChange.bind(this);
+        this.minInputChange   = this.minInputChange.bind(this);
+        this.maxInputChange   = this.maxInputChange.bind(this);
         this.nodeInputChanged    = this.nodeInputChanged.bind(this);
         this.componentDidMount   = this.componentDidMount.bind(this);
         this.componentWillUnmount= this.componentWillUnmount.bind(this);
@@ -183,20 +184,83 @@ class TransferFunction extends React.Component {
             allbtnColor:   this.disableColor
         });
     }
-    numberInputChange(eve){
-        if(!isNaN(parseFloat(this.minInput.value)) || !isNaN(parseFloat(this.maxInput.value))){
+    
+	onMinKeyPress(ev) {
+		if (ev.key === 'Enter') {
+			this.submitMin.bind(this)(ev);
+		}
+	}
+
+	onMinBlur(ev) {
+		this.submitMin.bind(this)(ev);
+		this.currentEdit = {
+			value : null
+		};
+	}
+
+	onMinFocus(ev) {
+		ev.target.style.border = "2px solid darkgreen";
+	}
+
+	onMaxKeyPress(ev) {
+		if (ev.key === 'Enter') {
+			this.submitMax.bind(this)(ev);
+		}
+	}
+
+	onMaxBlur(ev) {
+		this.submitMax.bind(this)(ev);
+		this.currentEdit = {
+			value : null
+		};
+	}
+
+	onMaxFocus(ev) {
+		ev.target.style.border = "2px solid darkgreen";
+	}
+    
+    submitMin(ev) {
+        if(!isNaN(parseFloat(this.state.valMin))){
             const varname = this.node.varname;
-            const minval = parseFloat(this.minInput.value);
-            const maxval = parseFloat(this.maxInput.value);
+            const minval = parseFloat(this.state.valMin);
             this.action.changeNodeInput({
                 varname : varname,
                 input : {
-                    "minval": minval,
+                    "minval": minval
+                }
+            });
+        }
+		ev.target.style.border = "none";
+		ev.target.blur();
+    }
+    
+    submitMax(ev) {
+        if(!isNaN(parseFloat(this.state.valMax))){
+            const varname = this.node.varname;
+            const maxval = parseFloat(this.state.valMax);
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
                     "maxval": maxval
                 }
             });
         }
+		ev.target.style.border = "none";
+		ev.target.blur();
     }
+
+    minInputChange(eve){
+        this.setState({
+            valMin : eve.target.value
+        });
+    }
+    
+    maxInputChange(eve){
+        this.setState({
+            valMax : eve.target.value
+        });
+    }
+    
     nodeInputChanged(err, data){
         const varname = this.node.varname;
         if (varname !== data.varname){return;}
@@ -573,11 +637,17 @@ class TransferFunction extends React.Component {
                 <div ref="minmaxframe" style={styles.minmaxframe}>
                     <div style={styles.numberArea}>
                         <div ref="minText" className="KCaption" style={styles.minmaxText}>Min</div>
-                        <input ref="minInput" type="number" step={0.00001} value={this.state.valMin} onChange={this.numberInputChange} style={styles.minmaxInput} />
+                        <input ref="minInput" type="number" step={0.00001} value={this.state.valMin} onChange={this.minInputChange} style={styles.minmaxInput}
+                                onKeyPress={this.onMinKeyPress.bind(this)}
+                                onBlur={this.onMinBlur.bind(this)}
+                                onFocus={this.onMinFocus.bind(this)} />
                     </div>
                     <div style={styles.numberArea}>
                         <div ref="maxText" className="KCaption" style={styles.minmaxText}>Max</div>
-                        <input ref="maxInput" type="number" step={0.00001} value={this.state.valMax} onChange={this.numberInputChange} style={styles.minmaxInput} />
+                        <input ref="maxInput" type="number" step={0.00001} value={this.state.valMax} onChange={this.maxInputChange} style={styles.minmaxInput}
+                                onKeyPress={this.onMaxKeyPress.bind(this)}
+                                onBlur={this.onMaxBlur.bind(this)}
+                                onFocus={this.onMaxFocus.bind(this)} />
                     </div>
                 </div>
             </div>

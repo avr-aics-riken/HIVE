@@ -142,8 +142,8 @@ end
 local function GetVolumeAnalyzerData(name, min, max)
 	local model = HIVE_ObjectTable[name]
 	if model == nil then return 'Not found Model:' .. name end
-	local analyzer = VolumeAnalyzer()
-	analyzer:Execute(model)
+	local analyzer = require('Analyzer').VolumeAnalyzer()
+	analyzer:Execute(model:GetVolume())
 	local histgram;
 	local volMin = analyzer:MinX()
 	local volMax = analyzer:MaxX()

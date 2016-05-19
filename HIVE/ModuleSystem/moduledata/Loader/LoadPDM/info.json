@@ -5,9 +5,9 @@
 	"customfuncfile":"pdmloader.lua",
 	"input": [
 		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
-		{"name": "timestep", "type": "float", "value": "-1"},
+		{"name": "timestep", "type": "float", "value": -1},
 		{"name": "container", "type": "string", "value": "Coordinate"},
-		{"name": "radius", "type": "string", "value": "1.0"}
+		{"name": "radius", "type": "float", "value": 1.0}
 	],
 	"output": [
 		{"name": "PointData", "type": "BufferPointData"}

@@ -1,6 +1,7 @@
-//
-// Simple wrapper class for PMlib
-//
+/**
+ * @file Perf.h
+ * Simple wrapper class for PMlib
+ */
 #ifndef HIVE_CORE_PROF_H__
 #define HIVE_CORE_PROF_H__
 

@@ -126,8 +126,9 @@ export default class MenuNodeCreate extends React.Component {
                     borderBottom: "1px solid gray",
                     color: "white",
                     fontSize: "small",
-                    margin: "0px",
+                    margin: "0px 0px 0px 2px",
                     padding: "5px",
+                    width: (this.props.floating) ? "236px" : "251px",
                     overflow: "hidden"
                 },
                 suggestionFocused: {

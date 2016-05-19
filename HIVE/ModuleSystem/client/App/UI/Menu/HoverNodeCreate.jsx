@@ -36,7 +36,8 @@ export default class HoverNodeCreate extends React.Component {
                 top: this.top + "px",
                 left: this.left + "px",
                 zIndex: "9999",
-                float: "left"
+                float: "left",
+                overflow: "auto"
             }
         };
     }

@@ -1,0 +1,13 @@
+{
+	"name": "Vec2ToFloat",
+	"funcname": "Vec2ToFloat",
+	"info":"vec2からfloatをつくるノード",
+	"customfuncfile":"vec2tof.lua",
+    "input": [
+		{"name": "vec2",  "type": "vec2", "value": [0.0, 0.0] }
+	],
+	"output": [
+		{"name": "value0",  "type": "float"},
+		{"name": "value1",  "type": "float"}
+	]
+}

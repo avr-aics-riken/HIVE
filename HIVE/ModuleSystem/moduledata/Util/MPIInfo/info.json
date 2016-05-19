@@ -1,0 +1,14 @@
+{
+	"name": "MPIInfo",
+	"funcname": "MPIInfo",
+	"info":"MPIInfoノード",
+	"customfuncfile":"mpi.lua",
+    "input": [
+		{"name": "parallelrendering", "type": "bool", "value": false}
+	],
+	"output": [
+		{"name": "mpimode",  "type": "bool" },
+		{"name": "mpirank",  "type": "float" },
+		{"name": "mpisize",  "type": "float" }
+	]
+}

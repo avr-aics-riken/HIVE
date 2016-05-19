@@ -1,0 +1,11 @@
+{
+	"name": "Print",
+	"funcname": "Print",
+	"info":"Printノード",
+	"customfuncfile":"print.lua",
+    "input": [
+		{"name": "value",  "type": "string", "value": ""}
+	],
+	"output": [
+	]
+}

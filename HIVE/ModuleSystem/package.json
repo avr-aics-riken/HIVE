@@ -22,6 +22,7 @@
     "react-split-pane": "*",
     "react-autosuggest": "*",
     "react-color": "1.3.7",
+    "react-vendor-prefix":"*",
     "rc-menu": "*",
     "react-slider": "*"
   },

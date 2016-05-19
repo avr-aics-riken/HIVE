@@ -36,7 +36,9 @@ module.exports = {
 	SCRIPT_STATUS_CHANGED : "script_status_changed",
 	NEED_REFRESH_PLUG_POSITION : "need_refresh_plug_position",
 	OPEN_FILE_BROWSER : "open_file_browser",
-	OK_FILE_BROWSER : "ok_file_browser"
+	OK_FILE_BROWSER : "ok_file_browser",
+	OK_LABEL_DIALOG : "ok_label_dialog",
+	GROUP_CHANGED : "group_changed"
 };
 
 // color 定数化したい気もする

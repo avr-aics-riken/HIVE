@@ -1,14 +1,14 @@
 /*jslint devel:true, node: true, nomen: true */
 /*global require, Error, process*/
 
-var	HRENDER = __dirname + '/../../build/bin/hrender',
-//var	HRENDER = __dirname + '/../hrender',
+//var	HRENDER = __dirname + '/../../build/bin/hrender',
+var	HRENDER = __dirname + '/../hrender',
     HRENDER_CWD = __dirname +'/lua/',
 	HRENDER_ARG = [HRENDER_CWD + 'hrender_server.lua'],
 	HRENDER_THUMBNAIL_ARG = [__dirname + '/lua/hrender_thumbnail.lua'],
 	HTTP_ROOT_DIR = __dirname + '/client/',
 	metabin = require(__dirname + '/lib/metabinary'),
-	port = process.argv.length > 2 ? process.argv[2] : 8080,
+	port = 8080,
 	http = require('http'),
 	path = require('path'),
     babel = require('babel-core'),
@@ -64,6 +64,23 @@ var	HRENDER = __dirname + '/../../build/bin/hrender',
 							   autoAcceptConnections : false}),
 	ws_connections = {},
 	id_counter = 0;
+
+if (process.argv.length === 3) {
+	port = process.argv[2];
+} else if (process.argv.length > 3) {
+	var np = 1;
+	for (i=2; i < process.argv.length; i = i + 2) {
+		console.log(process.argv[i])
+		if (process.argv[i] == '-p') {
+			port = process.argv[i+1];
+		} else if (process.argv[i] == '-np') {
+			console.log('MPI mode');
+			np = process.argv[i+1];
+	    	HRENDER_ARG = ['-np', np, HRENDER, HRENDER_ARG[0]],
+ 		   	HRENDER = 'mpirun';
+		}
+	}
+}
 
 //-----------------------------------------------------
 function is_array(value) {
@@ -424,15 +441,15 @@ ws.on('request', function (request) {
 					console.log('ARG=[' + a + '] = ' + args[a]);
 				}
 				clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
-                    return function (data) {
-                        clientNode.send(JSON.stringify({
-                            JSONRPC: "2.0",
-                            method: "rendererLog",
-                            param: JSON.stringify(data.toString()),
-                            id: 0
-                        }));
-                    };
-                })(clientNode));
+					return function (data) {
+						clientNode.send(JSON.stringify({
+							JSONRPC: "2.0",
+							method: "rendererLog",
+							param: JSON.stringify(data.toString()),
+							id: 0
+						}));
+					};
+				})(clientNode));
 			}
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
@@ -623,6 +640,7 @@ function startupHRenderServer(optarray, outcallback) {
 	spawnProcesses.push(process);
 	return process;
 }
+
 function stopHRenderServer() {
 	var p;
 	for (p in spawnProcesses) {

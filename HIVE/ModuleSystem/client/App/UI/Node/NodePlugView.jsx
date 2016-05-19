@@ -87,6 +87,7 @@ export default class NodePlugView extends React.Component {
 	}
 
 	hasSameGlobalInout(isInput, inout) {
+		if (inout.type === "all") { return true; }
 		if (isInput) {
 			let inputs = this.props.store.getInput();
 			for (let i = 0; i < inputs.length; i = i + 1) {
@@ -117,32 +118,60 @@ export default class NodePlugView extends React.Component {
 						if (data[0].isInput) {
 							if (!this.hasSameGlobalInout(false, output.data)) {
 								setTimeout(() => {
-									this.props.action.publishOutput(output.data);
+									this.props.action.openLabelDialog(output.data.name, (err, value) => {
+										if (!err) {
+											output.data.label = value;
+											setTimeout(() => {
+												this.props.action.publishOutput(output.data);
+											}, 0);
+											console.log("外部に公開する端子へ接続された", data);
+										}
+									});
 								}, 0);
-								console.log("外部に公開する端子へ接続された", data);
 							}
 						} else {
 							if (!this.hasSameGlobalInout(true, input.data)) {
 								setTimeout(() => {
-									this.props.action.publishInput(input.data);
+									this.props.action.openLabelDialog(input.data.name, (err, value) => {
+										if (!err) {
+											input.data.label = value;
+											setTimeout(() => {
+												this.props.action.publishInput(input.data);
+											}, 0);
+											console.log("外部に公開する端子へ接続された", data);
+										}
+									});
 								}, 0);
-								console.log("外部に公開する端子へ接続された", data);
 							}
 						}
 					} else if (data[1].data.type === "all") {
 						if (data[1].isInput) {
 							if (!this.hasSameGlobalInout(false, output.data)) {
 								setTimeout(() => {
-									this.props.action.publishOutput(output.data);
+									this.props.action.openLabelDialog(output.data.name, (err, value) => {
+										if (!err) {
+											output.data.label = value;
+											setTimeout(() => {
+												this.props.action.publishOutput(output.data);
+											}, 0);
+											console.log("外部に公開する端子へ接続された", data);
+										}
+									});
 								}, 0);
-								console.log("外部に公開する端子へ接続された", data);
 							}
 						} else {
 							if (!this.hasSameGlobalInout(true, input.data)) {
 								setTimeout(() => {
-									this.props.action.publishInput(input.data);
+									this.props.action.openLabelDialog(input.data.name, (err, value) => {
+										if (!err) {
+											input.data.label = value;
+											setTimeout(() => {
+												this.props.action.publishInput(input.data);
+											}, 0);
+											console.log("外部に公開する端子へ接続された", data);
+										}
+									});
 								}, 0);
-								console.log("外部に公開する端子へ接続された", data);
 							}
 						}
 					}

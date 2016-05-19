@@ -1,5 +1,5 @@
 /**
- * @file VolumeToVector_Lua.h
+ * @file VolumeQuantizer_Lua.h
  * VolumeToVector Luaラッパー
  */
 #ifndef _VOLUMETOVECTOR_LUA_H_

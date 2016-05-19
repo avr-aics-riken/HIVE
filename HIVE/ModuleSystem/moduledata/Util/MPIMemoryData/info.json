@@ -1,0 +1,12 @@
+{
+	"name": "MPIMemoryData",
+	"funcname": "MPIMemoryData",
+	"info":"MPIMemoryDataノード",
+	"customfuncfile":"memorydata.lua",
+    "input": [
+		{"name": "dataname", "type": "string", "value": "" }
+	],
+	"output": [
+		{"name": "data", "type" : "string" }
+	]
+}

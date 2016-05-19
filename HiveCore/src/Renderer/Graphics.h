@@ -1,5 +1,5 @@
-/*
- * Graphics.h
+/**
+ * @file Graphics.h
  * 
  * V-Xgen Graphics library
  * coded by Kentaro Oku

@@ -45,7 +45,7 @@ function LoadCDM:GlobalOffset()
     return globalOffset
 end
 
-function LoadCDM:GlobalOffset()
+function LoadCDM:GlobalRegion()
     local globalRegion = {self.loader:GlobalRegionX(), self.loader:GlobalRegionY(), self.loader:GlobalRegionZ()}
     return globalRegion
 end

@@ -102,6 +102,9 @@ export default class ItemArray extends React.Component {
 	submit(ev) {
 		if (this.currentEdit.value) {
 			this.props.changeLengthFunc(this.props.initialParam.name, this.currentEdit.value);
+			this.setState({
+				value : this.currentEdit.value
+			});
 		}
 		ev.target.style.border = "none";
 		ev.target.blur();
@@ -131,17 +134,27 @@ export default class ItemArray extends React.Component {
 			let id = String(this.props.id + "_out_" + key);
             let bottom = this.props.bottom && (this.props.initialParam.array.length - 1 === parseInt(key, 10));
             let holes = {name: "[" + key + "]", type: hole.type, isArray: true};
+			if (hole.hasOwnProperty('label')) {
+				holes.label = hole.label;
+			}
 			if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec initialParam={holes} key={id} bottom={bottom}/>);
 			} else if (hole.type === 'string' || hole.type === 'float') {
-				return (<ItemTextInput initialParam={holes} key={id} bottom={bottom}/>);
+				/*
+				return (<ItemTextInput
+							changeFunc={this.props.changeArrayTextFunc(key)}
+							initialParam={holes}
+							key={id}
+							bottom={bottom}/>);
+							*/
+				return (<ItemText initialParam={holes} key={id} bottom={bottom}/>);
 			} else {
 				return (<ItemText initialParam={holes} key={id} bottom={bottom}/>);
 			}
 		});
 		return contents;
 	}
-
+	
 	render () {
 		const styles = this.styles.bind(this)();
 		return (<div>

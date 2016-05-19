@@ -110,7 +110,7 @@ export default class MenuTop extends React.Component {
 		if (this.isCtrlDown && ev.keyCode === 48) { // "0"
 			this.windowToggleConsoleOutput();
 		}
-		if (ev.keyCode === 76) { // "l(L)"
+		if (this.isCtrlDown && ev.keyCode === 76) { // "l(L)"
 			// ノードの整列
 			this.editNodeAlign();
 		}

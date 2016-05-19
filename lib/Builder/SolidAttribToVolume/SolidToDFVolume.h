@@ -1,5 +1,5 @@
 /**
- * @file SolidAttribToVolume.h
+ * @file SolidToDFVolume.h
  * Solid データから SignedDistanceField へ変換するモジュール
  */
 

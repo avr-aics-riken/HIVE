@@ -11,7 +11,7 @@ export default class ItemVec extends React.Component {
 
 		this.state = {
 			values : JSON.parse(JSON.stringify(this.props.initialParam.value)),
-			onFrame : this.props.store.hasCurrentKeyFrame(this.props.initialParam)
+			onFrame : this.props.hasOwnProperty('store') ? this.props.store.hasCurrentKeyFrame(this.props.initialParam) : false
 		};
 		this.currentEdit = {
 			index : -1,
@@ -53,11 +53,15 @@ export default class ItemVec extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		if (this.props.hasOwnProperty('store')) {
+			this.props.store.on(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		}
 	}
 
 	componentWillUnmount() {
-		this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		if (this.props.hasOwnProperty('store')) {
+			this.props.store.off(Core.Constants.CURRENT_FRAME_APPLIED, this.frameApplied);
+		}
 	}
 
 	styles() {
@@ -211,23 +215,17 @@ export default class ItemVec extends React.Component {
 		return values;
 	}
 
-	onAddKey(ev) {
-		if (ev.button === 0) {
+	onChangeKey(ev) {
+		if (ev.button === 0 || ev.button === 2) {
 			var hole = this.props.initialParam;
 			hole.value = this.state.values;
-			this.props.changeKeyFunc(hole);
+			if (!this.state.onFrame === false) {
+				this.props.deleteKeyFunc(this.props.initialParam);
+			} else {
+				this.props.changeKeyFunc(hole);
+			}
 			this.setState({
-				onFrame : true
-			});
-		}
-	}
-
-	onDeleteKey(ev) {
-		if (ev.button === 2) {
-			console.log("delete")
-			this.props.deleteKeyFunc(this.props.initialParam);
-			this.setState({
-				onFrame : false
+				onFrame : !this.state.onFrame
 			});
 		}
 	}
@@ -235,7 +233,11 @@ export default class ItemVec extends React.Component {
 	addKeyElem() {
 		const styles = this.styles.bind(this)();
 		if (this.props.initialParam.hasOwnProperty('anim') && !this.props.initialParam.anim) { return; }
-		return (<span style={styles.addkey} onMouseDown={this.onDeleteKey.bind(this)} onClick={this.onAddKey.bind(this)} />);
+		return (<span style={styles.addkey} onMouseDown={this.onChangeKey.bind(this)} />);
+	}
+
+	title() {
+		return this.props.initialParam.hasOwnProperty('label') ? this.props.initialParam.label : this.props.initialParam.name;
 	}
 
 	render () {
@@ -243,7 +245,7 @@ export default class ItemVec extends React.Component {
 		return (<div style={styles.view}>
 					<div style={styles.key}>
 						{this.addKeyElem.bind(this)()}
-						<span style={{marginLeft : "12px"}} title={this.props.initialParam.name}>{this.props.initialParam.name}</span>
+						<span style={{marginLeft : "12px"}} title={this.title.bind(this)()}>{this.title.bind(this)()}</span>
 					</div>
                     <div style={styles.value}>
                         <div style={styles.flex}>

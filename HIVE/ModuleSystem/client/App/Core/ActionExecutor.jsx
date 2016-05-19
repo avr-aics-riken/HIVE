@@ -64,7 +64,7 @@ export default class ActionExecuter {
 		this.makeGroup = this.makeGroup.bind(this);
 		this.unGroup = this.unGroup.bind(this);
 		this.addGroup = this.addGroup.bind(this);
-		this.digGroup = this.digGroup.bind(this);
+		this.changeGroup = this.changeGroup.bind(this);
 		this.findGroupPath = this.findGroupPath.bind(this);
 		this.publishOutput = this.publishOutput.bind(this);
 		this.publishInput = this.publishInput.bind(this);
@@ -85,6 +85,8 @@ export default class ActionExecuter {
 		this.createVarnameToNodeMap = this.createVarnameToNodeMap.bind(this);
 		this.openFilebrowser = this.openFilebrowser.bind(this);
 		this.okFileBrowser = this.okFileBrowser.bind(this);
+		this.openLabelDialog = this.openLabelDialog.bind(this);
+		this.okLabelDialog = this.okLabelDialog.bind(this);
 	}
 
     /**
@@ -313,15 +315,34 @@ export default class ActionExecuter {
 	exportSceneScript(payload) {
         if (payload.hasOwnProperty('varname')) {
             let varname = payload.varname;
-            let n;
+            let n, frm, minFrame, maxFrame;
             if (varname === "") { // ALL
-                //n = this.store.getRootNodes();
+								
+				this.store.nodeExecutor.offEmitter(this.store); // remove main event
+				
                 let nodeExe = new NodeSystem.NodeExecutor(this.store.data);
+				nodeExe.setInteractiveMode(false);
+				nodeExe.initEmitter(this.store); // set exporter event
                 let luasrc = "package.path = './?.lua;' .. package.path\n";
                 luasrc    += "local HiveBaseModule = require('HiveBaseModule')\n";
                 luasrc    += "local HIVE_ImageSaver = ImageSaver()\n";
-                luasrc = luasrc + nodeExe.doNodes();
+				luasrc    += "local HIVE_FRAMETIME=0\n";
+				luasrc    += "local HIVE_EXPORTMODE=true\n";				
+                luasrc = luasrc + nodeExe.doNodes(true);
                 //console.log('EXPORT>', luasrc);
+				let minmax = this.store.getFrameRange(); 
+				minFrame = minmax.min;				
+				maxFrame = minmax.max;
+				for (frm = minFrame; frm <= maxFrame; ++frm) {
+					this.changeFrame({frame:frm});
+					luasrc = luasrc + "HIVE_FRAMETIME=" + frm + "\n";
+					luasrc = luasrc + nodeExe.doNodes(true);
+				}
+				nodeExe.offEmitter(this.store); // remove exporter event
+				
+				this.store.nodeExecutor.initEmitter(this.store); // restore main event				
+				this.changeFrame({frame:minFrame}); // reset frame				
+					
           		var blob = new Blob([luasrc], {type: "text/plain"});
 	        	saveAs(blob, "export.lua");
             } else { //
@@ -926,9 +947,9 @@ export default class ActionExecuter {
 	}
 
 	/**
-	 * グループを移動する
+	 * グループを変更(移動）する
 	 */
-	digGroup(payload) {
+	changeGroup(payload) {
 		if (payload.hasOwnProperty('groupVarname')) {
 			let groupPath = this.findGroupPath(this.store.data, payload.groupVarname, []);
 			if (groupPath && groupPath.length > 0) {
@@ -936,6 +957,7 @@ export default class ActionExecuter {
 				this.store.data.nodePath = groupPath;
 				this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 				this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
+				this.store.emit(Constants.GROUP_CHANGED, null, payload.groupVarname);
 			}
 		}
 	}
@@ -1519,6 +1541,28 @@ export default class ActionExecuter {
 			this.store.emit(Constants.OK_FILE_BROWSER, null, payload.key, payload.value);
 		}
 	}
+
+	/**
+	 * ラベルダイアログを開く.
+	 * @param key 任意のキー. OK_LABEL_DIALOGイベントで返される
+	 */
+	openLabelDialog(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('callback')) {
+			this.store.emit(Constants.OPEN_LABEL_DIALOG, null, payload.key, payload.callback);
+		}
+	}
+
+	/**
+	 * ラベルダイアログがOKされた通知を送る.
+	 * @param key 任意のキー. openLabelDialogの引数のキー
+	 * @param value 選択されたパス
+	 */
+	okLabelDialog(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('value')) {
+			this.store.emit(Constants.OK_LABEL_DIALOG, null, payload.key, payload.value);
+		}
+	}
+
 }
 
 ActionExecuter.initialData = {

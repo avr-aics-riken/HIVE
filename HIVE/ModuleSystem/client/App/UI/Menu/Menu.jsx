@@ -73,6 +73,10 @@ export default class Menu extends React.Component {
                 position: "relative",
                 // left: this.state.visible ? "0px" : "-200px",
                 // transition: "left 0.5s cubic-bezier(0.18, 0.93, 0.26, 0.99)"
+            },
+            menuWrap: {
+                position: "relative",
+                overflow: "auto"
             }
         };
     }
@@ -85,18 +89,20 @@ export default class Menu extends React.Component {
                     <div style={style.header}>
                         <div style={style.headerCaption}>Module List</div>
                     </div>
-                    <MenuNodeCreate
-                        store={this.props.store}
-                        action={this.props.action}
-                        menuStore={this.props.menuStore}
-                        menuAction={this.props.menuAction}
-                    />
-                    <MenuNodeList
-                        store={this.props.store}
-                        action={this.props.action}
-                        menuStore={this.props.menuStore}
-                        menuAction={this.props.menuAction}
-                    />
+                    <div style={style.menuWrap}>
+                        <MenuNodeCreate
+                            store={this.props.store}
+                            action={this.props.action}
+                            menuStore={this.props.menuStore}
+                            menuAction={this.props.menuAction}
+                        />
+                        <MenuNodeList
+                            store={this.props.store}
+                            action={this.props.action}
+                            menuStore={this.props.menuStore}
+                            menuAction={this.props.menuAction}
+                        />
+                    </div>
                 </div>
                 <div style={style.container}>
                     <div style={style.header}>

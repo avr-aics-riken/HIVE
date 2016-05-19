@@ -1,6 +1,6 @@
 /**
  * @file VolumeToMeshData.cpp
- * VolumeDataÇ©ÇÁÉÅÉbÉVÉÖê∂ê¨ÇçsÇ§ÉÇÉWÉÖÅ[Éã
+ * VolumeDataからメッシュ生成を行うモジュール
  */
 
 #include "VolumeToMeshData.h"

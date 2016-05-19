@@ -258,14 +258,22 @@ export default class NodeInOut extends React.Component {
 	inHoleText() {
         const style = this.styles();//this.props.index);
 		if (!this.props.isClosed) {
-			return (<div style={style.inholeText}>{this.props.data.name}</div>);
+			if (this.props.isGroup && this.props.data.hasOwnProperty('label')) {
+				return (<div style={style.inholeText}>{this.props.data.label}</div>);
+			} else {
+				return (<div style={style.inholeText}>{this.props.data.name}</div>);
+			}
 		}
 	}
 
 	outHoleText() {
 		const style = this.styles();//this.props.index);
 		if (!this.props.isClosed) {
-			return (<div style={style.outholeText}>{this.props.data.name}</div>);
+			if (this.props.isGroup && this.props.data.hasOwnProperty('label')) {
+				return (<div style={style.outholeText}>{this.props.data.label}</div>);
+			} else {
+				return (<div style={style.outholeText}>{this.props.data.name}</div>);
+			}
 		}
 	}
 
