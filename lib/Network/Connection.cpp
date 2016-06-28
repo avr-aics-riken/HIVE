@@ -98,6 +98,15 @@ namespace {
         WsSendThread(easywsclient::WebSocket::pointer ws) : VX::Thread(), m_ws(ws) { go(); }
         ~WsSendThread() {}
         
+        void destroy() {
+            size_t num = s_sendBuffer.size();
+            while (num > 0) {
+                num = s_sendBuffer.size();
+                os_sleep(1);
+            }
+            delete this;
+        }
+        
         bool process() {
             
             //g_wsclientCS.Enter(); // NOT NEED?
@@ -205,8 +214,8 @@ public:
     ~Impl()
     {
 #ifndef SINGLE_THREAD_RECV
+        m_wssendthread->destroy();
         delete m_wsrecvthread;
-        delete m_wssendthread;
 #endif
         Close();
         delete m_connection;
@@ -503,10 +512,10 @@ public:
         }
         if (m_ws) {
 #ifndef SINGLE_THREAD_RECV
+            m_wssendthread->destroy();
+            m_wssendthread = NULL;
             delete m_wsrecvthread;
             m_wsrecvthread = NULL;
-            delete m_wssendthread;
-            m_wssendthread = NULL;
 #endif
             m_ws->close();
             /*
