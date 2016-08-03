@@ -227,13 +227,9 @@ function mainloop()
 	end
 end
 
-----------------------------------
-
 local r = connectHIVE()
 if r then
 	Log("Connected")
 end
 
-if mpiRank() == 0 then
-	mainloop()
-end
+mainloop()
