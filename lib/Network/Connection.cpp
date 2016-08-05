@@ -677,12 +677,8 @@ public:
             len = buf.size();
         }
 
-		if (len == 0) {
-			return "";
-		}
-
 		if (nnodes > 1) {
-        
+            MPI_Barrier(MPI_COMM_WORLD);
 			MPI_Bcast(&len, 1, MPI_INT, 0, MPI_COMM_WORLD);
 			if (len > 0) {
 				if (rank != 0) {
