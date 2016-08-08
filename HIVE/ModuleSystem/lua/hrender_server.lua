@@ -89,27 +89,36 @@ end
 --]]
 
 local function sendClientError(err, id)
-	local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = targetClientId, id = id});
-	network:SendText(errtxt)
+	if mpiRank() == 0 then
+		local errtxt = JSON.encode({jsonrpc = "2.0", error = err, to = targetClientId, id = id});
+		network:SendText(errtxt)
+	end
 end
 
 local function sendClientResult(ret, id)
-	local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = targetClientId, id = id});
-	network:SendText(retval)
+	if mpiRank() == 0 then
+		local retval = JSON.encode({jsonrpc = "2.0", result = ret, to = targetClientId, id = id});
+		network:SendText(retval)
+	end
 end
 
 local function sendMasterMethod(method, param)
-	local retval = JSON.encode({jsonrpc = "2.0", method = method, param = param, to = 'master'});
-	network:SendText(retval)
+	if mpiRank() == 0 then
+		local retval = JSON.encode({jsonrpc = "2.0", method = method, param = param, to = 'master'});
+		network:SendText(retval)
+	end
 end
 
 
 local function connectHIVE()
-	local r = network:Connect(connectAddress)
-	if r then
-		sendMasterMethod('register', {mode = 'renderer', targetid = targetClientId})
+	if mpiRank() == 0 then
+		local r = network:Connect(connectAddress)
+		if r then
+			sendMasterMethod('register', {mode = 'renderer', targetid = targetClientId})
+		end
+		return r
 	end
-	return r
+	return false
 end
 
 local function eval(src)
@@ -218,10 +227,9 @@ function mainloop()
 	end
 end
 
-----------------------------------
-
 local r = connectHIVE()
 if r then
 	Log("Connected")
 end
+
 mainloop()
