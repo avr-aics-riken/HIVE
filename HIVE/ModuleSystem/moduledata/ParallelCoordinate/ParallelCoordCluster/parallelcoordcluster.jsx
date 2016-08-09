@@ -32,7 +32,7 @@ class ParallelContainer extends React.Component {
         }
 
         // this.parallel initialize
-        this.parallel = new ParallelCoordinate(ReactDOM.findDOMNode(this.refs.container));
+        this.parallel = new ParallelCoordCluster(ReactDOM.findDOMNode(this.refs.container));
 
         // axis initialize
         for(i = 0, j = json.axis.length; i < j; ++i){

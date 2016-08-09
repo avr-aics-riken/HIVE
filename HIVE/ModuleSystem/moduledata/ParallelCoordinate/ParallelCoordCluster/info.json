@@ -1,0 +1,17 @@
+{
+    "name": "ParallelCoordCluster",
+    "funcname": "ParallelCoordCluster",
+    "info":"ParallelCoordinateをつくるノードCluster版",
+    "customfuncfile":"parallelcoordcluster.lua",
+    "uifile":[
+        "glutil.js",
+        "parallel.js",
+        "parallelcoordcluster.jsx"
+    ],
+    "input": [
+        {"name": "volume", "type": "BufferVolumeData"}
+    ],
+    "output": [
+        {"name": "select", "type": "BufferImageData"}
+    ]
+}

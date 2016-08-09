@@ -20,7 +20,7 @@
  * }
  * ************************************************************************* */
 
-function ParallelCoordinate(parentElement, option){
+function ParallelCoordCluster(parentElement, option){
     this.width = 0;
     this.height = 0;
     this.padding = 0;
@@ -75,7 +75,7 @@ function ParallelCoordinate(parentElement, option){
     this.drawRect = this.getDrawRect(); // 描画対象の矩形領域
 }
 // オプションをセットする
-ParallelCoordinate.prototype.setOption = function(option){
+ParallelCoordCluster.prototype.setOption = function(option){
     if(!option){return false;}
     var s = 'padding';
     if(this.checkOption(option, s)){this.PARALLEL_PADDING = option[s];}
@@ -104,7 +104,7 @@ ParallelCoordinate.prototype.setOption = function(option){
         if(this.checkOption(option.bezier, s)){this.BEZIER_LINE_SCALE = option.bezier[s];}
     }
 };
-ParallelCoordinate.prototype.checkOption = function(option, name){
+ParallelCoordCluster.prototype.checkOption = function(option, name){
     return (
         option.hasOwnProperty(name) &&
         option[name] !== null &&
@@ -114,13 +114,13 @@ ParallelCoordinate.prototype.checkOption = function(option, name){
     );
 };
 // 列追加
-ParallelCoordinate.prototype.addAxis = function(axisData, index){
+ParallelCoordCluster.prototype.addAxis = function(axisData, index){
     this.axisArray.push(new Axis(this, index, axisData));
     this.axisCount = this.axisArray.length;
     return this;
 };
 // 列の配置をリセットして可能なら canvas を再描画する
-ParallelCoordinate.prototype.resetAxis = function(){
+ParallelCoordCluster.prototype.resetAxis = function(){
     var i, j;
     var space = this.layer.clientWidth - this.PARALLEL_PADDING * 2;
     var margin = space / (this.axisCount - 1);
@@ -137,13 +137,13 @@ ParallelCoordinate.prototype.resetAxis = function(){
     return this;
 };
 // WebGL コンテキストなどの初期化
-ParallelCoordinate.prototype.initCanvas = function(){
+ParallelCoordCluster.prototype.initCanvas = function(){
     this.gl = this.canvas.getContext('webgl');
     this.glReady = this.gl !== null && this.gl !== undefined;
     return this;
 };
 // canvas に矩形とか描けるやーつ
-ParallelCoordinate.prototype.resetCanvas = function(){
+ParallelCoordCluster.prototype.resetCanvas = function(){
     var gl = this.gl;
     var mat = this.mat;
     if(!this.glReady){return;}
@@ -183,7 +183,7 @@ ParallelCoordinate.prototype.resetCanvas = function(){
     return this;
 };
 // ベジェ曲線をラインで描く
-ParallelCoordinate.prototype.resetBezierCanvas = function(){
+ParallelCoordCluster.prototype.resetBezierCanvas = function(){
     var i, j;
     var gl = this.gl;
     var mat = this.mat;
@@ -243,7 +243,7 @@ ParallelCoordinate.prototype.resetBezierCanvas = function(){
     return this;
 };
 // ベジェ曲線をジオメトリとして描く
-ParallelCoordinate.prototype.resetBezierGeometryCanvas = function(){
+ParallelCoordCluster.prototype.resetBezierGeometryCanvas = function(){
     var i, j;
     var gl = this.gl;
     var mat = this.mat;
@@ -320,7 +320,7 @@ ParallelCoordinate.prototype.resetBezierGeometryCanvas = function(){
     return this;
 };
 // 初期化などが全て終わっている前提の描画実行部分
-ParallelCoordinate.prototype.drawCanvas = function(){
+ParallelCoordCluster.prototype.drawCanvas = function(){
     var i, j, k, l;
     var p, q, r, s, t, u, v, w, x, y;
     var gl = this.gl;
@@ -440,17 +440,18 @@ ParallelCoordinate.prototype.drawCanvas = function(){
     return this;
 };
 // 描画対象となる矩形を得る
-ParallelCoordinate.prototype.getDrawRect = function(){
+ParallelCoordCluster.prototype.getDrawRect = function(){
     var w = this.parent.clientWidth - this.PARALLEL_PADDING * 2;
     var h = this.parent.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
     return {x: this.PARALLEL_PADDING, y: this.PARALLEL_PADDING, width: w, height: h};
 };
 
 // axis ===================================================================
+// data: title, cluster: min, max, out: []
 function Axis(parent, index, data){
-    this.parent = parent;    // 親となる ParallelCoordinate インスタンス
-    this.title = data.title; // 列のラベル
-    this.index = index;      // インデックス（通常左から読み込んだ順に配置）
+    this.parent = parent;                // 親となる ParallelCoordCluster インスタンス
+    this.title = data.title;             // 列のラベル
+    this.index = index;                  // インデックス（通常左から読み込んだ順に配置）
     this.svg = this.parent.NS('svg');    // SVG エレメント
     this.min = 0;            // min
     this.max = 0;            // max
@@ -465,11 +466,11 @@ function Axis(parent, index, data){
     var i, j;
     for(i = 0, j = data.cluster.length; i < j; ++i){
         this.clusters.push(new Cluster(
-            this,
-            i,
-            data.cluster[i].out,
-            data.cluster[i].min,
-            data.cluster[i].max,
+            this, // axis 自身
+            i,    // axis のインデックス
+            data.cluster[i].out, // クラスタ自身からの出力
+            data.cluster[i].min, // min
+            data.cluster[i].max, // max
             [1, 1, 1, 1]         // ここは将来的に色が入る可能性がある
         ));
     }
