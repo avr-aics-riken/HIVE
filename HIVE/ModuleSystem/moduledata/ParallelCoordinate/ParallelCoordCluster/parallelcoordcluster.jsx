@@ -59,11 +59,7 @@ class ParallelContainer extends React.Component {
     }
 
     componentDidMount(){
-        // resize event
-        // window.addEventListener('resize', function(){
-        //     this.parallel.resetAxis.bind(this.parallel)();
-        // }, false);
-
+        // panel change
         this.store.on("panel_size_changed", this.onPanelSizeChanged);
 
         this.init({"axis": [
