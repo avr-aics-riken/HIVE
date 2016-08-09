@@ -10,7 +10,7 @@ class ParallelContainer extends React.Component {
         this.action = this.props.action;
         this.node   = this.props.node;
         this.state = {
-            width: 500,
+            width: 600,
             height: 300
         };
 
@@ -139,6 +139,9 @@ class ParallelContainer extends React.Component {
             width: data.panel.size[0],
             height: data.panel.size[1],
         });
+        if(!this.parallel.glReady){return;}
+        this.parallel.setRect(data.panel.size[0], data.panel.size[1]);
+        this.parallel.resetAxis();
     }
 
     styles(){
