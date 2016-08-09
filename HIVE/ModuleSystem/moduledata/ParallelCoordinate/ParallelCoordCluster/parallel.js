@@ -16,6 +16,10 @@
  *     bezier: {
  *         division    : <number> ベジェ曲線ポリゴンの分割数
  *         linescale   : <number> ベジェ曲線ポリゴンの厚み（高さ）係数
+ *     },
+ *     plot: {
+ *         width       : <number> Scatter plot エリアの幅（現状固定するので）
+ *         color       : <string> 矩形に対して適用する色 CSS 準拠
  *     }
  * }
  * ************************************************************************* */
@@ -28,18 +32,15 @@ function ParallelCoordCluster(parentElement, option){
     this.axisArray = [];     // 列（Axis インスタンス）格納する配列
     this.beginFlow = 'left'; // どちらが始点となりデータが流れていくか（未使用）
 
-    this.parent = parentElement;                    // 自身を格納している親エレメント
-    this.canvas = document.createElement('canvas'); // canvas は動的に生成
-    this.canvas.style.float = 'left';
-    this.canvas.width = this.parent.clientWidth;
-    this.canvas.height = this.parent.clientHeight;
-    this.canvas.style.position = 'absolute';
-    this.layer = document.createElement('div');     // canvas の上に乗るレイヤ（SVG などが入る）も動的生成
-    this.layer.style.width = '100%';
-    this.layer.style.height = '100%';
-    this.layer.style.position = 'relative';
-    this.parent.appendChild(this.canvas);
-    this.parent.appendChild(this.layer);
+    this.parent = parentElement;                        // 自身を格納している親 DOM
+    this.parentElement = document.createElement('div'); // Canvas 側の親 DOM
+    this.plotElement = document.createElement('div');   // Scatter plot 用の領域も動的生成
+    this.canvas = document.createElement('canvas');     // Canvas は動的に生成
+    this.layer = document.createElement('div');         // Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
+    this.parent.appendChild(this.parentElement);        // 親 DOM に Canvas と Layer を格納する DOM を append
+    this.parent.appendChild(this.plotElement);          // 親 DOM に plot 用の DOM を append
+    this.parentElement.appendChild(this.canvas);        // Canvas を親 DOM 内の外装に append
+    this.parentElement.appendChild(this.layer);         // Layer を親 DOM 内の外装に append
 
     this.gl = null;
     this.glReady = false;
@@ -60,6 +61,8 @@ function ParallelCoordCluster(parentElement, option){
     this.AXIS_SCALE_WIDTH = 5;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;
+    this.PLOT_AREA_WIDTH = 200;
+    this.PLOT_RECT_COLOR = 'deeppink';
 
     // binding
     this.setOption = this.setOption.bind(this);
@@ -67,6 +70,20 @@ function ParallelCoordCluster(parentElement, option){
 
     // option setting
     this.setOption(option);
+
+    // style modify
+    this.parent.style.display = 'flex';
+    this.parent.style.flexDirection = 'row';
+    this.parentElement.style.width = 'calc(100% - ' + this.PLOT_AREA_WIDTH + 'px)';
+    this.plotElement.style.width = this.PLOT_AREA_WIDTH + 'px';
+    this.plotElement.style.height = '100%';
+    this.canvas.style.float = 'left';
+    this.canvas.width = this.parentElement.clientWidth;
+    this.canvas.height = this.parentElement.clientHeight;
+    this.canvas.style.position = 'absolute';
+    this.layer.style.width = this.parentElement.clientWidth + 'px';
+    this.layer.style.height = this.parentElement.clientHeight + 'px';
+    this.layer.style.position = 'relative';
 
     this.initCanvas();                  // canvas の WebGL 関連初期化
     this.resetCanvas();                 // 初期化以降にリセットする場合
@@ -103,6 +120,12 @@ ParallelCoordCluster.prototype.setOption = function(option){
         s = 'linescale';
         if(this.checkOption(option.bezier, s)){this.BEZIER_LINE_SCALE = option.bezier[s];}
     }
+    if(this.checkOption(option, 'plot')){
+        s = 'width';
+        if(this.checkOption(option.bezier, s)){this.PLOT_AREA_WIDTH = option.plot[s];}
+        s = 'color';
+        if(this.checkOption(option.bezier, s)){this.PLOT_RECT_COLOR = option.plot[s];}
+    }
 };
 ParallelCoordCluster.prototype.checkOption = function(option, name){
     return (
@@ -112,6 +135,13 @@ ParallelCoordCluster.prototype.checkOption = function(option, name){
         option[name] !== '' &&
         option[name] !== 0
     );
+};
+// コンポーネントのサイズをセット
+ParallelCoordCluster.prototype.setRect = function(width, height){
+    this.canvas.width = this.parentElement.clientWidth;
+    this.canvas.height = this.parentElement.clientHeight;
+    this.layer.style.width = this.parentElement.clientWidth + 'px';
+    this.layer.style.height = this.parentElement.clientHeight + 'px';
 };
 // 列追加
 ParallelCoordCluster.prototype.addAxis = function(axisData, index){
@@ -331,8 +361,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
     var vpMatrix  = mat.identity(mat.create());
     var mvpMatrix = mat.identity(mat.create());
     if(!this.glReady){return;}
-    this.canvas.width = this.parent.clientWidth;
-    this.canvas.height = this.parent.clientHeight;
+    this.canvas.width = this.parentElement.clientWidth;
+    this.canvas.height = this.parentElement.clientHeight;
     this.drawRect = this.getDrawRect();
     mat.lookAt(
         [0.0, 0.0, 1.0],
@@ -441,8 +471,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
 };
 // 描画対象となる矩形を得る
 ParallelCoordCluster.prototype.getDrawRect = function(){
-    var w = this.parent.clientWidth - this.PARALLEL_PADDING * 2;
-    var h = this.parent.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
+    var w = this.parentElement.clientWidth - this.PARALLEL_PADDING * 2;
+    var h = this.parentElement.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
     return {x: this.PARALLEL_PADDING, y: this.PARALLEL_PADDING, width: w, height: h};
 };
 
