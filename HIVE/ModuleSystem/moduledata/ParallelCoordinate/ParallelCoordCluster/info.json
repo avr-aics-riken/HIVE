@@ -12,6 +12,7 @@
         {"name": "volume", "type": "BufferVolumeData"}
     ],
     "output": [
-        {"name": "select", "type": "BufferImageData"}
+        {"name": "select", "type": "BufferImageData"},
+        {"name": "blushed", "type": "floatarray"}
     ]
 }
