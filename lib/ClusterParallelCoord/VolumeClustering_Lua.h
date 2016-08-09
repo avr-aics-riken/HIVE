@@ -6,7 +6,7 @@
 #define _VOLUMECLUSTERING_LUA_H_
 
 #include "LuaUtil.h"
-#include "VolumeClusterAnalyzer.h"
+#include "VolumeClustering.h"
 #include "BufferVolumeData_Lua.h"
 
 /**
