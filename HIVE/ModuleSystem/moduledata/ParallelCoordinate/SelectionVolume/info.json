@@ -1,0 +1,16 @@
+{
+    "name": "SelectionVolume",
+    "funcname": "SelectionVolume",
+    "info": "ParallelCoordClusterの選択ボリュームを受け取るノード",
+    "customfuncfile": "SelectionVolume.lua",
+    "input": [
+        {"name": "select", "type": "BufferImageData"},
+        {"name": "volume", "type": "BufferVolumeData"},
+        {"name": "translate", "type": "vec3", "value": [0, 0, 0]},
+        {"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},
+        {"name": "scale", "type": "vec3", "value": [1.0, 1.0, 1.0]}
+    ],
+    "output": [
+        {"name": "model", "type": "RenderObject"}
+    ]
+}
