@@ -9,7 +9,10 @@ class ParallelContainer extends React.Component {
         this.store  = this.props.store;
         this.action = this.props.action;
         this.node   = this.props.node;
-        this.state = {};
+        this.state = {
+            width: 500,
+            height: 300
+        };
 
         console.log('cluster!', this.node);
 
@@ -20,6 +23,8 @@ class ParallelContainer extends React.Component {
         this.init = this.init.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
+        this.componentWillUnmount = this.componentWillUnmount.bind(this);
+        this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
     }
 
     // global initialize
@@ -56,8 +61,10 @@ class ParallelContainer extends React.Component {
     componentDidMount(){
         // resize event
         // window.addEventListener('resize', function(){
-        //     parallel.resetAxis.bind(parallel)();
+        //     this.parallel.resetAxis.bind(this.parallel)();
         // }, false);
+
+        this.store.on("panel_size_changed", this.onPanelSizeChanged);
 
         this.init({"axis": [
             {
@@ -127,11 +134,22 @@ class ParallelContainer extends React.Component {
         ]});
     }
 
+    componentWillUnmount(){
+        this.store.off("panel_size_changed", this.onPanelSizeChanged);
+    }
+
+    onPanelSizeChanged(err, data){
+        this.setState({
+            width: data.panel.size[0],
+            height: data.panel.size[1],
+        });
+    }
+
     styles(){
         return {
             container: {
-                width: "500px",
-                height: "300px"
+                width: this.state.width + "px",
+                height: this.state.height + "px"
             },
             canvas: {
                 width: "100%",
