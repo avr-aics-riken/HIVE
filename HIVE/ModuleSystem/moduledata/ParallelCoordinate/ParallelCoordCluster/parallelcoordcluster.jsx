@@ -13,6 +13,11 @@ class ParallelContainer extends React.Component {
         // variables
         this.parallel = null;
 
+        // const
+        this.PANEL_SIZE_CHANGED = "panel_size_changed";
+        this.ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        this.NODE_INPUT_CHANGED = "node_input_changed";
+
         // function
         this.init = this.init.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
@@ -76,23 +81,17 @@ class ParallelContainer extends React.Component {
 
     componentDidMount(){
         // panel change
-        const PANEL_SIZE_CHANGED = "panel_size_changed";
-        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
-        const NODE_INPUT_CHANGED = "node_input_changed";
-        this.store.on(PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
-        this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
-        this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.on(this.PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
+        this.store.on(this.ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.on(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
 
         this.init(this.state.clusterdata);
     }
 
     componentWillUnmount(){
-        const PANEL_SIZE_CHANGED = "panel_size_changed";
-        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
-        const NODE_INPUT_CHANGED = "node_input_changed";
-        this.store.off(PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
-        this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
-        this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.off(this.PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
+        this.store.off(this.ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.off(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
 
     onPanelSizeChanged(err, data){
