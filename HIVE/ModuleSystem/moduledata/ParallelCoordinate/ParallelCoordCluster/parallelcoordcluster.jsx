@@ -38,26 +38,21 @@ class ParallelContainer extends React.Component {
     // global initialize
     init(json){
         var i, j;
-        // this.parallel initialize
-        if(!this.parallel){
-            this.parallel = new ParallelCoordCluster(ReactDOM.findDOMNode(this.refs.container));
-        }
 
+        // data check
         if(!json || !json.hasOwnProperty('axis') || json.axis.length < 2){
             console.log('invalid data');
             console.log(json);
             return;
         }
 
-        // axis initialize
-        for(i = 0, j = json.axis.length; i < j; ++i){
-            this.parallel.addAxis(json.axis[i], i);
+        // this.parallel initialize
+        if(!this.parallel){
+            this.parallel = new ParallelCoordCluster(ReactDOM.findDOMNode(this.refs.container));
         }
-        this.parallel.resetAxis();
 
-        // // draw canvas
-        // if(!this.parallel.glReady){return;}
-        // this.parallel.drawCanvas();
+        // add or reset axis
+        this.parallel.resetAxis(json);
     }
 
     getInputValue(key){

@@ -166,10 +166,21 @@ ParallelCoordCluster.prototype.addAxis = function(axisData, index){
     return this;
 };
 // 列の配置をリセットして可能なら canvas を再描画する
-ParallelCoordCluster.prototype.resetAxis = function(){
+// resetData is optional argument
+ParallelCoordCluster.prototype.resetAxis = function(resetData){
     var i, j;
-    var space = this.layer.clientWidth - this.PARALLEL_PADDING * 2;
-    var margin = space / (this.axisCount - 1);
+    var space, margin;
+    if(resetData && resetData.hasOwnProperty('axis') && resetData.axis.length > 0){
+        for(i = 0; i < this.axisCount; ++i){
+            this.axisArray[i].delete();
+        }
+        this.axisArray = [];
+        for(i = 0, j = resetData.axis.length; i < j; ++i){
+            this.addAxis(resetData.axis[i], i);
+        }
+    }
+    space = this.layer.clientWidth - this.PARALLEL_PADDING * 2;
+    margin = space / (this.axisCount - 1);
     for(i = 0; i < this.axisCount; ++i){
         this.axisArray[i].update();
     }
@@ -623,6 +634,18 @@ Axis.prototype.update = function(titleString, minmax){
     );
     this.svg.appendChild(path);
     this.drawScale();
+};
+// 軸を削除するため listener を remove して HTML を空にする
+Axis.prototype.delete = function(){
+    if(this.listeners.length > 0){
+        this.listeners[0].bind(this)();
+        this.listeners[1].bind(this)();
+        this.listeners[2].bind(this)();
+        this.listeners = [];
+    }
+    this.svg.innerHTML = '';
+    this.parent.layer.removeChild(this.svg);
+    this.svg = null;
 };
 // 軸を描画している実行部分
 // 現状は軸を minmax の差分を用いて 10 分割している
