@@ -215,3 +215,27 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
     return true;
 }
 
+int VolumeClustering::GetAxisNum()
+{
+    return static_cast<int>(m_axisClusters.size());
+}
+
+int VolumeClustering::GetClusterNum(int axis)
+{
+    if (axis >= GetAxisNum()) {
+        return 0;
+    }
+    return static_cast<int>(m_axisClusters[axis].size());
+}
+
+const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int cluster)
+{
+    static Cluster empty;
+    if (axis >= GetAxisNum()) {
+        return empty;
+    }
+    if (cluster >= GetClusterNum(axis)) {
+        return empty;
+    }
+    return m_axisClusters[axis][cluster];
+}

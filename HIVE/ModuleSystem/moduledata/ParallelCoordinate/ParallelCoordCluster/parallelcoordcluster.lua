@@ -5,47 +5,8 @@ ParallelCoordCluster.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordCluster})
     this.gentex = GenTexture()
+    this.volumeclustering = require('ClusterParallelCoord').VolumeClustering()
     return this
-end
-
-function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring, label)
-    local mode = 'raw'
-    local datatype = 'float'
-    local json = [[{
-        "JSONRPC" : "2.0",
-        "method" : "renderedImage",
-        "to" : ]] .. targetClientId ..[[,
-        "param" : {
-        "type" : "volume",
-        "width" : "]] .. w .. [[",
-        "height" : "]] .. h .. [[",
-        "depth" : "]] .. d .. [[",
-        "component" : "]] .. c .. [[",
-        "datatype": "]] .. datatype .. [[",
-        "varname": "]] .. varname .. [[",
-        "mode": "]] .. mode ..  [[",
-        "quantsize": "]] .. qbit ..[[",
-        "label":[ ]] .. label ..[[ ],
-        "minmax":[ ]] .. minmaxstring .. [[ ]
-        },
-        "id":0
-    }]]
-    --print(json)
-    local imageBuffer = voldata:Pointer()
-    print('ImageBuffer=', imageBuffer)
-    local imageBufferSize = w * h * d * datasize
-    print('imageBufferSize=', imageBufferSize)
-    HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-    local bbuffer = HIVE_metabin:BinaryBuffer()
-    network:SendBinary(bbuffer, HIVE_metabin:BinaryBufferSize())
-    print('send!!!!!!!!!!!', imageBufferSize, varname);
-end
-
-function findTable(tbl, item)
-    for key, value in pairs(tbl) do
-        if value == item then return key end
-    end
-    return false
 end
 
 function ParallelCoordCluster:Do()
@@ -56,30 +17,26 @@ function ParallelCoordCluster:Do()
         return 'No volume input'
     end
 
-    voldata = self.volQ:VolumeData()
-    local datasize = self.volQ:DataElementSize()
-    sendData(self.varname, voldata, sdiv[1], sdiv[2], sdiv[3], c, qbit, datasize, minmaxstring, labelstring)
-    if true then
-        return true
+    print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
+    
+    -- dump
+    local axisNum = self.volumeclustering:GetAxisNum()
+    local ax
+    print('AxisNum = ' .. axisNum)
+    for ax=0, axisNum-1 do
+        local cnum = self.volumeclustering:GetClusterNum(ax)
+        print('ClusterNum = ' .. cnum)
+    
+        for c=0,cnum-1 do
+            local cv = self.volumeclustering:GetClusterValue(ax, c)
+            for i,v in pairs(cv) do
+                print(i,v)
+            end
+        end
     end
-    local json = [[{
-        "JSONRPC" : "2.0",
-        "method" : "renderedImage",
-        "to" : ]] .. targetClientId ..[[,
-        "param" : {
-        "type" : "volume",
-        "width" : "]] .. w .. [[",
-        "height" : "]] .. h .. [[",
-        "depth" : "]] .. d .. [[",
-        "component" : "]] .. c .. [[",
-        "datatype": "]] .. datatype .. [[",
-        "varname": "]] .. self.varname .. [[",
-        "mode": "]] .. mode ..  [[",
-        "quantsize": "]] .. qsize ..[[",
-        "minmax":[ ]] .. minmaxstring .. [[ ]
-        },
-        "id":0
-    }]]
+
+    print('End')
+
     return true
 end
 

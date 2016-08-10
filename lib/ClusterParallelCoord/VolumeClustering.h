@@ -12,14 +12,6 @@
 class VolumeClustering : public RefCount
 {
 public:
-    VolumeClustering();
-    ~VolumeClustering();
-
-    void Clear();
-
-    bool Execute(BufferVolumeData* volume);
-
-
     class Cluster {
         public:
         Cluster() {
@@ -38,6 +30,19 @@ public:
         float minValue;
         float topValue;
     };
+
+public:
+    VolumeClustering();
+    ~VolumeClustering();
+
+    void Clear();
+
+    bool Execute(BufferVolumeData* volume);
+
+    int GetAxisNum();
+    int GetClusterNum(int axis);
+    const Cluster& GetClusterValue(int axis, int cluster);
+    
 private:
     std::vector< std::vector<float> > m_hist;
     std::vector<float> m_minVal;
