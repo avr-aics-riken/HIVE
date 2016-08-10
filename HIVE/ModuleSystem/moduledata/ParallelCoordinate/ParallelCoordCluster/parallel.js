@@ -37,10 +37,14 @@ function ParallelCoordCluster(parentElement, option){
     this.plotElement = document.createElement('div');   // Scatter plot 用の領域も動的生成
     this.canvas = document.createElement('canvas');     // Canvas は動的に生成
     this.layer = document.createElement('div');         // Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
+    this.plotCanvas = document.createElement('canvas');     // Plot 用の Canvas は動的に生成
+    this.plotLayer = document.createElement('div');         // Plot 用の Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
     this.parent.appendChild(this.parentElement);        // 親 DOM に Canvas と Layer を格納する DOM を append
     this.parent.appendChild(this.plotElement);          // 親 DOM に plot 用の DOM を append
     this.parentElement.appendChild(this.canvas);        // Canvas を親 DOM 内の外装に append
     this.parentElement.appendChild(this.layer);         // Layer を親 DOM 内の外装に append
+    this.plotElement.appendChild(this.plotCanvas);        // Canvas を親 DOM 内の外装に append
+    this.plotElement.appendChild(this.plotLayer);         // Layer を親 DOM 内の外装に append
 
     this.gl = null;
     this.glReady = false;
@@ -52,7 +56,7 @@ function ParallelCoordCluster(parentElement, option){
     this.NS = function(e){return document.createElementNS(this.NS_SVG, e);}.bind(this);
 
     this.PARALLEL_PADDING = 30;
-    this.SVG_DEFAULT_WIDTH = 10;
+    this.SVG_DEFAULT_WIDTH = 40;
     this.SVG_TEXT_BASELINE = 30;
     this.SVG_TEXT_SIZE = 'medium';
     this.SVG_SCALE_SIZE = 'small';
@@ -84,6 +88,13 @@ function ParallelCoordCluster(parentElement, option){
     this.layer.style.width = this.parentElement.clientWidth + 'px';
     this.layer.style.height = this.parentElement.clientHeight + 'px';
     this.layer.style.position = 'relative';
+    this.plotCanvas.style.float = 'left';
+    this.plotCanvas.width = this.plotElement.clientWidth;
+    this.plotCanvas.height = this.plotElement.clientHeight;
+    this.plotCanvas.style.position = 'absolute';
+    this.plotLayer.style.width = this.plotElement.clientWidth + 'px';
+    this.plotLayer.style.height = this.plotElement.clientHeight + 'px';
+    this.plotLayer.style.position = 'relative';
 
     this.initCanvas();                  // canvas の WebGL 関連初期化
     this.resetCanvas();                 // 初期化以降にリセットする場合
@@ -142,6 +153,10 @@ ParallelCoordCluster.prototype.setRect = function(width, height){
     this.canvas.height = this.parentElement.clientHeight;
     this.layer.style.width = this.parentElement.clientWidth + 'px';
     this.layer.style.height = this.parentElement.clientHeight + 'px';
+    this.plotCanvas.width = this.plotElement.clientWidth;
+    this.plotCanvas.height = this.plotElement.clientHeight;
+    this.plotLayer.style.width = this.plotElement.clientWidth + 'px';
+    this.plotLayer.style.height = this.plotElement.clientHeight + 'px';
 };
 // 列追加
 ParallelCoordCluster.prototype.addAxis = function(axisData, index){
@@ -203,9 +218,13 @@ ParallelCoordCluster.prototype.resetCanvas = function(){
         color:  gl.getUniformLocation(this.prg, 'color')
     };
     var position = [
-        0.0, 1.0, 0.0,
+        // 0.0, 1.0, 0.0,
+        // 0.0, 0.0, 0.0,
+        // 1.0, 1.0, 0.0,
+        // 1.0, 0.0, 0.0
+        0.5, 1.0, 0.0,
         0.0, 0.0, 0.0,
-        1.0, 1.0, 0.0,
+        1.0, 0.0, 0.0,
         1.0, 0.0, 0.0
     ];
     var vPosition = create_vbo(gl, position);
@@ -387,19 +406,43 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
     gl.enable(gl.BLEND);
     gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 
-    var drawClusterRect = function(left, right, top, bottom, color){
+    var drawClusterRect = function(left, right, top, bottom, color, summit){
         var w = right - left;
         var h = top - bottom;
-        mat.identity(mMatrix);
-        mat.translate(mMatrix, [left - w / 2, bottom, 0.0], mMatrix);
-        mat.scale(mMatrix, [w, h, 1.0], mMatrix);
-        mat.multiply(vpMatrix, mMatrix, mvpMatrix);
+        // mat.identity(mMatrix);
+        // mat.translate(mMatrix, [left - w / 2, bottom, 0.0], mMatrix);
+        // mat.scale(mMatrix, [w, h, 1.0], mMatrix);
+        // mat.multiply(vpMatrix, mMatrix, mvpMatrix);
+        //
+        // gl.useProgram(this.prg);
+        // gl.uniformMatrix4fv(this.uniL.matrix, false, mvpMatrix);
+        // gl.uniform4fv(this.uniL.color, color);
+        //
+        // set_attribute(gl, this.vboList, this.attL, this.attS);
+        // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
+        // top triangle ==========
+        // debugger;
+        var nSummit = summit;
+        mat.identity(mMatrix);
+        mat.translate(mMatrix, [0.0, (h * (1.0 - nSummit)), 0.0], mMatrix);
+        mat.translate(mMatrix, [left - w / 2, bottom, 0.0], mMatrix);
+        mat.scale(mMatrix, [w, h * nSummit, 1.0], mMatrix);
+        mat.multiply(vpMatrix, mMatrix, mvpMatrix);
         gl.useProgram(this.prg);
         gl.uniformMatrix4fv(this.uniL.matrix, false, mvpMatrix);
         gl.uniform4fv(this.uniL.color, color);
-
         set_attribute(gl, this.vboList, this.attL, this.attS);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        // bottom triangle ========
+        mat.identity(mMatrix);
+        mat.translate(mMatrix, [0.0, (h * (1.0 - nSummit)), 0.0], mMatrix);
+        mat.translate(mMatrix, [left + w / 2, bottom, 0.0], mMatrix);
+        mat.rotate(mMatrix, Math.PI, [0.0, 0.0, 1.0], mMatrix);
+        mat.scale(mMatrix, [w, h * (1.0 - nSummit), 1.0], mMatrix);
+        mat.multiply(vpMatrix, mMatrix, mvpMatrix);
+        gl.useProgram(this.prg);
+        gl.uniformMatrix4fv(this.uniL.matrix, false, mvpMatrix);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }.bind(this);
 
@@ -435,7 +478,18 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                 v = this.axisArray[i].clusters[k].getNomalizeRange(); // クラスタの上下限値（正規）
                 w = q * v.min;                                        // 高さに正規化済みのクラスタの下限値掛ける
                 y = q * v.max;                                        // 高さに正規化済みのクラスタの上限値掛ける
-                drawClusterRect(x, x + this.SVG_DEFAULT_WIDTH, y, w, [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0]);
+                // drawClusterRect(x, x + this.SVG_DEFAULT_WIDTH, y, w, [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0]);
+                var _min = this.axisArray[i].clusters[k].min;
+                var _max = this.axisArray[i].clusters[k].max;
+                var _top = this.axisArray[i].clusters[k].out;
+                drawClusterRect(
+                    x,
+                    x + this.SVG_DEFAULT_WIDTH,
+                    y,
+                    w,
+                    [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
+                    (_max - _top) / (_max - _min)
+                );
             }
         }
         for(i = 0, j = this.axisArray.length; i < j; ++i){
@@ -452,13 +506,13 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     for(r = 0, s = this.axisArray[i + 1].clusters.length; r < s; ++r){
                         v = this.axisArray[i + 1].clusters[r].getNomalizeRange();
                         w = q * ((v.max - v.min) / 2 + v.min);
-                        p = this.axisArray[i].clusters[k].out[r]; // これが隣の各クラスタへの分配率（SUM ONE）
-                        // x == 対称軸の X 座標
-                        // t == 右軸の X 座標
-                        // u == 対象クラスタの中心の Y 座標
-                        // w == 右軸対象クラスタの中心の Y 座標
-                        drawBezierGeometry(x, t, u, w, [0.2, 0.5, 1.0, p]);
-                        // drawBeziercurve(x, t, u, w, [0.2, 0.5, 1.0, p]);
+                        // p = this.axisArray[i].clusters[k].out[r]; // これが隣の各クラスタへの分配率（SUM ONE）
+                        // // x == 対称軸の X 座標
+                        // // t == 右軸の X 座標
+                        // // u == 対象クラスタの中心の Y 座標
+                        // // w == 右軸対象クラスタの中心の Y 座標
+                        // drawBezierGeometry(x, t, u, w, [0.2, 0.5, 1.0, p]);
+                        // // drawBeziercurve(x, t, u, w, [0.2, 0.5, 1.0, p]);
                     }
                 }
             }
@@ -498,7 +552,8 @@ function Axis(parent, index, data){
         this.clusters.push(new Cluster(
             this, // axis 自身
             i,    // axis のインデックス
-            data.cluster[i].out, // クラスタ自身からの出力
+            data.cluster[i].top,
+            // data.cluster[i].out, // クラスタ自身からの出力
             data.cluster[i].min, // min
             data.cluster[i].max, // max
             [1, 1, 1, 1]         // ここは将来的に色が入る可能性がある

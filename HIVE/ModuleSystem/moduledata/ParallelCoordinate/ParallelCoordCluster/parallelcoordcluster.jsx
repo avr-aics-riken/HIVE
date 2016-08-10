@@ -62,69 +62,32 @@ class ParallelContainer extends React.Component {
         // panel change
         this.store.on("panel_size_changed", this.onPanelSizeChanged);
 
-        this.init({"axis": [
+        this.init({axis: [
+            // 軸の配列
             {
-                "title": "title1",
+                "title": "title_1",
                 "cluster": [
-                    {
-                        "min": 0,
-                        "max": 5,
-                        "out": [0.8, 0.1, 0.1]
-                    },{
-                        "min": 5,
-                        "max": 10,
-                        "out": [0.1, 0.8, 0.1]
-                    },{
-                        "min": 10,
-                        "max": 20,
-                        "out": [0.1, 0.1, 0.8]
-                    },{
-                        "min": 20,
-                        "max": 30,
-                        "out": [0.0, 1.0, 0.0]
-                    },{
-                        "min": 30,
-                        "max": 50,
-                        "out": [0.5, 0.0, 0.5]
-                    }
+                    // その軸に含まれるクラスタの配列
+                    {"top": 0.5, "min": 0.0, "max": 1.0},
+                    {"top": 2.5, "min": 1.0, "max": 3.0},
+                    {"top": 4.5, "min": 3.0, "max": 8.0}
                 ]
             },{
-                "title": "title2",
+                "title": "title_2",
                 "cluster": [
-                    {
-                        "min": 0,
-                        "max": 1,
-                        "out": [0.1, 0.5, 0.3, 0.1]
-                    },{
-                        "min": 1,
-                        "max": 2,
-                        "out": [0.1, 0.1, 0.5, 0.3]
-                    },{
-                        "min": 2,
-                        "max": 3,
-                        "out": [0.3, 0.1, 0.1, 0.5]
-                    }
+                    {"top": -7.0, "min": -10.0, "max": -5.0},
+                    {"top": -4.5, "min":  -5.0, "max":  0.0},
+                    {"top":  0.5, "min":   0.0, "max":  3.0},
+                    {"top": 10.0, "min":   3.0, "max": 20.0}
                 ]
             },{
-                "title": "title3",
+                "title": "title_3",
                 "cluster": [
-                    {
-                        "min": -5,
-                        "max": -2,
-                        "out": []
-                    },{
-                        "min": -2,
-                        "max": 2,
-                        "out": []
-                    },{
-                        "min": 2,
-                        "max": 5,
-                        "out": []
-                    },{
-                        "min": 5,
-                        "max": 10,
-                        "out": []
-                    }
+                    {"top": -5.0, "min": -10.0, "max": -5.0},
+                    {"top": -2.5, "min":  -5.0, "max":  0.0},
+                    {"top":  1.5, "min":   0.0, "max":  3.0},
+                    {"top": 11.5, "min":   3.0, "max": 20.0},
+                    {"top": 45.0, "min":  20.0, "max": 70.0},
                 ]
             }
         ]});
