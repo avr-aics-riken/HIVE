@@ -81,6 +81,7 @@ function ParallelCoordCluster(parentElement, option){
     this.parentElement.style.width = 'calc(100% - ' + this.PLOT_AREA_WIDTH + 'px)';
     this.plotElement.style.width = this.PLOT_AREA_WIDTH + 'px';
     this.plotElement.style.height = '100%';
+    this.canvas.style.backgroundColor = 'white';
     this.canvas.style.float = 'left';
     this.canvas.width = this.parentElement.clientWidth;
     this.canvas.height = this.parentElement.clientHeight;

@@ -16,33 +16,20 @@ class ParallelContainer extends React.Component {
         // function
         this.init = this.init.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
+        this.nodeInputChanged = this.nodeInputChanged.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
         this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 
-        let source = this.getInputValue('clusterdata');
-        if(source === '' || source === '{}' || !source.match(/^(\[|\{)/)){source = `
-{"axis": [
-    {
-        "title": "title_A",
-        "cluster": [
-            {"top": 0.5, "min": 0.0, "max": 1.0},
-            {"top": 2.5, "min": 1.0, "max": 3.0},
-            {"top": 4.5, "min": 3.0, "max": 8.0}
-        ]
-    },{
-        "title": "title_B",
-        "cluster": [
-            {"top": -5.0, "min": -10.0, "max": -5.0},
-            {"top": -2.5, "min":  -5.0, "max":  0.0},
-            {"top":  1.5, "min":   0.0, "max":  3.0},
-            {"top": 11.5, "min":   3.0, "max": 20.0},
-            {"top": 45.0, "min":  20.0, "max": 70.0}
-        ]
-    }
-]}`;}
+        // let source = this.getInputValue('clusterdata');
+        let source = this.props.node.input[1].value;
+        if(!source || source === '{}' || !source.match(/^(\[|\{)/)){
+            source = null;
+        }else{
+            source = JSON.parse(source);
+        }
         this.state = {
-            clusterdata: JSON.parse(source),
+            clusterdata: source,
             width: 600,
             height: 300
         };
@@ -52,7 +39,9 @@ class ParallelContainer extends React.Component {
     init(json){
         var i, j;
         // this.parallel initialize
-        this.parallel = new ParallelCoordCluster(ReactDOM.findDOMNode(this.refs.container));
+        if(!this.parallel){
+            this.parallel = new ParallelCoordCluster(ReactDOM.findDOMNode(this.refs.container));
+        }
 
         if(!json || !json.hasOwnProperty('axis') || json.axis.length < 2){
             console.log('invalid data');
@@ -66,9 +55,9 @@ class ParallelContainer extends React.Component {
         }
         this.parallel.resetAxis();
 
-        // draw canvas
-        if(!this.parallel.glReady){return;}
-        this.parallel.drawCanvas();
+        // // draw canvas
+        // if(!this.parallel.glReady){return;}
+        // this.parallel.drawCanvas();
     }
 
     getInputValue(key){
@@ -79,44 +68,36 @@ class ParallelContainer extends React.Component {
         }
     }
 
+    nodeInputChanged(){
+        let source = this.props.node.input[1].value;
+        if(!source || source === '{}' || !source.match(/^(\[|\{)/)){
+            console.log('but invalid', source);
+            return;
+        }
+        let json = JSON.parse(source);
+        this.setState({clusterdata: json});
+        this.init(json);
+    }
+
     componentDidMount(){
         // panel change
-        this.store.on("panel_size_changed", this.onPanelSizeChanged);
+        const PANEL_SIZE_CHANGED = "panel_size_changed";
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        const NODE_INPUT_CHANGED = "node_input_changed";
+        this.store.on(PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
+        this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
 
         this.init(this.state.clusterdata);
-        // this.init({axis: [
-        //     // 軸の配列
-        //     {
-        //         "title": "title_1",
-        //         "cluster": [
-        //             // その軸に含まれるクラスタの配列
-        //             {"top": 0.5, "min": 0.0, "max": 1.0},
-        //             {"top": 2.5, "min": 1.0, "max": 3.0},
-        //             {"top": 4.5, "min": 3.0, "max": 8.0}
-        //         ]
-        //     },{
-        //         "title": "title_2",
-        //         "cluster": [
-        //             {"top": -7.0, "min": -10.0, "max": -5.0},
-        //             {"top": -4.5, "min":  -5.0, "max":  0.0},
-        //             {"top":  0.5, "min":   0.0, "max":  3.0},
-        //             {"top": 10.0, "min":   3.0, "max": 20.0}
-        //         ]
-        //     },{
-        //         "title": "title_3",
-        //         "cluster": [
-        //             {"top": -5.0, "min": -10.0, "max": -5.0},
-        //             {"top": -2.5, "min":  -5.0, "max":  0.0},
-        //             {"top":  1.5, "min":   0.0, "max":  3.0},
-        //             {"top": 11.5, "min":   3.0, "max": 20.0},
-        //             {"top": 45.0, "min":  20.0, "max": 70.0},
-        //         ]
-        //     }
-        // ]});
     }
 
     componentWillUnmount(){
-        this.store.off("panel_size_changed", this.onPanelSizeChanged);
+        const PANEL_SIZE_CHANGED = "panel_size_changed";
+        const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+        const NODE_INPUT_CHANGED = "node_input_changed";
+        this.store.off(PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
+        this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
 
     onPanelSizeChanged(err, data){

@@ -10,7 +10,7 @@
     ],
     "input": [
         {"name": "volume", "type": "BufferVolumeData"},
-        {"name": "clusterdata", "type": "string", "value": "{}"}
+        {"name": "clusterdata", "type": "string", "value": ""}
     ],
     "output": [
         {"name": "select", "type": "BufferImageData"},
