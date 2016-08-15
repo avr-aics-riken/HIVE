@@ -62,6 +62,7 @@ function ParallelCoordCluster(parentElement, option){
     this.SVG_SCALE_SIZE = 'small';
     this.AXIS_LINE_WIDTH = 2;
     this.AXIS_LINE_COLOR = '#333';
+    this.AXIS_LINE_SELECT_COLOR = '#777';
     this.AXIS_SCALE_WIDTH = 5;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;
@@ -634,6 +635,22 @@ Axis.prototype.update = function(titleString, minmax){
     );
     this.svg.appendChild(path);
     this.drawScale();
+    // = test =
+    let path2 = this.parent.NS('path');
+    path2.setAttribute('fill', 'transparent');
+    path2.setAttribute('stroke', this.parent.AXIS_LINE_SELECT_COLOR);
+    // path2.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH);
+    path2.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
+    path2.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
+        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + this.parent.SVG_TEXT_BASELINE +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    this.svg.appendChild(path2);
+    // = test =
 };
 // 軸を削除するため listener を remove して HTML を空にする
 Axis.prototype.delete = function(){
