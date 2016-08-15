@@ -22,7 +22,6 @@ function sendData(varname, cdata)
         },
         "id":0
     }]]
-    print('!!!!!!!!!!sendjson!!!!!!!!!!', json)
     network:SendJSON(json)
 end
 
@@ -77,8 +76,6 @@ function ParallelCoordCluster:Do()
     end
 
     dest = dest .. ']}'
-
-    print(dest)
 
     print('---- DUMP End ----')
 
