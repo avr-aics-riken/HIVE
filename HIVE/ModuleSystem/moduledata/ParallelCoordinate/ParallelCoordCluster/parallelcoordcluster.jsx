@@ -71,10 +71,21 @@ class ParallelContainer extends React.Component {
     }
 
     imageRecieved(err, param, data){
-        debugger;
-        var arr, parse, minmax, label, labelkey;
         const varname = this.node.varname;
-        if(param.varname !== varname || param.mode === undefined || param.mode !== 'raw'){return;}
+        if(
+            param.varname !== varname ||
+            !param.hasOwnProperty('mode') ||
+            param.mode !== 'raw' ||
+            !param.hasOwnProperty('data') ||
+            param.data === null ||
+            param.data === undefined
+        ){
+            console.log('invalid recieaved data');
+            return;
+        }
+        console.log('get recieaved data');
+        this.init(param.data);
+
     }
 
     nodeInputChanged(){
