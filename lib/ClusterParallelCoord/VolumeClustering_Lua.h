@@ -32,6 +32,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int, GetAxisNum)
     LUA_SCRIPTCLASS_METHOD_ARG1(int, GetClusterNum, int)
     LUA_SCRIPTCLASS_METHOD_ARG2(LuaTable, GetClusterValue, int, int)
+    LUA_SCRIPTCLASS_METHOD_ARG3(int, GetEdgePowers, int, int, int)
     LUA_SCRIPTCLASS_END();
 
 };

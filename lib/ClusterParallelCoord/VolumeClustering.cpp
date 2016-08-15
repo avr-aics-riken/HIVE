@@ -142,7 +142,7 @@ namespace {
                     ++cl;
                 }
                 if (cl >= axisClusters[p].size()) {
-                    printf("Over max value:%f max=%f\n", v, axisClusters[p][cl-1].maxValue);
+                    //printf("Over max value:%f max=%f\n", v, axisClusters[p][cl-1].maxValue);
                     cl--;
                 }
                 cls[p] = cl;
@@ -284,3 +284,23 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
     }
     return m_axisClusters[axis][cluster];
 }
+
+int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
+{    
+     if (axis >= GetAxisNum() - 1) {
+        printf("[Error] over axis num\n");
+        return 0;
+    }
+    if (cluster >= GetClusterNum(axis)) {
+        printf("[Error] over cluster num\n");
+        return 0;
+    }
+    if (nextCluster >= GetClusterNum(axis + 1)) {
+        printf("[Error] over cluster num\n");
+        return 0;
+    }
+
+    const int cnt = m_edgeCounts[axis][cluster][nextCluster];
+    return cnt;
+}
+    

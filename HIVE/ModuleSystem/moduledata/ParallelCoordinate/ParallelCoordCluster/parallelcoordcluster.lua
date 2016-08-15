@@ -79,6 +79,22 @@ function ParallelCoordCluster:Do()
 
     dest = dest .. ']}'
 
+    
+    --- Edge
+    local datanum = self.value.volume:Width() * self.value.volume:Height() * self.value.volume:Depth()
+    for ax = 0, axisNum - 2 do
+        local cnum1 = self.volumeclustering:GetClusterNum(ax)
+        local cnum2 = self.volumeclustering:GetClusterNum(ax+1)                
+        for c1 = 0, cnum1 - 1 do
+            for c2 = 0, cnum2 - 1 do
+                local cnt = self.volumeclustering:GetEdgePowers(ax, c1, c2)
+                if cnt > 0 then
+                    print(ax .."-"..  c1 .. " <-> " .. ax+1 .."-"..  c2 .. " = " .. cnt / datanum)
+                end                
+            end
+        end
+    end
+
     print('---- DUMP End ----')
 
     -- temp

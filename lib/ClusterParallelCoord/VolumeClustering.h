@@ -42,6 +42,8 @@ public:
     int GetAxisNum();
     int GetClusterNum(int axis);
     const Cluster& GetClusterValue(int axis, int cluster);
+
+    int GetEdgePowers(int axis, int cluster, int nextCluster);
     
 private:
     std::vector< std::vector<float> > m_hist;
