@@ -27,6 +27,8 @@ end
 
 function ParallelCoordCluster:Do()
     self:UpdateValue()
+    -- generate selection texture
+    self.gentex:Create2D(self.value.rgba, 1, 256, 1);
     self:PrintValue()
 
     if self.value.volume == nil then
@@ -81,11 +83,11 @@ function ParallelCoordCluster:Do()
 
     -- temp
     sendData(self.varname, dest)
-
+    
     return true
 end
 
 function ParallelCoordCluster:select()
-    self:UpdateValue()
+    --self:UpdateValue()
     return self.gentex:ImageData()
 end

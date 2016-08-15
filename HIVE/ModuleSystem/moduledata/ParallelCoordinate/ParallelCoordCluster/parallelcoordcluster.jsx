@@ -32,11 +32,39 @@ class ParallelContainer extends React.Component {
             width: 600,
             height: 300
         };
+
+        this.selectChangeCallback = () => {
+            const numVals = 256;
+            let rgba = [4*numVals];
+            for(let i = 0; i < numVals; ++i){
+                if (i > 30 && i < 120) {
+                    rgba[4*i  ] = 255; //r
+                    rgba[4*i+1] = 255; //g
+                    rgba[4*i+2] = 255; //b
+                    rgba[4*i+3] = 255; //a
+                } else {
+                    rgba[4*i  ] = 0; //r
+                    rgba[4*i+1] = 0; //g
+                    rgba[4*i+2] = 0; //b
+                    rgba[4*i+3] = 255; //a
+                }
+            }
+            const varname = this.node.varname;
+            this.action.changeNodeInput({
+                varname : varname,
+                input : {
+                    "rgba" : rgba
+                }
+            });
+        };
     }
 
     // global initialize
     init(json){
         var i, j;
+
+        // selection test
+        this.selectChangeCallback();
 
         // data check
         if(!json || !json.hasOwnProperty('axis') || json.axis.length < 2){
@@ -102,7 +130,7 @@ class ParallelContainer extends React.Component {
             width: data.panel.size[0],
             height: data.panel.size[1],
         });
-        if(!this.parallel.glReady){return;}
+        if(!this.parallel || !this.parallel.glReady){return;}
         this.parallel.setRect(data.panel.size[0], data.panel.size[1]);
         this.parallel.resetAxis();
     }
