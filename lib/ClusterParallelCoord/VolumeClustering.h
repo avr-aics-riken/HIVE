@@ -48,5 +48,6 @@ private:
     std::vector<float> m_minVal;
     std::vector<float> m_maxVal;
     std::vector< std::vector<Cluster> > m_axisClusters;
+    std::vector< std::vector< std::vector<int> > > m_edgeCounts;
 };
 

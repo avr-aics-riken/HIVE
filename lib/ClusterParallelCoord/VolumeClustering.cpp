@@ -125,19 +125,30 @@ namespace {
         }
     }
 
-    void edgePower(BufferVolumeData* volume, const std::vector<float>& minVal, const std::vector<float>& maxVal, float sigma, std::vector< std::vector<float> >& f) {
+    void edgePower(BufferVolumeData* volume, const std::vector< std::vector<VolumeClustering::Cluster> >& axisClusters, std::vector< std::vector< std::vector<int> > >& edgeCount) {
         const int w = volume->Width();
         const int h = volume->Height();
         const int d = volume->Depth();
-        const int c = volume->Component();
-        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());        
-        for (int p = 0; p < c; ++p) {
-            const float minMaxDiffP = maxVal[p] - minVal[p];            
-            for (int i = 0; i < w * h * d; ++i) {
-                const float v = buffer[c * i + p];
-                const int idx = static_cast<int>((v - minVal[p])/minMaxDiffP);
-                                
-            }            
+        const int comp = volume->Component();
+        const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
+        
+        for (int i = 0; i < w * h * d; ++i) {
+            int cls[comp];
+            for (int p = 0; p < comp; ++p) {                
+                const float v = buffer[comp * i + p];
+                int cl = 0;
+                while(cl < axisClusters[p].size() && v > axisClusters[p][cl].maxValue) {
+                    ++cl;
+                }
+                if (cl >= axisClusters[p].size()) {
+                    printf("Over max value:%f max=%f\n", v, axisClusters[p][cl-1].maxValue);
+                    cl--;
+                }
+                cls[p] = cl;
+            }
+            for (int p = 0; p < comp - 1; ++p) {
+                ++edgeCount[p][cls[p]][cls[p+1]];
+            }
         }
     }
 
@@ -162,6 +173,8 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
     m_minVal.clear();
     m_maxVal.clear();
     m_axisClusters.clear();
+    m_edgeCounts.clear();
+    
     const int compNum = volume->Component();    
     m_hist.resize(compNum);
     for (int i = 0; i < compNum; ++i) {
@@ -212,6 +225,30 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
         int ax = m_axisClusters[p].size();
         for (int i = 0; i < ax; ++i) {
             printf("Cluster %3d-[%3d] = %6.3f, %6.3f, %6.3f\n", p, i, m_axisClusters[p][i].minValue, m_axisClusters[p][i].topValue, m_axisClusters[p][i].maxValue); 
+        }
+    }
+#endif
+    
+    m_edgeCounts.resize(compNum - 1);
+    for (int p = 0; p < compNum - 1; ++p) { // edge num = compNum - 1
+        int pmax = m_axisClusters[p].size();
+        m_edgeCounts[p].resize(pmax);
+        for (int np = 0; np < pmax; ++np) {
+            m_edgeCounts[p][np].resize(m_axisClusters[p+1].size());
+        }
+    
+    }
+    edgePower(volume, m_axisClusters, m_edgeCounts);
+
+#if DUMPVALUE
+    // dump edge value
+    for (int p = 0; p < compNum - 1; ++p) {
+        int en = m_edgeCounts[p].size();
+        for (int i = 0; i < en; ++i) {
+            int kn = m_edgeCounts[p][i].size();
+            for (int k = 0; k < kn; ++k) {
+                printf("Edge %3d[%3d]-%3d[%3d] = %d\n", p, i, p+1, k, m_edgeCounts[p][i][k]);
+            }
         }
     }
 #endif
