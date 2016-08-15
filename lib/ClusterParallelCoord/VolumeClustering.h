@@ -22,9 +22,9 @@ public:
             minValue = 0.0;
             topValue = 0.0;
         }
-        float maxIndex;
-        float minIndex;
-        float topIndex;
+        int maxIndex;
+        int minIndex;
+        int topIndex;
         
         float maxValue;
         float minValue;

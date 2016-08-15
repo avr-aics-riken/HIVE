@@ -20,6 +20,7 @@ function ParallelCoordCluster:Do()
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
     
     -- dump
+    print('---- DUMP -----')
     local axisNum = self.volumeclustering:GetAxisNum()
     local ax
     print('AxisNum = ' .. axisNum)
@@ -35,7 +36,7 @@ function ParallelCoordCluster:Do()
         end
     end
 
-    print('End')
+    print('---- DUMP End ----')
 
     return true
 end

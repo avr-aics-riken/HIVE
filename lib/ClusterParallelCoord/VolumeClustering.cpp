@@ -82,19 +82,19 @@ namespace {
             GradMode mode = UP;
             int i = 1;
 
-            printf("UP\n");
+            //printf("UP\n");
             while (i < fNum) {
-                printf("v=%f, f[%d][%d] = %f\n", v, p, i, f[p][i]);
+                //printf("v=%f, f[%d][%d] = %f\n", v, p, i, f[p][i]);
                 if (mode == UP && f[p][i] < v) {
                     cls.topIndex = i;
                     mode = DOWN;
-                    printf("DOWN\n");
+                    //printf("DOWN\n");
                             
                 }
                 else if (mode == DOWN && f[p][i] > v) {
                     cls.maxIndex = i;                
                     mode = UP;
-                    printf("UP\n");
+                    //printf("UP[%d] %d %d %d\n", p, cls.minIndex, cls.topIndex, cls.maxIndex);
                     axisClusters[p].push_back(cls);
                     cls.minIndex = i;
                     cls.maxIndex = i;
@@ -113,9 +113,14 @@ namespace {
             float minMaxDiff = maxVal[p] - minVal[p];
             int cn = axisClusters[p].size();
             for (int c = 0; c < cn; ++c) {
-                axisClusters[p][cn].maxValue = (axisClusters[p][cn].maxIndex / static_cast<float>(fNum)) * minMaxDiff + minVal[p];
-                axisClusters[p][cn].topValue = (axisClusters[p][cn].topIndex / static_cast<float>(fNum)) * minMaxDiff + minVal[p];
-                axisClusters[p][cn].minValue = (axisClusters[p][cn].minIndex / static_cast<float>(fNum)) * minMaxDiff + minVal[p];                
+                
+                axisClusters[p][c].maxValue = (axisClusters[p][c].maxIndex / static_cast<float>(fNum)) * minMaxDiff + minVal[p];
+                axisClusters[p][c].topValue = (axisClusters[p][c].topIndex / static_cast<float>(fNum)) * minMaxDiff + minVal[p];
+                axisClusters[p][c].minValue = (axisClusters[p][c].minIndex / static_cast<float>(fNum)) * minMaxDiff + minVal[p];
+                /*printf("axisCluster %d, %d, %d / %f, %f, %f\n",
+                    axisClusters[p][c].minIndex, axisClusters[p][c].topIndex, axisClusters[p][c].maxIndex,
+                    axisClusters[p][c].minValue, axisClusters[p][c].topValue, axisClusters[p][c].maxValue
+                );*/                
             }
         }
     }
@@ -166,7 +171,7 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
     m_maxVal.resize(compNum);
     m_axisClusters.resize(compNum);
 
-#define DUMPVALUE 1
+#define DUMPVALUE 0
 
 #if DUMPVALUE
     // dump volume info
@@ -232,9 +237,11 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
 {
     static Cluster empty;
     if (axis >= GetAxisNum()) {
+        printf("[Error] over axis num\n");
         return empty;
     }
     if (cluster >= GetClusterNum(axis)) {
+        printf("[Error] over cluster num\n");
         return empty;
     }
     return m_axisClusters[axis][cluster];
