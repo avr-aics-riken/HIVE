@@ -9,22 +9,6 @@
 #include <math.h>
 #include <float.h>
 
-/// コンストラクタ
-VolumeClustering::VolumeClustering()
-{
-    Clear();
-}
-
-/// デストラクタ
-VolumeClustering::~VolumeClustering()
-{
-}
-
-/// メンバクリア
-void VolumeClustering::Clear() {
-
-}
-
 
 namespace {
     const int fNum = 1024;
@@ -48,7 +32,7 @@ namespace {
     }
 
    
-    void histgram(BufferVolumeData* volume, const std::vector<float>& minVal, const std::vector<float>& maxVal, float sigma, std::vector< std::vector<float> >& f) {
+    void histgram(BufferVolumeData* volume, const std::vector<float>& minVal, const std::vector<float>& maxVal, const std::vector<float>& sigmaVal, std::vector< std::vector<float> >& f) {
         const int w = volume->Width();
         const int h = volume->Height();
         const int d = volume->Depth();
@@ -61,7 +45,7 @@ namespace {
                     const float v = buffer[c * i + p];
                     const float fidx = static_cast<float>(fn)+0.5;
                     const float vi = (fidx / fNum) * minMaxDiffP + minVal[p];
-                    f[p][fn] += exp( - 0.5 * ( ( (v - vi)/sigma )*( (v - vi)/sigma ) )  );
+                    f[p][fn] += exp( - 0.5 * ( ( (v - vi)/sigmaVal[p] )*( (v - vi)/sigmaVal[p] ) )  );
                 }
             }
         }
@@ -156,6 +140,38 @@ namespace {
 }
 
 
+/// コンストラクタ
+VolumeClustering::VolumeClustering()
+{
+    Clear();
+    const float defaultSigma = 50.0 / fNum;
+    const int maxAxis = 20;
+    m_sigmaVal.resize(maxAxis);
+    for (int i = 0; i < maxAxis; ++i) {
+        m_sigmaVal[i] = defaultSigma;
+    }
+}
+
+/// デストラクタ
+VolumeClustering::~VolumeClustering()
+{
+}
+
+/// メンバクリア
+void VolumeClustering::Clear() {
+
+}
+
+
+int VolumeClustering::SetSigma(int axis, float sigma) {
+    if (axis >= m_sigmaVal.size()) {
+        return 0;
+    }
+    m_sigmaVal[axis] = sigma;
+    return 1;
+}
+
+
 /**
  * ボリュームモデル解析
  * @param model 解析対象BufferVolumeData
@@ -207,8 +223,7 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
 #endif
 
     // histgram
-    const float sigma = 50.0 / fNum;
-    histgram(volume, m_minVal, m_maxVal, sigma, m_hist);
+    histgram(volume, m_minVal, m_maxVal, m_sigmaVal, m_hist);
 
 #if DUMPVALUE
     // dump histgram
