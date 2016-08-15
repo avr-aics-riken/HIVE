@@ -9,6 +9,23 @@ ParallelCoordCluster.new = function (varname)
     return this
 end
 
+function sendData(varname, cdata)
+    local mode = 'raw'
+    local json = [[{
+        "JSONRPC" : "2.0",
+        "method" : "renderedImage",
+        "to" : ]] .. targetClientId ..[[,
+        "param" : {
+            "varname": "]] .. varname .. [[",
+            "mode": "]] .. mode .. [[",
+            "data": ]] .. cdata .. [[
+        },
+        "id":0
+    }]]
+    print('!!!!!!!!!!sendjson!!!!!!!!!!', json)
+    network:SendJSON(json)
+end
+
 function ParallelCoordCluster:Do()
     self:UpdateValue()
     self:PrintValue()
@@ -18,25 +35,55 @@ function ParallelCoordCluster:Do()
     end
 
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
-    
+
     -- dump
     print('---- DUMP -----')
     local axisNum = self.volumeclustering:GetAxisNum()
     local ax
+    local temp
+    local dest = '{"axis": ['
     print('AxisNum = ' .. axisNum)
     for ax=0, axisNum-1 do
         local cnum = self.volumeclustering:GetClusterNum(ax)
         print('ClusterNum = ' .. cnum)
-    
-        for c=0,cnum-1 do
-            local cv = self.volumeclustering:GetClusterValue(ax, c)
-            for i,v in pairs(cv) do
-                print(i,v)
-            end
+
+        -- json string
+        if ax == 0 then
+            dest = dest .. '{'
+        else
+            dest = dest .. ',{'
         end
+        dest = dest .. '"title": "title_' .. ax .. '", "clusternum": ' .. cnum .. ', "cluster": ['
+        for c=0, cnum-1 do
+            if c == 0 then
+                dest = dest .. '{'
+            else
+                dest = dest .. ',{'
+            end
+            local cv = self.volumeclustering:GetClusterValue(ax, c)
+            local j = 0
+            for i,v in pairs(cv) do
+                temp = string.gsub(i, 'Value', '');
+                if j ~= 0 then
+                    dest = dest .. ','
+                end
+                j = j + 1
+                dest = dest .. '"' .. temp .. '": ' .. v
+                -- print(i,v)
+            end
+            dest = dest .. '}'
+        end
+        dest = dest .. ']}'
     end
 
+    dest = dest .. ']}'
+
+    print(dest)
+
     print('---- DUMP End ----')
+
+    -- temp
+    sendData(self.varname, dest)
 
     return true
 end

@@ -62,7 +62,7 @@ function ParallelCoordCluster(parentElement, option){
     this.SVG_SCALE_SIZE = 'small';
     this.AXIS_LINE_WIDTH = 2;
     this.AXIS_LINE_COLOR = '#333';
-    this.AXIS_LINE_SELECT_COLOR = '#777';
+    this.AXIS_LINE_SELECT_COLOR = '#666';
     this.AXIS_SCALE_WIDTH = 5;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;

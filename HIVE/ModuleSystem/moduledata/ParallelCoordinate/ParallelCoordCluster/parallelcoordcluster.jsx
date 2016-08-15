@@ -17,14 +17,16 @@ class ParallelContainer extends React.Component {
         this.PANEL_SIZE_CHANGED = "panel_size_changed";
         this.ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         this.NODE_INPUT_CHANGED = "node_input_changed";
+        this.STORE_IMAGE_RECIEVED = "image_revieved";
 
         // function
         this.init = this.init.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
         this.nodeInputChanged = this.nodeInputChanged.bind(this);
+        this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
+        this.imageRecieved = this.imageRecieved.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
-        this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 
         // let source = this.getInputValue('clusterdata');
         let source = this.props.node.input[1].value;
@@ -68,6 +70,13 @@ class ParallelContainer extends React.Component {
         }
     }
 
+    imageRecieved(err, param, data){
+        debugger;
+        var arr, parse, minmax, label, labelkey;
+        const varname = this.node.varname;
+        if(param.varname !== varname || param.mode === undefined || param.mode !== 'raw'){return;}
+    }
+
     nodeInputChanged(){
         let source = this.props.node.input[1].value;
         if(!source || source === '{}' || !source.match(/^(\[|\{)/)){
@@ -82,16 +91,18 @@ class ParallelContainer extends React.Component {
     componentDidMount(){
         // panel change
         this.store.on(this.PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
-        this.store.on(this.ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.on(this.ANALYZED_DATA_RECIEVED, this.imageRecieved);
         this.store.on(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.on(this.STORE_IMAGE_RECIEVED, this.imageRecieved);
 
         this.init(this.state.clusterdata);
     }
 
     componentWillUnmount(){
         this.store.off(this.PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
-        this.store.off(this.ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
+        this.store.off(this.ANALYZED_DATA_RECIEVED, this.imageRecieved);
         this.store.off(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.off(this.STORE_IMAGE_RECIEVED, this.imageRecieved);
     }
 
     onPanelSizeChanged(err, data){
