@@ -35,6 +35,8 @@ function ParallelCoordCluster:Do()
         return 'No volume input'
     end
 
+    --self.volumeclustering:SetSigma(0, 0.001)
+
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
 
     -- dump
