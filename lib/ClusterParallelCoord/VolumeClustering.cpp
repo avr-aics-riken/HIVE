@@ -7,6 +7,7 @@
 #include "VolumeClustering.h"
 #include "BufferVolumeData.h"
 #include <math.h>
+#include <float.h>
 
 /// コンストラクタ
 VolumeClustering::VolumeClustering()
@@ -36,8 +37,8 @@ namespace {
         const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
 
         for (int p = 0; p < c; ++p) {
-            minVal[p] =  MAXFLOAT;
-            maxVal[p] = -MAXFLOAT;        
+            minVal[p] =  FLT_MAX;
+            maxVal[p] = -FLT_MAX;        
             for (int i = 0; i < w * h * d; ++i) {
                 const float v = buffer[c * i + p];
                 minVal[p] = fmin(v, minVal[p]);
