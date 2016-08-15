@@ -9,7 +9,8 @@
         "parallelcoordcluster.jsx"
     ],
     "input": [
-        {"name": "volume", "type": "BufferVolumeData"}
+        {"name": "volume", "type": "BufferVolumeData"},
+        {"name": "rgba",  "type": "floatarray", "value":[], "visible": false }
     ],
     "output": [
         {"name": "select", "type": "BufferImageData"},
