@@ -231,24 +231,13 @@ ParallelCoordCluster.prototype.resetCanvas = function(){
         color:  gl.getUniformLocation(this.prg, 'color')
     };
     var position = [
-        // 0.0, 1.0, 0.0,
-        // 0.0, 0.0, 0.0,
-        // 1.0, 1.0, 0.0,
-        // 1.0, 0.0, 0.0
         0.5, 1.0, 0.0,
         0.0, 0.0, 0.0,
         1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0
+        1.0, 0.0, 0.0 // triangle look
     ];
     var vPosition = create_vbo(gl, position);
     this.vboList = [vPosition];
-    position = [
-        0.0, 0.0, 0.0,
-        1.0, 0.0, 0.0
-    ];
-    var vLinePosition = create_vbo(gl, position);
-    this.vboLineList = [vLinePosition];
-    return this;
 };
 // ベジェ曲線をラインで描く
 ParallelCoordCluster.prototype.resetBezierCanvas = function(){
@@ -465,22 +454,6 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }.bind(this);
 
-    // var drawClusterLine = function(left, right, top, bottom, color, summit){
-    //     var w = right - left;
-    //     var h = top - bottom;
-    //     var nSummit = summit;
-    //     mat.identity(mMatrix);
-    //     mat.translate(mMatrix, [0.0, (h * (1.0 - nSummit)), 0.0], mMatrix);
-    //     mat.translate(mMatrix, [left - w / 2, bottom, 0.0], mMatrix);
-    //     mat.scale(mMatrix, [w, h * nSummit, 1.0], mMatrix);
-    //     mat.multiply(vpMatrix, mMatrix, mvpMatrix);
-    //     gl.useProgram(this.prg);
-    //     gl.uniformMatrix4fv(this.uniL.matrix, false, mvpMatrix);
-    //     gl.uniform4fv(this.uniL.color, color);
-    //     set_attribute(gl, this.vboList, this.attL, this.attS);
-    //     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    // };
-
     var drawBeziercurve = function(left, right, first, second, color){
         gl.useProgram(this.bPrg);
         gl.uniformMatrix4fv(this.bUniL.matrix, false, vpMatrix);
@@ -516,7 +489,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                 // drawClusterRect(x, x + this.SVG_DEFAULT_WIDTH, y, w, [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0]);
                 var _min = this.axisArray[i].clusters[k].min;
                 var _max = this.axisArray[i].clusters[k].max;
-                var _top = this.axisArray[i].clusters[k].out;
+                var _top = this.axisArray[i].clusters[k].top;
                 drawClusterRect(
                     x,
                     x + this.SVG_DEFAULT_WIDTH,
@@ -588,7 +561,7 @@ function Axis(parent, index, data){
         this.clusters.push(new Cluster(
             this, // axis 自身
             i,    // axis のインデックス
-            data.cluster[i].top,
+            data.cluster[i].top, // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
             // data.cluster[i].out, // クラスタ自身からの出力
             data.cluster[i].min, // min
             data.cluster[i].max, // max
