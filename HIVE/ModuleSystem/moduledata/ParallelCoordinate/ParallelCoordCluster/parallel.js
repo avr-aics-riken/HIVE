@@ -495,7 +495,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     x + this.SVG_DEFAULT_WIDTH,
                     y,
                     w,
-                    [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
+                    // [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
+                    [0.0, 0.0, 0.0, v.percentage * 0.75 + 0.25],
                     (_max - _top) / (_max - _min)
                 );
             }
@@ -790,7 +791,8 @@ Cluster.prototype.getNormalizeRange = function(){
     return {
         min: (this.min - this.parentAxis.min) / i,
         max: 1.0 - (this.parentAxis.max - this.max) / i,
-        top: t
+        top: t,
+        percentage: (this.max - this.min) / (this.parentAxis.max - this.parentAxis.min)
     };
 };
 
