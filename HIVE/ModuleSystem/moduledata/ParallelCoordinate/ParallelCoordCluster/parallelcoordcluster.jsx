@@ -27,35 +27,11 @@ class ParallelContainer extends React.Component {
         this.imageRecieved = this.imageRecieved.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
+        this.selectChanged = this.selectChanged.bind(this);
 
         this.state = {
             width: 600,
             height: 300
-        };
-
-        this.selectChangeCallback = () => {
-            const numVals = 256;
-            let rgba = [4*numVals];
-            for(let i = 0; i < numVals; ++i){
-                if (i > 30 && i < 120) {
-                    rgba[4*i  ] = 255; //r
-                    rgba[4*i+1] = 255; //g
-                    rgba[4*i+2] = 255; //b
-                    rgba[4*i+3] = 255; //a
-                } else {
-                    rgba[4*i  ] = 0; //r
-                    rgba[4*i+1] = 0; //g
-                    rgba[4*i+2] = 0; //b
-                    rgba[4*i+3] = 255; //a
-                }
-            }
-            const varname = this.node.varname;
-            this.action.changeNodeInput({
-                varname : varname,
-                input : {
-                    "rgba" : rgba
-                }
-            });
         };
     }
 
@@ -64,7 +40,7 @@ class ParallelContainer extends React.Component {
         var i, j;
 
         // selection test
-        this.selectChangeCallback();
+        this.selectChanged();
 
         // data check
         if(!json || !json.hasOwnProperty('axis') || json.axis.length < 2){
@@ -81,7 +57,32 @@ class ParallelContainer extends React.Component {
         // add or reset axis
         this.parallel.resetAxis(json);
     }
-
+    
+    selectChanged() {
+        const numVals = 256;
+        let rgba = [4*numVals];
+        for(let i = 0; i < numVals; ++i){
+            if (i > 30 && i < 120) {
+                rgba[4*i  ] = 255; //r
+                rgba[4*i+1] = 255; //g
+                rgba[4*i+2] = 255; //b
+                rgba[4*i+3] = 255; //a
+            } else {
+                rgba[4*i  ] = 0; //r
+                rgba[4*i+1] = 0; //g
+                rgba[4*i+2] = 0; //b
+                rgba[4*i+3] = 255; //a
+            }
+        }
+        const varname = this.node.varname;
+        this.action.changeNodeInput({
+            varname : varname,
+            input : {
+                "rgba" : rgba
+            }
+        });
+    };
+        
     getInputValue(key){
         for(let i = 0; i < this.node.input.length; ++i){
             if(this.node.input[i].name === key){
