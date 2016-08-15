@@ -28,15 +28,7 @@ class ParallelContainer extends React.Component {
         this.componentDidMount = this.componentDidMount.bind(this);
         this.componentWillUnmount = this.componentWillUnmount.bind(this);
 
-        // let source = this.getInputValue('clusterdata');
-        let source = this.props.node.input[1].value;
-        if(!source || source === '{}' || !source.match(/^(\[|\{)/)){
-            source = null;
-        }else{
-            source = JSON.parse(source);
-        }
         this.state = {
-            clusterdata: source,
             width: 600,
             height: 300
         };
@@ -89,24 +81,13 @@ class ParallelContainer extends React.Component {
     }
 
     nodeInputChanged(){
-        let source = this.props.node.input[1].value;
-        if(!source || source === '{}' || !source.match(/^(\[|\{)/)){
-            console.log('but invalid', source);
-            return;
-        }
-        let json = JSON.parse(source);
-        this.setState({clusterdata: json});
-        this.init(json);
     }
 
     componentDidMount(){
-        // panel change
         this.store.on(this.PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
         this.store.on(this.ANALYZED_DATA_RECIEVED, this.imageRecieved);
         this.store.on(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
         this.store.on(this.STORE_IMAGE_RECIEVED, this.imageRecieved);
-
-        this.init(this.state.clusterdata);
     }
 
     componentWillUnmount(){
@@ -129,6 +110,7 @@ class ParallelContainer extends React.Component {
     styles(){
         return {
             container: {
+                backgroundColor: "#333",
                 width: this.state.width + "px",
                 height: this.state.height + "px"
             },
