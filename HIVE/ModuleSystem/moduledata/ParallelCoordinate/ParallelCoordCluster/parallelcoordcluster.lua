@@ -44,7 +44,7 @@ function ParallelCoordCluster:Do()
     local temp
     local dest = '{"axis": ['
     print('AxisNum = ' .. axisNum)
-    for ax=0, axisNum-1 do
+    for ax = 0, axisNum - 1 do
         local cnum = self.volumeclustering:GetClusterNum(ax)
         print('ClusterNum = ' .. cnum)
 
@@ -55,7 +55,7 @@ function ParallelCoordCluster:Do()
             dest = dest .. ',{'
         end
         dest = dest .. '"title": "title_' .. ax .. '", "clusternum": ' .. cnum .. ', "cluster": ['
-        for c=0, cnum-1 do
+        for c = 0, cnum - 1 do
             if c == 0 then
                 dest = dest .. '{'
             else
@@ -77,29 +77,48 @@ function ParallelCoordCluster:Do()
         dest = dest .. ']}'
     end
 
-    dest = dest .. ']}'
+    dest = dest .. ']'
 
-    
     --- Edge
     local datanum = self.value.volume:Width() * self.value.volume:Height() * self.value.volume:Depth()
+    dest = dest .. ', "edge": {"volumenum": ' .. datanum .. ', "cluster": ['
     for ax = 0, axisNum - 2 do
         local cnum1 = self.volumeclustering:GetClusterNum(ax)
-        local cnum2 = self.volumeclustering:GetClusterNum(ax+1)                
-        for c1 = 0, cnum1 - 1 do
-            for c2 = 0, cnum2 - 1 do
-                local cnt = self.volumeclustering:GetEdgePowers(ax, c1, c2)
-                if cnt > 0 then
-                    print(ax .."-"..  c1 .. " <-> " .. ax+1 .."-"..  c2 .. " = " .. cnt / datanum)
-                end                
-            end
+        local cnum2 = self.volumeclustering:GetClusterNum(ax + 1)
+        if ax == 0 then
+            dest = dest .. '['
+        else
+            dest = dest .. ',['
         end
+        for c1 = 0, cnum1 - 1 do
+            if c1 == 0 then
+                dest = dest .. '['
+            else
+                dest = dest .. ',['
+            end
+            temp = ""
+            for c2 = 0, cnum2 - 1 do
+                if c2 ~= 0 then
+                    temp = temp .. ','
+                end
+                local cnt = self.volumeclustering:GetEdgePowers(ax, c1, c2)
+                temp = temp .. cnt
+                if cnt > 0 then
+                    print(ax .."-"..  c1 .. " <-> " .. ax + 1 .."-"..  c2 .. " = " .. cnt / datanum)
+                end
+            end
+            dest = dest .. temp .. "]"
+        end
+        dest = dest .. "]"
     end
+
+    dest = dest .. ']}}'
 
     print('---- DUMP End ----')
 
     -- temp
     sendData(self.varname, dest)
-    
+
     return true
 end
 
