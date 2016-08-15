@@ -483,7 +483,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             x = this.axisArray[i].getHorizontalRange();               // 対象軸の X 座標（非正規）
             for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
                 // axis rect
-                v = this.axisArray[i].clusters[k].getNomalizeRange(); // クラスタの上下限値（正規）
+                v = this.axisArray[i].clusters[k].getNormalizeRange(); // クラスタの上下限値（正規）
                 w = q * v.min;                                        // 高さに正規化済みのクラスタの下限値掛ける
                 y = q * v.max;                                        // 高さに正規化済みのクラスタの上限値掛ける
                 // drawClusterRect(x, x + this.SVG_DEFAULT_WIDTH, y, w, [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0]);
@@ -495,7 +495,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     x + this.SVG_DEFAULT_WIDTH,
                     y,
                     w,
-                    [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
+                    // [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
+                    [0.0, 0.0, 0.0, v.percentage * 0.75 + 0.25],
                     (_max - _top) / (_max - _min)
                 );
             }
@@ -504,7 +505,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             q = this.axisArray[i].height - this.SVG_TEXT_BASELINE;    // Canvas の描画すべきエリアの高さ
             x = this.axisArray[i].getHorizontalRange();               // 対象軸の X 座標（非正規）
             for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
-                v = this.axisArray[i].clusters[k].getNomalizeRange(); // クラスタの上下限値（正規）
+                v = this.axisArray[i].clusters[k].getNormalizeRange(); // クラスタの上下限値（正規）
                 w = q * v.min;                                        // 高さに正規化済みのクラスタの下限値掛ける
                 y = q * v.max;                                        // 高さに正規化済みのクラスタの上限値掛ける
                 // bezier curve
@@ -512,7 +513,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     t = this.axisArray[i + 1].getHorizontalRange();   // 右隣の軸の X 座標（非正規）
                     u = (y - w) * v.top + w;                          // v.top は正規化されているので除算ではなく乗算
                     for(r = 0, s = this.axisArray[i + 1].clusters.length; r < s; ++r){
-                        v = this.axisArray[i + 1].clusters[r].getNomalizeRange();
+                        v = this.axisArray[i + 1].clusters[r].getNormalizeRange();
                         w = q * ((v.max - v.min) * v.top + v.min);    // v.top は正規化されているので除算ではなく乗算する
                         p = 0.5;
                         // p = this.axisArray[i].clusters[k].out[r]; // これが隣の各クラスタへの分配率（SUM ONE）
@@ -783,14 +784,15 @@ function Cluster(axis, index, out, min, max, top, color){
     return this;
 }
 // 正規化された、クラスタの縦方向の位置の上辺と下辺
-Cluster.prototype.getNomalizeRange = function(){
+Cluster.prototype.getNormalizeRange = function(){
     // vertical normalize range
     var i = this.parentAxis.max - this.parentAxis.min;
     var t = (this.top - this.min) / (this.max - this.min);
     return {
         min: (this.min - this.parentAxis.min) / i,
         max: 1.0 - (this.parentAxis.max - this.max) / i,
-        top: t
+        top: t,
+        percentage: (this.max - this.min) / (this.parentAxis.max - this.parentAxis.min)
     };
 };
 

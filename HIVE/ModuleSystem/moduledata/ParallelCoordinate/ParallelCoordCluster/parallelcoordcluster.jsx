@@ -92,8 +92,8 @@ class ParallelContainer extends React.Component {
 
     imageRecieved(err, param, data){
         const varname = this.node.varname;
+        if(param.varname !== varname){return;}
         if(
-            param.varname !== varname ||
             !param.hasOwnProperty('mode') ||
             param.mode !== 'raw' ||
             !param.hasOwnProperty('data') ||
@@ -126,6 +126,7 @@ class ParallelContainer extends React.Component {
     }
 
     onPanelSizeChanged(err, data){
+        if(data.varname !== this.node.varname){return;}
         this.setState({
             width: data.panel.size[0],
             height: data.panel.size[1],
