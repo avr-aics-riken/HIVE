@@ -64,6 +64,7 @@ function ParallelCoordCluster(parentElement, option){
     this.AXIS_LINE_COLOR = '#333';
     this.AXIS_LINE_SELECT_COLOR = '#666';
     this.AXIS_LINE_BRUSH_COLOR = '#f66';
+    this.AXIS_BRUSHED_EDGE_HEIGHT = 3;
     this.AXIS_SCALE_WIDTH = 5;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;
@@ -668,6 +669,37 @@ Axis.prototype.update = function(titleString, minmax){
     );
     path3.setAttribute('style', 'display: none;');
     this.svg.appendChild(path3);
+    // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※上端
+    var path4 = this.parent.NS('path');
+    path4.setAttribute('fill', 'rgba(255, 0, 0, 0.2)');
+    path4.setAttribute('stroke', 'transparent');
+    path4.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (this.parent.SVG_TEXT_BASELINE + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    path4.setAttribute('style', 'cursor: row-resize;');
+    path4.setAttribute('style', 'display: none;');
+    this.svg.appendChild(path4);
+    // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※下端
+    var path5 = this.parent.NS('path');
+    path5.setAttribute('fill', 'rgba(255, 0, 0, 0.2)');
+    path5.setAttribute('stroke', 'transparent');
+    path5.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (this.height + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    path5.setAttribute('style', 'cursor: row-resize;');
+    // path5.setAttribute('style', 'display: none;');
+    this.svg.appendChild(path5);
+
     // 軸関連のイベントの登録とリムーバの配列へのプッシュ
     path2.addEventListener('mousedown', funcAxisDown, false);
     this.parent.layer.addEventListener('mousemove', funcAxisMove, false);
@@ -680,10 +712,11 @@ Axis.prototype.update = function(titleString, minmax){
 };
 // 軸を削除するため listener を remove して HTML を空にする
 Axis.prototype.delete = function(){
+    var i, j;
     if(this.listeners.length > 0){
-        this.listeners[0].bind(this)();
-        this.listeners[1].bind(this)();
-        this.listeners[2].bind(this)();
+        for(i = 0, j = this.listeners.length; i < j; ++i){
+            this.listeners[i].bind(this)();
+        }
         this.listeners = [];
     }
     this.svg.innerHTML = '';
