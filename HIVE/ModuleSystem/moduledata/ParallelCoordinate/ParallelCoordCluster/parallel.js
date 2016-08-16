@@ -662,6 +662,7 @@ Axis.prototype.update = function(titleString, minmax){
     this.axisRectSvg.setAttribute('fill', 'transparent');
     this.axisRectSvg.setAttribute('stroke', this.parent.AXIS_LINE_SELECT_COLOR);
     this.axisRectSvg.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
+    this.axisRectSvg.setAttribute('class', 'parallelAxisRect');
     this.svg.appendChild(this.axisRectSvg);
     // 軸上の選択された部分を表す矩形
     this.brushRectSvg = this.parent.NS('path');
