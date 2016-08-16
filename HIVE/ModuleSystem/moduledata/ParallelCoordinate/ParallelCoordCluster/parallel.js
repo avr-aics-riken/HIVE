@@ -549,6 +549,7 @@ function Axis(parent, index, data){
     this.title = data.title;             // 列のラベル
     this.index = index;                  // インデックス（通常左から読み込んだ順に配置）
     this.svg = this.parent.NS('svg');    // SVG エレメント
+    this.axisRectSvg = null;             // axis area rect
     this.brushed = false;                // brushing flag
     this.onBrush = false;                // on brush start flag
     this.brushStartHeight = 0;           // brush start height (normalize range)
@@ -647,12 +648,12 @@ Axis.prototype.update = function(titleString, minmax){
     );
     this.svg.appendChild(path);
     this.drawScale();
-    // 軸上の選択領域
-    var path2 = this.parent.NS('path');
-    path2.setAttribute('fill', 'transparent');
-    path2.setAttribute('stroke', this.parent.AXIS_LINE_SELECT_COLOR);
-    path2.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
-    path2.setAttribute(
+    // 軸上の選択可能な領域
+    this.axisRectSvg = this.parent.NS('path');
+    this.axisRectSvg.setAttribute('fill', 'transparent');
+    this.axisRectSvg.setAttribute('stroke', this.parent.AXIS_LINE_SELECT_COLOR);
+    this.axisRectSvg.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
+    this.axisRectSvg.setAttribute(
         'd',
         'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
         ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
@@ -660,7 +661,7 @@ Axis.prototype.update = function(titleString, minmax){
         ' V ' + this.parent.SVG_TEXT_BASELINE +
         ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
     );
-    this.svg.appendChild(path2);
+    this.svg.appendChild(this.axisRectSvg);
     // 軸上の選択された部分を表す矩形
     this.brushRectSvg = this.parent.NS('path');
     this.brushRectSvg.setAttribute('fill', 'rgba(196, 196, 196, 0.5)');
@@ -708,14 +709,71 @@ Axis.prototype.update = function(titleString, minmax){
     this.svg.appendChild(this.brushBottomRectSvg);
 
     // 軸関連のイベントの登録とリムーバの配列へのプッシュ
-    path2.addEventListener('mousedown', funcAxisDown, false);
+    this.axisRectSvg.addEventListener('mousedown', funcAxisDown, false);
     this.parent.layer.addEventListener('mousemove', funcAxisMove, false);
     this.parent.layer.addEventListener('mouseup', funcAxisUp, false);
     this.listeners.push(
-        (function(){return function(){path2.removeEventListener('mousedown', funcAxisDown, false);};}()),
+        (function(){return function(){this.axisRectSvg.removeEventListener('mousedown', funcAxisDown, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcAxisMove, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcAxisUp, false);};}())
     );
+};
+// 軸上の SVG 要素の外観や大きさを、その時点での this が持つプロパティに応じてアップデートする
+Axis.prototype.updateSvg = function(){
+    var fill, stroke, display;
+    // 軸上の選択可能な領域
+    if(this.brushed){
+        stroke = this.parent.AXIS_LINE_SELECT_COLOR;
+    }
+    this.axisRectSvg.setAttribute('stroke', stroke);
+    this.axisRectSvg.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
+        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + this.parent.SVG_TEXT_BASELINE +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    // 軸上の選択された部分を表す矩形
+    if(this.brushed || this.onBrush){
+        display = '';
+    }else{
+        display = 'display: none;';
+    }
+    this.brushRectSvg.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
+        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + this.parent.SVG_TEXT_BASELINE +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    this.brushRectSvg.setAttribute('style', display);
+    // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※上端
+    if(this.brushed){
+        display = '';
+    }else{
+        display = 'display: none;';
+    }
+    this.brushTopRectSvg.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (this.parent.SVG_TEXT_BASELINE + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    this.brushTopRectSvg.setAttribute('style', display);
+    // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※下端
+    this.brushBottomRectSvg.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (this.height + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    this.brushBottomRectSvg.setAttribute('style', display);
 };
 // 軸を削除するため listener を remove して HTML を空にする
 Axis.prototype.delete = function(){
@@ -838,6 +896,7 @@ Axis.prototype.dragEnd = function(eve){
 // 軸上でのドラッグ開始（Brush開始）イベント
 Axis.prototype.dragAxisStart = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
+    this.brushed = true;
     this.onBrush = true;
     this.brushStartHeight = (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h;
     console.log('brush start', this.brushStartHeight);
@@ -845,18 +904,31 @@ Axis.prototype.dragAxisStart = function(eve){
 // 軸上でのドラッグ（Brush中）イベント
 Axis.prototype.dragAxisMove = function(eve){
     if(!this.onBrush){return;}
-    console.log('brush move');
+    var h = this.height - this.parent.SVG_TEXT_BASELINE;
+    this.brushEndHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
+    if(this.brushEndHeight < this.brushStartHeight){
+        h = this.brushEndHeight;
+        this.brushEndHeight = this.brushStartHeight;
+        this.brushStartHeight = h;
+    }
+    this.updateSvg();
+    console.log('brush move', this.brushEndHeight - this.brushStartHeight);
 };
 // 軸上でのドラッグ終了（Brush完了）イベント
 Axis.prototype.dragAxisEnd = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     this.onBrush = false;
     this.brushEndHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
+    if(this.brushEndHeight < this.brushStartHeight){
+        h = this.brushEndHeight;
+        this.brushEndHeight = this.brushStartHeight;
+        this.brushStartHeight = h;
+    }
+    if(this.brushEndHeight - this.brushStartHeight <= 0.03){
+        this.brushed = false;
+    }
+    this.updateSvg();
     console.log('brush end', this.brushEndHeight);
-};
-// 軸上の Rect の位置をドラッガブルな要素に合わせて揃える
-Axis.prototype.axisRectsFix = function(){
-    
 };
 
 Axis.prototype.formatFloat = function(number, n){
