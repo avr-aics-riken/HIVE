@@ -63,6 +63,7 @@ function ParallelCoordCluster(parentElement, option){
     this.AXIS_LINE_WIDTH = 2;
     this.AXIS_LINE_COLOR = '#333';
     this.AXIS_LINE_SELECT_COLOR = '#666';
+    this.AXIS_LINE_BRUSH_COLOR = '#f66';
     this.AXIS_SCALE_WIDTH = 5;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;
@@ -577,12 +578,16 @@ function Axis(parent, index, data){
 }
 // 軸を設定して SVG を生成して描画する
 Axis.prototype.update = function(titleString, minmax){
+    var i, j;
     var path = null;
     var text = null;
     var title = titleString;
     var funcDown = this.dragStart.bind(this);
     var funcMove = this.dragMove.bind(this);
     var funcUp   = this.dragEnd.bind(this);
+    var funcAxisDown = this.dragAxisStart.bind(this);
+    var funcAxisMove = this.dragAxisMove.bind(this);
+    var funcAxisUp   = this.dragAxisEnd.bind(this);
     if(titleString){
         this.title = titleString;
     }else{
@@ -591,10 +596,11 @@ Axis.prototype.update = function(titleString, minmax){
     if(minmax && minmax.hasOwnProperty('length') && minmax.length > 0){
         this.setMinMax(minmax[0], minmax[1]);
     }
+    // 軸上のイベントがメモリリークしないように
     if(this.listeners.length > 0){
-        this.listeners[0].bind(this)();
-        this.listeners[1].bind(this)();
-        this.listeners[2].bind(this)();
+        for(i = 0, j = this.listeners.length; i < j; ++i){
+            this.listeners[i].bind(this)();
+        }
         this.listeners = [];
     }
     this.svg.innerHTML = '';
@@ -633,11 +639,10 @@ Axis.prototype.update = function(titleString, minmax){
     );
     this.svg.appendChild(path);
     this.drawScale();
-    // = test =
-    let path2 = this.parent.NS('path');
+    // 軸上の選択領域
+    var path2 = this.parent.NS('path');
     path2.setAttribute('fill', 'transparent');
     path2.setAttribute('stroke', this.parent.AXIS_LINE_SELECT_COLOR);
-    // path2.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH);
     path2.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
     path2.setAttribute(
         'd',
@@ -648,7 +653,30 @@ Axis.prototype.update = function(titleString, minmax){
         ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
     );
     this.svg.appendChild(path2);
-    // = test =
+    // 軸上の選択された部分を表す矩形
+    var path3 = this.parent.NS('path');
+    path3.setAttribute('fill', 'rgba(196, 196, 196, 0.5)');
+    path3.setAttribute('stroke', this.parent.AXIS_LINE_BRUSH_COLOR);
+    path3.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
+    path3.setAttribute(
+        'd',
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
+        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
+        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
+        ' V ' + this.parent.SVG_TEXT_BASELINE +
+        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
+    );
+    path3.setAttribute('style', 'display: none;');
+    this.svg.appendChild(path3);
+    // 軸関連のイベントの登録とリムーバの配列へのプッシュ
+    path2.addEventListener('mousedown', funcAxisDown, false);
+    this.parent.layer.addEventListener('mousemove', funcAxisMove, false);
+    this.parent.layer.addEventListener('mouseup', funcAxisUp, false);
+    this.listeners.push(
+        (function(){return function(){path2.removeEventListener('mousedown', funcAxisDown, false);};}()),
+        (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcAxisMove, false);};}()),
+        (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcAxisUp, false);};}())
+    );
 };
 // 軸を削除するため listener を remove して HTML を空にする
 Axis.prototype.delete = function(){
@@ -740,12 +768,12 @@ Axis.prototype.getNomalizeHorizontalRange = function(){
     var i = this.getHorizontalRange();
     return i / this.parent.drawRect.width;
 };
-// 軸のドラッグ開始イベント
+// 軸タイトルのドラッグ開始イベント
 Axis.prototype.dragStart = function(eve){
     this.left = eve.pageX;
     this.onDrag = true;
 };
-// 軸のドラッグイベント
+// 軸タイトルのドラッグイベント
 Axis.prototype.dragMove = function(eve){
     if(!this.onDrag){return;}
     var x = eve.pageX - this.left;
@@ -761,11 +789,23 @@ Axis.prototype.dragMove = function(eve){
         this.parent.drawCanvas();
     }
 };
-// 軸のドラッグ終了イベント
+// 軸タイトルのドラッグ終了イベント
 Axis.prototype.dragEnd = function(eve){
     this.onDrag = false;
     // 時間差で軸リセットを呼ぶ
     setTimeout(this.parent.resetAxis.bind(this.parent), 300);
+};
+// 軸上でのドラッグ開始（Brush開始）イベント
+Axis.prototype.dragAxisStart = function(eve){
+    console.log('brush start');
+};
+// 軸上でのドラッグ（Brush中）イベント
+Axis.prototype.dragAxisMove = function(eve){
+    console.log('brush move');
+};
+// 軸上でのドラッグ終了（Brush完了）イベント
+Axis.prototype.dragAxisEnd = function(eve){
+    console.log('brush end');
 };
 Axis.prototype.formatFloat = function(number, n){
     var p = Math.pow(10, n);
