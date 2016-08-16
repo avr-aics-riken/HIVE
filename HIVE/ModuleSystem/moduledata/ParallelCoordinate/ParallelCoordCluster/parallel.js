@@ -553,7 +553,7 @@ function Axis(parent, index, data){
     this.axisRectSvg = null;             // axis area rect
     this.brushed = false;                // brushing flag
     this.onBrush = false;                // on brush start flag
-    this.eventCurrentElement = null;     // use currentTarget check
+    this.eventCurrentSvg = null;         // use currentTarget check
     this.brushDefaultHeight = 0;         // brush start height (normalize range)
     this.brushStartHeight = 0;           // brush start height (normalize range)
     this.brushEndHeight = 0;             // brush end height (normalize range)
@@ -600,6 +600,7 @@ Axis.prototype.update = function(titleString, minmax){
     var funcAxisDown = this.dragAxisStart.bind(this);
     var funcAxisMove = this.dragAxisMove.bind(this);
     var funcAxisUp   = this.dragAxisEnd.bind(this);
+    var funcAxisHandle = this.dragAxisHandleStart.bind(this);
     if(titleString){
         this.title = titleString;
     }else{
@@ -683,10 +684,14 @@ Axis.prototype.update = function(titleString, minmax){
     this.axisRectSvg.addEventListener('mousedown', funcAxisDown, false);
     this.parent.layer.addEventListener('mousemove', funcAxisMove, false);
     this.parent.layer.addEventListener('mouseup', funcAxisUp, false);
+    this.brushTopRectSvg.addEventListener('mousedown', funcAxisHandle, false);
+    this.brushBottomRectSvg.addEventListener('mousedown', funcAxisHandle, false);
     this.listeners.push(
         (function(){return function(){this.axisRectSvg.removeEventListener('mousedown', funcAxisDown, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcAxisMove, false);};}()),
-        (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcAxisUp, false);};}())
+        (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcAxisUp, false);};}()),
+        (function(){return function(){this.brushTopRectSvg.removeEventListener('mousedown', funcAxisHandle, false);};}()),
+        (function(){return function(){this.brushBottomRectSvg.removeEventListener('mousedown', funcAxisHandle, false);};}())
     );
 
     this.updateSvg.bind(this)();
@@ -878,7 +883,7 @@ Axis.prototype.dragAxisStart = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     this.brushed = true;
     this.onBrush = true;
-    this.eventCurrentElement = eve.currentTarget;
+    this.eventCurrentSvg = this.axisRectSvg;
     this.brushStartHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
     this.brushEndHeight = this.brushDefaultHeight = this.brushStartHeight;
     console.log('brush start', this.brushStartHeight);
@@ -886,7 +891,7 @@ Axis.prototype.dragAxisStart = function(eve){
 // 軸上でのドラッグ（Brush中）イベント
 Axis.prototype.dragAxisMove = function(eve){
     if(!this.onBrush){return;}
-    if(this.eventCurrentElement !== this.axisRectSvg){return;}
+    if(this.eventCurrentSvg !== this.axisRectSvg){return;}
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     var t = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
     if(t < this.brushDefaultHeight){
@@ -901,7 +906,7 @@ Axis.prototype.dragAxisMove = function(eve){
 };
 // 軸上でのドラッグ終了（Brush完了）イベント
 Axis.prototype.dragAxisEnd = function(eve){
-    if(this.eventCurrentElement !== this.axisRectSvg){return;}
+    if(this.eventCurrentSvg !== this.axisRectSvg){return;}
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     this.onBrush = false;
     var t = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
@@ -917,6 +922,26 @@ Axis.prototype.dragAxisEnd = function(eve){
     }
     this.updateSvg.bind(this)();
     console.log('brush end', this.brushEndHeight);
+};
+// 軸の上下のハンドルをドラッグ開始
+Axis.prototype.dragAxisHandleStart = function(eve){
+    var h = this.height - this.parent.SVG_TEXT_BASELINE;
+    var y = eve.currentTarget.getBBox().y + this.parent.AXIS_BRUSHED_EDGE_HEIGHT;
+    this.brushed = true;
+    this.onBrush = true;
+    this.eventCurrentSvg = this.axisRectSvg;
+    var t = Math.max(0, Math.min(1.0, (this.brushTopRectSvg.getBBox().y + this.parent.AXIS_BRUSHED_EDGE_HEIGHT - this.parent.SVG_TEXT_BASELINE) / h));
+    var b = Math.max(0, Math.min(1.0, (this.brushBottomRectSvg.getBBox().y + this.parent.AXIS_BRUSHED_EDGE_HEIGHT - this.parent.SVG_TEXT_BASELINE) / h));
+    if(eve.currentTarget === this.brushTopRectSvg){
+        this.brushDefaultHeight = b;
+        this.brushStartHeight = t;
+        this.brushEndHeight = b;
+    }else{
+        this.brushDefaultHeight = t;
+        this.brushStartHeight = t;
+        this.brushEndHeight = b;
+    }
+    console.log('handle brush start');
 };
 
 Axis.prototype.formatFloat = function(number, n){
