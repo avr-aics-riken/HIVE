@@ -64,6 +64,7 @@ function ParallelCoordCluster(parentElement, option){
     this.AXIS_LINE_COLOR = '#333';
     this.AXIS_LINE_SELECT_COLOR = '#666';
     this.AXIS_LINE_BRUSH_COLOR = '#f66';
+    this.AXIS_BRUSH_HANDLE_COLOR = 'transparent';
     this.AXIS_BRUSHED_EDGE_HEIGHT = 3;
     this.AXIS_SCALE_WIDTH = 5;
     this.BEZIER_DIVISION = 100;
@@ -665,17 +666,17 @@ Axis.prototype.update = function(titleString, minmax){
     this.svg.appendChild(this.brushRectSvg);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※上端
     this.brushTopRectSvg = this.parent.NS('path');
-    this.brushTopRectSvg.setAttribute('fill', 'transparent');
+    // this.brushTopRectSvg.setAttribute('fill', 'transparent');
+    this.brushTopRectSvg.setAttribute('fill', this.parent.AXIS_BRUSH_HANDLE_COLOR);
     this.brushTopRectSvg.setAttribute('stroke', 'transparent');
-    this.brushTopRectSvg.setAttribute('style', 'cursor: row-resize;');
-    this.brushTopRectSvg.setAttribute('style', 'display: none;');
+    this.brushTopRectSvg.setAttribute('style', 'cursor: row-resize; display: none;');
     this.svg.appendChild(this.brushTopRectSvg);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※下端
     this.brushBottomRectSvg = this.parent.NS('path');
-    this.brushBottomRectSvg.setAttribute('fill', 'transparent');
+    // this.brushBottomRectSvg.setAttribute('fill', 'transparent');
+    this.brushBottomRectSvg.setAttribute('fill', this.parent.AXIS_BRUSH_HANDLE_COLOR);
     this.brushBottomRectSvg.setAttribute('stroke', 'transparent');
-    this.brushBottomRectSvg.setAttribute('style', 'cursor: row-resize;');
-    this.brushBottomRectSvg.setAttribute('style', 'display: none;');
+    this.brushBottomRectSvg.setAttribute('style', 'cursor: row-resize; display: none;');
     this.svg.appendChild(this.brushBottomRectSvg);
 
     // 軸関連のイベントの登録とリムーバの配列へのプッシュ
@@ -727,27 +728,29 @@ Axis.prototype.updateSvg = function(){
     );
     this.brushRectSvg.setAttribute('style', display);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※上端
-    if(this.brushed){
+    if(this.brushed && this.onBrush){
         display = '';
+    }else if(this.brushed){
+        display = 'cursor: row-resize;';
     }else{
-        display = 'display: none;';
+        display = 'cursor: row-resize; display: none;';
     }
     this.brushTopRectSvg.setAttribute(
         'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' V ' + (this.parent.SVG_TEXT_BASELINE + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (top - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (top + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
         ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (top - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
         ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
     );
     this.brushTopRectSvg.setAttribute('style', display);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※下端
     this.brushBottomRectSvg.setAttribute(
         'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' V ' + (this.height + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (bottom - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (bottom + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
         ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
+        ' V ' + (bottom - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
         ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
     );
     this.brushBottomRectSvg.setAttribute('style', display);
