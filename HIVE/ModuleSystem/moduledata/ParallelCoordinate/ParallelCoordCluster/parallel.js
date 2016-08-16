@@ -552,6 +552,8 @@ function Axis(parent, index, data){
     this.axisRectSvg = null;             // axis area rect
     this.brushed = false;                // brushing flag
     this.onBrush = false;                // on brush start flag
+    this.eventCurrentElement = null;     // use currentTarget check
+    this.brushDefaultHeight = 0;         // brush start height (normalize range)
     this.brushStartHeight = 0;           // brush start height (normalize range)
     this.brushEndHeight = 0;             // brush end height (normalize range)
     this.brushRectSvg = null;            // brush area
@@ -653,42 +655,18 @@ Axis.prototype.update = function(titleString, minmax){
     this.axisRectSvg.setAttribute('fill', 'transparent');
     this.axisRectSvg.setAttribute('stroke', this.parent.AXIS_LINE_SELECT_COLOR);
     this.axisRectSvg.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
-    this.axisRectSvg.setAttribute(
-        'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
-        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
-        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + this.parent.SVG_TEXT_BASELINE +
-        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
-    );
     this.svg.appendChild(this.axisRectSvg);
     // 軸上の選択された部分を表す矩形
     this.brushRectSvg = this.parent.NS('path');
     this.brushRectSvg.setAttribute('fill', 'rgba(196, 196, 196, 0.5)');
     this.brushRectSvg.setAttribute('stroke', this.parent.AXIS_LINE_BRUSH_COLOR);
     this.brushRectSvg.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH - 1);
-    this.brushRectSvg.setAttribute(
-        'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
-        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
-        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + this.parent.SVG_TEXT_BASELINE +
-        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
-    );
     this.brushRectSvg.setAttribute('style', 'display: none;');
     this.svg.appendChild(this.brushRectSvg);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※上端
     this.brushTopRectSvg = this.parent.NS('path');
     this.brushTopRectSvg.setAttribute('fill', 'transparent');
     this.brushTopRectSvg.setAttribute('stroke', 'transparent');
-    this.brushTopRectSvg.setAttribute(
-        'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' V ' + (this.parent.SVG_TEXT_BASELINE + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + (this.parent.SVG_TEXT_BASELINE - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
-    );
     this.brushTopRectSvg.setAttribute('style', 'cursor: row-resize;');
     this.brushTopRectSvg.setAttribute('style', 'display: none;');
     this.svg.appendChild(this.brushTopRectSvg);
@@ -696,14 +674,6 @@ Axis.prototype.update = function(titleString, minmax){
     this.brushBottomRectSvg = this.parent.NS('path');
     this.brushBottomRectSvg.setAttribute('fill', 'transparent');
     this.brushBottomRectSvg.setAttribute('stroke', 'transparent');
-    this.brushBottomRectSvg.setAttribute(
-        'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' V ' + (this.height + this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + (this.height - this.parent.AXIS_BRUSHED_EDGE_HEIGHT) +
-        ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
-    );
     this.brushBottomRectSvg.setAttribute('style', 'cursor: row-resize;');
     this.brushBottomRectSvg.setAttribute('style', 'display: none;');
     this.svg.appendChild(this.brushBottomRectSvg);
@@ -717,13 +687,18 @@ Axis.prototype.update = function(titleString, minmax){
         (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcAxisMove, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcAxisUp, false);};}())
     );
+
+    this.updateSvg.bind(this)();
 };
 // 軸上の SVG 要素の外観や大きさを、その時点での this が持つプロパティに応じてアップデートする
 Axis.prototype.updateSvg = function(){
     var fill, stroke, display;
+    var top, bottom;
     // 軸上の選択可能な領域
-    if(this.brushed){
+    if(this.brushed || this.onBrush){
         stroke = this.parent.AXIS_LINE_SELECT_COLOR;
+    }else{
+        stroke = 'transparent';
     }
     this.axisRectSvg.setAttribute('stroke', stroke);
     this.axisRectSvg.setAttribute(
@@ -740,12 +715,14 @@ Axis.prototype.updateSvg = function(){
     }else{
         display = 'display: none;';
     }
+    top = this.brushStartHeight * (this.height - this.parent.SVG_TEXT_BASELINE) + this.parent.SVG_TEXT_BASELINE;
+    bottom = this.brushEndHeight * (this.height - this.parent.SVG_TEXT_BASELINE) + this.parent.SVG_TEXT_BASELINE;
     this.brushRectSvg.setAttribute(
         'd',
-        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + this.parent.SVG_TEXT_BASELINE +
-        ' v ' + (this.height - this.parent.SVG_TEXT_BASELINE) +
+        'M ' + (this.centerH - this.parent.AXIS_SCALE_WIDTH) + ' ' + top +
+        ' V ' + bottom +
         ' h ' + (this.parent.AXIS_SCALE_WIDTH * 2) +
-        ' V ' + this.parent.SVG_TEXT_BASELINE +
+        ' V ' + top +
         ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
     );
     this.brushRectSvg.setAttribute('style', display);
@@ -898,36 +875,44 @@ Axis.prototype.dragAxisStart = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     this.brushed = true;
     this.onBrush = true;
-    this.brushStartHeight = (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h;
+    this.eventCurrentElement = eve.currentTarget;
+    this.brushStartHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
+    this.brushEndHeight = this.brushDefaultHeight = this.brushStartHeight;
     console.log('brush start', this.brushStartHeight);
 };
 // 軸上でのドラッグ（Brush中）イベント
 Axis.prototype.dragAxisMove = function(eve){
     if(!this.onBrush){return;}
+    if(this.eventCurrentElement !== this.axisRectSvg){return;}
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
-    this.brushEndHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
-    if(this.brushEndHeight < this.brushStartHeight){
-        h = this.brushEndHeight;
-        this.brushEndHeight = this.brushStartHeight;
-        this.brushStartHeight = h;
+    var t = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
+    if(t < this.brushDefaultHeight){
+        this.brushStartHeight = t;
+        this.brushEndHeight = this.brushDefaultHeight;
+    }else if(t > this.brushDefaultHeight){
+        this.brushEndHeight = t;
+        this.brushStartHeight = this.brushDefaultHeight;
     }
-    this.updateSvg();
+    this.updateSvg.bind(this)();
     console.log('brush move', this.brushEndHeight - this.brushStartHeight);
 };
 // 軸上でのドラッグ終了（Brush完了）イベント
 Axis.prototype.dragAxisEnd = function(eve){
+    if(this.eventCurrentElement !== this.axisRectSvg){return;}
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     this.onBrush = false;
-    this.brushEndHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
-    if(this.brushEndHeight < this.brushStartHeight){
-        h = this.brushEndHeight;
-        this.brushEndHeight = this.brushStartHeight;
-        this.brushStartHeight = h;
+    var t = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
+    if(t < this.brushDefaultHeight){
+        this.brushStartHeight = t;
+        this.brushEndHeight = this.brushDefaultHeight;
+    }else if(t > this.brushDefaultHeight){
+        this.brushEndHeight = t;
+        this.brushStartHeight = this.brushDefaultHeight;
     }
     if(this.brushEndHeight - this.brushStartHeight <= 0.03){
         this.brushed = false;
     }
-    this.updateSvg();
+    this.updateSvg.bind(this)();
     console.log('brush end', this.brushEndHeight);
 };
 
