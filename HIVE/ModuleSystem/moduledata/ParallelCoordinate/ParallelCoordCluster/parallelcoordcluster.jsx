@@ -41,7 +41,7 @@ class ParallelContainer extends React.Component {
         var i, j;
 
         // selection test
-        this.selectChanged();
+        // this.selectChanged();
 
         // data check
         if(!json || !json.hasOwnProperty('axis') || json.axis.length < 2){
@@ -62,7 +62,14 @@ class ParallelContainer extends React.Component {
         this.parallel.resetAxis(json);
     }
 
-    selectChanged() {
+    selectChanged(value){
+        for(let i = 0; i < value.length; ++i){
+            for(let j = 0; j < value[i].cluster.length; ++j){
+                let selected = value[i].cluster[j].selected;
+                console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected);
+            }
+        }
+
         const numVals = 256;
         let rgba = [];
         rgba.length = numVals;
@@ -103,6 +110,7 @@ class ParallelContainer extends React.Component {
             varname: this.props.node.varname,
             input: obj
         });
+        this.selectChanged(value);
     }
 
     imageRecieved(err, param, data){
