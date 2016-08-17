@@ -37,6 +37,9 @@ function ParallelCoordCluster:Do()
 
     --self.volumeclustering:SetSigma(0, 0.001)
 
+    if self.volCache == self.value.volume then return true end
+
+    self.volCache = self.value.volume;
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
 
     -- dump
@@ -56,7 +59,10 @@ function ParallelCoordCluster:Do()
         else
             dest = dest .. ',{'
         end
-        dest = dest .. '"title": "title_' .. ax .. '", "clusternum": ' .. cnum .. ', "cluster": ['
+        dest = dest .. '"title": "title_' .. ax .. '", '
+        dest = dest .. '"brush": {"min": null, "max": null}, '
+        dest = dest .. '"clusternum": ' .. cnum .. ', '
+        dest = dest .. '"cluster": ['
         for c = 0, cnum - 1 do
             if c == 0 then
                 dest = dest .. '{'
@@ -72,9 +78,8 @@ function ParallelCoordCluster:Do()
                 end
                 j = j + 1
                 dest = dest .. '"' .. temp .. '": ' .. v
-                -- print(i,v)
             end
-            dest = dest .. '}'
+            dest = dest .. ', "selected": false, "color": [0, 0, 0, 1]}'
         end
         dest = dest .. ']}'
     end

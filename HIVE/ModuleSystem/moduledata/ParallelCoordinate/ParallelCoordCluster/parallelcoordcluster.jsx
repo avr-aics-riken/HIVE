@@ -22,6 +22,7 @@ class ParallelContainer extends React.Component {
         // function
         this.init = this.init.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
+        this.setInputValue = this.setInputValue.bind(this);
         this.nodeInputChanged = this.nodeInputChanged.bind(this);
         this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
         this.imageRecieved = this.imageRecieved.bind(this);
@@ -40,7 +41,7 @@ class ParallelContainer extends React.Component {
         var i, j;
 
         // selection test
-        this.selectChanged();
+        // this.selectChanged();
 
         // data check
         if(!json || !json.hasOwnProperty('axis') || json.axis.length < 2){
@@ -51,16 +52,27 @@ class ParallelContainer extends React.Component {
 
         // this.parallel initialize
         if(!this.parallel){
-            this.parallel = new ParallelCoordCluster(ReactDOM.findDOMNode(this.refs.container));
+            this.parallel = new ParallelCoordCluster(
+                ReactDOM.findDOMNode(this.refs.container),
+                {callback: {selected: this.setInputValue}}
+            );
         }
 
         // add or reset axis
         this.parallel.resetAxis(json);
     }
-    
-    selectChanged() {
+
+    selectChanged(value){
+        for(let i = 0; i < value.length; ++i){
+            for(let j = 0; j < value[i].cluster.length; ++j){
+                let selected = value[i].cluster[j].selected;
+                console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected);
+            }
+        }
+
         const numVals = 256;
-        let rgba = [4*numVals];
+        let rgba = [];
+        rgba.length = numVals;
         for(let i = 0; i < numVals; ++i){
             if (i > 30 && i < 120) {
                 rgba[4*i  ] = 255; //r
@@ -74,21 +86,31 @@ class ParallelContainer extends React.Component {
                 rgba[4*i+3] = 255; //a
             }
         }
-        const varname = this.node.varname;
-        this.action.changeNodeInput({
+        const varname = this.props.node.varname;
+        this.props.action.changeNodeInput({
             varname : varname,
             input : {
                 "rgba" : rgba
             }
         });
-    };
-        
+    }
+
     getInputValue(key){
         for(let i = 0; i < this.node.input.length; ++i){
             if(this.node.input[i].name === key){
                 return this.node.input[i].value;
             }
         }
+    }
+
+    setInputValue(key, value){
+        let obj = {};
+        obj[key] = JSON.stringify(value).replace(/"/g, '\\\"');
+        this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: obj
+        });
+        this.selectChanged(value);
     }
 
     imageRecieved(err, param, data){
