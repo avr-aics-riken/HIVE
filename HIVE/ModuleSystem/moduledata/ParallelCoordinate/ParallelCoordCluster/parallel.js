@@ -561,6 +561,29 @@ ParallelCoordCluster.prototype.getStateData = function(){
 ParallelCoordCluster.prototype.getStateJSON = function(){
     return JSON.stringify(this.stateData, undefined, 4);
 };
+// 全軸上の選択範囲をJSONにして出力
+ParallelCoordCluster.prototype.getAllBrushedRange = function(){
+    var i, j, k, l, v;
+    var min, max, len;
+    for(i = 0, j = this.axisArray.length; i < j; ++i){
+        min = max = len = null;
+        v = this.axisArray[i].getBrushedRange();
+        if(v && v.top && v.bottom){
+            len = this.axisArray[i].max - this.axisArray[i].min;
+            min = len * v.bottom + this.axisArray[i].min;
+            max = len * v.top    + this.axisArray[i].min;
+        }
+        this.stateData.axis[i].brush.min = min;
+        this.stateData.axis[i].brush.max = max;
+        v = this.axisArray[i].getClusterBrushed();
+        if(v){
+            for(k = 0, l = v.length; k < l; ++k){
+                this.stateData.axis[i].cluster[k].selected = v[k];
+            }
+        }
+    }
+    return this.stateData.axis;
+};
 
 // axis ===================================================================
 function Axis(parent, index){
@@ -606,12 +629,13 @@ function Axis(parent, index){
         this.clusters.push(new Cluster(
             this, // axis 自身
             i,    // axis のインデックス
-            axisData.cluster[i].top, // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
+            axisData.cluster[i].selected, // 選択状態
+            axisData.cluster[i].top,      // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
             // axisData.cluster[i].out, // クラスタ自身からの出力
-            axisData.cluster[i].min, // min
-            axisData.cluster[i].max, // max
-            axisData.cluster[i].top, // top
-            null                     // ここは将来的に色が入る可能性がある
+            axisData.cluster[i].min,      // min
+            axisData.cluster[i].max,      // max
+            axisData.cluster[i].top,      // top
+            null                          // ここは将来的に色が入る可能性がある
         ));
     }
     this.getClustersMinMax();    // クラスタの minmax とってきて自身に適用
@@ -960,10 +984,9 @@ Axis.prototype.dragAxisEnd = function(eve){
         this.brushed = false;
     }
     this.updateSvg.bind(this)();
-    console.log('brush end axis' + this.index, this.getBrushedRange());
 
     // temp
-    if(this.parent.selectedCallback){this.parent.selectedCallback('statejson', this.getBrushedRange());}
+    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', this.parent.getAllBrushedRange());}
 };
 // 軸の上下のハンドルをドラッグ開始
 Axis.prototype.dragAxisHandleStart = function(eve){
@@ -1015,13 +1038,13 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     if(this.eventCurrentSvg !== this.brushRectSvg){return;}
     if(!this.onBrushRect){return;}
     this.onBrushRect = false;
-    console.log('brushrect drag end axis' + this.index, this.getBrushedRange());
 
     // temp
-    if(this.parent.selectedCallback){this.parent.selectedCallback('statejson', this.getBrushedRange());}
+    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', this.parent.getAllBrushedRange());}
 };
 // 軸上の選択範囲を正規化した値として返す
 Axis.prototype.getBrushedRange = function(){
+    if(!this.brushed){return null;}
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     var t = this.parent.AXIS_BRUSHED_EDGE_HEIGHT - this.parent.SVG_TEXT_BASELINE;
     var top    = Math.max(0, Math.min(1.0, (this.brushTopRectSvg.getBBox().y    + t) / h));
@@ -1033,6 +1056,23 @@ Axis.prototype.getBrushedRange = function(){
         length: bottom - top
     };
 };
+// クラスタの選択状態をbrushを元に判定して配列で返す
+Axis.prototype.getClusterBrushed = function(){
+    var i, j, v, a = [];
+    var min, max, len;
+    if(!this.brushed){return;}
+    v = this.getBrushedRange();
+    for(i = 0, j = this.clusters.length; i < j; ++i){
+        len = this.max - this.min;
+        min = len * v.bottom + this.min;
+        max = len * v.top    + this.min;
+        a.push((
+            (this.clusters[i].min <= min && this.clusters[i].max >= min) ||
+            (this.clusters[i].min <= max && this.clusters[i].max >= max)
+        ));
+    }
+    return a;
+};
 
 Axis.prototype.formatFloat = function(number, n){
     var p = Math.pow(10, n);
@@ -1040,14 +1080,15 @@ Axis.prototype.formatFloat = function(number, n){
 };
 
 // cluster ================================================================
-function Cluster(axis, index, out, min, max, top, color){
+function Cluster(axis, index, selected, out, min, max, top, color){
     var c;
-    this.parentAxis = axis; // 自分自身が所属する軸インスタンス
-    this.index = index;     // 自分自身のインデックス
-    this.out = out;         // 自分からの出力（配列で、全て足して1
-    this.min = min;         // 自分自身の最小値
-    this.max = max;         // 自分自身の最大値
-    this.top = top;         // 自分自身の突出頂点部分の値
+    this.parentAxis = axis;   // 自分自身が所属する軸インスタンス
+    this.index = index;       // 自分自身のインデックス
+    this.selected = selected; // 
+    this.out = out;           // 
+    this.min = min;           // 自分自身の最小値
+    this.max = max;           // 自分自身の最大値
+    this.top = top;           // 自分自身の突出頂点部分の値
     this.color = color || [0, 0, 0, 1]; // 色
     if(!this.parentAxis.putData.right){
         c = this.getInputPower();
@@ -1090,6 +1131,9 @@ Cluster.prototype.getOutputPower = function(){
         j += data[this.index][i];
     }
     return j / this.parentAxis.dataLength;
+};
+Cluster.prototype.setSelected = function(select){
+    this.selected = select;
 };
 Cluster.prototype.setColor = function(color){
     this.color = color;

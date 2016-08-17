@@ -10,11 +10,11 @@
     ],
     "input": [
         {"name": "volume", "type": "BufferVolumeData"},
-        {"name": "rgba",  "type": "floatarray", "value": [], "visible": false},
-        {"name": "statejson", "type": "string", "value": ""}
+        {"name": "rgba", "type": "floatarray", "value": [], "visible": false},
+        {"name": "brushjson", "type": "string", "value": ""}
     ],
     "output": [
         {"name": "select", "type": "BufferImageData"},
-        {"name": "brushed", "type": "floatarray"}
+        {"name": "brush", "type": "floatarray"}
     ]
 }
