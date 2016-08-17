@@ -31,6 +31,7 @@ function ParallelCoordCluster(parentElement, option){
     this.axisCount = 0;      // 自身に含まれる列の数
     this.axisArray = [];     // 列（Axis インスタンス）格納する配列
     this.beginFlow = 'left'; // どちらが始点となりデータが流れていくか（未使用）
+    this.stateData = null;   // 選択状況も含めた内部的なデータ全体
 
     this.parent = parentElement;                        // 自身を格納している親 DOM
     this.parentElement = document.createElement('div'); // Canvas 側の親 DOM
@@ -45,6 +46,9 @@ function ParallelCoordCluster(parentElement, option){
     this.parentElement.appendChild(this.layer);         // Layer を親 DOM 内の外装に append
     this.plotElement.appendChild(this.plotCanvas);        // Canvas を親 DOM 内の外装に append
     this.plotElement.appendChild(this.plotLayer);         // Layer を親 DOM 内の外装に append
+
+    // callback function
+    this.selectedCallback = null;
 
     this.gl = null;
     this.glReady = false;
@@ -142,6 +146,10 @@ ParallelCoordCluster.prototype.setOption = function(option){
         s = 'color';
         if(this.checkOption(option.bezier, s)){this.PLOT_RECT_COLOR = option.plot[s];}
     }
+    if(this.checkOption(option, 'callback')){
+        s = 'selected';
+        if(this.checkOption(option.callback, s)){this.selectedCallback = option.callback[s];}
+    }
 };
 ParallelCoordCluster.prototype.checkOption = function(option, name){
     return (
@@ -182,6 +190,8 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         for(i = 0, j = resetData.axis.length; i < j; ++i){
             this.addAxis(resetData.axis[i], i);
         }
+        // set state
+        this.stateData = resetData;
     }
     space = this.layer.clientWidth - this.PARALLEL_PADDING * 2;
     margin = space / (this.axisCount - 1);
@@ -541,6 +551,14 @@ ParallelCoordCluster.prototype.getDrawRect = function(){
     var w = this.parentElement.clientWidth - this.PARALLEL_PADDING * 2;
     var h = this.parentElement.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
     return {x: this.PARALLEL_PADDING, y: this.PARALLEL_PADDING, width: w, height: h};
+};
+// ステートをデータ構造として返す
+ParallelCoordCluster.prototype.getStateData = function(){
+    return this.stateData;
+};
+// ステートを JSON で返す
+ParallelCoordCluster.prototype.getStateJSON = function(){
+    return JSON.stringify(this.stateData, undefined, 4);
 };
 
 // axis ===================================================================
@@ -932,6 +950,9 @@ Axis.prototype.dragAxisEnd = function(eve){
     }
     this.updateSvg.bind(this)();
     console.log('brush end axis' + this.index, this.getBrushedRange());
+
+    // temp
+    if(this.parent.selectedCallback){this.parent.selectedCallback('statejson', this.getBrushedRange());}
 };
 // 軸の上下のハンドルをドラッグ開始
 Axis.prototype.dragAxisHandleStart = function(eve){
@@ -984,6 +1005,9 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     if(!this.onBrushRect){return;}
     this.onBrushRect = false;
     console.log('brushrect drag end axis' + this.index, this.getBrushedRange());
+
+    // temp
+    if(this.parent.selectedCallback){this.parent.selectedCallback('statejson', this.getBrushedRange());}
 };
 // 軸上の選択範囲を正規化した値として返す
 Axis.prototype.getBrushedRange = function(){
