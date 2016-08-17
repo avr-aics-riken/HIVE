@@ -66,16 +66,51 @@ class ParallelContainer extends React.Component {
         for(let i = 0; i < value.length; ++i){
             for(let j = 0; j < value[i].cluster.length; ++j){
                 let selected = value[i].cluster[j].selected;
+                let minVal = value[i].cluster[j].min;
+                let maxVal = value[i].cluster[j].max;                                
                 if(selected){
-                    console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected);
+                    console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected + ' max:' + maxVal + ' min:' + minVal);
                 }
             }
         }
 
+        let allMin =  10000.0;
+        let allMax = -10000.0;
+        for(let j = 0; j < value[0].cluster.length; ++j){
+            let minVal = value[0].cluster[j].min;
+            let maxVal = value[0].cluster[j].max;
+            //console.log('cluster min/max:', minVal, maxVal);
+            allMin = Math.min(minVal, allMin);
+            allMax = Math.max(maxVal, allMax);
+        }
+        //console.log('search min/max:', allMin, allMax);
+
         const numVals = 256;
         let rgba = [];
-        rgba.length = numVals;
+        rgba.length = numVals*4;
+        rgba.fill(0);
+
         for(let i = 0; i < numVals; ++i){
+            let rate = i / numVals;
+            for(let j = 0; j < value[0].cluster.length; ++j){
+                let selected = value[0].cluster[j].selected;
+                if (selected) {
+                    let minVal = value[0].cluster[j].min;
+                    let maxVal = value[0].cluster[j].max;
+                    let cmin = (minVal - allMin) / (allMax - allMin);
+                    let cmax = (maxVal - allMin) / (allMax - allMin);                
+                    if (rate >= cmin && rate <= cmax) {
+                        rgba[4*i] = 255; //r
+                        rgba[4*i+1] = 255; //g
+                        rgba[4*i+2] = 255; //b
+                        rgba[4*i+3] = 255; //a
+                    }
+                }
+            }
+        }
+        //console.log(rgba);
+
+        /*for(let i = 0; i < numVals; ++i){
             if (i > 30 && i < 120) {
                 rgba[4*i  ] = 255; //r
                 rgba[4*i+1] = 255; //g
@@ -87,7 +122,7 @@ class ParallelContainer extends React.Component {
                 rgba[4*i+2] = 0; //b
                 rgba[4*i+3] = 255; //a
             }
-        }
+        }*/
         const varname = this.props.node.varname;
         this.props.action.changeNodeInput({
             varname : varname,
@@ -108,10 +143,10 @@ class ParallelContainer extends React.Component {
     setInputValue(key, value){
         let obj = {};
         obj[key] = JSON.stringify(value).replace(/"/g, '\\\"');
-        this.props.action.changeNodeInput({
+        /*this.props.action.changeNodeInput({
             varname: this.props.node.varname,
             input: obj
-        });
+        });*/
         this.selectChanged(value);
     }
 
