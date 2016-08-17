@@ -172,10 +172,12 @@ ParallelCoordCluster.prototype.setRect = function(width, height){
     this.plotLayer.style.height = this.plotElement.clientHeight + 'px';
 };
 // 列追加
-ParallelCoordCluster.prototype.addAxis = function(axisData, index){
-    this.axisArray.push(new Axis(this, index, axisData));
-    this.axisCount = this.axisArray.length;
-    return this;
+ParallelCoordCluster.prototype.addAxis = function(){
+    var i, j;
+    for(i = 0, j = this.stateData.axis.length; i < j; ++i){
+        this.axisArray.push(new Axis(this, i));
+        this.axisCount = this.axisArray.length;
+    }
 };
 // 列の配置をリセットして可能なら canvas を再描画する
 // resetData is optional argument
@@ -186,12 +188,10 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         for(i = 0; i < this.axisCount; ++i){
             this.axisArray[i].delete();
         }
-        this.axisArray = [];
-        for(i = 0, j = resetData.axis.length; i < j; ++i){
-            this.addAxis(resetData.axis[i], i);
-        }
-        // set state
+        // reset state and add data
         this.stateData = resetData;
+        this.axisArray = [];
+        this.addAxis();
     }
     space = this.layer.clientWidth - this.PARALLEL_PADDING * 2;
     margin = space / (this.axisCount - 1);
@@ -509,7 +509,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     y,
                     w,
                     // [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
-                    [0.0, 0.0, 0.0, v.percentage * 0.75 + 0.25],
+                    // [0.0, 0.0, 0.0, v.percentage * 0.75 + 0.25],
+                    this.axisArray[i].clusters[k].color,
                     (_max - _top) / (_max - _min)
                 );
             }
@@ -562,10 +563,11 @@ ParallelCoordCluster.prototype.getStateJSON = function(){
 };
 
 // axis ===================================================================
-// data: title, cluster: min, max, out: []
-function Axis(parent, index, data){
+function Axis(parent, index){
+    var i, j;
+    var axisData = parent.stateData.axis[index];
     this.parent = parent;                // 親となる ParallelCoordCluster インスタンス
-    this.title = data.title;             // 列のラベル
+    this.title = axisData.title;         // 列のラベル
     this.index = index;                  // インデックス（通常左から読み込んだ順に配置）
     this.svg = this.parent.NS('svg');    // SVG エレメント
     this.axisRectSvg = null;             // axis area rect
@@ -590,17 +592,26 @@ function Axis(parent, index, data){
     this.bbox = null;        // svg.getBBox の結果
     this.listeners = [];     // リスナを殺すためにキャッシュするので配列を用意
     this.clusters = [];      // 自身に格納しているクラスタ
-    var i, j;
-    for(i = 0, j = data.cluster.length; i < j; ++i){
+    this.putData = {left: null, right: null};
+    this.dataLength = parent.stateData.edge.volumenum;
+    if(index === 0){
+        this.putData.right = parent.stateData.edge.cluster[index];
+    }else if(index === parent.stateData.edge.cluster.length){
+        this.putData.left  = parent.stateData.edge.cluster[index - 1];
+    }else{
+        this.putData.left  = parent.stateData.edge.cluster[index - 1];
+        this.putData.right = parent.stateData.edge.cluster[index];
+    }
+    for(i = 0, j = axisData.cluster.length; i < j; ++i){
         this.clusters.push(new Cluster(
             this, // axis 自身
             i,    // axis のインデックス
-            data.cluster[i].top, // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
-            // data.cluster[i].out, // クラスタ自身からの出力
-            data.cluster[i].min, // min
-            data.cluster[i].max, // max
-            data.cluster[i].top, // top
-            [1, 1, 1, 1]         // ここは将来的に色が入る可能性がある
+            axisData.cluster[i].top, // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
+            // axisData.cluster[i].out, // クラスタ自身からの出力
+            axisData.cluster[i].min, // min
+            axisData.cluster[i].max, // max
+            axisData.cluster[i].top, // top
+            null                     // ここは将来的に色が入る可能性がある
         ));
     }
     this.getClustersMinMax();    // クラスタの minmax とってきて自身に適用
@@ -1030,13 +1041,20 @@ Axis.prototype.formatFloat = function(number, n){
 
 // cluster ================================================================
 function Cluster(axis, index, out, min, max, top, color){
+    var c;
     this.parentAxis = axis; // 自分自身が所属する軸インスタンス
     this.index = index;     // 自分自身のインデックス
     this.out = out;         // 自分からの出力（配列で、全て足して1
     this.min = min;         // 自分自身の最小値
     this.max = max;         // 自分自身の最大値
     this.top = top;         // 自分自身の突出頂点部分の値
-    this.color = color;     // 色
+    this.color = color || [0, 0, 0, 1]; // 色
+    if(!this.parentAxis.putData.right){
+        c = this.getInputPower();
+    }else{
+        c = this.getOutputPower();
+    }
+    this.color[3] *= 0.25 + c * 0.75;
     return this;
 }
 // 正規化された、クラスタの縦方向の位置の上辺と下辺
@@ -1050,6 +1068,31 @@ Cluster.prototype.getNormalizeRange = function(){
         top: t,
         percentage: (this.max - this.min) / (this.parentAxis.max - this.parentAxis.min)
     };
+};
+// クラスタ自身にインプットされている量/軸
+Cluster.prototype.getInputPower = function(){
+    var i, j;
+    var data = this.parentAxis.putData.left;
+    if(!data){return 0;}
+    j = 0;
+    for(i = 0; i < data.length; ++i){
+        j += data[i][this.index];
+    }
+    return j / this.parentAxis.dataLength;
+};
+// クラスタ自身がアウトプットしている量/軸
+Cluster.prototype.getOutputPower = function(){
+    var i, j;
+    var data = this.parentAxis.putData.right;
+    if(!data){return 0;}
+    j = 0;
+    for(i = 0; i < data[this.index].length; ++i){
+        j += data[this.index][i];
+    }
+    return j / this.parentAxis.dataLength;
+};
+Cluster.prototype.setColor = function(color){
+    this.color = color;
 };
 
 // util ===================================================================
