@@ -66,7 +66,9 @@ class ParallelContainer extends React.Component {
         for(let i = 0; i < value.length; ++i){
             for(let j = 0; j < value[i].cluster.length; ++j){
                 let selected = value[i].cluster[j].selected;
-                console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected);
+                if(selected){
+                    console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected);
+                }
             }
         }
 

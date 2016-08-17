@@ -576,9 +576,11 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(){
         this.stateData.axis[i].brush.min = min;
         this.stateData.axis[i].brush.max = max;
         v = this.axisArray[i].getClusterBrushed();
-        if(v){
-            for(k = 0, l = v.length; k < l; ++k){
+        for(k = 0, l = v.length; k < l; ++k){
+            if(v[k]){
                 this.stateData.axis[i].cluster[k].selected = v[k];
+            }else{
+                this.stateData.axis[i].cluster[k].selected = false;
             }
         }
     }
@@ -982,6 +984,7 @@ Axis.prototype.dragAxisEnd = function(eve){
     }
     if(this.brushEndHeight - this.brushStartHeight <= 0.03){
         this.brushed = false;
+        this.brushStartHeight = this.brushEndHeight = 0.0;
     }
     this.updateSvg.bind(this)();
 
@@ -1060,13 +1063,12 @@ Axis.prototype.getBrushedRange = function(){
 Axis.prototype.getClusterBrushed = function(){
     var i, j, v, a = [];
     var min, max, len;
-    if(!this.brushed){return;}
+    if(!this.brushed){return new Array(this.clusters.length);}
     v = this.getBrushedRange();
     for(i = 0, j = this.clusters.length; i < j; ++i){
         len = this.max - this.min;
         min = len * (1.0 - v.bottom) + this.min;
         max = len * (1.0 - v.top)    + this.min;
-        debugger;
         a.push((
             (this.clusters[i].min <= min && this.clusters[i].max >= min) ||
             (this.clusters[i].min <= max && this.clusters[i].max >= max) ||
