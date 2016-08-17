@@ -55,26 +55,13 @@ vec4 density_to_color(float dens)
 vec4 samplingVolume(vec3 texpos, vec4 sum)
 {
 	vec4 dens = texture3D(tex0, texpos);
-	vec4 col = density_to_color(0.4 * dens.x);
-	
-	col.w *= kDensity;
-	
-	// pre-multiply alpha
-	col.x *= col.w;
-	col.y *= col.y;
-	col.z *= col.z;
-	
-	// front-to-back blending.
-	col *= (1.0f - sum.a);
-    
     float vmin = min(0.0, volumemin);
     float vmax = max(volumemax, 1.0);
     float f = clamp(dens.x, vmin, vmax);
     float x = (f - vmin) / (vmax - vmin);
-    vec4 select = texture2D(selection, vec2(x, 0.5));
-    select.x = floor(select.x + 0.5);
     
-	return col * select.x;
+    vec4 select = texture2D(selection, vec2(x, 0.5));    
+	return select;
 }
 
 //-----------------------------------------------------------------------------------------
