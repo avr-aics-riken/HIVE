@@ -570,8 +570,8 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(){
         v = this.axisArray[i].getBrushedRange();
         if(v && v.top && v.bottom){
             len = this.axisArray[i].max - this.axisArray[i].min;
-            min = len * v.bottom + this.axisArray[i].min;
-            max = len * v.top    + this.axisArray[i].min;
+            min = len * (1.0 - v.bottom) + this.axisArray[i].min;
+            max = len * (1.0 - v.top)    + this.axisArray[i].min;
         }
         this.stateData.axis[i].brush.min = min;
         this.stateData.axis[i].brush.max = max;
@@ -1064,11 +1064,13 @@ Axis.prototype.getClusterBrushed = function(){
     v = this.getBrushedRange();
     for(i = 0, j = this.clusters.length; i < j; ++i){
         len = this.max - this.min;
-        min = len * v.bottom + this.min;
-        max = len * v.top    + this.min;
+        min = len * (1.0 - v.bottom) + this.min;
+        max = len * (1.0 - v.top)    + this.min;
+        debugger;
         a.push((
             (this.clusters[i].min <= min && this.clusters[i].max >= min) ||
-            (this.clusters[i].min <= max && this.clusters[i].max >= max)
+            (this.clusters[i].min <= max && this.clusters[i].max >= max) ||
+            (this.clusters[i].min >= min && this.clusters[i].max <= max)
         ));
     }
     return a;

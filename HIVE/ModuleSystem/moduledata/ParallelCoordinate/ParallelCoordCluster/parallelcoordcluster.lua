@@ -37,9 +37,9 @@ function ParallelCoordCluster:Do()
 
     --self.volumeclustering:SetSigma(0, 0.001)
 
-    if self.volCache == self.value.volume then return true end
+    if self.volCache == self.value.volume:Pointer() then return true end
+    self.volCache = self.value.volume:Pointer()
 
-    self.volCache = self.value.volume;
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
 
     -- dump
