@@ -536,7 +536,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                         // // u == 対象クラスタの中心の Y 座標
                         // // w == 右軸対象クラスタの中心の Y 座標
                         // drawBezierGeometry(x, t, u, w, [0.2, 0.5, 1.0, p]);
-                        drawBeziercurve(x, t, u, w, [0.2, 0.5, 1.0, p]);
+                        drawBeziercurve(x, t, u, w, this.axisArray[i].clusters[k].color);
                     }
                 }
             }
@@ -559,9 +559,9 @@ ParallelCoordCluster.prototype.getStateData = function(){
 };
 // ステートを JSON で返す
 ParallelCoordCluster.prototype.getStateJSON = function(){
-    return JSON.stringify(this.stateData, undefined, 4);
+    return JSON.stringify(this.stateData);
 };
-// 全軸上の選択範囲をJSONにして出力
+// 全軸上のその時点での選択範囲をJSONにして出力
 ParallelCoordCluster.prototype.getAllBrushedRange = function(){
     var i, j, k, l, v;
     var min, max, len;
@@ -988,8 +988,8 @@ Axis.prototype.dragAxisEnd = function(eve){
     }
     this.updateSvg.bind(this)();
 
-    // temp
-    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', this.parent.getAllBrushedRange());}
+    var axisjson = this.parent.getAllBrushedRange();
+    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', axisjson);}
 };
 // 軸の上下のハンドルをドラッグ開始
 Axis.prototype.dragAxisHandleStart = function(eve){
@@ -1042,8 +1042,8 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     if(!this.onBrushRect){return;}
     this.onBrushRect = false;
 
-    // temp
-    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', this.parent.getAllBrushedRange());}
+    var axisjson = this.parent.getAllBrushedRange();
+    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', axisjson);}
 };
 // 軸上の選択範囲を正規化した値として返す
 Axis.prototype.getBrushedRange = function(){
