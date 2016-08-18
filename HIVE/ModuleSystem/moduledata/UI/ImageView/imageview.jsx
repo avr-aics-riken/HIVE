@@ -202,8 +202,8 @@ class ImageView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-				width: String(this.canvasSize.bind(this)()[0]) + "px",
-				height: String(this.canvasSize.bind(this)()[1]) + "px",
+				width: String(this.state.width) + "px",
+				height: String(this.state.height) + "px",
 				transform : "scale(1.0,-1.0)",
 				display: (this.hasIPCAddress() ? "block" : "none")
 			},
@@ -211,8 +211,8 @@ class ImageView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-				width: String(this.canvasSize.bind(this)()[0]) + "px",
-				height: String(this.canvasSize.bind(this)()[1]) + "px",
+				width: String(this.state.width) + "px",
+				height: String(this.state.height) + "px",
 				display: (this.hasIPCAddress() ? "none" : "block")
 			},
 		}
