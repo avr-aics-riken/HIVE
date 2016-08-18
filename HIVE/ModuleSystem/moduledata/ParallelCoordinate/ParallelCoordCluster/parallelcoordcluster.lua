@@ -35,6 +35,10 @@ function ParallelCoordCluster:Do()
         return 'No volume input'
     end
 
+    local volWidth = self.value.volume:Width()
+    local volHeight = self.value.volume:Height()
+    local volDepth = self.value.volume:Depth()
+    local volComp = self.value.volume:Component()
     --self.volumeclustering:SetSigma(0, 0.001)
 
     if self.volCache == self.value.volume:Pointer() then return true end
@@ -47,7 +51,21 @@ function ParallelCoordCluster:Do()
     local axisNum = self.volumeclustering:GetAxisNum()
     local ax
     local temp
-    local dest = '{"axis": ['
+    local dest = '{'
+    
+    dest = dest .. '"volume": {'
+    dest = dest .. '  "size":[' .. volWidth .. ', ' .. volHeight .. ',' .. volDepth .. ', '.. volComp .. ' ],'
+    dest = dest .. '  "minmax":['
+    for  ax = 0, axisNum-1 do
+        if ax ~= 0 then
+            dest = dest .. ','
+        end
+        dest = dest .. '{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}'
+    end
+    dest = dest .. '  ]'
+    dest = dest .. ' }'
+
+    dest = dest .. ', "axis": ['
     print('AxisNum = ' .. axisNum)
     for ax = 0, axisNum - 1 do
         local cnum = self.volumeclustering:GetClusterNum(ax)
@@ -87,7 +105,7 @@ function ParallelCoordCluster:Do()
     dest = dest .. ']'
 
     --- Edge
-    local datanum = self.value.volume:Width() * self.value.volume:Height() * self.value.volume:Depth()
+    local datanum = volWidth * volHeight * volDepth
     dest = dest .. ', "edge": {"volumenum": ' .. datanum .. ', "cluster": ['
     for ax = 0, axisNum - 2 do
         local cnum1 = self.volumeclustering:GetClusterNum(ax)

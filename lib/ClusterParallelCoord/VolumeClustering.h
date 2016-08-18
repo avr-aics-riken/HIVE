@@ -46,6 +46,10 @@ public:
     int GetEdgePowers(int axis, int cluster, int nextCluster);
     int SetSigma(int axis, float sigma);
 
+    float GetVolumeMin(int axis);
+    float GetVolumeMax(int axis);
+    
+
 private:
     std::vector< std::vector<float> > m_hist;
     std::vector<float> m_minVal;
