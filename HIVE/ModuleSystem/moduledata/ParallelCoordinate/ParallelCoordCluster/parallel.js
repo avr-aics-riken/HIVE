@@ -112,6 +112,10 @@ function ParallelCoordCluster(parentElement, option){
     this.resetBezierCanvas();           // ベジェ曲線モードでリセット
     this.resetBezierGeometryCanvas();   // ベジェ曲線ポリゴンジオメトリモード
     this.drawRect = this.getDrawRect(); // 描画対象の矩形領域
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.mouseNormalX = 0;
+    this.mouseNormalY = 0;
 }
 // オプションをセットする
 ParallelCoordCluster.prototype.setOption = function(option){
@@ -215,9 +219,25 @@ ParallelCoordCluster.prototype.initCanvas = function(){
     this.glReady = this.gl !== null && this.gl !== undefined;
     this.glFrameSize = 512;
     this.glFrame = create_framebuffer(this.gl, null, this.glFrameSize, this.glFrameSize);
-    this.layer.addEventListener('mousemove', function(eve){
-        // console.log(eve.currentTarget.offsetX, eve.offsetX, eve.clientX, eve.pageX);
-    }, false);
+    this.layer.addEventListener('mousemove', (function(eve){
+        var r = eve.currentTarget.getBoundingClientRect();
+        var x = eve.clientX - r.left;
+        var y = eve.clientY - r.top;
+        var topMargin = this.PARALLEL_PADDING + this.SVG_TEXT_BASELINE;
+        this.mouseX = x;
+        this.mouseY = y;
+        this.mouseNormalX = Math.min(Math.max(0, x - this.drawRect.x), this.drawRect.width) / this.drawRect.width;
+        this.mouseNormalY = Math.min(Math.max(0, (r.height - y) - this.drawRect.y), this.drawRect.height) / this.drawRect.height;
+        if(this.glReady){
+            var gl = this.gl;
+            var u8 = new Uint8Array(4);
+            var rx = this.mouseNormalX * this.glFrameSize;
+            var ry = this.mouseNormalY * this.glFrameSize;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFrame.framebuffer);
+            gl.readPixels(rx, rx, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, u8);
+            // console.log(u8);
+        }
+    }).bind(this), false);
     return this;
 };
 // canvas に矩形とか描けるやーつ
@@ -516,7 +536,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             b.sort(function(a, b){return a.value - b.value;});
             a[i].cluster = b.concat();
         }
-        // render(this.glFrame.framebuffer);
+        render.bind(this)(this.glFrame.framebuffer);
         render.bind(this)(null);
         function render(target){
             var gl = this.gl;
@@ -526,8 +546,6 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                 gl.clearColor(0.0, 0.0, 0.0, 0.0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
             }else{
-                // var u8 = new Uint8Array(4);
-                // gl.readPixels(矩形開始横位置, 矩形開始縦位置, 矩形の幅, 矩形の高さ, gl.RGBA, gl.UNSIGNED_BYTE, 型付き配列);
                 gl.viewport(this.drawRect.x, this.drawRect.y, this.drawRect.width, this.drawRect.height);
                 gl.clearColor(1.0, 1.0, 1.0, 1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
@@ -600,7 +618,16 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
 ParallelCoordCluster.prototype.getDrawRect = function(){
     var w = this.parentElement.clientWidth - this.PARALLEL_PADDING * 2;
     var h = this.parentElement.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
-    return {x: this.PARALLEL_PADDING, y: this.PARALLEL_PADDING, width: w, height: h};
+    return {
+        x: this.PARALLEL_PADDING,
+        y: this.PARALLEL_PADDING,
+        width: w,
+        height: h,
+        mx: this.mouseX,
+        my: this.mouseY,
+        mnx: this.mouseNormalX,
+        mny: this.mouseNormalY
+    };
 };
 // ステートをデータ構造として返す
 ParallelCoordCluster.prototype.getStateData = function(){
