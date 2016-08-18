@@ -68,8 +68,9 @@ class ParallelContainer extends React.Component {
                 let selected = value[i].cluster[j].selected;
                 let minVal = value[i].cluster[j].min;
                 let maxVal = value[i].cluster[j].max;
+                let colorVal = value[i].cluster[j].color;
                 if(selected){
-                    console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected + ' max:' + maxVal + ' min:' + minVal);
+                    console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected + ' max:' + maxVal + ' min:' + minVal, colorVal);
                 }
             }
         }
