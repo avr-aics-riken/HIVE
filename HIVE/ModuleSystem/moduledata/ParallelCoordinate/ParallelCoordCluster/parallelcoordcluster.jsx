@@ -26,8 +26,6 @@ class ParallelContainer extends React.Component {
         this.nodeInputChanged = this.nodeInputChanged.bind(this);
         this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
         this.imageRecieved = this.imageRecieved.bind(this);
-        this.componentDidMount = this.componentDidMount.bind(this);
-        this.componentWillUnmount = this.componentWillUnmount.bind(this);
         this.selectChanged = this.selectChanged.bind(this);
 
         this.state = {
