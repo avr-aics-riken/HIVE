@@ -47,7 +47,7 @@ function ParallelCoordCluster:Do()
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
 
     -- dump
-    print('---- DUMP -----')
+    --print('---- DUMP -----')
     local axisNum = self.volumeclustering:GetAxisNum()
     local ax
     local temp
@@ -61,12 +61,13 @@ function ParallelCoordCluster:Do()
             dest = dest .. ','
         end
         dest = dest .. '{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}'
+        --print('{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}')
     end
     dest = dest .. '  ]'
     dest = dest .. ' }'
 
     dest = dest .. ', "axis": ['
-    print('AxisNum = ' .. axisNum)
+    --print('AxisNum = ' .. axisNum)
     for ax = 0, axisNum - 1 do
         local cnum = self.volumeclustering:GetClusterNum(ax)
         print('ClusterNum = ' .. cnum)
@@ -128,9 +129,9 @@ function ParallelCoordCluster:Do()
                 end
                 local cnt = self.volumeclustering:GetEdgePowers(ax, c1, c2)
                 temp = temp .. cnt
-                if cnt > 0 then
-                    print(ax .."-"..  c1 .. " <-> " .. ax + 1 .."-"..  c2 .. " = " .. cnt / datanum)
-                end
+                --if cnt > 0 then
+                --    print(ax .."-"..  c1 .. " <-> " .. ax + 1 .."-"..  c2 .. " = " .. cnt / datanum)
+                --end
             end
             dest = dest .. temp .. "]"
         end
@@ -139,7 +140,7 @@ function ParallelCoordCluster:Do()
 
     dest = dest .. ']}}'
 
-    print('---- DUMP End ----')
+    --print('---- DUMP End ----')
 
     -- temp
     sendData(self.varname, dest)

@@ -321,7 +321,7 @@ int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
 
 float VolumeClustering::GetVolumeMin(int axis)
 {
-    if (axis >= GetAxisNum() - 1) {
+    if (axis >= GetAxisNum()) {
         printf("[Error] over axis num\n");
         return 0.0f;
     }
@@ -330,7 +330,7 @@ float VolumeClustering::GetVolumeMin(int axis)
 
 float VolumeClustering::GetVolumeMax(int axis)
 {
-    if (axis >= GetAxisNum() - 1) {
+    if (axis >= GetAxisNum()) {
         printf("[Error] over axis num\n");
         return 0.0f;
     }
