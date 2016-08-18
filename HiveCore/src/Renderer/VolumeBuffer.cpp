@@ -25,6 +25,7 @@ VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
     m_index_num  = 0;
     memset(m_boxsize, 0, sizeof(m_boxsize));
     memset(m_voldim, 0, sizeof(m_voldim));
+    m_volcomp = 0;
 /*
     memset(m_volMinVal, 0, sizeof(m_volMinVal));
     memset(m_volMaxVal, 0, sizeof(m_volMaxVal));
@@ -102,6 +103,7 @@ bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsi
     m_voldim[0] = width;
     m_voldim[1] = height;
     m_voldim[2] = depth;
+    m_volcomp   = component;
 
 /*
     VolumeAnalyzerProc analyze;
@@ -201,6 +203,8 @@ void VolumeBuffer::Render() const
     const unsigned int prg = getProgram();
     SetUniform3fv_SGL(prg, "volumescale", volumescale);
     SetUniform3fv_SGL(prg, "volumedim", m_voldim);
+    SetUniform1i_SGL(prg, "volumecomponent", m_volcomp);
+
     VX::Math::vec3 translate = m_model->GetTranslate();
     SetUniform3fv_SGL(prg, "offset", (float *)&translate);
     

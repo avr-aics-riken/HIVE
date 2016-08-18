@@ -29,7 +29,7 @@ function ParallelCoordCluster:Do()
     self:UpdateValue()
     -- generate selection texture
     self.gentex:Create2D(self.value.rgba, 1, 256, 1);
-    self:PrintValue()
+    --self:PrintValue()
 
     if self.value.volume == nil then
         return 'No volume input'
@@ -39,6 +39,11 @@ function ParallelCoordCluster:Do()
     local volHeight = self.value.volume:Height()
     local volDepth = self.value.volume:Depth()
     local volComp = self.value.volume:Component()
+
+
+    self.gentex:Create2D(self.value.rgba, 1, 256, volComp * 2);
+
+
     --self.volumeclustering:SetSigma(0, 0.001)
 
     if self.volCache == self.value.volume:Pointer() then return true end

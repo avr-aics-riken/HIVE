@@ -62,7 +62,7 @@ class ParallelContainer extends React.Component {
         this.parallel.resetAxis(json);
     }
 
-    selectChanged(value, res){
+    selectChanged(value){
         for(let i = 0; i < value.length; ++i){
             for(let j = 0; j < value[i].cluster.length; ++j){
                 let selected = value[i].cluster[j].selected;
@@ -75,46 +75,77 @@ class ParallelContainer extends React.Component {
             }
         }
 
-        let allMin =  10000.0;
-        let allMax = -10000.0;
-        for(let j = 0; j < value[0].cluster.length; ++j){
-            let minVal = value[0].cluster[j].min;
-            let maxVal = value[0].cluster[j].max;
-            //console.log('cluster min/max:', minVal, maxVal);
-            allMin = Math.min(minVal, allMin);
-            allMax = Math.max(maxVal, allMax);
+        let allMin = [];
+        let allMax = [];
+        for (let i = 0; i < value.length; ++i) {
+            let axMin =  10000.0;
+            let axMax = -10000.0;
+            for(let j = 0; j < value[i].cluster.length; ++j){
+                let minVal = value[i].cluster[j].min;
+                let maxVal = value[i].cluster[j].max;
+                //console.log('cluster min/max:', minVal, maxVal);
+                axMin = Math.min(minVal, axMin);
+                axMax = Math.max(maxVal, axMax);
+            }
+            allMin.push(axMin);
+            allMax.push(axMax);
         }
         //console.log('search min/max:', allMin, allMax);
 
         const numVals = 256;
         let rgba = [];
-        rgba.length = numVals*4;
+        const volComp = 3
+        const RGBA = 4
+        rgba.length = numVals * RGBA * volComp * 2;
         rgba.fill(0);
 
-        for(let i = 0; i < numVals; ++i){
-            let rate = i / numVals;
-            for(let j = 0; j < value[0].cluster.length; ++j){
-                let selected = value[0].cluster[j].selected;
-                if (selected) {
-                    let minVal = value[0].cluster[j].min;
-                    let maxVal = value[0].cluster[j].max;
-                    let cmin = (minVal - allMin) / (allMax - allMin);
-                    let cmax = (maxVal - allMin) / (allMax - allMin);
-                    if (rate >= cmin && rate <= cmax) {
-                        rgba[4*i] = 255; //r
-                        rgba[4*i+1] = 255; //g
-                        rgba[4*i+2] = 255; //b
-                        rgba[4*i+3] = 255; //a
-                    }
+        let ax;
+        for(let ax = 0; ax < volComp; ++ax){
+            for(let i = 0; i < numVals; ++i){
+                let rate = i / numVals;
+                let allMinMaxDiff = allMax[ax] - allMin[ax];
+                for(let j = 0; j < value[ax].cluster.length; ++j){
+                    let minVal = value[ax].cluster[j].min;
+                    let maxVal = value[ax].cluster[j].max;
+                    let cmin = (minVal - allMin[ax]) / allMinMaxDiff;
+                    let cmax = (maxVal - allMin[ax]) / allMinMaxDiff;
+                    let selected = value[ax].cluster[j].selected;
+                    let colorVal = value[ax].cluster[j].color;
+                
+                    if (selected) {
+                        if (rate >= cmin && rate <= cmax) {
+                            rgba[4*(ax * numVals * 2 + i)  ] = 255;//*colorVal[0]; //r
+                            rgba[4*(ax * numVals * 2 + i)+1] = 255;//*colorVal[1]; //g
+                            rgba[4*(ax * numVals * 2 + i)+2] = 255;//*colorVal[2]; //b
+                            rgba[4*(ax * numVals * 2 + i)+3] = 255; //a
+                        }
+                    }                    
                 }
             }
+            rgba[4*(ax * numVals * 2 + numVals)  ] = allMin[ax]; // min
+            rgba[4*(ax * numVals * 2 + numVals)+1] = allMax[ax]; // max
         }
+        //console.log(rgba);
 
+        /*for(let i = 0; i < numVals; ++i){
+            if (i > 30 && i < 120) {
+                rgba[4*i  ] = 255; //r
+                rgba[4*i+1] = 255; //g
+                rgba[4*i+2] = 255; //b
+                rgba[4*i+3] = 255; //a
+            } else {
+                rgba[4*i  ] = 0; //r
+                rgba[4*i+1] = 0; //g
+                rgba[4*i+2] = 0; //b
+                rgba[4*i+3] = 255; //a
+            }
+        }*/
         const varname = this.props.node.varname;
-        res.rgba = rgba;
         this.props.action.changeNodeInput({
-            varname: varname,
-            input: res
+            varname : varname,
+            input : {
+                "rgba" : rgba
+            }
         });
     }
 
@@ -129,7 +160,11 @@ class ParallelContainer extends React.Component {
     setInputValue(key, value){
         let obj = {};
         obj[key] = JSON.stringify(value).replace(/"/g, '\\\"');
-        this.selectChanged(value, obj);
+        /*this.props.action.changeNodeInput({
+            varname: this.props.node.varname,
+            input: obj
+        });*/
+        this.selectChanged(value);
     }
 
     imageRecieved(err, param, data){

@@ -16,6 +16,7 @@ const float fov = 45.0;
 const float num_steps = 256.0;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
+uniform int volumecomponent;
 uniform vec3 offset;
 
 uniform float power;
@@ -60,7 +61,14 @@ vec4 samplingVolume(vec3 texpos, vec4 sum)
     float f = clamp(dens.x, vmin, vmax);
     float x = (f - vmin) / (vmax - vmin);
     
-    vec4 select = texture2D(selection, vec2(x, 0.5));    
+    float onePitch = 1.0 / float(volumecomponent*2);
+    float halfPitch = 0.5 / float(volumecomponent*2);
+    
+    vec4 select = vec4(0,0,0,1);
+    for (int i = 0; i < volumecomponent; ++i) {
+        select.rgb += texture2D(selection, vec2(x, halfPitch + onePitch * float(2*i))).rgb;
+    }
+    select.rgb = min(vec3(1.0), select.rgb);
 	return select;
 }
 
