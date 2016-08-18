@@ -536,9 +536,10 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                         // u == 対象クラスタの中心の Y 座標
                         // w == 右軸対象クラスタの中心の Y 座標
                         var drawColor = this.axisArray[i].clusters[k].color;
+                        c = hsva(o * 36, 1.0, 1.0, 1.0);
                         m = linePower[r] * 0.9 + 0.1;
                         // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ライン
-                        drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ジオメトリ
+                        drawBezierGeometry(x, t, u, w, [c[0], c[1], c[2], m]); // ジオメトリ
                     }
                 }
             }
@@ -556,12 +557,15 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                 var _min = this.axisArray[i].clusters[k].min;
                 var _max = this.axisArray[i].clusters[k].max;
                 var _top = this.axisArray[i].clusters[k].top;
+                c = hsva(e * 36, 1.0, 1.0, 1.0);
+                d = [c[0], c[1], c[2], this.axisArray[i].clusters[k].color[3]];
                 drawClusterRect(
                     x,
                     x + this.SVG_DEFAULT_WIDTH,
                     y,
                     w,
-                    this.axisArray[i].clusters[k].color,
+                    d,
+                    // this.axisArray[i].clusters[k].color,
                     (_max - _top) / (_max - _min)
                 );
             }
