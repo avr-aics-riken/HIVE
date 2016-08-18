@@ -217,7 +217,7 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
 ParallelCoordCluster.prototype.initCanvas = function(){
     this.gl = this.canvas.getContext('webgl');
     this.glReady = this.gl !== null && this.gl !== undefined;
-    this.glFrameSize = 512;
+    this.glFrameSize = 1024;
     this.glFrame = create_framebuffer(this.gl, null, this.glFrameSize, this.glFrameSize);
     this.layer.addEventListener('mousemove', (function(eve){
         var r = eve.currentTarget.getBoundingClientRect();
@@ -231,11 +231,8 @@ ParallelCoordCluster.prototype.initCanvas = function(){
         if(this.glReady){
             var gl = this.gl;
             var u8 = new Uint8Array(4);
-            var rx = this.mouseNormalX * this.glFrameSize;
-            var ry = this.mouseNormalY * this.glFrameSize;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFrame.framebuffer);
-            gl.readPixels(rx, rx, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, u8);
-            // console.log(u8);
+            gl.readPixels(x, r.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, u8);
         }
     }).bind(this), false);
     return this;
@@ -542,7 +539,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             var gl = this.gl;
             gl.bindFramebuffer(gl.FRAMEBUFFER, target);
             if(target){
-                gl.viewport(0, 0, this.glFrameSize, this.glFrameSize);
+                gl.viewport(this.drawRect.x, this.drawRect.y, this.drawRect.width, this.drawRect.height);
                 gl.clearColor(0.0, 0.0, 0.0, 0.0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
             }else{
