@@ -557,23 +557,22 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                             var drawColor = this.axisArray[i].clusters[k].color;
                             c = hsva(o * 36, 1.0, 1.0, 1.0);
                             m = linePower[r] * 0.9 + 0.1;
-                            // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ライン
-                            drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ジオメトリ
-                            // drawBezierGeometry(x, t, u, w, [c[0], c[1], c[2], m]); // ジオメトリ
+                            // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ラインで描く場合
+                            // drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // モノクロgeometry
+                            drawBezierGeometry(x, t, u, w, [c[0], c[1], c[2], m]); // ジオメトリ（カラー暫定）
                         }
                     }
                 }
             }
             // 少々冗長なのだが、軸上の矩形を確実に上に描画させるために
             for(i = 0, j = this.axisArray.length; i < j; ++i){
-                q = this.axisArray[i].height - this.SVG_TEXT_BASELINE;    // Canvas の描画すべきエリアの高さ
-                x = this.axisArray[i].getHorizontalRange();               // 対象軸の X 座標（非正規）
+                q = this.axisArray[i].height - this.SVG_TEXT_BASELINE;     // Canvas の描画すべきエリアの高さ
+                x = this.axisArray[i].getHorizontalRange();                // 対象軸の X 座標（非正規）
                 for(e = 0, f = this.axisArray[i].clusters.length; e < f; ++e){
                     k = a[i].cluster[e].index;                             // ソート済みの描画すべきインデックス
-                    // axis rect
                     v = this.axisArray[i].clusters[k].getNormalizeRange(); // クラスタの上下限値（正規）
-                    w = q * v.min;                                        // 高さに正規化済みのクラスタの下限値掛ける
-                    y = q * v.max;                                        // 高さに正規化済みのクラスタの上限値掛ける
+                    w = q * v.min;                                         // 高さに正規化済みのクラスタの下限値掛ける
+                    y = q * v.max;                                         // 高さに正規化済みのクラスタの上限値掛ける
                     var _min = this.axisArray[i].clusters[k].min;
                     var _max = this.axisArray[i].clusters[k].max;
                     var _top = this.axisArray[i].clusters[k].top;
@@ -584,8 +583,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                         x + this.SVG_DEFAULT_WIDTH,
                         y,
                         w,
-                        // d,
-                        this.axisArray[i].clusters[k].color,
+                        d, // カラー暫定
+                        // this.axisArray[i].clusters[k].color, // モノクロ
                         (_max - _top) / (_max - _min)
                     );
                 }
