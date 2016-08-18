@@ -46,6 +46,7 @@ class ImageView extends React.Component {
 		this.setState({
 			image : buffer
 		});
+		this.imageSize = [parseFloat(param.width), parseFloat(param.height)]
 
 		this.imageUpdate(param);
 	}
@@ -87,7 +88,6 @@ class ImageView extends React.Component {
 								imageData : imageData,
 							});
 							
-						console.log("hogehoge", param.width, param.height)
 							this.imageSize = [param.width, param.height];
 							context.putImageData(imageData, 0, 0);
 
@@ -127,6 +127,14 @@ class ImageView extends React.Component {
 			this.readyForIPCImageTransfer();
 		}
 	}
+	
+    closeForIPCImageTransfer(){
+        if (this.sc === undefined) {
+        } else {
+            this.sc.close();
+            this.sc = undefined;
+        }
+    }
 	
 	componentDidMount() {
         const Store_IMAGE_RECIEVED = "image_revieved";
@@ -184,6 +192,24 @@ class ImageView extends React.Component {
 		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[1], minHeight)];
 	}
 	
+	aspectCanvasSize() {
+		if (this.imageSize) {
+			let aspect = this.imageSize[0] / this.imageSize[1];
+			let w = Math.max(this.props.node.panel.size[0], minWidth);
+			return [w, w / aspect];
+		}
+		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[1], minHeight)];
+	}
+	
+	aspectImageSize() {
+		if (this.imageSize) {
+			let aspect = this.imageSize[0] / this.imageSize[1];
+			let w = Math.max(this.state.width, minWidth);
+			return [w, w / aspect];
+		}
+		return [Math.max(this.state.width, minWidth), Math.max(this.state.height,  minHeight)];
+	}
+	
 	styles() {
 		return {
 			bounds : {
@@ -194,8 +220,8 @@ class ImageView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-				width: String(this.canvasSize.bind(this)()[0]) + "px",
-				height: String(this.canvasSize.bind(this)()[1] - footerHeight) + "px",
+				width: String(this.aspectCanvasSize.bind(this)()[0]) + "px",
+				height: String(this.aspectCanvasSize.bind(this)()[1]) + "px",
 				transform : "scale(1.0,-1.0)",
 				display: (this.hasIPCAddress() ? "block" : "none")
 			},
@@ -203,8 +229,8 @@ class ImageView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-				width: String(this.state.width) + "px",
-				height: String(this.state.height) + "px",
+				width: String(this.aspectImageSize.bind(this)()[0]) + "px",
+				height: String(this.aspectImageSize.bind(this)()[1])  + "px",
 				display: (this.hasIPCAddress() ? "none" : "block")
 			},
 		}
