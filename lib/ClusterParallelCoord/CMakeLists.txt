@@ -15,6 +15,7 @@ include_directories(${INCLUDES})
 # Source files
 set(SOURCES
 	VolumeClustering.cpp
+	VolumeScatterPlot.cpp
 	LuaEntry.cpp
 )
 

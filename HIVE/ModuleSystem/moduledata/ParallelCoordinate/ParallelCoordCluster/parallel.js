@@ -116,6 +116,7 @@ function ParallelCoordCluster(parentElement, option){
     this.mouseY = 0;
     this.mouseNormalX = 0;
     this.mouseNormalY = 0;
+    this.selectedArray = []; // brush されたときの情報
 }
 // オプションをセットする
 ParallelCoordCluster.prototype.setOption = function(option){
@@ -196,6 +197,7 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         }
         // reset state and add data
         this.stateData = resetData;
+        this.selectedArray = [];
         this.axisArray = [];
         this.addAxis();
     }
@@ -217,7 +219,7 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
 ParallelCoordCluster.prototype.initCanvas = function(){
     this.gl = this.canvas.getContext('webgl');
     this.glReady = this.gl !== null && this.gl !== undefined;
-    this.glFrameSize = 512;
+    this.glFrameSize = 1024;
     this.glFrame = create_framebuffer(this.gl, null, this.glFrameSize, this.glFrameSize);
     this.layer.addEventListener('mousemove', (function(eve){
         var r = eve.currentTarget.getBoundingClientRect();
@@ -231,11 +233,8 @@ ParallelCoordCluster.prototype.initCanvas = function(){
         if(this.glReady){
             var gl = this.gl;
             var u8 = new Uint8Array(4);
-            var rx = this.mouseNormalX * this.glFrameSize;
-            var ry = this.mouseNormalY * this.glFrameSize;
             gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFrame.framebuffer);
-            gl.readPixels(rx, rx, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, u8);
-            // console.log(u8);
+            gl.readPixels(x, r.height - y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, u8);
         }
     }).bind(this), false);
     return this;
@@ -542,7 +541,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             var gl = this.gl;
             gl.bindFramebuffer(gl.FRAMEBUFFER, target);
             if(target){
-                gl.viewport(0, 0, this.glFrameSize, this.glFrameSize);
+                gl.viewport(this.drawRect.x, this.drawRect.y, this.drawRect.width, this.drawRect.height);
                 gl.clearColor(0.0, 0.0, 0.0, 0.0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
             }else{
@@ -573,11 +572,9 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                             // u == 対象クラスタの中心の Y 座標
                             // w == 右軸対象クラスタの中心の Y 座標
                             var drawColor = this.axisArray[i].clusters[k].color;
-                            c = hsva(o * 36, 1.0, 1.0, 1.0);
                             m = linePower[r] * 0.9 + 0.1;
                             // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ラインで描く場合
-                            // drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // モノクロgeometry
-                            drawBezierGeometry(x, t, u, w, [c[0], c[1], c[2], m]); // ジオメトリ（カラー暫定）
+                            drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // モノクロgeometry
                         }
                     }
                 }
@@ -594,15 +591,12 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     var _min = this.axisArray[i].clusters[k].min;
                     var _max = this.axisArray[i].clusters[k].max;
                     var _top = this.axisArray[i].clusters[k].top;
-                    c = hsva(e * 36, 1.0, 1.0, 1.0);
-                    d = [c[0], c[1], c[2], this.axisArray[i].clusters[k].color[3]];
                     drawClusterRect(
                         x,
                         x + this.SVG_DEFAULT_WIDTH,
                         y,
                         w,
-                        d, // カラー暫定
-                        // this.axisArray[i].clusters[k].color, // モノクロ
+                        this.axisArray[i].clusters[k].color, // モノクロ
                         (_max - _top) / (_max - _min)
                     );
                 }
@@ -637,30 +631,90 @@ ParallelCoordCluster.prototype.getStateData = function(){
 ParallelCoordCluster.prototype.getStateJSON = function(){
     return JSON.stringify(this.stateData);
 };
-// 全軸上のその時点での選択範囲をJSONにして出力
-ParallelCoordCluster.prototype.getAllBrushedRange = function(){
-    var i, j, k, l, v;
+// 全軸上のその時点での選択範囲・input に返すべき情報をJSONにして返す
+ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
+    var f, i, j, k, l, v, w;
     var min, max, len;
+    var selLength = this.selectedArray.length;
+
+    // return value gen and update
+    v = []; w = [];
     for(i = 0, j = this.axisArray.length; i < j; ++i){
         min = max = len = null;
-        v = this.axisArray[i].getBrushedRange();
-        if(v && v.top && v.bottom){
+        v[i] = this.axisArray[i].getBrushedRange();
+        if(v[i] && v[i].top && v[i].bottom){
             len = this.axisArray[i].max - this.axisArray[i].min;
-            min = len * (1.0 - v.bottom) + this.axisArray[i].min;
-            max = len * (1.0 - v.top)    + this.axisArray[i].min;
+            min = len * (1.0 - v[i].bottom) + this.axisArray[i].min;
+            max = len * (1.0 - v[i].top)    + this.axisArray[i].min;
         }
-        this.stateData.axis[i].brush.min = min;
-        this.stateData.axis[i].brush.max = max;
-        v = this.axisArray[i].getClusterBrushed();
-        for(k = 0, l = v.length; k < l; ++k){
-            if(v[k]){
-                this.stateData.axis[i].cluster[k].selected = v[k];
+        this.stateData.axis[i].brush.min = min; // brush 領域の min
+        this.stateData.axis[i].brush.max = max; // brush 領域の max
+        this.stateData.axis[i].volume = {       // ボリューム全体の軸ごとの minmax
+            min: this.stateData.volume.minmax[i].min,
+            max: this.stateData.volume.minmax[i].max
+        };
+        w[i] = this.axisArray[i].getClusterBrushed();
+        for(k = 0, l = w[i].length; k < l; ++k){
+            if(w[i][k]){
+                this.stateData.axis[i].cluster[k].selected = w[i][k];
             }else{
                 this.stateData.axis[i].cluster[k].selected = false;
             }
         }
     }
+
+    // check selection count
+    f = false;
+    j = currentAxis.index;
+    for(i = 0; i < selLength; ++i){                 // 既存の選択状態をチェックする
+        if(this.selectedArray[i].index === j){      // インデックスが一致しているか
+            f = true;                               // 一致していたものが存在した
+            if(v[j] && v[j].top && v[j].bottom){    // 選択されているか
+                // 一致していたものが存在し更新
+                this.selectedArray[i].top = v[j].top;
+                this.selectedArray[i].bottom = v[j].bottom;
+            }else{
+                // 一致したが選択されていない状態なので消す
+                this.selectedArray.splice(i, 1);
+            }
+            break;
+        }
+    }
+    // 一致していたものが存在しなかったら追加する
+    if(!f){
+        this.selectedArray.push({
+            index: currentAxis.index,
+            top: v[j].top,
+            bottom: v[j].bottom
+        });
+    }
+
+    this.setClusterColor();
     return this.stateData.axis;
+};
+ParallelCoordCluster.prototype.setClusterColor = function(){
+    var i, j, k, l, m, n;
+    var a, rgb = [];
+    var colorStride = 360 / 2.5;
+    for(i = 0, j = this.axisArray.length; i < j; ++i){
+        m = 0;
+        for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
+            rgb = [0, 0, 0];
+            if(this.stateData.axis[i].cluster[k].selected){
+                a = hsva(colorStride * m, 1.0, 0.5, 1.0);
+                ++m;
+                rgb[0] = a[0];
+                rgb[1] = a[1];
+                rgb[2] = a[2];
+            }
+            this.axisArray[i].clusters[k].color[0] = rgb[0];
+            this.axisArray[i].clusters[k].color[1] = rgb[1];
+            this.axisArray[i].clusters[k].color[2] = rgb[2];
+            this.stateData.axis[i].cluster[k].color[0] = rgb[0];
+            this.stateData.axis[i].cluster[k].color[1] = rgb[1];
+            this.stateData.axis[i].cluster[k].color[2] = rgb[2];
+        }
+    }
 };
 
 // axis ===================================================================
@@ -1068,7 +1122,7 @@ Axis.prototype.dragAxisEnd = function(eve){
     }
     this.updateSvg.bind(this)();
 
-    var axisjson = this.parent.getAllBrushedRange();
+    var axisjson = this.parent.getAllBrushedRange(this);
     if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', axisjson);}
 };
 // 軸の上下のハンドルをドラッグ開始
@@ -1122,7 +1176,7 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     if(!this.onBrushRect){return;}
     this.onBrushRect = false;
 
-    var axisjson = this.parent.getAllBrushedRange();
+    var axisjson = this.parent.getAllBrushedRange(this);
     if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', axisjson);}
 };
 // 軸上の選択範囲を正規化した値として返す
