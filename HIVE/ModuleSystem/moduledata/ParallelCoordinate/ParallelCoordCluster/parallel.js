@@ -112,6 +112,10 @@ function ParallelCoordCluster(parentElement, option){
     this.resetBezierCanvas();           // ベジェ曲線モードでリセット
     this.resetBezierGeometryCanvas();   // ベジェ曲線ポリゴンジオメトリモード
     this.drawRect = this.getDrawRect(); // 描画対象の矩形領域
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.mouseNormalX = 0;
+    this.mouseNormalY = 0;
 }
 // オプションをセットする
 ParallelCoordCluster.prototype.setOption = function(option){
@@ -215,9 +219,17 @@ ParallelCoordCluster.prototype.initCanvas = function(){
     this.glReady = this.gl !== null && this.gl !== undefined;
     this.glFrameSize = 512;
     this.glFrame = create_framebuffer(this.gl, null, this.glFrameSize, this.glFrameSize);
-    this.layer.addEventListener('mousemove', function(eve){
-        // console.log(eve.currentTarget.offsetX, eve.offsetX, eve.clientX, eve.pageX);
-    }, false);
+    this.layer.addEventListener('mousemove', (function(eve){
+        var r = eve.currentTarget.getBoundingClientRect();
+        var x = eve.clientX - r.left;
+        var y = eve.clientY - r.top;
+        var topMargin = this.PARALLEL_PADDING + this.SVG_TEXT_BASELINE;
+        this.mouseX = x;
+        this.mouseY = y;
+        this.mouseNormalX = Math.min(Math.max(0, x - this.drawRect.x), this.drawRect.width) / this.drawRect.width;
+        this.mouseNormalY = Math.min(Math.max(0, (r.height - y) - this.drawRect.y), this.drawRect.height) / this.drawRect.height;
+        console.log({mnx: this.mouseNormalX, mny: this.mouseNormalY});
+    }).bind(this), false);
     return this;
 };
 // canvas に矩形とか描けるやーつ
@@ -600,7 +612,16 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
 ParallelCoordCluster.prototype.getDrawRect = function(){
     var w = this.parentElement.clientWidth - this.PARALLEL_PADDING * 2;
     var h = this.parentElement.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
-    return {x: this.PARALLEL_PADDING, y: this.PARALLEL_PADDING, width: w, height: h};
+    return {
+        x: this.PARALLEL_PADDING,
+        y: this.PARALLEL_PADDING,
+        width: w,
+        height: h,
+        mx: this.mouseX,
+        my: this.mouseY,
+        mnx: this.mouseNormalX,
+        mny: this.mouseNormalY
+    };
 };
 // ステートをデータ構造として返す
 ParallelCoordCluster.prototype.getStateData = function(){
