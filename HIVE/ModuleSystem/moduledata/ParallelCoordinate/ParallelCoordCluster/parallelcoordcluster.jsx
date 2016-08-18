@@ -62,7 +62,7 @@ class ParallelContainer extends React.Component {
         this.parallel.resetAxis(json);
     }
 
-    selectChanged(value){
+    selectChanged(value, res){
         for(let i = 0; i < value.length; ++i){
             for(let j = 0; j < value[i].cluster.length; ++j){
                 let selected = value[i].cluster[j].selected;
@@ -109,27 +109,12 @@ class ParallelContainer extends React.Component {
                 }
             }
         }
-        //console.log(rgba);
 
-        /*for(let i = 0; i < numVals; ++i){
-            if (i > 30 && i < 120) {
-                rgba[4*i  ] = 255; //r
-                rgba[4*i+1] = 255; //g
-                rgba[4*i+2] = 255; //b
-                rgba[4*i+3] = 255; //a
-            } else {
-                rgba[4*i  ] = 0; //r
-                rgba[4*i+1] = 0; //g
-                rgba[4*i+2] = 0; //b
-                rgba[4*i+3] = 255; //a
-            }
-        }*/
         const varname = this.props.node.varname;
+        res.rgba = rgba;
         this.props.action.changeNodeInput({
-            varname : varname,
-            input : {
-                "rgba" : rgba
-            }
+            varname: varname,
+            input: res
         });
     }
 
@@ -144,11 +129,7 @@ class ParallelContainer extends React.Component {
     setInputValue(key, value){
         let obj = {};
         obj[key] = JSON.stringify(value).replace(/"/g, '\\\"');
-        /*this.props.action.changeNodeInput({
-            varname: this.props.node.varname,
-            input: obj
-        });*/
-        this.selectChanged(value);
+        this.selectChanged(value, obj);
     }
 
     imageRecieved(err, param, data){

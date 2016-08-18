@@ -228,7 +228,15 @@ ParallelCoordCluster.prototype.initCanvas = function(){
         this.mouseY = y;
         this.mouseNormalX = Math.min(Math.max(0, x - this.drawRect.x), this.drawRect.width) / this.drawRect.width;
         this.mouseNormalY = Math.min(Math.max(0, (r.height - y) - this.drawRect.y), this.drawRect.height) / this.drawRect.height;
-        console.log({mnx: this.mouseNormalX, mny: this.mouseNormalY});
+        if(this.glReady){
+            var gl = this.gl;
+            var u8 = new Uint8Array(4);
+            var rx = this.mouseNormalX * this.glFrameSize;
+            var ry = this.mouseNormalY * this.glFrameSize;
+            gl.bindFramebuffer(gl.FRAMEBUFFER, this.glFrame.framebuffer);
+            gl.readPixels(rx, rx, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, u8);
+            // console.log(u8);
+        }
     }).bind(this), false);
     return this;
 };
@@ -528,7 +536,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             b.sort(function(a, b){return a.value - b.value;});
             a[i].cluster = b.concat();
         }
-        // render(this.glFrame.framebuffer);
+        render.bind(this)(this.glFrame.framebuffer);
         render.bind(this)(null);
         function render(target){
             var gl = this.gl;
@@ -538,8 +546,6 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                 gl.clearColor(0.0, 0.0, 0.0, 0.0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
             }else{
-                // var u8 = new Uint8Array(4);
-                // gl.readPixels(矩形開始横位置, 矩形開始縦位置, 矩形の幅, 矩形の高さ, gl.RGBA, gl.UNSIGNED_BYTE, 型付き配列);
                 gl.viewport(this.drawRect.x, this.drawRect.y, this.drawRect.width, this.drawRect.height);
                 gl.clearColor(1.0, 1.0, 1.0, 1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT);
