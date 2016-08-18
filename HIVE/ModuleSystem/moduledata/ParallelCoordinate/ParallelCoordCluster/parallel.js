@@ -391,7 +391,7 @@ ParallelCoordCluster.prototype.resetBezierGeometryCanvas = function(){
 };
 // 初期化などが全て終わっている前提の描画実行部分
 ParallelCoordCluster.prototype.drawCanvas = function(){
-    var i, j, k, l;
+    var a, b, c, d, e, f, i, j, k, l, m, n, o;
     var p, q, r, s, t, u, v, w, x, y;
     var gl = this.gl;
     var mat = this.mat;
@@ -424,10 +424,9 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
     gl.viewport(this.drawRect.x, this.drawRect.y, this.drawRect.width, this.drawRect.height);
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    gl.enable(gl.BLEND);
-    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
 
     var drawClusterRect = function(left, right, top, bottom, color, summit){
+        gl.disable(gl.BLEND);
         var w = right - left;
         var h = top - bottom;
         // mat.identity(mMatrix);
@@ -468,6 +467,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
     }.bind(this);
 
     var drawBeziercurve = function(left, right, first, second, color){
+        gl.enable(gl.BLEND);
+        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         gl.useProgram(this.bPrg);
         gl.uniformMatrix4fv(this.bUniL.matrix, false, vpMatrix);
         gl.uniform4fv(this.bUniL.point, [left, right, first, second]);
@@ -478,6 +479,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
     }.bind(this);
 
     var drawBezierGeometry = function(left, right, first, second, color){
+        gl.disable(gl.BLEND);
         gl.useProgram(this.bgPrg);
         gl.uniformMatrix4fv(this.bgUniL.matrix, false, vpMatrix);
         gl.uniform4fv(this.bgUniL.point, [left, right, first, second]);
@@ -490,16 +492,67 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
     }.bind(this);
 
     if(this.axisArray.length > 1){
-        // 少々冗長なのだが、軸上の矩形を確実に下に描画させるために
+        a = [];
+        for(i = 0, j = this.axisArray.length; i < j; ++i){
+            a[i] = {cluster: null, line: []};
+            // cluster sort
+            b = [];
+            d = [];
+            for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
+                b.push({index: k, value: this.axisArray[i].clusters[k].color[3]});
+                if(i !== this.axisArray.length - 1){
+                    // line sort
+                    c = this.axisArray[i].clusters[k].getOutputLinePower();
+                    for(m = 0, n = c.length; m < n; ++m){
+                        d[m] = {index: m, value: c[m]};
+                    }
+                    d.sort(function(a, b){return a.value - b.value;});
+                    a[i].line[k] = d.concat();
+                }
+            }
+            b.sort(function(a, b){return a.value - b.value;});
+            a[i].cluster = b.concat();
+        }
+        for(i = 0, j = this.axisArray.length; i < j; ++i){
+            q = this.axisArray[i].height - this.SVG_TEXT_BASELINE;     // Canvas の描画すべきエリアの高さ
+            x = this.axisArray[i].getHorizontalRange();                // 対象軸の X 座標（非正規）
+            for(e = 0, f = this.axisArray[i].clusters.length; e < f; ++e){
+                k = a[i].cluster[e].index;                             // ソート済みの描画すべきインデックス
+                v = this.axisArray[i].clusters[k].getNormalizeRange(); // クラスタの上下限値（正規）
+                w = q * v.min;                                         // 高さに正規化済みのクラスタの下限値掛ける
+                y = q * v.max;                                         // 高さに正規化済みのクラスタの上限値掛ける
+                // bezier curve
+                if(i !== (this.axisArray.length - 1)){                 // 最終軸じゃないときだけやる
+                    t = this.axisArray[i + 1].getHorizontalRange();    // 右隣の軸の X 座標（非正規）
+                    u = (y - w) * v.top + w;                           // v.top は正規化されているので除算ではなく乗算
+                    var linePower = this.axisArray[i].clusters[k].getOutputLinePower();
+                    for(o = 0, s = this.axisArray[i + 1].clusters.length; o < s; ++o){
+                        r = a[i].line[k][o].index;                     // ソート済みの描画すべきインデックス
+                        v = this.axisArray[i + 1].clusters[r].getNormalizeRange();
+                        w = q * ((v.max - v.min) * v.top + v.min);     // v.top は正規化されているので除算ではなく乗算する
+                        p = 0.5;
+                        // x == 対称軸の X 座標
+                        // t == 右軸の X 座標
+                        // u == 対象クラスタの中心の Y 座標
+                        // w == 右軸対象クラスタの中心の Y 座標
+                        var drawColor = this.axisArray[i].clusters[k].color;
+                        m = linePower[r] * 0.9 + 0.1;
+                        // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ライン
+                        drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ジオメトリ
+                    }
+                }
+            }
+        }
+        // 少々冗長なのだが、軸上の矩形を確実に上に描画させるために
         for(i = 0, j = this.axisArray.length; i < j; ++i){
             q = this.axisArray[i].height - this.SVG_TEXT_BASELINE;    // Canvas の描画すべきエリアの高さ
             x = this.axisArray[i].getHorizontalRange();               // 対象軸の X 座標（非正規）
-            for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
+            for(e = 0, f = this.axisArray[i].clusters.length; e < f; ++e){
+                k = a[i].cluster[e].index;                             // ソート済みの描画すべきインデックス
                 // axis rect
                 v = this.axisArray[i].clusters[k].getNormalizeRange(); // クラスタの上下限値（正規）
                 w = q * v.min;                                        // 高さに正規化済みのクラスタの下限値掛ける
                 y = q * v.max;                                        // 高さに正規化済みのクラスタの上限値掛ける
-                // drawClusterRect(x, x + this.SVG_DEFAULT_WIDTH, y, w, [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0]);
                 var _min = this.axisArray[i].clusters[k].min;
                 var _max = this.axisArray[i].clusters[k].max;
                 var _top = this.axisArray[i].clusters[k].top;
@@ -508,37 +561,9 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     x + this.SVG_DEFAULT_WIDTH,
                     y,
                     w,
-                    // [1.0 / j * i / 2.0 + 0.5, 1.0 / l * k, 1.0 - 1.0 / l * k, 1.0],
-                    // [0.0, 0.0, 0.0, v.percentage * 0.75 + 0.25],
                     this.axisArray[i].clusters[k].color,
                     (_max - _top) / (_max - _min)
                 );
-            }
-        }
-        for(i = 0, j = this.axisArray.length; i < j; ++i){
-            q = this.axisArray[i].height - this.SVG_TEXT_BASELINE;    // Canvas の描画すべきエリアの高さ
-            x = this.axisArray[i].getHorizontalRange();               // 対象軸の X 座標（非正規）
-            for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
-                v = this.axisArray[i].clusters[k].getNormalizeRange(); // クラスタの上下限値（正規）
-                w = q * v.min;                                        // 高さに正規化済みのクラスタの下限値掛ける
-                y = q * v.max;                                        // 高さに正規化済みのクラスタの上限値掛ける
-                // bezier curve
-                if(i !== (this.axisArray.length - 1)){                // 最終軸じゃないときだけやる
-                    t = this.axisArray[i + 1].getHorizontalRange();   // 右隣の軸の X 座標（非正規）
-                    u = (y - w) * v.top + w;                          // v.top は正規化されているので除算ではなく乗算
-                    for(r = 0, s = this.axisArray[i + 1].clusters.length; r < s; ++r){
-                        v = this.axisArray[i + 1].clusters[r].getNormalizeRange();
-                        w = q * ((v.max - v.min) * v.top + v.min);    // v.top は正規化されているので除算ではなく乗算する
-                        p = 0.5;
-                        // p = this.axisArray[i].clusters[k].out[r]; // これが隣の各クラスタへの分配率（SUM ONE）
-                        // // x == 対称軸の X 座標
-                        // // t == 右軸の X 座標
-                        // // u == 対象クラスタの中心の Y 座標
-                        // // w == 右軸対象クラスタの中心の Y 座標
-                        // drawBezierGeometry(x, t, u, w, [0.2, 0.5, 1.0, p]);
-                        drawBeziercurve(x, t, u, w, this.axisArray[i].clusters[k].color);
-                    }
-                }
             }
         }
     }
@@ -1099,7 +1124,8 @@ function Cluster(axis, index, selected, out, min, max, top, color){
     }else{
         c = this.getOutputPower();
     }
-    this.color[3] *= 0.25 + c * 0.75;
+    this.color[3] *= c;
+    this.color[3] = this.color[3] * 0.9 + 0.1;
     return this;
 }
 // 正規化された、クラスタの縦方向の位置の上辺と下辺
@@ -1135,6 +1161,17 @@ Cluster.prototype.getOutputPower = function(){
         j += data[this.index][i];
     }
     return j / this.parentAxis.dataLength;
+};
+// クラスタ自身がアウトプットしているラインの各量の比率
+Cluster.prototype.getOutputLinePower = function(){
+    var i, j, a = [];
+    var data = this.parentAxis.putData.right;
+    if(!data){return 0;}
+    j = 0;
+    for(i = 0; i < data[this.index].length; ++i){
+        a.push(data[this.index][i] / this.parentAxis.dataLength);
+    }
+    return a;
 };
 Cluster.prototype.setSelected = function(select){
     this.selected = select;

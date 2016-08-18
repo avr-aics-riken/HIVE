@@ -67,7 +67,7 @@ class ParallelContainer extends React.Component {
             for(let j = 0; j < value[i].cluster.length; ++j){
                 let selected = value[i].cluster[j].selected;
                 let minVal = value[i].cluster[j].min;
-                let maxVal = value[i].cluster[j].max;                                
+                let maxVal = value[i].cluster[j].max;
                 if(selected){
                     console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected + ' max:' + maxVal + ' min:' + minVal);
                 }
@@ -98,7 +98,7 @@ class ParallelContainer extends React.Component {
                     let minVal = value[0].cluster[j].min;
                     let maxVal = value[0].cluster[j].max;
                     let cmin = (minVal - allMin) / (allMax - allMin);
-                    let cmax = (maxVal - allMin) / (allMax - allMin);                
+                    let cmax = (maxVal - allMin) / (allMax - allMin);
                     if (rate >= cmin && rate <= cmax) {
                         rgba[4*i] = 255; //r
                         rgba[4*i+1] = 255; //g
