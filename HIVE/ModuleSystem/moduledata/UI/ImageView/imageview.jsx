@@ -23,21 +23,13 @@ class ImageView extends React.Component {
 		this.imageRecieveWrap = this.imageRecieveWrap.bind(this);
 		this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
 		this.getInputValue = this.getInputValue.bind(this);
+		this.imageSize = null;
 	}
 
 	imageUpdate(param) {
 		let w = param.width;
 		let h = param.height;
 		const varname = this.node.varname;
-		
-		setTimeout(() => {
-			this.action.changeNodeInput({
-				varname : varname,
-				input : {
-					"rendersize" : [w,h]
-				}
-			});
-		},0);
 	}
 	
 	imageRecieved(err, param, data) {
@@ -91,6 +83,12 @@ class ImageView extends React.Component {
 							var context = resultElement.getContext('2d');
 							var imageData = context.createImageData(param.width, param.height);
 							buffercopy.buffercopy(data, imageData.data);
+							this.setState({
+								imageData : imageData,
+							});
+							
+						console.log("hogehoge", param.width, param.height)
+							this.imageSize = [param.width, param.height];
 							context.putImageData(imageData, 0, 0);
 
 							this.imageUpdate(param);
@@ -160,20 +158,6 @@ class ImageView extends React.Component {
 					height : height
 				});
 			}
-			
-			if (this.hasIPCAddress()) {
-				setTimeout( ()=> {
-					let width = Math.max(this.props.node.panel.size[0], minWidth);
-					let height = Math.max(this.props.node.panel.size[1] - footerHeight, minHeight)
-					
-					this.action.changeNodeInput({
-						varname : this.props.node.varname,
-						input : {
-							"rendersize" : [width, height]
-						}
-					});
-				}, 0);
-			}
 		}
 	}
 	
@@ -184,6 +168,14 @@ class ImageView extends React.Component {
 			if (!this.hasIPCAddress()) {
 				let imgElem = document.getElementById(this.getCanvasName('img'));
 				imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"})
+			} else {
+				if (this.imageSize) {
+					let canvas = document.getElementById(this.getCanvasName('canvas'));
+					canvas.setAttribute('width', this.imageSize[0]);
+					canvas.setAttribute('height', this.imageSize[1]);
+					let context = canvas.getContext('2d');
+					context.putImageData(this.state.imageData, 0, 0);
+				}
 			}
 		}
 	}
@@ -202,8 +194,8 @@ class ImageView extends React.Component {
 				postion : "relative",
 				left : "0px",
 				top : "0px",
-				width: String(this.state.width) + "px",
-				height: String(this.state.height) + "px",
+				width: String(this.canvasSize.bind(this)()[0]) + "px",
+				height: String(this.canvasSize.bind(this)()[1] - footerHeight) + "px",
 				transform : "scale(1.0,-1.0)",
 				display: (this.hasIPCAddress() ? "block" : "none")
 			},
