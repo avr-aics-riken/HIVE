@@ -633,16 +633,17 @@ ParallelCoordCluster.prototype.getStateJSON = function(){
 };
 // 全軸上のその時点での選択範囲・input に返すべき情報をJSONにして返す
 ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
-    var f, i, j, k, l, v, w;
+    var f, e, i, j, k, l, v, w;
     var min, max, len;
     var selLength = this.selectedArray.length;
 
     // return value gen and update
-    v = []; w = [];
+    v = []; w = []; e = [];
     for(i = 0, j = this.axisArray.length; i < j; ++i){
         min = max = len = null;
         v[i] = this.axisArray[i].getBrushedRange();
-        if(v[i] && v[i].top && v[i].bottom){
+        e[i] = (v[i] && v[i].top && v[i].bottom);
+        if(e[i]){
             len = this.axisArray[i].max - this.axisArray[i].min;
             min = len * (1.0 - v[i].bottom) + this.axisArray[i].min;
             max = len * (1.0 - v[i].top)    + this.axisArray[i].min;
@@ -669,7 +670,7 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
     for(i = 0; i < selLength; ++i){                 // 既存の選択状態をチェックする
         if(this.selectedArray[i].index === j){      // インデックスが一致しているか
             f = true;                               // 一致していたものが存在した
-            if(v[j] && v[j].top && v[j].bottom){    // 選択されているか
+            if(e[j]){                               // 選択されているか
                 // 一致していたものが存在し更新
                 this.selectedArray[i].top = v[j].top;
                 this.selectedArray[i].bottom = v[j].bottom;
@@ -689,30 +690,42 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
         });
     }
 
-    this.setClusterColor();
+    this.setClusterColor(e);
     return this.stateData.axis;
 };
-ParallelCoordCluster.prototype.setClusterColor = function(){
+ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
     var i, j, k, l, m, n;
-    var a, rgb = [];
+    var a;
     var colorStride = 360 / 2.5;
+
+    // いったん色を全リセット
     for(i = 0, j = this.axisArray.length; i < j; ++i){
-        m = 0;
         for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
-            rgb = [0, 0, 0];
-            if(this.stateData.axis[i].cluster[k].selected){
-                a = hsva(colorStride * m, 1.0, 0.5, 1.0);
-                ++m;
-                rgb[0] = a[0];
-                rgb[1] = a[1];
-                rgb[2] = a[2];
+            this.axisArray[i].clusters[k].color[0]     = 0.0;
+            this.axisArray[i].clusters[k].color[1]     = 0.0;
+            this.axisArray[i].clusters[k].color[2]     = 0.0;
+            this.stateData.axis[i].cluster[k].color[0] = 0.0;
+            this.stateData.axis[i].cluster[k].color[1] = 0.0;
+            this.stateData.axis[i].cluster[k].color[2] = 0.0;
+        }
+    }
+
+    // selected array で選択されているものを順番に影響力求める
+    for(i = 0, j = this.selectedArray.length; i < j; ++i){
+        m = this.selectedArray[i].index; // 最初に選択されたものから順に
+        n = 0;
+        for(k = 0, l = this.axisArray[m].clusters.length; k < l; ++k){
+            if(this.stateData.axis[m].cluster[k].selected){
+                // まずは自分自身の色を決める
+                a = hsva(colorStride * n, 1.0, 0.5, 1.0);
+                this.axisArray[m].clusters[k].color[0]     = a[0];
+                this.axisArray[m].clusters[k].color[1]     = a[1];
+                this.axisArray[m].clusters[k].color[2]     = a[2];
+                this.stateData.axis[m].cluster[k].color[0] = a[0];
+                this.stateData.axis[m].cluster[k].color[1] = a[1];
+                this.stateData.axis[m].cluster[k].color[2] = a[2];
+                ++n;
             }
-            this.axisArray[i].clusters[k].color[0] = rgb[0];
-            this.axisArray[i].clusters[k].color[1] = rgb[1];
-            this.axisArray[i].clusters[k].color[2] = rgb[2];
-            this.stateData.axis[i].cluster[k].color[0] = rgb[0];
-            this.stateData.axis[i].cluster[k].color[1] = rgb[1];
-            this.stateData.axis[i].cluster[k].color[2] = rgb[2];
         }
     }
 };
