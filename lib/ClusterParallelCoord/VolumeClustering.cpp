@@ -318,4 +318,23 @@ int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
     const int cnt = m_edgeCounts[axis][cluster][nextCluster];
     return cnt;
 }
+
+float VolumeClustering::GetVolumeMin(int axis)
+{
+    if (axis >= GetAxisNum()) {
+        printf("[Error] over axis num\n");
+        return 0.0f;
+    }
+    return m_minVal[axis];
+}
+
+float VolumeClustering::GetVolumeMax(int axis)
+{
+    if (axis >= GetAxisNum()) {
+        printf("[Error] over axis num\n");
+        return 0.0f;
+    }
+    return m_maxVal[axis];
+}
+
     
