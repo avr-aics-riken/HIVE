@@ -634,7 +634,7 @@ ParallelCoordCluster.prototype.getStateData = function(){
 ParallelCoordCluster.prototype.getStateJSON = function(){
     return JSON.stringify(this.stateData);
 };
-// 全軸上のその時点での選択範囲をJSONにして出力
+// 全軸上のその時点での選択範囲・input に返すべき情報をJSONにして返す
 ParallelCoordCluster.prototype.getAllBrushedRange = function(){
     var i, j, k, l, v;
     var min, max, len;
@@ -646,8 +646,12 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(){
             min = len * (1.0 - v.bottom) + this.axisArray[i].min;
             max = len * (1.0 - v.top)    + this.axisArray[i].min;
         }
-        this.stateData.axis[i].brush.min = min;
-        this.stateData.axis[i].brush.max = max;
+        this.stateData.axis[i].brush.min = min; // brush 領域の min
+        this.stateData.axis[i].brush.max = max; // brush 領域の max
+        this.stateData.axis[i].volume = {       // ボリューム全体の軸ごとの minmax
+            min: this.stateData.volume.minmax[i].min,
+            max: this.stateData.volume.minmax[i].max
+        };
         v = this.axisArray[i].getClusterBrushed();
         for(k = 0, l = v.length; k < l; ++k){
             if(v[k]){
