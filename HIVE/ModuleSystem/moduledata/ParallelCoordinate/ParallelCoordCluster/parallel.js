@@ -38,14 +38,14 @@ function ParallelCoordCluster(parentElement, option){
     this.plotElement = document.createElement('div');   // Scatter plot 用の領域も動的生成
     this.canvas = document.createElement('canvas');     // Canvas は動的に生成
     this.layer = document.createElement('div');         // Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
-    this.plotCanvas = document.createElement('canvas');     // Plot 用の Canvas は動的に生成
-    this.plotLayer = document.createElement('div');         // Plot 用の Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
+    this.plotCanvas = document.createElement('canvas'); // Plot 用の Canvas は動的に生成
+    this.plotLayer = document.createElement('div');     // Plot 用の Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
     this.parent.appendChild(this.parentElement);        // 親 DOM に Canvas と Layer を格納する DOM を append
     this.parent.appendChild(this.plotElement);          // 親 DOM に plot 用の DOM を append
     this.parentElement.appendChild(this.canvas);        // Canvas を親 DOM 内の外装に append
     this.parentElement.appendChild(this.layer);         // Layer を親 DOM 内の外装に append
-    this.plotElement.appendChild(this.plotCanvas);        // Canvas を親 DOM 内の外装に append
-    this.plotElement.appendChild(this.plotLayer);         // Layer を親 DOM 内の外装に append
+    this.plotElement.appendChild(this.plotCanvas);      // Canvas を親 DOM 内の外装に append
+    this.plotElement.appendChild(this.plotLayer);       // Layer を親 DOM 内の外装に append
 
     // callback function
     this.selectedCallback = null;
@@ -187,7 +187,6 @@ ParallelCoordCluster.prototype.addAxis = function(){
     }
 };
 // 列の配置をリセットして可能なら canvas を再描画する
-// resetData is optional argument
 ParallelCoordCluster.prototype.resetAxis = function(resetData){
     var i, j;
     var space, margin;
@@ -451,20 +450,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
         gl.disable(gl.BLEND);
         var w = right - left;
         var h = top - bottom;
-        // mat.identity(mMatrix);
-        // mat.translate(mMatrix, [left - w / 2, bottom, 0.0], mMatrix);
-        // mat.scale(mMatrix, [w, h, 1.0], mMatrix);
-        // mat.multiply(vpMatrix, mMatrix, mvpMatrix);
-        //
-        // gl.useProgram(this.prg);
-        // gl.uniformMatrix4fv(this.uniL.matrix, false, mvpMatrix);
-        // gl.uniform4fv(this.uniL.color, color);
-        //
-        // set_attribute(gl, this.vboList, this.attL, this.attS);
-        // gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-
         // top triangle ==========
-        // debugger;
         var nSummit = summit;
         mat.identity(mMatrix);
         mat.translate(mMatrix, [0.0, (h * (1.0 - nSummit)), 0.0], mMatrix);
@@ -755,11 +741,11 @@ function Axis(parent, index){
     this.width = 0;
     this.height = 0;
     this.left = 0;
-    this.onAxisTitleDrag = false;     // ドラッグされているかどうかのフラグ
-    this.centerH = 0;        // 軸の中心が矩形の左から何ピクセル目にあるか
-    this.bbox = null;        // svg.getBBox の結果
-    this.listeners = [];     // リスナを殺すためにキャッシュするので配列を用意
-    this.clusters = [];      // 自身に格納しているクラスタ
+    this.onAxisTitleDrag = false;        // ドラッグされているかどうかのフラグ
+    this.centerH = 0;                    // 軸の中心が矩形の左から何ピクセル目にあるか
+    this.bbox = null;                    // svg.getBBox の結果
+    this.listeners = [];                 // リスナを殺すためにキャッシュするので配列を用意
+    this.clusters = [];                  // 自身に格納しているクラスタ
     this.putData = {left: null, right: null};
     this.dataLength = parent.stateData.edge.volumenum;
     if(index === 0){
@@ -776,7 +762,6 @@ function Axis(parent, index){
             i,    // axis のインデックス
             axisData.cluster[i].selected, // 選択状態
             axisData.cluster[i].top,      // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
-            // axisData.cluster[i].out, // クラスタ自身からの出力
             axisData.cluster[i].min,      // min
             axisData.cluster[i].max,      // max
             axisData.cluster[i].top,      // top
