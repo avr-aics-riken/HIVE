@@ -6,7 +6,46 @@ ParallelCoordCluster.new = function (varname)
     setmetatable(this, {__index=ParallelCoordCluster})
     this.gentex = GenTexture()
     this.volumeclustering = require('ClusterParallelCoord').VolumeClustering()
+    this.plot = require('ClusterParallelCoord').VolumeScatterPlot();
     return this
+end
+
+function sendPlot(varname, image)
+    if (image == nil) then
+        return false
+    end
+    local mode = 'jpg'
+    -- image save
+    local imageBuffer
+    local imageBufferSize
+    -- image save
+    imageBuffer = HIVE_ImageSaver:SaveMemory(1, image)
+    imageBufferSize = HIVE_ImageSaver:MemorySize()
+    
+    -- create metabinary
+    --local w = v.screensize[1]
+    --local h = v.screensize[2]
+    local w = image:GetWidth()
+    local h = image:GetHeight()
+    print('rendersize=('.. w ..",".. h ..")", 'cancel=', tostring(HIVE_isRenderCanceled))
+    
+    local json = [[{
+            "JSONRPC" : "2.0",
+            "method" : "renderedImage",            
+            "to" : ]] .. targetClientId ..[[,
+            "param" : {
+                "isplot" : "]] .. "true" .. [[",
+                "type" : "]] .. mode .. [[",
+                "width" : "]] .. w .. [[",
+                "height" : "]] .. h .. [[",
+                "varname": "]] .. varname .. [["
+            },
+            "id":0
+    }]]
+    HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+    --print('JSON=', json, 'size=', imageBufferSize)
+    -- send
+    network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
 end
 
 function sendData(varname, cdata)
@@ -50,6 +89,7 @@ function ParallelCoordCluster:Do()
     self.volCache = self.value.volume:Pointer()
 
     print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
+    self.plot:Execute(self.value.volume, 0, 1); 
 
     -- dump
     --print('---- DUMP -----')
@@ -149,6 +189,7 @@ function ParallelCoordCluster:Do()
 
     -- temp
     sendData(self.varname, dest)
+    sendPlot(self.varname, self.plot:GetImageBuffer())
 
     return true
 end

@@ -27,6 +27,7 @@ class ParallelContainer extends React.Component {
         this.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);
         this.imageRecieved = this.imageRecieved.bind(this);
         this.selectChanged = this.selectChanged.bind(this);
+        this.componentDidUpdate = this.componentDidUpdate.bind(this);
 
         this.state = {
             width: 600,
@@ -168,6 +169,17 @@ class ParallelContainer extends React.Component {
     imageRecieved(err, param, data){
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
+        
+        console.log(param);
+        if (param.hasOwnProperty("isplot")) {
+            console.log("paramparam",param);
+            this.imageSize = [parseFloat(param.width), parseFloat(param.height)]
+            this.setState({
+                image : new Blob([data])
+            });
+            return;
+        }
+        
         if(
             !param.hasOwnProperty('mode') ||
             param.mode !== 'raw' ||
@@ -199,6 +211,16 @@ class ParallelContainer extends React.Component {
         this.store.off(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
         this.store.off(this.STORE_IMAGE_RECIEVED, this.imageRecieved);
     }
+    
+    componentDidUpdate() {
+        if (this.state.image) {
+            let imgElem = document.getElementById(this.getCanvasName('img'));
+            if (imgElem.src) {
+                URL.revokeObjectURL(imgElem.src);
+            }
+            imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
+        }
+    }
 
     onPanelSizeChanged(err, data){
         if(data.varname !== this.node.varname){return;}
@@ -222,8 +244,20 @@ class ParallelContainer extends React.Component {
                 width: "100%",
                 height: "100%",
                 backgroundColor: "rgba(0, 0, 255, 0.1)"
-            }
+            },
+            image : {
+                postion : "relative",
+                left : "0px",
+                top : "0px",
+                width: "256px",
+                height: "256px",
+                display: (this.imageSize ? "block" : "none")
+            },
         };
+    }
+
+    getCanvasName(prefix) {
+        return prefix + '-' + this.varname;
     }
 
     render(){
@@ -232,6 +266,7 @@ class ParallelContainer extends React.Component {
             <div>
                 <div ref="container" style={styles.container}>
                 </div>
+                <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
             </div>
         );
     }
