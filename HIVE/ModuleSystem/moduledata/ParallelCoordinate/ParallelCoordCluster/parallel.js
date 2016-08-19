@@ -70,10 +70,10 @@ function ParallelCoordCluster(parentElement, option){
     this.AXIS_LINE_WIDTH = 2;
     this.AXIS_LINE_COLOR = '#333';
     this.AXIS_LINE_SELECT_COLOR = '#666';
-    this.AXIS_LINE_BRUSH_COLOR = '#f66';
+    this.AXIS_LINE_BRUSH_COLOR = '#f33';
     this.AXIS_BRUSH_HANDLE_COLOR = 'transparent';
     this.AXIS_BRUSHED_EDGE_HEIGHT = 3;
-    this.AXIS_SCALE_WIDTH = 5;
+    this.AXIS_SCALE_WIDTH = 10;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;
     this.PLOT_AREA_WIDTH = 200;
