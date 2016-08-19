@@ -557,8 +557,24 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                             // t == 右軸の X 座標
                             // u == 対象クラスタの中心の Y 座標
                             // w == 右軸対象クラスタの中心の Y 座標
-                            var drawColor = this.axisArray[i].clusters[k].color;
+                            var fromColor = this.axisArray[i].clusters[k].color;
+                            var gotoColor = this.axisArray[i + 1].clusters[r].color;
+                            var drawColor = this.mixColor(fromColor, gotoColor, linePower.right[r]);
                             m = linePower.right[r] * 0.9 + 0.1;
+                            // 自分自身の属する軸が選択中、かつ、自分自身が非選択のときは自身の色にリセット
+                            v = this.axisArray[i].getBrushedRange();
+                            if(v && v.top !== null && v.bottom !== null && !this.axisArray[i].clusters[k].selected){
+                                drawColor[0] = fromColor[0];
+                                drawColor[1] = fromColor[1];
+                                drawColor[2] = fromColor[2];
+                            }
+                            // 隣軸選択中、かつ、対象クラスタが非選択のときは対象クラスタの色にリセット
+                            v = this.axisArray[i + 1].getBrushedRange();
+                            if(v && v.top !== null && v.bottom !== null && !this.axisArray[i + 1].clusters[r].selected){
+                                drawColor[0] = gotoColor[0];
+                                drawColor[1] = gotoColor[1];
+                                drawColor[2] = gotoColor[2];
+                            }
                             // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ラインで描く場合
                             drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // モノクロgeometry
                         }
@@ -643,8 +659,10 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
         w[i] = this.axisArray[i].getClusterBrushed();
         for(k = 0, l = w[i].length; k < l; ++k){
             if(w[i][k]){
+                this.axisArray[i].clusters[k].setSelected(true);
                 this.stateData.axis[i].cluster[k].selected = w[i][k];
             }else{
+                this.axisArray[i].clusters[k].setSelected(false);
                 this.stateData.axis[i].cluster[k].selected = false;
             }
         }
@@ -723,13 +741,22 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
                         // 既存の色
                         b = this.axisArray[m + o].clusters[q].color;
                         // 線形補間
-                        d = this.mixColor(b, a, c[q]);
-                        this.axisArray[m + o].clusters[q].color[0] = d[0];
-                        this.axisArray[m + o].clusters[q].color[1] = d[1];
-                        this.axisArray[m + o].clusters[q].color[2] = d[2];
-                        this.stateData.axis[m].cluster[k].color[0] = d[0];
-                        this.stateData.axis[m].cluster[k].color[1] = d[1];
-                        this.stateData.axis[m].cluster[k].color[2] = d[2];
+                        if(b[0] + b[1] + b[2] > 0){
+                            d = this.mixColor(b, a, c[q]);
+                            this.axisArray[m + o].clusters[q].color[0] = d[0];
+                            this.axisArray[m + o].clusters[q].color[1] = d[1];
+                            this.axisArray[m + o].clusters[q].color[2] = d[2];
+                            this.stateData.axis[m].cluster[k].color[0] = d[0];
+                            this.stateData.axis[m].cluster[k].color[1] = d[1];
+                            this.stateData.axis[m].cluster[k].color[2] = d[2];
+                        }else{
+                            this.axisArray[m + o].clusters[q].color[0] = a[0];
+                            this.axisArray[m + o].clusters[q].color[1] = a[1];
+                            this.axisArray[m + o].clusters[q].color[2] = a[2];
+                            this.stateData.axis[m].cluster[k].color[0] = a[0];
+                            this.stateData.axis[m].cluster[k].color[1] = a[1];
+                            this.stateData.axis[m].cluster[k].color[2] = a[2];
+                        }
                     }
                 }
             }
@@ -744,13 +771,22 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
                         // 既存の色
                         b = this.axisArray[m - o].clusters[q].color;
                         // 線形補間
+                        if(b[0] + b[1] + b[2] > 0){
                         d = this.mixColor(b, a, c[q]);
-                        this.axisArray[m - o].clusters[q].color[0] = d[0];
-                        this.axisArray[m - o].clusters[q].color[1] = d[1];
-                        this.axisArray[m - o].clusters[q].color[2] = d[2];
-                        this.stateData.axis[m].cluster[k].color[0] = d[0];
-                        this.stateData.axis[m].cluster[k].color[1] = d[1];
-                        this.stateData.axis[m].cluster[k].color[2] = d[2];
+                            this.axisArray[m - o].clusters[q].color[0] = d[0];
+                            this.axisArray[m - o].clusters[q].color[1] = d[1];
+                            this.axisArray[m - o].clusters[q].color[2] = d[2];
+                            this.stateData.axis[m].cluster[k].color[0] = d[0];
+                            this.stateData.axis[m].cluster[k].color[1] = d[1];
+                            this.stateData.axis[m].cluster[k].color[2] = d[2];
+                        }else{
+                            this.axisArray[m - o].clusters[q].color[0] = a[0];
+                            this.axisArray[m - o].clusters[q].color[1] = a[1];
+                            this.axisArray[m - o].clusters[q].color[2] = a[2];
+                            this.stateData.axis[m].cluster[k].color[0] = a[0];
+                            this.stateData.axis[m].cluster[k].color[1] = a[1];
+                            this.stateData.axis[m].cluster[k].color[2] = a[2];
+                        }
                     }
                 }
             }
