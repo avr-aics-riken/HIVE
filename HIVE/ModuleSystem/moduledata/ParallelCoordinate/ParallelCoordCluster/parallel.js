@@ -61,7 +61,8 @@ function ParallelCoordCluster(parentElement, option){
     this.NS_SVG = 'http://www.w3.org/2000/svg';
     this.NS = function(e){return document.createElementNS(this.NS_SVG, e);}.bind(this);
 
-    this.PARALLEL_PADDING = 30;
+    this.PARALLEL_PADDING_H = 70;
+    this.PARALLEL_PADDING_V = 30;
     this.SVG_DEFAULT_WIDTH = 40;
     this.SVG_TEXT_BASELINE = 30;
     this.SVG_TEXT_SIZE = 'medium';
@@ -122,7 +123,10 @@ function ParallelCoordCluster(parentElement, option){
 ParallelCoordCluster.prototype.setOption = function(option){
     if(!option){return false;}
     var s = 'padding';
-    if(this.checkOption(option, s)){this.PARALLEL_PADDING = option[s];}
+    if(this.checkOption(option, s)){
+        this.PARALLEL_PADDING_H = option[s];
+        this.PARALLEL_PADDING_V = option[s];
+    }
     if(this.checkOption(option, 'svg')){
         s = 'defaultwidth';
         if(this.checkOption(option.svg, s)){this.SVG_DEFAULT_WIDTH = option.svg[s];}
@@ -200,13 +204,13 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         this.axisArray = [];
         this.addAxis();
     }
-    space = this.layer.clientWidth - this.PARALLEL_PADDING * 2;
+    space = this.layer.clientWidth - this.PARALLEL_PADDING_H * 2;
     margin = space / (this.axisCount - 1);
     for(i = 0; i < this.axisCount; ++i){
         this.axisArray[i].update();
     }
     for(i = 0; i < this.axisCount; ++i){
-        j = this.PARALLEL_PADDING + (margin - this.SVG_DEFAULT_WIDTH) * i - this.SVG_DEFAULT_WIDTH / 2;
+        j = this.PARALLEL_PADDING_H + (margin - this.SVG_DEFAULT_WIDTH) * i - this.SVG_DEFAULT_WIDTH / 2;
         this.axisArray[i].setPosition(j);
     }
     if(this.glReady){
@@ -224,7 +228,7 @@ ParallelCoordCluster.prototype.initCanvas = function(){
         var r = eve.currentTarget.getBoundingClientRect();
         var x = eve.clientX - r.left;
         var y = eve.clientY - r.top;
-        var topMargin = this.PARALLEL_PADDING + this.SVG_TEXT_BASELINE;
+        var topMargin = this.PARALLEL_PADDING_V + this.SVG_TEXT_BASELINE;
         this.mouseX = x;
         this.mouseY = y;
         this.mouseNormalX = Math.min(Math.max(0, x - this.drawRect.x), this.drawRect.width) / this.drawRect.width;
@@ -612,11 +616,11 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
 };
 // 描画対象となる矩形を得る
 ParallelCoordCluster.prototype.getDrawRect = function(){
-    var w = this.parentElement.clientWidth - this.PARALLEL_PADDING * 2;
-    var h = this.parentElement.clientHeight - this.PARALLEL_PADDING * 2 - this.SVG_TEXT_BASELINE;
+    var w = this.parentElement.clientWidth - this.PARALLEL_PADDING_H * 2;
+    var h = this.parentElement.clientHeight - this.PARALLEL_PADDING_V * 2 - this.SVG_TEXT_BASELINE;
     return {
-        x: this.PARALLEL_PADDING,
-        y: this.PARALLEL_PADDING,
+        x: this.PARALLEL_PADDING_H,
+        y: this.PARALLEL_PADDING_V,
         width: w,
         height: h,
         mx: this.mouseX,
@@ -925,14 +929,14 @@ Axis.prototype.update = function(titleString, minmax){
     this.svg.appendChild(text);
     this.bbox = text.getBBox();
     this.width = this.bbox.width;
-    this.height = this.parent.layer.clientHeight - this.parent.PARALLEL_PADDING * 2;
+    this.height = this.parent.layer.clientHeight - this.parent.PARALLEL_PADDING_V * 2;
     this.centerH = this.parent.SVG_DEFAULT_WIDTH / 2;
     text.setAttribute('x', -(this.width - this.parent.SVG_DEFAULT_WIDTH) / 2);
     this.svg.style.position = 'relative';
     this.svg.style.width = this.parent.SVG_DEFAULT_WIDTH;
     this.svg.style.height = this.height;
-    this.svg.style.top = this.parent.PARALLEL_PADDING;
-    this.svg.style.left = this.parent.PARALLEL_PADDING - (this.parent.SVG_DEFAULT_WIDTH / 2);
+    this.svg.style.top = this.parent.PARALLEL_PADDING_V;
+    this.svg.style.left = this.parent.PARALLEL_PADDING_H - (this.parent.SVG_DEFAULT_WIDTH / 2);
     path = this.parent.NS('path');
     path.setAttribute('stroke', this.parent.AXIS_LINE_COLOR);
     path.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH);
@@ -1140,7 +1144,7 @@ Axis.prototype.getClustersMinMax = function(){
 Axis.prototype.getHorizontalRange = function(){
     // horizon range
     var i = parseFloat(this.svg.style.left.replace(/px$/));
-    return i + (this.parent.SVG_DEFAULT_WIDTH / 2) + (this.index * this.parent.SVG_DEFAULT_WIDTH) - this.parent.PARALLEL_PADDING;
+    return i + (this.parent.SVG_DEFAULT_WIDTH / 2) + (this.index * this.parent.SVG_DEFAULT_WIDTH) - this.parent.PARALLEL_PADDING_H;
 };
 // 正規化した軸の横位置（0 ~ 1）
 Axis.prototype.getNomalizeHorizontalRange = function(){
@@ -1159,8 +1163,8 @@ Axis.prototype.dragMove = function(eve){
     var x = eve.pageX - this.left;
     var df = parseFloat(this.svg.style.left.replace(/px$/, ''));
     var i = df + x;
-    var j = this.parent.drawRect.width - ((this.index + 1) * this.parent.SVG_DEFAULT_WIDTH) + (this.parent.SVG_DEFAULT_WIDTH / 2) + this.parent.PARALLEL_PADDING;
-    var k = this.parent.PARALLEL_PADDING - (this.index * this.parent.SVG_DEFAULT_WIDTH) - (this.parent.SVG_DEFAULT_WIDTH / 2);
+    var j = this.parent.drawRect.width - ((this.index + 1) * this.parent.SVG_DEFAULT_WIDTH) + (this.parent.SVG_DEFAULT_WIDTH / 2) + this.parent.PARALLEL_PADDING_H;
+    var k = this.parent.PARALLEL_PADDING_H - (this.index * this.parent.SVG_DEFAULT_WIDTH) - (this.parent.SVG_DEFAULT_WIDTH / 2);
     if(i > j){i = j;}
     if(i < k){i = k;}
     this.svg.style.left = i + 'px';
