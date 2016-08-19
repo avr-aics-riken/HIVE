@@ -1,12 +1,20 @@
 ParallelCoordCluster = {}
 setmetatable(ParallelCoordCluster, {__index = HiveBaseModule})
 
+local JSON = require('dkjson')
+
 ParallelCoordCluster.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordCluster})
     this.gentex = GenTexture()
     this.volumeclustering = require('ClusterParallelCoord').VolumeClustering()
     this.plot = require('ClusterParallelCoord').VolumeScatterPlot();
+    this.axisSigma = {}
+    local defaultSigma = 0.05
+    local maxAxisNum = 20    
+    for ax = 1, maxAxisNum do
+        this.axisSigma[ax] = defaultSigma
+    end
     return this
 end
 
@@ -80,35 +88,49 @@ function ParallelCoordCluster:Do()
     local volDepth = self.value.volume:Depth()
     local volComp = self.value.volume:Component()
 
-
     self.gentex:Create2D(self.value.rgba, 1, 256, volComp * 2);
 
+    local axisNum = self.value.volume:Component() -- self.volumeclustering:GetAxisNum()
+    local ax
+    
 
-    --self.volumeclustering:SetSigma(0, 0.001)
+    -- check axis info
+    local needExe = false
+    local axisjson = ""
+    if self.value.axisjson ~= "" then -- axis info edited?
+        axisjson = self.value.axisjson
 
+        axisinfo = JSON.decode(axisjson)
+        for ax = 1, axisNum do
+            local axSigma = axisinfo[ax].sigma
+            if axSigma ~= nil and self.axisSigma[ax] ~= axSigma then
+                self.axisSigma[ax] = axSigma
+                needExe = true
+            end
+        end
+    end
+
+    -- check update
     if self.volCache ~= self.value.volume:Pointer() then
         self.volCache = self.value.volume:Pointer()
-
+        needExe = true
+    end
+    
+    -- execution
+    if needExe then
+        for ax = 0, axisNum-1 do
+            self.volumeclustering:SetSigma(ax, self.axisSigma[ax+1])
+        end
         print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
 
         -- Plot
+        -- [TODO: axis select information]
         self.plot:Execute(self.value.volume, 0, 1); 
         sendPlot(self.varname, self.plot:GetImageBuffer())
-
-    end
-
-    -- axis info edited?
-
-    local axisjson = ""
-    if self.value.axisjson ~= "" then
-        axisjson = self.value.axisjson
     end
 
 
-    -- make axis info
-    
-    local axisNum = self.volumeclustering:GetAxisNum()
-    local ax
+    -- make axis info    
     local temp
     local dest = '{'
     
@@ -144,7 +166,7 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"title": "title_' .. ax .. '", '
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
-            dest = dest .. '"sigma": 0.001, '                
+            dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '                
             dest = dest .. '"clusternum": ' .. cnum .. ', '
             dest = dest .. '"cluster": ['
             for c = 0, cnum - 1 do
