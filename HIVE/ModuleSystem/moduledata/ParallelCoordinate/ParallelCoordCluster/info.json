@@ -11,7 +11,7 @@
     "input": [
         {"name": "volume", "type": "BufferVolumeData"},
         {"name": "rgba", "type": "floatarray", "value": [], "visible": false},
-        {"name": "brushjson", "type": "string", "value": ""}
+        {"name": "axisjson", "type": "string", "value": ""}
     ],
     "output": [
         {"name": "select", "type": "BufferImageData"},

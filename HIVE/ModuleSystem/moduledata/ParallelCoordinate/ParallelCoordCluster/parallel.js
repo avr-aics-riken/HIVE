@@ -1301,7 +1301,7 @@ Axis.prototype.dragAxisEnd = function(eve){
     this.updateSvg.bind(this)();
 
     var axisjson = this.parent.getAllBrushedRange(this);
-    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', axisjson);}
+    if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
 // 軸の上下のハンドルをドラッグ開始
 Axis.prototype.dragAxisHandleStart = function(eve){
@@ -1355,7 +1355,7 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     this.onBrushRect = false;
 
     var axisjson = this.parent.getAllBrushedRange(this);
-    if(this.parent.selectedCallback){this.parent.selectedCallback('brushjson', axisjson);}
+    if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
 // 軸上の選択範囲を正規化した値として返す
 Axis.prototype.getBrushedRange = function(){
