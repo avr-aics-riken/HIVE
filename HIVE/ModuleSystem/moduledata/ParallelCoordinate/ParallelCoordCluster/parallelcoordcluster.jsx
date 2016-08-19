@@ -112,9 +112,9 @@ class ParallelContainer extends React.Component {
                 
                     if (selected) {
                         if (rate >= cmin && rate <= cmax) {
-                            rgba[4*(ax * numVals * 2 + i)  ] = 255;//*colorVal[0]; //r
-                            rgba[4*(ax * numVals * 2 + i)+1] = 255;//*colorVal[1]; //g
-                            rgba[4*(ax * numVals * 2 + i)+2] = 255;//*colorVal[2]; //b
+                            rgba[4*(ax * numVals * 2 + i)  ] = 255*colorVal[0]; //r
+                            rgba[4*(ax * numVals * 2 + i)+1] = 255*colorVal[1]; //g
+                            rgba[4*(ax * numVals * 2 + i)+2] = 255*colorVal[2]; //b
                             rgba[4*(ax * numVals * 2 + i)+3] = 255; //a
                         }
                     }                    
