@@ -14,7 +14,6 @@
         {"name": "axisjson", "type": "string", "value": ""}
     ],
     "output": [
-        {"name": "select", "type": "BufferImageData"},
-        {"name": "brush", "type": "floatarray"}
+        {"name": "select", "type": "BufferImageData"}
     ]
 }
