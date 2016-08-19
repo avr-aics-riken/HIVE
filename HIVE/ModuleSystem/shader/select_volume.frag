@@ -28,30 +28,6 @@ const float kDensity = 0.05;
 uniform float volumemin;
 uniform float volumemax;
 
-// Simple transfer function
-vec4 density_to_color(float dens)
-{
-    if (dens < 0.01) {
-        return vec4(0.0, 0.0, 0.0, 0.005);
-    } else if (dens < 0.25) {
-        float t = 4.0 * dens; // [0, 1]
-        return vec4(t, 0.2*(1.0 - t), 0.0, .5);
-    } else if (dens < 0.5) {
-        float t = 4.0 * (dens - 0.25); // [0, 1]
-        return vec4(0.0, t, 1.0-t,0.5);
-    } else if (dens < 0.75) {
-        float t = 4.0 * (dens - 0.5); // [0, 1]
-        return vec4(1.0-t, 0.0, t,0.5);
-    } else if (dens < 1.0) {
-		float t = 4.0 * (dens - 0.75); // [0, 1]
-        return vec4(0.4-0.4*t, 0.4-0.4*t, 0.2*t,0.5);
-    } else if (dens < 10.0) {
-		float t = 0.1 * (dens - 1.0); // [0, 1]
-        return vec4(0.5*t, 0.0, 0.2-0.2*t,0.5);
-	} else {
-        return vec4(0.8, 0.0, 0.0,0.5);	
-	}
-}
 
 vec4 samplingVolume(vec3 texpos, vec4 sum)
 {
@@ -69,6 +45,11 @@ vec4 samplingVolume(vec3 texpos, vec4 sum)
         select.rgb += texture2D(selection, vec2(x, halfPitch + onePitch * float(2*i))).rgb;
     }
     select.rgb = min(vec3(1.0), select.rgb);
+    if (length(select.rgb) < 0.005) {
+        select.a = 0.0;
+    } else {
+        select.a = 0.05;
+    }
 	return select;
 }
 
@@ -150,8 +131,8 @@ void  main(void) {
 	
     // raymarch.
     float t = tmin;
-    float tstep = (tmax - tmin) / num_steps;
-    float cnt = 0.0;
+    float tstep = length(pmax - pmin)/length(volumedim); // (tmax - tmin) / num_steps;
+    float cnt = 0.0;    
     while (cnt < float(num_steps)) {
 		vec4 acol;
 		float hit = 0.0;
@@ -165,7 +146,7 @@ void  main(void) {
 		
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
-		sum += samplingVolume(texpos, sum);
+        sum += samplingVolume(texpos, sum);
 		if (sum.a > kOpacityThreshold)
 			break;
 		
