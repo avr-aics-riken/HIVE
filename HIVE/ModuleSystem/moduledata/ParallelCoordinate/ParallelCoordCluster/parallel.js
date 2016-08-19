@@ -701,6 +701,7 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
     var i, j, k, l, m, n, o, p, q, r;
     var a, b, c, d;
     var colorStride = 480 / 7;
+    var firstAxisColor = [];
 
     // いったん色を全リセット
     for(i = 0, j = this.axisArray.length; i < j; ++i){
@@ -715,29 +716,39 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
     }
 
     // selected array で選択されているものを順番に影響力求める
-    for(i = 0, j = this.selectedArray.length; i < j; ++i){
-        m = this.selectedArray[i].index; // 最初に選択されたものから順に
+    for(i = 0, j = this.selectedArray.length; i < 1; ++i){
+        if(this.selectedArray[i]){
+            m = this.selectedArray[i].index; // 最初に選択されたものから順に
+        }else{
+            m = i;
+        }
         n = 0;
         for(k = 0, l = this.axisArray[m].clusters.length; k < l; ++k){
             // そもそも選択されていない場合は飛ばす
             if(!this.stateData.axis[m].cluster[k].selected){continue;}
-            // まずは自分自身の色を決める
-            a = hsva(colorStride * n + 120, 1.0, 0.75, 1.0);
-            this.axisArray[m].clusters[k].color[0]     = a[0];
-            this.axisArray[m].clusters[k].color[1]     = a[1];
-            this.axisArray[m].clusters[k].color[2]     = a[2];
-            this.stateData.axis[m].cluster[k].color[0] = a[0];
-            this.stateData.axis[m].cluster[k].color[1] = a[1];
-            this.stateData.axis[m].cluster[k].color[2] = a[2];
-            ++n;
+            if(i === 0){
+                // 一本目の軸の場合、まずは自分自身の色を決める
+                a = hsva(colorStride * n + 120, 1.0, 0.75, 1.0);
+                firstAxisColor.push([a[0], a[1], a[2]]);
+                this.axisArray[m].clusters[k].color[0]     = a[0];
+                this.axisArray[m].clusters[k].color[1]     = a[1];
+                this.axisArray[m].clusters[k].color[2]     = a[2];
+                this.stateData.axis[m].cluster[k].color[0] = a[0];
+                this.stateData.axis[m].cluster[k].color[1] = a[1];
+                this.stateData.axis[m].cluster[k].color[2] = a[2];
+                ++n;
+            }else{
+                continue;
+            }
             if(this.axisArray[m].putData.right){
                 c = [];
                 for(o = 1, p = this.axisArray.length - m; o < p; ++o){
-                    // 右隣が選択されているか
-                    if(selectedAxis[m + o]){break;}
+                    // // 右隣が選択されているか
+                    // if(selectedAxis[m + o]){break;}
                     // 選択されていないので自身から右隣の各クラスタへどのような分配になっているか調べる
                     c = this.axisArray[m].clusters[k].getOutputLinePower().right;
                     for(q = 0, r = this.axisArray[m + o].clusters.length; q < r; ++q){
+                        if(selectedAxis[m + o] && !this.axisArray[m + o].clusters[q].selected){continue;}
                         // 既存の色
                         b = this.axisArray[m + o].clusters[q].color;
                         // 線形補間
@@ -763,11 +774,12 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
             if(this.axisArray[m].putData.left){
                 c = [];
                 for(o = 1; m - o >= 0; ++o){
-                    // 左隣が選択されているか
-                    if(selectedAxis[m - o]){break;}
+                    // // 左隣が選択されているか
+                    // if(selectedAxis[m - o]){break;}
                     // 選択されていないので自身から左隣の各クラスタへどのような分配になっているか調べる
                     c = this.axisArray[m].clusters[k].getOutputLinePower().left;
                     for(q = 0, r = this.axisArray[m - o].clusters.length; q < r; ++q){
+                        if(selectedAxis[m - o] && !this.axisArray[m - o].clusters[q].selected){continue;}
                         // 既存の色
                         b = this.axisArray[m - o].clusters[q].color;
                         // 線形補間
