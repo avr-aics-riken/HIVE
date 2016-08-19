@@ -217,7 +217,7 @@ ParallelCoordCluster.prototype.addAxis = function(){
 };
 // 列の配置をリセットして可能なら canvas を再描画する
 ParallelCoordCluster.prototype.resetAxis = function(resetData){
-    var i, j;
+    var i, j, v;
     var space, margin;
     if(resetData && resetData.hasOwnProperty('axis') && resetData.axis.length > 0){
         for(i = 0; i < this.axisCount; ++i){
@@ -238,6 +238,17 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         j = this.PARALLEL_PADDING_H + (margin - this.SVG_DEFAULT_WIDTH) * i - this.SVG_DEFAULT_WIDTH / 2;
         this.axisArray[i].setPosition(j);
     }
+
+    v = [];
+    for(i = 0, j = this.axisArray.length; i < j; ++i){
+        if(this.axisArray[i].selectedNumber > -1){
+            v[this.axisArray[i].selectedNumber] = i;
+        }
+    }
+    for(i = 0, j = v.length; i < j; ++i){
+        this.getAllBrushedRange(this.axisArray[v[i]]);
+    }
+
     if(this.glReady){
         this.drawCanvas();
     }
@@ -681,6 +692,8 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
         }
         this.stateData.axis[i].brush.min = min; // brush 領域の min
         this.stateData.axis[i].brush.max = max; // brush 領域の max
+        this.stateData.axis[i].range.min = this.axisArray[i].min;
+        this.stateData.axis[i].range.max = this.axisArray[i].max;
         this.stateData.axis[i].volume = {       // ボリューム全体の軸ごとの minmax
             min: this.stateData.volume.minmax[i].min,
             max: this.stateData.volume.minmax[i].max
@@ -703,12 +716,10 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
     for(i = 0; i < selLength; ++i){                 // 既存の選択状態をチェックする
         if(this.selectedArray[i].index === j){      // インデックスが一致しているか
             f = true;                               // 一致していたものが存在した
-            if(e[j]){                               // 選択されているか
-                // 一致していたものが存在し更新
-                this.selectedArray[i].top = v[j].top;
-                this.selectedArray[i].bottom = v[j].bottom;
-            }else{
+            if(!e[j]){                              // 選択されているか
                 // 一致したが選択されていない状態なので消す
+                this.stateData.axis[this.selectedArray[i].index].selectedNumber = -1;
+                this.axisArray[this.selectedArray[i].index].selectedNumber = -1;
                 this.selectedArray.splice(i, 1);
             }
             break;
@@ -717,10 +728,10 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
     // 一致していたものが存在しなかったら追加する
     if(!f){
         this.selectedArray.push({
-            index: currentAxis.index,
-            top: v[j].top,
-            bottom: v[j].bottom
+            index: currentAxis.index
         });
+        currentAxis.selectedNumber = this.selectedArray.length - 1;
+        this.stateData.axis[currentAxis.index].selectedNumber = currentAxis.selectedNumber;
     }
 
     this.setClusterColor(e);
@@ -852,6 +863,7 @@ function Axis(parent, index){
     this.index = index;                  // インデックス（通常左から読み込んだ順に配置）
     this.svg = this.parent.NS('svg');    // SVG エレメント
     this.axisRectSvg = null;             // axis area rect
+    this.brushInput = axisData.brush;    // brushing flag
     this.brushed = false;                // brushing flag
     this.onBrush = false;                // on brush start flag
     this.onBrushRect = false;            // on brush rect drag start flag
@@ -880,6 +892,7 @@ function Axis(parent, index){
     this.inputMin = null;     // input
     this.inputMax = null;     // input
     this.inputSigma = null;   // input
+    this.selectedNumber = axisData.selectedNumber;
     if(index === 0){
         this.putData.right = parent.stateData.edge.cluster[index];
     }else if(index === parent.stateData.edge.cluster.length){
@@ -1049,6 +1062,7 @@ Axis.prototype.update = function(titleString, minmax){
 
     this.updateInput.bind(this)();
     this.updateSvg.bind(this)();
+    this.setBrushed.bind(this)(this.brushInput);
 };
 // input 要素を更新する
 Axis.prototype.updateInput = function(){
@@ -1119,6 +1133,17 @@ Axis.prototype.updateSvg = function(){
         ' h ' + (-this.parent.AXIS_SCALE_WIDTH * 2)
     );
     this.brushBottomRectSvg.setAttribute('style', display);
+};
+Axis.prototype.setBrushed = function(brush){
+    if(!brush || brush.min === null || brush.max === null){return;}
+    var t = this.max - this.min;
+    this.brushStartHeight = 1.0 - (brush.max - this.min) / t;
+    this.brushEndHeight = 1.0 - (brush.min - this.min) / t;
+    this.brushDefaultHeight = this.brushEndHeight;
+    this.brushed = true;
+    this.onBrush = false;
+    this.onBrushRect = false;
+    this.updateSvg();
 };
 // 軸を削除するため listener を remove して HTML を空にする
 Axis.prototype.delete = function(){

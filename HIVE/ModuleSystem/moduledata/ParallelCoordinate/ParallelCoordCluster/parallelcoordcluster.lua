@@ -166,7 +166,8 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"title": "title_' .. ax .. '", '
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
-            dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '                
+            dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
+            dest = dest .. '"selectedNumber": -1, '
             dest = dest .. '"clusternum": ' .. cnum .. ', '
             dest = dest .. '"cluster": ['
             for c = 0, cnum - 1 do
