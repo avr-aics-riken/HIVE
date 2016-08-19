@@ -30,8 +30,8 @@ class ParallelContainer extends React.Component {
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
 
         this.state = {
-            width: 600,
-            height: 300
+            width: 700,
+            height: 400
         };
     }
 
@@ -61,7 +61,7 @@ class ParallelContainer extends React.Component {
         this.parallel.resetAxis(json);
     }
 
-    selectChanged(value){
+    selectChanged(value, obj){
         for(let i = 0; i < value.length; ++i){
             for(let j = 0; j < value[i].cluster.length; ++j){
                 let selected = value[i].cluster[j].selected;
@@ -89,12 +89,11 @@ class ParallelContainer extends React.Component {
             allMin.push(axMin);
             allMax.push(axMax);
         }
-        //console.log('search min/max:', allMin, allMax);
 
         const numVals = 256;
         let rgba = [];
-        const volComp = 3
-        const RGBA = 4
+        const volComp = 3;
+        const RGBA = 4;
         rgba.length = numVals * RGBA * volComp * 2;
         rgba.fill(0);
 
@@ -110,7 +109,6 @@ class ParallelContainer extends React.Component {
                     let cmax = (maxVal - allMin[ax]) / allMinMaxDiff;
                     let selected = value[ax].cluster[j].selected;
                     let colorVal = value[ax].cluster[j].color;
-                
                     if (selected) {
                         if (rate >= cmin && rate <= cmax) {
                             rgba[4*(ax * numVals * 2 + i)  ] = 255*colorVal[0]; //r
@@ -118,33 +116,17 @@ class ParallelContainer extends React.Component {
                             rgba[4*(ax * numVals * 2 + i)+2] = 255*colorVal[2]; //b
                             rgba[4*(ax * numVals * 2 + i)+3] = 255; //a
                         }
-                    }                    
+                    }
                 }
             }
             rgba[4*(ax * numVals * 2 + numVals)  ] = allMin[ax]; // min
             rgba[4*(ax * numVals * 2 + numVals)+1] = allMax[ax]; // max
         }
-        //console.log(rgba);
-
-        /*for(let i = 0; i < numVals; ++i){
-            if (i > 30 && i < 120) {
-                rgba[4*i  ] = 255; //r
-                rgba[4*i+1] = 255; //g
-                rgba[4*i+2] = 255; //b
-                rgba[4*i+3] = 255; //a
-            } else {
-                rgba[4*i  ] = 0; //r
-                rgba[4*i+1] = 0; //g
-                rgba[4*i+2] = 0; //b
-                rgba[4*i+3] = 255; //a
-            }
-        }*/
+        obj.rgba = rgba;
         const varname = this.props.node.varname;
         this.props.action.changeNodeInput({
             varname : varname,
-            input : {
-                "rgba" : rgba
-            }
+            input : obj
         });
     }
 
@@ -159,27 +141,21 @@ class ParallelContainer extends React.Component {
     setInputValue(key, value){
         let obj = {};
         obj[key] = JSON.stringify(value).replace(/"/g, '\\\"');
-        /*this.props.action.changeNodeInput({
-            varname: this.props.node.varname,
-            input: obj
-        });*/
-        this.selectChanged(value);
+        this.selectChanged(value, obj);
     }
 
     imageRecieved(err, param, data){
         const varname = this.node.varname;
         if(param.varname !== varname){return;}
-        
         console.log(param);
         if (param.hasOwnProperty("isplot")) {
             console.log("paramparam",param);
-            this.imageSize = [parseFloat(param.width), parseFloat(param.height)]
+            this.imageSize = [parseFloat(param.width), parseFloat(param.height)];
             this.setState({
                 image : new Blob([data])
             });
             return;
         }
-        
         if(
             !param.hasOwnProperty('mode') ||
             param.mode !== 'raw' ||
@@ -192,7 +168,6 @@ class ParallelContainer extends React.Component {
         }
         console.log('get recieaved data');
         this.init(param.data);
-
     }
 
     nodeInputChanged(){
@@ -235,9 +210,13 @@ class ParallelContainer extends React.Component {
 
     styles(){
         return {
+            wrapper: {
+                display: 'flex',
+                flexDirection: 'row'
+            },
             container: {
                 backgroundColor: "#333",
-                width: this.state.width + "px",
+                width: (this.state.width - 256) + "px",
                 height: this.state.height + "px"
             },
             canvas: {
@@ -263,10 +242,12 @@ class ParallelContainer extends React.Component {
     render(){
         const styles = this.styles();
         return (
-            <div>
+            <div style={styles.wrapper}>
                 <div ref="container" style={styles.container}>
                 </div>
-                <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+                <div>
+                    <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+                </div>
             </div>
         );
     }
