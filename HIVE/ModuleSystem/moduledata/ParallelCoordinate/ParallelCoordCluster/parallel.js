@@ -865,7 +865,7 @@ function Axis(parent, index){
     this.brushRectDefaultHeight = 0;     // brush start height (normalize range)
     this.min = 0;                        // min
     this.max = 0;                        // max
-    this.sigma = 0;                      // sigma
+    this.sigma = axisData.sigma || 0;    // sigma
     this.width = 0;
     this.height = 0;
     this.left = 0;
@@ -926,9 +926,9 @@ function Axis(parent, index){
     this.inputSigma.style.width = '50px';
     this.inputSigma.type = 'number';
     this.inputSigma.value = 0;
-    // this.inputWrapper.appendChild(this.inputMax);
     this.inputWrapper.appendChild(this.inputSigma);
-    // this.inputWrapper.appendChild(this.inputMin);
+    this.inputWrapper.appendChild(this.inputMax);
+    this.inputWrapper.appendChild(this.inputMin);
     this.parent.footerWrap.appendChild(this.inputWrapper);
 }
 // 軸を設定して SVG を生成して描画する
@@ -1132,12 +1132,15 @@ Axis.prototype.delete = function(){
     this.svg.innerHTML = '';
     this.parent.layer.removeChild(this.svg);
     this.svg = null;
+    this.inputWrapper.innerHTML = '';
+    this.parent.footerWrap.removeChild(this.inputWrapper);
+    this.inputWrapper = null;
 };
 // 軸を描画している実行部分
 // 現状は軸を minmax の差分を用いて 10 分割している
 // つまり、最小値も最大値も、きれいに軸の両端にぴったりと配置される
 Axis.prototype.drawScale = function(){
-    var i, j, k, l;
+    var i, j, k, l, m;
     var text, path, bbox, dummy;
     var smin, smax;
     var range = this.max - this.min;
@@ -1150,26 +1153,8 @@ Axis.prototype.drawScale = function(){
     dummy.style.fontSize = this.parent.SVG_SCALE_SIZE;
     dummy.style.visibility = 'hidden';
     this.svg.appendChild(dummy);
+    m = 0;
     for(i = this.min; i <= smax; i += scale){
-        // text = this.parent.NS('text');
-        // text.style.position = 'relative';
-        // text.style.overflow = 'visible';
-        // text.style.fontSize = this.parent.SVG_SCALE_SIZE;
-        // text.textContent = '' + this.formatFloat(i, 5);
-        // dummy.textContent = '' + this.formatFloat(i, 5);
-        // bbox = dummy.getBBox();
-        // j = bbox.width - (this.parent.SVG_DEFAULT_WIDTH / 2) + this.parent.AXIS_SCALE_WIDTH + 2;
-        // k = this.svg.clientHeight - ((i - this.min) / (smax - this.min)) * l;
-        // text.style.transform = 'translate(' + -j + 'px, ' + (k + 5) + 'px)';
-        // this.svg.appendChild(text);
-        // path = this.parent.NS('path');
-        // path.setAttribute('stroke', this.parent.AXIS_LINE_COLOR);
-        // path.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH);
-        // path.setAttribute(
-        //     'd',
-        //     'M ' + this.centerH + ' ' + k + ' h ' + -this.parent.AXIS_SCALE_WIDTH
-        // );
-        // this.svg.appendChild(path);
         text = this.parent.NS('text');
         text.style.position = 'relative';
         text.style.overflow = 'visible';
