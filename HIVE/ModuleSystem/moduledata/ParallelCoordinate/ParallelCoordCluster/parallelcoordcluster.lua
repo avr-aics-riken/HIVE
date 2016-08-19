@@ -125,6 +125,7 @@ function ParallelCoordCluster:Do()
         end
         dest = dest .. '"title": "title_' .. ax .. '", '
         dest = dest .. '"brush": {"min": null, "max": null}, '
+        dest = dest .. '"range": {"min": null, "max": null}, '        
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
         for c = 0, cnum - 1 do
