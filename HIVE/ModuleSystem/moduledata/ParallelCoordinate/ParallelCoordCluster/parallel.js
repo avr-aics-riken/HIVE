@@ -34,14 +34,22 @@ function ParallelCoordCluster(parentElement, option){
     this.stateData = null;   // 選択状況も含めた内部的なデータ全体
 
     this.parent = parentElement;                        // 自身を格納している親 DOM
+    this.wrapper = document.createElement('div');       // 全体の外側 DOM
+    this.footer = document.createElement('div');        // 全体の外側の下の DOM
+    this.footerWrap = document.createElement('div');    // 全体の外側の下の DOM
+    this.footerPlot = document.createElement('div');    // 全体の外側の下の DOM
     this.parentElement = document.createElement('div'); // Canvas 側の親 DOM
     this.plotElement = document.createElement('div');   // Scatter plot 用の領域も動的生成
     this.canvas = document.createElement('canvas');     // Canvas は動的に生成
     this.layer = document.createElement('div');         // Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
     this.plotCanvas = document.createElement('canvas'); // Plot 用の Canvas は動的に生成
     this.plotLayer = document.createElement('div');     // Plot 用の Canvas の上に乗るレイヤ（SVG などが入る）も動的生成
-    this.parent.appendChild(this.parentElement);        // 親 DOM に Canvas と Layer を格納する DOM を append
-    this.parent.appendChild(this.plotElement);          // 親 DOM に plot 用の DOM を append
+    this.parent.appendChild(this.wrapper);              // 親 DOM に wrapper を append
+    this.parent.appendChild(this.footer);               // 親 DOM に footer を append
+    this.wrapper.appendChild(this.parentElement);       // 親 DOM に Canvas と Layer を格納する DOM を append
+    this.wrapper.appendChild(this.plotElement);         // 親 DOM に plot 用の DOM を append
+    this.footer.appendChild(this.footerWrap);           // 親 DOM に wrap 用の DOM を append
+    this.footer.appendChild(this.footerPlot);           // 親 DOM に plot 用の DOM を append
     this.parentElement.appendChild(this.canvas);        // Canvas を親 DOM 内の外装に append
     this.parentElement.appendChild(this.layer);         // Layer を親 DOM 内の外装に append
     this.plotElement.appendChild(this.plotCanvas);      // Canvas を親 DOM 内の外装に append
@@ -76,8 +84,9 @@ function ParallelCoordCluster(parentElement, option){
     this.AXIS_SCALE_WIDTH = 10;
     this.BEZIER_DIVISION = 100;
     this.BEZIER_LINE_SCALE = 3.0;
-    this.PLOT_AREA_WIDTH = 200;
+    this.PLOT_AREA_WIDTH = 1;
     this.PLOT_RECT_COLOR = 'deeppink';
+    this.FOOTER_AREA_HEIGHT = 60;
 
     // binding
     this.setOption = this.setOption.bind(this);
@@ -88,7 +97,23 @@ function ParallelCoordCluster(parentElement, option){
 
     // style modify
     this.parent.style.display = 'flex';
-    this.parent.style.flexDirection = 'row';
+    this.parent.style.flexDirection = 'column';
+    this.wrapper.style.width = '100%';
+    this.wrapper.style.height = 'calc(100% - ' + this.FOOTER_AREA_HEIGHT + 'px)';
+    this.wrapper.style.display = 'flex';
+    this.wrapper.style.flexDirection = 'row';
+    this.footer.style.display = 'flex';
+    this.footer.style.flexDirection = 'row';
+    this.footer.style.width = '100%';
+    this.footer.style.height = this.FOOTER_AREA_HEIGHT + 'px';
+    this.footer.style.backgroundColor = '#222';
+    this.footerWrap.style.width = 'calc(100% - ' + this.PLOT_AREA_WIDTH + 'px)';
+    this.footerWrap.style.height = '100%';
+    this.footerWrap.style.display = 'flex';
+    this.footerWrap.style.flexDirection = 'row';
+    this.footerWrap.style.justifyContent = 'space-around';
+    this.footerPlot.style.width = this.PLOT_AREA_WIDTH + 'px';
+    this.footerPlot.style.height = '100%';
     this.parentElement.style.width = 'calc(100% - ' + this.PLOT_AREA_WIDTH + 'px)';
     this.plotElement.style.width = this.PLOT_AREA_WIDTH + 'px';
     this.plotElement.style.height = '100%';
@@ -840,6 +865,7 @@ function Axis(parent, index){
     this.brushRectDefaultHeight = 0;     // brush start height (normalize range)
     this.min = 0;                        // min
     this.max = 0;                        // max
+    this.sigma = 0;                      // sigma
     this.width = 0;
     this.height = 0;
     this.left = 0;
@@ -850,6 +876,10 @@ function Axis(parent, index){
     this.clusters = [];                  // 自身に格納しているクラスタ
     this.putData = {left: null, right: null};
     this.dataLength = parent.stateData.edge.volumenum;
+    this.inputWrapper = null; // input
+    this.inputMin = null;     // input
+    this.inputMax = null;     // input
+    this.inputSigma = null;   // input
     if(index === 0){
         this.putData.right = parent.stateData.edge.cluster[index];
     }else if(index === parent.stateData.edge.cluster.length){
@@ -878,6 +908,28 @@ function Axis(parent, index){
     this.svg.style.position = 'relative';
     this.svg.style.overflow = 'visible';
     this.parent.layer.appendChild(this.svg);
+
+    this.inputWrapper = document.createElement('div');
+    this.inputWrapper.style.display = 'flex';
+    this.inputWrapper.style.flexDirection = 'column';
+    this.inputMin   = document.createElement('input');
+    this.inputMin.style.width = '50px';
+    this.inputMin.type = 'number';
+    this.inputMin.step = '0.0001';
+    this.inputMin.value = 0;
+    this.inputMax   = document.createElement('input');
+    this.inputMax.style.width = '50px';
+    this.inputMax.type = 'number';
+    this.inputMax.step = '0.0001';
+    this.inputMax.value = 0;
+    this.inputSigma = document.createElement('input');
+    this.inputSigma.style.width = '50px';
+    this.inputSigma.type = 'number';
+    this.inputSigma.value = 0;
+    // this.inputWrapper.appendChild(this.inputMax);
+    this.inputWrapper.appendChild(this.inputSigma);
+    // this.inputWrapper.appendChild(this.inputMin);
+    this.parent.footerWrap.appendChild(this.inputWrapper);
 }
 // 軸を設定して SVG を生成して描画する
 Axis.prototype.update = function(titleString, minmax){
@@ -995,7 +1047,14 @@ Axis.prototype.update = function(titleString, minmax){
         (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcBrushUp, false);};}())
     );
 
+    this.updateInput.bind(this)();
     this.updateSvg.bind(this)();
+};
+// input 要素を更新する
+Axis.prototype.updateInput = function(){
+    this.inputMin.value = this.min;
+    this.inputMax.value = this.max;
+    this.inputSigma.value = this.sigma;
 };
 // 軸上の SVG 要素の外観や大きさを、その時点での this が持つプロパティに応じてアップデートする
 Axis.prototype.updateSvg = function(){
@@ -1092,6 +1151,25 @@ Axis.prototype.drawScale = function(){
     dummy.style.visibility = 'hidden';
     this.svg.appendChild(dummy);
     for(i = this.min; i <= smax; i += scale){
+        // text = this.parent.NS('text');
+        // text.style.position = 'relative';
+        // text.style.overflow = 'visible';
+        // text.style.fontSize = this.parent.SVG_SCALE_SIZE;
+        // text.textContent = '' + this.formatFloat(i, 5);
+        // dummy.textContent = '' + this.formatFloat(i, 5);
+        // bbox = dummy.getBBox();
+        // j = bbox.width - (this.parent.SVG_DEFAULT_WIDTH / 2) + this.parent.AXIS_SCALE_WIDTH + 2;
+        // k = this.svg.clientHeight - ((i - this.min) / (smax - this.min)) * l;
+        // text.style.transform = 'translate(' + -j + 'px, ' + (k + 5) + 'px)';
+        // this.svg.appendChild(text);
+        // path = this.parent.NS('path');
+        // path.setAttribute('stroke', this.parent.AXIS_LINE_COLOR);
+        // path.setAttribute('stroke-width', this.parent.AXIS_LINE_WIDTH);
+        // path.setAttribute(
+        //     'd',
+        //     'M ' + this.centerH + ' ' + k + ' h ' + -this.parent.AXIS_SCALE_WIDTH
+        // );
+        // this.svg.appendChild(path);
         text = this.parent.NS('text');
         text.style.position = 'relative';
         text.style.overflow = 'visible';
