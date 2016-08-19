@@ -511,8 +511,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                 if(i !== this.axisArray.length - 1){
                     // line sort
                     c = this.axisArray[i].clusters[k].getOutputLinePower();
-                    for(m = 0, n = c.length; m < n; ++m){
-                        d[m] = {index: m, value: c[m]};
+                    for(m = 0, n = c.right.length; m < n; ++m){
+                        d[m] = {index: m, value: c.right[m]};
                     }
                     d.sort(function(a, b){return a.value - b.value;});
                     a[i].line[k] = d.concat();
@@ -558,7 +558,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                             // u == 対象クラスタの中心の Y 座標
                             // w == 右軸対象クラスタの中心の Y 座標
                             var drawColor = this.axisArray[i].clusters[k].color;
-                            m = linePower[r] * 0.9 + 0.1;
+                            m = linePower.right[r] * 0.9 + 0.1;
                             // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ラインで描く場合
                             drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // モノクロgeometry
                         }
@@ -680,9 +680,9 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
     return this.stateData.axis;
 };
 ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
-    var i, j, k, l, m, n;
-    var a;
-    var colorStride = 360 / 2.5;
+    var i, j, k, l, m, n, o, p, q, r;
+    var a, b, c, d;
+    var colorStride = 480 / 7;
 
     // いったん色を全リセット
     for(i = 0, j = this.axisArray.length; i < j; ++i){
@@ -701,19 +701,69 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
         m = this.selectedArray[i].index; // 最初に選択されたものから順に
         n = 0;
         for(k = 0, l = this.axisArray[m].clusters.length; k < l; ++k){
-            if(this.stateData.axis[m].cluster[k].selected){
-                // まずは自分自身の色を決める
-                a = hsva(colorStride * n, 1.0, 0.5, 1.0);
-                this.axisArray[m].clusters[k].color[0]     = a[0];
-                this.axisArray[m].clusters[k].color[1]     = a[1];
-                this.axisArray[m].clusters[k].color[2]     = a[2];
-                this.stateData.axis[m].cluster[k].color[0] = a[0];
-                this.stateData.axis[m].cluster[k].color[1] = a[1];
-                this.stateData.axis[m].cluster[k].color[2] = a[2];
-                ++n;
+            // そもそも選択されていない場合は飛ばす
+            if(!this.stateData.axis[m].cluster[k].selected){continue;}
+            // まずは自分自身の色を決める
+            a = hsva(colorStride * n + 120, 1.0, 0.75, 1.0);
+            this.axisArray[m].clusters[k].color[0]     = a[0];
+            this.axisArray[m].clusters[k].color[1]     = a[1];
+            this.axisArray[m].clusters[k].color[2]     = a[2];
+            this.stateData.axis[m].cluster[k].color[0] = a[0];
+            this.stateData.axis[m].cluster[k].color[1] = a[1];
+            this.stateData.axis[m].cluster[k].color[2] = a[2];
+            ++n;
+            if(this.axisArray[m].putData.right){
+                c = [];
+                for(o = 1, p = this.axisArray.length - m; o < p; ++o){
+                    // 右隣が選択されているか
+                    if(selectedAxis[m + o]){break;}
+                    // 選択されていないので自身から右隣の各クラスタへどのような分配になっているか調べる
+                    c = this.axisArray[m].clusters[k].getOutputLinePower().right;
+                    for(q = 0, r = this.axisArray[m + o].clusters.length; q < r; ++q){
+                        // 既存の色
+                        b = this.axisArray[m + o].clusters[q].color;
+                        // 線形補間
+                        d = this.mixColor(b, a, c[q]);
+                        this.axisArray[m + o].clusters[q].color[0] = d[0];
+                        this.axisArray[m + o].clusters[q].color[1] = d[1];
+                        this.axisArray[m + o].clusters[q].color[2] = d[2];
+                        this.stateData.axis[m].cluster[k].color[0] = d[0];
+                        this.stateData.axis[m].cluster[k].color[1] = d[1];
+                        this.stateData.axis[m].cluster[k].color[2] = d[2];
+                    }
+                }
+            }
+            if(this.axisArray[m].putData.left){
+                c = [];
+                for(o = 1; m - o >= 0; ++o){
+                    // 左隣が選択されているか
+                    if(selectedAxis[m - o]){break;}
+                    // 選択されていないので自身から左隣の各クラスタへどのような分配になっているか調べる
+                    c = this.axisArray[m].clusters[k].getOutputLinePower().left;
+                    for(q = 0, r = this.axisArray[m - o].clusters.length; q < r; ++q){
+                        // 既存の色
+                        b = this.axisArray[m - o].clusters[q].color;
+                        // 線形補間
+                        d = this.mixColor(b, a, c[q]);
+                        this.axisArray[m - o].clusters[q].color[0] = d[0];
+                        this.axisArray[m - o].clusters[q].color[1] = d[1];
+                        this.axisArray[m - o].clusters[q].color[2] = d[2];
+                        this.stateData.axis[m].cluster[k].color[0] = d[0];
+                        this.stateData.axis[m].cluster[k].color[1] = d[1];
+                        this.stateData.axis[m].cluster[k].color[2] = d[2];
+                    }
+                }
             }
         }
     }
+};
+ParallelCoordCluster.prototype.mixColor = function(a, b, t){
+    var s = 1.0 - t;
+    return [
+        a[0] * s + b[0] * t,
+        a[1] * s + b[1] * t,
+        a[2] * s + b[2] * t
+    ];
 };
 
 // axis ===================================================================
@@ -1271,14 +1321,23 @@ Cluster.prototype.getOutputPower = function(){
 };
 // クラスタ自身がアウトプットしているラインの各量の比率
 Cluster.prototype.getOutputLinePower = function(){
-    var i, j, a = [];
-    var data = this.parentAxis.putData.right;
-    if(!data){return 0;}
-    j = 0;
-    for(i = 0; i < data[this.index].length; ++i){
-        a.push(data[this.index][i] / this.parentAxis.dataLength);
+    var i, a = [], b = [];
+    var lData = this.parentAxis.putData.left;
+    var rData = this.parentAxis.putData.right;
+    if(!lData && !rData){return {left: null, right :null};}
+    if(lData){
+        for(i = 0; i < lData.length; ++i){
+            a.push(lData[i][this.index] / this.parentAxis.dataLength);
+        }
     }
-    return a;
+    if(rData){
+        for(i = 0; i < rData[this.index].length; ++i){
+            b.push(rData[this.index][i] / this.parentAxis.dataLength);
+        }
+    }
+    if(a.length === 0){a = null;}
+    if(b.length === 0){b = null;}
+    return {left: a, right: b};
 };
 Cluster.prototype.setSelected = function(select){
     this.selected = select;
