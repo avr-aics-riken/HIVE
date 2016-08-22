@@ -167,15 +167,20 @@ function ParallelCoordCluster:Do()
             local brushMin = axisinfo[ax+1].brush.min or "null"
             local brushMax = axisinfo[ax+1].brush.max or "null"
             local rangeMin = axisinfo[ax+1].range.min or "null"
-            local rangeMax = axisinfo[ax+1].range.max or "null"                
+            local rangeMax = axisinfo[ax+1].range.max or "null"
+            local selectedAxis = "false"
+            if axisinfo[ax+1] then selectedAxis = "true" end
+            print(selectedAxis)
             dest = dest .. '"brush": {"min": ' .. brushMin .. ', "max": '.. brushMax .. '}, '
             dest = dest .. '"range": {"min": ' .. rangeMin .. ', "max": ' .. rangeMax .. '}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
+            dest = dest .. '"selectedAxis": ' .. selectedAxis  .. ', '
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
         else
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
+            dest = dest .. '"selectedAxis": false, '
             dest = dest .. '"selectedNumber": -1, '
         end
         
