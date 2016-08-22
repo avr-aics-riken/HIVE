@@ -694,6 +694,7 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
         this.stateData.axis[i].brush.max = max; // brush 領域の max
         this.stateData.axis[i].range.min = this.axisArray[i].min;
         this.stateData.axis[i].range.max = this.axisArray[i].max;
+        this.stateData.axis[i].sigma     = this.axisArray[i].sigma;
         this.stateData.axis[i].volume = {       // ボリューム全体の軸ごとの minmax
             min: this.stateData.volume.minmax[i].min,
             max: this.stateData.volume.minmax[i].max
@@ -917,7 +918,13 @@ function Axis(parent, index){
         this.parent.stateData.axis[index].cluster[i].color[2] = this.clusters[i].color[2];
         this.parent.stateData.axis[index].cluster[i].color[3] = this.clusters[i].color[3];
     }
-    this.getClustersMinMax();    // クラスタの minmax とってきて自身に適用
+    // 外部から range 来てたら使う、なければクラスタの minmax をなめる
+    if(axisData.range && axisData.range.min && axisData.range.max){
+        this.min = axisData.range.min;
+        this.max = axisData.range.max;
+    }else{
+        this.getClustersMinMax();    // クラスタの minmax とってきて自身に適用
+    }
     this.svg.style.position = 'relative';
     this.svg.style.overflow = 'visible';
     this.parent.layer.appendChild(this.svg);
@@ -929,16 +936,16 @@ function Axis(parent, index){
     this.inputMin.style.width = '50px';
     this.inputMin.type = 'number';
     this.inputMin.step = '0.0001';
-    this.inputMin.value = 0;
+    this.inputMin.value = this.min;
     this.inputMax   = document.createElement('input');
     this.inputMax.style.width = '50px';
     this.inputMax.type = 'number';
     this.inputMax.step = '0.0001';
-    this.inputMax.value = 0;
+    this.inputMax.value = this.max;
     this.inputSigma = document.createElement('input');
     this.inputSigma.style.width = '50px';
     this.inputSigma.type = 'number';
-    this.inputSigma.value = 0;
+    this.inputSigma.value = this.sigma;
     this.inputWrapper.appendChild(this.inputSigma);
     this.inputWrapper.appendChild(this.inputMax);
     this.inputWrapper.appendChild(this.inputMin);
@@ -960,6 +967,9 @@ Axis.prototype.update = function(titleString, minmax){
     var funcBrushDown = this.dragAxisBrushStart.bind(this);
     var funcBrushMove = this.dragAxisBrushMove.bind(this);
     var funcBrushUp   = this.dragAxisBrushEnd.bind(this);
+    var funcDomMin   = this.domInputMin.bind(this);
+    var funcDomMax   = this.domInputMax.bind(this);
+    var funcDomSigma = this.domInputSigma.bind(this);
     if(titleString){
         this.title = titleString;
     }else{
@@ -1049,6 +1059,9 @@ Axis.prototype.update = function(titleString, minmax){
     this.brushRectSvg.addEventListener('mousedown', funcBrushDown, false);
     this.parent.layer.addEventListener('mousemove', funcBrushMove, false);
     this.parent.layer.addEventListener('mouseup', funcBrushUp, false);
+    this.inputMin.addEventListener('change', funcDomMin, false);
+    this.inputMax.addEventListener('change', funcDomMax, false);
+    this.inputSigma.addEventListener('change', funcDomSigma, false);
     this.listeners.push(
         (function(){return function(){this.axisRectSvg.removeEventListener('mousedown', funcAxisDown, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcAxisMove, false);};}()),
@@ -1057,7 +1070,10 @@ Axis.prototype.update = function(titleString, minmax){
         (function(){return function(){this.brushBottomRectSvg.removeEventListener('mousedown', funcAxisHandle, false);};}()),
         (function(){return function(){this.brushRectSvg.removeEventListener('mousedown', funcBrushDown, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcBrushMove, false);};}()),
-        (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcBrushUp, false);};}())
+        (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcBrushUp, false);};}()),
+        (function(){return function(){this.inputMin.removeEventListener('change', funcDomMin, false);};}()),
+        (function(){return function(){this.inputMax.removeEventListener('change', funcDomMax, false);};}()),
+        (function(){return function(){this.inputSigma.removeEventListener('change', funcDomSigma, false);};}())
     );
 
     this.updateInput.bind(this)();
@@ -1367,6 +1383,30 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     var axisjson = this.parent.getAllBrushedRange(this);
     if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
+// dom の input の change イベント
+Axis.prototype.domInputMin = function(eve){
+    this.min = parseFloat(eve.currentTarget.value);
+    if(!isNaN(this.min)){
+        var axisjson = this.parent.getAllBrushedRange(this);
+        if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
+    }
+};
+// dom の input の change イベント
+Axis.prototype.domInputMax = function(eve){
+    this.max = parseFloat(eve.currentTarget.value);
+    if(!isNaN(this.max)){
+        var axisjson = this.parent.getAllBrushedRange(this);
+        if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
+    }
+};
+// dom の input の change イベント
+Axis.prototype.domInputSigma = function(eve){
+    this.sigma = parseFloat(eve.currentTarget.value);
+    if(!isNaN(this.sigma)){
+        var axisjson = this.parent.getAllBrushedRange(this);
+        if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
+    }
+};
 // 軸上の選択範囲を正規化した値として返す
 Axis.prototype.getBrushedRange = function(){
     if(!this.brushed){return null;}
@@ -1421,6 +1461,7 @@ function Cluster(axis, index, selected, out, min, max, top, color){
     }else{
         c = this.getOutputPower();
     }
+    // console.log('?!?!?!?!?!?!?!??!?!?!?!?!??!??!?!?', c);
     this.color[3] *= c;
     this.color[3] = this.color[3] * 0.9 + 0.1;
     return this;
@@ -1454,6 +1495,9 @@ Cluster.prototype.getOutputPower = function(){
     var data = this.parentAxis.putData.right;
     if(!data){return 0;}
     j = 0;
+    if(!data[this.index]){
+        console.log('output power valid'); return;
+    }
     for(i = 0; i < data[this.index].length; ++i){
         j += data[this.index][i];
     }
