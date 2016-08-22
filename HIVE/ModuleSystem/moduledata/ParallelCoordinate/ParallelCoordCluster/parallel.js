@@ -246,7 +246,7 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         }
     }
     for(i = 0, j = v.length; i < j; ++i){
-        this.getAllBrushedRange(this.axisArray[v[i]]);
+        this.getAllBrushedRange(this.axisArray[v[i]], true);
     }
 
     if(this.glReady){
@@ -674,7 +674,7 @@ ParallelCoordCluster.prototype.getStateJSON = function(){
     return JSON.stringify(this.stateData);
 };
 // 全軸上のその時点での選択範囲・input に返すべき情報をJSONにして返す
-ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
+ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDragEvent){
     var f, e, i, j, k, l, v, w;
     var min, max, len;
     var selLength = this.selectedArray.length;
@@ -727,7 +727,7 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis){
         }
     }
     // 一致していたものが存在しなかったら追加する
-    if(!f){
+    if(!f && isDragEvent){
         this.selectedArray.push({
             index: currentAxis.index
         });
@@ -1326,7 +1326,7 @@ Axis.prototype.dragAxisEnd = function(eve){
     }
     this.updateSvg.bind(this)();
 
-    var axisjson = this.parent.getAllBrushedRange(this);
+    var axisjson = this.parent.getAllBrushedRange(this, true);
     if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
 // 軸の上下のハンドルをドラッグ開始
@@ -1380,7 +1380,7 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     if(!this.onBrushRect){return;}
     this.onBrushRect = false;
 
-    var axisjson = this.parent.getAllBrushedRange(this);
+    var axisjson = this.parent.getAllBrushedRange(this, true);
     if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
 // dom の input の change イベント
@@ -1461,7 +1461,6 @@ function Cluster(axis, index, selected, out, min, max, top, color){
     }else{
         c = this.getOutputPower();
     }
-    // console.log('?!?!?!?!?!?!?!??!?!?!?!?!??!??!?!?', c);
     this.color[3] *= c;
     this.color[3] = this.color[3] * 0.9 + 0.1;
     return this;
@@ -1495,9 +1494,7 @@ Cluster.prototype.getOutputPower = function(){
     var data = this.parentAxis.putData.right;
     if(!data){return 0;}
     j = 0;
-    if(!data[this.index]){
-        console.log('output power valid'); return;
-    }
+    if(!data[this.index]){return;}
     for(i = 0; i < data[this.index].length; ++i){
         j += data[this.index][i];
     }
