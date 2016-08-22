@@ -1,0 +1,14 @@
+{
+	"name": "ImageView",
+	"funcname": "ImageView",
+	"info":"imageviewをつくるノード",
+	"customfuncfile":"imageview.lua",
+	"uifile" : "imageview.jsx",
+    "input": [
+        {"name": "image", "type": "BufferImageData"},
+        {"name": "ipcmode", "type": "bool", "value": false, "hole":false}
+	],
+	"output": [
+        {"name": "Image", "type": "BufferImageData"}
+	]
+}

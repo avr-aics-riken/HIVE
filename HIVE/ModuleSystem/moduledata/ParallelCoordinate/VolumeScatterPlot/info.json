@@ -1,0 +1,11 @@
+{
+    "name": "VolumeScatterPlot",
+    "funcname": "VolumeScatterPlot",
+    "info": "ParallelCoordClusterの選択ボリュームから散布図を描画するノード",
+    "customfuncfile": "VolumeScatterPlot.lua",
+    "input": [
+        {"name": "blushed", "type": "BufferImageData"},
+        {"name": "volume", "type": "BufferVolumeData"}
+    ],
+    "output": []
+}

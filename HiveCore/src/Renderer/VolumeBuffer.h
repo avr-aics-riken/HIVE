@@ -30,6 +30,7 @@ private:
     unsigned int       m_index_num;
     float              m_boxsize[3];
     float              m_voldim[3];
+    unsigned int       m_volcomp;
     double             m_volMinVal[3];
     double             m_volMaxVal[3];
     unsigned int       m_sgl_voltex;
