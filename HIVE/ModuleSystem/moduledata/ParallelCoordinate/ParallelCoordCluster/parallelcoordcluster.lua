@@ -148,51 +148,62 @@ function ParallelCoordCluster:Do()
     dest = dest .. ' }'
 
     dest = dest .. ', "axis": '
-    if axisjson ~= "" then
-        dest = dest .. axisjson
-    else
-        dest = dest .. '['
-        --print('AxisNum = ' .. axisNum)
-        for ax = 0, axisNum - 1 do
-            local cnum = self.volumeclustering:GetClusterNum(ax)
-            print('ClusterNum = ' .. cnum)
+    dest = dest .. '['
+    --print('AxisNum = ' .. axisNum)
+    for ax = 0, axisNum - 1 do
+        local cnum = self.volumeclustering:GetClusterNum(ax)
+        print('ClusterNum = ' .. cnum)
 
-            -- json string
-            if ax == 0 then
-                dest = dest .. '{'
-            else
-                dest = dest .. ',{'
-            end
-            dest = dest .. '"title": "title_' .. ax .. '", '
+        -- json string
+        if ax == 0 then
+            dest = dest .. '{'
+        else
+            dest = dest .. ',{'
+        end
+        
+        dest = dest .. '"title": "title_' .. ax .. '", '
+            
+        if axisjson ~= "" then
+            local brushMin = axisinfo[ax+1].brush.min or "null"
+            local brushMax = axisinfo[ax+1].brush.max or "null"
+            local rangeMin = axisinfo[ax+1].brush.min or "null"
+            local rangeMax = axisinfo[ax+1].brush.max or "null"                
+            dest = dest .. '"brush": {"min": ' .. brushMin .. ', "max": '.. brushMax .. '}, '
+            dest = dest .. '"range": {"min": ' .. rangeMin .. ', "max": ' .. rangeMax .. '}, '
+            dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
+            dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
+        else
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
             dest = dest .. '"selectedNumber": -1, '
-            dest = dest .. '"clusternum": ' .. cnum .. ', '
-            dest = dest .. '"cluster": ['
-            for c = 0, cnum - 1 do
-                if c == 0 then
-                    dest = dest .. '{'
-                else
-                    dest = dest .. ',{'
-                end
-                local cv = self.volumeclustering:GetClusterValue(ax, c)
-                local j = 0
-                for i,v in pairs(cv) do
-                    temp = string.gsub(i, 'Value', '');
-                    if j ~= 0 then
-                        dest = dest .. ','
-                    end
-                    j = j + 1
-                    dest = dest .. '"' .. temp .. '": ' .. v
-                end
-                dest = dest .. ', "selected": false, "color": [0, 0, 0, 1]}'
-            end
-            dest = dest .. ']}'
         end
-
-        dest = dest .. ']'
+        
+        dest = dest .. '"clusternum": ' .. cnum .. ', '
+        dest = dest .. '"cluster": ['
+        for c = 0, cnum - 1 do
+            if c == 0 then
+                dest = dest .. '{'
+            else
+                dest = dest .. ',{'
+            end
+            local cv = self.volumeclustering:GetClusterValue(ax, c)
+            local j = 0
+            for i,v in pairs(cv) do
+                temp = string.gsub(i, 'Value', '');
+                if j ~= 0 then
+                    dest = dest .. ','
+                end
+                j = j + 1
+                dest = dest .. '"' .. temp .. '": ' .. v
+            end
+            dest = dest .. ', "selected": false, "color": [0, 0, 0, 1]}'
+        end
+        dest = dest .. ']}'
     end
+
+    dest = dest .. ']'
+
 
     --- make Edge info
     local datanum = volWidth * volHeight * volDepth
