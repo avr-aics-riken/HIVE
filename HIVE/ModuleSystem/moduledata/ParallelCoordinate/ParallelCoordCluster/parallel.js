@@ -684,7 +684,7 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
     for(i = 0, j = this.axisArray.length; i < j; ++i){
         min = max = len = null;
         v[i] = this.axisArray[i].getBrushedRange();
-        e[i] = (v[i] && v[i].top && v[i].bottom);
+        e[i] = (v[i] !== null && v[i].top !== null && v[i].bottom !== null);
         if(e[i]){
             len = this.axisArray[i].max - this.axisArray[i].min;
             min = len * (1.0 - v[i].bottom) + this.axisArray[i].min;
@@ -1414,12 +1414,13 @@ Axis.prototype.getBrushedRange = function(){
     var t = this.parent.AXIS_BRUSHED_EDGE_HEIGHT - this.parent.SVG_TEXT_BASELINE;
     var top    = Math.max(0, Math.min(1.0, (this.brushTopRectSvg.getBBox().y    + t) / h));
     var bottom = Math.max(0, Math.min(1.0, (this.brushBottomRectSvg.getBBox().y + t) / h));
-    return {
+    var returnObject = {
         top: top,
         bottom: bottom,
         index: this.index,
         length: bottom - top
     };
+    return returnObject;
 };
 // クラスタの選択状態をbrushを元に判定して配列で返す
 Axis.prototype.getClusterBrushed = function(){
