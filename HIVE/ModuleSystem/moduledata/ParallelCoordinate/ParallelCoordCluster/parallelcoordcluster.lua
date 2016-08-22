@@ -166,8 +166,8 @@ function ParallelCoordCluster:Do()
         if axisjson ~= "" then
             local brushMin = axisinfo[ax+1].brush.min or "null"
             local brushMax = axisinfo[ax+1].brush.max or "null"
-            local rangeMin = axisinfo[ax+1].brush.min or "null"
-            local rangeMax = axisinfo[ax+1].brush.max or "null"                
+            local rangeMin = axisinfo[ax+1].range.min or "null"
+            local rangeMax = axisinfo[ax+1].range.max or "null"                
             dest = dest .. '"brush": {"min": ' .. brushMin .. ', "max": '.. brushMax .. '}, '
             dest = dest .. '"range": {"min": ' .. rangeMin .. ', "max": ' .. rangeMax .. '}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
