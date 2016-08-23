@@ -1060,8 +1060,12 @@ function Axis(parent, index){
     this.inputMax.step = '0.0001';
     this.inputMax.value = this.max;
     this.inputSigma = document.createElement('input');
-    this.inputSigma.style.width = '50px';
-    this.inputSigma.type = 'number';
+    this.inputSigma.style.width = '90%';
+    // this.inputSigma.type = 'number';
+    this.inputSigma.type = 'range';
+    this.inputSigma.min = 0.001;
+    this.inputSigma.max = 0.1;
+    this.inputSigma.step = 0.001;
     this.inputSigma.value = this.sigma;
     this.inputWrapper.appendChild(this.inputSigma);
     this.inputWrapper.appendChild(this.inputMax);

@@ -169,7 +169,6 @@ function ParallelCoordCluster:Do()
             local rangeMax = axisinfo[ax+1].range.max or "null"
             local selectedAxis = "false"
             if axisinfo[ax+1].selectedAxis == true then selectedAxis = "true" end
-            print(selectedAxis)
             dest = dest .. '"brush": {"min": ' .. brushMin .. ', "max": '.. brushMax .. '}, '
             dest = dest .. '"range": {"min": ' .. rangeMin .. ', "max": ' .. rangeMax .. '}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
@@ -203,10 +202,15 @@ function ParallelCoordCluster:Do()
             end
 
             if axisjson ~= "" then
-                local cColor = '[' .. axisinfo[ax+1].cluster[c+1].color[1] .. ', '
-                cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[2] .. ', '
-                cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[3] .. ', '
-                cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[4] .. ']'
+                local cColor = ''
+                if axisinfo[ax+1].cluster[c+1] == nil then
+                    cColor = '[0, 0, 0, 1]'
+                else
+                    cColor = '[' .. axisinfo[ax+1].cluster[c+1].color[1] .. ', '
+                    cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[2] .. ', '
+                    cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[3] .. ', '
+                    cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[4] .. ']'
+                end
                 dest = dest .. ', "selected": false, "color": ' .. cColor .. '}'
             else
                 dest = dest .. ', "selected": false, "color": [0, 0, 0, 1]}'
