@@ -656,6 +656,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                     );
                     console.log('wawawaawawawaawaaa', this.axisArray[i].clusters[k].color);
                     // なんか色がおかしいので調査JSONとしてINPUTに戻した色が正しく適用されていない
+                    // デフォルトで出てくる色が、ゼロインデックスの軸を選択したことになってる。
                 }
             }
         }
@@ -756,11 +757,12 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
         this.selectedAxis = true;
         this.selectedArray = [];
         j = currentAxis.index;
-        for(i = 0; i < this.axisArray.length; ++i){ // 選択状態をチェックする
-            f = i === j;
-            this.axisArray[i].selectedAxis = f;
-            this.stateData.axis[i].selectedAxis = f;
+        for(i = 0; i < this.axisArray.length; ++i){ // 選択状態を一度リセット
+            this.axisArray[i].selectedAxis = false;
+            this.stateData.axis[i].selectedAxis = false;
         }
+        this.axisArray[currentAxis.index].selectedAxis = true;
+        this.stateData.axis[currentAxis.index].selectedAxis = true;
     }else{
         this.selectedAxis = false;
     }
@@ -787,6 +789,7 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
         if(this.selectedAxis){
             if(this.axisArray[i].selectedAxis !== null && this.axisArray[i].selectedAxis !== false){
                 selectedAxisIndex = i;
+                console.log('selectedaxisindex;' , i, this.axisArray[i].selectedAxis);
             }
         }
     }
@@ -1383,6 +1386,7 @@ Axis.prototype.dragEnd = function(eve){
     }else{
         // すぐにマウスアップしているのでクリックと判定する
         var axisjson = this.parent.getAllBrushedRange(this, false, true);
+        console.log('axisaxisaxisaxisaxisaxisaxisaxis', axisjson);
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
 };
