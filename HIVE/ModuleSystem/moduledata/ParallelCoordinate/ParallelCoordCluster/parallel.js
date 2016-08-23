@@ -563,7 +563,8 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
             b = [];
             d = [];
             for(k = 0, l = this.axisArray[i].clusters.length; k < l; ++k){
-                b.push({index: k, value: this.axisArray[i].clusters[k].color[3]});
+                e = this.axisArray[i].clusters[k].getInputPower() + this.axisArray[i].clusters[k].getOutputPower();
+                b.push({index: k, value: e});
                 if(i !== this.axisArray.length - 1){
                     // line sort
                     c = this.axisArray[i].clusters[k].getOutputLinePower();
@@ -581,6 +582,7 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
         render.bind(this)(null);
         function render(target){
             var gl = this.gl;
+            var arr = {back: [], front: []};
             gl.bindFramebuffer(gl.FRAMEBUFFER, target);
             if(target){
                 gl.viewport(this.drawRect.x, this.drawRect.y, this.drawRect.width, this.drawRect.height);
@@ -608,34 +610,59 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
                             r = a[i].line[k][o].index;                     // ソート済みの描画すべきインデックス
                             v = this.axisArray[i + 1].clusters[r].getNormalizeRange();
                             w = q * ((v.max - v.min) * v.top + v.min);     // v.top は正規化されているので除算ではなく乗算する
-                            p = 0.5;
-                            // x == 対称軸の X 座標
-                            // t == 右軸の X 座標
-                            // u == 対象クラスタの中心の Y 座標
-                            // w == 右軸対象クラスタの中心の Y 座標
                             var fromColor = this.axisArray[i].clusters[k].color;
                             var gotoColor = this.axisArray[i + 1].clusters[r].color;
-                            var drawColor = this.mixColor(fromColor, gotoColor, linePower.right[r]);
-                            m = linePower.right[r] * 0.9 + 0.1;
-                            // 自分自身の属する軸が選択中、かつ、自分自身が非選択のときは自身の色にリセット
-                            v = this.axisArray[i].getBrushedRange();
-                            if(v && v.top !== null && v.bottom !== null && !this.axisArray[i].clusters[k].selected){
-                                drawColor[0] = fromColor[0];
-                                drawColor[1] = fromColor[1];
-                                drawColor[2] = fromColor[2];
+                            var drawColor = [];
+                            if(
+                                fromColor[0] + fromColor[1] + fromColor[2] === 0 ||
+                                gotoColor[0] + gotoColor[1] + gotoColor[2] === 0
+                            ){
+                                drawColor = [
+                                    fromColor[0] * gotoColor[0],
+                                    fromColor[1] * gotoColor[1],
+                                    fromColor[2] * gotoColor[2],
+                                    0.5
+                                    // fromColor[3] * gotoColor[3]
+                                ];
+                                arr.back.push({x: x, t: t, u: u, w: w, color: drawColor.concat()});
+                            }else{
+                                drawColor = [
+                                    fromColor[0] * 0.5 + gotoColor[0] * 0.5,
+                                    fromColor[1] * 0.5 + gotoColor[1] * 0.5,
+                                    fromColor[2] * 0.5 + gotoColor[2] * 0.5,
+                                    fromColor[3] * 0.5 + gotoColor[3] * 0.5
+                                ];
+                                arr.front.push({x: x, t: t, u: u, w: w, color: drawColor.concat()});
                             }
-                            // 隣軸選択中、かつ、対象クラスタが非選択のときは対象クラスタの色にリセット
-                            v = this.axisArray[i + 1].getBrushedRange();
-                            if(v && v.top !== null && v.bottom !== null && !this.axisArray[i + 1].clusters[r].selected){
-                                drawColor[0] = gotoColor[0];
-                                drawColor[1] = gotoColor[1];
-                                drawColor[2] = gotoColor[2];
-                            }
-                            // drawBeziercurve(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // ラインで描く場合
-                            drawBezierGeometry(x, t, u, w, [drawColor[0], drawColor[1], drawColor[2], m]); // モノクロgeometry
                         }
                     }
                 }
+            }
+            for(i = 0, j = arr.back.length; i < j; ++i){
+                // x == 対称軸の X 座標
+                // t == 右軸の X 座標
+                // u == 対象クラスタの中心の Y 座標
+                // w == 右軸対象クラスタの中心の Y 座標
+                drawBezierGeometry(
+                    arr.back[i].x,
+                    arr.back[i].t,
+                    arr.back[i].u,
+                    arr.back[i].w,
+                    arr.back[i].color
+                );
+            }
+            for(i = 0, j = arr.front.length; i < j; ++i){
+                // x == 対称軸の X 座標
+                // t == 右軸の X 座標
+                // u == 対象クラスタの中心の Y 座標
+                // w == 右軸対象クラスタの中心の Y 座標
+                drawBezierGeometry(
+                    arr.front[i].x,
+                    arr.front[i].t,
+                    arr.front[i].u,
+                    arr.front[i].w,
+                    arr.front[i].color
+                );
             }
             // 少々冗長なのだが、軸上の矩形を確実に上に描画させるために
             for(i = 0, j = this.axisArray.length; i < j; ++i){
@@ -764,7 +791,11 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
         j = currentAxis.index;
         for(i = 0; i < this.axisArray.length; ++i){ // 選択状態を一度リセット
             this.axisArray[i].selectedAxis = false;
+            this.axisArray[i].brushed = false;
+            this.axisArray[i].onBrush = false;
             this.stateData.axis[i].selectedAxis = false;
+            this.stateData.axis[i].brushed = false;
+            this.stateData.axis[i].onBrush = false;
         }
         this.axisArray[currentAxis.index].selectedAxis = true;
         this.stateData.axis[currentAxis.index].selectedAxis = true;
@@ -815,46 +846,46 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
             this.stateData.axis[i].cluster[k].color[1] = a[1];
             this.stateData.axis[i].cluster[k].color[2] = a[2];
             this.stateData.axis[i].cluster[k].color[3] = 1.0;
-            // 自身の左軸が存在するか
-            if(this.axisArray[i].putData.left){
-                // 左側にある軸の回数分繰り返す
-                for(o = 1; i - o > -1; ++o){
-                    // 対象のクラスタの個数分繰り返す
-                    for(q = 0, r = this.axisArray[i - o].clusters.length; q < r; ++q){
-                        c = this.axisArray[i - o].clusters[q].getInputLinePower().right;
-                        for(s = 0, t = c.length; s < t; ++s){
-                            a = this.axisArray[i - o + 1].clusters[s].color;
-                            this.axisArray[i - o].clusters[q].color[0] += a[0] * c[s];
-                            this.axisArray[i - o].clusters[q].color[1] += a[1] * c[s];
-                            this.axisArray[i - o].clusters[q].color[2] += a[2] * c[s];
-                            this.axisArray[i - o].clusters[q].color[3] = 1.0;
-                            this.stateData.axis[i - o].cluster[q].color[0] += a[0] * c[s];
-                            this.stateData.axis[i - o].cluster[q].color[1] += a[1] * c[s];
-                            this.stateData.axis[i - o].cluster[q].color[2] += a[2] * c[s];
-                            this.stateData.axis[i - o].cluster[q].color[3] = 1.0;
-                        }
+        }
+        // 自身の左軸が存在するか
+        if(this.axisArray[i].putData.left){
+            // 左側にある軸の回数分繰り返す
+            for(o = 1; i - o > -1; ++o){
+                // 対象のクラスタの個数分繰り返す
+                for(q = 0, r = this.axisArray[i - o].clusters.length; q < r; ++q){
+                    c = this.axisArray[i - o].clusters[q].getInputLinePower().right;
+                    for(s = 0, t = c.length; s < t; ++s){
+                        a = this.axisArray[i - o + 1].clusters[s].color;
+                        this.axisArray[i - o].clusters[q].color[0] += a[0] * c[s];
+                        this.axisArray[i - o].clusters[q].color[1] += a[1] * c[s];
+                        this.axisArray[i - o].clusters[q].color[2] += a[2] * c[s];
+                        this.axisArray[i - o].clusters[q].color[3] = 1.0;
+                        this.stateData.axis[i - o].cluster[q].color[0] += a[0] * c[s];
+                        this.stateData.axis[i - o].cluster[q].color[1] += a[1] * c[s];
+                        this.stateData.axis[i - o].cluster[q].color[2] += a[2] * c[s];
+                        this.stateData.axis[i - o].cluster[q].color[3] = 1.0;
                     }
                 }
             }
-            // 自身の右軸が存在するか
-            if(this.axisArray[i].putData.right){
-                // 右側にある軸の回数分繰り返す
-                for(o = 1, p = this.axisArray.length - i; o < p; ++o){
-                    // 対象の軸のクラスタの個数分繰り返す
-                    for(q = 0, r = this.axisArray[i + o].clusters.length; q < r; ++q){
-                        c = this.axisArray[i + o].clusters[q].getInputLinePower().left;
-                        // 左隣のクラスタ群からそれぞれどのような割合で色を持ってくるか計算する
-                        for(s = 0, t = c.length; s < t; ++s){
-                            a = this.axisArray[i + o - 1].clusters[s].color;
-                            this.axisArray[i + o].clusters[q].color[0] += a[0] * c[s];
-                            this.axisArray[i + o].clusters[q].color[1] += a[1] * c[s];
-                            this.axisArray[i + o].clusters[q].color[2] += a[2] * c[s];
-                            this.axisArray[i + o].clusters[q].color[3] = 1.0;
-                            this.stateData.axis[i + o].cluster[q].color[0] += a[0] * c[s];
-                            this.stateData.axis[i + o].cluster[q].color[1] += a[1] * c[s];
-                            this.stateData.axis[i + o].cluster[q].color[2] += a[2] * c[s];
-                            this.stateData.axis[i + o].cluster[q].color[3] = 1.0;
-                        }
+        }
+        // 自身の右軸が存在するか
+        if(this.axisArray[i].putData.right){
+            // 右側にある軸の回数分繰り返す
+            for(o = 1, p = this.axisArray.length - i; o < p; ++o){
+                // 対象の軸のクラスタの個数分繰り返す
+                for(q = 0, r = this.axisArray[i + o].clusters.length; q < r; ++q){
+                    c = this.axisArray[i + o].clusters[q].getInputLinePower().left;
+                    // 左隣のクラスタ群からそれぞれどのような割合で色を持ってくるか計算する
+                    for(s = 0, t = c.length; s < t; ++s){
+                        a = this.axisArray[i + o - 1].clusters[s].color;
+                        this.axisArray[i + o].clusters[q].color[0] += a[0] * c[s];
+                        this.axisArray[i + o].clusters[q].color[1] += a[1] * c[s];
+                        this.axisArray[i + o].clusters[q].color[2] += a[2] * c[s];
+                        this.axisArray[i + o].clusters[q].color[3] = 1.0;
+                        this.stateData.axis[i + o].cluster[q].color[0] += a[0] * c[s];
+                        this.stateData.axis[i + o].cluster[q].color[1] += a[1] * c[s];
+                        this.stateData.axis[i + o].cluster[q].color[2] += a[2] * c[s];
+                        this.stateData.axis[i + o].cluster[q].color[3] = 1.0;
                     }
                 }
             }
@@ -1372,6 +1403,8 @@ Axis.prototype.dragEnd = function(eve){
         setTimeout(this.parent.resetAxis.bind(this.parent), 300);
     }else{
         // すぐにマウスアップしているのでクリックと判定する
+        this.brushed = false;
+        this.onBrush = false;
         var axisjson = this.parent.getAllBrushedRange(this, false, true);
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
