@@ -189,9 +189,13 @@ class ParallelContainer extends React.Component {
         this.init(param.data);
     }
 
-    // 戻り値に、選択されている axis のインデックスが入ったオブジェクトを返す
-    // axis のインデックスは、UI 上で選択された順番で配列に格納される
-    // 選択されている行が無い、もしくは一本の場合は配列の長さが 0 になる
+    // 戻り値に、選択されている axis のインデックスが入った配列を返し
+    // 同時に UI 上の選択範囲を更新する
+    // axis のインデックスは、パラレルの UI 上で軸が選択された順番で配列に格納される
+    // 選択されている軸が無い、もしくは一本の場合は配列の長さが 0 になる
+    // lua の方は、needExe のフラグを立てるかどうかの判断基準に、ここで送っている配列の
+    // 中身をチェックする部分を追加
+    // キャシュした選択軸と異なる軸を送ると、散布図がアップデートされる
     axisSelectionDraw(v){
         let returnObj = [-1, -1];
         if(!v || !v.hasOwnProperty('length') || v.length === 0){return returnObj;}
@@ -223,12 +227,12 @@ class ParallelContainer extends React.Component {
         cx.lineWidth = 2;
         cx.clearRect(0, 0, width, height);
         let obj = {
-            axisHorizon: "---",
-            axisHorizonMin: 0,
-            axisHorizonMax: 0,
-            axisVertical: "---",
-            axisVerticalMin: 0,
-            axisVerticalMax: 0
+            axisHorizon: "---",  // 一本目の選択軸タイトル
+            axisHorizonMin: 0,   // 同 min
+            axisHorizonMax: 0,   // 同 max
+            axisVertical: "---", // 二本目の選択軸タイトル
+            axisVerticalMin: 0,  // 同 min
+            axisVerticalMax: 0   // 同 max
         };
         if(axisArray.length > 1){
             returnObj[0] = axisArray[0].index;
@@ -255,6 +259,8 @@ class ParallelContainer extends React.Component {
                 (right - left) * width,
                 (bottom - top) * height
             );
+            // ここでの座標計算は img の中心を原点
+            // XY の正負の方向はふつうに
             // console.log(xLen, left, right, yLen, top, bottom, 'cxcxcxcxcxcxcxcxcxcxcxcxcxcx');
             cx.stroke();
             cx.closePath();
