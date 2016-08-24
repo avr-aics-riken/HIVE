@@ -10,6 +10,7 @@ ParallelCoordCluster.new = function (varname)
     this.volumeclustering = require('ClusterParallelCoord').VolumeClustering()
     this.plot = require('ClusterParallelCoord').VolumeScatterPlot();
     this.axisSigma = {}
+    this.plotAxis = {plotX = -1, plotY = -1}
     local defaultSigma = 0.05
     local maxAxisNum = 20
     for ax = 1, maxAxisNum do
@@ -109,6 +110,15 @@ function ParallelCoordCluster:Do()
         end
     end
 
+    -- check plot axis prev
+    local plotAxisX = self.value.plotX
+    local plotAxisY = self.value.plotY
+    if self.plotAxis.plotX ~= plotAxisX or self.plotAxis.plotY ~= plotAxisY then
+        self.plotAxis.plotX = plotAxisX
+        self.plotAxis.plotY = plotAxisY
+        needExe = true
+    end
+
     -- check update
     if self.volCache ~= self.value.volume:Pointer() then
         self.volCache = self.value.volume:Pointer()
@@ -124,7 +134,17 @@ function ParallelCoordCluster:Do()
 
         -- Plot
         -- [TODO: axis select information]
-        self.plot:Execute(self.value.volume, 0, 1);
+        local plotX = -1
+        local plotY = -1
+        if self.value.plotX ~= nil then
+            if self.value.plotX > -1 and self.value.plotY > -1 then
+                plotX = self.value.plotX
+                plotY = self.value.plotY
+                print('plotX = ', plotX)
+                print('plotY = ', plotY)
+            end
+        end
+        self.plot:Execute(self.value.volume, plotX, plotY);
         sendPlot(self.varname, self.plot:GetImageBuffer())
     end
 
