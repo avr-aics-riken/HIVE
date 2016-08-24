@@ -12,6 +12,8 @@ class ParallelContainer extends React.Component {
 
         // variables
         this.parallel = null;
+        this.plotlayer = null;
+        this.plotctx = null;
 
         // const
         this.PANEL_SIZE_CHANGED = "panel_size_changed";
@@ -21,6 +23,7 @@ class ParallelContainer extends React.Component {
 
         // function
         this.init = this.init.bind(this);
+        this.axisSelectionDraw = this.axisSelectionDraw.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
         this.setInputValue = this.setInputValue.bind(this);
         this.nodeInputChanged = this.nodeInputChanged.bind(this);
@@ -31,7 +34,9 @@ class ParallelContainer extends React.Component {
 
         this.state = {
             width: 700,
-            height: 400
+            height: 400,
+            axis: null,
+            axisminmax: null
         };
     }
 
@@ -128,6 +133,9 @@ class ParallelContainer extends React.Component {
             varname : varname,
             input : obj
         });
+
+        // image
+        this.axisSelectionDraw(value);
     }
 
     getInputValue(key){
@@ -168,6 +176,28 @@ class ParallelContainer extends React.Component {
         }
         console.log('get recieaved data');
         this.init(param.data);
+    }
+
+    axisSelectionDraw(v){
+        if(!v){return;}
+        if(!this.layer){
+            this.plotlayer = this.refs.plotlayer;
+            this.plotctx = this.plotlayer.getContext('2d');
+        }
+        let c = this.plotlayer;
+        let cx = this.plotctx;
+        let width = c.clientWidth;
+        let height = c.clientHeight;
+        if(width === 0 || height === 0){return;}
+
+        cx.strokeStyle = 'crimson';
+        cx.lineWidth = 2;
+        cx.clearRect(0, 0, width, height);
+
+        cx.beginPath();
+        cx.rect(64, 64, 128, 128);
+        cx.stroke();
+        cx.closePath();
     }
 
     nodeInputChanged(){
@@ -232,6 +262,14 @@ class ParallelContainer extends React.Component {
                 height: "256px",
                 display: (this.imageSize ? "block" : "none")
             },
+            layer: {
+                position: "relative",
+                left : "0px",
+                top : "-256px",
+                width:   (this.imageSize ? "256px" : "0px"),
+                height:  (this.imageSize ? "256px" : "0px"),
+                display: (this.imageSize ? "block" : "none")
+            }
         };
     }
 
@@ -247,6 +285,7 @@ class ParallelContainer extends React.Component {
                 </div>
                 <div>
                     <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+                    <canvas ref="plotlayer" style={styles.layer} width="256" height="256"></canvas>
                 </div>
             </div>
         );
