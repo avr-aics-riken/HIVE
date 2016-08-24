@@ -974,6 +974,8 @@ ParallelCoordCluster.prototype.mixColor = function(a, b, t){
 function Axis(parent, index){
     var i, j;
     var axisData = parent.stateData.axis[index];
+    var tempWrapper = null;
+    var tempLabel = null;
     this.parent = parent;                // 親となる ParallelCoordCluster インスタンス
     this.title = axisData.title;         // 列のラベル
     this.index = index;                  // インデックス（通常左から読み込んだ順に配置）
@@ -1050,12 +1052,12 @@ function Axis(parent, index){
     this.inputWrapper.style.display = 'flex';
     this.inputWrapper.style.flexDirection = 'column';
     this.inputMin   = document.createElement('input');
-    this.inputMin.style.width = '50px';
+    this.inputMin.style.width = '65px';
     this.inputMin.type = 'number';
     this.inputMin.step = '0.0001';
     this.inputMin.value = this.min;
     this.inputMax   = document.createElement('input');
-    this.inputMax.style.width = '50px';
+    this.inputMax.style.width = '65px';
     this.inputMax.type = 'number';
     this.inputMax.step = '0.0001';
     this.inputMax.value = this.max;
@@ -1067,9 +1069,28 @@ function Axis(parent, index){
     this.inputSigma.max = 0.1;
     this.inputSigma.step = 0.001;
     this.inputSigma.value = this.sigma;
-    this.inputWrapper.appendChild(this.inputSigma);
-    this.inputWrapper.appendChild(this.inputMax);
-    this.inputWrapper.appendChild(this.inputMin);
+    tempWrapper = document.createElement('div');
+    tempWrapper.appendChild(this.inputSigma);
+    this.inputWrapper.appendChild(tempWrapper);
+    tempWrapper = document.createElement('div');
+    tempLabel = document.createElement('span');
+    tempLabel.style.display = 'inline-block';
+    tempLabel.style.width = '40px';
+    tempLabel.textContent = 'max: ';
+    tempWrapper.appendChild(tempLabel);
+    tempWrapper.appendChild(this.inputMax);
+    this.inputWrapper.appendChild(tempWrapper);
+    tempWrapper = document.createElement('div');
+    tempLabel = document.createElement('span');
+    tempLabel.style.display = 'inline-block';
+    tempLabel.style.width = '40px';
+    tempLabel.textContent = 'min: ';
+    tempWrapper.appendChild(tempLabel);
+    tempWrapper.appendChild(this.inputMin);
+    this.inputWrapper.appendChild(tempWrapper);
+    // this.inputWrapper.appendChild(this.inputSigma);
+    // this.inputWrapper.appendChild(this.inputMax);
+    // this.inputWrapper.appendChild(this.inputMin);
     this.parent.footerWrap.appendChild(this.inputWrapper);
 }
 // 軸を設定して SVG を生成して描画する

@@ -186,7 +186,7 @@ class ParallelContainer extends React.Component {
         this.store.off(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
         this.store.off(this.STORE_IMAGE_RECIEVED, this.imageRecieved);
     }
-    
+
     componentDidUpdate() {
         if (this.state.image) {
             let imgElem = document.getElementById(this.getCanvasName('img'));
