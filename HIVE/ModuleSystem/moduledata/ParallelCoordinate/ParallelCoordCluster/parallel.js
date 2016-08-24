@@ -796,6 +796,8 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
             this.stateData.axis[i].selectedAxis = false;
             this.stateData.axis[i].brushed = false;
             this.stateData.axis[i].onBrush = false;
+            this.stateData.axis[i].brush.min = null;
+            this.stateData.axis[i].brush.max = null;
         }
         this.axisArray[currentAxis.index].selectedAxis = true;
         this.stateData.axis[currentAxis.index].selectedAxis = true;
@@ -1088,9 +1090,6 @@ function Axis(parent, index){
     tempWrapper.appendChild(tempLabel);
     tempWrapper.appendChild(this.inputMin);
     this.inputWrapper.appendChild(tempWrapper);
-    // this.inputWrapper.appendChild(this.inputSigma);
-    // this.inputWrapper.appendChild(this.inputMax);
-    // this.inputWrapper.appendChild(this.inputMin);
     this.parent.footerWrap.appendChild(this.inputWrapper);
 }
 // 軸を設定して SVG を生成して描画する
@@ -1428,8 +1427,6 @@ Axis.prototype.dragEnd = function(eve){
         setTimeout(this.parent.resetAxis.bind(this.parent), 300);
     }else{
         // すぐにマウスアップしているのでクリックと判定する
-        this.brushed = false;
-        this.onBrush = false;
         var axisjson = this.parent.getAllBrushedRange(this, false, true);
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
