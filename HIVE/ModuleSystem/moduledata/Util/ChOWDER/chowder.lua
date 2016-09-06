@@ -5,6 +5,7 @@ ChOWDER.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ChOWDER})
     this.id = "id_" .. string.byte(math.random(100000000))
+    this.url = ""
     return this
 end
 
@@ -15,7 +16,7 @@ function ChOWDER:Do()
     local image = v.image
     if (image == nil) then
         print "image nil"
-        return false
+        return "Image is not connected."
     end
     
     local saver = ImageSaver()
@@ -39,11 +40,26 @@ function ChOWDER:Do()
     print(json)
     metabin:Create(json, imageBuffer, imageBufferSize) 
 
-    print('Send:', v.url);
+    print('chowder node URL:', v.url);
+
+    if self.url ~= v.url then
+        if self.ws then
+            self.ws:Close()
+        end
+        self.ws = nil
+    end
+
     -- send through websocket
     if (self.ws == nil) then
         self.ws = require("Network").Connection()
-        self.ws:Connect(v.url) --'ws://localhost:8082/v1/')
+        local nr = self.ws:Connect(v.url) --'ws://localhost:8082/v1/')
+        self.url = v.url
+        if not nr then
+            print('Chowder Connect faild:', v.url);
+            return "Faild to connect ChOWDER"
+        else
+            print('Chowder Connected:', v.url);
+        end
     end
     self.ws:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
     --ws:Close()
