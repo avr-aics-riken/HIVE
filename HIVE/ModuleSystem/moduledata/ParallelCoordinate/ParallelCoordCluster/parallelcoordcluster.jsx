@@ -12,6 +12,8 @@ class ParallelContainer extends React.Component {
 
         // variables
         this.parallel = null;
+        this.plotlayer = null;
+        this.plotctx = null;
 
         // const
         this.PANEL_SIZE_CHANGED = "panel_size_changed";
@@ -21,6 +23,7 @@ class ParallelContainer extends React.Component {
 
         // function
         this.init = this.init.bind(this);
+        this.axisSelectionDraw = this.axisSelectionDraw.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
         this.setInputValue = this.setInputValue.bind(this);
         this.nodeInputChanged = this.nodeInputChanged.bind(this);
@@ -31,7 +34,13 @@ class ParallelContainer extends React.Component {
 
         this.state = {
             width: 700,
-            height: 400
+            height: 400,
+            axisHorizon: "",
+            axisVertical: "",
+            axisHorizonMin: 0,
+            axisHorizonMax: 0,
+            axisVerticalMin: 0,
+            axisVerticalMax: 0
         };
     }
 
@@ -122,7 +131,17 @@ class ParallelContainer extends React.Component {
             rgba[4*(ax * numVals * 2 + numVals)  ] = allMin[ax]; // min
             rgba[4*(ax * numVals * 2 + numVals)+1] = allMax[ax]; // max
         }
+        // rgba
         obj.rgba = rgba;
+
+        // image
+        let plotAxis = this.axisSelectionDraw(value);
+        if(plotAxis && plotAxis.length > 0){
+            obj.plotX = plotAxis[0];
+            obj.plotY = plotAxis[1];
+        }
+
+        // put input
         const varname = this.props.node.varname;
         this.props.action.changeNodeInput({
             varname : varname,
@@ -170,6 +189,86 @@ class ParallelContainer extends React.Component {
         this.init(param.data);
     }
 
+    // 戻り値に、選択されている axis のインデックスが入った配列を返し
+    // 同時に UI 上の選択範囲を更新する
+    // axis のインデックスは、パラレルの UI 上で軸が選択された順番で配列に格納される
+    // 選択されている軸が無い、もしくは一本の場合は配列の長さが 0 になる
+    // lua の方は、needExe のフラグを立てるかどうかの判断基準に、ここで送っている配列の
+    // 中身をチェックする部分を追加
+    // キャシュした選択軸と異なる軸を送ると、散布図がアップデートされる
+    axisSelectionDraw(v){
+        let returnObj = [-1, -1];
+        if(!v || !v.hasOwnProperty('length') || v.length === 0){return returnObj;}
+        if(!this.layer){
+            this.plotlayer = this.refs.plotlayer;
+            this.plotctx = this.plotlayer.getContext('2d');
+        }
+
+        let c = this.plotlayer;
+        let cx = this.plotctx;
+        let width = c.clientWidth;
+        let height = c.clientHeight;
+
+        let axisArray = [];
+        for(let i = 0, j = v.length; i < j; ++i){
+            if(!v[i].selectedAxis && !isNaN(parseFloat(v[i].selectedNumber)) && v[i].selectedNumber > -1){
+                axisArray[v[i].selectedNumber] = {
+                    index: i,
+                    title: v[i].title,
+                    volmin: v[i].volume.min,
+                    volmax: v[i].volume.max,
+                    min: v[i].brush.min,
+                    max: v[i].brush.max
+                };
+            }
+        }
+
+        cx.strokeStyle = 'crimson';
+        cx.lineWidth = 2;
+        cx.clearRect(0, 0, width, height);
+        let obj = {
+            axisHorizon: "---",  // 一本目の選択軸タイトル
+            axisHorizonMin: 0,   // 同 min
+            axisHorizonMax: 0,   // 同 max
+            axisVertical: "---", // 二本目の選択軸タイトル
+            axisVerticalMin: 0,  // 同 min
+            axisVerticalMax: 0   // 同 max
+        };
+        if(axisArray.length > 1){
+            returnObj[0] = axisArray[0].index;
+            returnObj[1] = axisArray[1].index;
+            obj = {
+                axisHorizon: axisArray[0].title,
+                axisHorizonMin: axisArray[0].min,
+                axisHorizonMax: axisArray[0].max,
+                axisVertical: axisArray[1].title,
+                axisVerticalMin: axisArray[1].min,
+                axisVerticalMax: axisArray[1].max
+            };
+            // draw rect
+            let xLen    = axisArray[0].volmax - axisArray[0].volmin;
+            let left    = (axisArray[0].min - axisArray[0].volmin) / xLen;
+            let right   = (axisArray[0].max - axisArray[0].volmin) / xLen;
+            let yLen    = axisArray[1].volmax - axisArray[1].volmin;
+            let top     = 1.0 - (axisArray[1].max - axisArray[1].volmin) / yLen;
+            let bottom  = 1.0 - (axisArray[1].min - axisArray[1].volmin) / yLen;
+            cx.beginPath();
+            cx.rect(
+                left * width,
+                top * height,
+                (right - left) * width,
+                (bottom - top) * height
+            );
+            // ここでの座標計算は img の中心を原点
+            // XY の正負の方向はふつうに
+            // console.log(xLen, left, right, yLen, top, bottom, 'cxcxcxcxcxcxcxcxcxcxcxcxcxcx');
+            cx.stroke();
+            cx.closePath();
+        }
+        this.setState(obj);
+        return returnObj;
+    }
+
     nodeInputChanged(){
     }
 
@@ -186,7 +285,7 @@ class ParallelContainer extends React.Component {
         this.store.off(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
         this.store.off(this.STORE_IMAGE_RECIEVED, this.imageRecieved);
     }
-    
+
     componentDidUpdate() {
         if (this.state.image) {
             let imgElem = document.getElementById(this.getCanvasName('img'));
@@ -232,6 +331,42 @@ class ParallelContainer extends React.Component {
                 height: "256px",
                 display: (this.imageSize ? "block" : "none")
             },
+            layer: {
+                position: "relative",
+                left : "0px",
+                top : "-256px",
+                width:   (this.imageSize ? "256px" : "0px"),
+                height:  (this.imageSize ? "256px" : "0px"),
+                display: (this.imageSize ? "block" : "none")
+            },
+            row: {
+                height: "22px",
+                display: "flex",
+                flexDirection: "row"
+            },
+            label: {
+                fontSize: "small",
+                lineHeight: "22px",
+                display: "inline-block",
+                width: "70%"
+            },
+            caption: {
+                fontSize: "small",
+                lineHeight: "22px",
+                display: "inline-block",
+                width: "30%"
+            },
+            title: {
+                fontSize: "small",
+                fontWeight: "bold",
+                lineHeight: "22px",
+                display: "inline-block",
+                width: "100%"
+            },
+            box: {
+                width: "256px",
+                height: "256px"
+            }
         };
     }
 
@@ -246,7 +381,34 @@ class ParallelContainer extends React.Component {
                 <div ref="container" style={styles.container}>
                 </div>
                 <div>
-                    <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+                    <div style={styles.box}>
+                        <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
+                        <canvas ref="plotlayer" style={styles.layer} width="256" height="256"></canvas>
+                    </div>
+                    <div>
+                        <div style={styles.row}>
+                            <div style={styles.title}>{this.state.axisHorizon}</div>
+                        </div>
+                        <div style={styles.row}>
+                            <div style={styles.caption}> min:</div>
+                            <div style={styles.label}>{this.state.axisHorizonMin}</div>
+                        </div>
+                        <div style={styles.row}>
+                            <div style={styles.caption}> max:</div>
+                            <div style={styles.label}>{this.state.axisHorizonMax}</div>
+                        </div>
+                        <div style={styles.row}>
+                            <div style={styles.title}>{this.state.axisVertical}</div>
+                        </div>
+                        <div style={styles.row}>
+                            <div style={styles.caption}> min:</div>
+                            <div style={styles.label}>{this.state.axisVerticalMin}</div>
+                        </div>
+                        <div style={styles.row}>
+                            <div style={styles.caption}> max:</div>
+                            <div style={styles.label}>{this.state.axisVerticalMax}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

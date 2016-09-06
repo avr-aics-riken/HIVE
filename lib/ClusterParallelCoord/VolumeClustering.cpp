@@ -4,10 +4,12 @@
  */
 
 #include <string>
+#include <vector>
 #include "VolumeClustering.h"
 #include "BufferVolumeData.h"
 #include <math.h>
 #include <float.h>
+
 
 
 namespace {
@@ -117,8 +119,9 @@ namespace {
         const int comp = volume->Component();
         const float* buffer = static_cast<const float*>(volume->Buffer()->GetBuffer());
         
+        std::vector<int> cls;
+        cls.resize(comp);
         for (int i = 0; i < w * h * d; ++i) {
-            int cls[comp];
             for (int p = 0; p < comp; ++p) {                
                 const float v = buffer[comp * i + p];
                 int cl = 0;

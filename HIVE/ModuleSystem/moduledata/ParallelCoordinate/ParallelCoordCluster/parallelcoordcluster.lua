@@ -10,8 +10,9 @@ ParallelCoordCluster.new = function (varname)
     this.volumeclustering = require('ClusterParallelCoord').VolumeClustering()
     this.plot = require('ClusterParallelCoord').VolumeScatterPlot();
     this.axisSigma = {}
+    this.plotAxis = {plotX = -1, plotY = -1}
     local defaultSigma = 0.05
-    local maxAxisNum = 20    
+    local maxAxisNum = 20
     for ax = 1, maxAxisNum do
         this.axisSigma[ax] = defaultSigma
     end
@@ -29,17 +30,17 @@ function sendPlot(varname, image)
     -- image save
     imageBuffer = HIVE_ImageSaver:SaveMemory(1, image)
     imageBufferSize = HIVE_ImageSaver:MemorySize()
-    
+
     -- create metabinary
     --local w = v.screensize[1]
     --local h = v.screensize[2]
     local w = image:GetWidth()
     local h = image:GetHeight()
     print('rendersize=('.. w ..",".. h ..")", 'cancel=', tostring(HIVE_isRenderCanceled))
-    
+
     local json = [[{
             "JSONRPC" : "2.0",
-            "method" : "renderedImage",            
+            "method" : "renderedImage",
             "to" : ]] .. targetClientId ..[[,
             "param" : {
                 "isplot" : "]] .. "true" .. [[",
@@ -92,7 +93,6 @@ function ParallelCoordCluster:Do()
 
     local axisNum = self.value.volume:Component() -- self.volumeclustering:GetAxisNum()
     local ax
-    
 
     -- check axis info
     local needExe = false
@@ -110,12 +110,21 @@ function ParallelCoordCluster:Do()
         end
     end
 
+    -- check plot axis prev
+    local plotAxisX = self.value.plotX
+    local plotAxisY = self.value.plotY
+    if self.plotAxis.plotX ~= plotAxisX or self.plotAxis.plotY ~= plotAxisY then
+        self.plotAxis.plotX = plotAxisX
+        self.plotAxis.plotY = plotAxisY
+        needExe = true
+    end
+
     -- check update
     if self.volCache ~= self.value.volume:Pointer() then
         self.volCache = self.value.volume:Pointer()
         needExe = true
     end
-    
+
     -- execution
     if needExe then
         for ax = 0, axisNum-1 do
@@ -125,19 +134,29 @@ function ParallelCoordCluster:Do()
 
         -- Plot
         -- [TODO: axis select information]
-        self.plot:Execute(self.value.volume, 0, 1); 
+        local plotX = -1
+        local plotY = -1
+        if self.value.plotX ~= nil then
+            if self.value.plotX > -1 and self.value.plotY > -1 then
+                plotX = self.value.plotX
+                plotY = self.value.plotY
+                print('plotX = ', plotX)
+                print('plotY = ', plotY)
+            end
+        end
+        self.plot:Execute(self.value.volume, plotX, plotY);
         sendPlot(self.varname, self.plot:GetImageBuffer())
     end
 
 
-    -- make axis info    
+    -- make axis info
     local temp
     local dest = '{'
-    
+
     dest = dest .. '"volume": {'
     dest = dest .. '  "size":[' .. volWidth .. ', ' .. volHeight .. ',' .. volDepth .. ', '.. volComp .. ' ],'
     dest = dest .. '  "minmax":['
-    for  ax = 0, axisNum-1 do
+    for ax = 0, axisNum-1 do
         if ax ~= 0 then
             dest = dest .. ','
         end
@@ -160,25 +179,29 @@ function ParallelCoordCluster:Do()
         else
             dest = dest .. ',{'
         end
-        
+
         dest = dest .. '"title": "title_' .. ax .. '", '
-            
+
         if axisjson ~= "" then
             local brushMin = axisinfo[ax+1].brush.min or "null"
             local brushMax = axisinfo[ax+1].brush.max or "null"
             local rangeMin = axisinfo[ax+1].range.min or "null"
-            local rangeMax = axisinfo[ax+1].range.max or "null"                
+            local rangeMax = axisinfo[ax+1].range.max or "null"
+            local selectedAxis = "false"
+            if axisinfo[ax+1].selectedAxis == true then selectedAxis = "true" end
             dest = dest .. '"brush": {"min": ' .. brushMin .. ', "max": '.. brushMax .. '}, '
             dest = dest .. '"range": {"min": ' .. rangeMin .. ', "max": ' .. rangeMax .. '}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
+            dest = dest .. '"selectedAxis": ' .. selectedAxis  .. ', '
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
         else
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
+            dest = dest .. '"selectedAxis": false, '
             dest = dest .. '"selectedNumber": -1, '
         end
-        
+
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
         for c = 0, cnum - 1 do
@@ -197,7 +220,21 @@ function ParallelCoordCluster:Do()
                 j = j + 1
                 dest = dest .. '"' .. temp .. '": ' .. v
             end
-            dest = dest .. ', "selected": false, "color": [0, 0, 0, 1]}'
+
+            if axisjson ~= "" then
+                local cColor = ''
+                if axisinfo[ax+1].cluster[c+1] == nil then
+                    cColor = '[0, 0, 0, 1]'
+                else
+                    cColor = '[' .. axisinfo[ax+1].cluster[c+1].color[1] .. ', '
+                    cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[2] .. ', '
+                    cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[3] .. ', '
+                    cColor = cColor .. axisinfo[ax+1].cluster[c+1].color[4] .. ']'
+                end
+                dest = dest .. ', "selected": false, "color": ' .. cColor .. '}'
+            else
+                dest = dest .. ', "selected": false, "color": [0, 0, 0, 1]}'
+            end
         end
         dest = dest .. ']}'
     end
@@ -241,7 +278,7 @@ function ParallelCoordCluster:Do()
     dest = dest .. ']}}'
 
     sendData(self.varname, dest)
-    
+
     return true
 end
 
