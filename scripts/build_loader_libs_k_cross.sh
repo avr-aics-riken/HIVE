@@ -4,8 +4,8 @@ topdir=`pwd`
 installdir=`pwd`/third_party/local
 c_compiler=mpifccpx
 cxx_compiler=mpiFCCpx
-cxx_flags="-Kfast"
-f90_flags="-Kfast"
+cxx_flags="-Kfast -KPIC"
+f90_flags="-Kfast -KPIC"
 f90_compiler=mpifrtpx
 if [ -z "${CMAKE_BIN+x}" ]; then
   CMAKE_BIN=/opt/local/bin/cmake

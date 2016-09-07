@@ -48,6 +48,7 @@ target_link_libraries(CdmLoader hiveCore)
 set_target_properties(CdmLoader PROPERTIES PREFIX "")
 
 IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+  set(CMAKE_SHARED_LINKER_FLAGS -L/opt/aics/netcdf/k/lib-static)
   include_directories(/opt/aics/netcdf/k/include)
   link_directories(/opt/aics/netcdf/k/lib-static)
 ENDIF()
