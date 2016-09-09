@@ -16,59 +16,20 @@ var	HRENDER = __dirname + '/../hrender',
 	spawn = require('child_process').spawn,
     moduleListCache = false,
     cacheData = null,
-	seserver = http.createServer(function (req, res) {
-		'use strict';
-		console.log('REQ>', req.url);
-		var file, fname, jsondata;
-		if (req.url === '/') {
-			file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
-			res.end(file);
-        } else if (req.url === '/modulelist.json') { // temp
-            if (moduleListCache === true && cacheData) {
-                res.end(cacheData);
-            } else {
-                makeNodeList((function (res) {
-                    return function (err, nodelist) {
-                        // sort node list
-                        var arr = [], dest = [];
-                        var temp = {};
-                        for(var i = 0; i < nodelist.length; ++i){
-                            arr.push(nodelist[i].name);
-                            temp[nodelist[i].name] = nodelist[i];
-                        }
-                        arr.sort();
-                        for(var i = 0; i < arr.length; ++i){
-                            dest[i] = temp[arr[i]];
-                        }
-                        jsondata = {error: err, data:dest};
-                        file = JSON.stringify(jsondata);
-                        cacheData = file;
-                        res.end(file);
-                    };
-                }(res)));
-            }
-        } else {
-            fname = req.url.substr(1, req.url.length); // remove '/'
-            fs.readFile(HTTP_ROOT_DIR + fname, function(err, file){
-                if (err) {
-                   	res.writeHead(404, {'Content-Type': 'text/plain'});
-			    	res.end('not found\n');
-                }
-                res.end(file);                    
-            } );
-		}
-	}).listen(port),
+	seserver,
 	websocket = require('websocket'),
-	ws = new websocket.server({httpServer : seserver,
-							   maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
-							   autoAcceptConnections : false}),
+	ws = null,
 	ws_connections = {},
 	id_counter = 0;
 
+
 if (process.argv.length === 3) {
+	console.log("PORT OPTION", process.argv[2]);
 	port = process.argv[2];
+	HRENDER_ARG = [HRENDER_ARG[0], 'ws://localhost:' + port + '/'];
 } else if (process.argv.length > 3) {
 	var np = 1;
+	var wsaddress;
 	for (i=2; i < process.argv.length; i = i + 2) {
 		console.log(process.argv[i])
 		if (process.argv[i] == '-p') {
@@ -76,11 +37,58 @@ if (process.argv.length === 3) {
 		} else if (process.argv[i] == '-np') {
 			console.log('MPI mode');
 			np = process.argv[i+1];
-	    	HRENDER_ARG = ['-np', np, HRENDER, HRENDER_ARG[0]],
+			wsaddress = "ws://localhost:" + port + "/";
+	    	HRENDER_ARG = ['-np', np, HRENDER, HRENDER_ARG[0], wsaddress],
  		   	HRENDER = 'mpirun';
 		}
 	}
 }
+
+seserver = http.createServer(function (req, res) {
+	'use strict';
+	console.log('REQ>', req.url);
+	var file, fname, jsondata;
+	if (req.url === '/') {
+		file = fs.readFileSync(HTTP_ROOT_DIR + 'index.html');
+		res.end(file);
+	} else if (req.url === '/modulelist.json') { // temp
+		if (moduleListCache === true && cacheData) {
+			res.end(cacheData);
+		} else {
+			makeNodeList((function (res) {
+				return function (err, nodelist) {
+					// sort node list
+					var arr = [], dest = [];
+					var temp = {};
+					for(var i = 0; i < nodelist.length; ++i){
+						arr.push(nodelist[i].name);
+						temp[nodelist[i].name] = nodelist[i];
+					}
+					arr.sort();
+					for(var i = 0; i < arr.length; ++i){
+						dest[i] = temp[arr[i]];
+					}
+					jsondata = {error: err, data:dest};
+					file = JSON.stringify(jsondata);
+					cacheData = file;
+					res.end(file);
+				};
+			}(res)));
+		}
+	} else {
+		fname = req.url.substr(1, req.url.length); // remove '/'
+		fs.readFile(HTTP_ROOT_DIR + fname, function(err, file){
+			if (err) {
+				res.writeHead(404, {'Content-Type': 'text/plain'});
+				res.end('not found\n');
+			}
+			res.end(file);                    
+		} );
+	}
+}).listen(port);
+ws = new websocket.server({httpServer : seserver,
+							maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
+							autoAcceptConnections : false});
 
 //-----------------------------------------------------
 function is_array(value) {
