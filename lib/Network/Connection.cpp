@@ -38,10 +38,19 @@ namespace {
     }
     
 #else
+    
     static VX::CriticalSection g_wsclientCS;
+
     
     class WsRecvThread : public VX::Thread
     {
+    private:
+        struct ReceiveFunctor {
+            ReceiveFunctor(WsRecvThread *p);
+            void operator()(const std::string &message);
+            WsRecvThread *thr;
+        };
+
     public:
         WsRecvThread(easywsclient::WebSocket::pointer ws) : VX::Thread(), m_ws(ws) { go(); }
         ~WsRecvThread() {}
@@ -58,7 +67,8 @@ namespace {
             // Assume single thread, single instance execution.
             g_wsclientCS.Enter();
             m_ws->poll();
-            m_ws->dispatch(recvCallback);
+            ReceiveFunctor recv(this);
+            m_ws->dispatch(recv);
             g_wsclientCS.Leave();
             os_sleep(1);
             
@@ -80,17 +90,22 @@ namespace {
         
     private:
         easywsclient::WebSocket::pointer m_ws;
-        static VX::CriticalSection m_recvCS;
-        static std::queue<std::string> s_recvBuffer;
-        static void recvCallback(const std::string& message) {
-            //printf("WEBSOCKET RECV: %s\n", message.c_str());
-            m_recvCS.Enter();
-            s_recvBuffer.push(message);
-            m_recvCS.Leave();
-        }
+        VX::CriticalSection m_recvCS;
+        
+        std::queue<std::string> s_recvBuffer;
     };
-    VX::CriticalSection WsRecvThread::m_recvCS;
-    std::queue<std::string> WsRecvThread::s_recvBuffer;
+    
+    WsRecvThread::ReceiveFunctor::ReceiveFunctor(WsRecvThread *p) {
+        thr = p;
+    }
+    void WsRecvThread::ReceiveFunctor::operator()(const std::string &message) {
+        thr->m_recvCS.Enter();
+        thr->s_recvBuffer.push(message);
+        thr->m_recvCS.Leave();
+    }
+
+    //VX::CriticalSection WsRecvThread::m_recvCS;
+    //std::queue<std::string> WsRecvThread::s_recvBuffer;
 
     class WsSendThread : public VX::Thread
     {
@@ -153,11 +168,11 @@ namespace {
 
     private:
         easywsclient::WebSocket::pointer m_ws;
-        static VX::CriticalSection m_sendCS;
-        static std::queue<std::pair< std::string, bool> > s_sendBuffer;
+        VX::CriticalSection m_sendCS;
+        std::queue<std::pair< std::string, bool> > s_sendBuffer;
     };
-    VX::CriticalSection WsSendThread::m_sendCS;
-    std::queue< std::pair<std::string, bool> > WsSendThread::s_sendBuffer;
+    //VX::CriticalSection WsSendThread::m_sendCS;
+    //std::queue< std::pair<std::string, bool> > WsSendThread::s_sendBuffer;
     
 #endif
     
