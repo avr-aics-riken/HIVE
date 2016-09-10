@@ -12,6 +12,7 @@ camera:LookAt(
 
 
 local pdm = require("PdmLoader")()
+-- 4CL8.pdb.dfi is created by running `convert_pdb_to_pdm.scn`.
 pdm:Load('4CL8.pdm.dfi', -1) -- -1 => load first timeStep
 
 local pointmodel = PointModel()
