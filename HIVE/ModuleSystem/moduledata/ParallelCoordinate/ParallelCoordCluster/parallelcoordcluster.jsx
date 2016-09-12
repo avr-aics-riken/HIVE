@@ -192,8 +192,8 @@ class ParallelContainer extends React.Component {
     }
 
     axisSelectionChange(eve){
-        let h = this.refs.selectAxisDropdownHorizon;
-        let v = this.refs.selectAxisDropdownVertical;
+        let h = ReactDOM.findDOMNode(this.refs.selectAxisDropdownHorizon);
+        let v = ReactDOM.findDOMNode(this.refs.selectAxisDropdownVertical);
         if(h.selectedIndex < 1 || v.selectedIndex < 1){return;}
         let obj = {
             plotX: h.selectedIndex - 1,
@@ -215,7 +215,7 @@ class ParallelContainer extends React.Component {
     axisSelectionDraw(v){
         if(!v || !v.hasOwnProperty('length') || v.length === 0){return;}
         if(!this.layer){
-            this.plotlayer = this.refs.plotlayer;
+            this.plotlayer = ReactDOM.findDOMNode(this.refs.plotlayer);
             this.plotctx = this.plotlayer.getContext('2d');
         }
 
@@ -280,6 +280,17 @@ class ParallelContainer extends React.Component {
         }
         this.setState(obj);
     }
+
+    axisSvgDraw(){
+        var NS_SVG = 'http://www.w3.org/2000/svg';
+        var NS = (e)=>{return document.createElementNS(NS_SVG, e);};
+
+        let wrapperDiv;
+        let e, f, g, h, i, j, k, l;
+        wrapperDiv = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
+        
+    }
+
 
     nodeInputChanged(){
     }
