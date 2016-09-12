@@ -40,12 +40,12 @@ class ParallelContainer extends React.Component {
             defaultHeight: 430,
             axisCount: 0,
             axisTitles: [],
-            axisHorizon: "",
-            axisVertical: "",
             axisHorizonMin: 0,
             axisHorizonMax: 0,
             axisVerticalMin: 0,
-            axisVerticalMax: 0
+            axisVerticalMax: 0,
+            activeHorizon: -1,
+            activeVertical: -1
         };
     }
 
@@ -147,19 +147,8 @@ class ParallelContainer extends React.Component {
         // rgba
         obj.rgba = rgba;
 
-        // image
-        let plotAxis = this.axisSelectionDraw(value);
-        if(plotAxis && plotAxis.length > 0){
-            obj.plotX = plotAxis[0];
-            obj.plotY = plotAxis[1];
-        }
-
-        // put input
-        const varname = this.props.node.varname;
-        // this.props.action.changeNodeInput({
-        //     varname : varname,
-        //     input : obj
-        // });
+        // rect draw on image
+        this.axisSelectionDraw(value);
     }
 
     getInputValue(key){
@@ -216,17 +205,15 @@ class ParallelContainer extends React.Component {
             varname : varname,
             input : obj
         });
+        this.setState({
+            activeHorizon: obj.plotX,
+            activeVertical: obj.plotY
+        });
     }
-    // 戻り値に、選択されている axis のインデックスが入った配列を返し
-    // 同時に UI 上の選択範囲を更新する
-    // axis のインデックスは、パラレルの UI 上で軸が選択された順番で配列に格納される
-    // 選択されている軸が無い、もしくは一本の場合は配列の長さが 0 になる
-    // lua の方は、needExe のフラグを立てるかどうかの判断基準に、ここで送っている配列の
-    // 中身をチェックする部分を追加
-    // キャシュした選択軸と異なる軸を送ると、散布図がアップデートされる
+    // ここはあくまでもコンポーネント上の矩形を描画し直すだけ
+    // 背景のイメージが更新されるのはドロップダウンリストの変更イベントのときだけ
     axisSelectionDraw(v){
-        let returnObj = [-1, -1];
-        if(!v || !v.hasOwnProperty('length') || v.length === 0){return returnObj;}
+        if(!v || !v.hasOwnProperty('length') || v.length === 0){return;}
         if(!this.layer){
             this.plotlayer = this.refs.plotlayer;
             this.plotctx = this.plotlayer.getContext('2d');
@@ -238,16 +225,20 @@ class ParallelContainer extends React.Component {
         let height = c.clientHeight;
 
         let axisArray = [];
+        let brushedCount = 0;
         for(let i = 0, j = v.length; i < j; ++i){
             if(!v[i].selectedAxis && !isNaN(parseFloat(v[i].selectedNumber)) && v[i].selectedNumber > -1){
-                axisArray[v[i].selectedNumber] = {
-                    index: i,
+                axisArray[i] = {
+                    selectedIndex: v[i].selectedNumber,
                     title: v[i].title,
                     volmin: v[i].volume.min,
                     volmax: v[i].volume.max,
                     min: v[i].brush.min,
                     max: v[i].brush.max
                 };
+                if(i === this.state.activeHorizon || i === this.state.activeVertical){
+                    brushedCount++;
+                }
             }
         }
 
@@ -255,31 +246,28 @@ class ParallelContainer extends React.Component {
         cx.lineWidth = 2;
         cx.clearRect(0, 0, width, height);
         let obj = {
-            axisHorizon: "---",  // 一本目の選択軸タイトル
-            axisHorizonMin: 0,   // 同 min
-            axisHorizonMax: 0,   // 同 max
-            axisVertical: "---", // 二本目の選択軸タイトル
-            axisVerticalMin: 0,  // 同 min
-            axisVerticalMax: 0   // 同 max
+            axisHorizonMin: 0,
+            axisHorizonMax: 0,
+            axisVerticalMin: 0,
+            axisVerticalMax: 0
         };
-        if(axisArray.length > 1){
-            returnObj[0] = axisArray[0].index;
-            returnObj[1] = axisArray[1].index;
+        if(brushedCount > 1 && this.state.activeHorizon > -1 && this.state.activeVertical > -1){
+            let k, l;
+            k = this.state.activeHorizon;
+            l = this.state.activeVertical;
             obj = {
-                axisHorizon: axisArray[0].title,
-                axisHorizonMin: axisArray[0].min,
-                axisHorizonMax: axisArray[0].max,
-                axisVertical: axisArray[1].title,
-                axisVerticalMin: axisArray[1].min,
-                axisVerticalMax: axisArray[1].max
+                axisHorizonMin: axisArray[k].min,
+                axisHorizonMax: axisArray[k].max,
+                axisVerticalMin: axisArray[l].min,
+                axisVerticalMax: axisArray[l].max
             };
             // draw rect
-            let xLen    = axisArray[0].volmax - axisArray[0].volmin;
-            let left    = (axisArray[0].min - axisArray[0].volmin) / xLen;
-            let right   = (axisArray[0].max - axisArray[0].volmin) / xLen;
-            let yLen    = axisArray[1].volmax - axisArray[1].volmin;
-            let top     = 1.0 - (axisArray[1].max - axisArray[1].volmin) / yLen;
-            let bottom  = 1.0 - (axisArray[1].min - axisArray[1].volmin) / yLen;
+            let xLen    = axisArray[k].volmax - axisArray[k].volmin;
+            let left    = (axisArray[k].min - axisArray[k].volmin) / xLen;
+            let right   = (axisArray[k].max - axisArray[k].volmin) / xLen;
+            let yLen    = axisArray[l].volmax - axisArray[l].volmin;
+            let top     = 1.0 - (axisArray[l].max - axisArray[l].volmin) / yLen;
+            let bottom  = 1.0 - (axisArray[l].min - axisArray[l].volmin) / yLen;
             cx.beginPath();
             cx.rect(
                 left * width,
@@ -287,14 +275,10 @@ class ParallelContainer extends React.Component {
                 (right - left) * width,
                 (bottom - top) * height
             );
-            // ここでの座標計算は img の中心を原点
-            // XY の正負の方向はふつうに
-            // console.log(xLen, left, right, yLen, top, bottom, 'cxcxcxcxcxcxcxcxcxcxcxcxcxcx');
             cx.stroke();
             cx.closePath();
         }
         this.setState(obj);
-        return returnObj;
     }
 
     nodeInputChanged(){
@@ -427,7 +411,6 @@ class ParallelContainer extends React.Component {
                     <div>
                         <div style={styles.row}>
                             <div style={styles.title}>
-                                {this.state.axisHorizon}
                                 <select ref="selectAxisDropdownHorizon" onChange={this.axisSelectionChange}>
                                     <option> --- </option>
                                     {this.state.axisTitles.map((value, index)=>{return (<option key={"dropdownhorizontal" + index}>{value}</option>);})}
@@ -444,7 +427,6 @@ class ParallelContainer extends React.Component {
                         </div>
                         <div style={styles.row}>
                             <div style={styles.title}>
-                                {this.state.axisVertical}
                                 <select ref="selectAxisDropdownVertical" onChange={this.axisSelectionChange}>
                                     <option> --- </option>
                                     {this.state.axisTitles.map((value, index)=>{return (<option key={"dropdownvertical" + index}>{value}</option>);})}
