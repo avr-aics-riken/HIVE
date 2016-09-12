@@ -34,7 +34,9 @@ class ParallelContainer extends React.Component {
 
         this.state = {
             width: 700,
-            height: 400,
+            height: 430,
+            defaultWidth: 700,
+            defaultHeight: 430,
             axisHorizon: "",
             axisVertical: "",
             axisHorizonMin: 0,
@@ -299,11 +301,11 @@ class ParallelContainer extends React.Component {
     onPanelSizeChanged(err, data){
         if(data.varname !== this.node.varname){return;}
         this.setState({
-            width: data.panel.size[0],
-            height: data.panel.size[1],
+            width:  Math.max(this.state.defaultWidth, data.panel.size[0]),
+            height: Math.max(this.state.defaultHeight, data.panel.size[1]),
         });
         if(!this.parallel || !this.parallel.glReady){return;}
-        this.parallel.setRect(data.panel.size[0], data.panel.size[1]);
+        this.parallel.setRect(this.state.width, this.state.height);
         this.parallel.resetAxis();
     }
 
@@ -315,7 +317,7 @@ class ParallelContainer extends React.Component {
             },
             container: {
                 backgroundColor: "#333",
-                width: (this.state.width - 256) + "px",
+                width: (this.state.width - 276) + "px",
                 height: this.state.height + "px"
             },
             canvas: {
@@ -364,8 +366,18 @@ class ParallelContainer extends React.Component {
                 width: "100%"
             },
             box: {
-                width: "256px",
-                height: "256px"
+                backgroundColor: "white",
+                padding: "0px 0px 20px 20px",
+                width: "276px",
+                height: "276px"
+            },
+            axisPlotLayer: {
+                position: "relative",
+                left : "-20px",
+                top : "-512px",
+                width:   (this.imageSize ? "276px" : "0px"),
+                height:  (this.imageSize ? "276px" : "0px"),
+                display: (this.imageSize ? "block" : "none")
             }
         };
     }
@@ -384,6 +396,7 @@ class ParallelContainer extends React.Component {
                     <div style={styles.box}>
                         <img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
                         <canvas ref="plotlayer" style={styles.layer} width="256" height="256"></canvas>
+                        <div ref="axisPlotLayer" style={styles.axisPlotLayer}></div>
                     </div>
                     <div>
                         <div style={styles.row}>
