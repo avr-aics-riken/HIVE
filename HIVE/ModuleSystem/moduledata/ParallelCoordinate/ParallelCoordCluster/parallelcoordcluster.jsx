@@ -23,6 +23,7 @@ class ParallelContainer extends React.Component {
 
         // function
         this.init = this.init.bind(this);
+        this.axisSelectionChange = this.axisSelectionChange.bind(this);
         this.axisSelectionDraw = this.axisSelectionDraw.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
         this.setInputValue = this.setInputValue.bind(this);
@@ -37,6 +38,8 @@ class ParallelContainer extends React.Component {
             height: 430,
             defaultWidth: 700,
             defaultHeight: 430,
+            axisCount: 0,
+            axisTitles: [],
             axisHorizon: "",
             axisVertical: "",
             axisHorizonMin: 0,
@@ -49,6 +52,7 @@ class ParallelContainer extends React.Component {
     // global initialize
     init(json){
         var i, j;
+        var titles = [];
 
         // selection test
         // this.selectChanged();
@@ -59,6 +63,13 @@ class ParallelContainer extends React.Component {
             console.log(json);
             return;
         }
+        for(i = 0, j = json.axis.length; i < j; ++i){
+            titles.push(json.axis[i].title);
+        }
+        this.setState({
+            axisCount: json.axis.length,
+            axisTitles: titles
+        });
 
         // this.parallel initialize
         if(!this.parallel){
@@ -79,9 +90,9 @@ class ParallelContainer extends React.Component {
                 let minVal = value[i].cluster[j].min;
                 let maxVal = value[i].cluster[j].max;
                 let colorVal = value[i].cluster[j].color;
-                if(selected){
-                    console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected + ' max:' + maxVal + ' min:' + minVal, colorVal);
-                }
+                // if(selected){
+                //     console.log('axis: ' + i + ', cluster: ' + j + ', selected: ' + selected + ' max:' + maxVal + ' min:' + minVal, colorVal);
+                // }
             }
         }
 
@@ -145,10 +156,10 @@ class ParallelContainer extends React.Component {
 
         // put input
         const varname = this.props.node.varname;
-        this.props.action.changeNodeInput({
-            varname : varname,
-            input : obj
-        });
+        // this.props.action.changeNodeInput({
+        //     varname : varname,
+        //     input : obj
+        // });
     }
 
     getInputValue(key){
@@ -191,6 +202,21 @@ class ParallelContainer extends React.Component {
         this.init(param.data);
     }
 
+    axisSelectionChange(eve){
+        let h = this.refs.selectAxisDropdownHorizon;
+        let v = this.refs.selectAxisDropdownVertical;
+        if(h.selectedIndex < 1 || v.selectedIndex < 1){return;}
+        let obj = {
+            plotX: h.selectedIndex - 1,
+            plotY: v.selectedIndex - 1
+        };
+        // put input
+        const varname = this.props.node.varname;
+        this.props.action.changeNodeInput({
+            varname : varname,
+            input : obj
+        });
+    }
     // 戻り値に、選択されている axis のインデックスが入った配列を返し
     // 同時に UI 上の選択範囲を更新する
     // axis のインデックスは、パラレルの UI 上で軸が選択された順番で配列に格納される
@@ -400,7 +426,13 @@ class ParallelContainer extends React.Component {
                     </div>
                     <div>
                         <div style={styles.row}>
-                            <div style={styles.title}>{this.state.axisHorizon}</div>
+                            <div style={styles.title}>
+                                {this.state.axisHorizon}
+                                <select ref="selectAxisDropdownHorizon" onChange={this.axisSelectionChange}>
+                                    <option> --- </option>
+                                    {this.state.axisTitles.map((value, index)=>{return (<option key={"dropdownhorizontal" + index}>{value}</option>);})}
+                                </select>
+                            </div>
                         </div>
                         <div style={styles.row}>
                             <div style={styles.caption}> min:</div>
@@ -411,7 +443,13 @@ class ParallelContainer extends React.Component {
                             <div style={styles.label}>{this.state.axisHorizonMax}</div>
                         </div>
                         <div style={styles.row}>
-                            <div style={styles.title}>{this.state.axisVertical}</div>
+                            <div style={styles.title}>
+                                {this.state.axisVertical}
+                                <select ref="selectAxisDropdownVertical" onChange={this.axisSelectionChange}>
+                                    <option> --- </option>
+                                    {this.state.axisTitles.map((value, index)=>{return (<option key={"dropdownvertical" + index}>{value}</option>);})}
+                                </select>
+                            </div>
                         </div>
                         <div style={styles.row}>
                             <div style={styles.caption}> min:</div>
