@@ -25,6 +25,7 @@ class ParallelContainer extends React.Component {
         this.init = this.init.bind(this);
         this.axisSelectionChange = this.axisSelectionChange.bind(this);
         this.axisSelectionDraw = this.axisSelectionDraw.bind(this);
+        this.axisSvgDraw = this.axisSvgDraw.bind(this);
         this.getInputValue = this.getInputValue.bind(this);
         this.setInputValue = this.setInputValue.bind(this);
         this.nodeInputChanged = this.nodeInputChanged.bind(this);
@@ -146,6 +147,14 @@ class ParallelContainer extends React.Component {
         }
         // rgba
         obj.rgba = rgba;
+        // put input
+        // ここのインプットの出力時に、brush情報を更新しているので
+        // ここを通るようにすれば、image上でのbrushとリンクさせられるはず
+        const varname = this.props.node.varname;
+        this.props.action.changeNodeInput({
+            varname : varname,
+            input : obj
+        });
 
         // rect draw on image
         this.axisSelectionDraw(value);
@@ -195,6 +204,7 @@ class ParallelContainer extends React.Component {
         let h = ReactDOM.findDOMNode(this.refs.selectAxisDropdownHorizon);
         let v = ReactDOM.findDOMNode(this.refs.selectAxisDropdownVertical);
         if(h.selectedIndex < 1 || v.selectedIndex < 1){return;}
+        if(h.selectedIndex === v.selectedIndex){return;}
         let obj = {
             plotX: h.selectedIndex - 1,
             plotY: v.selectedIndex - 1
@@ -210,8 +220,9 @@ class ParallelContainer extends React.Component {
             activeVertical: obj.plotY
         });
     }
-    // ここはあくまでもコンポーネント上の矩形を描画し直すだけ
     // 背景のイメージが更新されるのはドロップダウンリストの変更イベントのときだけ
+    // 選択状態はparallel上とimage上でリンクする必要があるのでインプットの更新は行うする必要があり
+    // このメソッドの内部で SVG の更新処理メソッドを呼んでる
     axisSelectionDraw(v){
         if(!v || !v.hasOwnProperty('length') || v.length === 0){return;}
         if(!this.layer){
@@ -242,8 +253,6 @@ class ParallelContainer extends React.Component {
             }
         }
 
-        cx.strokeStyle = 'crimson';
-        cx.lineWidth = 2;
         cx.clearRect(0, 0, width, height);
         let obj = {
             axisHorizonMin: 0,
@@ -268,6 +277,31 @@ class ParallelContainer extends React.Component {
             let yLen    = axisArray[l].volmax - axisArray[l].volmin;
             let top     = 1.0 - (axisArray[l].max - axisArray[l].volmin) / yLen;
             let bottom  = 1.0 - (axisArray[l].min - axisArray[l].volmin) / yLen;
+            // draw horizon rect
+            cx.beginPath();
+            cx.strokeStyle = 'rgba(196, 128, 255, 0.5)';
+            cx.lineWidth = 1;
+            cx.rect(
+                -1,
+                top * height,
+                width + 1,
+                (bottom - top) * height
+            );
+            cx.stroke();
+            cx.closePath();
+            // draw vertical rect
+            cx.beginPath();
+            cx.rect(
+                left * width,
+                -1,
+                (right - left) * width,
+                height + 1
+            );
+            cx.stroke();
+            cx.closePath();
+            // draw cross rect
+            cx.strokeStyle = 'crimson';
+            cx.lineWidth = 2;
             cx.beginPath();
             cx.rect(
                 left * width,
@@ -277,18 +311,52 @@ class ParallelContainer extends React.Component {
             );
             cx.stroke();
             cx.closePath();
+            this.axisSvgDraw([axisArray[k], axisArray[l]]);
         }
         this.setState(obj);
     }
 
-    axisSvgDraw(){
-        var NS_SVG = 'http://www.w3.org/2000/svg';
-        var NS = (e)=>{return document.createElementNS(NS_SVG, e);};
+                // axisArray[i] = {
+                //     selectedIndex: v[i].selectedNumber,
+                //     title: v[i].title,
+                //     volmin: v[i].volume.min,
+                //     volmax: v[i].volume.max,
+                //     min: v[i].brush.min,
+                //     max: v[i].brush.max
+                // };
+    axisSvgDraw(axisArray){
+        let NS_SVG = 'http://www.w3.org/2000/svg';
+        let NS = (e)=>{return document.createElementNS(NS_SVG, e);};
+        let PADDING = 20;
+        let SIZE = 256;
 
-        let wrapperDiv;
+        let wrapperDiv, wrapperSvg;
         let e, f, g, h, i, j, k, l;
         wrapperDiv = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
-        
+        wrapperSvg = NS('svg');
+        wrapperSvg.style.display = 'block';
+        wrapperSvg.style.width = '100%';
+        wrapperSvg.style.height = '100%';
+        wrapperSvg.style.margin = '0';
+        wrapperSvg.style.padding = '0';
+        wrapperDiv.appendChild(wrapperSvg);
+        e = NS('path');
+        e.setAttribute('stroke', '#333');
+        e.setAttribute('stroke-width', 2);
+        e.setAttribute(
+            'd',
+            'M ' + PADDING + ' ' + (SIZE + PADDING / 2) + ' h ' + SIZE
+        );
+        wrapperSvg.appendChild(e);
+        f = NS('path');
+        f.setAttribute('stroke', '#333');
+        f.setAttribute('stroke-width', 2);
+        f.setAttribute(
+            'd',
+            'M ' + (PADDING / 2) + ' 0 v ' + SIZE
+        );
+        wrapperSvg.appendChild(f);
+        wrapperDiv.appendChild(wrapperSvg);
     }
 
 
