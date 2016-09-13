@@ -300,7 +300,7 @@ class ParallelContainer extends React.Component {
             cx.stroke();
             cx.closePath();
             // draw cross rect
-            cx.strokeStyle = 'crimson';
+            cx.strokeStyle = 'rgba(196, 32, 64, 0.5)';
             cx.lineWidth = 2;
             cx.beginPath();
             cx.rect(
@@ -316,23 +316,24 @@ class ParallelContainer extends React.Component {
         this.setState(obj);
     }
 
-                // axisArray[i] = {
-                //     selectedIndex: v[i].selectedNumber,
-                //     title: v[i].title,
-                //     volmin: v[i].volume.min,
-                //     volmax: v[i].volume.max,
-                //     min: v[i].brush.min,
-                //     max: v[i].brush.max
-                // };
     axisSvgDraw(axisArray){
         let NS_SVG = 'http://www.w3.org/2000/svg';
         let NS = (e)=>{return document.createElementNS(NS_SVG, e);};
         let PADDING = 20;
         let SIZE = 256;
+        let LINE_COLOR = 'rgba(64, 64, 64, 0.5)';
+        let LINE_WIDTH = 2;
+        let RECT_FILL_COLOR = 'rgba(196, 196, 196, 0.2)';
+        let RECT_STROKE_COLOR = 'rgba(196, 32, 64, 0.5)';
 
         let wrapperDiv, wrapperSvg;
+        let xLen, yLen, left, right, top, bottom;
         let e, f, g, h, i, j, k, l;
+
+        // reset svg area
         wrapperDiv = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
+        wrapperDiv.innerHTML = '';
+
         wrapperSvg = NS('svg');
         wrapperSvg.style.display = 'block';
         wrapperSvg.style.width = '100%';
@@ -340,22 +341,74 @@ class ParallelContainer extends React.Component {
         wrapperSvg.style.margin = '0';
         wrapperSvg.style.padding = '0';
         wrapperDiv.appendChild(wrapperSvg);
+        // line of horizon
         e = NS('path');
-        e.setAttribute('stroke', '#333');
-        e.setAttribute('stroke-width', 2);
+        e.setAttribute('stroke', LINE_COLOR);
+        e.setAttribute('stroke-width', LINE_WIDTH);
         e.setAttribute(
             'd',
             'M ' + PADDING + ' ' + (SIZE + PADDING / 2) + ' h ' + SIZE
         );
         wrapperSvg.appendChild(e);
-        f = NS('path');
-        f.setAttribute('stroke', '#333');
-        f.setAttribute('stroke-width', 2);
-        f.setAttribute(
+        e = NS('path');
+        e.setAttribute('stroke', LINE_COLOR);
+        e.setAttribute('stroke-width', LINE_WIDTH);
+        e.setAttribute(
+            'd',
+            'M ' + PADDING + ' ' + SIZE + ' v ' + PADDING
+        );
+        wrapperSvg.appendChild(e);
+        // line of vertical
+        e = NS('path');
+        e.setAttribute('stroke', LINE_COLOR);
+        e.setAttribute('stroke-width', LINE_WIDTH);
+        e.setAttribute(
             'd',
             'M ' + (PADDING / 2) + ' 0 v ' + SIZE
         );
-        wrapperSvg.appendChild(f);
+        wrapperSvg.appendChild(e);
+        e = NS('path');
+        e.setAttribute('stroke', LINE_COLOR);
+        e.setAttribute('stroke-width', LINE_WIDTH);
+        e.setAttribute(
+            'd',
+            'M 0 ' + SIZE + ' h ' + PADDING
+        );
+        wrapperSvg.appendChild(e);
+
+        // coords
+        xLen    = axisArray[0].volmax - axisArray[0].volmin;
+        left    = (axisArray[0].min - axisArray[0].volmin) / xLen;
+        right   = (axisArray[0].max - axisArray[0].volmin) / xLen;
+        yLen    = axisArray[1].volmax - axisArray[1].volmin;
+        top     = 1.0 - (axisArray[1].max - axisArray[1].volmin) / yLen;
+        bottom  = 1.0 - (axisArray[1].min - axisArray[1].volmin) / yLen;
+
+        // selection Rect
+        e = NS('path');
+        e.setAttribute('fill', RECT_FILL_COLOR);
+        e.setAttribute('stroke', RECT_STROKE_COLOR);
+        e.setAttribute('stroke-width', LINE_WIDTH);
+        e.setAttribute(
+            'd',
+            'M '  + (PADDING + SIZE * left) + ' ' + SIZE +
+            ' H ' + (PADDING + SIZE * right) + ' v ' + PADDING +
+            ' H ' + (PADDING + SIZE * left) + ' v ' + (-PADDING)
+        );
+        wrapperSvg.appendChild(e);
+        e = NS('path');
+        e.setAttribute('fill', RECT_FILL_COLOR);
+        e.setAttribute('stroke', RECT_STROKE_COLOR);
+        e.setAttribute('stroke-width', LINE_WIDTH);
+        e.setAttribute(
+            'd',
+            'M 0 ' + (SIZE * top) +
+            ' h ' + PADDING + ' V ' + (SIZE * bottom) +
+            ' h ' + (-PADDING) + ' V ' + (SIZE * top)
+        );
+        wrapperSvg.appendChild(e);
+
+        // last append
         wrapperDiv.appendChild(wrapperSvg);
     }
 
