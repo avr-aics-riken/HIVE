@@ -321,7 +321,7 @@ class ParallelContainer extends React.Component {
         let NS = (e)=>{return document.createElementNS(NS_SVG, e);};
         let PADDING = 20;
         let SIZE = 256;
-        let LINE_COLOR = 'rgba(64, 64, 64, 0.5)';
+        let LINE_COLOR = 'rgba(64, 64, 128, 0.5)';
         let LINE_WIDTH = 2;
         let RECT_FILL_COLOR = 'rgba(196, 196, 196, 0.2)';
         let RECT_STROKE_COLOR = 'rgba(196, 32, 64, 0.5)';
@@ -405,6 +405,54 @@ class ParallelContainer extends React.Component {
             'M 0 ' + (SIZE * top) +
             ' h ' + PADDING + ' V ' + (SIZE * bottom) +
             ' h ' + (-PADDING) + ' V ' + (SIZE * top)
+        );
+        wrapperSvg.appendChild(e);
+
+        // draggable rect horizon
+        e = NS('path');
+        e.setAttribute('fill', 'transparent');
+        e.setAttribute('stroke', 'transparent');
+        e.setAttribute('style', 'cursor: col-resize');
+        e.setAttribute(
+            'd',
+            'M '  + (PADDING + SIZE * left - 3) + ' ' + SIZE +
+            ' H ' + (PADDING + SIZE * left + 3) + ' v ' + PADDING +
+            ' H ' + (PADDING + SIZE * left - 3) + ' v ' + (-PADDING)
+        );
+        wrapperSvg.appendChild(e);
+        e = NS('path');
+        e.setAttribute('fill', 'transparent');
+        e.setAttribute('stroke', 'transparent');
+        e.setAttribute('style', 'cursor: col-resize');
+        e.setAttribute(
+            'd',
+            'M '  + (PADDING + SIZE * right - 3) + ' ' + SIZE +
+            ' H ' + (PADDING + SIZE * right + 3) + ' v ' + PADDING +
+            ' H ' + (PADDING + SIZE * right - 3) + ' v ' + (-PADDING)
+        );
+        wrapperSvg.appendChild(e);
+
+        // draggable rect horizon
+        e = NS('path');
+        e.setAttribute('fill', 'transparent');
+        e.setAttribute('stroke', 'transparent');
+        e.setAttribute('style', 'cursor: row-resize');
+        e.setAttribute(
+            'd',
+            'M 0 '  + (SIZE * top - 3) +
+            ' h ' + PADDING + ' V ' + (SIZE * top + 3) +
+            ' h ' + (-PADDING) + ' V ' + (SIZE * top - 3)
+        );
+        wrapperSvg.appendChild(e);
+        e = NS('path');
+        e.setAttribute('fill', 'transparent');
+        e.setAttribute('stroke', 'transparent');
+        e.setAttribute('style', 'cursor: row-resize');
+        e.setAttribute(
+            'd',
+            'M 0 '  + (SIZE * bottom - 3) +
+            ' h ' + PADDING + ' V ' + (SIZE * bottom + 3) +
+            ' h ' + (-PADDING) + ' V ' + (SIZE * bottom - 3)
         );
         wrapperSvg.appendChild(e);
 
