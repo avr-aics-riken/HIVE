@@ -31,6 +31,7 @@ function ChOWDER:Do()
             "to" : "master",
             "params" : {
                 "id" : "]] .. self.id .. [[",
+                "content_id" : "]] .. self.id .. [[",
                 "type" : "image",
                 "width" : "512",
                 "height" : "512"
