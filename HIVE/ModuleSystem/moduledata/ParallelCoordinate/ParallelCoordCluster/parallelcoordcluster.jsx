@@ -20,6 +20,8 @@ class ParallelContainer extends React.Component {
         this.ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         this.NODE_INPUT_CHANGED = "node_input_changed";
         this.STORE_IMAGE_RECIEVED = "image_revieved";
+        this.SIZE = 0;
+        this.PADDING = 0;
 
         // function
         this.init = this.init.bind(this);
@@ -33,6 +35,26 @@ class ParallelContainer extends React.Component {
         this.imageRecieved = this.imageRecieved.bind(this);
         this.selectChanged = this.selectChanged.bind(this);
         this.componentDidUpdate = this.componentDidUpdate.bind(this);
+
+        // axis dragging
+        this.axisWrapperSvg        = null;
+        this.axisEventDragHorizon  = false;// ドラッグしているかどうかのフラグ
+        this.axisEventDragVertical = false;
+        this.axisEventDefaultX     = 0;    // イベント登録時の起点 X 座標
+        this.axisEventDefaultY     = 0;    // イベント登録時の起点 Y 座標
+        this.axisHorizonIndex      = null; // horizon の軸インデックス
+        this.axisHorizonSelect     = null; // 選択矩形領域
+        this.axisHorizonMinHandle  = null; // 選択矩形の最小値側ハンドル
+        this.axisHorizonMaxHandle  = null; // 選択矩形の最大値側ハンドル
+        this.axisHorizonListeners  = [];   // horizon イベントリスナ
+        this.axisVerticalIndex     = null; // vertical の軸インデックス
+        this.axisVerticalSelect    = null; // 選択矩形領域
+        this.axisVerticalMinHandle = null; // 選択矩形の最小値側ハンドル
+        this.axisVerticalMaxHandle = null; // 選択矩形の最大値側ハンドル
+        this.axisVerticalListeners  = [];  // horizon イベントリスナ
+        this.axisEventFuncHorizon  = this.axisEventFuncHorizon.bind(this);
+        this.axisEventFuncVertical = this.axisEventFuncVertical.bind(this);
+        this.axisEventFuncMouseUp  = this.axisEventFuncMouseUp.bind(this);
 
         this.state = {
             width: 700,
@@ -48,6 +70,37 @@ class ParallelContainer extends React.Component {
             activeHorizon: -1,
             activeVertical: -1
         };
+    }
+
+    // kono listener wo kaku
+    axisEventFuncHorizon(eve){
+        if(!this.axisEventDragHorizon){return;}
+        let x = eve.pageX - this.axisEventDefaultX;
+        this.axisEventDefaultX = eve.pageX;
+        let b = this.axisHorizonSelect.getBBox();
+        let l = Math.min(this.SIZE + this.PADDING - b.width, Math.max(this.PADDING, b.x + x));
+        this.axisHorizonSelect.setAttribute('d',
+            'M '  + (l) + ' ' + this.SIZE +
+            ' H ' + (l + b.width) + ' v ' + this.PADDING +
+            ' H ' + (l) + ' v ' + (-this.PADDING)
+        );
+    }
+    axisEventFuncVertical(eve){
+        if(!this.axisEventDragVertical){return;}
+        let y = eve.pageY - this.axisEventDefaultY;
+        this.axisEventDefaultY = eve.pageY;
+        let b = this.axisVerticalSelect.getBBox();
+        let l = Math.min(this.SIZE - b.height, Math.max(0, b.y + y));
+        this.axisVerticalSelect.setAttribute('d',
+            'M 0 ' + (l) +
+            ' h ' + this.PADDING + ' V ' + (l + b.height) +
+            ' h ' + (-this.PADDING) + ' V ' + (l)
+        );
+    }
+    axisEventFuncMouseUp(eve){
+        this.axisEventDragHorizon = false;
+        this.axisEventDragVertical = false;
+        console.log('mouseup!!!!!!!!!!!!!!!!');
     }
 
     // global initialize
@@ -262,8 +315,8 @@ class ParallelContainer extends React.Component {
         };
         if(brushedCount > 1 && this.state.activeHorizon > -1 && this.state.activeVertical > -1){
             let k, l;
-            k = this.state.activeHorizon;
-            l = this.state.activeVertical;
+            k = this.axisHorizonIndex = this.state.activeHorizon;
+            l = this.axisVerticalIndex = this.state.activeVertical;
             obj = {
                 axisHorizonMin: axisArray[k].min,
                 axisHorizonMax: axisArray[k].max,
@@ -319,8 +372,8 @@ class ParallelContainer extends React.Component {
     axisSvgDraw(axisArray){
         let NS_SVG = 'http://www.w3.org/2000/svg';
         let NS = (e)=>{return document.createElementNS(NS_SVG, e);};
-        let PADDING = 20;
-        let SIZE = 256;
+        let PADDING = this.PADDING = 20;
+        let SIZE = this.SIZE = 256;
         let LINE_COLOR = 'rgba(64, 64, 128, 0.5)';
         let LINE_WIDTH = 2;
         let RECT_FILL_COLOR = 'rgba(196, 196, 196, 0.2)';
@@ -330,6 +383,15 @@ class ParallelContainer extends React.Component {
         let xLen, yLen, left, right, top, bottom;
         let e, f, g, h, i, j, k, l;
 
+        // reset event listener
+        for(i = 0, j = this.axisHorizonListeners.length; i < j; ++i){
+            this.axisHorizonListeners[i]();
+        }
+        for(i = 0, j = this.axisVerticalListeners.length; i < j; ++i){
+            this.axisVerticalListeners[i]();
+        }
+        this.axisHorizonListeners = [];
+        this.axisVerticalListeners = [];
         // reset svg area
         wrapperDiv = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
         wrapperDiv.innerHTML = '';
@@ -341,6 +403,7 @@ class ParallelContainer extends React.Component {
         wrapperSvg.style.margin = '0';
         wrapperSvg.style.padding = '0';
         wrapperDiv.appendChild(wrapperSvg);
+        this.axisWrapperSvg = wrapperSvg;
         // line of horizon
         e = NS('path');
         e.setAttribute('stroke', LINE_COLOR);
@@ -396,6 +459,15 @@ class ParallelContainer extends React.Component {
             ' H ' + (PADDING + SIZE * left) + ' v ' + (-PADDING)
         );
         wrapperSvg.appendChild(e);
+        f = ((eve)=>{
+            this.axisEventDragHorizon = true;
+            this.axisEventDefaultX = eve.pageX;
+        }).bind(this);
+        this.axisHorizonListeners.push(((func)=>{
+            return ()=>{this.axisHorizonSelect.removeEventListener('mousedown', func, false);};
+        })(f));
+        e.addEventListener('mousedown', f, false);
+        this.axisHorizonSelect = e; // add element to prop
         e = NS('path');
         e.setAttribute('fill', RECT_FILL_COLOR);
         e.setAttribute('stroke', RECT_STROKE_COLOR);
@@ -407,6 +479,15 @@ class ParallelContainer extends React.Component {
             ' h ' + (-PADDING) + ' V ' + (SIZE * top)
         );
         wrapperSvg.appendChild(e);
+        f = ((eve)=>{
+            this.axisEventDragVertical = true;
+            this.axisEventDefaultY = eve.pageY;
+        }).bind(this);
+        this.axisVerticalListeners.push(((func)=>{
+            return ()=>{this.axisVerticalSelect.removeEventListener('mousedown', func, false);};
+        })(f));
+        e.addEventListener('mousedown', f, false);
+        this.axisVerticalSelect = e; // add element to prop
 
         // draggable rect horizon
         e = NS('path');
@@ -432,7 +513,7 @@ class ParallelContainer extends React.Component {
         );
         wrapperSvg.appendChild(e);
 
-        // draggable rect horizon
+        // draggable rect vertical
         e = NS('path');
         e.setAttribute('fill', 'transparent');
         e.setAttribute('stroke', 'transparent');
@@ -465,6 +546,10 @@ class ParallelContainer extends React.Component {
     }
 
     componentDidMount(){
+        let fdn = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
+        fdn.addEventListener('mousemove', this.axisEventFuncHorizon, false);
+        fdn.addEventListener('mousemove', this.axisEventFuncVertical, false);
+        fdn.addEventListener('mouseup', this.axisEventFuncMouseUp, false);
         this.store.on(this.PANEL_SIZE_CHANGED, this.onPanelSizeChanged);
         this.store.on(this.ANALYZED_DATA_RECIEVED, this.imageRecieved);
         this.store.on(this.NODE_INPUT_CHANGED, this.nodeInputChanged);
