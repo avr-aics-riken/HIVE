@@ -757,7 +757,7 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
     // check selection count
     if(isDragEvent){
         f = false;
-        if(!currentAxis || !currentAxis.index === undefined){debugger;}
+        if(!currentAxis || !currentAxis.index === undefined){return;}
         j = currentAxis.index;
         for(i = 0; i < selLength; ++i){                 // 既存の選択状態をチェックする
             if(this.selectedArray[i].index === j){      // インデックスが一致しているか
