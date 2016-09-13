@@ -72,7 +72,6 @@ class ParallelContainer extends React.Component {
         };
     }
 
-    // kono listener wo kaku
     axisEventFuncHorizon(eve){
         if(!this.axisEventDragHorizon){return;}
         let x = eve.pageX - this.axisEventDefaultX;
@@ -98,9 +97,40 @@ class ParallelContainer extends React.Component {
         );
     }
     axisEventFuncMouseUp(eve){
+        let targetAxis = -1;
+        let horizon = false;
+        let bbox = null;
+        let len, min, max;
+        if(this.axisEventDragHorizon){
+            targetAxis = this.axisHorizonIndex;
+            bbox = this.axisHorizonSelect.getBBox();
+            horizon = true;
+        }
+        if(this.axisEventDragVertical){
+            targetAxis = this.axisVerticalIndex;
+            bbox = this.axisVerticalSelect.getBBox();
+        }
         this.axisEventDragHorizon = false;
         this.axisEventDragVertical = false;
+
         console.log('mouseup!!!!!!!!!!!!!!!!');
+        if(targetAxis < 0){return;}
+
+        let axisjson = this.parallel.getAllBrushedRange(
+            this.parallel.axisArray[targetAxis], true
+        );
+        let ax = axisjson[targetAxis];
+        if(horizon){
+            min = (bbox.x - this.PADDING) / this.SIZE;
+            max = (bbox.x + bbox.width - this.PADDING) / this.SIZE;
+        }else{
+            min = 1.0 - (bbox.y + bbox.height) / this.SIZE;
+            max = 1.0 - bbox.y / this.SIZE;
+        }
+        len = ax.range.max - ax.range.min;
+        axisjson[targetAxis].brush.min = ax.range.min + min * len;
+        axisjson[targetAxis].brush.max = ax.range.min + max * len;
+        this.setInputValue('axisjson', axisjson);
     }
 
     // global initialize
