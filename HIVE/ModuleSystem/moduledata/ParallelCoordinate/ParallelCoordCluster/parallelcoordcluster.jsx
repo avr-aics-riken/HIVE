@@ -224,6 +224,8 @@ class ParallelContainer extends React.Component {
 
         // add or reset axis
         this.parallel.resetAxis(json);
+
+        this.axisSelectionDraw(this.parallel.getAllBrushedRange());
     }
 
     selectChanged(value, obj){
@@ -361,12 +363,12 @@ class ParallelContainer extends React.Component {
             activeHorizon: obj.plotX,
             activeVertical: obj.plotY
         });
+        this.axisSelectionDraw();
     }
     // 背景のイメージが更新されるのはドロップダウンリストの変更イベントのときだけ
     // 選択状態はparallel上とimage上でリンクする必要があるのでインプットの更新は行うする必要があり
     // このメソッドの内部で SVG の更新処理メソッドを呼んでる
     axisSelectionDraw(v){
-        if(!v || !v.hasOwnProperty('length') || v.length === 0){return;}
         if(!this.layer){
             this.plotlayer = ReactDOM.findDOMNode(this.refs.plotlayer);
             this.plotctx = this.plotlayer.getContext('2d');
@@ -379,18 +381,20 @@ class ParallelContainer extends React.Component {
 
         let axisArray = [];
         let brushedCount = 0;
-        for(let i = 0, j = v.length; i < j; ++i){
-            if(!v[i].selectedAxis && !isNaN(parseFloat(v[i].selectedNumber)) && v[i].selectedNumber > -1){
-                axisArray[i] = {
-                    selectedIndex: v[i].selectedNumber,
-                    title: v[i].title,
-                    volmin: v[i].volume.min,
-                    volmax: v[i].volume.max,
-                    min: v[i].brush.min,
-                    max: v[i].brush.max
-                };
-                if(i === this.state.activeHorizon || i === this.state.activeVertical){
-                    brushedCount++;
+        if(v && v.hasOwnProperty('length') && v.length > 0){
+            for(let i = 0, j = v.length; i < j; ++i){
+                if(!v[i].selectedAxis && !isNaN(parseFloat(v[i].selectedNumber)) && v[i].selectedNumber > -1){
+                    axisArray[i] = {
+                        selectedIndex: v[i].selectedNumber,
+                        title: v[i].title,
+                        volmin: v[i].volume.min,
+                        volmax: v[i].volume.max,
+                        min: v[i].brush.min,
+                        max: v[i].brush.max
+                    };
+                    if(i === this.state.activeHorizon || i === this.state.activeVertical){
+                        brushedCount++;
+                    }
                 }
             }
         }
@@ -454,6 +458,8 @@ class ParallelContainer extends React.Component {
             cx.stroke();
             cx.closePath();
             this.axisSvgDraw([axisArray[k], axisArray[l]]);
+        }else{
+            this.axisSvgDraw(); // if no arguments running then reset svg
         }
         this.setState(obj);
     }
@@ -484,6 +490,8 @@ class ParallelContainer extends React.Component {
         // reset svg area
         wrapperDiv = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
         wrapperDiv.innerHTML = '';
+
+        if(!axisArray || axisArray.length < 2){return;}
 
         wrapperSvg = NS('svg');
         wrapperSvg.style.display = 'block';
