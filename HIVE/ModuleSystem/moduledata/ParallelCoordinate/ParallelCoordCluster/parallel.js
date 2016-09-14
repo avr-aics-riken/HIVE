@@ -1101,16 +1101,18 @@ Axis.prototype.update = function(titleString, minmax){
     var funcDown = this.dragStart.bind(this);
     var funcMove = this.dragMove.bind(this);
     var funcUp   = this.dragEnd.bind(this);
-    var funcAxisDown = this.dragAxisStart.bind(this);
-    var funcAxisMove = this.dragAxisMove.bind(this);
-    var funcAxisUp   = this.dragAxisEnd.bind(this);
+    var funcAxisDown   = this.dragAxisStart.bind(this);
+    var funcAxisMove   = this.dragAxisMove.bind(this);
+    var funcAxisUp     = this.dragAxisEnd.bind(this);
     var funcAxisHandle = this.dragAxisHandleStart.bind(this);
-    var funcBrushDown = this.dragAxisBrushStart.bind(this);
-    var funcBrushMove = this.dragAxisBrushMove.bind(this);
-    var funcBrushUp   = this.dragAxisBrushEnd.bind(this);
-    var funcDomMin   = this.domInputMin.bind(this);
-    var funcDomMax   = this.domInputMax.bind(this);
-    var funcDomSigma = this.domInputSigma.bind(this);
+    var funcBrushDown  = this.dragAxisBrushStart.bind(this);
+    var funcBrushMove  = this.dragAxisBrushMove.bind(this);
+    var funcBrushUp    = this.dragAxisBrushEnd.bind(this);
+    var funcDomMin     = this.domInputMin.bind(this);
+    var funcDomMax     = this.domInputMax.bind(this);
+    var funcDomSigmaDown = this.domInputSigmaDown.bind(this);
+    var funcDomSigmaMove = this.domInputSigmaMove.bind(this);
+    var funcDomSigmaUp   = this.domInputSigmaUp.bind(this);
     if(titleString){
         this.title = titleString;
     }else{
@@ -1202,7 +1204,9 @@ Axis.prototype.update = function(titleString, minmax){
     this.parent.layer.addEventListener('mouseup', funcBrushUp, false);
     this.inputMin.addEventListener('change', funcDomMin, false);
     this.inputMax.addEventListener('change', funcDomMax, false);
-    this.inputSigma.addEventListener('change', funcDomSigma, false);
+    this.inputSigma.addEventListener('mousedown', funcDomSigmaDown, false);
+    this.inputSigma.addEventListener('mousemove', funcDomSigmaMove, false);
+    this.inputSigma.addEventListener('mouseup', funcDomSigmaUp, false);
     this.listeners.push(
         (function(){return function(){this.axisRectSvg.removeEventListener('mousedown', funcAxisDown, false);};}()),
         (function(){return function(){this.parent.layer.removeEventListener('mousemove', funcAxisMove, false);};}()),
@@ -1214,7 +1218,9 @@ Axis.prototype.update = function(titleString, minmax){
         (function(){return function(){this.parent.layer.removeEventListener('mouseup', funcBrushUp, false);};}()),
         (function(){return function(){this.inputMin.removeEventListener('change', funcDomMin, false);};}()),
         (function(){return function(){this.inputMax.removeEventListener('change', funcDomMax, false);};}()),
-        (function(){return function(){this.inputSigma.removeEventListener('change', funcDomSigma, false);};}())
+        (function(){return function(){this.inputSigma.removeEventListener('mousedown', funcDomSigmaDown, false);};}()),
+        (function(){return function(){this.inputSigma.removeEventListener('mousemove', funcDomSigmaMove, false);};}()),
+        (function(){return function(){this.inputSigma.removeEventListener('mouseup', funcDomSigmaUp, false);};}())
     );
 
     this.updateInput.bind(this)();
@@ -1554,6 +1560,21 @@ Axis.prototype.domInputSigma = function(eve){
         var axisjson = this.parent.getAllBrushedRange(this);
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
+};
+Axis.prototype.domInputSigmaDown = function(eve){
+    var e = eve.currentTarget;
+    e.setAttribute('id', 'trued');
+};
+Axis.prototype.domInputSigmaMove = function(eve){
+    var e = eve.currentTarget;
+    if(e.id === 'trued'){
+        e.value = (eve.offsetX / e.offsetWidth) * (0.1 - 0.001);
+    }
+};
+Axis.prototype.domInputSigmaUp = function(eve){
+    var e = eve.currentTarget;
+    e.setAttribute('id', '');
+    this.domInputSigma({currentTarget: e});
 };
 // 軸上の選択範囲を正規化した値として返す
 Axis.prototype.getBrushedRange = function(){
