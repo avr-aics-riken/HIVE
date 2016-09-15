@@ -1,5 +1,9 @@
+/**
+ * setOption
+ * @param {} xx -
+ * @param {} [] -
+ */
 /* ****************************************************************************
- * parentElement === target dom node
  * options[optional] === {
  *     padding         : <number> Canvas 内部に設ける描画領域のパディング
  *     svg: {
@@ -26,7 +30,12 @@
  *     }
  * }
  * ************************************************************************* */
-
+/**
+ * @constructor
+ * @classdesc パラレルコーディネートを Cluster モードで描画するクラス
+ * @param     {HTMLElement} parentElement - 埋め込み対象となる HTMLElement
+ * @param     {Object}      [option]      - 初期化時のオプション
+ */
 function ParallelCoordCluster(parentElement, option){
     this.width = 0;
     this.height = 0;
@@ -148,7 +157,10 @@ function ParallelCoordCluster(parentElement, option){
     this.selectedAxis = false; // 軸ごと選択されたときの情報
     this.selectedArray = []; // brush されたときの情報
 }
-// オプションをセットする
+/**
+ * オプションをまとめてセットする
+ * @param {Object} option - セットするオプションを格納したオブジェクト
+ */
 ParallelCoordCluster.prototype.setOption = function(option){
     if(!option){return false;}
     var s = 'padding';
@@ -191,6 +203,12 @@ ParallelCoordCluster.prototype.setOption = function(option){
         if(this.checkOption(option.callback, s)){this.selectedCallback = option.callback[s];}
     }
 };
+
+/**
+ * オプションに該当するメンバが存在するかチェックする
+ * @param {Object} option - 走査対象のオプション
+ * @param {String} name   - 操作したいメンバの名前
+ */
 ParallelCoordCluster.prototype.checkOption = function(option, name){
     return (
         option.hasOwnProperty(name) &&
@@ -200,7 +218,11 @@ ParallelCoordCluster.prototype.checkOption = function(option, name){
         option[name] !== 0
     );
 };
-// コンポーネントのサイズをセット
+/**
+ * コンポーネントのサイズをセット
+ * @param {Number} width  - 幅
+ * @param {Number} height - 高さ
+ */
 ParallelCoordCluster.prototype.setRect = function(width, height){
     this.canvas.width = this.parentElement.clientWidth;
     this.canvas.height = this.parentElement.clientHeight;
@@ -211,7 +233,10 @@ ParallelCoordCluster.prototype.setRect = function(width, height){
     this.plotLayer.style.width = this.plotElement.clientWidth + 'px';
     this.plotLayer.style.height = this.plotElement.clientHeight + 'px';
 };
-// 列追加
+
+/**
+ * 軸を追加する
+ */
 ParallelCoordCluster.prototype.addAxis = function(){
     var i, j;
     for(i = 0, j = this.stateData.axis.length; i < j; ++i){
@@ -219,7 +244,11 @@ ParallelCoordCluster.prototype.addAxis = function(){
         this.axisCount = this.axisArray.length;
     }
 };
-// 列の配置をリセットして可能なら canvas を再描画する
+
+/**
+ * 列の配置をリセットして可能なら canvas を再描画する
+ * @param {Object} resetData - リセット時に再セットするデータ
+ */
 ParallelCoordCluster.prototype.resetAxis = function(resetData){
     var i, j, v;
     var space, margin;
@@ -273,7 +302,10 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
     }
     return this;
 };
-// WebGL コンテキストなどの初期化
+
+/**
+ * WebGL コンテキストを生成して初期化する
+ */
 ParallelCoordCluster.prototype.initCanvas = function(){
     this.gl = this.canvas.getContext('webgl');
     this.glReady = this.gl !== null && this.gl !== undefined;
@@ -297,7 +329,10 @@ ParallelCoordCluster.prototype.initCanvas = function(){
     }).bind(this), false);
     return this;
 };
-// canvas に矩形とか描けるやーつ
+
+/**
+ * WebGL の設定やシェーダを初期化する
+ */
 ParallelCoordCluster.prototype.resetCanvas = function(){
     var gl = this.gl;
     var mat = this.mat;
@@ -336,7 +371,10 @@ ParallelCoordCluster.prototype.resetCanvas = function(){
     var vPosition = create_vbo(gl, position);
     this.vboList = [vPosition];
 };
-// ベジェ曲線をラインで描く
+
+/**
+ * ベジェ曲線をラインで描画するための初期化処理を行う
+ */
 ParallelCoordCluster.prototype.resetBezierCanvas = function(){
     var i, j;
     var gl = this.gl;
@@ -396,7 +434,10 @@ ParallelCoordCluster.prototype.resetBezierCanvas = function(){
     this.bVboList = [vPosition];
     return this;
 };
-// ベジェ曲線をジオメトリとして描く
+
+/**
+ * ベジェ曲線をジオメトリとして描画するための初期化を行う
+ */
 ParallelCoordCluster.prototype.resetBezierGeometryCanvas = function(){
     var i, j;
     var gl = this.gl;
@@ -473,7 +514,10 @@ ParallelCoordCluster.prototype.resetBezierGeometryCanvas = function(){
     this.bgVboList = [vPosition, vSigns];
     return this;
 };
-// 初期化などが全て終わっている前提の描画実行部分
+
+/**
+ * 初期化が全て完了したあとに呼び出す描画プロセス
+ */
 ParallelCoordCluster.prototype.drawCanvas = function(){
     var a, b, c, d, e, f, i, j, k, l, m, n, o;
     var p, q, r, s, t, u, v, w, x, y;
@@ -696,7 +740,10 @@ ParallelCoordCluster.prototype.drawCanvas = function(){
 
     return this;
 };
-// 描画対象となる矩形を得る
+
+/**
+ * Canvas 上の描画対象エリアとなる矩形の情報を取得する
+ */
 ParallelCoordCluster.prototype.getDrawRect = function(){
     var w = this.parentElement.clientWidth - this.PARALLEL_PADDING_H * 2;
     var h = this.parentElement.clientHeight - this.PARALLEL_PADDING_V * 2 - this.SVG_TEXT_BASELINE;
@@ -711,15 +758,27 @@ ParallelCoordCluster.prototype.getDrawRect = function(){
         mny: this.mouseNormalY
     };
 };
-// ステートをデータ構造として返す
+
+/**
+ * 現在のステートを返す
+ */
 ParallelCoordCluster.prototype.getStateData = function(){
     return this.stateData;
 };
-// ステートを JSON で返す
+
+/**
+ * 現在のステートを JSON で返す
+ */
 ParallelCoordCluster.prototype.getStateJSON = function(){
     return JSON.stringify(this.stateData);
 };
-// 全軸上のその時点での選択範囲・input に返すべき情報をJSONにして返す
+
+/**
+ * 全軸上のその時点での選択範囲・input に返すべき情報をオブジェクトとして返す
+ * @param {Object}  [currentAxis]  - カレントな軸を指定する場合に渡す
+ * @param {Boolean} [isDragEvent]  - ドラッグイベント由来のものかどうか
+ * @param {Boolean} [isSelectAxis] - 選択操作由来のものかどうか
+ */
 ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDragEvent, isSelectAxis){
     var f, e, i, j, k, l, v, w;
     var min, max, len;
@@ -811,6 +870,11 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
     this.setClusterColor(e);
     return this.stateData.axis;
 };
+
+/**
+ * 指定された軸上のクラスタに色を割り当てる
+ * @param {Object} selectedAxis - 選択している軸
+ */
 ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
     var i, j, k, l, m, n, o, p, q, r, s, t;
     var a, b, c, d;
@@ -966,6 +1030,13 @@ ParallelCoordCluster.prototype.setClusterColor = function(selectedAxis){
     }
 
 };
+
+/**
+ * 色を線形に補間して返す
+ * @param {Array}  a - 基準色A
+ * @param {Array}  b - 基準色B
+ * @param {Number} t - 係数（0.0 ~ 1.0）
+ */
 ParallelCoordCluster.prototype.mixColor = function(a, b, t){
     var s = 1.0 - t;
     return [
@@ -975,7 +1046,12 @@ ParallelCoordCluster.prototype.mixColor = function(a, b, t){
     ];
 };
 
-// axis ===================================================================
+/**
+ * @constructor
+ * @classdesc 軸の情報や挙動を定義しているクラス
+ * @param     {ParallelCoordCluster} parent - 親となる ParallelCoordCluster クラスのインスタンス
+ * @param     {Number}               index  - 軸のインデックス
+ */
 function Axis(parent, index){
     var i, j;
     var axisData = parent.stateData.axis[index];
@@ -1095,7 +1171,12 @@ function Axis(parent, index){
     this.inputWrapper.appendChild(tempWrapper);
     this.parent.footerWrap.appendChild(this.inputWrapper);
 }
-// 軸を設定して SVG を生成して描画する
+
+/**
+ * 軸を設定して SVG を生成し描画する
+ * @param {String} titleString - 軸タイトルに指定する文字列
+ * @param {Array}  minmax      - 配列に格納した最小値と最大値（[最小値, 最大値]）
+ */
 Axis.prototype.update = function(titleString, minmax){
     var i, j;
     var path = null;
@@ -1230,13 +1311,19 @@ Axis.prototype.update = function(titleString, minmax){
     this.updateSvg.bind(this)();
     this.setBrushed.bind(this)(this.brushInput);
 };
-// input 要素を更新する
+
+/**
+ * input 要素に軸自身が持つ値を割り当てる
+ */
 Axis.prototype.updateInput = function(){
     this.inputMin.value = this.min;
     this.inputMax.value = this.max;
     this.inputSigma.value = this.sigma;
 };
-// 軸上の SVG 要素の外観や大きさを、その時点での this が持つプロパティに応じてアップデートする
+
+/**
+ * 軸上の SVG 要素の外観や大きさを、その時点での this が持つプロパティに応じてアップデートする
+ */
 Axis.prototype.updateSvg = function(){
     var fill, stroke, display;
     var top, bottom;
@@ -1300,6 +1387,11 @@ Axis.prototype.updateSvg = function(){
     );
     this.brushBottomRectSvg.setAttribute('style', display);
 };
+
+/**
+ * 軸に対して Brushing 状態を反映する
+ * @param {Object} brush - minmax 情報を格納したオブジェクト（{min: 0, max: 0}）
+ */
 Axis.prototype.setBrushed = function(brush){
     if(!brush || brush.min === null || brush.max === null){return;}
     var t = this.max - this.min;
@@ -1311,7 +1403,10 @@ Axis.prototype.setBrushed = function(brush){
     this.onBrushRect = false;
     this.updateSvg();
 };
-// 軸を削除するため listener を remove して HTML を空にする
+
+/**
+ * 軸を削除するため listener を remove して HTML を空にする
+ */
 Axis.prototype.delete = function(){
     var i, j;
     if(this.listeners.length > 0){
@@ -1327,9 +1422,10 @@ Axis.prototype.delete = function(){
     this.parent.footerWrap.removeChild(this.inputWrapper);
     this.inputWrapper = null;
 };
-// 軸を描画している実行部分
-// 現状は軸を minmax の差分を用いて 10 分割している
-// つまり、最小値も最大値も、きれいに軸の両端にぴったりと配置される
+
+/**
+ * SVG 要素を生成して軸を描画する
+ */
 Axis.prototype.drawScale = function(){
     var i, j, k, l, m;
     var text, path, bbox, dummy;
@@ -1367,16 +1463,25 @@ Axis.prototype.drawScale = function(){
         this.svg.appendChild(path);
     }
 };
-// 軸のスタイルを変更して直接横位置を設定する（非推奨）
+
+/**
+ * 軸のスタイルを変更して直接横位置を設定する
+ */
 Axis.prototype.setPosition = function(x){
     this.svg.style.left = x;
 };
-// 自身の minmax プロパティを直接設定する（非推奨）
+
+/**
+ * 自身の minmax プロパティを直接設定する
+ */
 Axis.prototype.setMinMax = function(min, max){
     this.min = min;
     this.max = max;
 };
-// 自身に格納しているクラスタの内容から minmax を求めて自身に設定する
+
+/**
+ * 自身に格納しているクラスタの内容から minmax を求めて自身に設定する
+ */
 Axis.prototype.getClustersMinMax = function(){
     if(this.clusters.length === 0){return;}
     var i, j, k, l;
@@ -1394,25 +1499,76 @@ Axis.prototype.getClustersMinMax = function(){
     this.max = l;
     return this;
 };
-// 正規化していない軸の Left（ピクセル単位、0 始点）
+
+/**
+ * 正規化していない軸の Left（ピクセル単位、0 始点）
+ */
 Axis.prototype.getHorizontalRange = function(){
     // horizon range
     var i = parseFloat(this.svg.style.left.replace(/px$/));
     return i + (this.parent.SVG_DEFAULT_WIDTH / 2) + (this.index * this.parent.SVG_DEFAULT_WIDTH) - this.parent.PARALLEL_PADDING_H;
 };
-// 正規化した軸の横位置（0 ~ 1）
+
+/**
+ * 正規化した軸の横位置（0 ~ 1）
+ */
 Axis.prototype.getNomalizeHorizontalRange = function(){
     // horizon normalize range
     var i = this.getHorizontalRange();
     return i / this.parent.drawRect.width;
 };
-// 軸タイトルのドラッグ開始イベント
+
+/**
+ * 軸上の選択範囲を正規化した値として返す
+ */
+Axis.prototype.getBrushedRange = function(){
+    if(!this.brushed){return null;}
+    var h = this.height - this.parent.SVG_TEXT_BASELINE;
+    var t = this.parent.AXIS_BRUSHED_EDGE_HEIGHT - this.parent.SVG_TEXT_BASELINE;
+    var top    = Math.max(0, Math.min(1.0, (this.brushTopRectSvg.getBBox().y    + t) / h));
+    var bottom = Math.max(0, Math.min(1.0, (this.brushBottomRectSvg.getBBox().y + t) / h));
+    var returnObject = {
+        top: top,
+        bottom: bottom,
+        index: this.index,
+        length: bottom - top
+    };
+    return returnObject;
+};
+
+/**
+ * クラスタの選択状態をbrushを元に判定して配列で返す
+ */
+Axis.prototype.getClusterBrushed = function(){
+    var i, j, v, a = [];
+    var min, max, len;
+    if(!this.brushed){return new Array(this.clusters.length);}
+    v = this.getBrushedRange();
+    for(i = 0, j = this.clusters.length; i < j; ++i){
+        len = this.max - this.min;
+        min = len * (1.0 - v.bottom) + this.min;
+        max = len * (1.0 - v.top)    + this.min;
+        a.push((
+            (this.clusters[i].min <= min && this.clusters[i].max >= min) ||
+            (this.clusters[i].min <= max && this.clusters[i].max >= max) ||
+            (this.clusters[i].min >= min && this.clusters[i].max <= max)
+        ));
+    }
+    return a;
+};
+
+/**
+ * 軸タイトルのドラッグ開始イベント
+ */
 Axis.prototype.dragStart = function(eve){
     this.left = eve.pageX;
     this.onAxisTitleDrag = true;
     this.titleDragStart = Date.now();
 };
-// 軸タイトルのドラッグイベント
+
+/**
+ * 軸タイトルのドラッグイベント
+ */
 Axis.prototype.dragMove = function(eve){
     if(!this.onAxisTitleDrag){return;}
     var x = eve.pageX - this.left;
@@ -1429,6 +1585,10 @@ Axis.prototype.dragMove = function(eve){
     }
 };
 // 軸タイトルのドラッグ終了イベント
+
+/**
+ * 軸タイトルのドラッグイベント
+ */
 Axis.prototype.dragEnd = function(eve){
     this.onAxisTitleDrag = false;
     if(Date.now() - this.titleDragStart > 100){
@@ -1441,6 +1601,10 @@ Axis.prototype.dragEnd = function(eve){
     }
 };
 // 軸上でのドラッグ開始（Brush開始）イベント
+
+/**
+ * 軸タイトルのドラッグイベント
+ */
 Axis.prototype.dragAxisStart = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     this.brushed = true;
@@ -1450,6 +1614,10 @@ Axis.prototype.dragAxisStart = function(eve){
     this.brushEndHeight = this.brushDefaultHeight = this.brushStartHeight;
 };
 // 軸上でのドラッグ（Brush中）イベント
+
+/**
+ * 軸タイトルのドラッグイベント
+ */
 Axis.prototype.dragAxisMove = function(eve){
     if(!this.onBrush){return;}
     if(this.eventCurrentSvg !== this.axisRectSvg){return;}
@@ -1465,6 +1633,10 @@ Axis.prototype.dragAxisMove = function(eve){
     this.updateSvg.bind(this)();
 };
 // 軸上でのドラッグ終了（Brush完了）イベント
+
+/**
+ * 軸タイトルのドラッグイベント
+ */
 Axis.prototype.dragAxisEnd = function(eve){
     if(this.eventCurrentSvg !== this.axisRectSvg){return;}
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
@@ -1486,7 +1658,10 @@ Axis.prototype.dragAxisEnd = function(eve){
     var axisjson = this.parent.getAllBrushedRange(this, true);
     if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
-// 軸の上下のハンドルをドラッグ開始
+
+/**
+ * 軸の上下のハンドルをドラッグ開始
+ */
 Axis.prototype.dragAxisHandleStart = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
     var y = eve.currentTarget.getBBox().y + this.parent.AXIS_BRUSHED_EDGE_HEIGHT;
@@ -1504,7 +1679,10 @@ Axis.prototype.dragAxisHandleStart = function(eve){
         this.brushEndHeight = v.bottom;
     }
 };
-// 軸上の選択済みエリアをドラッグ開始
+
+/**
+ * 軸上の選択済みエリアをドラッグ開始
+ */
 Axis.prototype.dragAxisBrushStart = function(eve){
     this.onBrushRect = true;
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
@@ -1512,7 +1690,10 @@ Axis.prototype.dragAxisBrushStart = function(eve){
     this.brushRectDefaultHeight = n;
     this.eventCurrentSvg = this.brushRectSvg;
 };
-// 軸上の選択済みエリアをドラッグ中
+
+/**
+ * 軸上の選択済みエリアをドラッグ中
+ */
 Axis.prototype.dragAxisBrushMove = function(eve){
     if(this.eventCurrentSvg !== this.brushRectSvg){return;}
     if(!this.onBrushRect){return;}
@@ -1531,7 +1712,10 @@ Axis.prototype.dragAxisBrushMove = function(eve){
     this.brushRectDefaultHeight += offset;
     this.updateSvg.bind(this)();
 };
-// 軸上の選択済みエリアをドラッグ終了
+
+/**
+ * 軸上の選択済みエリアをドラッグ終了
+ */
 Axis.prototype.dragAxisBrushEnd = function(eve){
     if(this.eventCurrentSvg !== this.brushRectSvg){return;}
     if(!this.onBrushRect){return;}
@@ -1540,7 +1724,10 @@ Axis.prototype.dragAxisBrushEnd = function(eve){
     var axisjson = this.parent.getAllBrushedRange(this, true);
     if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
 };
-// dom の input の change イベント
+
+/**
+ * dom の input min の change イベント
+ */
 Axis.prototype.domInputMin = function(eve){
     this.min = parseFloat(eve.currentTarget.value);
     if(!isNaN(this.min)){
@@ -1548,7 +1735,10 @@ Axis.prototype.domInputMin = function(eve){
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
 };
-// dom の input の change イベント
+
+/**
+ * dom の input max の change イベント
+ */
 Axis.prototype.domInputMax = function(eve){
     this.max = parseFloat(eve.currentTarget.value);
     if(!isNaN(this.max)){
@@ -1556,7 +1746,10 @@ Axis.prototype.domInputMax = function(eve){
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
 };
-// dom の input の change イベント
+
+/**
+ * dom の input sigma の change イベント
+ */
 Axis.prototype.domInputSigma = function(eve){
     this.sigma = parseFloat(eve.currentTarget.value);
     if(!isNaN(this.sigma)){
@@ -1564,61 +1757,54 @@ Axis.prototype.domInputSigma = function(eve){
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
 };
+
+/**
+ * dom の input sigma のマウスダウンイベント
+ */
 Axis.prototype.domInputSigmaDown = function(eve){
     var e = eve.currentTarget;
     e.setAttribute('id', 'trued');
 };
+
+/**
+ * dom の input sigma のマウスムーブ
+ */
 Axis.prototype.domInputSigmaMove = function(eve){
     var e = eve.currentTarget;
     if(e.id === 'trued'){
         e.value = (eve.offsetX / e.offsetWidth) * (0.1 - 0.001);
     }
 };
+
+/**
+ * dom の input sigma のマウスアップ
+ */
 Axis.prototype.domInputSigmaUp = function(eve){
     var e = eve.currentTarget;
     e.setAttribute('id', '');
     this.domInputSigma({currentTarget: e});
 };
-// 軸上の選択範囲を正規化した値として返す
-Axis.prototype.getBrushedRange = function(){
-    if(!this.brushed){return null;}
-    var h = this.height - this.parent.SVG_TEXT_BASELINE;
-    var t = this.parent.AXIS_BRUSHED_EDGE_HEIGHT - this.parent.SVG_TEXT_BASELINE;
-    var top    = Math.max(0, Math.min(1.0, (this.brushTopRectSvg.getBBox().y    + t) / h));
-    var bottom = Math.max(0, Math.min(1.0, (this.brushBottomRectSvg.getBBox().y + t) / h));
-    var returnObject = {
-        top: top,
-        bottom: bottom,
-        index: this.index,
-        length: bottom - top
-    };
-    return returnObject;
-};
-// クラスタの選択状態をbrushを元に判定して配列で返す
-Axis.prototype.getClusterBrushed = function(){
-    var i, j, v, a = [];
-    var min, max, len;
-    if(!this.brushed){return new Array(this.clusters.length);}
-    v = this.getBrushedRange();
-    for(i = 0, j = this.clusters.length; i < j; ++i){
-        len = this.max - this.min;
-        min = len * (1.0 - v.bottom) + this.min;
-        max = len * (1.0 - v.top)    + this.min;
-        a.push((
-            (this.clusters[i].min <= min && this.clusters[i].max >= min) ||
-            (this.clusters[i].min <= max && this.clusters[i].max >= max) ||
-            (this.clusters[i].min >= min && this.clusters[i].max <= max)
-        ));
-    }
-    return a;
-};
 
+/**
+ * 小数点以下の桁数をフォーマットする
+ */
 Axis.prototype.formatFloat = function(number, n){
     var p = Math.pow(10, n);
     return Math.round(number * p) / p;
 };
 
-// cluster ================================================================
+/**
+ * @constructor
+ * @classdesc クラスタの情報を管理するクラス
+ * @param     {Axis}    axis     - 親となる Axis クラスのインスタンス
+ * @param     {Number}  index    - 自分自身のインデックス
+ * @param     {Boolean} selected - 選択常態化どうかのフラグ
+ * @param     {Number}  out      - 出力用データ（現状未使用）
+ * @param     {Number}  min      - 最小値
+ * @param     {Number}  max      - 最大値
+ * @param     {Number}  top      - 突端部分（クラスタの菱型の左右の突端部分が全体の高さのうちのどこにあるか 0.0 ~ 1.0）
+ * @param     {Array}   color    - クラスタの色
+ */
 function Cluster(axis, index, selected, out, min, max, top, color){
     var c;
     this.parentAxis = axis;   // 自分自身が所属する軸インスタンス
@@ -1629,16 +1815,12 @@ function Cluster(axis, index, selected, out, min, max, top, color){
     this.max = max;           // 自分自身の最大値
     this.top = top;           // 自分自身の突出頂点部分の値
     this.color = color || [0, 0, 0, 1]; // 色
-    // if(!this.parentAxis.putData.right){
-    //     c = this.getInputPower();
-    // }else{
-    //     c = this.getOutputPower();
-    // }
-    // this.color[3] *= c;
-    // this.color[3] = this.color[3] * 0.9 + 0.1;
     return this;
 }
-// 正規化された、クラスタの縦方向の位置の上辺と下辺
+
+/**
+ * 正規化された、クラスタの縦方向の位置の上辺と下辺を取得する
+ */
 Cluster.prototype.getNormalizeRange = function(){
     // vertical normalize range
     var i = this.parentAxis.max - this.parentAxis.min;
@@ -1650,7 +1832,10 @@ Cluster.prototype.getNormalizeRange = function(){
         percentage: (this.max - this.min) / (this.parentAxis.max - this.parentAxis.min)
     };
 };
-// クラスタ自身にインプットされている量/軸
+
+/**
+ * クラスタ自身にインプットされている量/軸
+ */
 Cluster.prototype.getInputPower = function(){
     var i, j;
     var data = this.parentAxis.putData.left;
@@ -1661,7 +1846,10 @@ Cluster.prototype.getInputPower = function(){
     }
     return j / this.parentAxis.dataLength;
 };
-// クラスタ自身がアウトプットしている量/軸
+
+/**
+ * クラスタ自身がアウトプットしている量/軸
+ */
 Cluster.prototype.getOutputPower = function(){
     var i, j;
     var data = this.parentAxis.putData.right;
@@ -1673,26 +1861,10 @@ Cluster.prototype.getOutputPower = function(){
     }
     return j / this.parentAxis.dataLength;
 };
-// クラスタ自身がアウトプットしているラインの各量の比率
-Cluster.prototype.getOutputLinePower = function(){
-    var i, a = [], b = [];
-    var lData = this.parentAxis.putData.left;
-    var rData = this.parentAxis.putData.right;
-    if(!lData && !rData){return {left: null, right :null};}
-    if(lData){
-        for(i = 0; i < lData.length; ++i){
-            a.push(lData[i][this.index] / this.parentAxis.dataLength);
-        }
-    }
-    if(rData){
-        for(i = 0; i < rData[this.index].length; ++i){
-            b.push(rData[this.index][i] / this.parentAxis.dataLength);
-        }
-    }
-    if(a.length === 0){a = null;}
-    if(b.length === 0){b = null;}
-    return {left: a, right: b};
-};
+
+/**
+ * クラスタ自身に入ってきているラインの各量の比率
+ */
 Cluster.prototype.getInputLinePower = function(){
     var i, j, k, a = [], b = [];
     var lData = this.parentAxis.putData.left;
@@ -1722,21 +1894,41 @@ Cluster.prototype.getInputLinePower = function(){
     if(b.length === 0){b = null;}
     return {left: a, right: b};
 };
+
+/**
+ * クラスタ自身がアウトプットしているラインの各量の比率
+ */
+Cluster.prototype.getOutputLinePower = function(){
+    var i, a = [], b = [];
+    var lData = this.parentAxis.putData.left;
+    var rData = this.parentAxis.putData.right;
+    if(!lData && !rData){return {left: null, right :null};}
+    if(lData){
+        for(i = 0; i < lData.length; ++i){
+            a.push(lData[i][this.index] / this.parentAxis.dataLength);
+        }
+    }
+    if(rData){
+        for(i = 0; i < rData[this.index].length; ++i){
+            b.push(rData[this.index][i] / this.parentAxis.dataLength);
+        }
+    }
+    if(a.length === 0){a = null;}
+    if(b.length === 0){b = null;}
+    return {left: a, right: b};
+};
+
+/**
+ * クラスタを選択状態にする
+ */
 Cluster.prototype.setSelected = function(select){
     this.selected = select;
 };
+
+/**
+ * クラスタに色を設定する
+ */
 Cluster.prototype.setColor = function(color){
     this.color = color;
 };
-
-// util ===================================================================
-// json ロードするやーつ
-function loadJSON(url, callback){
-    var xml = new XMLHttpRequest();
-    xml.open('GET', url, true);
-    xml.onload = function(){
-        callback(xml.responseText);
-    };
-    xml.send();
-}
 
