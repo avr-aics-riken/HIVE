@@ -1,6 +1,6 @@
 /**
- * @file VolumeClusterAnalyzer_Lua.h
- * VolumeClusterAnalyzer Luaラッパー
+ * @file VolumeClustering_Lua.h
+ * VolumeClustering Luaラッパー
  */
 #ifndef _VOLUMECLUSTERING_LUA_H_
 #define _VOLUMECLUSTERING_LUA_H_
@@ -10,7 +10,7 @@
 #include "BufferVolumeData_Lua.h"
 
 /**
- * VolumeClusterAnalyzer Luaラッパー
+ * VolumeClustering Luaラッパー
  */
 class VolumeClustering_Lua : public VolumeClustering
 {
