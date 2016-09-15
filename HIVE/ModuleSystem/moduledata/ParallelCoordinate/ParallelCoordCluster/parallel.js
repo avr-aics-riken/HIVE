@@ -1,40 +1,8 @@
 /**
- * setOption
- * @param {} xx -
- * @param {} [] -
- */
-/* ****************************************************************************
- * options[optional] === {
- *     padding         : <number> Canvas 内部に設ける描画領域のパディング
- *     svg: {
- *         defaultwidth: <number> クラスタとして描かれる軸周辺の矩形の幅
- *         textbaseline: <number> 軸名描画領域の高さを決めるためのベースライン
- *         textsize    : <string> 軸タイトルのフォントサイズ
- *         scalesize   : <string> 軸目盛のフォントサイズ
- *     },
- *     axis: {
- *         linewidth   : <number> 軸の線の幅
- *         linecolor   : <string> 軸の色
- *         scalewidth  : <number> 軸の目盛線の横方向への伸び幅
- *     },
- *     bezier: {
- *         division    : <number> ベジェ曲線ポリゴンの分割数
- *         linescale   : <number> ベジェ曲線ポリゴンの厚み（高さ）係数
- *     },
- *     plot: {
- *         width       : <number> Scatter plot エリアの幅（現状固定するので）
- *         color       : <string> 矩形に対して適用する色 CSS 準拠
- *     },
- *     callback: {
- *         selected    : <function> brush 時のコールバック
- *     }
- * }
- * ************************************************************************* */
-/**
  * @constructor
  * @classdesc パラレルコーディネートを Cluster モードで描画するクラス
  * @param     {HTMLElement} parentElement - 埋め込み対象となる HTMLElement
- * @param     {Object}      [option]      - 初期化時のオプション
+ * @param     {Object}      [option]      - 初期化時のオプション（ファイルの末尾に詳細）
  */
 function ParallelCoordCluster(parentElement, option){
     this.width = 0;
@@ -67,7 +35,6 @@ function ParallelCoordCluster(parentElement, option){
     this.plotElement.appendChild(this.plotCanvas);      // Canvas を親 DOM 内の外装に append
     this.plotElement.appendChild(this.plotLayer);       // Layer を親 DOM 内の外装に append
 
-    // callback function
     this.selectedCallback = null;
 
     this.gl = null;
@@ -99,10 +66,6 @@ function ParallelCoordCluster(parentElement, option){
     this.PLOT_AREA_WIDTH = 1;
     this.PLOT_RECT_COLOR = 'deeppink';
     this.FOOTER_AREA_HEIGHT = 60;
-
-    // binding
-    this.setOption = this.setOption.bind(this);
-    this.checkOption = this.checkOption.bind(this);
 
     // option setting
     this.setOption(option);
@@ -155,7 +118,7 @@ function ParallelCoordCluster(parentElement, option){
     this.mouseNormalX = 0;
     this.mouseNormalY = 0;
     this.selectedAxis = false; // 軸ごと選択されたときの情報
-    this.selectedArray = []; // brush されたときの情報
+    this.selectedArray = [];   // brush されたときの情報
 }
 /**
  * オプションをまとめてセットする
@@ -1107,11 +1070,11 @@ function Axis(parent, index){
             this, // axis 自身
             i,    // axis のインデックス
             axisData.cluster[i].selected, // 選択状態
-            axisData.cluster[i].top,      // temp ※アウトの仕様がまだ未確定なので枠のみnullにならないようにそのままにしておく
+            axisData.cluster[i].top,      // temp
             axisData.cluster[i].min,      // min
             axisData.cluster[i].max,      // max
             axisData.cluster[i].top,      // top
-            null                          // ここは将来的に色が入る可能性がある
+            null                          // color
         ));
         this.parent.stateData.axis[index].cluster[i].color[0] = this.clusters[i].color[0];
         this.parent.stateData.axis[index].cluster[i].color[1] = this.clusters[i].color[1];
@@ -1123,7 +1086,7 @@ function Axis(parent, index){
         this.min = axisData.range.min;
         this.max = axisData.range.max;
     }else{
-        this.getClustersMinMax();    // クラスタの minmax とってきて自身に適用
+        this.getClustersMinMax(); // クラスタの minmax とってきて自身に適用
     }
     this.svg.style.position = 'relative';
     this.svg.style.overflow = 'visible';
@@ -1144,7 +1107,6 @@ function Axis(parent, index){
     this.inputMax.value = this.max;
     this.inputSigma = document.createElement('input');
     this.inputSigma.style.width = '90%';
-    // this.inputSigma.type = 'number';
     this.inputSigma.type = 'range';
     this.inputSigma.min = 0.001;
     this.inputSigma.max = 0.1;
@@ -1264,14 +1226,12 @@ Axis.prototype.update = function(titleString, minmax){
     this.svg.appendChild(this.brushRectSvg);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※上端
     this.brushTopRectSvg = this.parent.NS('path');
-    // this.brushTopRectSvg.setAttribute('fill', 'transparent');
     this.brushTopRectSvg.setAttribute('fill', this.parent.AXIS_BRUSH_HANDLE_COLOR);
     this.brushTopRectSvg.setAttribute('stroke', 'transparent');
     this.brushTopRectSvg.setAttribute('style', 'cursor: row-resize; display: none;');
     this.svg.appendChild(this.brushTopRectSvg);
     // 軸上の選択領域の上下の先端部分（不可視だがBrush領域を拡縮するのに使う）※下端
     this.brushBottomRectSvg = this.parent.NS('path');
-    // this.brushBottomRectSvg.setAttribute('fill', 'transparent');
     this.brushBottomRectSvg.setAttribute('fill', this.parent.AXIS_BRUSH_HANDLE_COLOR);
     this.brushBottomRectSvg.setAttribute('stroke', 'transparent');
     this.brushBottomRectSvg.setAttribute('style', 'cursor: row-resize; display: none;');
@@ -1584,10 +1544,9 @@ Axis.prototype.dragMove = function(eve){
         this.parent.drawCanvas();
     }
 };
-// 軸タイトルのドラッグ終了イベント
 
 /**
- * 軸タイトルのドラッグイベント
+ * 軸タイトルのドラッグ終了イベント
  */
 Axis.prototype.dragEnd = function(eve){
     this.onAxisTitleDrag = false;
@@ -1600,10 +1559,9 @@ Axis.prototype.dragEnd = function(eve){
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
 };
-// 軸上でのドラッグ開始（Brush開始）イベント
 
 /**
- * 軸タイトルのドラッグイベント
+ * 軸上でのドラッグ開始（Brush開始）イベント
  */
 Axis.prototype.dragAxisStart = function(eve){
     var h = this.height - this.parent.SVG_TEXT_BASELINE;
@@ -1613,10 +1571,9 @@ Axis.prototype.dragAxisStart = function(eve){
     this.brushStartHeight = Math.max(0, Math.min(1.0, (eve.offsetY - this.parent.SVG_TEXT_BASELINE) / h));
     this.brushEndHeight = this.brushDefaultHeight = this.brushStartHeight;
 };
-// 軸上でのドラッグ（Brush中）イベント
 
 /**
- * 軸タイトルのドラッグイベント
+ * 軸上でのドラッグ（Brush中）イベント
  */
 Axis.prototype.dragAxisMove = function(eve){
     if(!this.onBrush){return;}
@@ -1632,10 +1589,9 @@ Axis.prototype.dragAxisMove = function(eve){
     }
     this.updateSvg.bind(this)();
 };
-// 軸上でのドラッグ終了（Brush完了）イベント
 
 /**
- * 軸タイトルのドラッグイベント
+ * 軸上でのドラッグ終了（Brush完了）イベント
  */
 Axis.prototype.dragAxisEnd = function(eve){
     if(this.eventCurrentSvg !== this.axisRectSvg){return;}
@@ -1807,13 +1763,13 @@ Axis.prototype.formatFloat = function(number, n){
  */
 function Cluster(axis, index, selected, out, min, max, top, color){
     var c;
-    this.parentAxis = axis;   // 自分自身が所属する軸インスタンス
-    this.index = index;       // 自分自身のインデックス
-    this.selected = selected; // 
-    this.out = out;           // 
-    this.min = min;           // 自分自身の最小値
-    this.max = max;           // 自分自身の最大値
-    this.top = top;           // 自分自身の突出頂点部分の値
+    this.parentAxis = axis;             // 自分自身が所属する軸インスタンス
+    this.index = index;                 // 自分自身のインデックス
+    this.selected = selected;           // 選択状態かどうかのフラグ
+    this.out = out;                     // 出力（現状未使用）
+    this.min = min;                     // 自分自身の最小値
+    this.max = max;                     // 自分自身の最大値
+    this.top = top;                     // 自分自身の突出頂点部分の値
     this.color = color || [0, 0, 0, 1]; // 色
     return this;
 }
@@ -1932,3 +1888,30 @@ Cluster.prototype.setColor = function(color){
     this.color = color;
 };
 
+/* ****************************************************************************
+ * options[optional] === {
+ *     padding         : <number> Canvas 内部に設ける描画領域のパディング
+ *     svg: {
+ *         defaultwidth: <number> クラスタとして描かれる軸周辺の矩形の幅
+ *         textbaseline: <number> 軸名描画領域の高さを決めるためのベースライン
+ *         textsize    : <string> 軸タイトルのフォントサイズ
+ *         scalesize   : <string> 軸目盛のフォントサイズ
+ *     },
+ *     axis: {
+ *         linewidth   : <number> 軸の線の幅
+ *         linecolor   : <string> 軸の色
+ *         scalewidth  : <number> 軸の目盛線の横方向への伸び幅
+ *     },
+ *     bezier: {
+ *         division    : <number> ベジェ曲線ポリゴンの分割数
+ *         linescale   : <number> ベジェ曲線ポリゴンの厚み（高さ）係数
+ *     },
+ *     plot: {
+ *         width       : <number> Scatter plot エリアの幅（現状固定するので）
+ *         color       : <string> 矩形に対して適用する色 CSS 準拠
+ *     },
+ *     callback: {
+ *         selected    : <function> brush 時のコールバック
+ *     }
+ * }
+ * ************************************************************************* */
