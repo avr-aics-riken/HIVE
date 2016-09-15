@@ -9,6 +9,5 @@
         {"name": "ipcmode", "type": "bool", "value": false, "hole":false}
 	],
 	"output": [
-        {"name": "Image", "type": "BufferImageData"}
 	]
 }

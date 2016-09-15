@@ -74,7 +74,3 @@ function ImageView:Do()
     end
     return true
 end
-
-function ImageView:image()
-    return self.value.image
-end
