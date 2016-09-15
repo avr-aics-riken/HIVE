@@ -1426,6 +1426,7 @@ Axis.prototype.drawScale = function(){
 
 /**
  * 軸のスタイルを変更して直接横位置を設定する
+ * @param {Number} x - 設定する値
  */
 Axis.prototype.setPosition = function(x){
     this.svg.style.left = x;
@@ -1433,6 +1434,8 @@ Axis.prototype.setPosition = function(x){
 
 /**
  * 自身の minmax プロパティを直接設定する
+ * @param {Number} min - 設定する最小値
+ * @param {Number} max - 設定する最大値
  */
 Axis.prototype.setMinMax = function(min, max){
     this.min = min;
@@ -1875,7 +1878,7 @@ Cluster.prototype.getOutputLinePower = function(){
 };
 
 /**
- * クラスタを選択状態にする
+ * クラスタの選択状態を変更する
  */
 Cluster.prototype.setSelected = function(select){
     this.selected = select;
