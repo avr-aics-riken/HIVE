@@ -65,7 +65,7 @@ function ParallelCoordCluster(parentElement, option){
     this.BEZIER_LINE_SCALE = 3.0;
     this.PLOT_AREA_WIDTH = 1;
     this.PLOT_RECT_COLOR = 'deeppink';
-    this.FOOTER_AREA_HEIGHT = 60;
+    this.FOOTER_AREA_HEIGHT = 70;
 
     // option setting
     this.setOption(option);
