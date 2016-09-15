@@ -166,6 +166,13 @@ void VolumeClustering::Clear() {
 }
 
 
+/**
+ * Sigmaの値の設定
+ * @param axis コンポーネント(軸)指定
+ * @param sigram シグマ値
+ * @retval 1 成功
+ * @retval 0 失敗
+ */
 int VolumeClustering::SetSigma(int axis, float sigma) {
     if (axis >= m_sigmaVal.size()) {
         return 0;
@@ -276,11 +283,20 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
     return true;
 }
 
+/**
+ * コンポーネント(軸)の数取得
+ */
 int VolumeClustering::GetAxisNum()
 {
     return static_cast<int>(m_axisClusters.size());
 }
 
+/**
+ * コンポーネントのクラスター数の取得
+ * @param axis コンポーネント(軸)指定
+ * @retval コンポーネントの数
+ * @retval 0 失敗
+ */
 int VolumeClustering::GetClusterNum(int axis)
 {
     if (axis >= GetAxisNum()) {
@@ -289,6 +305,12 @@ int VolumeClustering::GetClusterNum(int axis)
     return static_cast<int>(m_axisClusters[axis].size());
 }
 
+/**
+ * コンポーネントのクラスター情報の取得
+ * @param axis コンポーネント(軸)指定
+ * @param cluster クラスター番号指定
+ * @retval クラスター情報
+ */
 const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int cluster)
 {
     static Cluster empty;
@@ -303,6 +325,13 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
     return m_axisClusters[axis][cluster];
 }
 
+/**
+ * クラスターごとの接続密度情報の取得
+ * @param axis コンポーネント(軸)指定
+ * @param cluster クラスター番号指定
+ * @param nextCluster 隣接するクラスター番号指定
+ * @retval 強度情報
+ */
 int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
 {    
      if (axis >= GetAxisNum() - 1) {
@@ -322,6 +351,11 @@ int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
     return cnt;
 }
 
+/**
+ * ボリュームの最小値取得
+ * @param axis コンポーネント(軸)指定
+ * @retval 最小値
+ */
 float VolumeClustering::GetVolumeMin(int axis)
 {
     if (axis >= GetAxisNum()) {
@@ -331,6 +365,11 @@ float VolumeClustering::GetVolumeMin(int axis)
     return m_minVal[axis];
 }
 
+/**
+ * ボリュームの最大値取得
+ * @param axis コンポーネント(軸)指定
+ * @retval 最大値
+ */
 float VolumeClustering::GetVolumeMax(int axis)
 {
     if (axis >= GetAxisNum()) {

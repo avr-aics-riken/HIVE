@@ -170,6 +170,7 @@ VolumeScatterPlot::~VolumeScatterPlot()
 {
 }
 
+/// 散布図画像の消去
 void VolumeScatterPlot::ClearImage()
 {
     unsigned char* buffer = m_imagebuffer->ImageBuffer()->GetBuffer();
@@ -298,6 +299,11 @@ bool VolumeScatterPlot::Execute(BufferVolumeData* volume, int axis1, int axis2)
  
     return true;
 }
+
+/**
+ * 散布図画像の取得
+ * @retval 画像情報
+ */
 
 BufferImageData* VolumeScatterPlot::GetImageBuffer()
 {
