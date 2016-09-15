@@ -70,7 +70,7 @@ function build_netcdf {
 	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
 	cd hdf5-1.8.10-patch1
 	# disable SZIP(but this may not work)
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --without-szlib --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-std=c99" ./configure --without-szlib --prefix=${installdir} && make && make install
 	cd ${topdir}
 
 	cd third_party/
@@ -186,7 +186,7 @@ function build_pdmlib {
 	rm -rf PDMlib_build
 	mkdir PDMlib_build
 	cd PDMlib_build/
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ${CMAKE_BIN} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib ../PDMlib && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ${CMAKE_BIN} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib -Dbuild_h5part_converter=no -Dbuild_fv_converter=no -Dbuild_vtk_converter=no ../PDMlib && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
