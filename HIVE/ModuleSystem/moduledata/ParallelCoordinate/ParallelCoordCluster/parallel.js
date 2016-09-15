@@ -20,6 +20,9 @@
  *     plot: {
  *         width       : <number> Scatter plot エリアの幅（現状固定するので）
  *         color       : <string> 矩形に対して適用する色 CSS 準拠
+ *     },
+ *     callback: {
+ *         selected    : <function> brush 時のコールバック
  *     }
  * }
  * ************************************************************************* */
