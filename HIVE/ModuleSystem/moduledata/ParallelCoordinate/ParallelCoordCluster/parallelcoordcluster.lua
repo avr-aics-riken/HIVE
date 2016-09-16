@@ -236,6 +236,7 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"defaultOrder": ' .. ax .. ', '
         end
 
+        dest = dest .. '"order": ' .. ax .. ', '
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
         for c = 0, cnum - 1 do
