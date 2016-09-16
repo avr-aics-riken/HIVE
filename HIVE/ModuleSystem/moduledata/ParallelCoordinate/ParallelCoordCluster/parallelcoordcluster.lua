@@ -91,16 +91,21 @@ function ParallelCoordCluster:Do()
 
     self.gentex:Create2D(self.value.rgba, 1, 256, volComp * 2);
 
+    local axisinfo
     local axisNum = self.value.volume:Component() -- self.volumeclustering:GetAxisNum()
     local ax
 
     -- check axis info
     local needExe = false
+    local needOrder = false
     local axisjson = ""
+    local jsonorder = {}
     if self.value.axisjson ~= "" then -- axis info edited?
+
         axisjson = self.value.axisjson
 
         axisinfo = JSON.decode(axisjson)
+
         for ax = 1, axisNum do
             local axSigma = axisinfo[ax].sigma
             if axSigma ~= nil and self.axisSigma[ax] ~= axSigma then
@@ -108,6 +113,35 @@ function ParallelCoordCluster:Do()
                 needExe = true
             end
         end
+
+        -- オーダーが変更になる場合には Lua でキャッシュしているデータも
+        -- 同じようにオーダーを変更してキャッシュしておかないと次に Lua が走るときに
+        -- 意味がなくなるので、もしオーダーに変更があった場合にはキャッシュも並び替える
+        for ax = 1, axisNum do
+            -- json から取得した現在の希望オーダー
+            jsonorder[ax] = axisinfo[ax].order
+            -- 希望オーダーがnilでなく、かつカウンタの値と異なる場合
+            -- 並べ替えが発生しているはずなのでneedexe
+            if jsonorder[ax] ~= nil and jsonorder[ax] ~= ax - 1 then
+                needExe = true
+                needOrder = true
+            end
+        end
+        -- オーダーが変更になってるということはキャッシュしているデータが
+        -- 存在しているはずなのでその順番を並び替えておかなくてはならない
+        -- 現状は self.axisSigma のみがインデックス別のキャッシュなので
+        -- 先にオーダーに添って並び替えておく
+        -- また、同時に axisinfo も並び替えておくことで、あとで行う JSON
+        -- の生成時に破綻しないようにしておく
+        if needOrder then
+            local tempsigma = self.axisSigma
+            local tempinfo = axisinfo
+            for ax = 1, axisNum do
+                self.axisSigma[ax] = tempsigma[jsonorder[ax]]
+                axisinfo[ax] = tempsigma[jsonorder[ax]]
+            end
+        end
+
     end
 
     -- check plot axis prev
@@ -127,7 +161,7 @@ function ParallelCoordCluster:Do()
 
     -- execution
     if needExe then
-        for ax = 0, axisNum-1 do
+        for ax = 0, axisNum - 1 do
             self.volumeclustering:SetSigma(ax, self.axisSigma[ax+1])
         end
         print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
@@ -140,8 +174,6 @@ function ParallelCoordCluster:Do()
             if self.value.plotX > -1 and self.value.plotY > -1 then
                 plotX = self.value.plotX
                 plotY = self.value.plotY
-                print('plotX = ', plotX)
-                print('plotY = ', plotY)
             end
         end
         self.plot:Execute(self.value.volume, plotX, plotY);
@@ -156,7 +188,7 @@ function ParallelCoordCluster:Do()
     dest = dest .. '"volume": {'
     dest = dest .. '  "size":[' .. volWidth .. ', ' .. volHeight .. ',' .. volDepth .. ', '.. volComp .. ' ],'
     dest = dest .. '  "minmax":['
-    for ax = 0, axisNum-1 do
+    for ax = 0, axisNum - 1 do
         if ax ~= 0 then
             dest = dest .. ','
         end
@@ -194,12 +226,14 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
             dest = dest .. '"selectedAxis": ' .. selectedAxis  .. ', '
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
+            dest = dest .. '"defaultOrder": ' .. axisinfo[ax+1].defaultOrder .. ', '
         else
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
             dest = dest .. '"selectedAxis": false, '
             dest = dest .. '"selectedNumber": -1, '
+            dest = dest .. '"defaultOrder": ' .. ax .. ', '
         end
 
         dest = dest .. '"clusternum": ' .. cnum .. ', '

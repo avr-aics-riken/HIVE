@@ -1553,7 +1553,7 @@ Axis.prototype.dragMove = function(eve){
  */
 Axis.prototype.dragEnd = function(eve){
     this.onAxisTitleDrag = false;
-    if(Date.now() - this.titleDragStart > 100){
+    if(Date.now() - this.titleDragStart > 300){
         // 時間差で軸リセットを呼ぶ
         setTimeout(this.parent.resetAxis.bind(this.parent), 300);
     }else{
