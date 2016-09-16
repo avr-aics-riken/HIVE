@@ -10,6 +10,7 @@ ParallelCoordCluster.new = function (varname)
     this.volumeclustering = require('ClusterParallelCoord').VolumeClustering()
     this.plot = require('ClusterParallelCoord').VolumeScatterPlot();
     this.axisSigma = {}
+    this.axisOrder = {}
     this.plotAxis = {plotX = -1, plotY = -1}
     local defaultSigma = 0.05
     local maxAxisNum = 20
@@ -99,7 +100,6 @@ function ParallelCoordCluster:Do()
     local needExe = false
     local needOrder = false
     local axisjson = ""
-    local jsonorder = {}
     if self.value.axisjson ~= "" then -- axis info edited?
 
         axisjson = self.value.axisjson
@@ -118,23 +118,17 @@ function ParallelCoordCluster:Do()
         -- 同じようにオーダーを変更してキャッシュしておかないと次に Lua が走るときに
         -- 意味がなくなるので、もしオーダーに変更があった場合にはキャッシュも並び替える
         for ax = 1, axisNum do
-            -- json から取得した現在の希望オーダー
-            jsonorder[ax] = axisinfo[ax].order
-            -- 希望オーダーがnilでなく、かつカウンタの値と異なる場合
-            -- 並べ替えが発生しているはずなのでneedexe
-            if jsonorder[ax] ~= nil and jsonorder[ax] ~= ax - 1 then
+            -- 希望オーダーがnilでなく、かつキャッシュの値と異なる場合
+            -- 並べ替えが発生しているはずなので needexe かつ needorder
+            if axisinfo[ax].order ~= nil and axisinfo[ax].order ~= self.axisOrder[ax] then
+                self.axisOrder[ax] = axisinfo[ax].order
                 needExe = true
                 needOrder = true
             end
         end
         -- オーダーが変更されていた場合の処理
         if needOrder then
-            -- local tempsigma = self.axisSigma
-            -- local tempinfo = axisinfo
-            -- for ax = 1, axisNum do
-            --     self.axisSigma[ax] = tempsigma[jsonorder[ax]]
-            --     axisinfo[ax] = tempsigma[jsonorder[ax]]
-            -- end
+            -- なにか事前準備などがある場合はここに
         end
 
     end
@@ -231,7 +225,7 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"defaultOrder": ' .. ax .. ', '
         end
 
-        dest = dest .. '"order": ' .. ax .. ', '
+        dest = dest .. '"order": ' .. ax .. ', ' -- ここはネイティブの実装が入ったら ax ではなく対象のオーダーが入るようにする
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
         for c = 0, cnum - 1 do
