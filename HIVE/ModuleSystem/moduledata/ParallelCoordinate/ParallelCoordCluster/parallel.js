@@ -12,6 +12,7 @@ function ParallelCoordCluster(parentElement, option){
     this.axisArray = [];     // 列（Axis インスタンス）格納する配列
     this.beginFlow = 'left'; // どちらが始点となりデータが流れていくか（未使用）
     this.stateData = null;   // 選択状況も含めた内部的なデータ全体
+    this.draggingAxis = -1;  // 軸ごとドラッグ中の軸インデックス
 
     this.parent = parentElement;                        // 自身を格納している親 DOM
     this.wrapper = document.createElement('div');       // 全体の外側 DOM
@@ -777,6 +778,7 @@ ParallelCoordCluster.prototype.getAllBrushedRange = function(currentAxis, isDrag
                 this.stateData.axis[i].cluster[k].selected = false;
             }
         }
+        this.stateData.axis[i].order = this.axisArray[i].order;
     }
 
     // check selection count
@@ -1040,6 +1042,8 @@ function Axis(parent, index){
     this.min = 0;                        // min
     this.max = 0;                        // max
     this.sigma = axisData.sigma || 0;    // sigma
+    this.order = axisData.order;         // order
+    this.defaultOrder = axisData.defaultOrder; // defaultOrder
     this.width = 0;
     this.height = 0;
     this.left = 0;
@@ -1527,6 +1531,7 @@ Axis.prototype.dragStart = function(eve){
     this.left = eve.pageX;
     this.onAxisTitleDrag = true;
     this.titleDragStart = Date.now();
+    this.parent.draggingAxis = this.index; // どの軸がドラッグ開始イベントを呼んだのか
 };
 
 /**
@@ -1553,12 +1558,70 @@ Axis.prototype.dragMove = function(eve){
  */
 Axis.prototype.dragEnd = function(eve){
     this.onAxisTitleDrag = false;
+    var axisjson;
     if(Date.now() - this.titleDragStart > 300){
+        // 軸の前後関係が変化しているのかどうかを確認する
+        var x = eve.pageX - this.left;
+        var df = parseFloat(this.svg.style.left.replace(/px$/, ''));
+        var i = df + x;
+        var j = this.parent.drawRect.width - ((this.index + 1) * this.parent.SVG_DEFAULT_WIDTH) + (this.parent.SVG_DEFAULT_WIDTH / 2) + this.parent.PARALLEL_PADDING_H;
+        var k = this.parent.PARALLEL_PADDING_H - (this.index * this.parent.SVG_DEFAULT_WIDTH) - (this.parent.SVG_DEFAULT_WIDTH / 2);
+        if(i > j){i = j;} // 右端に到達
+        if(i < k){i = k;} // 左端に到達
+        var l = i - k;
+        var w = (j - k) / (this.parent.axisCount - 1);
+        var start = w * Math.max(this.index - 1, 0);
+        var end = w * (this.index + 1);
+
+        // dragstart を呼んだ軸自身の場合だけ処理する
+        if(this.parent.draggingAxis === this.index){
+            var noworder = [];
+            var offsetCount = Math.floor(l / w) - this.order; // 左右にオフセットしている量
+            for(i = 0, j = this.parent.axisCount; i < j; ++i){
+                // noworder の中身は、実際の見た目順で本来の順番が格納されている
+                noworder[this.parent.axisArray[i].order] = i;
+            }
+            // 現在位置が左隣以下
+            if(l <= start){
+                // 現在の位置が 0 以外の場合だけ処理する
+                if(this.order > 0){
+                    for(i = 0, j = this.parent.axisCount; i < j; ++i){
+                        // インデックスが若いものだけインクリメントする
+                        if(i < this.order && i >= this.order + offsetCount){
+                            ++this.parent.axisArray[noworder[i]].order;
+                        }
+                    }
+                }
+                this.order += offsetCount;
+            // 現在位置が右隣以上
+            }else if(end <= l){
+                // 現在の位置が配列長より小さい場合だけ処理する
+                if(this.order < this.parent.axisCount - 1){
+                    for(i = 0, j = this.parent.axisCount; i < j; ++i){
+                        // インデックスが高いものだけデクリメントする
+                        if(i > this.order && i <= this.order + offsetCount){
+                            --this.parent.axisArray[noworder[i]].order;
+                        }
+                    }
+                }
+                this.order += offsetCount;
+            }
+            this.parent.draggingAxis = -1;
+            // 変更があった場合は input の値を更新する
+            axisjson = this.parent.getAllBrushedRange(this, false, false);
+            if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
+
+            console.log('order change');
+            console.log(this.parent.axisArray[0].order, this.parent.axisArray[1].order, this.parent.axisArray[2].order);
+        }
+
         // 時間差で軸リセットを呼ぶ
         setTimeout(this.parent.resetAxis.bind(this.parent), 300);
+
     }else{
+        this.parent.draggingAxis = -1;
         // すぐにマウスアップしているのでクリックと判定する
-        var axisjson = this.parent.getAllBrushedRange(this, false, true);
+        axisjson = this.parent.getAllBrushedRange(this, false, true);
         if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
     }
 };

@@ -127,19 +127,14 @@ function ParallelCoordCluster:Do()
                 needOrder = true
             end
         end
-        -- オーダーが変更になってるということはキャッシュしているデータが
-        -- 存在しているはずなのでその順番を並び替えておかなくてはならない
-        -- 現状は self.axisSigma のみがインデックス別のキャッシュなので
-        -- 先にオーダーに添って並び替えておく
-        -- また、同時に axisinfo も並び替えておくことで、あとで行う JSON
-        -- の生成時に破綻しないようにしておく
+        -- オーダーが変更されていた場合の処理
         if needOrder then
-            local tempsigma = self.axisSigma
-            local tempinfo = axisinfo
-            for ax = 1, axisNum do
-                self.axisSigma[ax] = tempsigma[jsonorder[ax]]
-                axisinfo[ax] = tempsigma[jsonorder[ax]]
-            end
+            -- local tempsigma = self.axisSigma
+            -- local tempinfo = axisinfo
+            -- for ax = 1, axisNum do
+            --     self.axisSigma[ax] = tempsigma[jsonorder[ax]]
+            --     axisinfo[ax] = tempsigma[jsonorder[ax]]
+            -- end
         end
 
     end
