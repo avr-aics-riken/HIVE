@@ -225,8 +225,6 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
         for(i = 0, j = resetData.axis.length; i < j; ++i){
             resetData.axis[i] = tmps[tmps[i].order];
         }
-        console.log('resetData!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log(resetData);
         this.stateData = resetData;
         this.selectedAxis = false;
         this.selectedArray = [];
