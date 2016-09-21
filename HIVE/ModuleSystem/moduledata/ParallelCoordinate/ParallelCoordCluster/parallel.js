@@ -221,6 +221,12 @@ ParallelCoordCluster.prototype.resetAxis = function(resetData){
             this.axisArray[i].delete();
         }
         // reset state and add data
+        var tmps = JSON.parse(JSON.stringify(resetData.axis));
+        for(i = 0, j = resetData.axis.length; i < j; ++i){
+            resetData.axis[i] = tmps[tmps[i].order];
+        }
+        console.log('resetData!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+        console.log(resetData);
         this.stateData = resetData;
         this.selectedAxis = false;
         this.selectedArray = [];
@@ -1618,7 +1624,10 @@ Axis.prototype.dragEnd = function(eve){
             console.log('order change');
             axisjson = this.parent.getAllBrushedRange(this, false, false);
 
-
+            var tmps = JSON.parse(JSON.stringify(axisjson));
+            for(i = 0, j = this.parent.axisCount; i < j; ++i){
+                axisjson[i] = tmps[tmps[i].defaultOrder];
+            }
 
             if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
         }
