@@ -1615,11 +1615,12 @@ Axis.prototype.dragEnd = function(eve){
 
             this.parent.draggingAxis = -1;
             // 変更があった場合は input の値を更新する
-            axisjson = this.parent.getAllBrushedRange(this, false, false);
-            if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
-
             console.log('order change');
-            console.log(this.parent.axisArray[0].order, this.parent.axisArray[1].order, this.parent.axisArray[2].order);
+            axisjson = this.parent.getAllBrushedRange(this, false, false);
+
+
+
+            if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
         }
 
         // 時間差で軸リセットを呼ぶ

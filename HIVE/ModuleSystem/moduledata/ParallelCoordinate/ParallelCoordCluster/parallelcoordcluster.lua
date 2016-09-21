@@ -128,7 +128,9 @@ function ParallelCoordCluster:Do()
         end
         -- オーダーが変更されていた場合の処理
         if needOrder then
-            -- なにか事前準備などがある場合はここに
+            for ax = 1, axisNum do
+                print('new order: ', axisinfo[ax].order)
+            end
         end
 
     end
@@ -201,8 +203,6 @@ function ParallelCoordCluster:Do()
             dest = dest .. ',{'
         end
 
-        dest = dest .. '"title": "title_' .. ax .. '", '
-
         if axisjson ~= "" then
             local brushMin = axisinfo[ax+1].brush.min or "null"
             local brushMax = axisinfo[ax+1].brush.max or "null"
@@ -210,22 +210,25 @@ function ParallelCoordCluster:Do()
             local rangeMax = axisinfo[ax+1].range.max or "null"
             local selectedAxis = "false"
             if axisinfo[ax+1].selectedAxis == true then selectedAxis = "true" end
+            dest = dest .. '"title": "' .. axisinfo[ax+1].title .. '", '
             dest = dest .. '"brush": {"min": ' .. brushMin .. ', "max": '.. brushMax .. '}, '
             dest = dest .. '"range": {"min": ' .. rangeMin .. ', "max": ' .. rangeMax .. '}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
             dest = dest .. '"selectedAxis": ' .. selectedAxis  .. ', '
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
             dest = dest .. '"defaultOrder": ' .. axisinfo[ax+1].defaultOrder .. ', '
+            dest = dest .. '"order": ' .. axisinfo[ax+1].order .. ', '
         else
+            dest = dest .. '"title": "title_' .. ax .. '", '
             dest = dest .. '"brush": {"min": null, "max": null}, '
             dest = dest .. '"range": {"min": null, "max": null}, '
             dest = dest .. '"sigma": ' .. self.axisSigma[ax+1] .. ', '
             dest = dest .. '"selectedAxis": false, '
             dest = dest .. '"selectedNumber": -1, '
             dest = dest .. '"defaultOrder": ' .. ax .. ', '
+            dest = dest .. '"order": ' .. ax .. ', '
         end
 
-        dest = dest .. '"order": ' .. ax .. ', ' -- ここはネイティブの実装が入ったら ax ではなく対象のオーダーが入るようにする
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
         for c = 0, cnum - 1 do
