@@ -10,7 +10,7 @@ end
 
 function LoadPDB:Do()
     self:UpdateValue()
-    return self.loader:Load(self.value.filepath)
+    return self.loader:Load(self.value.filepath,'true')
 end
 
 function LoadPDB:BallData()
