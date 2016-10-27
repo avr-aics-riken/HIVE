@@ -73,6 +73,107 @@ void PDMLoader::Clear()
 	m_readAll = false;
 	m_pointMap.clear();
 	m_containerMap.clear();
+	m_containerInfoList.clear();
+}
+
+bool PDMLoader::CachePoints(const char* containerName, int timeStep) {
+	float* points = NULL;
+	size_t n = 0;
+	int ret = PDMlib::PDMlib::GetInstance().Read(containerName, &n, &points, &timeStep, m_readAll);
+
+	if (n == 0 || points == NULL) {
+		fprintf(stderr, "[CDMLoader] No such a container with point type: %s\n", containerName);
+		return false;
+	}
+	printf("[PDMloader] %s : n = %d\n", containerName, n);
+
+	// Alloc
+	BufferPointData* buf = BufferPointData::CreateInstance();
+	buf->Create(n/3);
+	// position
+	std::copy(points, points + n, buf->Position()->GetBuffer());
+	// radius
+	std::fill(buf->Radius()->GetBuffer(), buf->Radius()->GetBuffer() + buf->Radius()->GetNum(), 1);
+	m_pointMap[containerName] = buf;
+	delete [] points; // Release memory allocated by PDMlib
+	return true; 
+}
+
+bool PDMLoader::CacheExtraData(const char* containerName, int timeStep) {
+	const ContainerInfo* info = FindContainer(m_containerInfoList, containerName);
+	if (info == NULL) {
+		fprintf(stderr, "[CDMLoader] No such a container: %s\n", containerName);
+		return NULL;
+	}
+
+	if (info->type == "float" || info->type == "vec2" || info->type == "vec3" || info->type == "vec4") {
+		float* values = NULL;
+		size_t n = 0;
+		int ret = PDMlib::PDMlib::GetInstance().Read(containerName, &n, &values, &timeStep, m_readAll);
+
+		if (n == 0 || values == NULL) {
+			fprintf(stderr, "[CDMLoader] No such a container with point type: %s\n", containerName);
+			return NULL;
+		}
+
+		printf("[PDMloader] %s : n = %d\n", containerName, n);
+
+		int numElems = n;
+		if (info->type == "vec2") {
+			numElems /= 2;
+		} else if (info->type == "vec3") {
+			numElems /= 3;
+		} else if (info->type == "vec4") {
+			numElems /= 4;
+		}
+
+		// Alloc
+		BufferExtraData* buf = BufferExtraData::CreateInstance();
+		buf->Create(info->type.c_str(), numElems);
+
+		if (info->type == "float") {
+			std::copy(values, values + n, buf->Float()->GetBuffer());
+		} else if (info->type == "vec2") {
+			std::copy(values, values + n, buf->Vec2()->GetBuffer());
+		} else if (info->type == "vec3") {
+			std::copy(values, values + n, buf->Vec3()->GetBuffer());
+		} else if (info->type == "vec4") {
+			std::copy(values, values + n, buf->Vec4()->GetBuffer());
+		}
+
+		m_containerMap[containerName] = buf;
+
+		delete [] values; // Release memory allocated by PDMlib 
+
+		return m_containerMap[containerName];
+	} else if (info->type == "uint") {
+		unsigned int* values = NULL;
+		size_t n = 0;
+		int ret = PDMlib::PDMlib::GetInstance().Read(containerName, &n, &values, &timeStep, m_readAll);
+
+		if (n == 0 || values == NULL) {
+			fprintf(stderr, "[CDMLoader] No such a container with point type: %s\n", containerName);
+			return NULL;
+		}
+
+		printf("[PDMloader] %s : n = %d\n", containerName, n);
+
+		int numElems = n;
+
+		// Alloc
+		BufferExtraData* buf = BufferExtraData::CreateInstance();
+		buf->Create(info->type.c_str(), numElems);
+
+		std::copy(values, values + n, buf->Uint()->GetBuffer());
+
+		m_containerMap[containerName] = buf;
+
+		delete [] values; // Release memory allocated by PDMlib 
+
+		return m_containerMap[containerName];
+	}
+
+	fprintf(stderr, "[CDMLoader] Unknown or unsupported container: %s\n", containerName);
 }
 
 /**
@@ -107,6 +208,10 @@ bool PDMLoader::Load(const char* filename, int timeStep){
 
 			printf("[PDMLoader] Add container info: name = %s, type = %s\n",
 					containerInfo.name.c_str(), containerInfo.type.c_str());
+		
+			std::string containerName = infos[i].Name;
+			CachePoints(containerName.c_str(), timeStep);
+			CacheExtraData(containerName.c_str(), timeStep);
 		}
 	}
 
@@ -127,34 +232,12 @@ bool PDMLoader::Load(const char* filename, int timeStep){
 BufferPointData *PDMLoader::PointData(const char* containerName, float radius)
 {
 	if (m_pointMap.find(containerName) != m_pointMap.end()) {
-		return m_pointMap[containerName];
+		BufferPointData* buf = m_pointMap[containerName];
+		printf("[PDMloader] radius = %f\n", radius);
+		std::fill(buf->Radius()->GetBuffer(), buf->Radius()->GetBuffer() + buf->Radius()->GetNum(), radius);
+		return buf;
 	}
-
-	float* points = NULL;
-	size_t n = 0;
-	int ret = PDMlib::PDMlib::GetInstance().Read(containerName, &n, &points, &m_timeStep, m_readAll);
-
-	if (n == 0 || points == NULL) {
-		fprintf(stderr, "[CDMLoader] No such a container with point type: %s\n", containerName);
-		return NULL;
-	}
-
-	printf("[PDMloader] %s : n = %d\n", containerName, n);
-
-	// Alloc
-    BufferPointData* buf = BufferPointData::CreateInstance();
-	buf->Create(n/3);
-	std::copy(points, points + n, buf->Position()->GetBuffer());
-
-	printf("[PDMloader] radius = %f\n", radius);
-
-	std::fill(buf->Radius()->GetBuffer(), buf->Radius()->GetBuffer() + (n/3), radius);
-
-	m_pointMap[containerName] = buf;
-
-	delete [] points; // Release memory allocated by PDMlib 
-	
-	return m_pointMap[containerName];
+	return NULL;
 }
 
 BufferExtraData *PDMLoader::ExtraData(const char* containerName)
@@ -162,82 +245,6 @@ BufferExtraData *PDMLoader::ExtraData(const char* containerName)
 	if (m_containerMap.find(containerName) != m_containerMap.end()) {
 		return m_containerMap[containerName];
 	}
-
-	const ContainerInfo* info = FindContainer(m_containerInfoList, containerName);
-	if (info == NULL) {
-		fprintf(stderr, "[CDMLoader] No such a container: %s\n", containerName);
-		return NULL;
-	}
-
-	if (info->type == "float" || info->type == "vec2" || info->type == "vec3" || info->type == "vec4") {
-		float* values = NULL;
-		size_t n = 0;
-		int ret = PDMlib::PDMlib::GetInstance().Read(containerName, &n, &values, &m_timeStep, m_readAll);
-
-		if (n == 0 || values == NULL) {
-			fprintf(stderr, "[CDMLoader] No such a container with point type: %s\n", containerName);
-			return NULL;
-		}
-
-		printf("[PDMloader] %s : n = %d\n", containerName, n);
-
-		int numElems = n;
-		if (info->type == "vec2") {
-			numElems /= 2;
-		} else if (info->type == "vec3") {
-			numElems /= 3;
-		} else if (info->type == "vec4") {
-			numElems /= 4;
-		}
-
-		// Alloc
-        BufferExtraData* buf = BufferExtraData::CreateInstance();
-		buf->Create(info->type.c_str(), numElems);
-
-		if (info->type == "float") {
-			std::copy(values, values + n, buf->Float()->GetBuffer());
-		} else if (info->type == "vec2") {
-			std::copy(values, values + n, buf->Vec2()->GetBuffer());
-		} else if (info->type == "vec3") {
-			std::copy(values, values + n, buf->Vec3()->GetBuffer());
-		} else if (info->type == "vec4") {
-			std::copy(values, values + n, buf->Vec4()->GetBuffer());
-		}
-
-		m_containerMap[containerName] = buf;
-
-		delete [] values; // Release memory allocated by PDMlib 
-
-		return m_containerMap[containerName];
-	} else if (info->type == "uint") {
-		unsigned int* values = NULL;
-		size_t n = 0;
-		int ret = PDMlib::PDMlib::GetInstance().Read(containerName, &n, &values, &m_timeStep, m_readAll);
-
-		if (n == 0 || values == NULL) {
-			fprintf(stderr, "[CDMLoader] No such a container with point type: %s\n", containerName);
-			return NULL;
-		}
-
-		printf("[PDMloader] %s : n = %d\n", containerName, n);
-
-		int numElems = n;
-
-		// Alloc
-        BufferExtraData* buf = BufferExtraData::CreateInstance();
-		buf->Create(info->type.c_str(), numElems);
-
-		std::copy(values, values + n, buf->Uint()->GetBuffer());
-
-		m_containerMap[containerName] = buf;
-
-		delete [] values; // Release memory allocated by PDMlib 
-
-		return m_containerMap[containerName];
-	}
-
-	fprintf(stderr, "[CDMLoader] Unknown or unsupported container: %s\n", containerName);
-
 	return NULL;
 	
 }

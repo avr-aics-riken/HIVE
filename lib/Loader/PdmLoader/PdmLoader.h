@@ -57,6 +57,9 @@ protected:
 
 	std::vector<ContainerInfo> m_containerInfoList;
 
+private:
+	bool CachePoints(const char* containerName, int timeStep);
+	bool CacheExtraData(const char* containerName, int timeStep);
 };
 
 #endif //_PDMLOADERNATIVE_H
