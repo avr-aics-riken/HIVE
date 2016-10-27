@@ -10,15 +10,15 @@ end
 
 function LoadPDM:Do()
     self:UpdateValue()
-	if self.value.filepath then
-    	return self.loader:Load(self.value.filepath, self.value.timestep)
+	if self.value.filepath ~= nil and self.value.filepath ~= "" then
+        return self.loader:Load(self.value.filepath, self.value.timestep)
 	else
 		return false
 	end
 end
 
 function LoadPDM:PointData()
-    return self.loader:PointData(self.value.container, self.value.radius)
+   return self.loader:PointData(self.value.container, self.value.radius)
 end
 
 function LoadPDM:ExtraData()

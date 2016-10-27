@@ -10,7 +10,7 @@ end
 
 function LoadCDM:Do()
     self:UpdateValue()
-	if self.value.filepath then
+	if self.value.filepath ~= nil and self.value.filepath ~= "" then
     	return self.loader:Load(self.value.filepath, self.value.time)
 	else
 		return false
