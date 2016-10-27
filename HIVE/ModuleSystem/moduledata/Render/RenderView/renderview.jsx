@@ -47,7 +47,7 @@ class RenderView extends React.Component {
 
 		this.updatePreset = this.updatePreset.bind(this);
 		
-		this.reRender();
+		this.reRender(true);
 	}
 
     progressiveUpdate(param) {
@@ -55,18 +55,19 @@ class RenderView extends React.Component {
         let h = param.height;
         const varname = this.node.varname;
         const ssize = this.getInputValue("screensize");
+		if (this.mouseState > 0) { return; }
         if (w < ssize[0] || h < ssize[1]) {
-            w *= 2;
-            h *= 2;
+            w = ssize[0];
+            h = ssize[1];
             //console.log('PROGRESSIVE:', w, h);
-            setTimeout(() => {
-                this.action.changeNodeInput({
-                    varname : varname,
-                    input : {
-                        "rendersize" : [w,h]
-                    }
-                });
-            },0);
+			setTimeout(() => {
+				this.action.changeNodeInput({
+					varname : varname,
+					input : {
+						"rendersize" : [w,h]
+					}
+				});
+			},0);
         }
     }
 
@@ -183,15 +184,24 @@ class RenderView extends React.Component {
 		}
 	}
 	
-	reRender() {
+	reRender(useProgressive) {
 		let screensize = this.getInputValue("screensize");
 		setTimeout( () => {
-			this.action.changeNodeInput({
-				varname : this.props.node.varname,
-				input : {
-					"rendersize" : [progressiveMin(screensize[0]), progressiveMin(screensize[1])]
-				}
-			});
+			if (useProgressive) {
+				this.action.changeNodeInput({
+					varname : this.props.node.varname,
+					input : {
+						"rendersize" : [progressiveMin(screensize[0]), progressiveMin(screensize[1])]
+					}
+				});
+			} else {
+				this.action.changeNodeInput({
+					varname : this.props.node.varname,
+					input : {
+						"rendersize" : [(screensize[0]), (screensize[1])]
+					}
+				});
+			}
 		}, 0);
 	}
 
@@ -332,6 +342,9 @@ class RenderView extends React.Component {
         }
     }
     onImgMouseUp(event) {
+		if (this.mouseState !== 0) {
+			this.reRender(false);
+		}
         this.mouseState = 0;
     }
 	
