@@ -129,13 +129,12 @@ namespace {
         cls.resize(comp);
         for (int i = 0; i < w * h * d; ++i) {
             for (int p = 0; p < comp; ++p) {
-                const int order = orderVal[p];
-                const float v = buffer[comp * i + order];
+                const float v = buffer[comp * i + p];
                 int cl = 0;
-                while(cl < axisClusters[order].size() && v > axisClusters[order][cl].maxValue) {
+                while(cl < axisClusters[p].size() && v > axisClusters[p][cl].maxValue) {
                     ++cl;
                 }
-                if (cl >= axisClusters[order].size()) {
+                if (cl >= axisClusters[p].size()) {
                     //printf("Over max value:%f max=%f\n", v, axisClusters[p][cl-1].maxValue);
                     cl--;
                 }
@@ -343,7 +342,7 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
 {
     static Cluster empty;
     if (axis >= GetAxisNum()) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return empty;
     }
     if (cluster >= GetClusterNum(axis)) {
@@ -364,7 +363,7 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
 int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
 {    
      if (axis >= GetAxisNum() - 1) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return 0;
     }
     if (cluster >= GetClusterNum(axis)) {
@@ -388,7 +387,7 @@ int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
 float VolumeClustering::GetVolumeMin(int axis)
 {
     if (axis >= GetAxisNum()) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
     const int orderedAxis = m_orderVal[axis];
@@ -403,7 +402,7 @@ float VolumeClustering::GetVolumeMin(int axis)
 float VolumeClustering::GetVolumeMax(int axis)
 {
     if (axis >= GetAxisNum()) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
     const int orderedAxis = m_orderVal[axis];
