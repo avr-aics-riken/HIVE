@@ -1065,14 +1065,23 @@ function Axis(parent, index){
     this.inputSigma = null;   // input
     this.selectedAxis = axisData.selectedAxis;
     this.selectedNumber = axisData.selectedNumber;
-    if(index === 0){
-        this.putData.right = parent.stateData.edge.cluster[index];
-    }else if(index === parent.stateData.edge.cluster.length){
-        this.putData.left  = parent.stateData.edge.cluster[index - 1];
+    // @@@
+    if(this.order === 0){
+        this.putData.right = parent.stateData.edge.cluster[this.order];
+    }else if(this.order === parent.stateData.edge.cluster.length){
+        this.putData.left  = parent.stateData.edge.cluster[this.order - 1];
     }else{
-        this.putData.left  = parent.stateData.edge.cluster[index - 1];
-        this.putData.right = parent.stateData.edge.cluster[index];
+        this.putData.left  = parent.stateData.edge.cluster[this.order - 1];
+        this.putData.right = parent.stateData.edge.cluster[this.order];
     }
+    // if(index === 0){
+    //     this.putData.right = parent.stateData.edge.cluster[index];
+    // }else if(index === parent.stateData.edge.cluster.length){
+    //     this.putData.left  = parent.stateData.edge.cluster[index - 1];
+    // }else{
+    //     this.putData.left  = parent.stateData.edge.cluster[index - 1];
+    //     this.putData.right = parent.stateData.edge.cluster[index];
+    // }
     for(i = 0, j = axisData.cluster.length; i < j; ++i){
         this.clusters.push(new Cluster(
             this, // axis 自身
