@@ -101,7 +101,7 @@ function ParallelCoordCluster:Do()
     local needOrder = false
     local axisjson = ""
                 
-    -[[
+    --[[
     self.volumeclustering:SetOrder(0, 2);
     self.volumeclustering:SetOrder(1, 1);
     self.volumeclustering:SetOrder(2, 0);
