@@ -349,8 +349,8 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
         printf("[Error] over cluster num\n");
         return empty;
     }
-    const int orderedAxis = m_orderVal[axis];
-    return m_axisClusters[orderedAxis][cluster];
+    //const int orderedAxis = m_orderVal[axis];
+    return m_axisClusters[axis][cluster];
 }
 
 /**
