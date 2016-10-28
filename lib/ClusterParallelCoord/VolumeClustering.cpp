@@ -328,8 +328,8 @@ int VolumeClustering::GetClusterNum(int axis)
     if (axis >= GetAxisNum()) {
         return 0;
     }
-    // const int orderedAxis = m_orderVal[axis];
-    return static_cast<int>(m_axisClusters[axis].size());
+    const int orderedAxis = m_orderVal[axis];
+    return static_cast<int>(m_axisClusters[orderedAxis].size());
 }
 
 /**
@@ -349,8 +349,8 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
         printf("[Error] over cluster num\n");
         return empty;
     }
-    //const int orderedAxis = m_orderVal[axis];
-    return m_axisClusters[axis][cluster];
+    const int orderedAxis = m_orderVal[axis];
+    return m_axisClusters[orderedAxis][cluster];
 }
 
 /**
@@ -390,8 +390,8 @@ float VolumeClustering::GetVolumeMin(int axis)
         printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
-    //const int orderedAxis = m_orderVal[axis];
-    return m_minVal[axis];
+    const int orderedAxis = m_orderVal[axis];
+    return m_minVal[orderedAxis];
 }
 
 /**
@@ -405,8 +405,8 @@ float VolumeClustering::GetVolumeMax(int axis)
         printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
-    //const int orderedAxis = m_orderVal[axis];
-    return m_maxVal[axis];
+    const int orderedAxis = m_orderVal[axis];
+    return m_maxVal[orderedAxis];
 }
 
     
