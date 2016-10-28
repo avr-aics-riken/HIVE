@@ -1065,7 +1065,6 @@ function Axis(parent, index){
     this.inputSigma = null;   // input
     this.selectedAxis = axisData.selectedAxis;
     this.selectedNumber = axisData.selectedNumber;
-    // @@@
     if(this.order === 0){
         this.putData.right = parent.stateData.edge.cluster[this.order];
     }else if(this.order === parent.stateData.edge.cluster.length){

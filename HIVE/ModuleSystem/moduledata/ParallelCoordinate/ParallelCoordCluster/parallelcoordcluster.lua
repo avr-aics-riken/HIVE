@@ -184,15 +184,24 @@ function ParallelCoordCluster:Do()
     -- make axis info
     local temp
     local dest = '{'
+    local cnum
+    local order
 
     dest = dest .. '"volume": {'
     dest = dest .. '  "size":[' .. volWidth .. ', ' .. volHeight .. ',' .. volDepth .. ', '.. volComp .. ' ],'
     dest = dest .. '  "minmax":['
     for ax = 0, axisNum - 1 do
+
+        cnum = self.volumeclustering:GetClusterNum(ax)
+        order = ax
+        if axisjson ~= "" then
+            order = axisinfo[ax+1].order
+        end
+
         if ax ~= 0 then
             dest = dest .. ','
         end
-        dest = dest .. '{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}'
+        dest = dest .. '{"min":' .. self.volumeclustering:GetVolumeMin(order) .. ', "max":' .. self.volumeclustering:GetVolumeMax(order) .. '}'
         --print('{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}')
     end
     dest = dest .. '  ]'
@@ -202,7 +211,8 @@ function ParallelCoordCluster:Do()
     dest = dest .. '['
     --print('AxisNum = ' .. axisNum)
     for ax = 0, axisNum - 1 do
-        local cnum = self.volumeclustering:GetClusterNum(ax)
+        cnum = self.volumeclustering:GetClusterNum(ax)
+        order = ax
         print('ClusterNum = ' .. cnum)
 
         -- json string
@@ -227,6 +237,8 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
             dest = dest .. '"defaultOrder": ' .. axisinfo[ax+1].defaultOrder .. ', '
             dest = dest .. '"order": ' .. axisinfo[ax+1].order .. ', '
+            order = axisinfo[ax+1].order
+            cnum = self.volumeclustering:GetClusterNum(order)
         else
             dest = dest .. '"title": "title_' .. ax .. '", '
             dest = dest .. '"brush": {"min": null, "max": null}, '
@@ -246,7 +258,7 @@ function ParallelCoordCluster:Do()
             else
                 dest = dest .. ',{'
             end
-            local cv = self.volumeclustering:GetClusterValue(ax, c)
+            local cv = self.volumeclustering:GetClusterValue(order, c)
             local j = 0
             for i,v in pairs(cv) do
                 temp = string.gsub(i, 'Value', '');
