@@ -328,8 +328,8 @@ int VolumeClustering::GetClusterNum(int axis)
     if (axis >= GetAxisNum()) {
         return 0;
     }
-    const int orderedAxis = m_orderVal[axis];
-    return static_cast<int>(m_axisClusters[orderedAxis].size());
+    // const int orderedAxis = m_orderVal[axis];
+    return static_cast<int>(m_axisClusters[axis].size());
 }
 
 /**
