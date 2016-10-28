@@ -406,57 +406,64 @@ class ParallelContainer extends React.Component {
             axisVerticalMin: 0,
             axisVerticalMax: 0
         };
-        if(brushedCount > 1 && this.state.activeHorizon > -1 && this.state.activeVertical > -1){
+        if(brushedCount > 0 && (this.state.activeHorizon > -1 || this.state.activeVertical > -1)){
+        // if(brushedCount > 1 && this.state.activeHorizon > -1 && this.state.activeVertical > -1){
             let k, l;
+            let xLen, left, right, yLen, top, bottom;
             k = this.axisHorizonIndex = this.state.activeHorizon;
             l = this.axisVerticalIndex = this.state.activeVertical;
-            obj = {
-                axisHorizonMin: axisArray[k].min,
-                axisHorizonMax: axisArray[k].max,
-                axisVerticalMin: axisArray[l].min,
-                axisVerticalMax: axisArray[l].max
-            };
-            // draw rect
-            let xLen    = axisArray[k].volmax - axisArray[k].volmin;
-            let left    = (axisArray[k].min - axisArray[k].volmin) / xLen;
-            let right   = (axisArray[k].max - axisArray[k].volmin) / xLen;
-            let yLen    = axisArray[l].volmax - axisArray[l].volmin;
-            let top     = 1.0 - (axisArray[l].max - axisArray[l].volmin) / yLen;
-            let bottom  = 1.0 - (axisArray[l].min - axisArray[l].volmin) / yLen;
-            // draw horizon rect
-            cx.beginPath();
-            cx.strokeStyle = 'rgba(196, 128, 255, 0.5)';
-            cx.lineWidth = 1;
-            cx.rect(
-                -1,
-                top * height,
-                width + 1,
-                (bottom - top) * height
-            );
-            cx.stroke();
-            cx.closePath();
-            // draw vertical rect
-            cx.beginPath();
-            cx.rect(
-                left * width,
-                -1,
-                (right - left) * width,
-                height + 1
-            );
-            cx.stroke();
-            cx.closePath();
-            // draw cross rect
-            cx.strokeStyle = 'rgba(196, 32, 64, 0.5)';
-            cx.lineWidth = 2;
-            cx.beginPath();
-            cx.rect(
-                left * width,
-                top * height,
-                (right - left) * width,
-                (bottom - top) * height
-            );
-            cx.stroke();
-            cx.closePath();
+            if(axisArray[k]){
+                obj.axisHorizonMin = axisArray[k].min;
+                obj.axisHorizonMax = axisArray[k].max;
+                xLen  = axisArray[k].volmax - axisArray[k].volmin;
+                left  = (axisArray[k].min - axisArray[k].volmin) / xLen;
+                right = (axisArray[k].max - axisArray[k].volmin) / xLen;
+                // draw horizon rect
+                cx.beginPath();
+                cx.strokeStyle = 'rgba(196, 128, 255, 0.5)';
+                cx.lineWidth = 1;
+                cx.rect(
+                    left * width,
+                    0,
+                    (right - left) * width,
+                    height
+                );
+                cx.stroke();
+                cx.closePath();
+            }
+            if(axisArray[l]){
+                obj.axisVerticalMin = axisArray[l].min;
+                obj.axisVerticalMax = axisArray[l].max;
+                yLen    = axisArray[l].volmax - axisArray[l].volmin;
+                top     = 1.0 - (axisArray[l].max - axisArray[l].volmin) / yLen;
+                bottom  = 1.0 - (axisArray[l].min - axisArray[l].volmin) / yLen;
+                // draw vertical rect
+                cx.beginPath();
+                cx.strokeStyle = 'rgba(196, 128, 255, 0.5)';
+                cx.lineWidth = 1;
+                cx.rect(
+                    0,
+                    top * height,
+                    width,
+                    (bottom - top) * height
+                );
+                cx.stroke();
+                cx.closePath();
+            }
+            if(brushedCount > 1){
+                // draw cross rect
+                cx.strokeStyle = 'rgba(196, 32, 64, 0.5)';
+                cx.lineWidth = 2;
+                cx.beginPath();
+                cx.rect(
+                    left * width,
+                    top * height,
+                    (right - left) * width,
+                    (bottom - top) * height
+                );
+                cx.stroke();
+                cx.closePath();
+            }
             this.axisSvgDraw([axisArray[k], axisArray[l]]);
         }else{
             this.axisSvgDraw(); // if no arguments running then reset svg
@@ -491,7 +498,7 @@ class ParallelContainer extends React.Component {
         wrapperDiv = ReactDOM.findDOMNode(this.refs.axisPlotLayer);
         wrapperDiv.innerHTML = '';
 
-        if(!axisArray || axisArray.length < 2){return;}
+        if(!axisArray || axisArray.length === 0){return;}
 
         wrapperSvg = NS('svg');
         wrapperSvg.style.display = 'block';
@@ -536,139 +543,143 @@ class ParallelContainer extends React.Component {
         );
         wrapperSvg.appendChild(e);
 
-        // coords
-        xLen    = axisArray[0].volmax - axisArray[0].volmin;
-        left    = (axisArray[0].min - axisArray[0].volmin) / xLen;
-        right   = (axisArray[0].max - axisArray[0].volmin) / xLen;
-        yLen    = axisArray[1].volmax - axisArray[1].volmin;
-        top     = 1.0 - (axisArray[1].max - axisArray[1].volmin) / yLen;
-        bottom  = 1.0 - (axisArray[1].min - axisArray[1].volmin) / yLen;
+        if(axisArray[0]){
+            // coords
+            xLen    = axisArray[0].volmax - axisArray[0].volmin;
+            left    = (axisArray[0].min - axisArray[0].volmin) / xLen;
+            right   = (axisArray[0].max - axisArray[0].volmin) / xLen;
+            // selection Rect
+            e = NS('path');
+            e.setAttribute('fill', RECT_FILL_COLOR);
+            e.setAttribute('stroke', RECT_STROKE_COLOR);
+            e.setAttribute('stroke-width', LINE_WIDTH);
+            e.setAttribute(
+                'd',
+                'M '  + (PADDING + SIZE * left) + ' ' + SIZE +
+                ' H ' + (PADDING + SIZE * right) + ' v ' + PADDING +
+                ' H ' + (PADDING + SIZE * left) + ' v ' + (-PADDING)
+            );
+            wrapperSvg.appendChild(e);
+            f = ((eve)=>{
+                this.axisEventDragHorizon = true;
+                this.axisEventDefaultX = eve.pageX;
+            }).bind(this);
+            this.axisHorizonListeners.push(((func)=>{
+                return ()=>{this.axisHorizonSelect.removeEventListener('mousedown', func, false);};
+            })(f));
+            e.addEventListener('mousedown', f, false);
+            this.axisHorizonSelect = e; // add element to prop
+            // draggable rect horizon
+            e = NS('path');
+            e.setAttribute('fill', 'transparent');
+            e.setAttribute('stroke', 'transparent');
+            e.setAttribute('style', 'cursor: col-resize');
+            e.setAttribute(
+                'd',
+                'M '  + (PADDING + SIZE * left - 3) + ' ' + SIZE +
+                ' H ' + (PADDING + SIZE * left + 3) + ' v ' + PADDING +
+                ' H ' + (PADDING + SIZE * left - 3) + ' v ' + (-PADDING)
+            );
+            wrapperSvg.appendChild(e);
+            f = ((eve)=>{
+                this.axisEventDragHorizonMin = true;
+                this.axisEventDefaultX = eve.pageX;
+            }).bind(this);
+            this.axisHorizonListeners.push(((func)=>{
+                return ()=>{this.axisHorizonMinHandle.removeEventListener('mousedown', func, false);};
+            })(f));
+            e.addEventListener('mousedown', f, false);
+            this.axisHorizonMinHandle = e; // add element to prop
+            e = NS('path');
+            e.setAttribute('fill', 'transparent');
+            e.setAttribute('stroke', 'transparent');
+            e.setAttribute('style', 'cursor: col-resize');
+            e.setAttribute(
+                'd',
+                'M '  + (PADDING + SIZE * right - 3) + ' ' + SIZE +
+                ' H ' + (PADDING + SIZE * right + 3) + ' v ' + PADDING +
+                ' H ' + (PADDING + SIZE * right - 3) + ' v ' + (-PADDING)
+            );
+            wrapperSvg.appendChild(e);
+            f = ((eve)=>{
+                this.axisEventDragHorizonMax = true;
+                this.axisEventDefaultX = eve.pageX;
+            }).bind(this);
+            this.axisHorizonListeners.push(((func)=>{
+                return ()=>{this.axisHorizonMaxHandle.removeEventListener('mousedown', func, false);};
+            })(f));
+            e.addEventListener('mousedown', f, false);
+            this.axisHorizonMaxHandle = e; // add element to prop
+        }
 
-        // selection Rect
-        e = NS('path');
-        e.setAttribute('fill', RECT_FILL_COLOR);
-        e.setAttribute('stroke', RECT_STROKE_COLOR);
-        e.setAttribute('stroke-width', LINE_WIDTH);
-        e.setAttribute(
-            'd',
-            'M '  + (PADDING + SIZE * left) + ' ' + SIZE +
-            ' H ' + (PADDING + SIZE * right) + ' v ' + PADDING +
-            ' H ' + (PADDING + SIZE * left) + ' v ' + (-PADDING)
-        );
-        wrapperSvg.appendChild(e);
-        f = ((eve)=>{
-            this.axisEventDragHorizon = true;
-            this.axisEventDefaultX = eve.pageX;
-        }).bind(this);
-        this.axisHorizonListeners.push(((func)=>{
-            return ()=>{this.axisHorizonSelect.removeEventListener('mousedown', func, false);};
-        })(f));
-        e.addEventListener('mousedown', f, false);
-        this.axisHorizonSelect = e; // add element to prop
-        e = NS('path');
-        e.setAttribute('fill', RECT_FILL_COLOR);
-        e.setAttribute('stroke', RECT_STROKE_COLOR);
-        e.setAttribute('stroke-width', LINE_WIDTH);
-        e.setAttribute(
-            'd',
-            'M 0 ' + (SIZE * top) +
-            ' h ' + PADDING + ' V ' + (SIZE * bottom) +
-            ' h ' + (-PADDING) + ' V ' + (SIZE * top)
-        );
-        wrapperSvg.appendChild(e);
-        f = ((eve)=>{
-            this.axisEventDragVertical = true;
-            this.axisEventDefaultY = eve.pageY;
-        }).bind(this);
-        this.axisVerticalListeners.push(((func)=>{
-            return ()=>{this.axisVerticalSelect.removeEventListener('mousedown', func, false);};
-        })(f));
-        e.addEventListener('mousedown', f, false);
-        this.axisVerticalSelect = e; // add element to prop
-
-        // draggable rect horizon
-        e = NS('path');
-        e.setAttribute('fill', 'transparent');
-        e.setAttribute('stroke', 'transparent');
-        e.setAttribute('style', 'cursor: col-resize');
-        e.setAttribute(
-            'd',
-            'M '  + (PADDING + SIZE * left - 3) + ' ' + SIZE +
-            ' H ' + (PADDING + SIZE * left + 3) + ' v ' + PADDING +
-            ' H ' + (PADDING + SIZE * left - 3) + ' v ' + (-PADDING)
-        );
-        wrapperSvg.appendChild(e);
-        f = ((eve)=>{
-            this.axisEventDragHorizonMin = true;
-            this.axisEventDefaultX = eve.pageX;
-        }).bind(this);
-        this.axisHorizonListeners.push(((func)=>{
-            return ()=>{this.axisHorizonMinHandle.removeEventListener('mousedown', func, false);};
-        })(f));
-        e.addEventListener('mousedown', f, false);
-        this.axisHorizonMinHandle = e; // add element to prop
-        e = NS('path');
-        e.setAttribute('fill', 'transparent');
-        e.setAttribute('stroke', 'transparent');
-        e.setAttribute('style', 'cursor: col-resize');
-        e.setAttribute(
-            'd',
-            'M '  + (PADDING + SIZE * right - 3) + ' ' + SIZE +
-            ' H ' + (PADDING + SIZE * right + 3) + ' v ' + PADDING +
-            ' H ' + (PADDING + SIZE * right - 3) + ' v ' + (-PADDING)
-        );
-        wrapperSvg.appendChild(e);
-        f = ((eve)=>{
-            this.axisEventDragHorizonMax = true;
-            this.axisEventDefaultX = eve.pageX;
-        }).bind(this);
-        this.axisHorizonListeners.push(((func)=>{
-            return ()=>{this.axisHorizonMaxHandle.removeEventListener('mousedown', func, false);};
-        })(f));
-        e.addEventListener('mousedown', f, false);
-        this.axisHorizonMaxHandle = e; // add element to prop
-
-        // draggable rect vertical
-        e = NS('path');
-        e.setAttribute('fill', 'transparent');
-        e.setAttribute('stroke', 'transparent');
-        e.setAttribute('style', 'cursor: row-resize');
-        e.setAttribute(
-            'd',
-            'M 0 '  + (SIZE * bottom - 3) +
-            ' h ' + PADDING + ' V ' + (SIZE * bottom + 3) +
-            ' h ' + (-PADDING) + ' V ' + (SIZE * bottom - 3)
-        );
-        wrapperSvg.appendChild(e);
-        f = ((eve)=>{
-            this.axisEventDragVerticalMin = true;
-            this.axisEventDefaultY = eve.pageY;
-        }).bind(this);
-        this.axisVerticalListeners.push(((func)=>{
-            return ()=>{this.axisVerticalMinHandle.removeEventListener('mousedown', func, false);};
-        })(f));
-        e.addEventListener('mousedown', f, false);
-        this.axisVerticalMinHandle = e; // add element to prop
-        e = NS('path');
-        e.setAttribute('fill', 'transparent');
-        e.setAttribute('stroke', 'transparent');
-        e.setAttribute('style', 'cursor: row-resize');
-        e.setAttribute(
-            'd',
-            'M 0 '  + (SIZE * top - 3) +
-            ' h ' + PADDING + ' V ' + (SIZE * top + 3) +
-            ' h ' + (-PADDING) + ' V ' + (SIZE * top - 3)
-        );
-        wrapperSvg.appendChild(e);
-        f = ((eve)=>{
-            this.axisEventDragVerticalMax = true;
-            this.axisEventDefaultY = eve.pageY;
-        }).bind(this);
-        this.axisVerticalListeners.push(((func)=>{
-            return ()=>{this.axisVerticalMaxHandle.removeEventListener('mousedown', func, false);};
-        })(f));
-        e.addEventListener('mousedown', f, false);
-        this.axisVerticalMaxHandle = e; // add element to prop
+        if(axisArray[1]){
+            // coords
+            yLen    = axisArray[1].volmax - axisArray[1].volmin;
+            top     = 1.0 - (axisArray[1].max - axisArray[1].volmin) / yLen;
+            bottom  = 1.0 - (axisArray[1].min - axisArray[1].volmin) / yLen;
+            // selection Rect
+            e = NS('path');
+            e.setAttribute('fill', RECT_FILL_COLOR);
+            e.setAttribute('stroke', RECT_STROKE_COLOR);
+            e.setAttribute('stroke-width', LINE_WIDTH);
+            e.setAttribute(
+                'd',
+                'M 0 ' + (SIZE * top) +
+                ' h ' + PADDING + ' V ' + (SIZE * bottom) +
+                ' h ' + (-PADDING) + ' V ' + (SIZE * top)
+            );
+            wrapperSvg.appendChild(e);
+            f = ((eve)=>{
+                this.axisEventDragVertical = true;
+                this.axisEventDefaultY = eve.pageY;
+            }).bind(this);
+            this.axisVerticalListeners.push(((func)=>{
+                return ()=>{this.axisVerticalSelect.removeEventListener('mousedown', func, false);};
+            })(f));
+            e.addEventListener('mousedown', f, false);
+            this.axisVerticalSelect = e; // add element to prop
+            // draggable rect vertical
+            e = NS('path');
+            e.setAttribute('fill', 'transparent');
+            e.setAttribute('stroke', 'transparent');
+            e.setAttribute('style', 'cursor: row-resize');
+            e.setAttribute(
+                'd',
+                'M 0 '  + (SIZE * bottom - 3) +
+                ' h ' + PADDING + ' V ' + (SIZE * bottom + 3) +
+                ' h ' + (-PADDING) + ' V ' + (SIZE * bottom - 3)
+            );
+            wrapperSvg.appendChild(e);
+            f = ((eve)=>{
+                this.axisEventDragVerticalMin = true;
+                this.axisEventDefaultY = eve.pageY;
+            }).bind(this);
+            this.axisVerticalListeners.push(((func)=>{
+                return ()=>{this.axisVerticalMinHandle.removeEventListener('mousedown', func, false);};
+            })(f));
+            e.addEventListener('mousedown', f, false);
+            this.axisVerticalMinHandle = e; // add element to prop
+            e = NS('path');
+            e.setAttribute('fill', 'transparent');
+            e.setAttribute('stroke', 'transparent');
+            e.setAttribute('style', 'cursor: row-resize');
+            e.setAttribute(
+                'd',
+                'M 0 '  + (SIZE * top - 3) +
+                ' h ' + PADDING + ' V ' + (SIZE * top + 3) +
+                ' h ' + (-PADDING) + ' V ' + (SIZE * top - 3)
+            );
+            wrapperSvg.appendChild(e);
+            f = ((eve)=>{
+                this.axisEventDragVerticalMax = true;
+                this.axisEventDefaultY = eve.pageY;
+            }).bind(this);
+            this.axisVerticalListeners.push(((func)=>{
+                return ()=>{this.axisVerticalMaxHandle.removeEventListener('mousedown', func, false);};
+            })(f));
+            e.addEventListener('mousedown', f, false);
+            this.axisVerticalMaxHandle = e; // add element to prop
+        }
 
         // last append
         wrapperDiv.appendChild(wrapperSvg);

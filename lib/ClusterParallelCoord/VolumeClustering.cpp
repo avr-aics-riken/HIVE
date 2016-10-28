@@ -10,8 +10,6 @@
 #include <math.h>
 #include <float.h>
 
-
-
 namespace {
     const int fNum = 1024;
 
@@ -53,7 +51,11 @@ namespace {
         }
     }
 
-    void clustering(const std::vector< std::vector<float> >& f, const std::vector<float>& minVal, const std::vector<float>& maxVal, std::vector< std::vector<VolumeClustering::Cluster> >& axisClusters) {
+    void clustering(const std::vector< std::vector<float> >& f, 
+            const std::vector<float>& minVal,
+            const std::vector<float>& maxVal,
+            std::vector< std::vector<VolumeClustering::Cluster> >& axisClusters) 
+    {
         const int compNum = f.size();        
         for (int p = 0; p < compNum; ++p) {
             VolumeClustering::Cluster cls;
@@ -112,7 +114,11 @@ namespace {
         }
     }
 
-    void edgePower(BufferVolumeData* volume, const std::vector< std::vector<VolumeClustering::Cluster> >& axisClusters, std::vector< std::vector< std::vector<int> > >& edgeCount) {
+    void edgePower(BufferVolumeData* volume,
+        const std::vector< std::vector<VolumeClustering::Cluster> >& axisClusters,
+        std::vector< std::vector< std::vector<int> > >& edgeCount,
+        std::vector<int>& orderVal) 
+    {
         const int w = volume->Width();
         const int h = volume->Height();
         const int d = volume->Depth();
@@ -122,7 +128,7 @@ namespace {
         std::vector<int> cls;
         cls.resize(comp);
         for (int i = 0; i < w * h * d; ++i) {
-            for (int p = 0; p < comp; ++p) {                
+            for (int p = 0; p < comp; ++p) {
                 const float v = buffer[comp * i + p];
                 int cl = 0;
                 while(cl < axisClusters[p].size() && v > axisClusters[p][cl].maxValue) {
@@ -135,7 +141,9 @@ namespace {
                 cls[p] = cl;
             }
             for (int p = 0; p < comp - 1; ++p) {
-                ++edgeCount[p][cls[p]][cls[p+1]];
+                const int order1 = orderVal[p];
+                const int order2 = orderVal[p+1];
+                ++edgeCount[p][cls[order1]][cls[order2]];
             }
         }
     }
@@ -150,8 +158,10 @@ VolumeClustering::VolumeClustering()
     const float defaultSigma = 50.0 / fNum;
     const int maxAxis = 20;
     m_sigmaVal.resize(maxAxis);
+    m_orderVal.resize(maxAxis);
     for (int i = 0; i < maxAxis; ++i) {
         m_sigmaVal[i] = defaultSigma;
+        m_orderVal[i] = i;
     }
 }
 
@@ -181,6 +191,20 @@ int VolumeClustering::SetSigma(int axis, float sigma) {
     return 1;
 }
 
+/**
+ * Orderの値の設定
+ * @param axis コンポーネント(軸)指定
+ * @param order Order値
+ * @retval 1 成功
+ * @retval 0 失敗
+ */
+int VolumeClustering::SetOrder(int axis, int order) {
+    if (axis >= m_orderVal.size()) {
+        return 0;
+    }
+    m_orderVal[axis] = order;
+    return 1;
+}
 
 /**
  * ボリュームモデル解析
@@ -257,14 +281,16 @@ bool VolumeClustering::Execute(BufferVolumeData* volume)
     
     m_edgeCounts.resize(compNum - 1);
     for (int p = 0; p < compNum - 1; ++p) { // edge num = compNum - 1
-        int pmax = m_axisClusters[p].size();
+        int order1 = m_orderVal[p];
+        int order2 = m_orderVal[p+1];
+        int pmax = m_axisClusters[order1].size();
         m_edgeCounts[p].resize(pmax);
         for (int np = 0; np < pmax; ++np) {
-            m_edgeCounts[p][np].resize(m_axisClusters[p+1].size());
+            m_edgeCounts[p][np].resize(m_axisClusters[order2].size());
         }
     
     }
-    edgePower(volume, m_axisClusters, m_edgeCounts);
+    edgePower(volume, m_axisClusters, m_edgeCounts, m_orderVal);
 
 #if DUMPVALUE
     // dump edge value
@@ -302,7 +328,8 @@ int VolumeClustering::GetClusterNum(int axis)
     if (axis >= GetAxisNum()) {
         return 0;
     }
-    return static_cast<int>(m_axisClusters[axis].size());
+    const int orderedAxis = m_orderVal[axis];
+    return static_cast<int>(m_axisClusters[orderedAxis].size());
 }
 
 /**
@@ -315,14 +342,15 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
 {
     static Cluster empty;
     if (axis >= GetAxisNum()) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return empty;
     }
     if (cluster >= GetClusterNum(axis)) {
         printf("[Error] over cluster num\n");
         return empty;
     }
-    return m_axisClusters[axis][cluster];
+    const int orderedAxis = m_orderVal[axis];
+    return m_axisClusters[orderedAxis][cluster];
 }
 
 /**
@@ -335,7 +363,7 @@ const VolumeClustering::Cluster& VolumeClustering::GetClusterValue(int axis, int
 int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
 {    
      if (axis >= GetAxisNum() - 1) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return 0;
     }
     if (cluster >= GetClusterNum(axis)) {
@@ -359,10 +387,11 @@ int VolumeClustering::GetEdgePowers(int axis, int cluster, int nextCluster)
 float VolumeClustering::GetVolumeMin(int axis)
 {
     if (axis >= GetAxisNum()) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
-    return m_minVal[axis];
+    const int orderedAxis = m_orderVal[axis];
+    return m_minVal[orderedAxis];
 }
 
 /**
@@ -373,10 +402,11 @@ float VolumeClustering::GetVolumeMin(int axis)
 float VolumeClustering::GetVolumeMax(int axis)
 {
     if (axis >= GetAxisNum()) {
-        printf("[Error] over axis num\n");
+        printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
-    return m_maxVal[axis];
+    const int orderedAxis = m_orderVal[axis];
+    return m_maxVal[orderedAxis];
 }
 
     
