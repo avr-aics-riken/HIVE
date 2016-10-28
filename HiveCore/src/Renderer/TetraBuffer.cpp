@@ -41,8 +41,8 @@ TetraBuffer::~TetraBuffer()
 /// クリア
 void TetraBuffer::Clear()
 {
-    if (m_vtx_id)      ReleaseBufferVBIB_SGL(m_vtx_id);
-    if (m_material_id) ReleaseBufferVBIB_SGL(m_material_id);
+    if (m_vtx_id)      ReleaseBufferVBIB_GS[m_mode](m_vtx_id);
+    if (m_material_id) ReleaseBufferVBIB_GS[m_mode](m_material_id);
     m_vtx_id      = 0;
     m_material_id = 0;
     m_vtxnum      = 0;

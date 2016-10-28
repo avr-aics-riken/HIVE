@@ -455,19 +455,19 @@ void BufferSparseVolumeData::print()
 }
 
 /// Width取得
-const int BufferSparseVolumeData::Width() const
+int BufferSparseVolumeData::Width() const
 {
     return m_imp->Width();
 }
 
 /// Height取得
-const int BufferSparseVolumeData::Height() const
+int BufferSparseVolumeData::Height() const
 {
     return m_imp->Height();
 }
 
 /// Depth取得
-const int BufferSparseVolumeData::Depth() const
+int BufferSparseVolumeData::Depth() const
 {
     return m_imp->Depth();
 }

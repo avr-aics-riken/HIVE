@@ -28,7 +28,7 @@ inline int SimplePNGSaverRGBA(void** pngbuffer, int w, int h, const unsigned cha
     }
   }
 
-  size_t out_size = 0;
+  //size_t out_size = 0;
   std::vector<unsigned char> out;
   unsigned int error = lodepng::encode(out, pImage, w, h);
 

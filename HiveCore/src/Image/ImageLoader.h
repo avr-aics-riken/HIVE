@@ -27,7 +27,7 @@ public:
     BufferImageData *ImageData();
     
     /// @retval no compressed buffer
-    const Buffer ImageBuffer() const;
+    Buffer ImageBuffer() const;
     
     /// @retval no compressed buffer size
     int ImageBufferSize() const;

@@ -247,7 +247,7 @@ public:
      * @param data      ファイルデータ
      * @return buffer ファイルイメージデータバッファ
      */
-    const Buffer SaveMemory(unsigned int format, BufferImageData* data)
+    Buffer SaveMemory(unsigned int format, BufferImageData* data)
     {
         if (!data) { return NULL; }
         if (data->Bytes() <= 0) { return NULL; }
@@ -262,7 +262,7 @@ public:
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
                 delete [] dstbuffer;
-                return (const Buffer)m_memory.c_str();
+                return (Buffer)m_memory.c_str();
             }
         }
         else if (format == ImageSaver::TGA)
@@ -272,7 +272,7 @@ public:
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
                 delete [] dstbuffer;
-                return (const Buffer)m_memory.c_str();
+                return (Buffer)m_memory.c_str();
             }
         }
         else if (format == ImageSaver::EXR)
@@ -283,14 +283,14 @@ public:
                 if (bytes && dstbuffer) {
                     m_memory = std::string(dstbuffer, bytes);
                     delete [] dstbuffer;
-                    return (const Buffer)m_memory.c_str();
+                    return (Buffer)m_memory.c_str();
                 }
             } else if (data->Format() == BufferImageData::RGBA32F) {
                 const int bytes = SimpleEXRSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
                 if (bytes && dstbuffer) {
                     m_memory = std::string(dstbuffer, bytes);
                     delete [] dstbuffer;
-                    return (const Buffer)m_memory.c_str();
+                    return (Buffer)m_memory.c_str();
                 }
             }
         }
@@ -324,7 +324,7 @@ bool ImageSaver::Save(const char* filename, BufferImageData* data)
     return m_imp->Save(filename, data);
 }
 
-const ImageSaver::Buffer ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
+ImageSaver::Buffer ImageSaver::SaveMemory(unsigned int format, BufferImageData* data)
 {
     return m_imp->SaveMemory(format, data);
 }

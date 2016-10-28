@@ -256,7 +256,7 @@ unsigned int BaseBuffer::getProgram() const
  * @param buf バッファイメージデータ
  * @retval テクスチャID
  */
-const unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
+unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
 {
     RenderCore* core = RenderCore::GetInstance();
     unsigned int tex = 0;

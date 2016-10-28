@@ -32,7 +32,7 @@ public:
     ImageSaver();
     ~ImageSaver();
     bool Save(const char* filename, BufferImageData* data);
-    const Buffer SaveMemory(unsigned int format, BufferImageData* data);
+    Buffer SaveMemory(unsigned int format, BufferImageData* data);
     int MemorySize() const;
 };
 

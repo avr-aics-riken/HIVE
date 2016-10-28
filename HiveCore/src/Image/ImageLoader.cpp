@@ -252,7 +252,7 @@ public:
      * ロードしたファイルイメージバッファ
      * @retval Buffer ファイルイメージバッファ
      */
-    const ImageLoader::Buffer ImageBuffer() const
+    ImageLoader::Buffer ImageBuffer() const
     {
         unsigned char* buf = m_image->ImageBuffer()->GetBuffer();
         return reinterpret_cast<ImageLoader::Buffer>(buf);
@@ -291,7 +291,7 @@ BufferImageData* ImageLoader::ImageData()
 }
 
 /// @retval no compressed buffer
-const ImageLoader::Buffer ImageLoader::ImageBuffer() const
+ImageLoader::Buffer ImageLoader::ImageBuffer() const
 {
     return m_imp->ImageBuffer();
 }

@@ -27,7 +27,7 @@ public:
 	bool Create3D_F32(float *buf, int width, int height, int depth);
 	BufferImageData *ImageData();
 	BufferVolumeData *VolumeData();
-	const Buffer ImageBuffer() const;
+	Buffer ImageBuffer() const;
 
 	int ImageBufferSize() const;
 

@@ -63,9 +63,9 @@ public:
     void print();
 
     // Width(), Height() and Depth() are valid after adding all volume blocks.
-    const int Width() const;
-    const int Height() const;
-    const int Depth() const;
+    int Width() const;
+    int Height() const;
+    int Depth() const;
     //const int CellWidth() const;
     //const int CellHeight() const;
     //const int CellDepth() const;

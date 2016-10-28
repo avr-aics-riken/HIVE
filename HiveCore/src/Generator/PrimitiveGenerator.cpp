@@ -2248,7 +2248,6 @@ BufferMeshData* PrimitiveGenerator::Teapot(float scale) const
 
 BufferPointData*  PrimitiveGenerator::SphereList(float *vertices, float num, float radius) const
 {
-    int i = 0;
     BufferPointData* point = BufferPointData::CreateInstance();
 
     point->Create(num);
@@ -2271,7 +2270,6 @@ BufferPointData*  PrimitiveGenerator::SphereList(float *vertices, float num, flo
 
 BufferLineData*  PrimitiveGenerator::LineList(float *vertices, float num, float radius) const
 {
-    int i = 0;
     BufferLineData* line = BufferLineData::CreateInstance();
 
     //line->Create(num, num); //create line list

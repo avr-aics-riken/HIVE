@@ -123,7 +123,7 @@ BufferVolumeData* GenTexture::VolumeData()
 }
 
 
-const GenTexture::Buffer GenTexture::ImageBuffer() const
+GenTexture::Buffer GenTexture::ImageBuffer() const
 {
 	return m_imp->ImageBuffer();
 }
