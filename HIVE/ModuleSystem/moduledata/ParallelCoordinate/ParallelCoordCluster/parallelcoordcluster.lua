@@ -100,6 +100,13 @@ function ParallelCoordCluster:Do()
     local needExe = false
     local needOrder = false
     local axisjson = ""
+                
+    -[[
+    self.volumeclustering:SetOrder(0, 2);
+    self.volumeclustering:SetOrder(1, 1);
+    self.volumeclustering:SetOrder(2, 0);
+       ]]         
+       
     if self.value.axisjson ~= "" then -- axis info edited?
 
         axisjson = self.value.axisjson
@@ -114,6 +121,7 @@ function ParallelCoordCluster:Do()
             end
         end
 
+        
         -- オーダーが変更になる場合には Lua でキャッシュしているデータも
         -- 同じようにオーダーを変更してキャッシュしておかないと次に Lua が走るときに
         -- 意味がなくなるので、もしオーダーに変更があった場合にはキャッシュも並び替える
@@ -130,6 +138,7 @@ function ParallelCoordCluster:Do()
         if needOrder then
             for ax = 1, axisNum do
                 print('new order: ', axisinfo[ax].order)
+                self.volumeclustering:SetOrder(ax - 1, self.axisOrder[ax])
             end
         end
 

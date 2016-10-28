@@ -45,6 +45,7 @@ public:
 
     int GetEdgePowers(int axis, int cluster, int nextCluster);
     int SetSigma(int axis, float sigma);
+    int SetOrder(int axis, int order);
 
     float GetVolumeMin(int axis);
     float GetVolumeMax(int axis);
@@ -55,7 +56,8 @@ private:
     std::vector<float> m_minVal;
     std::vector<float> m_maxVal;
     std::vector<float> m_sigmaVal;    
+    std::vector<int> m_orderVal;
     std::vector< std::vector<Cluster> > m_axisClusters;
-    std::vector< std::vector< std::vector<int> > > m_edgeCounts;
+    std::vector< std::vector< std::vector<int> > > m_edgeCounts; // depends on order
 };
 
