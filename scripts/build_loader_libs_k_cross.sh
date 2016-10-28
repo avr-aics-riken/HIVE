@@ -4,8 +4,8 @@ topdir=`pwd`
 installdir=`pwd`/third_party/local
 c_compiler=mpifccpx
 cxx_compiler=mpiFCCpx
-cxx_flags="-Kfast -KPIC"
-f90_flags="-Kfast -KPIC"
+cxx_flags="-Xg -Kfast -KPIC"
+f90_flags="-Xg -Kfast -KPIC"
 f90_compiler=mpifrtpx
 if [ -z "${CMAKE_BIN+x}" ]; then
   CMAKE_BIN=/opt/local/bin/cmake
@@ -49,7 +49,7 @@ function build_cdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -I/opt/aics/netcdf/k/include" LDFLAGS="-L/opt/aics/netcdf/k/lib-static" LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lsz -lz" F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes --with-nc && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS="${cxx_flags} -I/opt/aics/netcdf/k/include" LDFLAGS="-L/opt/aics/netcdf/k/lib-static" LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lsz -lz" F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes --with-nc && make && make install
 	cd ${topdir}
 }
 
@@ -70,7 +70,7 @@ function build_polylib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="-Kfast,ocl,preex,simd=2,uxsimd,array_private,parallel,openmp" ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS="-Kfast,ocl,preex,simd=2,uxsimd,array_private,parallel,openmp" ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
  
@@ -84,7 +84,7 @@ function build_bcmtools {
 		make distclean
 	fi
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
@@ -101,7 +101,7 @@ function build_hdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
@@ -136,7 +136,7 @@ function build_pdmlib {
 	rm -rf PDMlib_build
 	mkdir PDMlib_build
 	cd PDMlib_build/
-	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_CXX_COMPILER=${cxx_compiler} -DCMAKE_C_COMPILER=${c_compiler} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib -Dbuild_h5part_converter=no -Dbuild_fv_converter=no -Dbuild_vtk_converter=no ../PDMlib && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ${CMAKE_BIN} -DCMAKE_CXX_COMPILER=${cxx_compiler} -DCMAKE_C_COMPILER=${c_compiler} -DTP_ROOT=${installdir}/TextParser -DFPZIP_ROOT=${installdir} -DZOLTAN_ROOT=${installdir} -DCMAKE_INSTALL_PREFIX=${installdir}/PDMlib -Dbuild_h5part_converter=no -Dbuild_fv_converter=no -Dbuild_vtk_converter=no ../PDMlib && make && make install
 	cd ${topdir}
 }
 
@@ -156,7 +156,7 @@ function build_udmlib {
 	tar -zxvf cgnslib_3.2.1.tar.gz
 	mkdir cgnslib_build
 	cd cgnslib_build
-	CXX=${cxx_compiler} CC=${c_compiler} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_ENABLE_64BIT=On -DCGNS_BUILD_SHARED=Off ../cgnslib_3.2.1 && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ${CMAKE_BIN} -DCMAKE_INSTALL_PREFIX=${installdir} -DCGNS_ENABLE_64BIT=On -DCGNS_BUILD_SHARED=Off ../cgnslib_3.2.1 && make && make install
 	cd ${topdir}
 
 	#
@@ -170,7 +170,7 @@ function build_udmlib {
 	cd build
 
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${cxx_compiler} CXX_FLAGS=${cxx_flags} ../configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -184,7 +184,7 @@ function build_compositor {
 	fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
@@ -197,7 +197,7 @@ function build_nanomsg {
 	fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/nanomsg && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXX_FLAGS=${cxx_flags} ./configure --prefix=${installdir}/nanomsg && make && make install
 	cd ${topdir}
 }
 
