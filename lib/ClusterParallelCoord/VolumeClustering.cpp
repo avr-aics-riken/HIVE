@@ -390,8 +390,8 @@ float VolumeClustering::GetVolumeMin(int axis)
         printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
-    const int orderedAxis = m_orderVal[axis];
-    return m_minVal[orderedAxis];
+    //const int orderedAxis = m_orderVal[axis];
+    return m_minVal[axis];
 }
 
 /**
@@ -405,8 +405,8 @@ float VolumeClustering::GetVolumeMax(int axis)
         printf("[Error] over axis num %d \n", axis);
         return 0.0f;
     }
-    const int orderedAxis = m_orderVal[axis];
-    return m_maxVal[orderedAxis];
+    //const int orderedAxis = m_orderVal[axis];
+    return m_maxVal[axis];
 }
 
     
