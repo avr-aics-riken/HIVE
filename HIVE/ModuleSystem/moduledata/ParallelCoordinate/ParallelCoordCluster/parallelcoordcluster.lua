@@ -100,27 +100,23 @@ function ParallelCoordCluster:Do()
     local needExe = false
     local needOrder = false
     local axisjson = ""
+    if self.value.axisjson ~= "" then
 
-    if self.value.axisjson ~= "" then -- axis info edited?
-
+        -- json from input
         axisjson = self.value.axisjson
 
+        -- decode
         axisinfo = JSON.decode(axisjson)
 
+        -- for each axis
         for ax = 1, axisNum do
+            -- シグマに変更があったか確認
             local axSigma = axisinfo[ax].sigma
             if axSigma ~= nil and self.axisSigma[ax] ~= axSigma then
                 self.axisSigma[ax] = axSigma
                 needExe = true
             end
-        end
-
-        -- オーダーが変更になる場合には Lua でキャッシュしているデータも
-        -- 同じようにオーダーを変更してキャッシュしておかないと次に Lua が走るときに
-        -- 意味がなくなるので、もしオーダーに変更があった場合にはキャッシュも並び替える
-        for ax = 1, axisNum do
-            -- 希望オーダーがnilでなく、かつキャッシュの値と異なる場合
-            -- 並べ替えが発生しているはずなので needexe かつ needorder
+            -- オーダーに変更があったか確認
             if axisinfo[ax].order ~= nil and axisinfo[ax].order ~= ax - 1 then
             -- if axisinfo[ax].order ~= nil and axisinfo[ax].order ~= self.axisOrder[ax] then
                 self.axisOrder[ax] = axisinfo[ax].order
@@ -128,6 +124,7 @@ function ParallelCoordCluster:Do()
                 needOrder = true
             end
         end
+
         -- オーダーが変更されていた場合の処理
         if needOrder then
             for ax = 1, axisNum do
@@ -136,12 +133,39 @@ function ParallelCoordCluster:Do()
                 print('new order: ', axisinfo[ax].order)
                 print('default order: ', axisinfo[ax].defaultOrder)
                 print('---------------------------------------------------')
-                -- self.volumeclustering:SetOrder(axisinfo[ax].order, ax - 1)
-                -- self.volumeclustering:SetOrder(ax - 1, axisinfo[ax].order)
                 -- self.volumeclustering:SetOrder(axisinfo[ax].defaultOrder, axisinfo[ax].order)
+                self.volumeclustering:SetOrder(axisinfo[ax].order, axisinfo[ax].defaultOrder)
             end
         end
+    else
+        -- 初回はデフォルトのオーダーを連番でセットする
+        for ax = 1, axisNum do
+            self.axisOrder[ax] = ax - 1
+        end
+    end
 
+    -- もしオーダーが変更されていたら、この時点でネイティブ側のインデックスは既に
+    -- 新しいオーダー順になっている。ネイティブ側のインデックス状態に合わせるため
+    -- axisinfo の中身を Lua 側でも並び替えておくと状態が一致する
+    -- また、変更があったかどうかを調べるためにキャッシュしているシグマとオーダー
+    -- についても同様に並び替えをしておくことで次フレームでも整合性が保たれる
+    if needOrder then
+        local tmp = JSON.decode(axisjson)
+        local tmpSigma = {}
+        local tmpOrder = {}
+        local index = {}
+        for ax = 1, axisNum do
+            local i = axisinfo[ax].order + 1
+            index[ax] = i
+            tmpSigma[ax] = self.axisSigma[ax]
+            tmpOrder[ax] = self.axisOrder[ax]
+        end
+
+        for ax = 1, axisNum do
+            axisinfo[ax] = tmp[index[ax]]
+            self.axisSigma[ax] = tmpSigma[index[ax]]
+            self.axisOrder[ax] = tmpOrder[index[ax]]
+        end
     end
 
     -- check plot axis prev
@@ -164,10 +188,9 @@ function ParallelCoordCluster:Do()
         for ax = 0, axisNum - 1 do
             self.volumeclustering:SetSigma(ax, self.axisSigma[ax+1])
         end
-        print('Clustring = ', self.volumeclustering:Execute(self.value.volume))
+        print('Clustring Running = ', self.volumeclustering:Execute(self.value.volume))
 
         -- Plot
-        -- [TODO: axis select information]
         local plotX = -1
         local plotY = -1
         if self.value.plotX ~= nil then
@@ -180,7 +203,6 @@ function ParallelCoordCluster:Do()
         sendPlot(self.varname, self.plot:GetImageBuffer())
     end
 
-
     -- make axis info
     local temp
     local dest = '{'
@@ -191,7 +213,6 @@ function ParallelCoordCluster:Do()
     dest = dest .. '  "size":[' .. volWidth .. ', ' .. volHeight .. ',' .. volDepth .. ', '.. volComp .. ' ],'
     dest = dest .. '  "minmax":['
     for ax = 0, axisNum - 1 do
-
         if ax ~= 0 then
             dest = dest .. ','
         end
@@ -204,9 +225,6 @@ function ParallelCoordCluster:Do()
     dest = dest .. '['
     --print('AxisNum = ' .. axisNum)
     for ax = 0, axisNum - 1 do
-        order = ax
-        cnum = self.volumeclustering:GetClusterNum(order)
-
         -- json string
         if ax == 0 then
             dest = dest .. '{'
@@ -228,10 +246,7 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"selectedAxis": ' .. selectedAxis  .. ', '
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
             dest = dest .. '"defaultOrder": ' .. axisinfo[ax+1].defaultOrder .. ', '
-            -- dest = dest .. '"order": ' .. axisinfo[ax+1].order .. ', '
             dest = dest .. '"order": ' .. ax .. ', '
-            order = axisinfo[ax+1].order
-            cnum = self.volumeclustering:GetClusterNum(order)
         else
             dest = dest .. '"title": "title_' .. ax .. '", '
             dest = dest .. '"brush": {"min": null, "max": null}, '
@@ -243,6 +258,8 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"order": ' .. ax .. ', '
         end
 
+        cnum = self.volumeclustering:GetClusterNum(ax)
+
         print('ClusterNum' .. ax .. ' = ' .. cnum)
 
         dest = dest .. '"clusternum": ' .. cnum .. ', '
@@ -253,7 +270,7 @@ function ParallelCoordCluster:Do()
             else
                 dest = dest .. ',{'
             end
-            local cv = self.volumeclustering:GetClusterValue(order, c)
+            local cv = self.volumeclustering:GetClusterValue(ax, c)
             local j = 0
             for i,v in pairs(cv) do
                 temp = string.gsub(i, 'Value', '');
@@ -283,7 +300,6 @@ function ParallelCoordCluster:Do()
     end
 
     dest = dest .. ']'
-
 
     --- make Edge info
     local datanum = volWidth * volHeight * volDepth

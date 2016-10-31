@@ -1627,17 +1627,16 @@ Axis.prototype.dragEnd = function(eve){
 
             this.parent.draggingAxis = -1;
             // 変更があった場合は input の値を更新する
-            console.log('order change');
             axisjson = this.parent.getAllBrushedRange(this, false, false);
 
-            var tmps = JSON.parse(JSON.stringify(axisjson));
-            for(i = 0, j = this.parent.axisCount; i < j; ++i){
-                noworder[i] = tmps[i].order;
-            }
-            for(i = 0, j = this.parent.axisCount; i < j; ++i){
-                axisjson[i] = tmps[noworder[i]];
-                axisjson[i].order = noworder[i];
-            }
+            // var tmps = JSON.parse(JSON.stringify(axisjson));
+            // for(i = 0, j = this.parent.axisCount; i < j; ++i){
+            //     noworder[i] = tmps[i].order;
+            // }
+            // for(i = 0, j = this.parent.axisCount; i < j; ++i){
+            //     axisjson[i] = tmps[noworder[i]];
+            //     axisjson[i].order = noworder[i];
+            // }
 
             if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
         }
