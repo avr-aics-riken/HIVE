@@ -11,6 +11,7 @@ ParallelCoordCluster.new = function (varname)
     this.plot = require('ClusterParallelCoord').VolumeScatterPlot();
     this.axisSigma = {}
     this.axisOrder = {}
+    this.newOrderToDefaultOrder = {}
     this.plotAxis = {plotX = -1, plotY = -1}
     local defaultSigma = 0.05
     local maxAxisNum = 20
@@ -140,6 +141,7 @@ function ParallelCoordCluster:Do()
                 print('---------------------------------------------------')
                 -- self.volumeclustering:SetOrder(axisinfo[ax].defaultOrder, axisinfo[ax].order)
                 self.volumeclustering:SetOrder(axisinfo[axi].order, axisinfo[axi].defaultOrder)
+                self.newOrderToDefaultOrder[axisinfo[axi].order + 1] = axisinfo[axi].defaultOrder;
             end
         end
     else
@@ -163,13 +165,13 @@ function ParallelCoordCluster:Do()
             local i = axisinfo[ax].order + 1
             index[ax] = i
             tmpSigma[ax] = self.axisSigma[ax]
-            tmpOrder[ax] = self.axisOrder[ax]
+            --tmpOrder[ax] = self.axisOrder[ax]
         end
 
         for ax = 1, axisNum do
             axisinfo[ax] = tmp[index[ax]]
             self.axisSigma[ax] = tmpSigma[index[ax]]
-            self.axisOrder[ax] = tmpOrder[index[ax]]
+            --self.axisOrder[ax] = tmpOrder[index[ax]]
         end
     end
 
@@ -204,7 +206,15 @@ function ParallelCoordCluster:Do()
                 plotY = self.value.plotY
             end
         end
-        self.plot:Execute(self.value.volume, plotX, plotY);
+        print("plot original = :", plotX, plotY);
+        
+        if self.newOrderToDefaultOrder[plotX + 1] ~= nil then
+            print("plot = :",self.newOrderToDefaultOrder[plotX + 1], self.newOrderToDefaultOrder[plotY + 1]);
+            self.plot:Execute(self.value.volume, self.newOrderToDefaultOrder[plotX + 1], self.newOrderToDefaultOrder[plotY + 1]);
+        else
+            print("plot = :", plotX, plotY);
+            self.plot:Execute(self.value.volume, plotX, plotY);
+        end
         sendPlot(self.varname, self.plot:GetImageBuffer())
     end
 
