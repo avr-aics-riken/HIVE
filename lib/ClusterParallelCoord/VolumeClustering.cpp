@@ -187,7 +187,8 @@ int VolumeClustering::SetSigma(int axis, float sigma) {
     if (axis >= m_sigmaVal.size()) {
         return 0;
     }
-    m_sigmaVal[axis] = sigma;
+    const int orderedAxis = m_orderVal[axis];
+    m_sigmaVal[orderedAxis] = sigma;
     return 1;
 }
 

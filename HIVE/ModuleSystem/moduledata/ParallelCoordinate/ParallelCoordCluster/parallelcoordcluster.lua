@@ -131,8 +131,14 @@ function ParallelCoordCluster:Do()
         -- オーダーが変更されていた場合の処理
         if needOrder then
             for ax = 1, axisNum do
+                print('---------------------------------------------------')
+                print('axis: ', ax - 1)
                 print('new order: ', axisinfo[ax].order)
-                self.volumeclustering:SetOrder(ax - 1, axisinfo[ax])
+                print('default order: ', axisinfo[ax].defaultOrder)
+                print('---------------------------------------------------')
+                -- self.volumeclustering:SetOrder(axisinfo[ax].order, ax - 1)
+                -- self.volumeclustering:SetOrder(ax - 1, axisinfo[ax].order)
+                -- self.volumeclustering:SetOrder(axisinfo[ax].defaultOrder, axisinfo[ax].order)
             end
         end
 
@@ -238,7 +244,6 @@ function ParallelCoordCluster:Do()
         end
 
         print('ClusterNum' .. ax .. ' = ' .. cnum)
-        print('Order' .. ' = ' .. order)
 
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
