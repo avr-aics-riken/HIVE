@@ -1602,6 +1602,7 @@ Axis.prototype.dragEnd = function(eve){
                     }else{
                         offsetCount = Math.floor(l / w) - this.order + 1;
                     }
+                    offsetCount = -1; // 隣にひとつだけ移動できる
                     for(i = 0, j = this.parent.axisCount; i < j; ++i){
                         // インデックスが若いものだけインクリメントする
                         if(i < this.order && i >= this.order + offsetCount){
@@ -1615,6 +1616,7 @@ Axis.prototype.dragEnd = function(eve){
                 // 現在の位置が配列長より小さい場合だけ処理する
                 if(this.order < this.parent.axisCount - 1){
                     offsetCount = Math.floor(l / w) - this.order;
+                    offsetCount = 1; // 隣にひとつだけ移動できる
                     for(i = 0, j = this.parent.axisCount; i < j; ++i){
                         // インデックスが高いものだけデクリメントする
                         if(i > this.order && i <= this.order + offsetCount){
@@ -1628,15 +1630,6 @@ Axis.prototype.dragEnd = function(eve){
             this.parent.draggingAxis = -1;
             // 変更があった場合は input の値を更新する
             axisjson = this.parent.getAllBrushedRange(this, false, false);
-
-            // var tmps = JSON.parse(JSON.stringify(axisjson));
-            // for(i = 0, j = this.parent.axisCount; i < j; ++i){
-            //     noworder[i] = tmps[i].order;
-            // }
-            // for(i = 0, j = this.parent.axisCount; i < j; ++i){
-            //     axisjson[i] = tmps[noworder[i]];
-            //     axisjson[i].order = noworder[i];
-            // }
 
             if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}
         }
