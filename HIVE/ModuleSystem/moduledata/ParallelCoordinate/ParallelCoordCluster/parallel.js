@@ -1632,7 +1632,11 @@ Axis.prototype.dragEnd = function(eve){
 
             var tmps = JSON.parse(JSON.stringify(axisjson));
             for(i = 0, j = this.parent.axisCount; i < j; ++i){
-                axisjson[i] = tmps[tmps[i].defaultOrder];
+                noworder[i] = tmps[i].order;
+            }
+            for(i = 0, j = this.parent.axisCount; i < j; ++i){
+                axisjson[i] = tmps[noworder[i]];
+                axisjson[i].order = noworder[i];
             }
 
             if(this.parent.selectedCallback){this.parent.selectedCallback('axisjson', axisjson);}

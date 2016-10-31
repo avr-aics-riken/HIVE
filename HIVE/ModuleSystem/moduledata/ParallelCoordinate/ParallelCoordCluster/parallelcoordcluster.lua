@@ -100,13 +100,7 @@ function ParallelCoordCluster:Do()
     local needExe = false
     local needOrder = false
     local axisjson = ""
-                
-    --[[
-    self.volumeclustering:SetOrder(0, 2);
-    self.volumeclustering:SetOrder(1, 1);
-    self.volumeclustering:SetOrder(2, 0);
-       ]]         
-       
+
     if self.value.axisjson ~= "" then -- axis info edited?
 
         axisjson = self.value.axisjson
@@ -121,14 +115,14 @@ function ParallelCoordCluster:Do()
             end
         end
 
-        
         -- オーダーが変更になる場合には Lua でキャッシュしているデータも
         -- 同じようにオーダーを変更してキャッシュしておかないと次に Lua が走るときに
         -- 意味がなくなるので、もしオーダーに変更があった場合にはキャッシュも並び替える
         for ax = 1, axisNum do
             -- 希望オーダーがnilでなく、かつキャッシュの値と異なる場合
             -- 並べ替えが発生しているはずなので needexe かつ needorder
-            if axisinfo[ax].order ~= nil and axisinfo[ax].order ~= self.axisOrder[ax] then
+            if axisinfo[ax].order ~= nil and axisinfo[ax].order ~= ax - 1 then
+            -- if axisinfo[ax].order ~= nil and axisinfo[ax].order ~= self.axisOrder[ax] then
                 self.axisOrder[ax] = axisinfo[ax].order
                 needExe = true
                 needOrder = true
@@ -138,7 +132,7 @@ function ParallelCoordCluster:Do()
         if needOrder then
             for ax = 1, axisNum do
                 print('new order: ', axisinfo[ax].order)
-                self.volumeclustering:SetOrder(ax - 1, self.axisOrder[ax])
+                self.volumeclustering:SetOrder(ax - 1, axisinfo[ax])
             end
         end
 
@@ -192,17 +186,10 @@ function ParallelCoordCluster:Do()
     dest = dest .. '  "minmax":['
     for ax = 0, axisNum - 1 do
 
-        cnum = self.volumeclustering:GetClusterNum(ax)
-        order = ax
-        if axisjson ~= "" then
-            order = axisinfo[ax+1].order
-        end
-
         if ax ~= 0 then
             dest = dest .. ','
         end
-        dest = dest .. '{"min":' .. self.volumeclustering:GetVolumeMin(order) .. ', "max":' .. self.volumeclustering:GetVolumeMax(order) .. '}'
-        --print('{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}')
+        dest = dest .. '{"min":' .. self.volumeclustering:GetVolumeMin(ax) .. ', "max":' .. self.volumeclustering:GetVolumeMax(ax) .. '}'
     end
     dest = dest .. '  ]'
     dest = dest .. ' }'
@@ -211,9 +198,8 @@ function ParallelCoordCluster:Do()
     dest = dest .. '['
     --print('AxisNum = ' .. axisNum)
     for ax = 0, axisNum - 1 do
-        cnum = self.volumeclustering:GetClusterNum(ax)
         order = ax
-        print('ClusterNum = ' .. cnum)
+        cnum = self.volumeclustering:GetClusterNum(order)
 
         -- json string
         if ax == 0 then
@@ -236,7 +222,8 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"selectedAxis": ' .. selectedAxis  .. ', '
             dest = dest .. '"selectedNumber": ' .. axisinfo[ax+1].selectedNumber .. ', '
             dest = dest .. '"defaultOrder": ' .. axisinfo[ax+1].defaultOrder .. ', '
-            dest = dest .. '"order": ' .. axisinfo[ax+1].order .. ', '
+            -- dest = dest .. '"order": ' .. axisinfo[ax+1].order .. ', '
+            dest = dest .. '"order": ' .. ax .. ', '
             order = axisinfo[ax+1].order
             cnum = self.volumeclustering:GetClusterNum(order)
         else
@@ -249,6 +236,9 @@ function ParallelCoordCluster:Do()
             dest = dest .. '"defaultOrder": ' .. ax .. ', '
             dest = dest .. '"order": ' .. ax .. ', '
         end
+
+        print('ClusterNum' .. ax .. ' = ' .. cnum)
+        print('Order' .. ' = ' .. order)
 
         dest = dest .. '"clusternum": ' .. cnum .. ', '
         dest = dest .. '"cluster": ['
