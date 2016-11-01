@@ -102,7 +102,7 @@ function build_hdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS=${c_flags} ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
@@ -127,7 +127,7 @@ function build_pdmlib {
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
 	mkdir Zoltan_build
 	cd Zoltan_build
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS=${c_flags} ../Zoltan_v3.81/configure --prefix=${installdir} --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 
 	#
@@ -148,7 +148,7 @@ function build_udmlib {
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
 	mkdir Zoltan_build
 	cd Zoltan_build
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS=${c_flags} ../Zoltan_v3.81/configure --prefix=${installdir} --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 
 	cd third_party/
@@ -171,7 +171,7 @@ function build_udmlib {
 	cd build
 
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} CXX_FLAGS=${cxx_flags} ../configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${cxx_compiler} CXX_FLAGS=${cxx_flags} CFLAGS=${c_flags} ../configure --prefix=${installdir}/UDMlib --with-comp=FJ --host=sparc64-unknown-linux-gnu --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -185,7 +185,7 @@ function build_compositor {
 	fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS=${c_flags} ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
@@ -198,7 +198,7 @@ function build_nanomsg {
 	fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/nanomsg && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS=${c_flags} ./configure --prefix=${installdir}/nanomsg && make && make install
 	cd ${topdir}
 }
 
