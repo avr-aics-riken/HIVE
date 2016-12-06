@@ -32,7 +32,7 @@ function build_tp {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ../configure --host=sparc64-unknown-linux-gnu --prefix=${installdir}/TextParser && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="${c_flags}" CXXFLAGS=${cxx_flags} ../configure --host=sparc64-unknown-linux-gnu --prefix=${installdir}/TextParser && make && make install
 	cd ${topdir}
 }
 
@@ -50,7 +50,7 @@ function build_cdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -I/opt/aics/netcdf/k/include" LDFLAGS="-L/opt/aics/netcdf/k/lib-static" LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lsz -lz" F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes --with-nc && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="${c_flags}" CXXFLAGS="${cxx_flags} -I/opt/aics/netcdf/k/include" LDFLAGS="-L/opt/aics/netcdf/k/lib-static" LIBS="-lnetcdf -lhdf5_hl -lhdf5 -lsz -lz" F90=${f90_compiler} F90FLAGS=${f90_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu --with-MPI=yes --with-nc && make && make install
 	cd ${topdir}
 }
 
@@ -71,7 +71,7 @@ function build_polylib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="-Kfast,ocl,preex,simd=2,uxsimd,array_private,parallel,openmp" ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="${c_flags}" CXXFLAGS="-Kfast,ocl,preex,simd=2,uxsimd,array_private,parallel,openmp" ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
  
@@ -85,7 +85,7 @@ function build_bcmtools {
 		make distclean
 	fi
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS="${c_flags}" ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
