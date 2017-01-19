@@ -8,13 +8,14 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 
 * cmake 2.8 or later
 * Autotools
-* MPI compiler(optional for macosx and linux x64 environment)
+* MPI C/C++ compiler(optional for macosx and linux x64 environment)
 * Zoltan v.3.81(Required when you build HIVE with PDMlib support)
 * fpzip 1.0.1(Required when you build HIVE with PDMlib support)
 * cgnslib 3.2.1(Required when you build HIVE with UDMlib support)
 * netcdf4 4.2.1.1(Required when you build HIVE with CDMlib support)
 * HDF5 1.8.10 patch1(Required when you buil HIVE with CDMlib support)
   * Use brew install hdf5 for MacOSX.
+* Fortran compiler(e.g. gfortran. Optional. Required for building CDMlib)
 
 ## git clone
 
@@ -47,6 +48,7 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
 #### Ubuntu 14.04
 
     $ sudo apt-get install libhdf5-dev
+    $ sudo apt-get install gfortran
     $ cd $HIVE
     $ ./scripts/build_loader_libs_linux-x64.sh
 
