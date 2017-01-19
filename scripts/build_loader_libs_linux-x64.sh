@@ -173,6 +173,12 @@ function build_pdmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+	# Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+	cd Zoltan_v3.81
+	patch -p0 < ../zoltan_installscript_patch.diff
+	cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
@@ -196,6 +202,12 @@ function build_udmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+	# Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+	cd Zoltan_v3.81
+	patch -p0 < ../zoltan_installscript_patch.diff
+	cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
