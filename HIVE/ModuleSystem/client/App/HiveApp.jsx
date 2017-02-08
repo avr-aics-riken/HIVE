@@ -7,6 +7,7 @@ import Hive from './HIVE';
 import Node from "./UI/Node";
 import Panel from "./UI/Panel";
 import Menu from "./UI/Menu";
+import Dialog from "./UI/Dialog";
 import MenuTop from "./UI/Menu/MenuTop.jsx";
 import TimeSlider from "./UI/TimeSlider";
 import Splitter from "./UI/Splitter";
@@ -32,7 +33,8 @@ export default class HiveApp extends React.Component {
             listVisible: false,
             listPos: [window.innerWidth / 2, window.innerHeight / 2 - 150],
 			filebrowser : false,
-			labeldialog : false
+			labeldialog : false,
+            messagedialog : false,
         };
 
         this.onDragOver = this.onDragOver.bind(this);
@@ -54,6 +56,8 @@ export default class HiveApp extends React.Component {
 		this.onFilebrowserCancel = this.onFilebrowserCancel.bind(this);
 		this.onLabelDialogOK = this.onLabelDialogOK.bind(this);
 		this.onLabelDialogCancel = this.onLabelDialogCancel.bind(this);
+        this.onMessageDialogOK = this.onMessageDialogOK.bind(this);
+		this.onMessageDialogCancel = this.onMessageDialogCancel.bind(this);
 
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
@@ -118,6 +122,17 @@ export default class HiveApp extends React.Component {
 			}
 			this.labeldialogCallback = callback;
 			this.setState({ labeldialog: true});
+		});
+        
+		this.store.on(Constants.OPEN_MESSAGE_DIALOG, (err, key, callback) => {
+			this.messagedialogKey = key;
+			let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+			let dialog = "messageDialog" + String(currentMode);
+			if (this.refs.hasOwnProperty(dialog)) {
+				this.refs[dialog].setState({label : key})
+			}
+			this.messagedialogCallback = callback;
+			this.setState({ messagedialog: true});
 		});
     }
 
@@ -277,6 +292,20 @@ export default class HiveApp extends React.Component {
 			labeldialog : false
 		});
 	}
+    
+	onMessageDialogOK(value) {
+		this.messagedialogCallback(null, value);
+		this.action.okMessageDialog(this.messagedialogKey, value);
+		this.setState({
+			messagedialog : false
+		});
+	}
+
+	onMessageDialogCancel(value) {
+		this.setState({
+			messagedialog : false
+		});
+	}
 
 	layoutMode(layoutType) {
 		if (layoutType === "all") { return 2; }
@@ -303,7 +332,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -317,6 +346,14 @@ export default class HiveApp extends React.Component {
 							okFunc={this.onLabelDialogOK}
 							cancelFunc={this.onLabelDialogCancel}
 							initialValue={this.labeldialogKey}
+							/>
+						<Dialog.MessageDialog ref="messageDialog3"
+							store={this.store}
+							action={this.action}
+							display={this.state.messagedialog}
+							okFunc={this.onMessageDialogOK}
+							cancelFunc={this.onMessageDialogCancel}
+							initialValue={this.messagedialogKey}
 							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
@@ -340,7 +377,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -354,6 +391,14 @@ export default class HiveApp extends React.Component {
 							okFunc={this.onLabelDialogOK}
 							cancelFunc={this.onLabelDialogCancel}
 							initialValue={this.labeldialogKey}
+							/>
+						<Dialog.MessageDialog ref="messageDialog2"
+							store={this.store}
+							action={this.action}
+							display={this.state.messagedialog}
+							okFunc={this.onMessageDialogOK}
+							cancelFunc={this.onMessageDialogCancel}
+							initialValue={this.messagedialogKey}
 							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
@@ -372,7 +417,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -387,6 +432,14 @@ export default class HiveApp extends React.Component {
 							cancelFunc={this.onLabelDialogCancel}
 							initialValue={this.labeldialogKey}
 							/>
+						<Dialog.MessageDialog ref="messageDialog1"
+							store={this.store}
+							action={this.action}
+							display={this.state.messagedialog}
+							okFunc={this.onMessageDialogOK}
+							cancelFunc={this.onMessageDialogCancel}
+							initialValue={this.messagedialogKey}
+							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -400,7 +453,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );

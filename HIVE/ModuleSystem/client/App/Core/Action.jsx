@@ -17,6 +17,16 @@ export default class Action {
 			show : show
 		});
     }
+	
+	/**
+	 * HIVEを再起動する
+	 */
+	rebootHive() {
+        this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "rebootHive"
+		});
+	}
 
     /**
 	 * Layoutを変更する
@@ -518,6 +528,33 @@ export default class Action {
 		this.dispatcher.dispatch({
 			id :this.id,
 			actionType: "okLabelDialog",
+			key : key,
+			value : value
+		});
+	}
+	
+	/**
+	 * Messageダイアログを開く.
+	 * @param key 任意のキー. OK_MESSAGE_DIALOGイベントで返される
+	 */
+	openMessageDialog(key, callback) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "openMessageDialog",
+			key : key,
+			callback : callback
+		});
+	}
+	
+	/**
+	 * MessageダイアログがOKされた通知を送る.
+	 * @param key 任意のキー. openMessageDialogの引数のキー
+	 * @param value 選択されたパス
+	 */
+	okMessageDialog(key, value) {
+		this.dispatcher.dispatch({
+			id :this.id,
+			actionType: "okMessageDialog",
 			key : key,
 			value : value
 		});

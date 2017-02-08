@@ -3,9 +3,9 @@ import ReactDOM from "react-dom";
 import Core from '../../Core';
 
 /**
- * ファイルブラウザ
+ * メッセージダイアログ
  */
-export default class LabelDialog extends React.Component {
+export default class MessageDialog extends React.Component {
 	constructor(props) {
 		super(props);
 		this.store = this.props.store;
@@ -32,7 +32,7 @@ export default class LabelDialog extends React.Component {
 				position: "fixed",
 				display: this.props.display ? "block" : "none"
 			},
-			LabelDialog : {
+			MessageDialog : {
 				position : "absolute",
 				left : "50%",
 				top : "50%",
@@ -45,7 +45,8 @@ export default class LabelDialog extends React.Component {
 				zIndex : "100000",
 				display : this.props.display ? "block" : "none",
 				paddingTop : "10px",
-				paddingLeft : "10px"
+				paddingLeft : "10px",
+				color : "white"
 			},
 			okButton : {
 				width : "70px",
@@ -77,13 +78,10 @@ export default class LabelDialog extends React.Component {
 			},
 			labelview : {
 				width : "378px",
-				height : "30px",
-				border : "2px solid rgb(54, 196, 168)",
-				borderRadius : "5px",
-				fontSize : "14px",
-				backgroundColor : "white",
-				marginTop : "5px",
-				marginBottom : "6px"
+				height : "20px",
+				fontSize : "16px",
+				marginTop : "35px",
+				marginBottom : "0px"
 			},
 			closeButton : {
 				position : "absolute",
@@ -149,12 +147,6 @@ export default class LabelDialog extends React.Component {
 		ev.target.style.cursor = "default";
 	}
 
-	onLabelChange(ev) {
-		this.setState({
-			label : ev.target.value
-		});
-	}
-
 	onCancelClick(ev) {
 		this.props.cancelFunc();
 		this.state.label = "";
@@ -168,10 +160,9 @@ export default class LabelDialog extends React.Component {
 	render () {
 		const style = this.styles();
 		return (<div>
-					<div style={style.LabelDialog}>
-						<div style={style.title}>Label Setting</div>
+					<div style={style.MessageDialog}>
 						<div>
-							<input type="text" style={style.labelview} placeholder="label" value={this.state.label} onChange={this.onLabelChange.bind(this)} />
+							<div style={style.labelview}>{this.state.label}</div>
 							<div style={style.buttonarea}>
 								<div style={style.buttonareaInner}>
 									<div style={style.okButton}
