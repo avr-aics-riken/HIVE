@@ -154,7 +154,22 @@ export default class ActionExecuter {
 	 * HIVEを再起動
 	 */
 	rebootHive(payload) {
-		console.log("rebootHive!!!!");
+		if (this.store.hive !== undefined && this.store.hive) {
+			let data = JSON.parse(JSON.stringify(this.store.data));
+			console.log("rebootHive");
+			this.clearAll();
+			this.store.nodeExecutor.nodeGraph = {};
+			this.store.nodeExecutor.updateGraph();
+			this.store.hive.rebootHIVE(( (data) => {
+				return () => {
+					this.load({ data : data });
+					this.store.nodeExecutor.nodeGraph = {};
+					this.store.nodeExecutor.updateGraph();
+				}
+			}(data)));
+		} else {
+			console.error("can not reboot hive");
+		}
 	}
 
     /**

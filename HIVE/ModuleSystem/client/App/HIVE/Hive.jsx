@@ -125,6 +125,14 @@ export default class Hive extends EventEmitter {
 		getFileListInternal(this.conn, dir, callback);
 	}
 
+	/**
+	 * HIVEを再起動
+	 */
+	rebootHIVE(callback) {
+		let param = {mode: 'client', opengl: this.conn.openGLMode, ipc:this.conn.ipcAddress};
+		this.conn.masterMethod('rebootHIVE', param, callback || defaultCallback(src));
+	}
+	
 	/*testRender() {
 		runScriptInternal(this.conn,
 			`
