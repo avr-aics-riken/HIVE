@@ -70,16 +70,19 @@ class GradientMap extends React.Component {
         this.styles              = this.styles.bind(this);
 
         this.changeCallback = () => {
-            let rgba = [numVals];
+            let rgba = [numVals * 4];
             for(let i = 0; i < numVals; ++i){
-                rgba[i] = parseInt(this.valueAlpha[i]*255);
+                rgba[i * 4 + 0] = parseInt(this.valueAlpha[i]*255);
+                rgba[i * 4 + 1] = rgba[i * 4 + 0]; 
+                rgba[i * 4 + 2] = rgba[i * 4 + 0];
+                rgba[i * 4 + 3] = 0xFF
             }
             //this.node.rgba
             const varname = this.node.varname;
             this.action.changeNodeInput({
                 varname : varname,
                 input : {
-                    "rgba" : rgba
+                    "values" : rgba
                 }
             });
         };
@@ -186,7 +189,7 @@ class GradientMap extends React.Component {
 
 		if (data.input[0].value.length >= this.numVals) {
 			for (let i = 0; i < this.numVals; ++i) {
-				this.valueAlpha[i] = data.input[0].value[i] / 0xFF;
+				this.valueAlpha[i] = data.input[0].value[i * 4 + 0] / 0xFF;
 			}
 		}
 

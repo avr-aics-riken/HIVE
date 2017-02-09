@@ -54,11 +54,14 @@ function GradientMap:Do()
         values = {}
         local i
         for i = 1, 256 do
-            values[i]   = 255
+            values[4*i]   = 255
+            values[4*i+1] = 255
+            values[4*i+2] = 255
+            values[4*i+3] = 255
         end
     end
     
-	self.gentex:Create2D(rgba, 1, 256, 1);
+	self.gentex:Create2D(values, 1, 256, 1);
     
     return true
 end
