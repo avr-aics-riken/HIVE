@@ -37,11 +37,13 @@ export default class HiveApp extends React.Component {
             messagedialog : false,
         };
 
+		this.ctrlKeyDown = false;
         this.onDragOver = this.onDragOver.bind(this);
         this.onDrop = this.onDrop.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onDblClick = this.onDblClick.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.loadFile = this.loadFile.bind(this);
         this.setFocusTarget = this.setFocusTarget.bind(this);
@@ -107,7 +109,8 @@ export default class HiveApp extends React.Component {
 
     componentDidMount() {
 		this.assignEvents();
-		window.addEventListener('keydown', this.onKeyDown, false);
+		window.addEventListener('keydown', this.onKeyDown);
+		window.addEventListener('keyup', this.onKeyUp);
 		this.store.on(Constants.OPEN_FILE_BROWSER, (err, key) => {
 			this.filebrowserKey = key;
 			this.setState({ filebrowser: true});
@@ -138,13 +141,13 @@ export default class HiveApp extends React.Component {
 
 	componentWillUnmount() {
 		this.removeEvents();
-		window.removeEventListener('keydown', this.onKeyDown, false);
+		window.removeEventListener('keydown', this.onKeyDown);
+		window.removeEventListener('keyup', this.onKeyUp);
 	}
 
 	componentDidUpdate() {
 		this.assignEvents(this.state.layoutType);
 	}
-
     onDragOver(eve){
         eve.stopPropagation();
         eve.preventDefault();
@@ -161,6 +164,20 @@ export default class HiveApp extends React.Component {
 
     // キーダウンイベントのターゲットは Window
     onKeyDown(eve){
+		let keyCode = (eve.which || eve.keyCode);
+		if (keyCode == 116 // F5 
+				|| (this.ctrlKeyDown || keyCode == 82)) // Ctrl R or Command R
+		{
+			// Reboot hive
+			this.action.openMessageDialog("Is it OK to reboot HIVE?", (err, key) => {
+				if (!err) {
+					this.action.rebootHive();
+				}
+			});
+			eve.preventDefault();
+		} else if (keyCode == 17 || keyCode == 224 || keyCode == 91 || keyCode == 93) {
+			this.ctrlKeyDown = true;
+		}
         switch(eve.keyCode){
             case 27:
                 this.hoverHidden();
@@ -180,6 +197,13 @@ export default class HiveApp extends React.Component {
                 break;
         }
     }
+	
+	onKeyUp(eve) {
+		let keyCode = (eve.which || eve.keyCode);
+		if (keyCode == 17 || keyCode == 224 || keyCode == 91 || keyCode == 93) {
+			this.ctrlKeyDown = false;
+		}
+	}
 
     onClick(eve) {
         if (eve.button === 0) {

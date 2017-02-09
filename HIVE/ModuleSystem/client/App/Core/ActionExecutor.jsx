@@ -166,7 +166,7 @@ export default class ActionExecuter {
 					this.store.nodeExecutor.nodeGraph = {};
 					this.store.nodeExecutor.updateGraph();
 				}
-			}(data)));
+			})(data));
 		} else {
 			console.error("can not reboot hive");
 		}
