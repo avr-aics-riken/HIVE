@@ -166,7 +166,7 @@ export default class HiveApp extends React.Component {
     onKeyDown(eve){
 		let keyCode = (eve.which || eve.keyCode);
 		if (keyCode == 116 // F5 
-				|| (this.ctrlKeyDown || keyCode == 82)) // Ctrl R or Command R
+				|| (this.ctrlKeyDown && keyCode == 82)) // Ctrl R or Command R
 		{
 			// Reboot hive
 			this.action.openMessageDialog("Is it OK to reboot HIVE?", (err, key) => {
