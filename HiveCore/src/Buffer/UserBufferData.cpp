@@ -30,7 +30,8 @@ public:
     {
         std::string dataID(id);
         if (m_buffer.find(dataID) != m_buffer.end()) {
-            return m_buffer[dataID].Get();
+            BufferData* data = m_buffer[dataID].Get();
+            return data;
         }
         return NULL;
     }

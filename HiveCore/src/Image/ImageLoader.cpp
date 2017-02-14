@@ -15,6 +15,7 @@
 #include "../Image/SimpleHDR.h"
 #include "../Image/SimpleEXR.h"
 #include "Buffer.h"
+#include "ImageSaver.h"
 
 namespace
 {
@@ -72,6 +73,27 @@ public:
         ifs.read(buffer, fsize);
         return buffer;
     }
+    
+    /**
+     * TGAファイルをメモリからロード
+     * @param srcbuffer TGAファイルバッファ 
+     * @retval true 成功
+     * @retval false 失敗
+     */
+    bool LoadTGAFromMemory(const void* srcbuffer)
+    {
+        int width = 0;
+        int height = 0;
+        unsigned char* dstbuffer = NULL;
+        bool result = SimpleTGALoaderRGBA(srcbuffer, width, height, &dstbuffer);
+        if (result && dstbuffer)
+        {
+            m_image->Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+        }
+        delete [] dstbuffer;
+        return result;
+    }
 
     /**
      * TGAファイルロード
@@ -80,18 +102,9 @@ public:
      */
     bool LoadTGA(const std::string& filepath)
     {
-        int width = 0;
-        int height = 0;
         const char* srcbuffer = LoadFile(filepath);
-        unsigned char* dstbuffer = NULL;
-        bool result = SimpleTGALoaderRGBA(srcbuffer, width, height, &dstbuffer);
-        if (result && dstbuffer)
-        {
-            m_image->Create(BufferImageData::RGBA8, width, height);
-            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
-        }
+        bool result = LoadTGAFromMemory(reinterpret_cast<const void*>(srcbuffer));
         delete [] srcbuffer;
-        delete [] dstbuffer;
         return result;
     }
 
@@ -124,6 +137,29 @@ public:
     }
 
     /**
+     * PNGファイルをメモリからロード
+     * @param srcbuffer PNGファイルバッファ
+     * @param bufferSize PNGファイルバッファサイズ
+     * @retval true 成功
+     * @retval false 失敗
+     */
+    bool LoadPNGFromMemory(const void* srcbuffer, int bufferSize)
+    {
+        int width = 0;
+        int height = 0;
+        unsigned char * dstbuffer = NULL;
+        const unsigned char* src = reinterpret_cast<const unsigned char*>(srcbuffer); 
+        bool result = SimplePNGLoaderFromMemory(src, bufferSize, width, height, &dstbuffer);
+        if (result && dstbuffer)
+        {
+            m_image->Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+        }
+        delete [] dstbuffer;
+        return result;
+    }
+    
+    /**
      * PNGファイルロード
      * @param filepath  ファイルフルパス 
      * @retval true 成功
@@ -135,6 +171,29 @@ public:
         int height = 0;
         unsigned char * dstbuffer = NULL;
         bool result = SimplePNGLoader(filepath.c_str(), width, height, &dstbuffer);
+        if (result && dstbuffer)
+        {
+            m_image->Create(BufferImageData::RGBA8, width, height);
+            memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
+        }
+        delete [] dstbuffer;
+        return result;
+    }
+
+    /**
+     * JPGファイルをメモリからロード
+     * @param srcbuffer JPGファイルバッファ
+     * @param bufferSize JPGファイルバッファサイズ
+     * @retval true 成功
+     * @retval false 失敗
+     */
+    bool LoadJPGFromMemory(const void* srcbuffer, int bufferSize)
+    {
+        int width = 0;
+        int height = 0;
+        unsigned char * dstbuffer = NULL;
+        const unsigned char * src = reinterpret_cast<const unsigned char*>(srcbuffer);
+        bool result = SimpleJPGLoaderRGBAFromMemory(src, bufferSize, width, height, &dstbuffer);
         if (result && dstbuffer)
         {
             m_image->Create(BufferImageData::RGBA8, width, height);
@@ -218,7 +277,7 @@ public:
     bool Load(const char* filename)
     {
         bool result = false;
-        m_image->Clear();
+        m_image  = BufferImageData::CreateInstance();
         std::string path(filename);
         std::string::size_type pos = path.rfind('.');
         if (pos != std::string::npos)
@@ -246,6 +305,30 @@ public:
             }
         }
         return result;
+    }
+    
+    /**
+     * メモリから画像ファイルをロード
+     * @param format 画像フォーマット
+     * @param data 画像バイナリポインタ
+     */
+    bool LoadMemory(unsigned int format, const Buffer buffer, unsigned int bufferSize)
+    {
+        m_image  = BufferImageData::CreateInstance();
+        if (format == ImageSaver::TGA) {
+            return LoadTGAFromMemory(buffer);
+        }
+        else if (format == ImageSaver::JPG) {
+            return LoadJPGFromMemory(buffer, bufferSize);
+        }
+        else if (format == ImageSaver::PNG) {
+            return LoadPNGFromMemory(buffer, bufferSize);
+        }
+        else
+        {
+            // NOT IMPLEMENTED
+        }
+        return false;
     }
 
     /**
@@ -283,6 +366,11 @@ ImageLoader::~ImageLoader()
 bool ImageLoader::Load(const char* filename)
 {
     return m_imp->Load(filename);
+}
+
+bool ImageLoader::LoadMemory(unsigned int format, const Buffer buffer, unsigned int bufferSize)
+{
+    return m_imp->LoadMemory(format, buffer, bufferSize);
 }
 
 BufferImageData* ImageLoader::ImageData()

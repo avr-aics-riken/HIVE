@@ -24,6 +24,7 @@ public:
     ImageLoader();
     ~ImageLoader();
     bool Load(const char* filename);
+    bool LoadMemory(unsigned int format, const Buffer buffer,unsigned int bufferSize);
     BufferImageData *ImageData();
     
     /// @retval no compressed buffer

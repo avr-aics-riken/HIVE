@@ -27,6 +27,7 @@ public:
 
     LUA_SCRIPTCLASS_BEGIN(ImageLoader_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(bool,Load,const char*)
+    LUA_SCRIPTCLASS_METHOD_ARG3(bool, LoadMemory, unsigned int, const ImageLoader::Buffer, unsigned int)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferImageData_Lua*,ImageData)
     LUA_SCRIPTCLASS_METHOD_ARG0(ImageLoader::Buffer,ImageBuffer)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,ImageBufferSize)

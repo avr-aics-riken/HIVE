@@ -436,6 +436,7 @@ namespace {
         
         void* bufferPtr = lua_touserdata(L, 2);
         LuaRefPtr<BufferData>* buffer = *static_cast<LuaRefPtr<BufferData>**>(bufferPtr);
+        
         if (sceneScript && buffer) {
             sceneScript->GetBufferData().SetBufferData(dataName, *buffer);
         }
@@ -443,6 +444,7 @@ namespace {
     }
     
     int getBufferData(lua_State* L) {
+        dumpStack(L);
         if (!lua_isstring(L, 1)) {
             lua_pushnil(L);
             return 1;

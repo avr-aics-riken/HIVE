@@ -298,6 +298,16 @@ public:
         {
             // not implemented
         }
+        else if (format == ImageSaver::PNG)
+        {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+            const int bytes = SimplePNGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
+            if (bytes && dstbuffer) {
+                m_memory = std::string(dstbuffer, bytes);
+                delete [] dstbuffer;
+                return (Buffer)m_memory.c_str();
+            }
+        }
         return NULL;
     }
     

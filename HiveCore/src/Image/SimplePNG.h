@@ -72,4 +72,31 @@ inline bool SimplePNGLoader(const char* filename, int& w, int& h, unsigned char*
     return false;
 }
 
+inline bool SimplePNGLoaderFromMemory(const unsigned char* pngbuffer, int buffersize, int& w, int& h, unsigned char** rgba)
+{
+    unsigned int width;
+    unsigned int height;
+    unsigned char *loaddata;
+    
+    int r = lodepng_decode32(&loaddata, &width, &height, pngbuffer, buffersize);
+    if (r == 0) {
+        w = width;
+        h = height;
+        *rgba = new unsigned char[4 * w * h];
+        // invert vertically
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                int i = (y * w + x);
+                int yinv = ((h - y - 1) * w + x);
+                (*rgba)[4 * i + 0] = loaddata[4 * yinv + 0];
+                (*rgba)[4 * i + 1] = loaddata[4 * yinv + 1];
+                (*rgba)[4 * i + 2] = loaddata[4 * yinv + 2];
+                (*rgba)[4 * i + 3] = loaddata[4 * yinv + 3];
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 #endif // INCLUDE_SIMPLEPNG
