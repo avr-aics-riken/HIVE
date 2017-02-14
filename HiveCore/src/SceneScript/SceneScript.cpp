@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include "../Renderer/RenderCore.h"
+#include "../Buffer/UserBufferData.h"
 
 #include "Core/Perf.h"
 
@@ -294,6 +295,8 @@ int screenParallelRendering(lua_State* L)
 int getMemoryData(lua_State* L);
 int getMemoryDataNames(lua_State* L);
 
+int setBufferData(lua_State* L);
+int getBufferData(lua_State* L);
 
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
@@ -314,6 +317,8 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
 
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
+    SetFunction(L, "setBufferData", setBufferData);
+    SetFunction(L, "getBufferData", getBufferData);
     
     lua_pushlightuserdata(L, sceneScriptPtr);
     lua_setglobal(L, "__sceneScript");
@@ -367,13 +372,14 @@ public:
     const char* GetMemoryDataId(int i);
     
     void PushMemoryData(const char* dataId); // for internal
+    UserBufferData& GetBufferData() { return m_bufferData; }  // for internal
 
 private:
     lua_State* m_L;
     UserMemoryDataArray m_memoryData;
+    UserBufferData m_bufferData;
     
     UserMemoryDataArray::iterator getUserMemoryData(const char* dataId);
-    
 };
 
 
@@ -417,6 +423,53 @@ namespace {
         return 1;
     }
 
+    int setBufferData(lua_State* L) {
+        dumpStack(L);
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        
+        void* bufferPtr = lua_touserdata(L, 2);
+        LuaRefPtr<BufferData>* buffer = *static_cast<LuaRefPtr<BufferData>**>(bufferPtr);
+        if (sceneScript && buffer) {
+            sceneScript->GetBufferData().SetBufferData(dataName, *buffer);
+        }
+        return 1;
+    }
+    
+    int getBufferData(lua_State* L) {
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        
+        if (sceneScript) {
+            BufferData* data = sceneScript->GetBufferData().GetBufferData(dataName);
+            if (data) {
+                if (data->GetType() == BufferData::TYPE_IMAGE) {
+                    BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferImageData_Lua*>(L, instance);
+                    }
+                } else {
+                    // TODO
+                }
+            } else {
+                lua_pushnil(L);
+                return 1;
+            }
+        }
+        return 1;
+    }
     
 } // namespace
 

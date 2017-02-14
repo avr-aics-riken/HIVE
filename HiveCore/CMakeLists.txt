@@ -188,6 +188,7 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferTetraData.cpp
   src/Buffer/BufferImageData.cpp
   src/Buffer/BufferExtraData.cpp
+  src/Buffer/UserBufferData.cpp
   src/Renderer/RenderCore.cpp
   src/Renderer/BaseBuffer.cpp
   src/Renderer/Commands_GL.cpp

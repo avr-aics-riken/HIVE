@@ -1,0 +1,13 @@
+
+{
+	"name": "ImageGet",
+	"funcname": "ImageGet",
+	"info":"ImageSetによってメモリに格納されたImageを取得するノード",
+	"customfuncfile":"imageget.lua",
+    "input": [
+		{"name": "id",  "type": "string", "value": ""}
+	],
+	"output": [
+		{"name": "image",  "type": "BufferImageData"}
+	]
+}
