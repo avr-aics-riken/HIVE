@@ -4,6 +4,7 @@
 	"funcname": "ImageSet",
 	"info":"imageを一時的にメモリに格納するノード",
 	"customfuncfile":"imageset.lua",
+	"uifile" : "imageset.jsx",
     "input": [
 		{"name": "image",  "type": "BufferImageData"},
 		{"name": "id",  "type": "string", "value": ""}

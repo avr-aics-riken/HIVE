@@ -123,6 +123,9 @@ export default class Store extends EventEmitter {
         this.hive.on(Hive.ANALYZED_DATA_RECIEVED, (data) => {
 			this.emit(Constants.ANALYZED_DATA_RECIEVED, data);
         });
+		this.hive.on(Hive.LUA_DATA_RECIEVED, (data) => {
+			this.emit(Constants.LUA_DATA_RECIEVED, data);
+		});
 		this.nodeExecutor.on(NodeSystem.NodeExecutor.SCRIPT_SERIALIZED, (script) => {
 			//console.warn('SCRIPT>', script);
 

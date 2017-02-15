@@ -72,6 +72,15 @@ export default class Hive extends EventEmitter {
 			//console.log('analyzedInfo', data);
             this.emit(Hive.ANALYZED_DATA_RECIEVED, data);
 		});
+		
+        this.conn.method('luaData', (data) => {
+			/*
+			 * data.name = NodeName
+			 * data.type = data type
+			 * data.* = arbitrary
+			 */
+            this.emit(Hive.LUA_DATA_RECIEVED, data);
+		});
 
         this.conn.method('rendererLog', (data) => {
 		    //console.log('processlog>', data);
@@ -175,3 +184,4 @@ Hive.NODE_CHANGED = "core_node_changed";
 Hive.IMAGE_RECIEVED = "core_image_revieved";
 Hive.RENDERER_LOG_RECIEVED = "renderer_log_recieved";
 Hive.ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
+Hive.LUA_DATA_RECIEVED = "lua_data_recieved";

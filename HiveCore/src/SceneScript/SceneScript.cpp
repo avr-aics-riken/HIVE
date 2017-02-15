@@ -297,7 +297,9 @@ int getMemoryDataNames(lua_State* L);
 
 int setBufferData(lua_State* L);
 int getBufferData(lua_State* L);
-
+int getBufferDataNames(lua_State* L);
+int deleteBufferData(lua_State* L);
+int clearBufferData(lua_State* L);
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
@@ -317,8 +319,12 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
 
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
+    
     SetFunction(L, "setBufferData", setBufferData);
     SetFunction(L, "getBufferData", getBufferData);
+    SetFunction(L, "getBufferDataNames", getBufferDataNames);
+    SetFunction(L, "deleteBufferData", deleteBufferData);
+    SetFunction(L, "clearBufferData", clearBufferData);
     
     lua_pushlightuserdata(L, sceneScriptPtr);
     lua_setglobal(L, "__sceneScript");
@@ -470,6 +476,52 @@ namespace {
                 return 1;
             }
         }
+        return 1;
+    }
+    
+    int deleteBufferData(lua_State* L) {
+        dumpStack(L);
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        bool result = sceneScript->GetBufferData().DeleteBufferData(dataName);
+        
+        lua_pushboolean(L,result);
+        return 1;
+    }
+    
+    int clearBufferData(lua_State* L) {
+        dumpStack(L);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        sceneScript->GetBufferData().Clear();
+        lua_pushboolean(L,true);
+        return 1;
+    }
+    
+    int getBufferDataNames(lua_State* L) {
+        lua_getglobal(L, "__sceneScript");
+        const void* ptr = lua_touserdata(L, -1);
+        if (!ptr) {
+            fprintf(stderr,"Invalid sceneScript instance\n");
+            lua_pushnil(L);
+            return 1;
+        }
+
+        LuaTable t;
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(const_cast<void*>(ptr));
+        std::vector<std::string> ids;
+        sceneScript->GetBufferData().GetBufferDataNames(ids);
+        for (int i = 0, size = static_cast<int>(ids.size()); i < size; ++i) {
+            t.push(ids[i]);
+        }
+        t.pushLuaTableValue(L);
         return 1;
     }
     

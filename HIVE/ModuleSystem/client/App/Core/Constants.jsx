@@ -14,6 +14,7 @@ module.exports = {
     IMAGE_RECIEVED : "image_revieved",
     RENDERER_LOG_RECIEVED: "renderer_log_recieved",
     ANALYZED_DATA_RECIEVED: "analyzed_data_recieved",
+	LUA_DATA_RECIEVED: "lua_data_recieved",
     NODE_ADDED : "node_added",
     NODE_DELETED : "node_deleted",
     NODE_SELECT_CHANGED : "node_selected",

@@ -7,6 +7,8 @@
 #define _USERBUFFERDATA_H_
 
 #include "Ref.h"
+#include <vector>
+#include <string>
 
 class BufferData;
 
@@ -24,8 +26,11 @@ public:
     UserBufferData();
     ~UserBufferData();
     
-    bool SetBufferData(const char* id, BufferData* data);
-    BufferData* GetBufferData(const char* id);
+    bool SetBufferData(const char* name, BufferData* data);
+    BufferData* GetBufferData(const char* name);
+    bool DeleteBufferData(const char* name);
+    void GetBufferDataNames(std::vector<std::string>& dst) const;
+    
     void Clear();
 };
 
