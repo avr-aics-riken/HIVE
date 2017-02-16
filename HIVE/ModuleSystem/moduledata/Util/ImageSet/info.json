@@ -7,7 +7,10 @@
 	"uifile" : "imageset.jsx",
     "input": [
 		{"name": "image",  "type": "BufferImageData"},
-		{"name": "id",  "type": "string", "value": ""}
+		{"name": "id",  "type": "string", "value": ""},
+		{"name": "delete",  "type": "bool", "value": false, "visible" : false},
+		{"name": "deleteall",  "type": "bool", "value": false, "visible" : false},
+		{"name": "selected",  "type": "string", "value": [], "visible" : false}
 	],
 	"output": []
 }

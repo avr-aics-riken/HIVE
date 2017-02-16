@@ -21,17 +21,48 @@ class ImageSet extends React.Component {
 
 	componentDidUpdate() {}
 
-	onChange(val) {
+	onSelectChange(ev) {
+		let options = ev.target.options
+		let selected = { selected : [] };
+		
+		for (let i = 0; i < options.length; ++i) {
+			if (options[i].selected) {
+				selected.selected.push(options[i].value);
+			}
+		}
+		console.log(selected)
 		this.props.action.changeNodeInput({
 			varname : this.props.node.varname,
 			input : {
-				"value" : Number(val)
+				"selected" : JSON.stringify(selected).split("\"").join("'")
 			}
 		});
 	}
 	
-	nodeInputChanged() {
-		console.log(this.node)
+	nodeInputChanged(err, data){
+		const varname = this.node.varname;
+		if (varname !== data.varname){return;}
+		
+		if (data.input[2].value === true) {
+			setTimeout(() => {
+				this.props.action.changeNodeInput({
+					varname : this.props.node.varname,
+					input : {
+						"delete" : false
+					}
+				});
+			}, 0);
+		}
+		if (data.input[3].value === true) {
+			setTimeout(() => {
+				this.props.action.changeNodeInput({
+					varname : this.props.node.varname,
+					input : {
+						"deleteall" : false
+					}
+				});
+			}, 0);
+		}
 	}
 
     componentDidMount(){
@@ -57,11 +88,21 @@ class ImageSet extends React.Component {
 	}
 	
 	onDeleteClicked() {
-		alert("not implemented")
+		this.props.action.changeNodeInput({
+			varname : this.props.node.varname,
+			input : {
+				"delete" : true
+			}
+		});
 	}
 	
 	onDeleteAllClicked() {
-		alert("not implemented")
+		this.props.action.changeNodeInput({
+			varname : this.props.node.varname,
+			input : {
+				"deleteall" : true
+			}
+		});
 	}
 	
 	options() {
@@ -76,7 +117,7 @@ class ImageSet extends React.Component {
 	render() {
 		return (<div className={'imageset'} style={{margin:'4', minWidth:"150px",  minHeight:"100px",height:'100%', padding:'2'}}>
 			<div>images</div>
-			<select multiple style={{width:"150px", height:"100px"}}>
+			<select multiple style={{width:"150px", height:"100px"}} onChange={this.onSelectChange.bind(this)}>
 				{ this.options.bind(this)() }
 			</select>
 			<div>
