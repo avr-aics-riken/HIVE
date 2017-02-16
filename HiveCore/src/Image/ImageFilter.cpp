@@ -40,9 +40,12 @@ namespace
                 const int ir = i * stride + 0;
                 const int ig = i * stride + 1;
                 const int ib = i * stride + 2;
-                dst[ir] = (std::min)(static_cast<int>(left[ir] - right[ir] * opacity), 0xFF);
-                dst[ig] = (std::min)(static_cast<int>(left[ig] - right[ig] * opacity), 0xFF);
-                dst[ib] = (std::min)(static_cast<int>(left[ib] - right[ib] * opacity), 0xFF);
+                const int rr = (std::max)(left[ir] + right[ir] - 0xFF, 0);
+                const int gg = (std::max)(left[ig] + right[ig] - 0xFF, 0);
+                const int bb = (std::max)(left[ib] + right[ib] - 0xFF, 0);
+                dst[ir] = (std::min)(static_cast<int>(rr * opacity + left[ir] * (1.0f - opacity)), 0xFF);
+                dst[ig] = (std::min)(static_cast<int>(gg * opacity + left[ig] * (1.0f - opacity)), 0xFF);
+                dst[ib] = (std::min)(static_cast<int>(bb * opacity + left[ib] * (1.0f - opacity)), 0xFF);
             }
         } else if (operation == ImageFilter::MULTIPLY) {
             for (int i = 0; i < length; ++i)
@@ -53,6 +56,16 @@ namespace
                 dst[ir] = (std::min)(static_cast<int>(left[ir] * (0xFF + (right[ir] - 0xFF) * opacity) / 0xFF), 0xFF);
                 dst[ig] = (std::min)(static_cast<int>(left[ig] * (0xFF + (right[ig] - 0xFF) * opacity) / 0xFF), 0xFF);
                 dst[ib] = (std::min)(static_cast<int>(left[ib] * (0xFF + (right[ib] - 0xFF) * opacity) / 0xFF), 0xFF);
+            }
+        } else if (operation == ImageFilter::AVERAGE) {
+            for (int i = 0; i < length; ++i)
+            {
+                const int ir = i * stride + 0;
+                const int ig = i * stride + 1;
+                const int ib = i * stride + 2;
+                dst[ir] = (std::min)(static_cast<int>( (left[ir] + right[ir]) / 2.0 * opacity + left[ir] * (1.0 - opacity)), 0xFF);
+                dst[ig] = (std::min)(static_cast<int>( (left[ig] + right[ig]) / 2.0 * opacity + left[ig] * (1.0 - opacity)), 0xFF);
+                dst[ib] = (std::min)(static_cast<int>( (left[ib] + right[ib]) / 2.0 * opacity + left[ib] * (1.0 - opacity)), 0xFF);
             }
         }
     }

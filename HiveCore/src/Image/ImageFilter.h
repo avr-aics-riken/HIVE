@@ -23,7 +23,7 @@ public:
         ADD = 1,
         SUBSTRACT,
         MULTIPLY,
-        DIVIDE
+        AVERAGE
     };
 
     ImageFilter();
