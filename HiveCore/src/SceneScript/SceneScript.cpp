@@ -44,6 +44,7 @@
 #include "Camera_Lua.h"
 #include "ImageLoader_Lua.h"
 #include "ImageSaver_Lua.h"
+#include "ImageFilter_Lua.h"
 #include "GenTexture_Lua.h"
 #include "PrimitiveGenerator_Lua.h"
 
@@ -69,6 +70,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, PrimitiveGenerator_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, ImageFilter_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
@@ -90,6 +92,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "PrimitiveGenerator",  LUA_SCRIPTCLASS_NEW_FUNCTION(PrimitiveGenerator_Lua));
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
+    SetFunction(L, "ImageFilter",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageFilter_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
 }
 
