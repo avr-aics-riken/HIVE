@@ -16,10 +16,10 @@ function FilterImage:Do()
     local image1 = v.image1;
     local ope = v.operation;
     local opacity = v.opacity;
-    print (ope)
-    print(tonumber(ope))
     if image0 ~= nil and image1 ~= nil and tonumber(ope) > 0 and tonumber(ope) <= 4 then
-        if image0:GetWidth() == image1:GetWidth() and image0:GetHeight() == image1:GetHeight() then
+        if image0:GetWidth() == image1:GetWidth() 
+            and image0:GetHeight() == image1:GetHeight()
+            and image0:GetFormat() == image1:GetFormat() then
             self.res = self.filter:Filter(ope, image0, image1, opacity);
         end
     end
