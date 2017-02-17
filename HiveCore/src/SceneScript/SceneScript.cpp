@@ -471,8 +471,54 @@ namespace {
                     if (instance) {
                         return LUAPUSH<BufferImageData_Lua*>(L, instance);
                     }
+                } else if (data->GetType() == BufferData::TYPE_MESH) {
+                    BufferMeshData_Lua* instance = static_cast<BufferMeshData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferMeshData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_POINT) {
+                    BufferPointData_Lua* instance = static_cast<BufferPointData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferPointData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_LINE) {
+                    BufferLineData_Lua* instance = static_cast<BufferLineData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferLineData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_VECTOR) {
+                    BufferVectorData_Lua* instance = static_cast<BufferVectorData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferVectorData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_TETRA) {
+                    BufferTetraData_Lua* instance = static_cast<BufferTetraData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferTetraData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_SOLID) {
+                    BufferSolidData_Lua* instance = static_cast<BufferSolidData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferSolidData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_VOLUME) {
+                    BufferVolumeData_Lua* instance = static_cast<BufferVolumeData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferVolumeData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_SPARSEVOLUME) {
+                    BufferSparseVolumeData_Lua* instance = static_cast<BufferSparseVolumeData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferSparseVolumeData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_IMAGE) {
+                    BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferImageData_Lua*>(L, instance);
+                    }
                 } else {
-                    // TODO
+                    lua_pushnil(L);
+                    return 1;
                 }
             } else {
                 lua_pushnil(L);

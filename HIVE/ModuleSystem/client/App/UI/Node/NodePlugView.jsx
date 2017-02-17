@@ -105,6 +105,16 @@ export default class NodePlugView extends React.Component {
 		}
 		return false;
 	}
+	
+	isBufferDataConnection(type1, type2) {
+		if (type1 === "BufferData" && type2.indexOf("Buffer") >= 0 && type2.indexOf("Data") > 0) {
+			return true;
+		}
+		if (type2 === "BufferData" && type1.indexOf("Buffer") >= 0 && type1.indexOf("Data") > 0) {
+			return true;
+		}
+		return false;
+	}
 
 	onPlugHoleSelected(err, data) {
 		if (data.length >= 2) {
@@ -175,7 +185,9 @@ export default class NodePlugView extends React.Component {
 							}
 						}
 					}
-				} else if (data[0].data.type === data[1].data.type) {
+				} else if (data[0].data.type === data[1].data.type || 
+						this.isBufferDataConnection(data[0].data.type, data[1].data.type)) {
+							
 					let input = data[0].isInput ? data[0] : data[1];
 					let output = data[0].isInput ? data[1] : data[0];
 					setTimeout(() => {
