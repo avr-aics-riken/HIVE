@@ -5,7 +5,7 @@ class BufferSet extends React.Component {
         super(props);
 		
 		this.state = {
-			images: []
+			buffers: []
 		};
 		
 		this.store  = this.props.store;
@@ -79,9 +79,9 @@ class BufferSet extends React.Component {
 	
 	luaDataRecieved(data) {
 		if (data.hasOwnProperty("name") && data.name === this.node.name) {
-			if (data.hasOwnProperty('images')) {
+			if (data.hasOwnProperty('buffers')) {
 				this.setState({
-					images : JSON.parse(JSON.stringify(data.images))
+					buffers : JSON.parse(JSON.stringify(data.buffers))
 				});
 			}
 		}
@@ -106,7 +106,10 @@ class BufferSet extends React.Component {
 	}
 	
 	options() {
-		let options = this.state.images.map((id, index) => {
+		let sorted = this.state.buffers.sort(function(a, b){
+			return a - b;
+		});
+		let options = sorted.map((id, index) => {
 			return (
 				<option key={id + "_" + String(index)}>{id}</option>
 			)

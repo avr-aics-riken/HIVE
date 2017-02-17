@@ -10,7 +10,7 @@ BufferSet.new = function (varname)
 end
 
 function BufferSet:SendIDs()
-    local imageIDs = getBufferDataNames()
+    local bufferIDs = getBufferDataNames()
     
     if network then
         local data = {}
@@ -21,7 +21,7 @@ function BufferSet:SendIDs()
         data["param"] = {}
         data["param"]["name"] = "BufferSet"
         data["param"]["type"] = "bufferids"
-        data["param"]["images"] = imageIDs
+        data["param"]["buffers"] = bufferIDs
         network:SendJSON( JSON.encode(data) );
     end
 end

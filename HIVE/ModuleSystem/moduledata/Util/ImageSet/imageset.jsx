@@ -106,7 +106,10 @@ class ImageSet extends React.Component {
 	}
 	
 	options() {
-		let options = this.state.images.map((id, index) => {
+		let sorted = this.state.images.sort(function(a, b){
+			return a - b;
+		});
+		let options = sorted.map((id, index) => {
 			return (
 				<option key={id + "_" + String(index)}>{id}</option>
 			)

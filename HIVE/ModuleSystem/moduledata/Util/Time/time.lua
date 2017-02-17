@@ -21,3 +21,10 @@ function Time:time()
     local value = v.value
     return value
 end
+
+function Time:timestring()
+    local v = self.value
+    local value = v.value
+    return tostring(value)
+end
+
