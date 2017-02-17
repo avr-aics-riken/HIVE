@@ -14,8 +14,8 @@ class ImageView extends React.Component {
 		this.varname = this.node.varname;
 		
 		this.state = {
-			width : minWidth,
-			height : minHeight
+			width : this.canvasSize()[0],
+			height : this.canvasSize()[1]
 		};
 		
 		this.componentDidUpdate = this.componentDidUpdate.bind(this);
