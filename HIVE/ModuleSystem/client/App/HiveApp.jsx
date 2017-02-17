@@ -198,8 +198,9 @@ export default class HiveApp extends React.Component {
 					this.listVisiblity = true;
 					this.setState({
 						listVisible: true,
-						listPos: [this.mousePos.x, 
-							Math.min(this.mousePos.y, this.hoverTarget.getBoundingClientRect().bottom - 300)]
+						listPos: [
+							Math.min(this.mousePos.x, rect.right - 270),  
+							Math.min(this.mousePos.y, rect.bottom - 270)]
 					});
 					setTimeout((()=>{
 						this.setHoverPosition();
@@ -243,10 +244,15 @@ export default class HiveApp extends React.Component {
             // let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
             let x = eve.pageX;
             let y = eve.pageY;
+			let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+			let hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
+			let rect = hoverTarget.getBoundingClientRect();
             this.listVisiblity = !this.listVisiblity;
             this.setState({
                 listVisible: this.listVisiblity,
-                listPos: [x, y]
+                listPos: [
+						Math.min(x, rect.right - 270),  
+						Math.min(y, rect.bottom - 270)]
             });
             if(this.listVisiblity){
                 setTimeout((()=>{
