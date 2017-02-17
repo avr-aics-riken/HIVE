@@ -43,6 +43,7 @@ export default class HiveApp extends React.Component {
         this.onClick = this.onClick.bind(this);
         this.onDblClick = this.onDblClick.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
         this.onKeyUp = this.onKeyUp.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.loadFile = this.loadFile.bind(this);
@@ -60,6 +61,8 @@ export default class HiveApp extends React.Component {
 		this.onLabelDialogCancel = this.onLabelDialogCancel.bind(this);
         this.onMessageDialogOK = this.onMessageDialogOK.bind(this);
 		this.onMessageDialogCancel = this.onMessageDialogCancel.bind(this);
+		
+		this.mousePos = {x : 0, y : 0};
 
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
@@ -82,7 +85,7 @@ export default class HiveApp extends React.Component {
 			dropTarget.removeEventListener('drop', this.onDrop, false);
 		}
 		if (hoverTarget) {
-			hoverTarget.removeEventListener('click', this.onClick, false);
+			window.removeEventListener('click', this.onClick, false);
 			hoverTarget.removeEventListener('dblclick', this.onDblClick, false);
 		}
 		this.dropTarget = null;
@@ -101,7 +104,7 @@ export default class HiveApp extends React.Component {
 		if (!this.hoverTarget) {
 			this.hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
 			if (this.hoverTarget) {
-				this.hoverTarget.addEventListener('click', this.onClick, false);
+				window.addEventListener('click', this.onClick, false);
 				this.hoverTarget.addEventListener('dblclick', this.onDblClick, false);
 			}
 		}
@@ -109,6 +112,7 @@ export default class HiveApp extends React.Component {
 
     componentDidMount() {
 		this.assignEvents();
+		window.addEventListener('mousemove', this.onMouseMove);
 		window.addEventListener('keydown', this.onKeyDown);
 		window.addEventListener('keyup', this.onKeyUp);
 		this.store.on(Constants.OPEN_FILE_BROWSER, (err, key) => {
@@ -141,6 +145,7 @@ export default class HiveApp extends React.Component {
 
 	componentWillUnmount() {
 		this.removeEvents();
+		window.removeEventListener('mousemove', this.onMouseMove);
 		window.removeEventListener('keydown', this.onKeyDown);
 		window.removeEventListener('keyup', this.onKeyUp);
 	}
@@ -183,20 +188,36 @@ export default class HiveApp extends React.Component {
                 this.hoverHidden();
                 break;
             case 32:
-                eve.preventDefault();
-                this.setState({
-                    listVisible: true
-                });
-                setTimeout((()=>{
-                    this.setHoverPosition();
-                    var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
-                    e.focus();
-                }).bind(this), 50);
-                break;
+				let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+				let hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
+				let rect = hoverTarget.getBoundingClientRect();
+				if (this.mousePos.x >= rect.left && this.mousePos.x <= rect.right &&
+					this.mousePos.y >= rect.top && this.mousePos.y <= rect.bottom)
+				{
+					eve.preventDefault();
+					this.listVisiblity = true;
+					this.setState({
+						listVisible: true,
+						listPos: [this.mousePos.x, 
+							Math.min(this.mousePos.y, this.hoverTarget.getBoundingClientRect().bottom - 300)]
+					});
+					setTimeout((()=>{
+						this.setHoverPosition();
+						var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
+						e.focus();
+					}).bind(this), 30);
+				}
             default:
                 break;
         }
     }
+	
+	onMouseMove(eve) {
+		this.mousePos = {
+			x : eve.pageX,
+			y : eve.pageY
+		};
+	}
 	
 	onKeyUp(eve) {
 		let keyCode = (eve.which || eve.keyCode);
@@ -231,7 +252,7 @@ export default class HiveApp extends React.Component {
                 setTimeout((()=>{
                     var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
                     e.focus();
-                }).bind(this), 50);
+                }).bind(this), 30);
             }
         }
     }

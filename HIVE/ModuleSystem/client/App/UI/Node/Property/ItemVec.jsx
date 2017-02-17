@@ -185,6 +185,11 @@ export default class ItemVec extends React.Component {
 		}
 	}
 
+	onKeyDown(ev) {
+		//ev.preventDefault();
+		ev.stopPropagation();
+	}
+	
 	onBlur(ev) {
 		this.submit.bind(this)(ev);
 		this.currentEdit = {
@@ -207,6 +212,7 @@ export default class ItemVec extends React.Component {
 						defaultValue={this.state.values[key]}
 						value={this.state.values[key]}
 						onKeyPress={this.onKeyPress.bind(this)}
+						onKeyDown={this.onKeyDown.bind(this)}
 						onBlur={this.onBlur.bind(this)}
 						onFocus={this.onFocus.bind(this)}
 						key={key}

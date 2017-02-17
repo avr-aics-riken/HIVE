@@ -75,7 +75,6 @@ export default class ItemText extends React.Component {
                 verticalAlign: "middle",
                 width : "162px",
                 height: "20px",
-                verticalAlign: "middle",
                 display: "inline-block",
             }
         };
