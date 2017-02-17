@@ -163,8 +163,6 @@ export default class ActionExecuter {
 			this.store.hive.rebootHIVE(( (data) => {
 				return () => {
 					this.load({ data : data });
-					this.store.nodeExecutor.nodeGraph = {};
-					this.store.nodeExecutor.updateGraph();
 				}
 			})(data));
 		} else {
@@ -1031,8 +1029,6 @@ export default class ActionExecuter {
 				this.store.emit(Constants.PLUG_ADDED, null, p);
 			}
 			this.store.emit(Constants.PLUG_COUNT_CHANGED, null, this.store.getPlugs().length);
-			// Panel再描画させるため
-			this.store.emit(Constants.NODE_COUNT_CHANGED, null, this.store.getNodes().length);
 		}
 	}
 

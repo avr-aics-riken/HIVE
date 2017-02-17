@@ -62,6 +62,7 @@ export default class Hive extends EventEmitter {
 			var rendererId = res.id;
 			console.log('rendererId = ', rendererId);
 			this.conn.setRendererId(parseInt(res.id)); // これは必要！TODO
+            this.emit(Hive.RENDER_REGISTED, null);
 		});
 
 		this.conn.method('updateInfo', (function (core, infoCallback) {
@@ -139,7 +140,11 @@ export default class Hive extends EventEmitter {
 	 */
 	rebootHIVE(callback) {
 		let param = {mode: 'client', opengl: this.conn.openGLMode, ipc:this.conn.ipcAddress};
-		this.conn.masterMethod('rebootHIVE', param, callback || defaultCallback(src));
+		this.once(Hive.RENDER_REGISTED, function () {
+			console.log("Hive.RENDER_REGISTED")
+			if (callback) callback();
+		});
+		this.conn.masterMethod('rebootHIVE', param, defaultCallback());
 	}
 	
 	/*testRender() {
@@ -185,3 +190,4 @@ Hive.IMAGE_RECIEVED = "core_image_revieved";
 Hive.RENDERER_LOG_RECIEVED = "renderer_log_recieved";
 Hive.ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
 Hive.LUA_DATA_RECIEVED = "lua_data_recieved";
+Hive.RENDER_REGISTED = "render_registed";
