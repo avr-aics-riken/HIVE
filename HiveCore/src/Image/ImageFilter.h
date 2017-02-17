@@ -29,7 +29,7 @@ public:
     ImageFilter();
     ~ImageFilter();
 
-    BufferImageData* Filter(unsigned int operation, BufferImageData* left, BufferImageData* right, float opacity);
+    BufferImageData* Filter(unsigned int operation, BufferImageData* left, BufferImageData* right, float factor);
 };
 
 #endif //_IMAGEFILTER_H_

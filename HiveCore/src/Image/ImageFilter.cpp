@@ -20,7 +20,7 @@ namespace
         const unsigned char* right,
         const int stride,
         const int length,
-        float opacity)
+        float factor)
     {
         if (operation == ImageFilter::ADD) {
             // const float leftAlpha = (stride == 3) ? 1.0 : left[3];
@@ -30,9 +30,9 @@ namespace
                 const int ir = i * stride + 0;
                 const int ig = i * stride + 1;
                 const int ib = i * stride + 2;
-                dst[ir] = (std::min)(static_cast<int>(left[ir] + right[ir] * opacity), 0xFF);
-                dst[ig] = (std::min)(static_cast<int>(left[ig] + right[ig] * opacity), 0xFF);
-                dst[ib] = (std::min)(static_cast<int>(left[ib] + right[ib] * opacity), 0xFF);
+                dst[ir] = (std::min)(static_cast<int>(left[ir] + right[ir] * factor), 0xFF);
+                dst[ig] = (std::min)(static_cast<int>(left[ig] + right[ig] * factor), 0xFF);
+                dst[ib] = (std::min)(static_cast<int>(left[ib] + right[ib] * factor), 0xFF);
             }
         } else if (operation == ImageFilter::SUBSTRACT) {
             for (int i = 0; i < length; ++i)
@@ -43,9 +43,9 @@ namespace
                 const int rr = (std::max)(left[ir] + right[ir] - 0xFF, 0);
                 const int gg = (std::max)(left[ig] + right[ig] - 0xFF, 0);
                 const int bb = (std::max)(left[ib] + right[ib] - 0xFF, 0);
-                dst[ir] = (std::min)(static_cast<int>(rr * opacity + left[ir] * (1.0f - opacity)), 0xFF);
-                dst[ig] = (std::min)(static_cast<int>(gg * opacity + left[ig] * (1.0f - opacity)), 0xFF);
-                dst[ib] = (std::min)(static_cast<int>(bb * opacity + left[ib] * (1.0f - opacity)), 0xFF);
+                dst[ir] = (std::min)(static_cast<int>(rr * factor + left[ir] * (1.0f - factor)), 0xFF);
+                dst[ig] = (std::min)(static_cast<int>(gg * factor + left[ig] * (1.0f - factor)), 0xFF);
+                dst[ib] = (std::min)(static_cast<int>(bb * factor + left[ib] * (1.0f - factor)), 0xFF);
             }
         } else if (operation == ImageFilter::MULTIPLY) {
             for (int i = 0; i < length; ++i)
@@ -53,9 +53,9 @@ namespace
                 const int ir = i * stride + 0;
                 const int ig = i * stride + 1;
                 const int ib = i * stride + 2;
-                dst[ir] = (std::min)(static_cast<int>(left[ir] * (0xFF + (right[ir] - 0xFF) * opacity) / 0xFF), 0xFF);
-                dst[ig] = (std::min)(static_cast<int>(left[ig] * (0xFF + (right[ig] - 0xFF) * opacity) / 0xFF), 0xFF);
-                dst[ib] = (std::min)(static_cast<int>(left[ib] * (0xFF + (right[ib] - 0xFF) * opacity) / 0xFF), 0xFF);
+                dst[ir] = (std::min)(static_cast<int>(left[ir] * (0xFF + (right[ir] - 0xFF) * factor) / 0xFF), 0xFF);
+                dst[ig] = (std::min)(static_cast<int>(left[ig] * (0xFF + (right[ig] - 0xFF) * factor) / 0xFF), 0xFF);
+                dst[ib] = (std::min)(static_cast<int>(left[ib] * (0xFF + (right[ib] - 0xFF) * factor) / 0xFF), 0xFF);
             }
         } else if (operation == ImageFilter::AVERAGE) {
             for (int i = 0; i < length; ++i)
@@ -63,9 +63,9 @@ namespace
                 const int ir = i * stride + 0;
                 const int ig = i * stride + 1;
                 const int ib = i * stride + 2;
-                dst[ir] = (std::min)(static_cast<int>( (left[ir] + right[ir]) / 2.0 * opacity + left[ir] * (1.0 - opacity)), 0xFF);
-                dst[ig] = (std::min)(static_cast<int>( (left[ig] + right[ig]) / 2.0 * opacity + left[ig] * (1.0 - opacity)), 0xFF);
-                dst[ib] = (std::min)(static_cast<int>( (left[ib] + right[ib]) / 2.0 * opacity + left[ib] * (1.0 - opacity)), 0xFF);
+                dst[ir] = (std::min)(static_cast<int>( (left[ir] + right[ir]) / 2.0 * factor + left[ir] * (1.0 - factor)), 0xFF);
+                dst[ig] = (std::min)(static_cast<int>( (left[ig] + right[ig]) / 2.0 * factor + left[ig] * (1.0 - factor)), 0xFF);
+                dst[ib] = (std::min)(static_cast<int>( (left[ib] + right[ib]) / 2.0 * factor + left[ib] * (1.0 - factor)), 0xFF);
             }
         }
     }
@@ -85,7 +85,7 @@ public:
     /// デストラクタ
     ~Impl() {}
     
-    BufferImageData* Filter(unsigned int operation, BufferImageData* left, BufferImageData* right, float opacity)
+    BufferImageData* Filter(unsigned int operation, BufferImageData* left, BufferImageData* right, float factor)
     {
         if (!left || !right) return NULL;        
         if (left->Width() != right->Width() || left->Height() != right->Height()) return NULL;
@@ -115,7 +115,7 @@ public:
                 right->ImageBuffer()->GetBuffer(),
                 3,
                 dst->ImageBuffer()->GetNum() / 3,
-                opacity);
+                factor);
         } else if (left->Format() == BufferImageData::RGBA8) {
             FilterByteBuffer(
                 operation,
@@ -124,7 +124,7 @@ public:
                 right->ImageBuffer()->GetBuffer(),
                 4,
                 dst->ImageBuffer()->GetNum() / 4,
-                opacity);
+                factor);
         }
         
         return dst;
@@ -141,7 +141,7 @@ ImageFilter::~ImageFilter()
     delete m_imp;
 }
 
-BufferImageData* ImageFilter::Filter(unsigned int operation, BufferImageData* left, BufferImageData* right, float opacity)
+BufferImageData* ImageFilter::Filter(unsigned int operation, BufferImageData* left, BufferImageData* right, float factor)
 {
-    return m_imp->Filter(operation, left, right, opacity);
+    return m_imp->Filter(operation, left, right, factor);
 }
