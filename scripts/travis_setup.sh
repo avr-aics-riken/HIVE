@@ -3,7 +3,7 @@
 if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
 
 	brew update
-	brew upgrade gcc48 
+	brew install gcc48 
 	brew install openmpi
 	brew install homebrew/science/hdf5
 
