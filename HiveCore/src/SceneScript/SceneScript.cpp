@@ -381,7 +381,7 @@ public:
     const char* GetMemoryDataId(int i);
     
     void PushMemoryData(const char* dataId); // for internal
-    UserBufferData& GetBufferData() { return m_bufferData; }  // for internal
+    UserBufferData& GetUserBufferData() { return m_bufferData; }
 
 private:
     lua_State* m_L;
@@ -447,7 +447,7 @@ namespace {
         LuaRefPtr<BufferData>* buffer = *static_cast<LuaRefPtr<BufferData>**>(bufferPtr);
         
         if (sceneScript && buffer) {
-            sceneScript->GetBufferData().SetBufferData(dataName, *buffer);
+            sceneScript->GetUserBufferData().SetBufferData(dataName, *buffer);
         }
         return 1;
     }
@@ -464,7 +464,7 @@ namespace {
         SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
         
         if (sceneScript) {
-            BufferData* data = sceneScript->GetBufferData().GetBufferData(dataName);
+            BufferData* data = sceneScript->GetUserBufferData().GetBufferData(dataName);
             if (data) {
                 if (data->GetType() == BufferData::TYPE_IMAGE) {
                     BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
@@ -538,7 +538,7 @@ namespace {
         lua_getglobal(L, "__sceneScript");
         void* ptr = lua_touserdata(L, -1);
         SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
-        bool result = sceneScript->GetBufferData().DeleteBufferData(dataName);
+        bool result = sceneScript->GetUserBufferData().DeleteBufferData(dataName);
         
         lua_pushboolean(L,result);
         return 1;
@@ -549,7 +549,7 @@ namespace {
         lua_getglobal(L, "__sceneScript");
         void* ptr = lua_touserdata(L, -1);
         SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
-        sceneScript->GetBufferData().Clear();
+        sceneScript->GetUserBufferData().Clear();
         lua_pushboolean(L,true);
         return 1;
     }
@@ -566,7 +566,7 @@ namespace {
         LuaTable t;
         SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(const_cast<void*>(ptr));
         std::vector<std::string> ids;
-        sceneScript->GetBufferData().GetBufferDataNames(ids);
+        sceneScript->GetUserBufferData().GetBufferDataNames(ids);
         for (int i = 0, size = static_cast<int>(ids.size()); i < size; ++i) {
             t.push(ids[i]);
         }
@@ -631,6 +631,11 @@ int SceneScript::GetMemoryDataNum() const
 const char* SceneScript::GetMemoryDataId(int i) const
 {
     return m_imp->GetMemoryDataId(i);
+}
+
+UserBufferData* SceneScript::GetUserBufferData()
+{
+    return &m_imp->GetUserBufferData();
 }
 
 //----------------
