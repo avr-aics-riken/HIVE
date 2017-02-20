@@ -75,6 +75,10 @@ class ImageView extends React.Component {
 						var resultElement = document.getElementById(this.getCanvasName('img'));
 						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
 
+					} else if (param.type === 'png') {
+						// resultElement is img.
+						var resultElement = document.getElementById(this.getCanvasName('img'));
+						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/png"}));
 					} else if (param.type === 'raw'){
 						// resultElement is canvas.
 						var resultElement = document.getElementById(this.getCanvasName('canvas'));

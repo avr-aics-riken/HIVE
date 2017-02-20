@@ -69,6 +69,73 @@ namespace
             }
         }
     }
+    
+    void FilterFloatBuffer(
+        unsigned int operation,
+        float *dst,
+        const float* left,
+        const float* right,
+        const int stride,
+        const int length,
+        float factor)
+    {
+        if (operation == ImageFilter::ADD) {
+            for (int i = 0; i < length; ++i)
+            {
+                const int ir = i * stride + 0;
+                const int ig = i * stride + 1;
+                const int ib = i * stride + 2;
+                const int src_ir = (stride == 1) ? ir : ir;
+                const int src_ig = (stride == 1) ? ir : ig;
+                const int src_ib = (stride == 1) ? ir : ib;
+                dst[ir] = (std::min)(left[src_ir] + right[src_ir] * factor, 1.0f);
+                dst[ig] = (std::min)(left[src_ig] + right[src_ig] * factor, 1.0f);
+                dst[ib] = (std::min)(left[src_ib] + right[src_ib] * factor, 1.0f);
+            }
+        } else if (operation == ImageFilter::SUBSTRACT) {
+            for (int i = 0; i < length; ++i)
+            {
+                const int ir = i * stride + 0;
+                const int ig = i * stride + 1;
+                const int ib = i * stride + 2;
+                const int src_ir = (stride == 1) ? ir : ir;
+                const int src_ig = (stride == 1) ? ir : ig;
+                const int src_ib = (stride == 1) ? ir : ib;
+                const float rr = (std::max)(left[src_ir] + right[src_ir] - 1.0f, 0.0f);
+                const float gg = (std::max)(left[src_ig] + right[src_ig] - 1.0f, 0.0f);
+                const float bb = (std::max)(left[src_ib] + right[src_ib] - 1.0f, 0.0f);
+                dst[ir] = (std::min)(rr * factor + left[src_ir] * (1.0f - factor), 1.0f);
+                dst[ig] = (std::min)(gg * factor + left[src_ig] * (1.0f - factor), 1.0f);
+                dst[ib] = (std::min)(bb * factor + left[src_ib] * (1.0f - factor), 1.0f);
+            }
+        } else if (operation == ImageFilter::MULTIPLY) {
+            for (int i = 0; i < length; ++i)
+            {
+                const int ir = i * stride + 0;
+                const int ig = i * stride + 1;
+                const int ib = i * stride + 2;
+                const int src_ir = (stride == 1) ? ir : ir;
+                const int src_ig = (stride == 1) ? ir : ig;
+                const int src_ib = (stride == 1) ? ir : ib;
+                dst[ir] = (std::min)(left[src_ir] * (1.0f + (right[src_ir] - 1.0f) * factor), 1.0f);
+                dst[ig] = (std::min)(left[src_ig] * (1.0f + (right[src_ig] - 1.0f) * factor), 1.0f);
+                dst[ib] = (std::min)(left[src_ib] * (1.0f + (right[src_ib] - 1.0f) * factor), 1.0f);
+            }
+        } else if (operation == ImageFilter::AVERAGE) {
+            for (int i = 0; i < length; ++i)
+            {
+                const int ir = i * stride + 0;
+                const int ig = i * stride + 1;
+                const int ib = i * stride + 2;
+                const int src_ir = (stride == 1) ? ir : ir;
+                const int src_ig = (stride == 1) ? ir : ig;
+                const int src_ib = (stride == 1) ? ir : ib;
+                dst[ir] = (std::min)((left[src_ir] + right[src_ir]) / 2.0f * factor + left[src_ir] * (1.0f - factor), 1.0f);
+                dst[ig] = (std::min)((left[src_ig] + right[src_ig]) / 2.0f * factor + left[src_ig] * (1.0f - factor), 1.0f);
+                dst[ib] = (std::min)((left[src_ib] + right[src_ib]) / 2.0f * factor + left[src_ib] * (1.0f - factor), 1.0f);
+            }
+        }
+    }
 }
 
 class ImageFilter::Impl
@@ -98,9 +165,18 @@ public:
         const int height = left->Height();
         dst->Create(left->Format(), width, height);
         
-        for (int i = 0; i < dst->ImageBuffer()->GetNum(); ++i)
+        if (dst->ImageBuffer()) {
+            for (int i = 0; i < dst->ImageBuffer()->GetNum(); ++i)
+            {
+                dst->ImageBuffer()->GetBuffer()[i] = 0xFF;
+            }
+        }
+        if (dst->FloatImageBuffer())
         {
-            dst->ImageBuffer()->GetBuffer()[i] = 0xFF;
+            for (int i = 0; i < dst->FloatImageBuffer()->GetNum(); ++i)
+            {
+                dst->FloatImageBuffer()->GetBuffer()[i] = 1.0f;
+            }
         }
         
         /*
@@ -124,6 +200,24 @@ public:
                 right->ImageBuffer()->GetBuffer(),
                 4,
                 dst->ImageBuffer()->GetNum() / 4,
+                factor);
+        } else if (left->Format() == BufferImageData::RGBA32F) {
+            FilterFloatBuffer(
+                operation,
+                dst->FloatImageBuffer()->GetBuffer(),
+                left->FloatImageBuffer()->GetBuffer(),
+                right->FloatImageBuffer()->GetBuffer(),
+                4,
+                dst->FloatImageBuffer()->GetNum() / 4,
+                factor);
+        } else if (left->Format() == BufferImageData::R32F) {
+            FilterFloatBuffer(
+                operation,
+                dst->FloatImageBuffer()->GetBuffer(),
+                left->FloatImageBuffer()->GetBuffer(),
+                right->FloatImageBuffer()->GetBuffer(),
+                1,
+                dst->FloatImageBuffer()->GetNum(),
                 factor);
         }
         

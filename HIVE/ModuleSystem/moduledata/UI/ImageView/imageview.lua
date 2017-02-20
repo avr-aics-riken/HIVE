@@ -27,7 +27,7 @@ function ImageView:Do()
         imageBufferSize = v.image:GetSize()
     else
         -- image save
-        imageBuffer = HIVE_ImageSaver:SaveMemory(1, v.image)
+        imageBuffer = HIVE_ImageSaver:SaveMemory(1, v.image) --jpg
         imageBufferSize = HIVE_ImageSaver:MemorySize()
     end
     
