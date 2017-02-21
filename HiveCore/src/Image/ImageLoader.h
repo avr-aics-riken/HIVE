@@ -34,6 +34,9 @@ public:
     int ImageBufferSize() const;
     
     bool LoadRawFromPointer(int width, int height, int color, int bit, void* ptr);
+    
+    /// deep copy
+    bool LoadImageData(BufferImageData* imageData);
 
 };
 

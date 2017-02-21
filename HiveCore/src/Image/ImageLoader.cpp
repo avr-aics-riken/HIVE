@@ -88,6 +88,7 @@ public:
         bool result = SimpleTGALoaderRGBA(srcbuffer, width, height, &dstbuffer);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA8, width, height);
             memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
@@ -122,6 +123,7 @@ public:
         bool result = SimpleHDRLoader(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA32F, width, height);
             
             //memcpy(m_image.FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
@@ -152,6 +154,7 @@ public:
         bool result = SimplePNGLoaderFromMemory(src, bufferSize, width, height, &dstbuffer);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA8, width, height);
             memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
@@ -173,6 +176,7 @@ public:
         bool result = SimplePNGLoader(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA8, width, height);
             memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
@@ -196,6 +200,7 @@ public:
         bool result = SimpleJPGLoaderRGBAFromMemory(src, bufferSize, width, height, &dstbuffer);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA8, width, height);
             memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
@@ -217,6 +222,7 @@ public:
         bool result = SimpleJPGLoaderRGBA(filepath.c_str(), width, height, &dstbuffer);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA8, width, height);
             memcpy(m_image->ImageBuffer()->GetBuffer(), dstbuffer, sizeof(unsigned char) * 4 * width * height);
         }
@@ -240,6 +246,7 @@ public:
         printf("ret: %d: %d x %d \n", result, width, height);
         if (result && dstbuffer)
         {
+            m_image = BufferImageData::CreateInstance();
             m_image->Create(BufferImageData::RGBA32F, width, height);
             memcpy(m_image->FloatImageBuffer()->GetBuffer(), dstbuffer, sizeof(float) * 4 * width * height);
         }
@@ -261,10 +268,44 @@ public:
             return false;
         }
         
+        m_image = BufferImageData::CreateInstance();
         m_image->Create(BufferImageData::RGBA8, width, height);
         memcpy(m_image->ImageBuffer()->GetBuffer(), ptr, sizeof(unsigned char) * 4 * width * height);
 
         return true;
+    }
+    
+    /**
+     * BufferImageDataから画像をロード(DeepCopy)
+     * @param BufferImageData* 画像データ
+     * @retval true 成功
+     * @retval false 失敗
+     */
+    bool LoadImageData(BufferImageData* imageData)
+    {
+        const int width = imageData->Width();
+        const int height = imageData->Height();
+        m_image = BufferImageData::CreateInstance();
+        m_image->Create(imageData->Format(), width, height);
+        
+        if (imageData->Format() == BufferImageData::RGB8 ||
+            imageData->Format() == BufferImageData::RGBA8)
+        {
+            memcpy(m_image->ImageBuffer()->GetBuffer(), 
+                    imageData->ImageBuffer()->GetBuffer(),
+                    imageData->ImageBuffer()->GetNum());
+            return true;
+        }
+        else if (imageData->Format() == BufferImageData::R32F ||
+                 imageData->Format() == BufferImageData::RGBA32F)
+        {
+            memcpy(m_image->FloatImageBuffer()->GetBuffer(), 
+                    imageData->FloatImageBuffer()->GetBuffer(),
+                    imageData->FloatImageBuffer()->GetNum());
+            return true;
+        }
+        
+        return false;
     }
 
 
@@ -393,4 +434,9 @@ int ImageLoader::ImageBufferSize() const
 bool ImageLoader::LoadRawFromPointer(int width, int height, int color, int bit, void* ptr)
 {
     return m_imp->LoadRawFromPointer(width, height, color, bit, ptr);
+}
+
+bool ImageLoader::LoadImageData(BufferImageData* imageData)
+{
+    return m_imp->LoadImageData(imageData);
 }

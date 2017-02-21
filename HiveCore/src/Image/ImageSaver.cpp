@@ -123,26 +123,14 @@ namespace
 class ImageSaver::Impl
 {
 private:
-    RefPtr<BufferImageData> m_image;
     std::string m_memory;
     
 public:
     /// コンストラクタ
-    Impl() {
-        m_image = BufferImageData::CreateInstance();
-        m_image->Clear();
-    }
+    Impl() {}
 
     /// デストラクタ
-    ~Impl() {
-        m_image->Clear();
-    }
-
-    /// イメージデータへの参照
-    BufferImageData* ImageData()
-    {
-        return m_image;
-    }
+    ~Impl() {}
 
     /**
      * ファイルロード
@@ -418,6 +406,7 @@ public:
                 return (Buffer)m_memory.c_str();
             }
         }
+        
         return NULL;
     }
     

@@ -36,10 +36,8 @@ function ImageSet:Do()
     local selected = v.selected
     
     if image ~= nil and id ~= "" then
-        -- Copy image through png data
-        local imageBuffer = self.saver:SaveMemory(5, image)
-        local imageBufferSize = self.saver:MemorySize()
-        self.loader:LoadMemory(5, imageBuffer, imageBufferSize);
+        -- Copy image
+        self.loader:LoadImageData(image);
         local copy = self.loader:ImageData();
         
         setBufferData(id, copy);
