@@ -23,10 +23,10 @@ class GradientMap extends React.Component {
         this.defaultValMax = this.props.node.input[5].value;
         const numVals = 256;
         this.numVals    = numVals;
-        this.valueAlpha = [numVals];
+        this.value = [numVals];
         this.hist = [numVals];
         for(let i = 0; i < numVals; ++i){
-            this.valueAlpha[i] = 1.0;
+            this.value[i] = 1.0;
             this.hist[i] = 0;
         }
         this.oldx = 0;
@@ -61,18 +61,24 @@ class GradientMap extends React.Component {
         this.drawValueLine       = this.drawValueLine.bind(this);
         this.drawColorBar        = this.drawColorBar.bind(this);
         this.mouseMoveFunc       = this.mouseMoveFunc.bind(this);
+        this.mouseDownFunc       = this.mouseDownFunc.bind(this);
+        this.mouseUpFunc       = this.mouseUpFunc.bind(this);
         this.setMaskedGraphValue = this.setMaskedGraphValue.bind(this);
-        this.getGraphValueAlpha  = this.getGraphValueAlpha.bind(this);
+        this.getGraphValue  = this.getGraphValue.bind(this);
         this.getMinValue         = this.getMinValue.bind(this);
         this.getMaxValue         = this.getMaxValue.bind(this);
         this.getNumValues        = this.getNumValues.bind(this);
         this.setAnalyzeResult    = this.setAnalyzeResult.bind(this);
+        this.undo                = this.undo.bind(this);
+        this.redo                = this.redo.bind(this);
         this.styles              = this.styles.bind(this);
+        this.undoBuffer = [JSON.stringify(this.value)];
+        this.redoBuffer = [];
 
         this.changeCallback = () => {
             let rgba = [numVals * 4];
             for(let i = 0; i < numVals; ++i){
-                rgba[i * 4 + 0] = parseInt(this.valueAlpha[i]*255);
+                rgba[i * 4 + 0] = parseInt(this.value[i]*255);
                 rgba[i * 4 + 1] = rgba[i * 4 + 0]; 
                 rgba[i * 4 + 2] = rgba[i * 4 + 0];
                 rgba[i * 4 + 3] = 0xFF
@@ -97,13 +103,14 @@ class GradientMap extends React.Component {
 
         if (t === 1) {
             for (let i = 0; i < this.numVals; ++i){
-                this.valueAlpha[i] = i / this.numVals;
+                this.value[i] = i / this.numVals;
             }
         }
 
         this.drawGraph();
         if (this.changeCallback){
-            this.changeCallback(this);
+            this.changeCallback();
+            this.redoBuffer = [];
         }
     }
     
@@ -189,7 +196,7 @@ class GradientMap extends React.Component {
 
 		if (data.input[0].value.length >= this.numVals) {
 			for (let i = 0; i < this.numVals; ++i) {
-				this.valueAlpha[i] = data.input[0].value[i * 4 + 0] / 0xFF;
+				this.value[i] = data.input[0].value[i * 4 + 0] / 0xFF;
 			}
 		}
 
@@ -199,23 +206,19 @@ class GradientMap extends React.Component {
 		});
 
 		if (this.state.valMin !== data.input[2].value || this.state.valMax !== data.input[3].value) {
-	        setTimeout((()=>{if(this.changeCallback){this.changeCallback(this);}}).bind(this), 50);
+	        setTimeout((()=>{
+                if (this.changeCallback) {
+                    this.changeCallback();
+                }
+            }).bind(this), 50);
 		}
         this.drawGraph();
     }
     componentDidMount(){
         this.wrapper = ReactDOM.findDOMNode(this.refs.wrapper);
         this.init();
-        this.canvas.addEventListener('mousedown', ((eve)=>{
-            this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;
-            this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;
-            this.mspress = true;
-            document.addEventListener('mousemove', this.mouseMoveFunc, true);
-        }).bind(this), true);
-        document.addEventListener('mouseup', (()=>{
-            this.mspress = false;
-            document.removeEventListener('mousemove', this.mouseMoveFunc);
-        }).bind(this), true);
+        this.canvas.addEventListener('mousedown', this.mouseDownFunc);
+        window.addEventListener('mouseup', this.mouseUpFunc);
 
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         const NODE_INPUT_CHANGED = "node_input_changed";
@@ -223,13 +226,37 @@ class GradientMap extends React.Component {
         this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
     componentWillUnmount() {
+        this.canvas.removeEventListener('mousedown', this.mouseDownFunc);
+        window.removeEventListener('mouseup', this.mouseUpFunc);
+        
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
         this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
+    
+    mouseDownFunc(eve) {
+        this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;
+        this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;
+        this.mspress = true;
+        document.addEventListener('mousemove', this.mouseMoveFunc);
+    }
+    
+    mouseUpFunc(eve) {
+        if (this.mspress) {
+            if (this.undoBuffer.length > 30) {
+                this.undoBuffer.pop();
+            }
+            this.undoBuffer.unshift(JSON.stringify(this.value));
+        }
+        this.mspress = false;
+        document.removeEventListener('mousemove', this.mouseMoveFunc);
+    }
+    
     transFunc(x){return Math.sqrt(x);}
+    
     invTransFunc(x){return x*x;}
+    
     init(){
         this.canvas       = ReactDOM.findDOMNode(this.refs.canvas);
         var preSelect     = ReactDOM.findDOMNode(this.refs.preSelect);
@@ -277,9 +304,9 @@ class GradientMap extends React.Component {
 
         this.ctx.globalCompositeOperation = 'lighter';
 
-        this.drawColorBar(this.valueAlpha, this.valueAlpha, this.valueAlpha, 1.0);
+        this.drawColorBar(this.value, this.value, this.value, 1.0);
         this.ctx.globalCompositeOperation = 'source-over';
-        this.drawValueLine(this.valueAlpha, '#000');
+        this.drawValueLine(this.value, '#000');
         this.drawValueLine(this.hist, 'rgb(154, 79, 40)', true);
     }
     drawValueLine(vals, col, scaling){
@@ -352,7 +379,8 @@ class GradientMap extends React.Component {
 
             this.drawGraph();
             if (this.changeCallback){
-                this.changeCallback(this);
+                this.changeCallback();
+                this.redoBuffer = [];
             }
         }
         this.oldx = x;
@@ -361,10 +389,10 @@ class GradientMap extends React.Component {
     setMaskedGraphValue(n, val){
         if (n < 0 || this.numVals <= n){return;}
         val = Math.max(0.0, Math.min(1.0, val));
-        this.valueAlpha[n] = val;
+        this.value[n] = val;
     }
-    getGraphValueAlpha(){
-        return this.valueAlpha;
+    getGraphValue(){
+        return this.value;
     }
     getMinValue(){
         return this.state.valMin;
@@ -403,6 +431,26 @@ class GradientMap extends React.Component {
         }
     }
     
+    undo() {
+        if (this.undoBuffer.length > 1) {
+            this.redoBuffer.unshift(this.undoBuffer.shift());
+            var undoValue = this.undoBuffer[0];
+            this.value = JSON.parse(undoValue);
+            this.changeCallback();
+            this.setState({selValue: 0});
+        }
+    }
+    
+    redo() {
+        if (this.redoBuffer.length > 0) {
+            var redoValue = this.redoBuffer.shift();
+            this.value = JSON.parse(redoValue);
+            this.undoBuffer.unshift(redoValue);
+            this.changeCallback();
+            this.setState({selValue: 0});
+        }
+    }
+    
     styles(){
         return {
             wrapper: {
@@ -413,6 +461,11 @@ class GradientMap extends React.Component {
                 lineHeight: "30px",
                 width: "300px",
                 height: "20px"
+            },
+            undoframe : {
+                lineHeight: "30px",
+                width: "300px",
+                height: "28px"
             },
             btnframe: {
                 textAlign: "center",
@@ -457,6 +510,12 @@ class GradientMap extends React.Component {
                 padding: "3px",
                 width: "90px",
             },
+            undoredoButton: {
+                borderRadius: "3px 5px",
+                width: "60px",
+                height: "22px",
+                marginLeft : "3px"
+            }
         };
     }
 
@@ -471,6 +530,10 @@ class GradientMap extends React.Component {
             <div ref="wrapper" style={styles.wrapper}>
                 <canvas ref="canvas" style={styles.canvas}></canvas>
                 <canvas ref="colorframe" style={styles.colorframe}></canvas>
+                <div ref="undoframe" style={styles.undoframe}>
+                    <input ref="undoButton" type="button" value={"Undo"} style={styles.undoredoButton} onClick={this.undo}/>
+                    <input ref="redoButton" type="button" value={"Redo"} style={styles.undoredoButton}  onClick={this.redo}/>
+                </div>
                 <div ref="presetframe" style={styles.presetframe}>
                     <div ref="preText" className="KCaption" style={styles.preText}>Preset</div>
                     <select ref="preSelect" className="KDropdownList"
