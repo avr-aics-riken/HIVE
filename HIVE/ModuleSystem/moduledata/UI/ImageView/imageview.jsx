@@ -40,6 +40,8 @@ class ImageView extends React.Component {
 		}
 		if (param.type === 'jpg') {
 			buffer = new Blob([data]);
+		} else if (param.type === 'png') {
+			buffer = new Blob([data]);
 		} else {
 			buffer = data;
 		}
