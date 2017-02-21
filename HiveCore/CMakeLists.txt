@@ -104,6 +104,7 @@ ELSE()
     ENDIF()
   ENDIF()
 ENDIF()
+
 # --------------------------------------
 
 # --------------------------------------
@@ -269,6 +270,10 @@ ENDIF()
 # HIVE Core
 add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
 
+# Enable address sanitizer(if available).
+add_sanitizers(hiveCore)
+
+
 
 
 # LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
@@ -329,10 +334,12 @@ endif()
 
 # For test
 add_executable (hiveCoreSimpleTest test/simpletest.cpp)
+add_sanitizers (hiveCoreSimpleTest)
 target_link_libraries (hiveCoreSimpleTest hiveCore)
 
 # For test
 add_executable (hiveCoreSolverSample test/solversample.cpp)
+add_sanitizers (hiveCoreSolverSample)
 target_link_libraries (hiveCoreSolverSample hiveCore)
 
 

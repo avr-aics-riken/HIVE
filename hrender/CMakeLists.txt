@@ -175,6 +175,7 @@ ENDIF()
 
 # hrender
 add_executable (hrender ${HRENDER_SOURCES})
+add_sanitizers (hrender)
 
 
 # HIVE Core
