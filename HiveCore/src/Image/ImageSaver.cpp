@@ -24,6 +24,97 @@ namespace
         std::transform( in.begin(), in.end(), std::back_inserter( out ), ::tolower );
         return out;
     }
+    
+    unsigned char toByte(float f)
+    {
+        return (std::min)(static_cast<unsigned char>(f * 0xFF + 0.5), static_cast<unsigned char>(0xFF));
+    }
+    
+    float toFloat(char b)
+    {
+        return static_cast<float>(b / 255.0f);
+    }
+    
+    
+    void convertRGBA32FToRGBA8Buffer(unsigned char* byteBuffer, const float* floatBuffer, const int length)
+    {
+        for (int i = 0; i < length; ++i) {
+            byteBuffer[i] = toByte(floatBuffer[i]);
+        }
+    }
+        
+    BufferImageData* convertRGBA32FToRGBA8(BufferImageData* data)
+    {
+        const float* src = data->FloatImageBuffer()->GetBuffer();
+        const int size = data->FloatImageBuffer()->GetNum();
+        BufferImageData* dst = BufferImageData::CreateInstance();
+        dst->Create(BufferImageData::RGBA8, data->Width(), data->Height());
+        unsigned char* dstBuffer = dst->ImageBuffer()->GetBuffer();
+        convertRGBA32FToRGBA8Buffer(dstBuffer, src, size);
+        return dst;
+    }
+    
+    void convertR32FToRGBA8Buffer(unsigned char* byteBuffer, const float* floatBuffer, const int length)
+    {
+        for (int i = 0; i < length; ++i) {
+            byteBuffer[i * 4 + 0] = toByte(floatBuffer[i]);
+            byteBuffer[i * 4 + 1] = byteBuffer[i * 4 + 0];
+            byteBuffer[i * 4 + 2] = byteBuffer[i * 4 + 0];
+            byteBuffer[i * 4 + 3] = 0xFF;
+        }
+    }
+        
+    BufferImageData* convertR32FToRGBA8(BufferImageData* data)
+    {
+        const float* src = data->FloatImageBuffer()->GetBuffer();
+        const int size = data->FloatImageBuffer()->GetNum();
+        BufferImageData* dst = BufferImageData::CreateInstance();
+        dst->Create(BufferImageData::RGBA8, data->Width(), data->Height());
+        unsigned char* dstBuffer = dst->ImageBuffer()->GetBuffer();
+        convertR32FToRGBA8Buffer(dstBuffer, src, size);
+        return dst;
+    }
+    
+    void convertRGBA8ToRGBA32FBuffer(float* floatBuffer, const unsigned char* byteBuffer, const int length)
+    {
+        for (int i = 0; i < length; ++i) {
+            floatBuffer[i] = toFloat(byteBuffer[i]);
+        }
+    }
+    
+    void convertRGB8ToRGBA32FBuffer(float* floatBuffer, const unsigned char* byteBuffer, const int length)
+    {
+        int size = length / 3;
+        for (int i = 0; i < size; ++i) {
+            floatBuffer[i * 4 + 0] = toFloat(byteBuffer[i * 3 + 0]);
+            floatBuffer[i * 4 + 1] = toFloat(byteBuffer[i * 3 + 1]);
+            floatBuffer[i * 4 + 2] = toFloat(byteBuffer[i * 3 + 2]);
+            floatBuffer[i * 4 + 3] = 1.0f;
+        }
+    }
+    
+    BufferImageData* convertRGBA8ToRGBA32F(BufferImageData* data)
+    {
+        const unsigned char* src = data->ImageBuffer()->GetBuffer();
+        const int size = data->ImageBuffer()->GetNum();
+        BufferImageData* dst = BufferImageData::CreateInstance();
+        dst->Create(BufferImageData::RGBA32F, data->Width(), data->Height());
+        float* dstBuffer = dst->FloatImageBuffer()->GetBuffer();
+        convertRGBA8ToRGBA32FBuffer(dstBuffer, src, size);
+        return dst;
+    }
+    
+    BufferImageData* convertRGB8FToRGBA32F(BufferImageData* data)
+    {
+        const unsigned char* src = data->ImageBuffer()->GetBuffer();
+        const int size = data->ImageBuffer()->GetNum();
+        BufferImageData* dst = BufferImageData::CreateInstance();
+        dst->Create(BufferImageData::RGBA32F, data->Width(), data->Height());
+        float* dstBuffer = dst->FloatImageBuffer()->GetBuffer();
+        convertRGB8ToRGBA32FBuffer(dstBuffer, src, size);
+        return dst;
+    }
+    
 } // anonymouse namepsace
 
 /**
@@ -32,26 +123,14 @@ namespace
 class ImageSaver::Impl
 {
 private:
-    RefPtr<BufferImageData> m_image;
     std::string m_memory;
     
 public:
     /// コンストラクタ
-    Impl() {
-        m_image = BufferImageData::CreateInstance();
-        m_image->Clear();
-    }
+    Impl() {}
 
     /// デストラクタ
-    ~Impl() {
-        m_image->Clear();
-    }
-
-    /// イメージデータへの参照
-    BufferImageData* ImageData()
-    {
-        return m_image;
-    }
+    ~Impl() {}
 
     /**
      * ファイルロード
@@ -243,7 +322,7 @@ public:
 
     /**
      * メモリロード
-    * @param format  ファイルフォーマット(JPG, TGAのみ)
+    * @param format  ファイルフォーマット(JPG, TGA, EXR, PNG)
      * @param data      ファイルデータ
      * @return buffer ファイルイメージデータバッファ
      */
@@ -255,6 +334,25 @@ public:
         const int height = data->Height();
         char* dstbuffer = NULL;
         
+        // convert float <==> byte buffers
+        if (format == ImageSaver::JPG || format == ImageSaver::TGA || format == ImageSaver::PNG)
+        {
+            if (data->Format() == BufferImageData::RGBA32F) {
+                data = convertRGBA32FToRGBA8(data);
+            }
+            if (data->Format() == BufferImageData::R32F) {
+                data = convertR32FToRGBA8(data);
+            }
+        } else if (format == ImageSaver::EXR) {
+            if (data->Format() == BufferImageData::RGBA8) {
+                data = convertRGBA8ToRGBA32F(data);
+            }
+            if (data->Format() == BufferImageData::RGB8) {
+                data = convertRGB8FToRGBA32F(data);
+            }
+        }
+        
+        // save image to memory
         if (format == ImageSaver::JPG)
         {
             const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
@@ -298,6 +396,17 @@ public:
         {
             // not implemented
         }
+        else if (format == ImageSaver::PNG)
+        {
+            const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
+            const int bytes = SimplePNGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
+            if (bytes && dstbuffer) {
+                m_memory = std::string(dstbuffer, bytes);
+                delete [] dstbuffer;
+                return (Buffer)m_memory.c_str();
+            }
+        }
+        
         return NULL;
     }
     

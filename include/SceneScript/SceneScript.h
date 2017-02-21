@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+class UserBufferData;
+
 class SceneScript
 {
 public:
@@ -35,6 +37,8 @@ public:
     const void* GetMemoryDataPointer(const char* dataId) const;
     int GetMemoryDataNum() const;
     const char* GetMemoryDataId(int i) const;
+    
+    UserBufferData* GetUserBufferData();
     
     class Impl; // to be public (for internal)
 private:

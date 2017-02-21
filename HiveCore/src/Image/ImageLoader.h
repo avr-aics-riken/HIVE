@@ -24,6 +24,7 @@ public:
     ImageLoader();
     ~ImageLoader();
     bool Load(const char* filename);
+    bool LoadMemory(unsigned int format, const Buffer buffer,unsigned int bufferSize);
     BufferImageData *ImageData();
     
     /// @retval no compressed buffer
@@ -33,6 +34,9 @@ public:
     int ImageBufferSize() const;
     
     bool LoadRawFromPointer(int width, int height, int color, int bit, void* ptr);
+    
+    /// deep copy
+    bool LoadImageData(BufferImageData* imageData);
 
 };
 

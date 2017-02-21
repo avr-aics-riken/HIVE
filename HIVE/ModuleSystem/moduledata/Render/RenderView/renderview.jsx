@@ -79,6 +79,8 @@ class RenderView extends React.Component {
 		}
 		if (param.type === 'jpg') {
 			buffer = new Blob([data]);
+		} else if (param.type == 'png') {
+			buffer = new Blob([data]);
 		} else {
 			buffer = data;
 		}
@@ -129,7 +131,11 @@ class RenderView extends React.Component {
 	                    var resultElement = document.getElementById(this.getCanvasName('img'));
 	                    resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
 
-	                } else if (param.type === 'raw'){
+	                } else if (param.type === 'png') {
+						// resultElement is img.
+						var resultElement = document.getElementById(this.getCanvasName('img'));
+						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/png"}));
+					} else if (param.type === 'raw'){
 	                    //console.log('UPDATE CANVAS!!!');
 
 	                    // resultElement is canvas.
@@ -178,7 +184,7 @@ class RenderView extends React.Component {
   		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
                 let imgElem = document.getElementById(this.getCanvasName('img'));
-                imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"})
+                imgElem.src = URL.createObjectURL(this.state.image, {type: "image/png"})
                 //console.log(imgElem);
 			}
 		}

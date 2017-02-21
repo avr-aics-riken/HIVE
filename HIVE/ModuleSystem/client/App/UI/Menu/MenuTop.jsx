@@ -43,6 +43,7 @@ export default class MenuTop extends React.Component {
 	    this.layoutPanel = this.layoutPanel.bind(this);
 	    this.layoutPanelNode = this.layoutPanelNode.bind(this);
 		this.windowToggleConsoleOutput = this.windowToggleConsoleOutput.bind(this);
+		this.systemRebootHive = this.systemRebootHive.bind(this);
 		this.isShiftDown = false;
 		this.isCtrlDown = false;
     }
@@ -245,6 +246,15 @@ export default class MenuTop extends React.Component {
         this.props.action.showConsoleOutput(this.showConsole);
     }
 
+    // System menu
+    systemRebootHive() {
+        this.props.action.openMessageDialog("Is it OK to reboot HIVE?", (err, key) => {
+            if (!err) {
+                this.props.action.rebootHive();
+            }
+        });
+    }
+    
     // ここでメニュー操作時の動作を定義
     // info のなかの key を見て分岐したりする
     handleClick(info){
@@ -289,6 +299,9 @@ export default class MenuTop extends React.Component {
                 </SubMenu>
                 <SubMenu title={<span>Window</span>} key="Window">
                     <MenuItem key="windowToggleConsoleOutput">Console Output</MenuItem>
+                </SubMenu>
+                <SubMenu title={<span>System</span>} key="system">
+                    <MenuItem key="systemRebootHive">Reboot HIVE</MenuItem>
                 </SubMenu>
                 </RcMenu>
         ), {

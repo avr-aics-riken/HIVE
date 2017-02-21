@@ -566,5 +566,32 @@ inline bool SimpleJPGLoaderRGBA(const char* jpgfile, int& w, int& h, unsigned ch
     return false;
 }
 
+inline bool SimpleJPGLoaderRGBAFromMemory(const unsigned char *jpgbuffer, int buf_size, int& w, int& h, unsigned char** rgba)
+{
+    unsigned char* loaddata;
+    int actual_comps;
+    int width;
+    int height;
+    loaddata = jpgd::decompress_jpeg_image_from_memory(jpgbuffer, buf_size, &width, &height, &actual_comps, 4);
+    if (loaddata) {
+        w = width;
+        h = height;
+        *rgba = new unsigned char[4 * w * h];
+        // invert vertically
+        for (int y = 0; y < h; ++y) {
+            for (int x = 0; x < w; ++x) {
+                int i = (y * w + x);
+                int yinv = ((h - y - 1) * w + x);
+                (*rgba)[4 * i + 0] = loaddata[4 * yinv + 0];
+                (*rgba)[4 * i + 1] = loaddata[4 * yinv + 1];
+                (*rgba)[4 * i + 2] = loaddata[4 * yinv + 2];
+                (*rgba)[4 * i + 3] = loaddata[4 * yinv + 3];
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 #endif // INCLUDE_SIMPLEJPG
 

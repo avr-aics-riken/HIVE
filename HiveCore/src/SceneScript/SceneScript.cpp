@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include "../Renderer/RenderCore.h"
+#include "../Buffer/UserBufferData.h"
 
 #include "Core/Perf.h"
 
@@ -43,6 +44,7 @@
 #include "Camera_Lua.h"
 #include "ImageLoader_Lua.h"
 #include "ImageSaver_Lua.h"
+#include "ImageFilter_Lua.h"
 #include "GenTexture_Lua.h"
 #include "PrimitiveGenerator_Lua.h"
 
@@ -68,6 +70,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, PrimitiveGenerator_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, ImageFilter_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
@@ -89,6 +92,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "PrimitiveGenerator",  LUA_SCRIPTCLASS_NEW_FUNCTION(PrimitiveGenerator_Lua));
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
+    SetFunction(L, "ImageFilter",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageFilter_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
 }
 
@@ -294,7 +298,11 @@ int screenParallelRendering(lua_State* L)
 int getMemoryData(lua_State* L);
 int getMemoryDataNames(lua_State* L);
 
-
+int setBufferData(lua_State* L);
+int getBufferData(lua_State* L);
+int getBufferDataNames(lua_State* L);
+int deleteBufferData(lua_State* L);
+int clearBufferData(lua_State* L);
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
@@ -314,6 +322,12 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
 
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
+    
+    SetFunction(L, "setBufferData", setBufferData);
+    SetFunction(L, "getBufferData", getBufferData);
+    SetFunction(L, "getBufferDataNames", getBufferDataNames);
+    SetFunction(L, "deleteBufferData", deleteBufferData);
+    SetFunction(L, "clearBufferData", clearBufferData);
     
     lua_pushlightuserdata(L, sceneScriptPtr);
     lua_setglobal(L, "__sceneScript");
@@ -367,13 +381,14 @@ public:
     const char* GetMemoryDataId(int i);
     
     void PushMemoryData(const char* dataId); // for internal
+    UserBufferData& GetUserBufferData() { return m_bufferData; }
 
 private:
     lua_State* m_L;
     UserMemoryDataArray m_memoryData;
+    UserBufferData m_bufferData;
     
     UserMemoryDataArray::iterator getUserMemoryData(const char* dataId);
-    
 };
 
 
@@ -417,6 +432,147 @@ namespace {
         return 1;
     }
 
+    int setBufferData(lua_State* L) {
+        dumpStack(L);
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        
+        void* bufferPtr = lua_touserdata(L, 2);
+        LuaRefPtr<BufferData>* buffer = *static_cast<LuaRefPtr<BufferData>**>(bufferPtr);
+        
+        if (sceneScript && buffer) {
+            sceneScript->GetUserBufferData().SetBufferData(dataName, *buffer);
+        }
+        return 1;
+    }
+    
+    int getBufferData(lua_State* L) {
+        dumpStack(L);
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        
+        if (sceneScript) {
+            BufferData* data = sceneScript->GetUserBufferData().GetBufferData(dataName);
+            if (data) {
+                if (data->GetType() == BufferData::TYPE_IMAGE) {
+                    BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferImageData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_MESH) {
+                    BufferMeshData_Lua* instance = static_cast<BufferMeshData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferMeshData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_POINT) {
+                    BufferPointData_Lua* instance = static_cast<BufferPointData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferPointData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_LINE) {
+                    BufferLineData_Lua* instance = static_cast<BufferLineData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferLineData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_VECTOR) {
+                    BufferVectorData_Lua* instance = static_cast<BufferVectorData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferVectorData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_TETRA) {
+                    BufferTetraData_Lua* instance = static_cast<BufferTetraData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferTetraData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_SOLID) {
+                    BufferSolidData_Lua* instance = static_cast<BufferSolidData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferSolidData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_VOLUME) {
+                    BufferVolumeData_Lua* instance = static_cast<BufferVolumeData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferVolumeData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_SPARSEVOLUME) {
+                    BufferSparseVolumeData_Lua* instance = static_cast<BufferSparseVolumeData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferSparseVolumeData_Lua*>(L, instance);
+                    }
+                } else if (data->GetType() == BufferData::TYPE_IMAGE) {
+                    BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
+                    if (instance) {
+                        return LUAPUSH<BufferImageData_Lua*>(L, instance);
+                    }
+                } else {
+                    lua_pushnil(L);
+                    return 1;
+                }
+            } else {
+                lua_pushnil(L);
+                return 1;
+            }
+        }
+        return 1;
+    }
+    
+    int deleteBufferData(lua_State* L) {
+        dumpStack(L);
+        if (!lua_isstring(L, 1)) {
+            lua_pushnil(L);
+            return 1;
+        }
+        const char* dataName = lua_tostring(L, 1);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        bool result = sceneScript->GetUserBufferData().DeleteBufferData(dataName);
+        
+        lua_pushboolean(L,result);
+        return 1;
+    }
+    
+    int clearBufferData(lua_State* L) {
+        dumpStack(L);
+        lua_getglobal(L, "__sceneScript");
+        void* ptr = lua_touserdata(L, -1);
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(ptr);
+        sceneScript->GetUserBufferData().Clear();
+        lua_pushboolean(L,true);
+        return 1;
+    }
+    
+    int getBufferDataNames(lua_State* L) {
+        lua_getglobal(L, "__sceneScript");
+        const void* ptr = lua_touserdata(L, -1);
+        if (!ptr) {
+            fprintf(stderr,"Invalid sceneScript instance\n");
+            lua_pushnil(L);
+            return 1;
+        }
+
+        LuaTable t;
+        SceneScript::Impl* sceneScript = reinterpret_cast<SceneScript::Impl*>(const_cast<void*>(ptr));
+        std::vector<std::string> ids;
+        sceneScript->GetUserBufferData().GetBufferDataNames(ids);
+        for (int i = 0, size = static_cast<int>(ids.size()); i < size; ++i) {
+            t.push(ids[i]);
+        }
+        t.pushLuaTableValue(L);
+        return 1;
+    }
     
 } // namespace
 
@@ -475,6 +631,11 @@ int SceneScript::GetMemoryDataNum() const
 const char* SceneScript::GetMemoryDataId(int i) const
 {
     return m_imp->GetMemoryDataId(i);
+}
+
+UserBufferData* SceneScript::GetUserBufferData()
+{
+    return &m_imp->GetUserBufferData();
 }
 
 //----------------

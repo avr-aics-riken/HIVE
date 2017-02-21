@@ -7,6 +7,7 @@ import Hive from './HIVE';
 import Node from "./UI/Node";
 import Panel from "./UI/Panel";
 import Menu from "./UI/Menu";
+import Dialog from "./UI/Dialog";
 import MenuTop from "./UI/Menu/MenuTop.jsx";
 import TimeSlider from "./UI/TimeSlider";
 import Splitter from "./UI/Splitter";
@@ -32,14 +33,18 @@ export default class HiveApp extends React.Component {
             listVisible: false,
             listPos: [window.innerWidth / 2, window.innerHeight / 2 - 150],
 			filebrowser : false,
-			labeldialog : false
+			labeldialog : false,
+            messagedialog : false,
         };
 
+		this.ctrlKeyDown = false;
         this.onDragOver = this.onDragOver.bind(this);
         this.onDrop = this.onDrop.bind(this);
         this.onClick = this.onClick.bind(this);
         this.onDblClick = this.onDblClick.bind(this);
         this.onKeyDown = this.onKeyDown.bind(this);
+		this.onMouseMove = this.onMouseMove.bind(this);
+        this.onKeyUp = this.onKeyUp.bind(this);
         this.componentDidMount = this.componentDidMount.bind(this);
         this.loadFile = this.loadFile.bind(this);
         this.setFocusTarget = this.setFocusTarget.bind(this);
@@ -54,6 +59,10 @@ export default class HiveApp extends React.Component {
 		this.onFilebrowserCancel = this.onFilebrowserCancel.bind(this);
 		this.onLabelDialogOK = this.onLabelDialogOK.bind(this);
 		this.onLabelDialogCancel = this.onLabelDialogCancel.bind(this);
+        this.onMessageDialogOK = this.onMessageDialogOK.bind(this);
+		this.onMessageDialogCancel = this.onMessageDialogCancel.bind(this);
+		
+		this.mousePos = {x : 0, y : 0};
 
         this.store.on(Constants.LAYOUT_CHANGED, (val) => {
             console.log('LAYOUT_CHANGED', val);
@@ -76,7 +85,7 @@ export default class HiveApp extends React.Component {
 			dropTarget.removeEventListener('drop', this.onDrop, false);
 		}
 		if (hoverTarget) {
-			hoverTarget.removeEventListener('click', this.onClick, false);
+			window.removeEventListener('click', this.onClick, false);
 			hoverTarget.removeEventListener('dblclick', this.onDblClick, false);
 		}
 		this.dropTarget = null;
@@ -95,7 +104,7 @@ export default class HiveApp extends React.Component {
 		if (!this.hoverTarget) {
 			this.hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
 			if (this.hoverTarget) {
-				this.hoverTarget.addEventListener('click', this.onClick, false);
+				window.addEventListener('click', this.onClick, false);
 				this.hoverTarget.addEventListener('dblclick', this.onDblClick, false);
 			}
 		}
@@ -103,7 +112,9 @@ export default class HiveApp extends React.Component {
 
     componentDidMount() {
 		this.assignEvents();
-		window.addEventListener('keydown', this.onKeyDown, false);
+		window.addEventListener('mousemove', this.onMouseMove);
+		window.addEventListener('keydown', this.onKeyDown);
+		window.addEventListener('keyup', this.onKeyUp);
 		this.store.on(Constants.OPEN_FILE_BROWSER, (err, key) => {
 			this.filebrowserKey = key;
 			this.setState({ filebrowser: true});
@@ -119,17 +130,29 @@ export default class HiveApp extends React.Component {
 			this.labeldialogCallback = callback;
 			this.setState({ labeldialog: true});
 		});
+        
+		this.store.on(Constants.OPEN_MESSAGE_DIALOG, (err, key, callback) => {
+			this.messagedialogKey = key;
+			let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+			let dialog = "messageDialog" + String(currentMode);
+			if (this.refs.hasOwnProperty(dialog)) {
+				this.refs[dialog].setState({label : key})
+			}
+			this.messagedialogCallback = callback;
+			this.setState({ messagedialog: true});
+		});
     }
 
 	componentWillUnmount() {
 		this.removeEvents();
-		window.removeEventListener('keydown', this.onKeyDown, false);
+		window.removeEventListener('mousemove', this.onMouseMove);
+		window.removeEventListener('keydown', this.onKeyDown);
+		window.removeEventListener('keyup', this.onKeyUp);
 	}
 
 	componentDidUpdate() {
 		this.assignEvents(this.state.layoutType);
 	}
-
     onDragOver(eve){
         eve.stopPropagation();
         eve.preventDefault();
@@ -146,25 +169,63 @@ export default class HiveApp extends React.Component {
 
     // キーダウンイベントのターゲットは Window
     onKeyDown(eve){
+		let keyCode = (eve.which || eve.keyCode);
+		if (keyCode == 116 // F5 
+				|| (this.ctrlKeyDown && keyCode == 82)) // Ctrl R or Command R
+		{
+			// Reboot hive
+			this.action.openMessageDialog("Is it OK to reboot HIVE?", (err, key) => {
+				if (!err) {
+					this.action.rebootHive();
+				}
+			});
+			eve.preventDefault();
+		} else if (keyCode == 17 || keyCode == 224 || keyCode == 91 || keyCode == 93) {
+			this.ctrlKeyDown = true;
+		}
         switch(eve.keyCode){
             case 27:
                 this.hoverHidden();
                 break;
             case 32:
-                eve.preventDefault();
-                this.setState({
-                    listVisible: true
-                });
-                setTimeout((()=>{
-                    this.setHoverPosition();
-                    var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
-                    e.focus();
-                }).bind(this), 50);
-                break;
+				let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+				let hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
+				let rect = hoverTarget.getBoundingClientRect();
+				if (this.mousePos.x >= rect.left && this.mousePos.x <= rect.right &&
+					this.mousePos.y >= rect.top && this.mousePos.y <= rect.bottom)
+				{
+					eve.preventDefault();
+					this.listVisiblity = true;
+					this.setState({
+						listVisible: true,
+						listPos: [
+							Math.min(this.mousePos.x, rect.right - 270),  
+							Math.min(this.mousePos.y, rect.bottom - 270)]
+					});
+					setTimeout((()=>{
+						this.setHoverPosition();
+						var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
+						e.focus();
+					}).bind(this), 30);
+				}
             default:
                 break;
         }
     }
+	
+	onMouseMove(eve) {
+		this.mousePos = {
+			x : eve.pageX,
+			y : eve.pageY
+		};
+	}
+	
+	onKeyUp(eve) {
+		let keyCode = (eve.which || eve.keyCode);
+		if (keyCode == 17 || keyCode == 224 || keyCode == 91 || keyCode == 93) {
+			this.ctrlKeyDown = false;
+		}
+	}
 
     onClick(eve) {
         if (eve.button === 0) {
@@ -183,16 +244,21 @@ export default class HiveApp extends React.Component {
             // let y = eve.currentTarget.scrollTop + eve.clientY - eve.currentTarget.getBoundingClientRect().top;
             let x = eve.pageX;
             let y = eve.pageY;
+			let currentMode = this.layoutMode.bind(this)(this.state.layoutType);
+			let hoverTarget = ReactDOM.findDOMNode(this.refs["hoverTarget" + String(currentMode)]);
+			let rect = hoverTarget.getBoundingClientRect();
             this.listVisiblity = !this.listVisiblity;
             this.setState({
                 listVisible: this.listVisiblity,
-                listPos: [x, y]
+                listPos: [
+						Math.min(x, rect.right - 270),  
+						Math.min(y, rect.bottom - 270)]
             });
             if(this.listVisiblity){
                 setTimeout((()=>{
                     var e = ReactDOM.findDOMNode(this.focusTarget.refs.suggest.input);
                     e.focus();
-                }).bind(this), 50);
+                }).bind(this), 30);
             }
         }
     }
@@ -277,6 +343,20 @@ export default class HiveApp extends React.Component {
 			labeldialog : false
 		});
 	}
+    
+	onMessageDialogOK(value) {
+		this.messagedialogCallback(null, value);
+		this.action.okMessageDialog(this.messagedialogKey, value);
+		this.setState({
+			messagedialog : false
+		});
+	}
+
+	onMessageDialogCancel(value) {
+		this.setState({
+			messagedialog : false
+		});
+	}
 
 	layoutMode(layoutType) {
 		if (layoutType === "all") { return 2; }
@@ -303,7 +383,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -317,6 +397,14 @@ export default class HiveApp extends React.Component {
 							okFunc={this.onLabelDialogOK}
 							cancelFunc={this.onLabelDialogCancel}
 							initialValue={this.labeldialogKey}
+							/>
+						<Dialog.MessageDialog ref="messageDialog3"
+							store={this.store}
+							action={this.action}
+							display={this.state.messagedialog}
+							okFunc={this.onMessageDialogOK}
+							cancelFunc={this.onMessageDialogCancel}
+							initialValue={this.messagedialogKey}
 							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
@@ -340,7 +428,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -354,6 +442,14 @@ export default class HiveApp extends React.Component {
 							okFunc={this.onLabelDialogOK}
 							cancelFunc={this.onLabelDialogCancel}
 							initialValue={this.labeldialogKey}
+							/>
+						<Dialog.MessageDialog ref="messageDialog2"
+							store={this.store}
+							action={this.action}
+							display={this.state.messagedialog}
+							okFunc={this.onMessageDialogOK}
+							cancelFunc={this.onMessageDialogCancel}
+							initialValue={this.messagedialogKey}
 							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
@@ -372,7 +468,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
 						<FileBrowser.View
 							display={this.state.filebrowser}
 							okFunc={this.onFilebrowserOK}
@@ -387,6 +483,14 @@ export default class HiveApp extends React.Component {
 							cancelFunc={this.onLabelDialogCancel}
 							initialValue={this.labeldialogKey}
 							/>
+						<Dialog.MessageDialog ref="messageDialog1"
+							store={this.store}
+							action={this.action}
+							display={this.state.messagedialog}
+							okFunc={this.onMessageDialogOK}
+							cancelFunc={this.onMessageDialogCancel}
+							initialValue={this.messagedialogKey}
+							/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );
@@ -400,7 +504,7 @@ export default class HiveApp extends React.Component {
                             <TimeSlider.View store={this.store} action={this.action} />
                         </Splitter>
                         {this.hoverGenerator()}
-                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
+                        <MenuTop lock={this.state.filebrowser || this.state.labeldialog || this.state.messagedialog} store={this.store} action={this.action} consoleShow={this.state.consoleOutputVisible}/>
                         <ConsoleOutput store={this.store} show={this.state.consoleOutputVisible}/>
                     </div>
                 );

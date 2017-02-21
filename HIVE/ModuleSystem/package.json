@@ -21,9 +21,8 @@
     "electron-packager": "*",
     "react-split-pane": "0.1.25",
     "react-autosuggest": "4.0.0",
-    "react-color": "1.3.8",
     "react-vendor-prefix":"0.0.1",
-    "rc-menu": "4.10.8",
+    "rc-menu": "4.12.4",
     "react-slider": "0.6.1"
   },
   "window": {

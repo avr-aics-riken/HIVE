@@ -155,6 +155,11 @@ export default class ItemTextInput extends React.Component {
 			this.submit.bind(this)(ev);
 		}
 	}
+	
+	onKeyDown(ev) {
+		//ev.preventDefault();
+		ev.stopPropagation();
+	}
 
 	onBlur(ev) {
 		this.submit.bind(this)(ev);
@@ -225,6 +230,7 @@ export default class ItemTextInput extends React.Component {
 						value={this.state.value}
 						onChange={this.onChange.bind(this)()}
 						onKeyPress={this.onKeyPress.bind(this)}
+						onKeyDown={this.onKeyDown.bind(this)}
 						onBlur={this.onBlur.bind(this)}
 						onFocus={this.onFocus.bind(this)}
 					>

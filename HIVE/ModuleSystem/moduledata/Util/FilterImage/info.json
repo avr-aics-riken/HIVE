@@ -1,0 +1,17 @@
+
+{
+	"name": "FilterImage",
+	"funcname": "FilterImage",
+	"info":"画像処理ノード",
+	"customfuncfile":"filterimage.lua",
+	"uifile" : "filterimage.jsx",
+    "input": [
+		{"name": "image0",  "type": "BufferImageData" },
+		{"name": "image1",  "type": "BufferImageData" },
+		{"name": "factor",  "type": "float", "value": 1.0 },
+		{"name": "operation",  "type": "float", "value": 1, "visible": false}
+	],
+	"output": [
+		{"name": "result",  "type": "BufferImageData" }
+	]
+}

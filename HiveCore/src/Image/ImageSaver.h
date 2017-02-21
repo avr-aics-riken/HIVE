@@ -26,7 +26,8 @@ public:
         JPG = 1,
         TGA,
         EXR,
-        HDR
+        HDR,
+        PNG
     };
     
     ImageSaver();

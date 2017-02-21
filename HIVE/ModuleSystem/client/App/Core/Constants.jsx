@@ -14,6 +14,7 @@ module.exports = {
     IMAGE_RECIEVED : "image_revieved",
     RENDERER_LOG_RECIEVED: "renderer_log_recieved",
     ANALYZED_DATA_RECIEVED: "analyzed_data_recieved",
+	LUA_DATA_RECIEVED: "lua_data_recieved",
     NODE_ADDED : "node_added",
     NODE_DELETED : "node_deleted",
     NODE_SELECT_CHANGED : "node_selected",
@@ -36,8 +37,11 @@ module.exports = {
 	SCRIPT_STATUS_CHANGED : "script_status_changed",
 	NEED_REFRESH_PLUG_POSITION : "need_refresh_plug_position",
 	OPEN_FILE_BROWSER : "open_file_browser",
+	OPEN_LABEL_DIALOG : "open_label_dialog",
+	OPEN_MESSAGE_DIALOG : "open_message_dialog",
 	OK_FILE_BROWSER : "ok_file_browser",
 	OK_LABEL_DIALOG : "ok_label_dialog",
+	OK_MESSAGE_DIALOG : "ok_message_dialog",
 	GROUP_CHANGED : "group_changed"
 };
 

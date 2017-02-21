@@ -11,7 +11,6 @@ VolumeObject.new = function (varname)
 end
 
 function VolumeObject:Do()    
-    
     self:UpdateValue()
     local v = self.value    
     local pm = VolumeModel(); -- make new Model!
@@ -20,14 +19,15 @@ function VolumeObject:Do()
     local minval = 0.0
     local maxval = 1.0
     if v.volume then
-	    pm:Create(v.volume)
-        
-        -- Analyze min/max
-        local analyzer = require('Analyzer').VolumeAnalyzer()
-        analyzer:Execute(v.volume)
-        minval = analyzer:MinX()
-        maxval = analyzer:MaxX()
-        print('analyzer: min=', minval, ' max=', maxval)
+        if v.volume:Width() > 0 and v.volume:Height() > 0 and v.volume:Depth() > 0 then 
+            pm:Create(v.volume)
+            -- Analyze min/max
+            local analyzer = require('Analyzer').VolumeAnalyzer()
+            analyzer:Execute(v.volume)
+            minval = analyzer:MinX()
+            maxval = analyzer:MaxX()
+            print('analyzer: min=', minval, ' max=', maxval)
+       end
     end    
     
     pm:SetFloat('volumemin', minval)
