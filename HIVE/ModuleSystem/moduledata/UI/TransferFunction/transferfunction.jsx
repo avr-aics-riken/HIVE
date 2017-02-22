@@ -96,6 +96,8 @@ class TransferFunction extends React.Component {
         this.getNumValues        = this.getNumValues.bind(this);
         this.setAnalyzeResult    = this.setAnalyzeResult.bind(this);
         this.styles              = this.styles.bind(this);
+        this.undoBuffer = [JSON.stringify(this.value)];
+        this.redoBuffer = [];
 
         this.changeCallback = () => {
             let rgba = [4*numVals];
@@ -544,6 +546,26 @@ class TransferFunction extends React.Component {
         }
     }*/
 
+    undo() {
+        if (this.undoBuffer.length > 1) {
+            this.redoBuffer.unshift(this.undoBuffer.shift());
+            var undoValue = this.undoBuffer[0];
+            this.value = JSON.parse(undoValue);
+            this.changeCallback();
+            this.setState({selValue: 0});
+        }
+    }
+    
+    redo() {
+        if (this.redoBuffer.length > 0) {
+            var redoValue = this.redoBuffer.shift();
+            this.value = JSON.parse(redoValue);
+            this.undoBuffer.unshift(redoValue);
+            this.changeCallback();
+            this.setState({selValue: 0});
+        }
+    }
+    
     styles(){
         return {
             wrapper: {
@@ -554,6 +576,11 @@ class TransferFunction extends React.Component {
                 lineHeight: "30px",
                 width: "300px",
                 height: "20px"
+            },
+            undoframe : {
+                lineHeight: "30px",
+                width: "300px",
+                height: "28px"
             },
             btnframe: {
                 textAlign: "center",
@@ -603,6 +630,12 @@ class TransferFunction extends React.Component {
                 padding: "3px",
                 width: "90px",
             },
+            undoredoButton: {
+                borderRadius: "3px 5px",
+                width: "60px",
+                height: "22px",
+                marginLeft : "3px"
+            }
         };
     }
 
@@ -617,6 +650,10 @@ class TransferFunction extends React.Component {
             <div ref="wrapper" style={styles.wrapper}>
                 <canvas ref="canvas" style={styles.canvas}></canvas>
                 <canvas ref="colorframe" style={styles.colorframe}></canvas>
+                <div ref="undoframe" style={styles.undoframe}>
+                    <input ref="undoButton" type="button" value={"Undo"} style={styles.undoredoButton} onClick={this.undo}/>
+                    <input ref="redoButton" type="button" value={"Redo"} style={styles.undoredoButton}  onClick={this.redo}/>
+                </div>
                 <div ref="btnframe" style={styles.btnframe}>
                     <div ref="redbtn"   onClick={this.redbtnClick}   style={styles.redbtn}>RED</div>
                     <div ref="greenbtn" onClick={this.greenbtnClick} style={styles.greenbtn}>GREEN</div>

@@ -66,6 +66,7 @@ public:
 
     bool AddExtraBuffer(const std::string& varyingName, BufferExtraData* data);
     bool RemoveExtraBuffer(const std::string& varyingName);
+    bool ClearExtraBuffer();
     const ExtraBufferMap& GetExtraBuffers() const;
 
     void UpdateBuffers();
