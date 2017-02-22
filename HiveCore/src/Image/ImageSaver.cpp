@@ -207,7 +207,7 @@ public:
                 {
                     result = SaveFile(path, jpgbuffer, bytes);
                 }
-                delete [] jpgbuffer;
+                free(jpgbuffer);
             }
         }
         else if (ext == "tga")
@@ -221,7 +221,7 @@ public:
                 {
                     result = SaveFile(path, tgabuffer, bytes);
                 }
-                delete [] tgabuffer;
+                free(tgabuffer);
             }
         }
         else if (ext == "exr" || ext == "EXR")
