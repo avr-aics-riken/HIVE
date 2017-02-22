@@ -9,7 +9,7 @@
 		{"name": "container", "type": "string", "value": "Coordinate"},
 		{"name": "radius", "type": "float", "value": 1.0},
 		{"name": "extraname", "type": "string", "array": [
-			{"name": "extraname[0]", "type": "string", "value" : "P"}
+			{"name": "extraname[0]", "type": "string", "value" : ""}
 		]}
 	],
 	"output": [

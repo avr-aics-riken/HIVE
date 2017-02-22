@@ -54,7 +54,6 @@ function PointObject:Do()
     local varyings = self.connection.Varying
     if varyings ~= nil then
         for i, v in pairs(varyings) do
-            --print(v.name, v.value)
             pm:AddExtraBuffer(v.name, v.value)
         end
     end

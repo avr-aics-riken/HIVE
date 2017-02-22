@@ -57,6 +57,7 @@ function LoadUDM:Solid()
     return self.loader:SolidData(this.value.solidtype)
 end
 
-function LoadUDM:ExtraData()
-    return self.loader:ExtraData(this.value.extraname)
+function LoadUDM:ExtraData(index)
+    local name = self.value.extraname[index + 1]
+    return self.loader:ExtraData(name)
 end

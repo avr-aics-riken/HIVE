@@ -8,12 +8,14 @@
 		{"name": "step", "type": "float", "value": 0.0},
 		{"name": "solidtype", "type": "float", "value": 0.0},
 		{"name": "extraname", "type": "string", "array": [
-			{"name": "extraname[0]", "type": "string", "value" : "P"}
+			{"name": "extraname[0]", "type": "string", "value" : ""}
 		]}
 	],
 	"output": [
 		{"name": "Tetra", "type": "BufferTetraData"},
 		{"name": "Mesh", "type": "BufferMeshData"},
-		{"name": "ExtraData", "type": "BufferExtraData"}
+		{"name": "extraname", "type": "BufferExtraData", "array": [
+			{"name": "ExtraData[0]", "type": "BufferExtraData"}
+		]}
 	]
 }
