@@ -164,9 +164,10 @@ export default class NodeExecutor extends EventEmitter {
         if (data.hasOwnProperty('doState')) {
             let i;
             for (i in data.doState) {
-                this.nodeGraph[i].exeState = data.doState[i];
+                if (this.nodeGraph.hasOwnProperty(i)) {
+                    this.nodeGraph[i].exeState = data.doState[i];
+                }
             }
-            //console.log('hoge', this.nodeGraph);
         }
     }
 

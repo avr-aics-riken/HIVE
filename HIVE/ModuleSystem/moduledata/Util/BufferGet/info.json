@@ -1,0 +1,13 @@
+
+{
+	"name": "BufferGet",
+	"funcname": "BufferGet",
+	"info":"BufferSetによってメモリに格納されたBufferを取得するノード",
+	"customfuncfile":"bufferget.lua",
+    "input": [
+		{"name": "id",  "type": "string", "value": ""}
+	],
+	"output": [
+		{"name": "bufferdata",  "type": "BufferData"}
+	]
+}

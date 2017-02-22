@@ -18,11 +18,11 @@ public:
     BufferImageData_Lua(const BufferImageData* data) : BufferImageData(data) { }
     BufferImageData_Lua() {}
     
-    int GetWidth() const { return Width(); };
-    int GetHeight() const { return Height(); };
-    //const char* GetFormat() const { return Format() };
-    int GetSize() const { return Bytes(); };
-    const char* GetBuffer() const { return reinterpret_cast<const char*>(ImageBuffer()->GetBuffer()); };
+    int GetWidth() const { return Width(); }
+    int GetHeight() const { return Height(); }
+    BufferImageData::FORMAT GetFormat() const { return Format(); }
+    int GetSize() const { return Bytes(); }
+    const char* GetBuffer() const { return reinterpret_cast<const char*>(ImageBuffer()->GetBuffer()); }
 
     ~BufferImageData_Lua() {}
     
@@ -31,7 +31,7 @@ public:
     LUA_SCRIPTCLASS_BEGIN(BufferImageData_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG0(int, GetWidth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int, GetHeight)
-    //LUA_SCRIPTCLASS_METHOD_ARG0(const char*, GetFormat)
+    LUA_SCRIPTCLASS_METHOD_ARG0(BufferImageData::FORMAT, GetFormat)
     LUA_SCRIPTCLASS_METHOD_ARG0(int, GetSize)
     LUA_SCRIPTCLASS_METHOD_ARG0(const char*, GetBuffer)
     LUA_SCRIPTCLASS_END();

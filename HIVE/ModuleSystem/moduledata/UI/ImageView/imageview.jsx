@@ -14,8 +14,8 @@ class ImageView extends React.Component {
 		this.varname = this.node.varname;
 		
 		this.state = {
-			width : minWidth,
-			height : minHeight
+			width : this.canvasSize()[0],
+			height : this.canvasSize()[1]
 		};
 		
 		this.componentDidUpdate = this.componentDidUpdate.bind(this);
@@ -39,6 +39,8 @@ class ImageView extends React.Component {
 			return;
 		}
 		if (param.type === 'jpg') {
+			buffer = new Blob([data]);
+		} else if (param.type === 'png') {
 			buffer = new Blob([data]);
 		} else {
 			buffer = data;
@@ -75,6 +77,10 @@ class ImageView extends React.Component {
 						var resultElement = document.getElementById(this.getCanvasName('img'));
 						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
 
+					} else if (param.type === 'png') {
+						// resultElement is img.
+						var resultElement = document.getElementById(this.getCanvasName('img'));
+						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/png"}));
 					} else if (param.type === 'raw'){
 						// resultElement is canvas.
 						var resultElement = document.getElementById(this.getCanvasName('canvas'));

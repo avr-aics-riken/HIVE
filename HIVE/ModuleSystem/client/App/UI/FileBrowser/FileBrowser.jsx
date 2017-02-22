@@ -355,10 +355,7 @@ export default class FileBrowser extends React.Component {
 	render () {
 		const style = this.styles();
 		return (<div>
-					<div style={style.filebrowser}
-						action={this.props.action}
-						store={this.props.store}
-					>
+					<div style={style.filebrowser}>
 						<div style={style.title}>File Browser</div>
 						<div style={{paddingLeft : "18px"}}>
 							<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file}></input>

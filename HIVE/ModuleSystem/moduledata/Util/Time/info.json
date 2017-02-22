@@ -8,6 +8,7 @@
 		{"name": "value",  "type": "float", "value": 0, "visible" : false, "hole":false}
 	],
 	"output": [
-		{"name": "time",  "type": "float"}
+		{"name": "time",  "type": "float"},
+		{"name": "timestring",  "type": "string"}
 	]
 }

@@ -168,10 +168,7 @@ export default class LabelDialog extends React.Component {
 	render () {
 		const style = this.styles();
 		return (<div>
-					<div style={style.LabelDialog}
-						action={this.props.action}
-						store={this.props.store}
-					>
+					<div style={style.LabelDialog}>
 						<div style={style.title}>Label Setting</div>
 						<div>
 							<input type="text" style={style.labelview} placeholder="label" value={this.state.label} onChange={this.onLabelChange.bind(this)} />

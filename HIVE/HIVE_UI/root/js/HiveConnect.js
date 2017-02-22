@@ -112,6 +112,7 @@
 					if (data.error) {
 						//console.error('[Error] Response => ', data.error);
 						self.callbacks[data.id](data.error, null);
+						delete self.callbacks[data.id];
 					} else if (data.method) {
 						if (self.methodFuncs[data.method]) {
 							//console.log('[DEBUG] Call Method=>', data.method);
@@ -126,6 +127,7 @@
 						}
 						if (self.callbacks[data.id]) {
 							self.callbacks[data.id](null, JSON.parse(data.result), data.id);
+							delete self.callbacks[data.id];
 						}
 					}
 				}

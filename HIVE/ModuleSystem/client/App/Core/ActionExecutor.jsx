@@ -38,6 +38,7 @@ export default class ActionExecuter {
 
         // only Functions
         this.showConsoleOutput = this.showConsoleOutput.bind(this);
+		this.rebootHive = this.rebootHive.bind(this);
         this.setLayout = this.setLayout.bind(this);
 		this.addNode = this.addNode.bind(this);
 		this.exportSceneScript = this.exportSceneScript.bind(this);
@@ -87,6 +88,8 @@ export default class ActionExecuter {
 		this.okFileBrowser = this.okFileBrowser.bind(this);
 		this.openLabelDialog = this.openLabelDialog.bind(this);
 		this.okLabelDialog = this.okLabelDialog.bind(this);
+		this.okMessageDialog = this.okMessageDialog.bind(this);
+		this.openMessageDialog = this.openMessageDialog.bind(this);
 	}
 
     /**
@@ -146,6 +149,26 @@ export default class ActionExecuter {
             this.store.emit(Constants.CONSOLEOUTPUT_SHOW, payload.show);
         }
     }
+	
+	/**
+	 * HIVEを再起動
+	 */
+	rebootHive(payload) {
+		if (this.store.hive !== undefined && this.store.hive) {
+			let data = JSON.parse(JSON.stringify(this.store.data));
+			console.log("rebootHive");
+			this.clearAll();
+			this.store.nodeExecutor.nodeGraph = {};
+			this.store.nodeExecutor.updateGraph();
+			this.store.hive.rebootHIVE(( (data) => {
+				return () => {
+					this.load({ data : data });
+				}
+			})(data));
+		} else {
+			console.error("can not reboot hive");
+		}
+	}
 
     /**
 	 * レイアウト変更
@@ -1563,6 +1586,26 @@ export default class ActionExecuter {
 		}
 	}
 
+	/**
+	 * メッセージダイアログを開く.
+	 * @param key 任意のキー. OK_LABEL_DIALOGイベントで返される
+	 */
+	openMessageDialog(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('callback')) {
+			this.store.emit(Constants.OPEN_MESSAGE_DIALOG, null, payload.key, payload.callback);
+		}
+	}
+
+	/**
+	 * メッセージダイアログがOKされた通知を送る.
+	 * @param key 任意のキー. openMessageDialogの引数のキー
+	 * @param value 選択されたパス
+	 */
+	okMessageDialog(payload) {
+		if (payload.hasOwnProperty('key') && payload.hasOwnProperty('value')) {
+			this.store.emit(Constants.OK_MESSAGE_DIALOG, null, payload.key, payload.value);
+		}
+	}
 }
 
 ActionExecuter.initialData = {

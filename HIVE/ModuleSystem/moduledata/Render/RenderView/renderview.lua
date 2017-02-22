@@ -71,7 +71,7 @@ function RenderView:Do()
         return true
     end 
     
-    local mode = 'jpg'
+    local mode = 'png'
     -- image save
     local imageBuffer
     local imageBufferSize
@@ -83,7 +83,7 @@ function RenderView:Do()
         imageBufferSize = img:GetSize()
     else    
         -- image save
-        imageBuffer = HIVE_ImageSaver:SaveMemory(1, targetcam:GetImageBuffer())
+        imageBuffer = HIVE_ImageSaver:SaveMemory(5, targetcam:GetImageBuffer())
         imageBufferSize = HIVE_ImageSaver:MemorySize()
     end
     

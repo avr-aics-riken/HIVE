@@ -104,6 +104,7 @@ ELSE()
     ENDIF()
   ENDIF()
 ENDIF()
+
 # --------------------------------------
 
 # --------------------------------------
@@ -188,6 +189,7 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferTetraData.cpp
   src/Buffer/BufferImageData.cpp
   src/Buffer/BufferExtraData.cpp
+  src/Buffer/UserBufferData.cpp
   src/Renderer/RenderCore.cpp
   src/Renderer/BaseBuffer.cpp
   src/Renderer/Commands_GL.cpp
@@ -218,6 +220,7 @@ set(HIVECORE_SOURCES
   src/Image/ImageLoader.cpp
   src/Image/GenTexture.cpp
   src/Image/ImageSaver.cpp
+  src/Image/ImageFilter.cpp
   src/Generator/PrimitiveGenerator.cpp
 )
 
@@ -268,6 +271,10 @@ ENDIF()
 
 # HIVE Core
 add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
+
+# Enable address sanitizer(if available).
+add_sanitizers(hiveCore)
+
 
 
 
@@ -329,10 +336,12 @@ endif()
 
 # For test
 add_executable (hiveCoreSimpleTest test/simpletest.cpp)
+add_sanitizers (hiveCoreSimpleTest)
 target_link_libraries (hiveCoreSimpleTest hiveCore)
 
 # For test
 add_executable (hiveCoreSolverSample test/solversample.cpp)
+add_sanitizers (hiveCoreSolverSample)
 target_link_libraries (hiveCoreSolverSample hiveCore)
 
 

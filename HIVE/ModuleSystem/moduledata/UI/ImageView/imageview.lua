@@ -16,7 +16,7 @@ function ImageView:Do()
     if (v.image == nil) then
         return false
     end
-    local mode = 'jpg'
+    local mode = 'png'
     -- image save
     local imageBuffer
     local imageBufferSize
@@ -27,7 +27,7 @@ function ImageView:Do()
         imageBufferSize = v.image:GetSize()
     else
         -- image save
-        imageBuffer = HIVE_ImageSaver:SaveMemory(1, v.image)
+        imageBuffer = HIVE_ImageSaver:SaveMemory(5, v.image) --png
         imageBufferSize = HIVE_ImageSaver:MemorySize()
     end
     

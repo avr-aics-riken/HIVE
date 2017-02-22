@@ -1,0 +1,16 @@
+
+{
+	"name": "BufferSet",
+	"funcname": "BufferSet",
+	"info":"Bufferを一時的にメモリに格納するノード",
+	"customfuncfile":"bufferset.lua",
+	"uifile" : "bufferset.jsx",
+    "input": [
+		{"name": "bufferdata",  "type": "BufferData"},
+		{"name": "id",  "type": "string", "value": ""},
+		{"name": "delete",  "type": "bool", "value": false, "visible" : false},
+		{"name": "deleteall",  "type": "bool", "value": false, "visible" : false},
+		{"name": "selected",  "type": "string", "value": [], "visible" : false}
+	],
+	"output": []
+}
