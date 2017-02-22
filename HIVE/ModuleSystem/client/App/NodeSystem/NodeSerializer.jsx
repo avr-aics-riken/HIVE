@@ -91,7 +91,7 @@ export default class NodeSerializer {
             if (v.hasOwnProperty('funcinput') && v.funcinput == false) {
                 continue;
             }
-            if(v.hasOwnProperty('array')) {
+            if(v.hasOwnProperty('array') && v.type === "string") {
                 script += setPropertyOriginalArray(node, v);           
             } else if (v.type === 'vec4') {
                 script += setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);

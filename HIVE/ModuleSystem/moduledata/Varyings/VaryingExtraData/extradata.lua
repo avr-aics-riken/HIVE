@@ -15,5 +15,5 @@ end
 
 function VaryingExtraData:varying()
     local v = self.value
-    return { name = v.name, type = "varying", value = v.value}
+    return { name = v.name, type = "varying", value = v.extradata}
 end

@@ -22,8 +22,6 @@ function LoadPDM:PointData()
 end
 
 function LoadPDM:ExtraData(index)
-    print (index)
-    print (self.value.extraname[index + 1])
-    
-    return nil --self.loader:ExtraData(self.value.extraname.array[index])
+    local name = self.value.extraname[index + 1]
+    return self.loader:ExtraData(name)
 end
