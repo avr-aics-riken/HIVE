@@ -679,7 +679,11 @@ export default class ActionExecuter {
 					let isChanged = false;
 					for (let i = 0; i < node.input.length; i = i + 1) {
 						if (info.input.hasOwnProperty(node.input[i].name)) {
-							copy[i].value = info.input[node.input[i].name];
+							if (Array.isArray(copy[i].array)) {
+								copy[i].array = info.input[node.input[i].name];
+							} else {
+								copy[i].value = info.input[node.input[i].name];		
+							}
 							isChanged = true;
 						}
 					}

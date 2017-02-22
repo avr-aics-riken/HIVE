@@ -7,7 +7,9 @@
 		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
 		{"name": "step", "type": "float", "value": 0.0},
 		{"name": "solidtype", "type": "float", "value": 0.0},
-		{"name": "extraname", "type": "string", "value": ""}
+		{"name": "extraname", "type": "string", "array": [
+			{"name": "extraname[0]", "type": "string", "value" : "P"}
+		]}
 	],
 	"output": [
 		{"name": "Tetra", "type": "BufferTetraData"},

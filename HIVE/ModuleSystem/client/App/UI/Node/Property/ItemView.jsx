@@ -165,7 +165,6 @@ export default class ItemView extends React.Component {
 		}
 	}
 	
-	// TODO
 	changeArrayTextFunc(hole) {
 		return (key) => {
 			return (value) => {
@@ -174,8 +173,8 @@ export default class ItemView extends React.Component {
 				if (!hole.hasOwnProperty('array')) {
 					return;
 				}
-				input['array'] = JSON.parse(JSON.stringify(hole.array));
-				input.array[key] = JSON.parse(JSON.stringify(value));
+				input[hole.name] = JSON.parse(JSON.stringify(hole.array));
+				input[hole.name][key].value = value;
 				console.log(input);
 				this.props.action.changeNodeInput({
 					varname : hole.nodeVarname,
