@@ -13,6 +13,9 @@
 		]}
 	],
 	"output": [
-		{"name": "PointData", "type": "BufferPointData"}
+		{"name": "PointData", "type": "BufferPointData"},
+		{"name": "extraname", "type": "BufferExtraData", "array": [
+			{"name": "ExtraData[0]", "type": "BufferExtraData"}
+		]}
 	]
 }
