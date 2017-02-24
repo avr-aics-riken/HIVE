@@ -65,12 +65,11 @@ function build_tp {
 
 function build_netcdf {
 	cd third_party/
-
 	rm -rf hdf5-1.8.10-patch1/
 	tar -jxvf hdf5-1.8.10-patch1.tar.bz2
 	cd hdf5-1.8.10-patch1
 	# disable SZIP(but this may not work)
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-std=c99" ./configure --without-szlib --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="-std=c99" ./configure --without-szlib --enable-shared --prefix=${installdir} && make && make install
 	cd ${topdir}
 
 	cd third_party/
@@ -79,7 +78,7 @@ function build_netcdf {
 	cd netcdf-c-netcdf-4.2.1.1/
 	autoreconf -ivf
         # disable curl
-	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-netcdf4 --disable-dap --with-curl-config=/invalid --disable-shared --prefix=${installdir} && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CPPFLAGS=-I${installdir}/include LDFLAGS=-L${installdir}/lib ./configure --enable-shared --enable-netcdf4 --disable-dap --with-curl-config=/invalid --prefix=${installdir} && make && make install
 	cd ${topdir}
 
 }
