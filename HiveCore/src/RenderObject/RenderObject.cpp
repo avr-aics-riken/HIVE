@@ -249,6 +249,16 @@ public:
     }
 
     /**
+     * 拡張バッファの削除
+     * @param varyingName varying名
+     */
+    bool ClearExtraBuffer()
+    {
+        m_extrabuffers.clear();
+        return true;
+    }
+    
+    /**
      * 拡張バッファの取得
      */
     const ExtraBufferMap& GetExtraBuffers() const
@@ -432,3 +442,11 @@ const RenderObject::ExtraBufferMap& RenderObject::GetExtraBuffers() const
 {
     return m_imp->GetExtraBuffers();
 }
+
+/// 拡張バッファを全て削除する
+bool RenderObject::ClearExtraBuffer()
+{
+    return m_imp->ClearExtraBuffer();
+}
+
+

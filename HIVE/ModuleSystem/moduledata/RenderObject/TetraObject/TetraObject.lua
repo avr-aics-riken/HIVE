@@ -51,6 +51,14 @@ function TetraObject:Do()
         end
     end
     
+    pm:ClearExtraBuffer()
+    local varyings = self.connection.Varying
+    if varyings ~= nil then
+        for i, v in pairs(varyings) do
+            pm:AddExtraBuffer(v.name, v.value)
+        end
+    end
+    
     return true
 end
 

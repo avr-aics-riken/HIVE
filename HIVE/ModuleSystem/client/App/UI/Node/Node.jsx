@@ -493,24 +493,63 @@ export default class Node extends React.Component {
 
 	/// 出力端子.
 	outputElem() {
+		let inoutIndex = -1;
 		const isClose = this.isClosed();
 		const isGroup = this.props.store.isGroup(this.state.node);
 		if (this.isMinimum()) {
 			return <div/>;
 		}
 		let outputs = this.state.node.output.map( (outputData, index) => {
-			return (<NodeInOut
-						nodeStore={this.props.nodeStore}
-						nodeAction={this.props.nodeAction}
-			 			nodeRect={this.nodeRect(index)}
-						nodeVarname={this.props.nodeVarname}
-						isInput={false}
-						data={outputData}
-						isClosed={isClose}
-						isGroup={isGroup}
-						key={this.props.nodeVarname + "_" + outputData.name + "_" + index}
-						id={this.props.nodeVarname + "_" + outputData.name + "_" + index}
-						index={index} />)
+			if (Array.isArray(outputData.array)) {
+				let arrayInputs = outputData.array.map((data, dataIndex) => {
+					if (isHideInput(data)) { return; }
+					if (isClose) {
+					 	if (this.props.nodeStore.isConnected(this.state.node.varname, data.name)) {
+							// 閉じる表示のときは繋がってるものだけ表示する
+							inoutIndex = inoutIndex + 1;
+							return (<NodeInOut
+										nodeStore={this.props.nodeStore}
+										nodeAction={this.props.nodeAction}
+										nodeRect={this.nodeRect(index)}
+										nodeVarname={this.props.nodeVarname}
+										isInput={false} data={data}
+										isClosed={isClose}
+										isGroup={isGroup}
+										key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+										id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+										index={inoutIndex} />);
+						}
+					} else {
+						inoutIndex = inoutIndex + 1;
+						return (<NodeInOut
+									nodeStore={this.props.nodeStore}
+									nodeAction={this.props.nodeAction}
+									nodeRect={this.nodeRect(index)}
+									nodeVarname={this.props.nodeVarname}
+									isInput={false} data={data}
+									isClosed={isClose}
+									isGroup={isGroup}
+									key={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+									id={this.props.nodeVarname + "_" + data.name + "_" + index + "_" + dataIndex}
+									index={inoutIndex} />);
+					}
+				});
+				return arrayInputs;
+			} else {
+				inoutIndex = inoutIndex + 1;
+				return (<NodeInOut
+							nodeStore={this.props.nodeStore}
+							nodeAction={this.props.nodeAction}
+							nodeRect={this.nodeRect(index)}
+							nodeVarname={this.props.nodeVarname}
+							isInput={false}
+							data={outputData}
+							isClosed={isClose}
+							isGroup={isGroup}
+							key={this.props.nodeVarname + "_" + outputData.name + "_" + index}
+							id={this.props.nodeVarname + "_" + outputData.name + "_" + index}
+							index={inoutIndex} />)
+			}
 		});
 		return (<div>{outputs}</div>);
 	}

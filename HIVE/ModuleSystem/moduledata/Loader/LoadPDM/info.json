@@ -7,9 +7,15 @@
 		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
 		{"name": "timestep", "type": "float", "value": -1},
 		{"name": "container", "type": "string", "value": "Coordinate"},
-		{"name": "radius", "type": "float", "value": 1.0}
+		{"name": "radius", "type": "float", "value": 1.0},
+		{"name": "extraname", "type": "string", "array": [
+			{"name": "extraname[0]", "type": "string", "value" : ""}
+		]}
 	],
 	"output": [
-		{"name": "PointData", "type": "BufferPointData"}
+		{"name": "PointData", "type": "BufferPointData"},
+		{"name": "extraname", "type": "BufferExtraData", "array": [
+			{"name": "ExtraData[0]", "type": "BufferExtraData"}
+		]}
 	]
 }

@@ -99,12 +99,17 @@ class GradientMap extends React.Component {
      onSelectChange(eve){
         var e = eve.target.value;
         var t = parseInt(e);
+        var changed =  (t !== this.state.selValue);
         this.setState({selValue: t});
 
         if (t === 1) {
             for (let i = 0; i < this.numVals; ++i){
                 this.value[i] = i / this.numVals;
             }
+        }
+            
+        if (changed) {
+            this.undoBuffer.unshift(JSON.stringify(this.value));
         }
 
         this.drawGraph();

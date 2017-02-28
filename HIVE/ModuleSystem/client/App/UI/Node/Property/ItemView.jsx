@@ -165,18 +165,24 @@ export default class ItemView extends React.Component {
 		}
 	}
 	
-	// TODO
 	changeArrayTextFunc(hole) {
 		return (key) => {
 			return (value) => {
-				let input = {};
-				console.log(hole);
-				if (!hole.hasOwnProperty('array')) {
+				let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
+				let inputs = JSON.parse(JSON.stringify(node.input));
+				let target = null;
+				for (let i = 0; i < inputs.length; ++i) {
+					if (inputs[i].name === hole.name) {
+						target = inputs[i];
+						break;
+					}
+				}
+				if (!target || !target.hasOwnProperty('array')) {
 					return;
 				}
-				input['array'] = JSON.parse(JSON.stringify(hole.array));
-				input.array[key] = JSON.parse(JSON.stringify(value));
-				console.log(input);
+				var input = {};
+				input[hole.name] = target.array;
+				input[hole.name][key].value = value;
 				this.props.action.changeNodeInput({
 					varname : hole.nodeVarname,
 					input : input
@@ -217,6 +223,7 @@ export default class ItemView extends React.Component {
 	changeLengthFunc(name, length) {
 		let node = this.props.store.getNode(this.props.initialNodeData.varname).node;
 		let inputs = JSON.parse(JSON.stringify(node.input));
+
 		for (let i = 0; i < inputs.length; i = i + 1) {
 			if (inputs[i].name === name) {
 				for (let k = inputs[i].array.length; k < length; k = k + 1) {
@@ -228,6 +235,23 @@ export default class ItemView extends React.Component {
 				this.props.action.changeNode({
 					varname : this.props.initialNodeData.varname,
 					input : inputs
+				});
+			}
+		}
+		
+		// 入力端子と同じ名前の出力arrayが存在した場合に、出力端子の数も変更する
+		let outputs = JSON.parse(JSON.stringify(node.output));
+		for (let i = 0; i < outputs.length; i = i + 1) {
+			if (outputs[i].name === name) {
+				for (let k = outputs[i].array.length; k < length; k = k + 1) {
+					outputs[i].array.push(
+						{"name": outputs[i].array[0].name.split("[0]").join("") + "[" + String(k) + "]",  "nodeVarname" : outputs[i].nodeVarname, "type": outputs[i].type }
+					);
+				}
+				outputs[i].array.length = length;
+				this.props.action.changeNode({
+					varname : this.props.initialNodeData.varname,
+					output : outputs
 				});
 			}
 		}
