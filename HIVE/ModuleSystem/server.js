@@ -441,7 +441,7 @@ ws.on('request', function (request) {
 					id: msg_id
 				}));
 				args = ['--client:' + connection.id, 'ws://localhost:' + port];
-				if (opengl_method == opengl_method) {
+				if (opengl_method) {
 					args.push('--opengl');
 				}
 				if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
