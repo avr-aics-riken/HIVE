@@ -297,14 +297,30 @@ export default class Store extends EventEmitter {
 			//return [100000, node.node.pos[1]];
 		} else {
 			if (plug.output.nodeVarname === node.varname || this.isGroup(node)) {
+				let count = 0;
+				let outputIterator = NodeIterator.makeOutputIterator(this.store, node);
 				let width = 200;
 				if (this.nodeSizeMap.hasOwnProperty(node.varname)) {
 					width = this.nodeSizeMap[node.varname].width;
 				}
-				for (let k = 0; k < node.output.length; k = k + 1) {
-					//console.log(node.output[k].name, plug.output.name, node.node.pos[0] + width, calcPlugPositionY(node, k));
-					if (node.output[k].name === plug.output.name && node.output[k].nodeVarname === plug.output.nodeVarname) {
-						return [node.node.pos[0] + width, calcPlugPositionY(node, k)];
+				for (let v of outputIterator) {
+					if (v.output) {
+						if (v.output.hasOwnProperty('hole') && !v.output.hole) {
+							continue;
+						}
+						if (v.output.name === plug.output.name && v.output.nodeVarname === plug.output.nodeVarname) {
+							if (node.node.pos[0] === null) {
+								console.error(node);
+							}
+							return [node.node.pos[0] + width, calcPlugPositionY(node, count)];
+						}
+						if (isClosed) {
+							if (this.isConnected(node.varname, v.output.name)) {
+								count = count + 1;
+							}
+						} else {
+							count = count + 1;
+						}
 					}
 				}
 			}

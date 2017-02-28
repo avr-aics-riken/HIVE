@@ -20,35 +20,39 @@ NodeIterator.makeInputIterator = (store, node) => {
 					let input = null;
 					if (inputIndex < currentNode.input.length) {
 						input = currentNode.input[inputIndex];
-						if (Array.isArray(input.array)) {
-							if (arrayIndex < input.array.length) {
-								input = input.array[arrayIndex];
-								++arrayIndex;
+						while (true) {
+							if (Array.isArray(input.array)) {
+								if (arrayIndex < input.array.length) {
+									input = input.array[arrayIndex];
+									++arrayIndex;
+								} else {
+									++inputIndex;
+									arrayIndex = 0;
+									if (inputIndex < currentNode.input.length) {
+										input = currentNode.input[inputIndex];
+										continue;
+									} else {
+										return {
+											value : {
+												input : null
+											},
+											done : true
+										};
+									}
+									//arrayIndex = 0;
+								}
 							} else {
 								++inputIndex;
-								if (inputIndex < currentNode.input.length) {
-									input = currentNode.input[inputIndex];
-								} else {
-									return {
-										value : {
-											input : null
-										},
-										done : true
-									};
-								}
 								arrayIndex = 0;
 							}
-						} else {
-							++inputIndex;
-							arrayIndex = 0;
-						}
 
-						return {
-							value : {
-								input : input
-							},
-							done : false
-						};
+							return {
+								value : {
+									input : input
+								},
+								done : false
+							};
+						}
 					} else {
 						return {
 							value : {
@@ -71,18 +75,45 @@ NodeIterator.makeOutputIterator = (store, node) => {
 		[Symbol.iterator]() {
 			let currentNode = node;
 			let outputIndex = 0;
+			let arrayIndex = 0;
 			return {
 				next() {
 					let output = null;
 					if (outputIndex < currentNode.output.length) {
 						output = currentNode.output[outputIndex];
-						++outputIndex;
-						return {
-							value : {
-								output : output
-							},
-							done : false
-						};
+						while (true) {
+							if (Array.isArray(output.array)) {
+								if (arrayIndex < output.array.length) {
+									output = output.array[arrayIndex];
+									++arrayIndex;
+								} else {
+									++outputIndex;
+									arrayIndex = 0;
+									if (outputIndex < currentNode.output.length) {
+										output = currentNode.output[outputIndex];
+										continue;
+									} else {
+										return {
+											value : {
+												output : null
+											},
+											done : true
+										};
+									}
+									//arrayIndex = 0;
+								}
+							} else {
+								++outputIndex;
+								arrayIndex = 0;
+							}
+
+							return {
+								value : {
+									output : output
+								},
+								done : false
+							};
+						}
 					} else {
 						return {
 							value : {

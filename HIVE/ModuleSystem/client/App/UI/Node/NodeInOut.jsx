@@ -27,6 +27,10 @@ function colorFunction(type, hover) {
 		return hover ? "#37f062" : "#17d042";
 	} else if (type === "BufferData") {
 		return hover ? "#eeeeee" : "#aaaaaa";
+	} else if (type === "BufferExtraData") {
+		return hover ? "#6f3899" : "#77499b";
+	} else if (type === "Varying") {
+		return hover ? "#b2652a" : "#af5713";
 	} else if (type === "Any") {
 		return hover ? "#ffa835" : "#ef8815";
 	} else { // Object
