@@ -159,6 +159,9 @@
     bool RemoveExtraBuffer(const std::string& varyingName) { \
         return RenderObject::RemoveExtraBuffer(varyingName); \
     } \
+    bool ClearExtraBuffer() { \
+        return RenderObject::ClearExtraBuffer(); \
+    } \
     BufferImageData_Lua* GetTexture(const char* name) { \
         const TextureMap& m = RenderObject::GetUniformTexture(); \
         TextureMap::const_iterator it = m.find(std::string(name)); \
@@ -194,8 +197,9 @@
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec3, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec2, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(float, GetFloat, const char*) \
-    LUA_SCRIPTCLASS_METHOD_ARG2(float, AddExtraBuffer, const char*, BufferExtraData_Lua*) \
-    LUA_SCRIPTCLASS_METHOD_ARG1(float, RemoveExtraBuffer, const char*) \
+    LUA_SCRIPTCLASS_METHOD_ARG2(bool, AddExtraBuffer, const char*, BufferExtraData_Lua*) \
+    LUA_SCRIPTCLASS_METHOD_ARG1(bool, RemoveExtraBuffer, const char*) \
+    LUA_SCRIPTCLASS_METHOD_ARG0(bool, ClearExtraBuffer) \
     LUA_SCRIPTCLASS_METHOD_ARG1(BufferImageData_Lua, GetTexture, const char*)
 
 

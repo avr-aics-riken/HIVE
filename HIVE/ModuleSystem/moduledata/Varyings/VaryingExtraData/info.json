@@ -1,0 +1,13 @@
+{
+	"name": "VaryingExtraData",
+	"funcname": "VaryingExtraData",
+	"info":"Varying をつくるノード",
+	"customfuncfile":"extradata.lua",
+    "input": [
+		{"name": "name",  "type": "string", "value": "varyingname"},
+		{"name": "extradata",  "type": "BufferExtraData"}
+	],
+	"output": [
+		{"name": "varying",  "type": "Varying"}
+	]
+}

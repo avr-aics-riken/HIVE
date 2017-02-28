@@ -185,7 +185,7 @@ function build_compositor {
 	fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS=${cxx_flags} CFLAGS=${c_flags} ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -Kopenmp" CFLAGS="${c_flags} -Kopenmp" ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
 	cd ${topdir}
 }
 
@@ -202,6 +202,18 @@ function build_nanomsg {
 	cd ${topdir}
 }
 
+function build_pmlib {
+
+        cd third_party/PMlib
+        autoreconf -ivf
+
+        rm -rf BUILD_DIR
+        mkdir -p BUILD_DIR
+        cd BUILD_DIR
+        CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -Kopenmp -Ntl_notrt -Nfjcex -DK_COMPUTER -W" CFLAGS="${c_flags} -Kopenmp -Ntl_notrt  -Nfjcex -DL_COMPUTER -W" ../configure --prefix=${installdir}/PMlib --with-comp="FJ" LDFLAGS="-L/opt/FJSVXosDevkit/sparc64fx/V01L02E07/target/usr/lib64" --host=sparc64-unknown-linux-gnu && make && make install
+        if [[ $? != 0 ]]; then exit $?; fi
+        cd ${topdir}
+}
 
 clean_install_dir
 build_tp
@@ -212,4 +224,5 @@ build_hdmlib
 build_pdmlib
 build_udmlib
 build_compositor
+build_pmlib
 # build_nanomsg

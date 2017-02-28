@@ -28,22 +28,28 @@ class TransferFunction extends React.Component {
         this.defaultValMax = this.props.node.input[5].value;
         const numVals = 256;
         this.numVals    = numVals;
-        this.valueRed   = [numVals];
-        this.valueGreen = [numVals];
-        this.valueBlue  = [numVals];
-        this.valueAlpha = [numVals];
+        this.value = {
+            r : [numVals],
+            g : [numVals],
+            b : [numVals],
+            a : [numVals]
+        };
         this.hist = [numVals];
         for(let i = 0; i < numVals; ++i){
-            this.valueRed[i] = i/numVals;
-            this.valueGreen[i] = 0.8;
-            this.valueBlue[i] = 1.0 - i / numVals;
-            this.valueAlpha[i] = 1.0;
+            this.value.r[i] = i/numVals;
+            this.value.g[i] = 0.8;
+            this.value.b[i] = 1.0 - i / numVals;
+            this.value.a[i] = 1.0;
             this.hist[i] = 0;
         }
         this.oldx = 0;
         this.oldy = 0;
         this.disableColor = '#8b8b8b';
         this.mspress = false;
+        this.undo                = this.undo.bind(this);
+        this.redo                = this.redo.bind(this);
+        this.undoBuffer = [JSON.stringify(this.value)];
+        this.redoBuffer = [];
 
         // state
         this.state = {
@@ -85,6 +91,8 @@ class TransferFunction extends React.Component {
         this.drawValueLine       = this.drawValueLine.bind(this);
         this.drawColorBar        = this.drawColorBar.bind(this);
         this.mouseMoveFunc       = this.mouseMoveFunc.bind(this);
+        this.mouseDownFunc       = this.mouseDownFunc.bind(this);
+        this.mouseUpFunc         = this.mouseUpFunc.bind(this);
         this.setGraphValue       = this.setGraphValue.bind(this);
         this.setMaskedGraphValue = this.setMaskedGraphValue.bind(this);
         this.getGraphValueRed    = this.getGraphValueRed.bind(this);
@@ -96,14 +104,16 @@ class TransferFunction extends React.Component {
         this.getNumValues        = this.getNumValues.bind(this);
         this.setAnalyzeResult    = this.setAnalyzeResult.bind(this);
         this.styles              = this.styles.bind(this);
+        this.undoBuffer = [JSON.stringify(this.value)];
+        this.redoBuffer = [];
 
         this.changeCallback = () => {
             let rgba = [4*numVals];
             for(let i = 0; i < numVals; ++i){
-                rgba[4*i  ] = parseInt(this.valueRed[i]*255);
-                rgba[4*i+1] = parseInt(this.valueGreen[i]*255);
-                rgba[4*i+2] = parseInt(this.valueBlue[i]*255);
-                rgba[4*i+3] = parseInt(this.valueAlpha[i]*255);
+                rgba[4*i  ] = parseInt(this.value.r[i]*255);
+                rgba[4*i+1] = parseInt(this.value.g[i]*255);
+                rgba[4*i+2] = parseInt(this.value.b[i]*255);
+                rgba[4*i+3] = parseInt(this.value.a[i]*255);
             }
             //this.node.rgba
             const varname = this.node.varname;
@@ -121,29 +131,35 @@ class TransferFunction extends React.Component {
      onSelectChange(eve){
         var e = eve.target.value;
         var t = parseInt(e);
+        var changed =  (t !== this.state.selValue);
         this.setState({selValue: t});
         if (t === 1) {
             for (let i = 0; i < this.numVals; ++i){
-                this.valueRed[i]   = i / this.numVals;
-                this.valueGreen[i] = 0.0;
-                this.valueBlue[i]  = 1.0 - i / this.numVals;
-                this.valueAlpha[i] = 1.0;
+                this.value.r[i]   = i / this.numVals;
+                this.value.g[i] = 0.0;
+                this.value.b[i]  = 1.0 - i / this.numVals;
+                this.value.a[i] = 1.0;
             }
         } else if (t === 2) {
             for (let i = 0; i < this.numVals; ++i){
-                this.valueRed[i]   = i / this.numVals;
-                this.valueGreen[i] = i / this.numVals;
-                this.valueBlue[i]  = i / this.numVals;
-                this.valueAlpha[i] = 1.0;
+                this.value.r[i]   = i / this.numVals;
+                this.value.g[i] = i / this.numVals;
+                this.value.b[i]  = i / this.numVals;
+                this.value.a[i] = 1.0;
             }
         } else if (t === 3) {
             for (let i = 0; i < this.numVals; ++i){
-                this.valueRed[i]   = i / this.numVals;
-                this.valueGreen[i] = Math.sin(i / this.numVals * Math.PI);
-                this.valueBlue[i]  = 1.0 - i / this.numVals;
-                this.valueAlpha[i] = 1.0;
+                this.value.r[i]   = i / this.numVals;
+                this.value.g[i] = Math.sin(i / this.numVals * Math.PI);
+                this.value.b[i]  = 1.0 - i / this.numVals;
+                this.value.a[i] = 1.0;
             }
         }
+        
+        if (changed) {
+            this.undoBuffer.unshift(JSON.stringify(this.value));
+        }
+
 
         this.drawGraph();
         if (this.changeCallback){
@@ -267,10 +283,10 @@ class TransferFunction extends React.Component {
 
 		if (data.input[0].value.length >= this.numVals * 4) {
 			for (let i = 0; i < this.numVals; ++i) {
-				this.valueRed[i]   = data.input[0].value[i * 4 + 0] / 0xFF;
-				this.valueGreen[i] = data.input[0].value[i * 4 + 1] / 0xFF;
-				this.valueBlue[i]  = data.input[0].value[i * 4 + 2] / 0xFF;
-				this.valueAlpha[i] = data.input[0].value[i * 4 + 3] / 0xFF;
+				this.value.r[i] = data.input[0].value[i * 4 + 0] / 0xFF;
+				this.value.g[i] = data.input[0].value[i * 4 + 1] / 0xFF;
+				this.value.b[i] = data.input[0].value[i * 4 + 2] / 0xFF;
+				this.value.a[i] = data.input[0].value[i * 4 + 3] / 0xFF;
 			}
 		}
 
@@ -288,16 +304,8 @@ class TransferFunction extends React.Component {
         this.wrapper = ReactDOM.findDOMNode(this.refs.wrapper);
         this.graphMode = (1|2|4);
         this.init();
-        this.canvas.addEventListener('mousedown', ((eve)=>{
-            this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;
-            this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;
-            this.mspress = true;
-            document.addEventListener('mousemove', this.mouseMoveFunc, true);
-        }).bind(this), true);
-        document.addEventListener('mouseup', (()=>{
-            this.mspress = false;
-            document.removeEventListener('mousemove', this.mouseMoveFunc);
-        }).bind(this), true);
+        this.canvas.addEventListener('mousedown', this.mouseDownFunc);
+        window.addEventListener('mouseup', this.mouseUpFunc);
 
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         const NODE_INPUT_CHANGED = "node_input_changed";
@@ -305,11 +313,33 @@ class TransferFunction extends React.Component {
         this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
     componentWillUnmount() {
+        this.canvas.removeEventListener('mousedown', this.mouseDownFunc);
+        window.removeEventListener('mouseup', this.mouseUpFunc);
+        
         const ANALYZED_DATA_RECIEVED = "analyzed_data_recieved";
         const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
         this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
     }
+    
+    mouseDownFunc(eve) {
+        this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;
+        this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;
+        this.mspress = true;
+        document.addEventListener('mousemove', this.mouseMoveFunc, true);
+    }
+    
+    mouseUpFunc(eve) {
+        if (this.mspress) {
+            if (this.undoBuffer.length > 30) {
+                this.undoBuffer.pop();
+            }
+            this.undoBuffer.unshift(JSON.stringify(this.value));
+        }
+        this.mspress = false;
+        document.removeEventListener('mousemove', this.mouseMoveFunc);
+    }
+    
     transFunc(x){return Math.sqrt(x);}
     invTransFunc(x){return x*x;}
     init(){
@@ -367,13 +397,13 @@ class TransferFunction extends React.Component {
           this.drawValueLine(this.histRed, '#F00');
           this.drawValueLine(this.histGreen, '#0F0');
           this.drawValueLine(this.histBlue, '#00F');*/
-        this.drawValueLine(this.valueRed, '#F00');
-        this.drawValueLine(this.valueGreen, '#0F0');
-        this.drawValueLine(this.valueBlue, '#11F');
+        this.drawValueLine(this.value.r, '#F00');
+        this.drawValueLine(this.value.g, '#0F0');
+        this.drawValueLine(this.value.b, '#11F');
 
-        this.drawColorBar(this.valueRed, this.valueGreen, this.valueBlue, this.valueAlpha);
+        this.drawColorBar(this.value.r, this.value.g, this.value.b, this.value.a);
         this.ctx.globalCompositeOperation = 'source-over';
-        this.drawValueLine(this.valueAlpha, '#000');
+        this.drawValueLine(this.value.a, '#000');
         this.drawValueLine(this.hist, 'rgb(154, 79, 40)', true);
     }
     drawValueLine(vals, col, scaling){
@@ -455,38 +485,38 @@ class TransferFunction extends React.Component {
     }
     setGraphValue(n, val_r, val_g, val_b, val_a){
         if(n < 0 || this.numVals <= n){return;}
-        this.valueRed[n]   = val_r;
-        this.valueGreen[n] = val_g;
-        this.valueBlue[n]  = val_b;
-        this.valueAlpha[n] = val_a;
+        this.value.r[n] = val_r;
+        this.value.g[n] = val_g;
+        this.value.b[n] = val_b;
+        this.value.a[n] = val_a;
     }
     setMaskedGraphValue(n, val){
         if (n < 0 || this.numVals <= n){return;}
         val = Math.max(0.0, Math.min(1.0, val));
         if (this.graphMode & 1) {
-            this.valueRed[n] = val;
+            this.value.r[n] = val;
         }
         if (this.graphMode & 2) {
-            this.valueGreen[n] = val;
+            this.value.g[n] = val;
         }
         if (this.graphMode & 4) {
-            this.valueBlue[n] = val;
+            this.value.b[n] = val;
         }
         if (this.graphMode & 8) {
-            this.valueAlpha[n] = val;
+            this.value.a[n] = val;
         }
     }
     getGraphValueRed(){
-        return this.valueRed;
+        return this.value.r;
     }
     getGraphValueGreen(){
-        return this.valueGreen;
+        return this.value.g;
     }
     getGraphValueBlue(){
-        return this.valueBlue;
+        return this.value.b;
     }
     getGraphValueAlpha(){
-        return this.valueAlpha;
+        return this.value.a;
     }
     getMinValue(){
         return this.state.valMin;
@@ -544,6 +574,26 @@ class TransferFunction extends React.Component {
         }
     }*/
 
+    undo() {
+        if (this.undoBuffer.length > 1) {
+            this.redoBuffer.unshift(this.undoBuffer.shift());
+            var undoValue = this.undoBuffer[0];
+            this.value = JSON.parse(undoValue);
+            this.changeCallback();
+            this.setState({selValue: 0});
+        }
+    }
+    
+    redo() {
+        if (this.redoBuffer.length > 0) {
+            var redoValue = this.redoBuffer.shift();
+            this.value = JSON.parse(redoValue);
+            this.undoBuffer.unshift(redoValue);
+            this.changeCallback();
+            this.setState({selValue: 0});
+        }
+    }
+    
     styles(){
         return {
             wrapper: {
@@ -554,6 +604,11 @@ class TransferFunction extends React.Component {
                 lineHeight: "30px",
                 width: "300px",
                 height: "20px"
+            },
+            undoframe : {
+                lineHeight: "30px",
+                width: "300px",
+                height: "28px"
             },
             btnframe: {
                 textAlign: "center",
@@ -603,6 +658,12 @@ class TransferFunction extends React.Component {
                 padding: "3px",
                 width: "90px",
             },
+            undoredoButton: {
+                borderRadius: "3px 5px",
+                width: "60px",
+                height: "22px",
+                marginLeft : "3px"
+            }
         };
     }
 
@@ -617,6 +678,10 @@ class TransferFunction extends React.Component {
             <div ref="wrapper" style={styles.wrapper}>
                 <canvas ref="canvas" style={styles.canvas}></canvas>
                 <canvas ref="colorframe" style={styles.colorframe}></canvas>
+                <div ref="undoframe" style={styles.undoframe}>
+                    <input ref="undoButton" type="button" value={"Undo"} style={styles.undoredoButton} onClick={this.undo}/>
+                    <input ref="redoButton" type="button" value={"Redo"} style={styles.undoredoButton}  onClick={this.redo}/>
+                </div>
                 <div ref="btnframe" style={styles.btnframe}>
                     <div ref="redbtn"   onClick={this.redbtnClick}   style={styles.redbtn}>RED</div>
                     <div ref="greenbtn" onClick={this.greenbtnClick} style={styles.greenbtn}>GREEN</div>

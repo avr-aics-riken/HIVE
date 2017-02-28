@@ -20,8 +20,8 @@ var	HRENDER = __dirname + '/../hrender',
 	websocket = require('websocket'),
 	ws = null,
 	ws_connections = {},
-	id_counter = 0;
-
+	id_counter = 0,
+	opengl_method = false;
 
 if (process.argv.length === 3) {
 	console.log("PORT OPTION", process.argv[2]);
@@ -30,16 +30,18 @@ if (process.argv.length === 3) {
 } else if (process.argv.length > 3) {
 	var np = 1;
 	var wsaddress;
-	for (i=2; i < process.argv.length; i = i + 2) {
-		console.log(process.argv[i])
+	for (i = 3; i < process.argv.length; i = i + 2) {
 		if (process.argv[i] == '-p') {
 			port = process.argv[i+1];
 		} else if (process.argv[i] == '-np') {
 			console.log('MPI mode');
 			np = process.argv[i+1];
 			wsaddress = "ws://localhost:" + port + "/";
-	    	HRENDER_ARG = ['-np', np, HRENDER, HRENDER_ARG[0], wsaddress],
+	    	       HRENDER_ARG = ['-np', np, HRENDER, HRENDER_ARG[0], wsaddress],
  		   	HRENDER = 'mpirun';
+		}
+		else if (process.argv[i] == '--opengl') {
+			opengl_method = true;
 		}
 	}
 }
@@ -393,49 +395,13 @@ ws.on('request', function (request) {
 	connection.id = id_counter;
 	ws_connections[id_counter] = {id:id_counter , conn:connection};
 	id_counter = id_counter + 1;
-	
-	var registerClient = function (connection, msg_id, param) { 
-		var clientNode, json, args;
-		console.log('[CONNECTION] Connected client id = ' + connection.id);
-		connection.type = 'client';
-		clientNode = connection;
-		json = {
-			ret:'registered',
-			id: connection.id
-		};
-		clientNode.send(JSON.stringify({
-			JSONRPC: "2.0",
-			result: JSON.stringify(json),
-			id: msg_id
-		}));
-		args = ['--client:' + connection.id, 'ws://localhost:' + port];
-		if (param.opengl == true) {
-			args.push('--opengl');
-		}
-		if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
-			args.push(param.ipc);
-		}
-		var a;
-		for (a in args) {
-			console.log('ARG=[' + a + '] = ' + args[a]);
-		}
-		clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
-			return function (data) {
-				clientNode.send(JSON.stringify({
-					JSONRPC: "2.0",
-					method: "rendererLog",
-					param: JSON.stringify(data.toString()),
-					id: 0
-				}));
-			};
-		})(clientNode));
-	};
 
 	/*
 		Master process methods
 	*/
 	function masterMethod(method, param, msg_id, from) {
-		//console.log('[DEBUG] masterMethod:', method, param, msg_id);
+		console.log('[DEBUG] masterMethod:', method, param, msg_id);
+				
 		var clientNode, json, fr_conn, wsc, args;
 		if (from != undefined) {
 			wsc = ws_connections[parseInt(from)];
@@ -462,12 +428,40 @@ ws.on('request', function (request) {
 				}));
 
 			} else if (param.mode === 'client') {
-				registerClient(connection, msg_id, param);
+				console.log('[CONNECTION] Connected client id = ' + connection.id);
+				connection.type = 'client';
+				clientNode = connection;
+				json = {
+					ret:'registered',
+					id: connection.id
+				};
+				clientNode.send(JSON.stringify({
+					JSONRPC: "2.0",
+					result: JSON.stringify(json),
+					id: msg_id
+				}));
+				args = ['--client:' + connection.id, 'ws://localhost:' + port];
+				if (opengl_method) {
+					args.push('--opengl');
+				}
+				if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
+					args.push(param.ipc);
+				}
+				var a;
+				for (a in args) {
+					console.log('ARG=[' + a + '] = ' + args[a]);
+				}
+				clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
+					return function (data) {
+						clientNode.send(JSON.stringify({
+							JSONRPC: "2.0",
+							method: "rendererLog",
+							param: JSON.stringify(data.toString()),
+							id: 0
+						}));
+					};
+				})(clientNode));
 			}
-		} else if (method === 'rebootHIVE') {
-			// 再起動は、終了、起動、再接続(register)を一気に行う.
-			stopHRenderServer();
-			registerClient(connection, msg_id, param);
 		} else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
 		} else if (method === 'requestShaderList') {

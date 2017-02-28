@@ -34,6 +34,18 @@ function setPropertyArray(nodeinfo, name, value) {
     return setsrc;
 }    
 
+function setPropertyOriginalArray(nodeinfo, input) {
+    var arraystr = '{';
+    var i, v;
+    for (i = 0; i < input.array.length; ++i) {
+        v = input.array[i];
+        arraystr += "'" + v.value + "'" + ","; 
+    }
+    arraystr += '}';
+    const setsrc = nodeinfo.varname + ":Set('" + input.name + "'," + arraystr + ")\n"
+    return setsrc;
+}
+
 //-----
 
 export default class NodeSerializer {
@@ -79,7 +91,9 @@ export default class NodeSerializer {
             if (v.hasOwnProperty('funcinput') && v.funcinput == false) {
                 continue;
             }
-            if (v.type === 'vec4') {
+            if(v.hasOwnProperty('array') && v.type === "string") {
+                script += setPropertyOriginalArray(node, v);           
+            } else if (v.type === 'vec4') {
                 script += setPropertyVal4(node, v.name, v.value[0], v.value[1], v.value[2], v.value[3]);
             } else if (v.type === 'vec3') {
                 script += setPropertyVal3(node, v.name, v.value[0], v.value[1], v.value[2]);
@@ -103,7 +117,14 @@ export default class NodeSerializer {
     
     updateConnectedNodeInput(plug) {
         let script = '';
-        script += plug.input.nodeVarname + ":Connect('" + plug.input.name + "'," + plug.output.nodeVarname + ":" + plug.output.name + "())\n";
+        if (plug.output.name.indexOf("[") >= 0) {
+            var nameIndex = plug.output.name.split("[");
+            var name = nameIndex[0];
+            var index = nameIndex[1].split("]").join("");
+            script += plug.input.nodeVarname + ":Connect('" + plug.input.name + "'," + plug.output.nodeVarname + ":" + name + "(" + index +"))\n";
+        } else {
+            script += plug.input.nodeVarname + ":Connect('" + plug.input.name + "'," + plug.output.nodeVarname + ":" + plug.output.name + "())\n";   
+        }
         //console.error('updateConnectedNodeInput', script);
         return script; 
     }    
