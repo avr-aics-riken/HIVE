@@ -45,6 +45,11 @@ IF (CMAKE_SYSTEM_PROCESSOR MATCHES "s64fx")
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Kfast")
   ENDIF()
 
+  IF (HIVE_BUILD_WITH_PMLIB)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Nfjcex -Ntl_notrt -DK_COMPUTER")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Nfjcex -Ntl_notrt -DK_COMPUTER")
+  ENDIF()
+
   # Prevent CMake from adding GNU-specific linker flags (-rdynamic)
   SET(CMAKE_C_COMPILER_ID "Fujitsu" CACHE STRING "Fujitsu C cross-compiler" FORCE)
   SET(CMAKE_CXX_COMPILER_ID "Fujitsu" CACHE STRING "Fujitsu C++ cross-compiler" FORCE)
@@ -87,8 +92,13 @@ IF (HIVE_BUILD_K_CROSS_COMPILE)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Kfast")
   ENDIF()
 
+  IF (HIVE_BUILD_WITH_PMLIB)
+    SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Nfjcex -Ntl_notrt -DK_COMPUTER")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -Nfjcex -Ntl_notrt -DK_COMPUTER")
+  ENDIF()
+
   # FindOpenMP.cmake does not try -Kopenmp,but the package will try specific
-  # flags based on the compier ID.
+  # flags based on the compiler ID.
   SET(OMP_FLAG_Fujitsu "-Kopenmp")
   
 ELSE()
@@ -104,6 +114,7 @@ ELSE()
     ENDIF()
   ENDIF()
 ENDIF()
+
 # --------------------------------------
 
 # --------------------------------------
@@ -271,6 +282,10 @@ ENDIF()
 # HIVE Core
 add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
 
+# Enable address sanitizer(if available).
+add_sanitizers(hiveCore)
+
+
 
 
 # LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
@@ -331,10 +346,12 @@ endif()
 
 # For test
 add_executable (hiveCoreSimpleTest test/simpletest.cpp)
+add_sanitizers (hiveCoreSimpleTest)
 target_link_libraries (hiveCoreSimpleTest hiveCore)
 
 # For test
 add_executable (hiveCoreSolverSample test/solversample.cpp)
+add_sanitizers (hiveCoreSolverSample)
 target_link_libraries (hiveCoreSolverSample hiveCore)
 
 

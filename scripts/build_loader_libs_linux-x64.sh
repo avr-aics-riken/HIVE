@@ -173,6 +173,12 @@ function build_pdmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+	# Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+	cd Zoltan_v3.81
+	patch -p0 < ../zoltan_installscript_patch.diff
+	cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
@@ -196,6 +202,12 @@ function build_udmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+	# Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+	cd Zoltan_v3.81
+	patch -p0 < ../zoltan_installscript_patch.diff
+	cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
@@ -236,7 +248,7 @@ function build_compositor {
 	#fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ./configure --prefix=${installdir}/234Compositor && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="${c_flags} -fopenmp" CXXFLAGS="${cxx_flags} -fopenmp" ./configure --prefix=${installdir}/234Compositor && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -258,10 +270,13 @@ function build_nanomsg {
 function build_pmlib {
 
 	cd third_party/PMlib
-
 	autoreconf -ivf
+
+       rm -rf BUILD_DIR
+       mkdir -p BUILD_DIR
 	cd BUILD_DIR
-	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/PMlib && make && make install
+
+	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -O3 -fopenmp" CFLAGS="${c_flags} -O3 -fopenmp" ../configure --prefix=${installdir}/PMlib --with-comp=GNU && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
