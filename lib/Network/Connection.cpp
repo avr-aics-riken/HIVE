@@ -229,8 +229,12 @@ public:
     ~Impl()
     {
 #ifndef SINGLE_THREAD_RECV
-        m_wssendthread->destroy();
+        if (m_wssendthread) {
+            m_wssendthread->destroy();
+            m_wssendthread = NULL;
+        }
         delete m_wsrecvthread;
+        m_wsrecvthread = NULL;
 #endif
         Close();
         delete m_connection;
@@ -527,7 +531,9 @@ public:
         }
         if (m_ws) {
 #ifndef SINGLE_THREAD_RECV
-            m_wssendthread->destroy();
+            if (m_wssendthread) {
+                m_wssendthread->destroy();
+            }
             m_wssendthread = NULL;
             delete m_wsrecvthread;
             m_wsrecvthread = NULL;

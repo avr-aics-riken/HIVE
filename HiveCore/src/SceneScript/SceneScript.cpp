@@ -702,7 +702,9 @@ bool SceneScript::Impl::Command(const char* sceneCommand)
 
 void SceneScript::Impl::End()
 {
-    closeLua(m_L);
+    if (m_L) {
+        closeLua(m_L);
+    }
     m_L = 0;
 
     RenderCore::Finalize();
