@@ -359,7 +359,7 @@ public:
             const int bytes = SimpleJPGSaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
-                delete [] dstbuffer;
+                free(dstbuffer); // Assume malloc is used in `jpge.cpp`
                 return (Buffer)m_memory.c_str();
             }
         }
@@ -369,7 +369,7 @@ public:
             const int bytes = SimpleTGASaverRGBA((void**)&dstbuffer, width, height, srcbuffer);
             if (bytes && dstbuffer) {
                 m_memory = std::string(dstbuffer, bytes);
-                delete [] dstbuffer;
+                free(dstbuffer);
                 return (Buffer)m_memory.c_str();
             }
         }
