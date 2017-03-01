@@ -52,7 +52,7 @@ inline bool SimplePNGLoader(const char* filename, int& w, int& h, unsigned char*
     unsigned char *loaddata;
     
     int r = lodepng_decode32_file(&loaddata, &width, &height, filename);
-    if (r == 0) {
+    if ((r == 0) && loaddata) {
         w = width;
         h = height;
         *rgba = new unsigned char[4 * w * h];
@@ -67,6 +67,7 @@ inline bool SimplePNGLoader(const char* filename, int& w, int& h, unsigned char*
                 (*rgba)[4 * i + 3] = loaddata[4 * yinv + 3];
             }
         }
+        free(loaddata);
         return true;
     }
     return false;
@@ -79,7 +80,7 @@ inline bool SimplePNGLoaderFromMemory(const unsigned char* pngbuffer, int buffer
     unsigned char *loaddata;
     
     int r = lodepng_decode32(&loaddata, &width, &height, pngbuffer, buffersize);
-    if (r == 0) {
+    if ((r == 0) && loaddata) {
         w = width;
         h = height;
         *rgba = new unsigned char[4 * w * h];
@@ -94,6 +95,7 @@ inline bool SimplePNGLoaderFromMemory(const unsigned char* pngbuffer, int buffer
                 (*rgba)[4 * i + 3] = loaddata[4 * yinv + 3];
             }
         }
+        free(loaddata);
         return true;
     }
     return false;

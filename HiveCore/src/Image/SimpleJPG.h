@@ -561,6 +561,8 @@ inline bool SimpleJPGLoaderRGBA(const char* jpgfile, int& w, int& h, unsigned ch
                 (*rgba)[4 * i + 3] = loaddata[4 * yinv + 3];
             }
         }
+        // Guess malloc() is used for allocating memory in `jpegd.cpp`
+        free(loaddata);
         return true;
     }
     return false;
@@ -588,6 +590,8 @@ inline bool SimpleJPGLoaderRGBAFromMemory(const unsigned char *jpgbuffer, int bu
                 (*rgba)[4 * i + 3] = loaddata[4 * yinv + 3];
             }
         }
+        // Guess malloc() is used for allocating memory in `jpegd.cpp`
+        free(loaddata);
         return true;
     }
     return false;
