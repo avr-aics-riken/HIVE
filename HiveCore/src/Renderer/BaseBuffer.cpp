@@ -33,6 +33,7 @@ namespace {
     void (* const BindBufferVec4_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec4_GL, BindBufferVec4_SGL};
     void (* const BindBufferVec3_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec3_GL, BindBufferVec3_SGL};
     void (* const BindBufferVec2_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec2_GL, BindBufferVec2_SGL};
+    void (* const UnBindBuffer_GS[])(unsigned int prg, const char* attrname) = {UnBindBuffer_GL, UnBindBuffer_SGL};
 
     void (* const BindTexture2D_GS[])(unsigned int texid) = {BindTexture2D_GL, BindTexture2D_SGL};
     void (* const ActiveTexture_GS[])(unsigned int n) = {ActiveTexture_GL, ActiveTexture_SGL};
@@ -232,6 +233,31 @@ void BaseBuffer::bindExtraBuffers(const RenderObject* obj) const
     }
 }
 
+/**
+ * 拡張バッファのアンバインド.
+ * @param obj レンダーオブジェクト
+ */
+void BaseBuffer::unbindExtraBuffers(const RenderObject* obj) const
+{
+    const unsigned int prg = getProgram();
+    if (prg == 0) {
+        return;
+    }
+    
+    const RenderObject::ExtraBufferMap& emap = obj->GetExtraBuffers();
+    RenderObject::ExtraBufferMap::const_iterator it, eit = emap.end();
+    for (it = emap.begin(); it != eit; ++it) {
+        const std::string& name = it->first;
+        const RefPtr<BufferExtraData>& p = it->second;
+        std::map<std::string, unsigned int>::const_iterator it = m_extraIdx.find(name);
+        if (it == m_extraIdx.end())
+            continue;
+        const unsigned int bufidx = it->second;
+        std::string dtype(p->GetDataType());
+        UnBindBuffer_GS[m_mode](prg, name.c_str());
+    }
+}
+    
 //-------------------------------------------------------------------
 
 /**

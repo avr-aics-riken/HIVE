@@ -1062,8 +1062,8 @@ export default class ActionExecuter {
 		}
 		let outputIterator = NodeIterator.makeOutputIterator(this.store, node);
 		for (let v of outputIterator) {
-			if (v.output && convertTable.hasOwnProperty(v.output[i].nodeVarname)) {
-				v.output[i].nodeVarname = convertTable[v.output[i].nodeVarname];
+			if (v.output && convertTable.hasOwnProperty(v.output.nodeVarname)) {
+				v.output.nodeVarname = convertTable[v.output.nodeVarname];
 			}
 		}
 

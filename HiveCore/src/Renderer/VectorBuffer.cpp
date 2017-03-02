@@ -20,9 +20,11 @@ namespace {
                                    unsigned int& tex_id, unsigned int& index_id) = {CreateVBIB_GL, CreateVBIB_SGL};
 
     void (* const BindLineVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) = {BindLineVBIB_GL, BindLineVBIB_SGL};
+    void (* const UnBindLineVBIB_GS[])(unsigned int prg) = {UnBindLineVBIB_GL, UnBindLineVBIB_SGL};
     void (* const DrawLineArrays_GS[])(unsigned int vtxnum) = {DrawLineArrays_GL, DrawLineArrays_SGL};
 
     void (* const BindTetraVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) = {BindTetraVBIB_GL, BindTetraVBIB_SGL};
+    void (* const UnBindTetraVBIB_GS[])(unsigned int prg) = {UnBindTetraVBIB_GL, UnBindTetraVBIB_SGL};
     void (* const DrawTetraArrays_GS[])(unsigned int vtxnum) = {DrawTetraArrays_GL, DrawTetraArrays_SGL};
     void (* const LineWidth_GS[])(float w) = {LineWidth_GL, LineWidth_SGL};
 
@@ -173,9 +175,12 @@ void VectorBuffer::Render() const
     
     BindLineVBIB_GS[m_mode](getProgram(), m_line_vtx_id, 0, 0, 0);
     DrawLineArrays_GS[m_mode](m_lines_vnum);
+    UnBindLineVBIB_GS[m_mode](getProgram());
     
     BindTetraVBIB_GS[m_mode](getProgram(), m_tetra_vtx_id, 0, 0);
     DrawTetraArrays_GS[m_mode](m_tetra_vnum);
+    UnBindTetraVBIB_GS[m_mode](getProgram());
+    unbindExtraBuffers(m_model);
 }
 
 void VectorBuffer::Update()

@@ -59,11 +59,17 @@ void BindBufferUint_SGL(unsigned int prg, const char* attrname, unsigned int buf
 void BindBufferVec4_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
 void BindBufferVec3_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
 void BindBufferVec2_SGL(unsigned int prg, const char* attrname, unsigned int bufidx);
+void UnBindBuffer_SGL(unsigned int prg, const char* attrname);
 void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx);
 void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material);
 void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx);
 void BindTetraVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx);
 void BindSolidVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx);
+void UnBindVBIB_SGL(unsigned int prg);
+void UnBindPointVB_SGL(unsigned int prg);
+void UnBindLineVBIB_SGL(unsigned int prg);
+void UnBindTetraVBIB_SGL(unsigned int prg);
+void UnBindSolidVBIB_SGL(unsigned int prg);
 void LineWidth_SGL(float w);
 
 void GenTextures_SGL(int n, unsigned int* tex);
@@ -141,10 +147,15 @@ CMDINLINE void BindBufferUint_GL(unsigned int prg, const char* attrname, unsigne
 CMDINLINE void BindBufferVec4_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
 CMDINLINE void BindBufferVec3_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
 CMDINLINE void BindBufferVec2_GL(unsigned int prg, const char* attrname, unsigned int bufidx) BLANKFUNC;
+CMDINLINE void UnBindBuffer_GL(unsigned int prg, const char* attrname) BLANKFUNC;
 CMDINLINE void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, unsigned int matidx, unsigned int texidx, unsigned int indexidx) BLANKFUNC;
 CMDINLINE void BindLineVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) BLANKFUNC;
 CMDINLINE void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) BLANKFUNC;
 CMDINLINE void BindTetraVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) BLANKFUNC;
+CMDINLINE void UnBindVBIB_GL(unsigned int prg) BLANKFUNC;
+CMDINLINE void UnBindLineVBIB_GL(unsigned int prg) BLANKFUNC;
+CMDINLINE void UnBindPointVB_GL(unsigned int prg) BLANKFUNC;
+CMDINLINE void UnBindTetraVBIB_GL(unsigned int prg) BLANKFUNC;
 CMDINLINE void BindFramebuffer_GL(unsigned int frame) BLANKFUNC;
 CMDINLINE void LineWidth_GL(float w) BLANKFUNC;
 CMDINLINE void GenTextures_GL(int n, unsigned int* tex) BLANKFUNC;

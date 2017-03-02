@@ -14,6 +14,7 @@
 namespace {
     void (* const ReleaseBufferVBIB_GS[])(unsigned int buffer_id) = {ReleaseBufferVBIB_GL, ReleaseBufferVBIB_SGL};
     void (* const BindLineVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) = {BindLineVBIB_GL, BindLineVBIB_SGL};
+    void (* const UnBindLineVBIB_GS[])(unsigned int prg) = {UnBindLineVBIB_GL, UnBindLineVBIB_SGL};
     void (* const DrawLineElements_GS[])(unsigned int indexnum) = {DrawLineElements_GL, DrawLineElements_SGL};
     void (* const DrawLineArrays_GS[])(unsigned int vtxnum) = {DrawLineArrays_GL, DrawLineArrays_SGL};
     void (* const CreateVBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
@@ -148,6 +149,9 @@ void LineBuffer::Render() const
         DrawLineArrays_GS[m_mode](m_vtxnum);
     else
         DrawLineElements_GS[m_mode](m_indexnum);
+        
+    UnBindLineVBIB_GS[m_mode](getProgram());
+    unbindExtraBuffers(m_model);
 }
 
 void LineBuffer::Update()

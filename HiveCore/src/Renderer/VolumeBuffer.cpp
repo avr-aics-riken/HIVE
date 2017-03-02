@@ -221,6 +221,8 @@ void VolumeBuffer::Render() const
     } else {
         DrawArrays_SGL(m_vertex_num);
     }
+    UnBindVBIB_SGL(getProgram());
+    unbindExtraBuffers(m_model);
 }
 
 void VolumeBuffer::Update()

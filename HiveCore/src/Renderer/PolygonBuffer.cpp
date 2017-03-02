@@ -18,6 +18,7 @@ namespace {
                                    unsigned int& tex_id, unsigned int& index_id) = {CreateVBIB_GL, CreateVBIB_SGL};
     void (* const BindVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
                                  unsigned int vtx_material, unsigned int texidx, unsigned int indexidx) = {BindVBIB_GL, BindVBIB_SGL};
+    void (* const UnBindVBIB_GS[])(unsigned int prg) = {UnBindVBIB_GL, UnBindVBIB_SGL};
     void (* const DrawElements_GS[])(unsigned int indexnum) = {DrawElements_GL, DrawElements_SGL};
     void (* const DrawArrays_GS[])(unsigned int vtxnum) = {DrawArrays_GL, DrawArrays_SGL};
 
@@ -131,6 +132,9 @@ void PolygonBuffer::Render() const
         DrawElements_GS[m_mode](m_index_num);
     else
         DrawArrays_GS[m_mode](m_vertex_num);
+
+    UnBindVBIB_GS[m_mode](getProgram());
+    unbindExtraBuffers(m_model);
 }
 
 void PolygonBuffer::Update()

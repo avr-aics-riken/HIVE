@@ -723,6 +723,7 @@ void BindBufferFloat_SGL(unsigned int prg, const char* attrname, unsigned int bu
         sgl.glEnableVertexAttribArray(attr);
     }
 }
+
 void BindBufferUint_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
 {
     assert(prg);
@@ -756,6 +757,7 @@ void BindBufferVec3_SGL(unsigned int prg, const char* attrname, unsigned int buf
         sgl.glEnableVertexAttribArray(attr);
     }
 }
+
 void BindBufferVec2_SGL(unsigned int prg, const char* attrname, unsigned int bufidx)
 {
     assert(prg);
@@ -768,6 +770,16 @@ void BindBufferVec2_SGL(unsigned int prg, const char* attrname, unsigned int buf
     }
 }
 
+void UnBindBuffer_SGL(unsigned int prg, const char* attrname)
+{
+    assert(prg);
+    static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attr = sgl.glGetAttribLocation(prg, attrname);
+    if (attr != -1) {
+        sgl.glDisableVertexAttribArray(attr);
+    }
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
 
 /**
  * バッファのバインド.
@@ -810,6 +822,33 @@ void BindVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
     sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
+
+/**
+ * バッファのアンバインド
+ */
+void UnBindVBIB_SGL(unsigned int prg)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+	GLint attrNormal = sgl.glGetAttribLocation(prg, "mnormal");
+	GLint attrPos    = sgl.glGetAttribLocation(prg, "position");
+    GLint attrTex    = sgl.glGetAttribLocation(prg, "texcoord");
+    if (attrMaterial != -1) {
+        sgl.glDisableVertexAttribArray(attrMaterial);
+    }
+    if (attrNormal != -1) {
+        sgl.glDisableVertexAttribArray(attrNormal);
+    }
+    if (attrPos != -1) {
+        sgl.glDisableVertexAttribArray(attrPos);
+    }
+    if (attrTex != -1) {
+        sgl.glDisableVertexAttribArray(attrTex);
+    }
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
 /**
  * ポイントバッファのバインド
  * @param prg シェーダプログラムID
@@ -839,6 +878,27 @@ void BindPointVB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_rad
 		sgl.glVertexAttribPointer(attrPos, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (void*)0);
 		sgl.glEnableVertexAttribArray(attrPos);
 	}
+}
+
+/**
+ * ポイントバッファのアンバインド
+ */
+void UnBindPointVB_SGL(unsigned int prg)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint attrRadius   = sgl.glGetAttribLocation(prg, "lsgl_PointSize");
+	GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+	GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    if (attrRadius != -1) {
+        sgl.glDisableVertexAttribArray(attrRadius);
+    }
+    if (attrMaterial != -1) {
+        sgl.glDisableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glDisableVertexAttribArray(attrPos);
+    }
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 /**
@@ -876,6 +936,27 @@ void BindLineVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_ra
 }
 
 /**
+ * ラインバッファのアンバインド
+ */
+void UnBindLineVBIB_SGL(unsigned int prg)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+	GLint attrRadius   = sgl.glGetAttribLocation(prg, "lsgl_PointSize");
+	GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+	GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    if (attrRadius != -1) {
+        sgl.glDisableVertexAttribArray(attrRadius);
+    }
+    if (attrMaterial != -1) {
+        sgl.glDisableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glDisableVertexAttribArray(attrPos);
+    }
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+/**
  * 三角錐バッファのバインド
  * @param prg シェーダプログラムID
  * @param vtxidx 頂点インデックスバッファID
@@ -904,6 +985,24 @@ void BindTetraVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_m
 }
 
 /**
+ * 三角錐バッファのアンバインド
+ */
+void UnBindTetraVBIB_SGL(unsigned int prg)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+    GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    if (attrMaterial != -1) {
+        sgl.glDisableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glDisableVertexAttribArray(attrPos);
+    }
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+/**
  * Solid バッファのバインド
  * @param prg シェーダプログラムID
  * @param vtxidx 頂点インデックスバッファID
@@ -929,6 +1028,24 @@ void BindSolidVBIB_SGL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_m
     }
     
     sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+}
+
+/**
+ * 三角錐バッファのアンバインド
+ */
+void UnBindSolidVBIB_SGL(unsigned int prg)
+{
+	static lsgl::Context& sgl = lsgl::Context::GetCurrentContext();
+    GLint attrMaterial = sgl.glGetAttribLocation(prg, "matID");
+    GLint attrPos      = sgl.glGetAttribLocation(prg, "position");
+    if (attrMaterial != -1) {
+        sgl.glDisableVertexAttribArray(attrMaterial);
+    }
+    if (attrPos != -1) {
+        sgl.glDisableVertexAttribArray(attrPos);
+    }
+    sgl.glBindBuffer(GL_ARRAY_BUFFER, 0);
+    sgl.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 /**

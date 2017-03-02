@@ -51,6 +51,7 @@ protected:
     void bindUniforms(const RenderObject* obj) const;
     void createExtraBuffers(const RenderObject* obj);
     void bindExtraBuffers(const RenderObject* obj) const;
+    void unbindExtraBuffers(const RenderObject* obj) const;
     unsigned int getTextureId(const BufferImageData* buf) const;
     bool cacheTexture(const BufferImageData* buf, bool filter, bool clampToEdgeS, bool clampToEdgeT);
     void cacheTextures(const RenderObject* model);
