@@ -114,6 +114,7 @@ Use `CXX` and `CC` flag to specify custom compiler. e.g.:
     HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    SANITIZE_ADDRESS=On/Off : Enable/Disable Address sanitizer(HiveCore/Modules/SURFACE). Default = off.
 
 ### K/FX10
 
@@ -146,6 +147,14 @@ Optionally edit `./scripts/cmake_linux-x64-all.sh`, then
     $ ./scripts/cmake_linux-x64-all.sh
     $ cd build
     $ make
+
+##### Address sanitizer
+
+HiveCore, Modules and SURFACE can be built with address sanitizer(ASAN) support.
+We recommend to use recent clang compiler(gcc 4.8+ works, but clang has much better ASAN support)
+
+Plese set clang compiler to cmake and mpi(e.g. through CC/CXX environment), then add `-DSANITIZE_ADDRESS=On` to cmake flag.
+
 
 ### MacOSX OpenMP + MPI build
 
