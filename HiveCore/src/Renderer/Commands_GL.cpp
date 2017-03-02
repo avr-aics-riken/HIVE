@@ -838,6 +838,16 @@ void BindBufferVec2_GL(unsigned int prg, const char* attrname, unsigned int bufi
     }
 }
 
+void UnBindBuffer_GL(unsigned int prg, const char* attrname)
+{
+    assert(prg);
+    VX::Graphics& g = GetCurrentGraphics();
+    GLint attr = g.GetAttribLocation(prg, attrname);
+    if (attr != -1) {
+        g.DisableVertexAttribArray(attr);
+    }
+	g.BindBuffer(GL_ARRAY_BUFFER, 0);
+}
 
 /**
  * バッファのバインド.
@@ -878,6 +888,31 @@ void BindVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int normalidx, 
 	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
 }
 
+/**
+ * バッファのアンバインド.
+ */
+void UnBindVBIB_GL(unsigned int prg)
+{
+	VX::Graphics& g = GetCurrentGraphics();
+	GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
+	GLint attrNormal = g.GetAttribLocation(prg, "mnormal");
+	GLint attrPos    = g.GetAttribLocation(prg, "position");
+	GLint attrTex    = g.GetAttribLocation(prg, "tex");
+	if (attrTex != -1) {
+		g.DisableVertexAttribArray(attrTex);
+	}
+	if (attrMaterial != -1) {
+		g.DisableVertexAttribArray(attrMaterial);
+	}
+	if (attrNormal != -1) {
+		g.DisableVertexAttribArray(attrNormal);
+	}
+	if (attrPos != -1){
+		g.DisableVertexAttribArray(attrPos);
+	}
+	g.BindBuffer(GL_ARRAY_BUFFER, 0);
+	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
 
 /**
  * ラインバッファのバインド
@@ -914,6 +949,28 @@ void BindLineVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_rad
 }
 
 /**
+ * ラインバッファのアンバインド.
+ */
+void UnBindLineVBIB_GL(unsigned int prg)
+{
+	VX::Graphics& g = GetCurrentGraphics();
+    GLint attrRadius   = g.GetAttribLocation(prg, "lsgl_LineWidth");
+    GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
+    GLint attrPos      = g.GetAttribLocation(prg, "position");
+	if (attrRadius != -1) {
+		g.DisableVertexAttribArray(attrRadius);
+	}
+	if (attrMaterial != -1) {
+		g.DisableVertexAttribArray(attrMaterial);
+	}
+	if (attrPos != -1){
+		g.DisableVertexAttribArray(attrPos);
+	}
+	g.BindBuffer(GL_ARRAY_BUFFER, 0);
+	g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+/**
  * ポイントバッファのバインド
  * @param prg シェーダプログラムID
  * @param vtxidx 頂点インデックスバッファID
@@ -944,6 +1001,28 @@ void BindPointVB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radi
 	}
 }
 
+/**
+ * ポイントバッファのアンバインド
+ */
+void UnBindPointVB_GL(unsigned int prg)
+{
+	VX::Graphics& g = GetCurrentGraphics();
+	GLint attrRadius   = g.GetAttribLocation(prg, "lsgl_PointSize");
+	GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
+	GLint attrPos      = g.GetAttribLocation(prg, "position");
+	
+	if (attrRadius != -1) {
+		g.DisableVertexAttribArray(attrRadius);
+	}
+	if (attrMaterial != -1) {
+		g.DisableVertexAttribArray(attrMaterial);
+	}
+	if (attrPos != -1) {
+		g.DisableVertexAttribArray(attrPos);
+	}
+	g.BindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 
 /**
  * 三角錐バッファのバインド
@@ -971,6 +1050,24 @@ void BindTetraVBIB_GL(unsigned int prg, unsigned int vtxidx, unsigned int vtx_ma
     }
     
     g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexidx);
+}
+/**
+ * 三角錐バッファのアンバインド
+ */
+void UnBindTetraVBIB_GL(unsigned int prg)
+{
+	VX::Graphics& g = GetCurrentGraphics();
+    GLint attrMaterial = g.GetAttribLocation(prg, "materialID");
+    GLint attrPos      = g.GetAttribLocation(prg, "position");
+	
+	if (attrMaterial != -1) {
+		g.DisableVertexAttribArray(attrMaterial);
+	}
+	if (attrPos != -1) {
+		g.DisableVertexAttribArray(attrPos);
+	}
+	g.BindBuffer(GL_ARRAY_BUFFER, 0);
+    g.BindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 /**

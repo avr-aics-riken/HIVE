@@ -209,6 +209,7 @@ void SparseVolumeBuffer::Render() const
     } else {
         DrawArrays_SGL(m_vertex_num);
     }
+    UnBindVBIB_SGL(getProgram());
 }
 
 void SparseVolumeBuffer::Update()

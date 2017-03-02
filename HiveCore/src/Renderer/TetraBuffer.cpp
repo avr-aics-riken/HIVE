@@ -19,6 +19,7 @@ namespace {
                                    unsigned int& tex_id, unsigned int& index_id) = {CreateVBIB_GL, CreateVBIB_SGL};
     
     void (* const BindTetraVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) = {BindTetraVBIB_GL, BindTetraVBIB_SGL};
+    void (* const UnBindTetraVBIB_GS[])(unsigned int prg) = {UnBindTetraVBIB_GL, UnBindTetraVBIB_SGL};
     void (* const DrawTetraArrays_GS[])(unsigned int vtxnum) = {DrawTetraArrays_GL, DrawTetraArrays_SGL};
 }
 
@@ -121,6 +122,8 @@ void TetraBuffer::Render() const
     BindTetraVBIB_GS[m_mode](getProgram(), m_vtx_id, 0, 0);
 	// Use draw array method.
     DrawTetraArrays_GS[m_mode](m_vtxnum);
+    UnBindTetraVBIB_GS[m_mode](getProgram());
+    unbindExtraBuffers(m_model);
 }
 
 void TetraBuffer::Update()

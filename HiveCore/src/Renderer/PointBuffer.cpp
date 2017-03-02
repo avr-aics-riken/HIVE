@@ -13,6 +13,7 @@
 namespace {
     void (* const ReleaseBufferVBIB_GS[])(unsigned int buffer_id) = {ReleaseBufferVBIB_GL, ReleaseBufferVBIB_SGL};
     void (* const BindPointVB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) = {BindPointVB_GL, BindPointVB_SGL};
+    void (* const UnBindPointVB_GS[])(unsigned int prg) = {UnBindPointVB_GL, UnBindPointVB_SGL};
     void (* const DrawPointArrays_GS[])(unsigned int vtxnum) = {DrawPointArrays_GL, DrawPointArrays_SGL};
     void (* const CreateVBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
                                    unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) = {CreateVBRM_GL, CreateVBRM_SGL};
@@ -116,6 +117,8 @@ void PointBuffer::Render() const
     
     BindPointVB_GS[m_mode](getProgram(), m_vtx_id, m_radius_id, m_material_id);
     DrawPointArrays_GS[m_mode](m_vtxnum);
+    UnBindPointVB_GS[m_mode](getProgram());
+    unbindExtraBuffers(m_model);
 }
 
 void PointBuffer::Update()
