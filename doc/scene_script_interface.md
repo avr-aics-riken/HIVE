@@ -731,14 +731,19 @@ timeStepIndex には 0 からのインデックス番号を指定する(timeStep
 
 PDMファイルを読み込むローダークラス. hrender が PDMlib とリンクされているときのみ利用可能.
 Load() でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
-ファイル名に相対パスが含まれていてはならない.
+`migration` を `true` にすると, データの並列ロードを行います. 入力のデータ分散数(M)から, 実行時の MPI プロセス数(N)に合うように自動でデータのマイグレーション処理を行い, データ分散のロードを行います(MxN loading).
+
+`false` の場合, データの並列ロードは行いません. データを各ノードがすべて保持するようにロードします(Mx1 loading).
 
     local loader = PDMLoader()
     local timestep = 0
-    loader:Load('input.dfi', timestep)
+    local migration = false
+    loader:Load('input.dfi', timestep, migration)
     
-    -- 点データのコンテナ名と, 点の半径を指定(半径は省略可能. 省略時は 1.0 に設定)
+    -- 座標データのコンテナ名(省略時は `Coordinatge`, に設定)と, 点の半径を指定(省略時は 1.0 に設定)
     local pointData = pdm:PointData('Coordinate', 0.2)
+    -- local pointData = pdm:PointData() -- container name = `Coordinate`, radius = 1.0 
+    -- local pointData = pdm:PointData('Coordinate') --  radius = 1.0 
 
     -- 任意形式のコンテナデータを取得.
     -- コンテナ名に対するデータ形式(float, vec3, etc)はユーザが既知とする.

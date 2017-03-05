@@ -62,7 +62,7 @@ bool RawVolumeSaver::Save(const char* filename, bool appendFooter){
 	const unsigned char* ptr = reinterpret_cast<unsigned char*>(m_volumeData->Buffer()->GetBuffer());
 	size_t dataLen = m_volumeData->Buffer()->GetNum() * sizeof(float);
 
-	printf("[RawVolumeSaver] DataLen = %d\n", dataLen);
+	printf("[RawVolumeSaver] DataLen = %d\n", int(dataLen));
 
 	size_t len = fwrite(ptr, 1, dataLen, fp);
 	assert(len == dataLen);
