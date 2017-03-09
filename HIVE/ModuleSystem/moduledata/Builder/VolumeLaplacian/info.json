@@ -1,0 +1,14 @@
+{
+	"name": "VolumeLaplacian",
+	"funcname": "VolumeLaplacian",
+	"info":"Volumeデータの要素をラプラシアンフィルタするノード",
+	"pos": [50, 50],
+	"varname": "instVolumeLaplacian",
+	"customfuncfile": "volumelaplacian.lua",
+	"input": [
+		{"name": "srcvolume", "type": "BufferVolumeData"}
+	],
+	"output": [
+		{"name": "volume", "type": "BufferVolumeData"}
+	]
+}
