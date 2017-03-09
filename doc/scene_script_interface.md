@@ -716,6 +716,7 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
 (一様/非一様)ボリュームプリミティブが取得可能.
 データが非一様で読み込まれるかは .dfi ファイルでの指定に従う.
+デフォルトでは `.dfi` ファイルに記述されたボクセルサイズ(GlobalVoxel)と分割数(GlobalDivision)を利用します. 後述の `SetGlobalVoxelSize`, `SetDivisionMode`, `SetGlobalDivision` で読み込みボクセルサイズや分割形式を指定することができます.
 timeStepIndex には 0 からのインデックス番号を指定する(timeStep の時刻ではないことに注意. 省略可能. デフォルトは 0)
 
     local loader = CDMLoader()
@@ -723,6 +724,56 @@ timeStepIndex には 0 からのインデックス番号を指定する(timeStep
     local virtualCellSize = 2
     loader:Load('input.dfi', timeStepIndex)
     local volumeData = loader:VolumeData() -- volume プリミティブを取得
+
+### データ並列ロード
+
+`CDMLoader:SetDivisionMode()` もしくは `CDMLoader:SetGlobalDivision()` を `Load` の前に呼び出すことで, データ並列ロードを行うことができます.
+
+読み込みのボクセルサイズ(GlobalVoxel)より細かい分割を行うことはできません(たとえば 8x8x8 ボクセルで, Z 軸で 1D で 16 分割するケース)
+`CDMLoader:SetDivisionMode()` と `CDMLoader:SetGlobalDivision()` が両方指定された場合は `SetGlobalDivision` の設定が優先されます.
+
+#### SetGlobalVoxelSize
+
+読み込み時のボクセルサイズ(x, y, z)を指定できます. `Load` の前に呼び出す必要があります.
+
+   local loader = CDMLoader()
+   local timeStepIndex = 0
+   local virtualCellSize = 2
+   loader:SetGlobalVoxelSize(8, 8, 8)
+   loader:Load('input.dfi', timeStepIndex)
+
+#### SetGlobalDivision
+
+x, y, z の分割数を指定できます. `Load` の前に呼び出す必要があります.
+
+   local loader = CDMLoader()
+   local timeStepIndex = 0
+   local virtualCellSize = 2
+   loader:SetGlobalDivision(4, 4, 4)
+   loader:Load('input.dfi', timeStepIndex)
+
+#### SetDivisionMode
+
+分割モードと分割の軸を指定します.
+
+   -- 0 : no data parallel loading(Mx1 loading)
+   -- 1 : 1D 分割による Data parallel load(MxN loading)
+   -- 2 : 2D 分割による Data parallel load(MxN loading)
+   -- 3 : 3D 分割による Data parallel load(MxN loading)
+   -- 4 : DFI ファイルに記述された分割を利用(default)
+
+   local mode = 1
+
+   -- axis0 : 1D と 2D 分割で利用する分割軸を設定(0: x, 1: y, 2: z). 省略時は 0(x) に設定されます.
+   -- axis1 : 2D 分割で利用する分割軸を設定(0: x, 1: y, 2: z). 省略時は 1(y) に設定されます.
+   local axis0 = 2
+   local axis1 = 0
+   
+   local loader = CDMLoader()
+   local timeStepIndex = 0
+   local virtualCellSize = 2
+   loader:SetDivisionMode(mode, axis0, axis1)
+   loader:Load('input.dfi', timeStepIndex)
 
 [render_cdm.scn](hrender/test/render_cdm.scn) 参考例
 [render_cdm_nonuni.scn](hrender/test/render_cdm_nonuni.scn) 参考例(非一様)
