@@ -6,7 +6,7 @@
 	"varname": "instVolumeToVector",
 	"customfuncfile": "volumetovec.lua",
 	"input": [
-		{"name": "volume", "type": "BufferVolumeData"},
+		{"name": "srcvolume", "type": "BufferVolumeData"},
 		{"name": "divideNum", "type": "vec3", "value": [10,10,10]}
 	],
 	"output": [

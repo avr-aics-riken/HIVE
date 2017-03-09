@@ -14,12 +14,12 @@ function VolumeToVector:Do()
     self:UpdateValue()
     
     local v = self.value
-    if (v.volume == nil) then
+    if (v.srcvolume == nil) then
         return "Invalid volume"
     end
     
-    self.DivideNumber(v.divideNum[1], v.divideNum[2], v.divideNum[3])
-	self.vm:Create(v.volume)
+    self.vm:DivideNumber(v.divideNum[1], v.divideNum[2], v.divideNum[3])
+	self.vm:Create(v.srcvolume)
     return true
 end
 
