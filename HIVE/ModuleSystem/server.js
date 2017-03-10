@@ -30,7 +30,7 @@ if (process.argv.length === 3) {
 } else if (process.argv.length > 3) {
 	var np = 1;
 	var wsaddress;
-	for (i = 3; i < process.argv.length; i = i + 2) {
+	for (i = 3; i < process.argv.length; i = i + 1) {
 		if (process.argv[i] == '-p') {
 			port = process.argv[i+1];
 		} else if (process.argv[i] == '-np') {
