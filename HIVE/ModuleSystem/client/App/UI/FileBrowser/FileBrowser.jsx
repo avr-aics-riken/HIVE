@@ -339,6 +339,12 @@ export default class FileBrowser extends React.Component {
 			filter : ev.target.value
 		});
 	}
+	
+	onInputChange(ev) {
+		this.setState({
+			file : ev.target.value
+		});
+	}
 
 	onCancelClick(ev) {
 		this.props.cancelFunc();
@@ -358,7 +364,7 @@ export default class FileBrowser extends React.Component {
 					<div style={style.filebrowser}>
 						<div style={style.title}>File Browser</div>
 						<div style={{paddingLeft : "18px"}}>
-							<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file}></input>
+							<input type="text" style={style.filenameview} placeholder="file name" value={this.state.file} onChange={this.onInputChange.bind(this)}></input>
 							<div style={style.pathview}>
 								<div style={style.path}>{this.state.currentPath}</div>
 							</div>
