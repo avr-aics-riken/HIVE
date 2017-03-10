@@ -58,7 +58,6 @@ camera:LookAt(
 	0,1,0,
 	60
 )
-
 local sphLoader = require("SphLoader")()
 local imageLoader = ImageLoader()
 local imageSaver = ImageSaver()
@@ -115,7 +114,7 @@ end
   このように接続を行うことで、FilterImageノードの出力として、現在のフレームまでピクセル平均化を行った画像を出力することができる。
   ただし、あるフレーム t での結果画像を得るためには、フレーム 0 から フレーム t まで順番にレンダリングを実行する必要がある。
 
-	(※)1フレーム前のフレーム番号を含んだは、以下のように Timeノードの出力を加工することで作成することができる。
+  (※)1フレーム前のフレーム番号を含んだは、以下のように Timeノードの出力を加工することで作成することができる。
 
 ![Time(t-1)](./images/hive_module_rgba_time.png "Time(t-1)")
 
