@@ -51,14 +51,12 @@ function build_tp {
 	cd third_party/ 
 	cd TextParser/
 
-	# It looks like setting CXX/CC require regeneration of configure.
-	autoreconf -ivf
-
 	rm -rf build
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/TextParser && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/TextParser -Dwith_MPI=yes -Denable_test=no -Denable_fapi=no .. && make && make install
+
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -84,6 +82,7 @@ function build_netcdf {
 }
 
 
+# Assume NetCDF(and HDF5) are built and installed in advance(using `build_netcdf`)
 function build_cdmlib {
 	#
 	# CDMlib
@@ -91,14 +90,12 @@ function build_cdmlib {
 	cd third_party/
 	cd CDMlib/
 
-	# It looks like setting CXX/CC require regeneration of configure.
-	autoreconf -ivf
-
 	rm -rf build
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-nc=${installdir} --with-MPI=yes && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir} -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no .. && make && make install
+
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -110,14 +107,12 @@ function build_polylib {
 	cd third_party/
 	cd Polylib/
 
-	# It looks like setting CXX/CC require regeneration of configure.
-	autoreconf -ivf
-
 	rm -rf build
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/Polylib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Dwith_example=no .. && make && make install
+
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -128,11 +123,12 @@ function build_bcmtools {
 	#
 	cd third_party/
 	cd BCMTools/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
-	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler}  CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib && make && make install
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/BCMTools -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib .. && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -271,8 +267,8 @@ function build_pmlib {
 	cd third_party/PMlib
 	autoreconf -ivf
 
-       rm -rf BUILD_DIR
-       mkdir -p BUILD_DIR
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
 	cd BUILD_DIR
 
 	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -O3 -fopenmp" CFLAGS="${c_flags} -O3 -fopenmp" ../configure --prefix=${installdir}/PMlib --with-comp=GNU && make && make install
@@ -280,16 +276,33 @@ function build_pmlib {
 	cd ${topdir}
 }
 
+function build_cpmlib {
+
+	cd third_party/CPMlib
+
+	rm -rf build
+	mkdir -p build
+	cd build
+
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir} -Dwith_MPI=yes -Dwith_example=no -Dwith_TP=${installdir} -Dreal_type=float -Denable_LMR=no .. && make && make install
+
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
+}
 
 clean_install_dir
 build_netcdf
 build_tp
 build_cdmlib
 build_polylib
-build_bcmtools
-build_hdmlib
-build_pdmlib
-build_udmlib
-build_compositor
-build_pmlib
+
+# Disabled for a while.
+#build_bcmtools
+#build_hdmlib
+#build_pdmlib
+#build_udmlib
+#build_compositor
+#build_pmlib
+#build_cpmlib
+
 build_nanomsg
