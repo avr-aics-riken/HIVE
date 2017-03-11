@@ -180,9 +180,9 @@ function build_compositor {
 
 	cd third_party/ 
 	cd 234Compositor/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+	# if [ -f "Makefile" ]; then
+	# 	make distclean
+	# fi
 
 	autoreconf -ivf
 	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -Kopenmp" CFLAGS="${c_flags} -Kopenmp" ./configure --prefix=${installdir}/234Compositor --host=sparc64-unknown-linux-gnu && make && make install
