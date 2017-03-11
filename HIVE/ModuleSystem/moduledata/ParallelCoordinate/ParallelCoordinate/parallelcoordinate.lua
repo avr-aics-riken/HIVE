@@ -12,8 +12,12 @@ end
 
 
 function sendData(varname, voldata, w, h, d, c, qbit, datasize, minmaxstring, label)
+    if targetClientId == nil then
+        return
+    end
     local mode = 'raw'
-    local datatype = 'float'    
+    local datatype = 'float'   
+    
     local json = [[{
         "JSONRPC" : "2.0",
         "method" : "renderedImage",

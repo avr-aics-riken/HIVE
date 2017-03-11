@@ -29,21 +29,23 @@ function TransferFunction:Do()
         end
         hist = hist .. "]"
         
-        if network then
-            local analyzedInfo = [[{
-                "JSONRPC" : "2.0",
-                "method" : "analyzedInfo",            
-                "to" : ]] .. targetClientId ..[[,
-                "id":0,
-                "param" : {
-                    "minval" : "]] .. minval .. [[",
-                    "maxval" : "]] .. maxval .. [[",
-                    "varname": "]] .. self.varname .. [[",
-                    "histgram": ]] .. hist .. [[
-                }
-            }]]
-            --print('json=', analyzedInfo)        
-            network:SendJSON(analyzedInfo);
+        if targetClientId ~= nil then
+            if network then
+                local analyzedInfo = [[{
+                    "JSONRPC" : "2.0",
+                    "method" : "analyzedInfo",            
+                    "to" : ]] .. targetClientId ..[[,
+                    "id":0,
+                    "param" : {
+                        "minval" : "]] .. minval .. [[",
+                        "maxval" : "]] .. maxval .. [[",
+                        "varname": "]] .. self.varname .. [[",
+                        "histgram": ]] .. hist .. [[
+                    }
+                }]]
+                --print('json=', analyzedInfo)        
+                network:SendJSON(analyzedInfo);
+            end
         end
     end
         

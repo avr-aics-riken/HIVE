@@ -1,0 +1,15 @@
+{
+	"name": "VolumeElementFilter",
+	"funcname": "VolumeElementFilter",
+	"info":"Volumeデータの複数の要素から1つの要素を取得するフィルタリングノード",
+	"pos": [50, 50],
+	"varname": "instVolumeElementFilter",
+	"customfuncfile": "volumeelementfilter.lua",
+	"input": [
+		{"name": "srcvolume", "type": "BufferVolumeData"},
+		{"name": "element", "type": "float", "value": 0}
+	],
+	"output": [
+		{"name": "volume", "type": "BufferVolumeData"}
+	]
+}

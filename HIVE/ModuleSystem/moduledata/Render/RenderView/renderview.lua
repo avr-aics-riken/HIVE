@@ -94,6 +94,9 @@ function RenderView:Do()
     local h = v.rendersize[2]
     print('rendersize=('.. w ..",".. h ..")", 'cancel=', tostring(HIVE_isRenderCanceled))
     
+    if targetClientId == nil then
+        return false
+    end
     local json = [[{
             "JSONRPC" : "2.0",
             "method" : "renderedImage",            

@@ -1,0 +1,15 @@
+{
+	"name": "VolumeToVector",
+	"funcname": "VolumeToVector",
+	"info":"Volumeデータからベクターアローを生成するノード",
+	"pos": [50, 50],
+	"varname": "instVolumeToVector",
+	"customfuncfile": "volumetovec.lua",
+	"input": [
+		{"name": "srcvolume", "type": "BufferVolumeData"},
+		{"name": "divideNum", "type": "vec3", "value": [10,10,10]}
+	],
+	"output": [
+		{"name": "VectorData", "type": "BufferVectorData"}
+	]
+}

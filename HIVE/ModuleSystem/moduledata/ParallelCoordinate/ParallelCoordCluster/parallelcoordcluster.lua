@@ -22,6 +22,9 @@ ParallelCoordCluster.new = function (varname)
 end
 
 function sendPlot(varname, image)
+    if targetClientId == nil then
+        return false
+    end
     if (image == nil) then
         return false
     end

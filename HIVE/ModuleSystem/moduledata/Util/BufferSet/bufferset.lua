@@ -10,6 +10,9 @@ BufferSet.new = function (varname)
 end
 
 function BufferSet:SendIDs()
+    if targetClientId == nil then
+        return
+    end
     local bufferIDs = getBufferDataNames()
     
     if network then

@@ -16,6 +16,12 @@ function FilterImage:Do()
     local image1 = v.image1;
     local ope = v.operation;
     local factor = v.factor;
+    if image1 ~= nil then
+        self.res = image1;
+    end
+    if image0 ~= nil then
+        self.res = image0;
+    end
     if image0 ~= nil and image1 ~= nil and tonumber(ope) > 0 and tonumber(ope) <= 4 then
         if image0:GetWidth() == image1:GetWidth() 
             and image0:GetHeight() == image1:GetHeight()

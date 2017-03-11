@@ -1,0 +1,13 @@
+{
+	"name": "SavePDM",
+	"funcname": "SavePDM",
+	"info":"PDMファイルを出力するためのノード",
+	"customfuncfile":"savepdm.lua",
+    "input": [
+		{"name": "filepath",  "type": "string", "value": "", "meta": "filebrowser"},
+        {"name": "pointdata",  "type": "BufferPointData"},
+		{"name": "only_export",  "type": "bool", "value": true }
+	],
+	"output": [
+	]
+}

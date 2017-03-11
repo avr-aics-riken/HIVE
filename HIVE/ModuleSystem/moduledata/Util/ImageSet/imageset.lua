@@ -12,6 +12,9 @@ ImageSet.new = function (varname)
 end
 
 function ImageSet:SendImageIDs()
+    if targetClientId == nil then
+        return
+    end
     local imageIDs = getBufferDataNames()
     
     if network then

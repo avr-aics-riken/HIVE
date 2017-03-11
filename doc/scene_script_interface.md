@@ -79,6 +79,26 @@ libHiveCoreを利用するネイティブから、インメモリ経由でデー
 戻り値はtable型. ```{pointer=[データのポインタ], size=[データサイズ]}```
 データ識別名が存在しない場合は```nil```を返す
 
+## setBufferData(name, bufferData)
+メモリ上にバッファデータを name をキーとして保存する。
+既に同じキーで保存されたデータがある場合は上書きされる。
+- name - 格納されるデータの識別名(string)
+
+## getBufferData(name)
+setBufferDataによってメモリ上に保存したバッファデータを、取得する。
+- name - 格納されているデータの識別名(string)
+戻り値はBufferData型
+データ識別名が存在しない場合は```nil```を返す
+
+## getBufferDataNames()
+格納されているバッファデータの識別名(string)一覧(table型)を取得する。
+
+## deleteBufferData(name)
+setBufferDataにより格納されているバッファデータを、キーを指定して削除する。
+
+## clearBufferData()
+setBufferDataにより格納されているバッファデータを、全て削除する。
+
 --------------
 
 #RenderObject
