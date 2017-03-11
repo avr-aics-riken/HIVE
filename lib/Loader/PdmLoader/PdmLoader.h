@@ -75,10 +75,10 @@ class PDMLoader : public RefCount
 	size_t m_numData; // data size read.
 
 	// Store coordinate attribute(vec3 pos + radius).
-	std::map<std::string, RefPtr<BufferPointData>> m_pointMap;
+	std::map<std::string, RefPtr<BufferPointData> > m_pointMap;
 
 	// Store custom attributes(containers)
-	std::map<std::string, RefPtr<BufferExtraData>> m_containerMap;
+	std::map<std::string, RefPtr<BufferExtraData> > m_containerMap;
 
 	std::vector<ContainerInfo> m_containerInfoList;
 
