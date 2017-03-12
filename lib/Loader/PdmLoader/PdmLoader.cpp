@@ -140,20 +140,19 @@ PDMLoader::~PDMLoader(){};
 /// メンバクリア
 void PDMLoader::Clear()
 {
-	m_timeStep = -1;
-	m_readAll = false;
 	m_pointMap.clear();
 	m_containerMap.clear();
 	m_containerInfoList.clear();
-	m_ok = false;
+	m_initialized = false;
+	m_coordianteName = "Coordinate";
 }
 
 /// Convert read coordinate data to HIVE buffer and cache it.
 bool PDMLoader::CachePoints(const char *containerName)
 {
-	if (!m_ok)
+	if (!m_initialized)
 	{
-		fprintf(stderr, "[PDMLoader] Failed to init loading container\n");
+		fprintf(stderr, "[PDMLoader] Failed to init PDMloader\n");
 		return false;
 	}
 
@@ -240,9 +239,10 @@ bool PDMLoader::CachePoints(const char *containerName)
 /// Convert read non-coordinate data to HIVE buffer and cache it.
 bool PDMLoader::CacheExtraData(const char *containerName)
 {
-	if (!m_ok)
+	if (!m_initialized)
 	{
 		// Failed to init
+		fprintf(stderr, "[PDMLoader] Failed to init PDMloader\n");
 		return false;
 	}
 
@@ -352,42 +352,74 @@ bool PDMLoader::CacheExtraData(const char *containerName)
 	return false;
 }
 
+bool PDMLoader::EnableProfiling(bool onoff)
+{
+	if (m_initialized)
+	{
+		// Must be called before initialiing PDMlib.
+		return false;
+	}
+
+	m_profiling = onoff;
+
+	return true;
+}
+
 /**
  * PDMデータのロード
  * @param filename ファイルパス
  * @param timeStep time step
+ * @param coordinateName Name of coordinate container
  * @param migration Do migration of loading data(for MxN parallel data loading).
  * @retval true 成功
  * @retval false 失敗
  */
-bool PDMLoader::Load(const char *filename, int timeStep, bool migration)
+bool PDMLoader::Load(const char *filename, int timeStep,
+					 const char *coordinateName, bool migration)
 {
 	Clear();
 
 	std::string fname = std::string(filename);
 
-	const bool profiling = true; // Profile PDMlib
+	int rank = 0;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+	if (rank == 0)
+	{
+		printf("[PDMloader] Initializing PDMLib: filename = %s, timeStep = %d, "
+			   "coordinateName = %s, migration = %d, profile = %d\n",
+			   filename, timeStep, coordinateName, migration, m_profiling);
+	}
 
 	// Its OK to pass argc=0,argv=NULL since its only used to initialize MPI
 	// inside of Zoltan lib(called from PDMlib::Init()).
 	// We alreadly initialized MPI, thus argc and argv will not be used.
 	PDMlib::PDMlib::GetInstance().Init(/* argc */ 0, /* argv */ NULL,
 									   /* write filename = */ "",
-									   /* read filename */ fname, profiling);
+									   /* read filename */ fname, m_profiling);
 
 	std::vector<PDMlib::ContainerInfo> &infos =
 		PDMlib::PDMlib::GetInstance().GetContainerInfo();
-	printf("[PDMloader] # of infos = %d\n", int(infos.size()));
+
+	if (rank == 0)
+	{
+		printf("[PDMloader] # of infos = %d\n", int(infos.size()));
+	}
 
 	bool hasCoordinate = false;
+	m_coordianteName = coordinateName ? std::string(coordinateName) : "";
 
 	for (size_t i = 0; i < infos.size(); i++)
 	{
-		printf("[PDMLoader] [%d] name = %s, type = %d, ncomp = %d, order = %d, "
-			   "suffix = %s, annotation = %s, compression = %s\n",
-			   int(i), infos[i].Name.c_str(), infos[i].Type, infos[i].nComp,
-			   infos[i].VectorOrder, infos[i].Suffix.c_str(),
-			   infos[i].Annotation.c_str(), infos[i].Compression.c_str());
+		if (rank == 0)
+		{
+			printf("[PDMLoader] [%d] name = %s, type = %d, ncomp = %d, order = "
+				   "%d, "
+				   "suffix = %s, annotation = %s, compression = %s\n",
+				   int(i), infos[i].Name.c_str(), infos[i].Type, infos[i].nComp,
+				   infos[i].VectorOrder, infos[i].Suffix.c_str(),
+				   infos[i].Annotation.c_str(), infos[i].Compression.c_str());
+		}
 
 		std::string type = GetTypeName(infos[i]);
 		if (type != "UNKNOWN")
@@ -404,10 +436,15 @@ bool PDMLoader::Load(const char *filename, int timeStep, bool migration)
 
 			m_containerInfoList.push_back(containerInfo);
 
-			printf("[PDMLoader] Add container info: name = %s, type = %s\n",
-				   containerInfo.name.c_str(), containerInfo.type_name.c_str());
+			if (rank == 0)
+			{
+				printf("[PDMLoader] Add container info: name = %s, type = %s\n",
+					   containerInfo.name.c_str(),
+					   containerInfo.type_name.c_str());
+			}
 
-			if (infos[i].Name.compare("Coordinate") == 0)
+			if ((!m_coordianteName.empty()) &&
+				infos[i].Name.compare(m_coordianteName) == 0)
 			{
 				hasCoordinate = true;
 			}
@@ -416,9 +453,15 @@ bool PDMLoader::Load(const char *filename, int timeStep, bool migration)
 
 	if (!hasCoordinate)
 	{
-		fprintf(stderr, "[PDMLoader] `Coordinate` container not found.\n");
-		return false; // TODO(LTE): Support PDMlib data without coordiante
-					  // container and cooridnate container with other name.
+		if (m_coordianteName.empty())
+		{
+			fprintf(stdout, "[PDMLoader] Null for Coordinate container.\n");
+		}
+		else
+		{
+			fprintf(stdout, "[PDMLoader] Coordinate container: %s not found.\n",
+					m_coordianteName.c_str());
+		}
 	}
 
 	// Read all container data.
@@ -429,7 +472,7 @@ bool PDMLoader::Load(const char *filename, int timeStep, bool migration)
 		{
 			int ret = RegisterContainer(PDMlib::PDMlib::GetInstance(),
 										&(m_containerInfoList[i]));
-			if (!ret)
+			if (ret != 0)
 			{
 				fprintf(stderr, "[PDMLoader] Failed to register container [ %s "
 								"]. ret = %d.\n",
@@ -438,8 +481,18 @@ bool PDMLoader::Load(const char *filename, int timeStep, bool migration)
 			}
 		}
 
+		// When Coordinate container does not exit, migration doesn't work.
+		const bool doMigration = hasCoordinate ? migration : false;
+
+		if (!hasCoordinate && migration)
+		{
+			fprintf(stdout, "[PDMLoader] WARN: migration disabled since "
+							"Coordiante container does not exit in PDM "
+							"data.\n");
+		}
+
 		size_t num_data =
-			PDMlib::PDMlib::GetInstance().ReadAll(&m_timeStep, m_migration);
+			PDMlib::PDMlib::GetInstance().ReadAll(&timeStep, doMigration);
 
 		// Ensure all containers are read.
 		if (num_data < 1)
@@ -454,10 +507,7 @@ bool PDMLoader::Load(const char *filename, int timeStep, bool migration)
 	// Converting read data to HIVE buffer will be done in subsequent call of
 	// `PointData` or `ExtraData`
 
-	m_timeStep = timeStep;
-	m_readAll = false; // @fixme
-	m_migration = migration;
-	m_ok = true;
+	m_initialized = true;
 
 	return true;
 }

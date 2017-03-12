@@ -50,12 +50,24 @@ class PDMLoader : public RefCount
 
   protected:
 	/**
+	 * Enable PDMLib's profiling functionality.
+	 * Must be called before `Load` method.
+	 * Returns false when this method was called after `Load` function.
+	 */
+	bool EnableProfiling(bool onoff);
+
+	/**
 	 * Loads PDM data for a given timeStep(-1 = read the first timestep in the
    * PDM file).
+   * `coordinateName` specifies the name of coordinate container.
+   * Set NULL to disable reading coordinate container.
    * When `migration` is set to true, do MxN loading of data(Load data in data
    * parallel manner).
+   * `migration` will be ignored when `coordinateName` is set to NULL.
 	 */
-	bool Load(const char *filename, int timeStep = -1, bool migration = false);
+	bool Load(const char *filename, int timeStep = -1,
+			  const char *coordinateName = "Coordinate",
+			  bool migration = false);
 
 	/**
 	 * Read point(coordinate) data.
@@ -68,11 +80,10 @@ class PDMLoader : public RefCount
 	 */
 	BufferExtraData *ExtraData(const char *containerName);
 
-	int m_timeStep;
-	bool m_readAll;
-	bool m_migration;
-	bool m_ok;		  // True upon the success of `Load`.
-	size_t m_numData; // data size read.
+	bool m_initialized; // True upon the success of `Load`.
+	size_t m_numData;   // data size read.
+	bool m_profiling;
+	std::string m_coordianteName;
 
 	// Store coordinate attribute(vec3 pos + radius).
 	std::map<std::string, RefPtr<BufferPointData> > m_pointMap;

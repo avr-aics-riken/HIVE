@@ -17,9 +17,17 @@ class PDMLoader_Lua : public PDMLoader
 	PDMLoader_Lua() {}
 	~PDMLoader_Lua() {}
 
-	bool Load(const char *filename, int timeStep, bool migration)
+	/// Enable PDMlib's profiling support.
+	/// Must be called before `Load`.
+	bool EnableProfiling(bool onoff)
 	{
-		return PDMLoader::Load(filename, timeStep, migration);
+		return PDMLoader::EnableProfiling(onoff);
+	}
+
+	bool Load(const char *filename, int timeStep = -1,
+			  const char *coordinateName = NULL, bool migration = false)
+	{
+		return PDMLoader::Load(filename, timeStep, coordinateName, migration);
 	}
 
 	BufferPointData_Lua *PointData(const char *containerName = "Coordinate",
@@ -37,8 +45,11 @@ class PDMLoader_Lua : public PDMLoader
 	}
 
 	LUA_SCRIPTCLASS_BEGIN(PDMLoader_Lua)
-	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("PDMLoader", bool, Load,
-											 const char *, int, bool)
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("PDMLoader", bool, EnableProfiling,
+											 bool);
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("PDMLoader", bool, Load,
+											 const char *, int, const char *,
+											 bool)
 	LUA_SCRIPTCLASS_METHOD_ARG2(BufferPointData_Lua *, PointData, const char *,
 								double)
 	LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua *, ExtraData, const char *)

@@ -59,7 +59,10 @@ MPIモードで起動している場合、MPIのサイズを取得する。
 - big - ビッグエンディアン
 
 ## screenParallelRendering(enable)
-MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。以下のいずれかの値が設定可能
+MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。N プロセスで N 領域に画面を分割してレンダリングします。
+の分割方法は自動で行われます。
+
+以下のいずれかの値が設定可能
 
 - true - 有効
 - false - 無効
@@ -768,6 +771,16 @@ Load() でファイル名と timestep 番号を指定し, 該当の timestep の
     -- 任意形式のコンテナデータを取得.
     -- コンテナ名に対するデータ形式(float, vec3, etc)はユーザが既知とする.
     local extraData = pdm:ExtraData('velocity')
+
+### EnableProfiling
+
+PDMLib の profiling 機能を有効にします. `Load` の前に呼び出す必要があります.
+
+    local loader = PDMLoader()
+    local timestep = 0
+    local migration = false
+    loader:EnableProfiling(true)
+    loader:Load('input.dfi', timestep, migration)
 
 [render_pdm.scn](hrender/test/render_pdm.scn) 参考例
 
