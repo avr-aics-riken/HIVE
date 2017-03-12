@@ -502,6 +502,8 @@ bool PDMLoader::Load(const char *filename, int timeStep,
 			// May OK.
 		}
 		m_numData = num_data;
+
+		printf("[PDMLoader] MPI rank = %d, num_data = %d\n", rank, int(num_data));
 	}
 
 	// Converting read data to HIVE buffer will be done in subsequent call of
