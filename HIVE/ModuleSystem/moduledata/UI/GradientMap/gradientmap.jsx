@@ -253,6 +253,11 @@ class GradientMap extends React.Component {
                 this.undoBuffer.pop();
             }
             this.undoBuffer.unshift(JSON.stringify(this.value));
+            
+            if (this.changeCallback){
+                this.changeCallback();
+                this.redoBuffer = [];
+            }
         }
         this.mspress = false;
         document.removeEventListener('mousemove', this.mouseMoveFunc);
@@ -383,10 +388,6 @@ class GradientMap extends React.Component {
             }
 
             this.drawGraph();
-            if (this.changeCallback){
-                this.changeCallback();
-                this.redoBuffer = [];
-            }
         }
         this.oldx = x;
         this.oldy = y;
