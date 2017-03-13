@@ -45,6 +45,10 @@ function LineObject:Do()
                 print('float[' .. v.name .. '] = (', v.value, ')')
                 pm:SetFloat(v.name, v.value)
             end
+            if v.type == 'int' then
+                print('int[' .. v.name .. '] = (', v.value, ')')
+                pm:SetInt(v.name, v.value)
+            end
             if v.type == 'texture' then
                 print('texture[' .. v.name .. '] = (', v.value, ')')
                 pm:SetTexture(v.name, v.value)

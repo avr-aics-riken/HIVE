@@ -51,6 +51,7 @@ public:
     typedef std::map<std::string, VX::Math::vec3>                 Vec3Map;
     typedef std::map<std::string, VX::Math::vec2>                 Vec2Map;
     typedef std::map<std::string, float>                          FloatMap;
+    typedef std::map<std::string, int>                          IntMap;
     typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
     typedef std::map<std::string, bool>                           FilteringParamMap;
     typedef std::map<std::string, std::vector<bool> >             WrappingParamMap; // <S, T, R>
@@ -58,6 +59,7 @@ public:
     const Vec3Map&    GetUniformVec3 ()   const;
     const Vec2Map&    GetUniformVec2 ()   const;
     const FloatMap&   GetUniformFloat()   const;
+    const IntMap&   GetUniformInt()   const;
     const TextureMap& GetUniformTexture() const;
     const FilteringParamMap& GetTextureFiltering() const;
     const WrappingParamMap& GetTextureWrapping() const;
@@ -83,6 +85,7 @@ protected:
     bool SetVec3(const std::string& name, float x, float y, float z);
     bool SetVec2(const std::string& name, float x, float y);
     bool SetFloat(const std::string& name, float x);
+    bool SetInt(const std::string& name, int x);
     bool SetTexture(const std::string& name, const BufferImageData* img);
     bool SetTextureFiltering(const std::string& name, bool filter);
     /// Set texture wrapping mode. CLAMP_TO_EDGE(true) or REPEAT(false)

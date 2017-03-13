@@ -153,6 +153,12 @@ void BaseBuffer::bindUniforms(const RenderObject* obj) const
         const float vf = itf->second;
         SetUniform1f_GS[m_mode](prg, itf->first.c_str(), vf);
     }
+    const RenderObject::IntMap& intarray = obj->GetUniformInt();
+    RenderObject::IntMap::const_iterator iti, eiti = intarray.end();
+    for (iti = intarray.begin(); iti != eiti; ++iti) {
+        const float vi = iti->second;
+        SetUniform1i_GS[m_mode](prg, iti->first.c_str(), vi);
+    }
     
     int textureCount = 1; // start from 1. 0 is default texture. Ex: volume texture.
     const RenderObject::TextureMap& texarray = obj->GetUniformTexture();

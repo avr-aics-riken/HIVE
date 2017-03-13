@@ -335,6 +335,10 @@ class TransferFunction extends React.Component {
                 this.undoBuffer.pop();
             }
             this.undoBuffer.unshift(JSON.stringify(this.value));
+            
+            if (this.changeCallback){
+                this.changeCallback(this);
+            }
         }
         this.mspress = false;
         document.removeEventListener('mousemove', this.mouseMoveFunc);
@@ -476,9 +480,6 @@ class TransferFunction extends React.Component {
             }
 
             this.drawGraph();
-            if (this.changeCallback){
-                this.changeCallback(this);
-            }
         }
         this.oldx = x;
         this.oldy = y;

@@ -58,6 +58,15 @@
         } \
         return t; \
     } \
+    LuaTable GetIntTable() { \
+        const IntMap& m = RenderObject::GetUniformInt(); \
+        IntMap::const_iterator it, eit = m.end(); \
+        LuaTable t; \
+        for (it = m.begin(); it != eit; ++it) { \
+            t.map(it->first, LuaTable(it->second)); \
+        } \
+        return t; \
+    } \
     LuaTable GetVec2Table() { \
         const Vec2Map& m = RenderObject::GetUniformVec2(); \
         Vec2Map::const_iterator it, eit = m.end(); \
@@ -117,6 +126,14 @@
         FloatMap::const_iterator it = m.find(std::string(name)); \
         if (it == m.end()) { \
             return 0.0; \
+        } \
+        return it->second; \
+    } \
+    int GetInt(const char* name) { \
+        const IntMap& m = RenderObject::GetUniformInt(); \
+        IntMap::const_iterator it = m.find(std::string(name)); \
+        if (it == m.end()) { \
+            return 0; \
         } \
         return it->second; \
     } \
@@ -182,6 +199,7 @@
     LUA_SCRIPTCLASS_METHOD_ARG4(bool, SetVec3,  const char*, float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG5(bool, SetVec4,  const char*, float, float, float, float) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetFloat, const char*, float) \
+    LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetInt, const char*, int) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetTexture, const char*, BufferImageData_Lua*) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, SetTextureFiltering, const char*, bool) \
     LUA_SCRIPTCLASS_METHOD_ARG4(bool, SetTextureWrapping, const char*, bool, bool, bool) \
@@ -197,6 +215,7 @@
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec3, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(LuaTable, GetVec2, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(float, GetFloat, const char*) \
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, GetInt, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, AddExtraBuffer, const char*, BufferExtraData_Lua*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, RemoveExtraBuffer, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG0(bool, ClearExtraBuffer) \

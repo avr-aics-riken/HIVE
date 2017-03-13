@@ -101,6 +101,8 @@ export default class NodeSerializer {
                 script += setPropertyVal2(node, v.name, v.value[0], v.value[1]);
             } else if(v.type === 'float') {
                 script += setPropertyVal(node, v.name, v.value);
+            } else if(v.type === 'int') {
+                script += setPropertyVal(node, v.name, v.value);
             } else if(v.type === 'string') {
                 script += setPropertyString(node, v.name, v.value);
             } else if(v.type === 'bool') {
