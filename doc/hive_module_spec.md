@@ -125,6 +125,7 @@ Lua スクリプトにはモジュールのインプットとアウトプット�
 
 記述例：
 
+
 ```
 Slider = {}
 setmetatable(Slider, {__index = HiveBaseModule})
@@ -149,8 +150,30 @@ end
 まずモジュールそのものを格納するための Lua のテーブルを定義し `HiveBaseModule` を継承した擬似クラスを定義する。
 
 その後、`new` プロパティにコンストラクタに相当する処理を記述したあと、入出力に関する処理をメソッドとして実装する。特に `モジュール名:Do()` は入力を受け取った際に動作するので、入力を取りたいのであれば必須。
+返値としてtrueを返すと緑色(成功)、falseを返すと赤色(失敗)、処理が返らない場合は黄色としてGUIにステータスが表示される。
 
-当然ながら info.json で定義したモジュールの入出力の定義と内容が合致している必要がある点に注意。
+このluaに対応するinfo.jsonは以下のように定義している。
+```
+{
+	"name": "Slider",
+	"funcname": "Slider",
+	"info":"sliderをつくるノード",
+	"customfuncfile":"slider.lua",
+	"uifile" : "slider.jsx",
+    "input": [
+		{"name": "value",  "type": "float", "value": 0.0},
+		{"name": "min",  "type": "float", "value": 0.0},
+		{"name": "max",  "type": "float", "value": 1.0},
+		{"name": "step",  "type": "float", "value": 0.01}
+	],
+	"output": [
+		{"name": "fval",  "type": "float"}
+	]
+}
+```
+
+ここで "output" の name "fval"と記載することで、モジュールの出力値として、luaスクリプト中の、Slider:fval() が呼び出される。
+また、"input" の name "min" などの変数については、luaスクリプト中で、self.value.min として値が取得できる。
 
 
 ## JSX ファイル
