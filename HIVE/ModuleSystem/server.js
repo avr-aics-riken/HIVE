@@ -395,7 +395,44 @@ ws.on('request', function (request) {
 	connection.id = id_counter;
 	ws_connections[id_counter] = {id:id_counter , conn:connection};
 	id_counter = id_counter + 1;
-
+		
+	var registerClient = function (connection, msg_id, param) {
+		var clientNode, json, args;
+		console.log('[CONNECTION] Connected client id = ' + connection.id);
+		connection.type = 'client';
+		clientNode = connection;
+		json = {
+			ret:'registered',
+			id: connection.id
+		};
+		clientNode.send(JSON.stringify({
+			JSONRPC: "2.0",
+			result: JSON.stringify(json),
+			id: msg_id
+		}));
+		args = ['--client:' + connection.id, 'ws://localhost:' + port];
+		if (opengl_method || param.opengl == true) {
+			args.push('--opengl');
+		}
+		if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
+			args.push(param.ipc);
+		}
+		var a;
+		for (a in args) {
+			console.log('ARG=[' + a + '] = ' + args[a]);
+		}
+		clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
+			return function (data) {
+				clientNode.send(JSON.stringify({
+					JSONRPC: "2.0",
+					method: "rendererLog",
+					param: JSON.stringify(data.toString()),
+					id: 0
+				}));
+			};
+		})(clientNode));
+	};
+	
 	/*
 		Master process methods
 	*/
@@ -428,41 +465,13 @@ ws.on('request', function (request) {
 				}));
 
 			} else if (param.mode === 'client') {
-				console.log('[CONNECTION] Connected client id = ' + connection.id);
-				connection.type = 'client';
-				clientNode = connection;
-				json = {
-					ret:'registered',
-					id: connection.id
-				};
-				clientNode.send(JSON.stringify({
-					JSONRPC: "2.0",
-					result: JSON.stringify(json),
-					id: msg_id
-				}));
-				args = ['--client:' + connection.id, 'ws://localhost:' + port];
-				if (opengl_method) {
-					args.push('--opengl');
-				}
-				if (param.ipc && param.ipc.slice(0,6) === 'ipc://') {
-					args.push(param.ipc);
-				}
-				var a;
-				for (a in args) {
-					console.log('ARG=[' + a + '] = ' + args[a]);
-				}
-				clientNode.renderproc = startupHRenderServer(args, (function (clientNode) {
-					return function (data) {
-						clientNode.send(JSON.stringify({
-							JSONRPC: "2.0",
-							method: "rendererLog",
-							param: JSON.stringify(data.toString()),
-							id: 0
-						}));
-					};
-				})(clientNode));
+				registerClient(connection, msg_id, param);
 			}
-		} else if (method === 'requestFileList') {
+		} else if (method === 'rebootHIVE') {		
+			// 再起動は、終了、起動、再接続(register)を一気に行う.		
+			stopHRenderServer();		
+			registerClient(connection, msg_id, param);		
+		}  else if (method === 'requestFileList') {
 			requestFileList(fr_conn, param.path, msg_id);
 		} else if (method === 'requestShaderList') {
 			requestShaderList(fr_conn, msg_id);
