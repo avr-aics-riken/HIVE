@@ -14,7 +14,7 @@ function Volren:Do()
 end
 
 function Volren:tf_tex()
-    return { name = "tf_tex", type = "float", value = self.value.tf_tex}
+    return { name = "tf_tex", type = "texture", value = self.value.tf_tex}
 end
 
 function Volren:tf_min()
@@ -30,7 +30,7 @@ function Volren:u_enableGradientMap()
 end
 
 function Volren:u_gradTex()
-    return { name= "u_gradTex", type='texture', value=self.value.gradMap}
+    return { name= "u_gradTex", type='texture', value=self.value.gradTex}
 end
 
 function Volren:u_samples()
@@ -42,7 +42,7 @@ function Volren:u_volumeDensity()
 end
 
 function Volren:u_enableLighting()
-    return { name = "u_enableLighting", type = "float", value = self.value.enableLighting}
+    return { name = "u_enableLighting", type = "float", value = self.value.enableL}
 end
 
 function Volren:u_light()
