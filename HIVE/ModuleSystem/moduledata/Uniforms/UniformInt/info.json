@@ -1,0 +1,13 @@
+{
+	"name": "UniformInt",
+	"funcname": "UniformInt",
+	"info":"Uniform intをつくるノード",
+	"customfuncfile":"int.lua",
+    "input": [
+		{"name": "name",  "type": "string", "value": "uniint"},
+		{"name": "value",  "type": "int", "value": 0}
+	],
+	"output": [
+		{"name": "uniform",  "type": "Uniform"}
+	]
+}

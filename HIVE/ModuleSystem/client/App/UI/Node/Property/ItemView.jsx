@@ -107,7 +107,7 @@ export default class ItemView extends React.Component {
 						this.refs[id].setState({
 							values : hole.value
 						});
-					} else if (hole.type === 'string' || hole.type === 'float') {
+					} else if (hole.type === 'string' || hole.type === 'float' || hole.type === 'int') {
 						this.refs[id].setState({
 							value : hole.value
 						});
@@ -383,7 +383,7 @@ export default class ItemView extends React.Component {
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
                             bottom={bottom} />);
-			} else if (hole.type === 'string' || hole.type === 'float') {
+			} else if (hole.type === 'string' || hole.type === 'float' || hole.type === 'int') {
 				return (<ItemTextInput  ref={id}
 							varname={this.props.initialNodeData.varname}
 							store={this.props.store}
