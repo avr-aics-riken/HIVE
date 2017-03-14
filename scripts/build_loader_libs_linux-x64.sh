@@ -99,7 +99,7 @@ function build_cdmlib {
 	mkdir -p build
 	cd build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir} -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no .. && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no .. && make && make install
 
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
