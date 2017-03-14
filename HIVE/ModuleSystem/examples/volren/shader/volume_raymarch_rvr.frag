@@ -36,7 +36,7 @@ uniform float u_linearAttenuation;
 uniform float u_quadraticAttenuation;
 uniform vec3 u_ambient;
 uniform vec3 u_specular;
-uniform float u_volumeDensity;
+//uniform float u_volumeDensity;
 
 //uniform mat4 lsgl_World; // object to world matrix
 uniform mat4 lsgl_WorldInverse; // inverse of object to world matrix
@@ -129,22 +129,26 @@ vec4 densityToColor( float d, vec3 eye, vec3 shadingPos, vec3 texPos ){
     float dist = length(lightVec);
     lightVec = normalize(lightVec);
     vec3 revLightVec = vec3(-lightVec.x, -lightVec.y, -lightVec.z);
-    vec3 viewVec = normalize(eye-shadingPos);
+    vec3 viewVec = normalize(-shadingPos);
     vec3 halfVec = normalize(lightVec + viewVec);
     vec3 halfVec2 = normalize(revLightVec + viewVec);
+
     float specular = pow(max(dot(n, halfVec), 0.), u_light.w);
     float specular2 = pow(max(dot(n, halfVec2), 0.), u_light.w);
     float attenuation = 1.0 / (u_attenuation.x
                                + u_attenuation.y * dist
                                + u_attenuation.z * dist * dist);
-    float diffuse = max(dot(lightVec, n), 0.) * 0.66;
-    float diffuse2 = max(dot(revLightVec, n), 0.) * 0.33;
+    //    float diffuse = clamp(dot(lightVec, n), 0.1, 1.0);
+    float diffuse = (dot(lightVec, n)) * 0.66;
+    //    float diffuse2 = clamp(dot(revLightVec, n), 0.1, 1.0);
+    float diffuse2 = (dot(revLightVec, n)) * 0.33;
     
-    color.rgb = color.rgb * diffuse
+    color.rgb += color.rgb * diffuse
         + color.rgb * diffuse2
         + u_ambient
         + u_specular * specular * attenuation
         + u_specular * specular2 * attenuation;
+    color.rgb = min(color.rgb, vec3(1));
     color.a = a;
     return color;
 }
@@ -166,8 +170,6 @@ void  main(void) {
     vec3 rayorg = eye;
 	vec3 raydir = p - eye;
     raydir = normalize(raydir);
-    vec4 sum   = vec4(0.0, 0.0, 0.0, 0.0);
-    vec4 sum_k = vec4(0.0, 0.0, 0.0, 0.0);
     vec3 pmin = vec3(-0.5, -0.5, -0.5) * volumescale + offset;
     vec3 pmax = vec3( 0.5,  0.5,  0.5) * volumescale + offset;
     float tmin, tmax;
@@ -176,26 +178,16 @@ void  main(void) {
 	tmax = max(0.0, tmax);
 	
     // raymarch.
-    float t = tmin;
+    float t = tmin + 0.01;
     float tstep = (tmax - tmin) / u_samples;
-	float count = 0.0;
 	
-	vec3 sumN = vec3(0.0);
 	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
 	float i = 0.0;
 	while((i < u_samples)
           && (min(min(col.x, col.y), col.z) < 1.0)
-          && (col.w < 0.999)) {
-        vec4 acol;
-		float hit = 0.0;
-		int pds;
-		rayoption(pds, 0);
-		hit = trace(rayorg+t*raydir, tstep*raydir, acol, 0.0);
-		if (hit > 0.0 && hit < 1.0) {
-            col += acol;
-			break;
-		}
+          && (col.w < 0.999)
+          && t <= tmax) {
         
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
@@ -214,16 +206,17 @@ void  main(void) {
             float f = clamp(temp.x, tf_min, tf_max);
             float x = (f - tf_min) / (tf_max - tf_min); // normalize
             vec4 tfCol = densityToColor(x, rayorg, p, texpos);
-            tfCol.w *= u_volumeDensity;
-            tfCol *= (1.0 - col.w); //blend
-            col += tfCol;
+            tfCol.w *= min(min(volumedim.x, volumedim.y), volumedim.z) / u_samples; //u_volumeDensity;
+
+            tfCol.rgb *= tfCol.a;
+            col = (1. - col.a) * tfCol + col;
+            
         }
 
-		count = count + 1.0;
 		t += tstep;
 		i = i + 1.0;
 	}
 	col.w = min(1.0, col.w);
-    col.rgb = pow(col.rgb, vec3(1.0/2.2)); 
+    col.rgb = pow(col.rgb, vec3(1.0)); 
 	gl_FragColor = col;
 }
