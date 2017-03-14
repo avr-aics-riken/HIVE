@@ -166,6 +166,10 @@ RenderObjectは共通のインターフェースを持つ
 
 	  SetFloat(uniform_name, x)
 
+- オブジェクトのシェーダのUniform変数(int)の値を設定
+
+	  SetInt(uniform_name, x)
+
 - オブジェクトのシェーダのUniform変数(sampler2D)の値を設定
 
 	  SetTexture(uniform_name, texture)
@@ -206,6 +210,10 @@ RenderObjectは共通のインターフェースを持つ
 
       LuaTable GetFloatTable()
       
+- シェーダのUniform変数(int)の値をすべて取得
+
+      LuaTable GetIntTable()
+      
 - シェーダのUniform変数(sampler2D)の値をすべて取得
 
       LuaTable GetTextureTable()
@@ -222,9 +230,9 @@ RenderObjectは共通のインターフェースを持つ
 
       LuaTable GetVec2(string)
       
-- シェーダのUniform変数(float)の指定変数の値を取得
+- シェーダのUniform変数(int)の指定変数の値を取得
 
-      float GetFloat(string)
+      int GetInt(string)
       
 - シェーダのUniform変数(sampler2D)の指定変数の値を取得
 
