@@ -50,16 +50,17 @@ function build_tp {
 	# TextParser
 	#
 	cd third_party/ 
-	cd TextParser/
 
-	# It looks like setting CXX/CC require regeneration of configure.
+	# For configure build
+        # cd TextParser
 	# autoreconf -ivf
 
-	rm -rf build
-	mkdir -p build
-	cd build
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/TextParser -Dwith_MPI=yes -Denable_test=no -Denable_fapi=no .. && make && make install
+	rm -rf TextParser_build
+	mkdir -p TextParser_build
+	cd TextParser_build
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/TextParser -Dwith_MPI=yes -Denable_test=no -Denable_fapi=no ../TextParser && make && make install
 
+	# for configure build
 	# CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/TextParser && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
@@ -93,13 +94,12 @@ function build_cdmlib {
 	# CDMlib
 	#
 	cd third_party/
-	cd CDMlib/
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf CDMlib_build
+	mkdir -p CDMlib_build
+	cd CDMlib_build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no .. && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no ../CDMlib && make && make install
 
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
@@ -110,13 +110,12 @@ function build_polylib {
 	# Polylib
 	#
 	cd third_party/
-	cd Polylib/
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf Polylib_build
+	mkdir -p Polylib_build
+	cd Polylib_build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/Polylib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Dwith_example=no .. && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/Polylib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Dwith_example=no ../Polylib && make && make install
 
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
@@ -127,13 +126,12 @@ function build_bcmtools {
 	# BCMTools
 	#
 	cd third_party/
-	cd BCMTools/
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf BCMTools_build
+	mkdir -p BCMTools_build
+	cd BCMTools_build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/BCMTools -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib .. && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/BCMTools -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib ../BCMTools && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -143,16 +141,16 @@ function build_hdmlib {
 	# HDMlib
 	#
 	cd third_party/
-	cd HDMlib/
+	#cd HDMlib/
 	#autoreconf -ivf
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf HDMlib_build
+	mkdir -p HDMlib_build
+	cd HDMlib_build
 
 	#CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/HDMlib -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib -Dwith_BCM=${installdir}/BCMTools -Dreal_type=float .. && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/HDMlib -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib -Dwith_BCM=${installdir}/BCMTools -Dreal_type=float ../HDMlib && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -285,13 +283,13 @@ function build_pmlib {
 
 function build_cpmlib {
 
-	cd third_party/CPMlib
+	cd third_party
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf CPMlib_build
+	mkdir -p CPMlib_build
+	cd CPMlib_build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CPMlib -Dwith_MPI=yes -Dwith_example=no -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Denable_LMR=no .. && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CPMlib -Dwith_MPI=yes -Dwith_example=no -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Denable_LMR=no ../CPMlib && make && make install
 
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
