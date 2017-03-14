@@ -81,6 +81,12 @@ bool CDMLoader::Load(const char *filename, int timeSliceIndex)
 	// Clear();
 	m_volume = BufferVolumeData::CreateInstance();
 
+	int myRank;
+	int mpiSize;
+
+	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+	MPI_Comm_size(MPI_COMM_WORLD, &mpiSize);
+
 	//
 	// NOTE: Assume MPI_Init() was already called in hrender::main()
 	//
@@ -211,6 +217,49 @@ bool CDMLoader::Load(const char *filename, int timeSliceIndex)
 		}
 	}
 
+	bool isNxN = false; // True if stored data division size == MPI process size
+						// of hrender in running.
+
+	// Load Process info.
+	cdm_Process process;
+	{
+		if (process.Read(tp) != CDM::E_CDM_SUCCESS)
+		{
+			fprintf(stderr, "[CDMLoader] Warn: Failed to read Process Data "
+							"from .dfi file: %s\n",
+					tpFilename.c_str());
+			// May OK;
+		}
+		else
+		{
+
+			if (process.RankList.size() == mpiSize)
+			{
+				isNxN = true;
+			}
+		}
+	}
+
+	if (myRank == 0)
+	{
+		if (isNxN)
+		{
+			printf("Do NxN parallel loading\n");
+		}
+
+		printf("Ranks in .DFI: %d\n", int(process.RankList.size()));
+		for (size_t i = 0; i < process.RankList.size(); i++)
+		{
+			const cdm_Rank &cdmRank = process.RankList[i];
+			printf("RankList[%d] : RankID = %d, head = %d, %d, %d, tail = %d, "
+				   "%d, %d\n",
+				   int(i), cdmRank.RankID, cdmRank.HeadIndex[0],
+				   cdmRank.HeadIndex[1], cdmRank.HeadIndex[2],
+				   cdmRank.TailIndex[0], cdmRank.TailIndex[1],
+				   cdmRank.TailIndex[2]);
+		}
+	}
+
 	tp.remove();
 
 	std::vector<float> coords[3];
@@ -332,11 +381,51 @@ bool CDMLoader::Load(const char *filename, int timeSliceIndex)
 	// printf("region = %f, %f, %f\n", m_globalRegion[0], m_globalRegion[1],
 	// m_globalRegion[2]);
 
-	int GVoxel[3] = {m_globalVoxel[0], m_globalVoxel[1], m_globalVoxel[2]};
-	int GDiv[3] = {m_globalDiv[0], m_globalDiv[1], m_globalDiv[2]};
-	int head[3] = {1, 1, 1}; // @fixme.
-	int tail[3] = {m_globalVoxel[0], m_globalVoxel[1],
-				   m_globalVoxel[2]}; // @fixme.
+	int GVoxel[3] = {-1, -1, -1};
+	int GDiv[3] = {-1, -1, -1};
+	int head[3] = {-1, -1, -1};
+	int tail[3] = {-1, -1, -1};
+
+	GVoxel[0] = m_globalVoxel[0];
+	GVoxel[1] = m_globalVoxel[1];
+	GVoxel[2] = m_globalVoxel[2];
+
+	GDiv[0] = m_globalDiv[0];
+	GDiv[1] = m_globalDiv[1];
+	GDiv[2] = m_globalDiv[2];
+
+	if (isNxN)
+	{
+		// TODO(IDS): Find Process info whose RankID equals to current MPI
+		// rank(myRank).
+		head[0] = process.RankList[myRank].HeadIndex[0];
+		head[1] = process.RankList[myRank].HeadIndex[1];
+		head[2] = process.RankList[myRank].HeadIndex[2];
+
+		tail[0] = process.RankList[myRank].TailIndex[0];
+		tail[1] = process.RankList[myRank].TailIndex[1];
+		tail[2] = process.RankList[myRank].TailIndex[2];
+	}
+	else
+	{
+		// TODO(IDS): Support Mx1, MxN loading.
+		head[0] = 1;
+		head[1] = 1;
+		head[2] = 1;
+
+		tail[0] = m_globalVoxel[0];
+		tail[1] = m_globalVoxel[1];
+		tail[2] = m_globalVoxel[2];
+	}
+
+	printf("rank[%d/%d] GVoxel: %d, %d, %d\n", myRank, mpiSize, GVoxel[0],
+		   GVoxel[1], GVoxel[2]);
+	printf("rank[%d/%d] GDiv: %d, %d, %d\n", myRank, mpiSize, GDiv[0], GDiv[1],
+		   GDiv[2]);
+	printf("rank[%d/%d] head: %d, %d, %d\n", myRank, mpiSize, head[0], head[1],
+		   head[2]);
+	printf("rank[%d/%d] tail: %d, %d, %d\n", myRank, mpiSize, tail[0], tail[1],
+		   tail[2]);
 
 	delete domain;
 
