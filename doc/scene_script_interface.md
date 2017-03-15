@@ -1150,5 +1150,23 @@ ToVolume メソッドにはボリュームの解像度を指定する.
 
     filter:SetCompoleOption('gcc', '-O2')
 
+## ImageFilter()
 
+BufferImageDataに対してフィルタ処理を行い, 画像を合成する. 
+2つのBufferImageDataの幅, 高さ, フォーマットが, 同一のもののみ受け付ける.
+
+    local filter = ImageFilter()
+    local operation = 4 -- Average Filter
+    local factor = 1.0  -- ブレンド率
+    local output = filter:Filter(operation, imageA, imageB, factor);
+
+インターフェース一覧
+
+- 画像フィルターを実行する
+  * operation フィルターのタイプ (ImageFilter::Operation)
+  * imageA ソースイメージ
+  * imageB ソースイメージ
+  * factor ブレンド率
+    
+        BufferImageData Filter(operation, imageA, imageB, factor)
 
