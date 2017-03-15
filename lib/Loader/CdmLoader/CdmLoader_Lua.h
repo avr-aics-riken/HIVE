@@ -109,17 +109,59 @@ class CDMLoader_Lua : public CDMLoader
 		return buf[2];
 	}
 
+	int HeadIndexX()
+	{
+		int buf[3];
+		CDMLoader::HeadIndex(buf);
+		return buf[0];
+	}
+
+	int HeadIndexY()
+	{
+		int buf[3];
+		CDMLoader::HeadIndex(buf);
+		return buf[1];
+	}
+
+	int HeadIndexZ()
+	{
+		int buf[3];
+		CDMLoader::HeadIndex(buf);
+		return buf[2];
+	}
+
+	int TailIndexX()
+	{
+		int buf[3];
+		CDMLoader::TailIndex(buf);
+		return buf[0];
+	}
+
+	int TailIndexY()
+	{
+		int buf[3];
+		CDMLoader::TailIndex(buf);
+		return buf[1];
+	}
+
+	int TailIndexZ()
+	{
+		int buf[3];
+		CDMLoader::TailIndex(buf);
+		return buf[2];
+	}
+
 	int NumTimeSteps() { return CDMLoader::NumTimeSteps(); }
 
 	int TimeStepAt(int i) { return CDMLoader::GetTimeStep(i); }
 
-	int SetGlobalVoxelSize(int x, int y, int z)
+	int SetGlobalVoxel(int x, int y, int z)
 	{
 		int buf[3];
 		buf[0] = x;
 		buf[1] = y;
 		buf[2] = z;
-		return CDMLoader::SetGlobalVoxelSize(buf);
+		return CDMLoader::SetGlobalVoxel(buf);
 	}
 
 	int SetGlobalDivision(int x, int y, int z)
@@ -129,6 +171,24 @@ class CDMLoader_Lua : public CDMLoader
 		buf[1] = y;
 		buf[2] = z;
 		return CDMLoader::SetGlobalDivision(buf);
+	}
+
+	int SetHeadIndex(int x, int y, int z)
+	{
+		int buf[3];
+		buf[0] = x;
+		buf[1] = y;
+		buf[2] = z;
+		return CDMLoader::SetHeadIndex(buf);
+	}
+
+	int SetTailIndex(int x, int y, int z)
+	{
+		int buf[3];
+		buf[0] = x;
+		buf[1] = y;
+		buf[2] = z;
+		return CDMLoader::SetTailIndex(buf);
 	}
 
 	int SetDivisionMode(int divisionMode, int divisionAxis0 = 0,
@@ -159,9 +219,17 @@ class CDMLoader_Lua : public CDMLoader
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelX)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelY)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexZ)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, NumTimeSteps)
 	LUA_SCRIPTCLASS_METHOD_ARG1(int, TimeStepAt, int)
-	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalVoxelSize, int, int, int)
+	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetHeadIndex, int, int, int)
+	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetTailIndex, int, int, int)
+	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalVoxel, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalDivision, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetDivisionMode, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetX)

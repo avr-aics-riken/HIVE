@@ -62,6 +62,14 @@ void CDMLoader::Clear()
 	m_globalDiv[1] = -1;
 	m_globalDiv[2] = -1;
 
+	m_head[0] = -1;
+	m_head[1] = -1;
+	m_head[2] = -1;
+
+	m_tail[0] = -1;
+	m_tail[1] = -1;
+	m_tail[2] = -1;
+
 	// use global division stored in .dfi
 	m_divisionMode = DIVISION_DFI;
 
@@ -233,8 +241,10 @@ bool CDMLoader::Load(const char *filename, int timeSliceIndex)
 		else
 		{
 
-			if (process.RankList.size() == mpiSize)
+			if ((process.RankList.size() == mpiSize) &&
+				(m_divisionMode == DIVISION_DFI))
 			{
+				// # of MPI ranks in running equals to # of MPI ranks in .DFI
 				isNxN = true;
 			}
 		}
@@ -405,6 +415,26 @@ bool CDMLoader::Load(const char *filename, int timeSliceIndex)
 		tail[0] = process.RankList[myRank].TailIndex[0];
 		tail[1] = process.RankList[myRank].TailIndex[1];
 		tail[2] = process.RankList[myRank].TailIndex[2];
+	}
+	else if (m_divisionMode == DIVISION_USER_SPECIFIED)
+	{
+		// Use user specified head/tail info.
+
+		assert(m_head[0] > 0);
+		assert(m_head[1] > 0);
+		assert(m_head[2] > 0);
+
+		assert(m_tail[0] > 0);
+		assert(m_tail[1] > 0);
+		assert(m_tail[2] > 0);
+
+		head[0] = m_head[0];
+		head[1] = m_head[1];
+		head[2] = m_head[2];
+
+		tail[0] = m_tail[0];
+		tail[1] = m_tail[1];
+		tail[2] = m_tail[2];
 	}
 	else
 	{
@@ -649,7 +679,7 @@ int CDMLoader::SetGlobalDivision(const int div[3])
 	return 0; // OK
 }
 
-int CDMLoader::SetGlobalVoxelSize(const int sz[3])
+int CDMLoader::SetGlobalVoxel(const int sz[3])
 {
 	if ((sz[0] <= 0) || (sz[1] <= 0) || (sz[2] <= 0))
 	{
