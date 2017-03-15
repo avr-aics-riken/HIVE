@@ -38,7 +38,7 @@ ModuleSystemのRGBAデータ操作モジュールを使ったピクセル平均�
   - FilterImageを使用することで、画像データのピクセル平均化を行うことができる。
 
 ```
-	local filter = ImageFilter();
+	local filter = require("ImageFilter")();
 	local ope = 4 -- average (ImageFilter::Operation)
 	local factor = 1.0;
 	local output = filter:Filter(ope, image, preImage, factor);
@@ -61,7 +61,7 @@ camera:LookAt(
 local sphLoader = require("SphLoader")()
 local imageLoader = ImageLoader()
 local imageSaver = ImageSaver()
-local imageFilter = ImageFilter()
+local imageFilter = require("ImageFilter")()
 
 for i = 0, 10 do
   -- Volumeデータの読み込みとレンダリング

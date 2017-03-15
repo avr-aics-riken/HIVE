@@ -6,7 +6,7 @@
 #define _IMAGEFILTER_LUA_H_
 
 #include "LuaUtil.h"
-#include "../Image/ImageFilter.h"
+#include "ImageFilter.h"
 #include "BufferImageData_Lua.h"
 /**
  * ImageFilter Luaラッパー
