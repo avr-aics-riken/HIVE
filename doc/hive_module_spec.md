@@ -13,6 +13,7 @@
 	"name": "モジュール名",
 	"funcname": "関数名",
 	"info": "モジュールに関する説明",
+	"uifile" : "対になるJSXスクリプト",
 	"customfuncfile": "対になるLuaスクリプト",
 	"input": [
     {"name": "プロパティ名", "type": "データタイプ", "value": "値"}

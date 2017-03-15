@@ -230,7 +230,6 @@ set(HIVECORE_SOURCES
   src/Image/ImageLoader.cpp
   src/Image/GenTexture.cpp
   src/Image/ImageSaver.cpp
-  src/Image/ImageFilter.cpp
   src/Generator/PrimitiveGenerator.cpp
 )
 
