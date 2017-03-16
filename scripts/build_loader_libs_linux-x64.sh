@@ -84,21 +84,19 @@ function build_netcdf {
 }
 
 
+# Assume NetCDF(and HDF5) are built and installed in advance(using `build_netcdf`)
 function build_cdmlib {
 	#
 	# CDMlib
 	#
 	cd third_party/
-	cd CDMlib/
 
-	# It looks like setting CXX/CC require regeneration of configure.
-	autoreconf -ivf
+	rm -rf CDMlib_build
+	mkdir -p CDMlib_build
+	cd CDMlib_build
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no ../CDMlib && make && make install
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-nc=${installdir} --with-MPI=yes && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
