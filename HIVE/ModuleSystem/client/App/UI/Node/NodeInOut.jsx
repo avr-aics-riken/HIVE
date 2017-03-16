@@ -11,6 +11,8 @@ function colorFunction(type, hover) {
 		return hover ? "#3b8af6" : "#1b6ad6";
 	} else if (type === "vec3") {
 		return hover ? "#768fbf" : "#566f9f";
+	} else if (type === "int") {
+		return hover ? "#34c2ba" : "#0a8b96";
 	} else if (type === "vec2") {
 		return hover ? "#a242c7" : "#8222a7";
 	} else if (type === "RenderObject") {

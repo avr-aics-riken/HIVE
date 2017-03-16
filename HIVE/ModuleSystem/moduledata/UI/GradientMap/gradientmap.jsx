@@ -81,7 +81,7 @@ class GradientMap extends React.Component {
                 rgba[i * 4 + 0] = parseInt(this.value[i]*255);
                 rgba[i * 4 + 1] = rgba[i * 4 + 0]; 
                 rgba[i * 4 + 2] = rgba[i * 4 + 0];
-                rgba[i * 4 + 3] = 0xFF
+                rgba[i * 4 + 3] = rgba[i * 4 + 0];
             }
             //this.node.rgba
             const varname = this.node.varname;
@@ -253,6 +253,11 @@ class GradientMap extends React.Component {
                 this.undoBuffer.pop();
             }
             this.undoBuffer.unshift(JSON.stringify(this.value));
+            
+            if (this.changeCallback){
+                this.changeCallback();
+                this.redoBuffer = [];
+            }
         }
         this.mspress = false;
         document.removeEventListener('mousemove', this.mouseMoveFunc);
@@ -383,10 +388,6 @@ class GradientMap extends React.Component {
             }
 
             this.drawGraph();
-            if (this.changeCallback){
-                this.changeCallback();
-                this.redoBuffer = [];
-            }
         }
         this.oldx = x;
         this.oldy = y;

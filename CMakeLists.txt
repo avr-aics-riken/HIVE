@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(Sanitizers) # Address sanitizer.
 
+IF(NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/TextParser/src")
+  MESSAGE(FATAL_ERROR "HIVE dependency repositories(TextParser, SURFACE, etc.) are missing!"
+    "You probably did not clone the project with --recursive."
+    " Plese call\n \"git submodule update --init\" first.")
+ENDIF()
 
 enable_testing()
 

@@ -144,7 +144,7 @@ export default class ItemArray extends React.Component {
 			}
 			if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {
 				return (<ItemVec initialParam={holes} key={id} bottom={bottom}/>);
-			} else if (hole.type === 'float') {
+			} else if (hole.type === 'float' || hole.type === 'int') {
 				/*
 				return (<ItemTextInput
 							changeFunc={this.props.changeArrayTextFunc(key)}
