@@ -693,6 +693,34 @@ int CDMLoader::SetGlobalVoxel(const int sz[3])
 	return 0; // OK
 }
 
+int CDMLoader::SetHeadIndex(const int head[3])
+{
+	if ((head[0] <= 0) || (head[1] <= 0) || (head[2] <= 0))
+	{
+		return -1;
+	}
+
+	m_head[0] = head[0];
+	m_head[1] = head[1];
+	m_head[2] = head[2];
+
+	return 0; // OK
+}
+
+int CDMLoader::SetTailIndex(const int tail[3])
+{
+	if ((tail[0] <= 0) || (tail[1] <= 0) || (tail[2] <= 0))
+	{
+		return -1;
+	}
+
+	m_tail[0] = tail[0];
+	m_tail[1] = tail[1];
+	m_tail[2] = tail[2];
+
+	return 0; // OK
+}
+
 int CDMLoader::SetDivisionMode(const int mode, const int axis0, const int axis1)
 {
 	if ((m_globalDiv[0] > 0) && (m_globalDiv[1] > 0) && (m_globalDiv[2] > 0))
