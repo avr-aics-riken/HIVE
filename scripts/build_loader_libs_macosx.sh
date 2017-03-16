@@ -238,7 +238,7 @@ function build_nanomsg {
 	#fi
 
 	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/nanomsg && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/nanomsg --disable-shared && make && make install
 	cd ${topdir}
 }
 
