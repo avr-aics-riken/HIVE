@@ -6,11 +6,11 @@ if (os.platform() === 'win32') {
     opt = ' --msvs_version=2013';
 }
 
-var cmds =[ 'cd node_modules/nanomsg && node-gyp rebuild --target=0.36.4 --arch=x64 --dist-url=https://atom.io/download/atom-shell rebuild ' + opt,
-	    'cd node_modules/buffercopy && node-gyp rebuild --target=0.36.4 --arch=x64 --dist-url=https://atom.io/download/atom-shell rebuild' + opt],
+var cmds =[ 'cd node_modules/nanomsg && node-gyp rebuild --target=0.36.9 --arch=x64 --dist-url=https://atom.io/download/atom-shell rebuild ' + opt,
+	    'cd node_modules/buffercopy && node-gyp rebuild --target=0.36.9 --arch=x64 --dist-url=https://atom.io/download/atom-shell rebuild' + opt],
     cmd;
 
-if (os.platform() !== 'linux') {
+//if (os.platform() !== 'linux') {
 	for (i in cmds) {
 	    cmd = cmds[i];
 	    exec(cmd, function (err, stdout, stderr) {
@@ -25,4 +25,4 @@ if (os.platform() !== 'linux') {
 		}
 	    });
 	}
-}
+//}
