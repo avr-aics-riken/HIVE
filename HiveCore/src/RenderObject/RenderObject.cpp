@@ -64,6 +64,7 @@ public:
     typedef std::map<std::string, VX::Math::vec3> Vec3Map;
     typedef std::map<std::string, VX::Math::vec2> Vec2Map;
     typedef std::map<std::string, float>         FloatMap;
+    typedef std::map<std::string, int>         IntMap;
     typedef std::map<std::string, RefPtr<const BufferImageData> > TextureMap;
     typedef std::map<std::string, bool>          FilteringParamMap;
     /// Uniformマップを返す
@@ -74,6 +75,8 @@ public:
     const Vec2Map&    GetUniformVec2 ()   const { return m_vec2s;  }
     /// Uniformマップを返す
     const FloatMap&   GetUniformFloat()   const { return m_floats; }
+    /// Uniformマップを返す
+    const IntMap&   GetUniformInt()   const { return m_ints; }
     /// Uniformテクスチャマップを返す
     const TextureMap& GetUniformTexture() const { return m_imgs;   }
     /// Filtering parameterを返す
@@ -183,6 +186,16 @@ public:
         return true;
     }
 
+    /**
+     * Unifrom値の設定
+     * @param name Uniform名
+     * @param x x
+     */
+    bool SetInt(const std::string& name, float x) {
+        m_ints[name] = x;
+        return true;
+    }
+    
     /**
      * テクスチャの設定
      * @param name Uniform名
@@ -334,6 +347,8 @@ const RenderObject::Vec3Map&  RenderObject::GetUniformVec3 ()     const { return
 const RenderObject::Vec2Map&  RenderObject::GetUniformVec2 ()     const { return m_imp->GetUniformVec2();     }
 /// Uniformマップを返す
 const RenderObject::FloatMap& RenderObject::GetUniformFloat()     const { return m_imp->GetUniformFloat();    }
+/// Uniformマップを返す
+const RenderObject::IntMap& RenderObject::GetUniformInt()     const { return m_imp->GetUniformInt();    }
 /// Uniformテクスチャマップを返す
 const RenderObject::TextureMap& RenderObject::GetUniformTexture() const { return m_imp->GetUniformTexture();  }
 /// Filtering parameterマップを返す
@@ -402,6 +417,12 @@ bool RenderObject::SetVec2(const std::string& name, float x, float y)           
  * @param x x
  */
 bool RenderObject::SetFloat(const std::string& name, float x)                           { return m_imp->SetFloat(name, x);         }
+/**
+ * Unifrom値の設定
+ * @param name Uniform名
+ * @param x x
+ */
+bool RenderObject::SetInt(const std::string& name, int x)                           { return m_imp->SetInt(name, x);         }
 /**
  * テクスチャの設定
  * @param name Uniform名

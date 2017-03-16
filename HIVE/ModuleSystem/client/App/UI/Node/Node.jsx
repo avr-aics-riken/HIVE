@@ -154,11 +154,11 @@ export default class Node extends React.Component {
 	getHeight() {
 		let holeSize = this.isClosed() ? 10 : 15;
 		if (this.isClosed()) {
-			return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 20;
+			return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 10;
 		} else if (this.isMinimum()) {
 			return 50;
 		}
-		return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 20;
+		return (Math.max(this.getInputCounts.bind(this)(), this.state.node.output.length) + 1) * (holeSize+3) + 10;
 	}
 
 	styles() {
@@ -176,7 +176,8 @@ export default class Node extends React.Component {
 				zIndex : this.state.zIndex,
 				border : this.state.isSelected ? "solid 2px" : "solid 2px rgba (0, 0, 0, 0)",
 				borderRadius : "4.5px",
-				borderColor : this.state.isSelected ? "rgb(54, 196, 168)" : "rgba(0, 0, 0, 0)"
+				borderColor : this.state.isSelected ? "rgb(54, 196, 168)" : "rgba(0, 0, 0, 0)",
+				boxSizing : "content-box"
 			},
 			title : {
 				color : "white", //"rgb(239, 136, 21)",

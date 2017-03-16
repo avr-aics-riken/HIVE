@@ -174,8 +174,8 @@ void print(const char *prefix, const int dcid, const int vc = 0)
 template <typename T>
 void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 						 size_t level, size_t maxLevel, size_t rootDim[3],
-						 const Vec3d &org, const Vec3d &globalOrigin,
-						 const Vec3d &pitch, const Vec3d &globalRegion)
+						 const Vec3r &org, const Vec3r &globalOrigin,
+						 const Vec3r &pitch, const Vec3r &globalRegion)
 {
 	T *data = mesh->getData();
 	Index3DS idx = mesh->getIndex();
@@ -240,9 +240,9 @@ void LoadBlockCellScalar(VoxelBlock<T> &block, Scalar3D<T> *mesh, Vec3i sz,
 template <typename T>
 void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 						 Scalar3D<T> *W, Vec3i sz, size_t level,
-						 size_t maxLevel, size_t rootDim[3], const Vec3d &org,
-						 const Vec3d &globalOrigin, const Vec3d &pitch,
-						 const Vec3d &globalRegion)
+						 size_t maxLevel, size_t rootDim[3], const Vec3r &org,
+						 const Vec3r &globalOrigin, const Vec3r &pitch,
+						 const Vec3r &globalRegion)
 {
 
 	// Assume U, V and W has all same data layout.
@@ -316,8 +316,8 @@ void LoadBlockCellVector(VoxelBlock<T> &block, Scalar3D<T> *U, Scalar3D<T> *V,
 template <typename T>
 void LoadCellIDBlock(VoxelBlock<float> &block, Scalar3D<T> *mesh, Vec3i sz,
 					 size_t level, size_t maxLevel, size_t rootDim[3],
-					 const Vec3d &org, const Vec3d &globalOrigin,
-					 const Vec3d &pitch, const Vec3d &globalRegion)
+					 const Vec3r &org, const Vec3r &globalOrigin,
+					 const Vec3r &pitch, const Vec3r &globalRegion)
 {
 	T *data = mesh->getData();
 	Index3DS idx = mesh->getIndex();
@@ -385,8 +385,8 @@ void LoadCellIDBlock(VoxelBlock<float> &block, Scalar3D<T> *mesh, Vec3i sz,
 template <typename T>
 void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 							const int dcid, size_t maxLevel, size_t rootDim[3],
-							const Vec3d &globalOrigin,
-							const Vec3d &globalRegion)
+							const Vec3r &globalOrigin,
+							const Vec3r &globalRegion)
 {
 	BlockManager &blockManager = BlockManager::getInstance();
 	const MPI::Intracomm &comm = blockManager.getCommunicator();
@@ -397,8 +397,8 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 		BlockBase *block = blockManager.getBlock(id);
 
 		size_t level = block->getLevel();
-		const Vec3d &org = block->getOrigin();
-		const Vec3d &pitch = block->getCellSize();
+		const Vec3r &org = block->getOrigin();
+		const Vec3r &pitch = block->getCellSize();
 
 		Scalar3D<T> *mesh =
 			dynamic_cast<Scalar3D<T> *>(block->getDataClass(dcid));
@@ -440,7 +440,7 @@ void ConvertLeafBlockScalar(BufferSparseVolumeData &sparseVolume,
 template <typename T>
 void ConvertCellIDBlock(BufferSparseVolumeData &sparseVolume, const int dcid,
 						size_t maxLevel, size_t rootDim[3],
-						const Vec3d &globalOrigin, const Vec3d &globalRegion)
+						const Vec3r &globalOrigin, const Vec3r &globalRegion)
 {
 	BlockManager &blockManager = BlockManager::getInstance();
 	const MPI::Intracomm &comm = blockManager.getCommunicator();
@@ -451,8 +451,8 @@ void ConvertCellIDBlock(BufferSparseVolumeData &sparseVolume, const int dcid,
 		BlockBase *block = blockManager.getBlock(id);
 
 		size_t level = block->getLevel();
-		const Vec3d &org = block->getOrigin();
-		const Vec3d &pitch = block->getCellSize();
+		const Vec3r &org = block->getOrigin();
+		const Vec3r &pitch = block->getCellSize();
 
 		Scalar3D<T> *mesh =
 			dynamic_cast<Scalar3D<T> *>(block->getDataClass(dcid));
@@ -492,8 +492,8 @@ void ConvertCellIDBlock(BufferSparseVolumeData &sparseVolume, const int dcid,
 template <typename T>
 void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 							const int dcid[3], size_t maxLevel,
-							size_t rootDim[3], const Vec3d &globalOrigin,
-							const Vec3d &globalRegion)
+							size_t rootDim[3], const Vec3r &globalOrigin,
+							const Vec3r &globalRegion)
 {
 	BlockManager &blockManager = BlockManager::getInstance();
 	const MPI::Intracomm &comm = blockManager.getCommunicator();
@@ -504,8 +504,8 @@ void ConvertLeafBlockVector(BufferSparseVolumeData &sparseVolume,
 		BlockBase *block = blockManager.getBlock(id);
 
 		size_t level = block->getLevel();
-		const Vec3d &org = block->getOrigin();
-		const Vec3d &pitch = block->getCellSize();
+		const Vec3r &org = block->getOrigin();
+		const Vec3r &pitch = block->getCellSize();
 
 		Scalar3D<T> *meshU =
 			dynamic_cast<Scalar3D<T> *>(block->getDataClass(dcid[0]));
@@ -612,13 +612,13 @@ BufferSparseVolumeData *HDMLoader::LoadField(const char *fieldName,
 
 	if (fieldName == NULL)
 	{
-		fprintf(stderr, "[HDMLoader] NULL input for fieldName.\n", components);
+		fprintf(stderr, "[HDMLoader] NULL input for fieldName.\n");
 		return NULL;
 	}
 
 	if (fieldType == NULL)
 	{
-		fprintf(stderr, "[HDMLoader] NULL input for fieldType.\n", components);
+		fprintf(stderr, "[HDMLoader] NULL input for fieldType.\n");
 		return NULL;
 	}
 
@@ -648,8 +648,8 @@ BufferSparseVolumeData *HDMLoader::LoadField(const char *fieldName,
 		return m_fields[fieldName];
 	}
 
-	const Vec3d &globalOrigin = m_loader->GetGlobalOrigin();
-	const Vec3d &globalRegion = m_loader->GetGlobalRegion();
+	const Vec3r &globalOrigin = m_loader->GetGlobalOrigin();
+	const Vec3r &globalRegion = m_loader->GetGlobalRegion();
 
 	BlockManager &blockManager = BlockManager::getInstance();
 	blockManager.printBlockLayoutInfo();

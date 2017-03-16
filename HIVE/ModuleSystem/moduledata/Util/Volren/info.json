@@ -1,0 +1,36 @@
+{
+	"name": "Volren",
+	"funcname": "Volren",
+	"info":"Volrenノード",
+	"customfuncfile":"volren.lua",
+    "input": [
+		{"name": "tf_tex",  "type": "BufferImageData" },
+		{"name": "tf_min",  "type": "float", "value": 0.0},
+		{"name": "tf_max",  "type": "float", "value": 0.0},
+		{"name": "enableG",  "type": "float", "value": 1},
+		{"name": "gradTex",  "type": "BufferImageData"},
+		{"name": "samples",  "type": "float", "value": 100},
+		{"name": "density",  "type": "float", "value": 0.2},
+		{"name": "enableL",  "type": "float", "value": 1},
+		{"name": "light",  "type": "vec4", "value": [50.0, -30.0, 0.0, 1000.0]},
+		{"name": "attenuation",  "type": "vec3", "value": [3.0, 2.0, 1.0]},
+		{"name": "specular",  "type": "vec3", "value": [1.0, 1.0, 1.0]},
+		{"name": "ambient",  "type": "vec3", "value": [0.005, 0.005, 0.005]},
+		{"name": "offset",  "type": "vec3", "value": [0.0, 0.0, 0.0]}
+	],
+	"output": [
+		{"name": "tf_tex",  "type": "Uniform"},
+		{"name": "tf_min",  "type": "Uniform"},
+		{"name": "tf_max",  "type": "Uniform"},
+		{"name": "u_enableGradientMap",  "type": "Uniform"},
+		{"name": "u_gradTex",  "type": "Uniform"},
+		{"name": "u_samples",  "type": "Uniform"},
+		{"name": "u_volumeDensity",  "type": "Uniform"},
+		{"name": "u_enableLighting",  "type": "Uniform"},
+		{"name": "u_light",  "type": "Uniform"},
+		{"name": "u_attenuation",  "type": "Uniform"},
+		{"name": "u_specular",  "type": "Uniform"},
+		{"name": "u_ambient",  "type": "Uniform"},
+		{"name": "offset",  "type": "Uniform"}
+	]
+}

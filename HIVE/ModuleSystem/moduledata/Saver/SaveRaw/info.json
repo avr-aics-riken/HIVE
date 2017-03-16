@@ -1,0 +1,13 @@
+{
+	"name": "SaveRaw",
+	"funcname": "SaveRaw",
+	"info":"RAWファイルを出力するためのノード",
+	"customfuncfile":"saveraw.lua",
+    "input": [
+		{"name": "filepath",  "type": "string", "value": "", "meta": "filebrowser"},
+        {"name": "volumedata",  "type": "BufferVolumeData"},
+		{"name": "only_export",  "type": "bool", "value": true }
+	],
+	"output": [
+	]
+}
