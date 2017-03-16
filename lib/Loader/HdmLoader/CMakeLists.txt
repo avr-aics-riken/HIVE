@@ -3,9 +3,15 @@ IF(HIVE_BUILD_WITH_HDMLIB)
 SET(HIVE_BUILD_WITH_BCMTOOLS On)
 add_definitions(-DHIVE_WITH_HDMLIB)
 
-  SET(HDMLIB_LIBS
-    HDM BCM TPmpi
-  )
+  IF(HIVE_BUILD_WITH_MPI)
+    SET(HDMLIB_LIBS
+      HDMmpi BCMmpi TPmpi
+    )
+  ELSE()
+    SET(HDMLIB_LIBS
+      HDM BCM TP
+    )
+  ENDIF()
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
