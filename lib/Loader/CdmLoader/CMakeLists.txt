@@ -14,12 +14,19 @@ add_definitions(-DHIVE_WITH_CDMLIB)
   IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
     SET(NETCDF_LIBS netcdf hdf5_hl hdf5 sz)
   ELSE()
-    SET(NETCDF_LIBS netcdf hdf5_hl hdf5)
+    SET(NETCDF_LIBS netcdf hdf5_hl hdf5 z)
   ENDIF()
 
-  SET(CDMLIB_LIBS
-    CDM TPmpi ${NETCDF_LIBS}
-  )
+  IF(HIVE_BUILD_WITH_MPI)
+    SET(CDMLIB_LIBS
+      CDMmpi TPmpi ${NETCDF_LIBS}
+    )
+  ELSE()
+    SET(CDMLIB_LIBS
+      CDM TP ${NETCDF_LIBS}
+    )
+  ENDIF()
+
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/lib)

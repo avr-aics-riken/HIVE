@@ -58,19 +58,14 @@ function build_cdmlib {
 	# CDMlib
 	#
 	cd third_party/
-	cd CDMlib/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
 
-	autoreconf -ivf
+	rm -rf CDMlib_build
+	mkdir -p CDMlib_build
+	cd CDMlib_build
 
-	rm -rf BUILD_DIR
-	mkdir -p BUILD_DIR
-	cd BUILD_DIR
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${cmake_bin} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no ../CDMlib && make && make install
 
-	# Assume NetCDF4 and HDF5 are installed with homebrew 
-	CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/CDMlib --with-parser=${installdir}/TextParser --with-nc=${installdir} --with-MPI=yes && make && make install
+	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
 
@@ -146,6 +141,12 @@ function build_pdmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+        # Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+        cd Zoltan_v3.81
+        patch -p0 < ../zoltan_installscript_patch.diff
+        cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
@@ -178,6 +179,12 @@ function build_udmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+        # Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+        cd Zoltan_v3.81
+        patch -p0 < ../zoltan_installscript_patch.diff
+        cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
