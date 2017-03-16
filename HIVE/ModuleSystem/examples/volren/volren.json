@@ -42,8 +42,8 @@
       "node": {
         "close": false,
         "pos": [
-          1410,
-          2010
+          1511.851851851852,
+          2289.6296296296296
         ],
         "zindex": 0
       },
@@ -90,239 +90,239 @@
             0,
             251,
             0,
-            0,
+            1,
             0,
             250,
             0,
-            0,
+            1,
             0,
             249,
             0,
-            0,
+            1,
             0,
             248,
             0,
-            0,
+            1,
             0,
             247,
             0,
-            0,
+            2,
             0,
             246,
             0,
-            0,
+            2,
             0,
             245,
             0,
-            0,
+            3,
             0,
             244,
             0,
-            0,
+            4,
             0,
             243,
             0,
-            0,
+            4,
             0,
             242,
             0,
-            0,
+            5,
             0,
             241,
             0,
-            0,
+            5,
             0,
             240,
             0,
-            0,
+            6,
             0,
             239,
             0,
-            1,
+            7,
             0,
             238,
             0,
-            1,
+            8,
             0,
             237,
             0,
-            1,
+            8,
             0,
             236,
             0,
-            1,
+            9,
             0,
             235,
             0,
-            1,
+            9,
             0,
             234,
             0,
-            1,
+            10,
             0,
             233,
             0,
-            2,
+            11,
             0,
             232,
             0,
-            2,
+            12,
             0,
             231,
             0,
-            2,
+            12,
             0,
             230,
             0,
-            2,
+            13,
             0,
             229,
             0,
-            2,
+            14,
             0,
             228,
             0,
-            3,
+            15,
             0,
             227,
             0,
-            3,
+            17,
             0,
             226,
             0,
-            3,
+            17,
             0,
             225,
             0,
-            4,
+            18,
             0,
             224,
             0,
-            4,
+            19,
             0,
             223,
             0,
-            4,
+            20,
             0,
             222,
             0,
-            4,
+            21,
             0,
             221,
             0,
-            5,
+            23,
             0,
             220,
             0,
-            5,
+            24,
             0,
             219,
             0,
-            5,
+            25,
             0,
             218,
             0,
-            5,
+            26,
             0,
             217,
             0,
-            6,
+            27,
             0,
             216,
             0,
-            6,
+            29,
             0,
             215,
             0,
-            7,
+            30,
             0,
             214,
             0,
-            7,
+            31,
             0,
             213,
             0,
-            7,
+            32,
             0,
             212,
             0,
-            8,
+            33,
             0,
             211,
             0,
-            8,
+            34,
             0,
             210,
             0,
-            8,
+            35,
             0,
             209,
             0,
-            9,
+            36,
             0,
             208,
             0,
-            9,
+            36,
             0,
             207,
             0,
-            9,
+            37,
             0,
             206,
             0,
-            9,
+            38,
             0,
             205,
             0,
-            10,
+            38,
             0,
             204,
             0,
-            10,
+            41,
             0,
             203,
             0,
-            11,
+            41,
             0,
             202,
             0,
-            11,
+            42,
             0,
             201,
             0,
-            11,
+            43,
             0,
             200,
             0,
-            12,
+            44,
             0,
             199,
             0,
-            12,
+            45,
             0,
             198,
             0,
-            13,
+            46,
             0,
             197,
             0,
-            13,
+            47,
             0,
             196,
             0,
-            14,
+            48,
             0,
             195,
             0,
-            14,
+            49,
             0,
             194,
             0,
-            14,
+            50,
             0,
             193,
             0,
-            49,
+            50,
             0,
             192,
             0,
@@ -1169,7 +1169,7 @@
           541.9469026548675,
           -258.96147839666844
         ],
-        "zindex": 1
+        "zindex": 6
       }
     },
     {
@@ -1309,8 +1309,8 @@
       "node": {
         "close": false,
         "pos": [
-          2833.2988505747126,
-          2495
+          2768.185185185185,
+          2180.185185185185
         ],
         "zindex": 0
       },
@@ -1321,8 +1321,8 @@
           306
         ],
         "pos": [
-          923.9124755545984,
-          -287.5919706682894
+          848.402271472966,
+          73.63251912762905
         ],
         "zindex": 6
       }
@@ -1450,31 +1450,6 @@
               "name": "Uniform[11]",
               "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
               "type": "Uniform"
-            },
-            {
-              "name": "Uniform[12]",
-              "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-              "type": "Uniform"
-            },
-            {
-              "name": "Uniform[13]",
-              "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-              "type": "Uniform"
-            },
-            {
-              "name": "Uniform[14]",
-              "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-              "type": "Uniform"
-            },
-            {
-              "name": "Uniform[15]",
-              "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-              "type": "Uniform"
-            },
-            {
-              "name": "Uniform[16]",
-              "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-              "type": "Uniform"
             }
           ],
           "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9"
@@ -1495,8 +1470,8 @@
       "node": {
         "close": false,
         "pos": [
-          2532,
-          2617
+          2494.3333333333335,
+          2298.5555555555557
         ],
         "zindex": 0
       },
@@ -1592,7 +1567,7 @@
       "uiFunc": "",
       "varname": "UniformTexture4f2f1e28_1ae7_4b20_a27e_38d88ee3dc8e",
       "label": null,
-      "select": false,
+      "select": true,
       "node": {
         "close": false,
         "pos": [
@@ -1679,7 +1654,7 @@
         {
           "name": "value",
           "type": "float",
-          "value": 0,
+          "value": 1,
           "nodeVarname": "UniformFloatfde82a83_28e3_47ee_a755_1d3ff9ebc3d2"
         }
       ],
@@ -1696,8 +1671,8 @@
       "node": {
         "close": false,
         "pos": [
-          2123,
-          2725
+          2090,
+          2595.6296296296296
         ],
         "zindex": 0
       },
@@ -1747,8 +1722,8 @@
       "node": {
         "close": false,
         "pos": [
-          2116,
-          2314
+          2106.3703703703704,
+          2365.6666666666665
         ],
         "zindex": 0
       },
@@ -1797,8 +1772,8 @@
       "node": {
         "close": false,
         "pos": [
-          2102,
-          2413
+          2103.8518518518517,
+          2453.740740740741
         ],
         "zindex": 0
       },
@@ -2911,8 +2886,8 @@
       "node": {
         "close": false,
         "pos": [
-          1834,
-          2359
+          1828.4444444444443,
+          2407.1481481481483
         ],
         "zindex": 0
       },
@@ -2923,10 +2898,10 @@
           100
         ],
         "pos": [
-          347.9012420396209,
-          237.67375457811045
+          523.4114461212534,
+          243.79620355770237
         ],
-        "zindex": 3
+        "zindex": 6
       }
     },
     {
@@ -2961,8 +2936,8 @@
       "node": {
         "close": false,
         "pos": [
-          2117,
-          2508
+          2092.6666666666665,
+          3102.703703703704
         ],
         "zindex": 0
       },
@@ -3016,8 +2991,8 @@
       "node": {
         "close": false,
         "pos": [
-          2141,
-          3029.25
+          2094.962962962963,
+          2860.777777777778
         ],
         "zindex": 0
       },
@@ -3029,57 +3004,6 @@
         "pos": [
           900,
           900
-        ],
-        "zindex": -1
-      },
-      "label": "",
-      "select": false
-    },
-    {
-      "name": "UniformFloat",
-      "funcname": "UniformFloat",
-      "info": "Uniform floatをつくるノード",
-      "customfuncfile": "float.lua",
-      "input": [
-        {
-          "name": "name",
-          "type": "string",
-          "value": "u_volumeDensity",
-          "nodeVarname": "UniformFloat8b9f2814_7bbc_42f9_be85_a6782b058829"
-        },
-        {
-          "name": "value",
-          "type": "float",
-          "value": 1,
-          "nodeVarname": "UniformFloat8b9f2814_7bbc_42f9_be85_a6782b058829"
-        }
-      ],
-      "output": [
-        {
-          "name": "uniform",
-          "type": "Uniform",
-          "nodeVarname": "UniformFloat8b9f2814_7bbc_42f9_be85_a6782b058829"
-        }
-      ],
-      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
-      "uiFunc": "",
-      "varname": "UniformFloat8b9f2814_7bbc_42f9_be85_a6782b058829",
-      "node": {
-        "close": false,
-        "pos": [
-          2120,
-          2621
-        ],
-        "zindex": 0
-      },
-      "panel": {
-        "size": [
-          100,
-          100
-        ],
-        "pos": [
-          950,
-          950
         ],
         "zindex": -1
       },
@@ -3122,8 +3046,8 @@
       "node": {
         "close": false,
         "pos": [
-          2133,
-          3116
+          2087.259259259259,
+          2958.037037037037
         ],
         "zindex": 0
       },
@@ -3150,7 +3074,7 @@
         {
           "name": "name",
           "type": "string",
-          "value": "offset",
+          "value": "u_offset",
           "nodeVarname": "UniformVec3be516ce9_aa1f_4c1a_a787_08ea38ac8dd1"
         },
         {
@@ -3177,8 +3101,8 @@
       "node": {
         "close": false,
         "pos": [
-          2144,
-          3222
+          2088.5185185185187,
+          3188.222222222222
         ],
         "zindex": 0
       },
@@ -3232,8 +3156,8 @@
       "node": {
         "close": false,
         "pos": [
-          2141,
-          2928
+          2090.6666666666665,
+          2772.6666666666665
         ],
         "zindex": 0
       },
@@ -3290,8 +3214,8 @@
       "node": {
         "close": false,
         "pos": [
-          2127.75,
-          2839
+          2092.1481481481483,
+          2680.814814814815
         ],
         "zindex": 0
       },
@@ -3303,61 +3227,6 @@
         "pos": [
           1100,
           1100
-        ],
-        "zindex": -1
-      }
-    },
-    {
-      "name": "UniformVec3",
-      "funcname": "UniformVec3",
-      "info": "Uniform Vec3をつくるノード",
-      "customfuncfile": "vec3.lua",
-      "input": [
-        {
-          "name": "name",
-          "type": "string",
-          "value": "volumedim",
-          "nodeVarname": "UniformVec32881df3d_56b4_43d9_822b_690c49feeff7"
-        },
-        {
-          "name": "value",
-          "type": "vec3",
-          "value": [
-            0,
-            0,
-            0
-          ],
-          "nodeVarname": "UniformVec32881df3d_56b4_43d9_822b_690c49feeff7"
-        }
-      ],
-      "output": [
-        {
-          "name": "uniform",
-          "type": "Uniform",
-          "nodeVarname": "UniformVec32881df3d_56b4_43d9_822b_690c49feeff7"
-        }
-      ],
-      "customfunc": "UniformVec3 = {}\nsetmetatable(UniformVec3, {__index = HiveBaseModule})\n\nUniformVec3.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    this.property = {\n        name = 'univec3',\n        value = {0,0,0}               \n    }\n    setmetatable(this, {__index=UniformVec3})\n    return this\nend\n\nfunction UniformVec3:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformVec3:uniform()\n    local v = self.value    \n    \n    return {name=v.name, value=v.value, type='vec3'}\nend\n\n",
-      "uiFunc": "",
-      "varname": "UniformVec32881df3d_56b4_43d9_822b_690c49feeff7",
-      "label": "",
-      "select": false,
-      "node": {
-        "close": false,
-        "pos": [
-          1882,
-          2580
-        ],
-        "zindex": 0
-      },
-      "panel": {
-        "size": [
-          100,
-          100
-        ],
-        "pos": [
-          200,
-          200
         ],
         "zindex": -1
       }
@@ -3396,8 +3265,8 @@
       "node": {
         "close": false,
         "pos": [
-          3104,
-          2505
+          3042.9830508474574,
+          2250.7627118644064
         ],
         "zindex": 0
       },
@@ -3547,7 +3416,7 @@
     },
     {
       "output": {
-        "nodeVarname": "UniformFloatb88775db_6db8_4e81_b13d_54e12603abaf",
+        "nodeVarname": "UniformFloatfde82a83_28e3_47ee_a755_1d3ff9ebc3d2",
         "name": "uniform"
       },
       "input": {
@@ -3557,7 +3426,7 @@
     },
     {
       "output": {
-        "nodeVarname": "UniformFloat8b9f2814_7bbc_42f9_be85_a6782b058829",
+        "nodeVarname": "UniformVec4201bb102_02bd_4a53_a5c7_dce628ab0cf5",
         "name": "uniform"
       },
       "input": {
@@ -3567,17 +3436,7 @@
     },
     {
       "output": {
-        "nodeVarname": "LoadSPH079792da_cfd8_4d1d_9146_7a8be0ca8bef",
-        "name": "Size"
-      },
-      "input": {
-        "nodeVarname": "UniformVec32881df3d_56b4_43d9_822b_690c49feeff7",
-        "name": "value"
-      }
-    },
-    {
-      "output": {
-        "nodeVarname": "UniformVec32881df3d_56b4_43d9_822b_690c49feeff7",
+        "nodeVarname": "UniformVec3a40c0565_dd0d_4559_a208_0cd53b6ca0a2",
         "name": "uniform"
       },
       "input": {
@@ -3587,7 +3446,7 @@
     },
     {
       "output": {
-        "nodeVarname": "UniformFloatfde82a83_28e3_47ee_a755_1d3ff9ebc3d2",
+        "nodeVarname": "UniformVec3200ac46f_59ee_48ca_8dcb_c665a9f1257a",
         "name": "uniform"
       },
       "input": {
@@ -3597,7 +3456,7 @@
     },
     {
       "output": {
-        "nodeVarname": "UniformVec4201bb102_02bd_4a53_a5c7_dce628ab0cf5",
+        "nodeVarname": "UniformVec32f00955b_0fe2_4e59_a45c_3340f0a21b7c",
         "name": "uniform"
       },
       "input": {
@@ -3607,7 +3466,7 @@
     },
     {
       "output": {
-        "nodeVarname": "UniformVec3a40c0565_dd0d_4559_a208_0cd53b6ca0a2",
+        "nodeVarname": "UniformFloatb88775db_6db8_4e81_b13d_54e12603abaf",
         "name": "uniform"
       },
       "input": {
@@ -3617,32 +3476,12 @@
     },
     {
       "output": {
-        "nodeVarname": "UniformVec3200ac46f_59ee_48ca_8dcb_c665a9f1257a",
-        "name": "uniform"
-      },
-      "input": {
-        "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-        "name": "Uniform[11]"
-      }
-    },
-    {
-      "output": {
-        "nodeVarname": "UniformVec32f00955b_0fe2_4e59_a45c_3340f0a21b7c",
-        "name": "uniform"
-      },
-      "input": {
-        "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-        "name": "Uniform[12]"
-      }
-    },
-    {
-      "output": {
         "nodeVarname": "UniformVec3be516ce9_aa1f_4c1a_a787_08ea38ac8dd1",
         "name": "uniform"
       },
       "input": {
         "nodeVarname": "VolumeObjecteb0ede45_2a65_4321_a4a2_03755ea670c9",
-        "name": "Uniform[13]"
+        "name": "Uniform[11]"
       }
     }
   ],

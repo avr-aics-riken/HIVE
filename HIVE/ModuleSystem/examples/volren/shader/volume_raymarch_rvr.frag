@@ -15,32 +15,25 @@ uniform vec3      up;
 uniform vec3      eyedir;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
-uniform vec3 offset;
+uniform vec3 u_offset;
 
 // Transfer function parameters
 uniform sampler2D tf_tex;
 uniform float     tf_min;
 uniform float     tf_max;
 
-#define EPS        0.005
-#define SAMPLES    256.0
-#define num_steps  SAMPLES
-
 uniform float u_samples;
 uniform float u_enableLighting;
 uniform vec4 u_light;//(posX, posY, posZ, intensity)
-//uniform float u_lightIntensity;
 uniform vec3 u_attenuation;//(const, linear, quadratic);
+uniform vec3 u_ambient;
+uniform vec3 u_specular;
+
+uniform mat4 lsgl_WorldInverse; // inverse of object to world matrix
+
 uniform float u_constAttenuation;
 uniform float u_linearAttenuation;
 uniform float u_quadraticAttenuation;
-uniform vec3 u_ambient;
-uniform vec3 u_specular;
-//uniform float u_volumeDensity;
-
-//uniform mat4 lsgl_World; // object to world matrix
-uniform mat4 lsgl_WorldInverse; // inverse of object to world matrix
-//uniform mat4 lsgl_WorldInverseTranspose; // inverse transpose of object to world matrix
 
 
 // gradient map
@@ -49,7 +42,7 @@ uniform sampler2D u_gradTex;
 
 vec3 computeGradient(vec3 t){
     vec3 sample1, sample2;
-    vec3 ofst = 1.0 / (volumedim * volumescale);
+    vec3 ofst = 1.0 / (volumedim) / 2.;
     sample1.x = texture3D(tex0, t-vec3(ofst.x, 0.0, 0.0)).x;
 	sample2.x = texture3D(tex0, t+vec3(ofst.x, 0.0, 0.0)).x;
 	sample1.y = texture3D(tex0, t-vec3(0.0, ofst.y, 0.0)).x;
@@ -124,7 +117,6 @@ vec4 densityToColor( float d, vec3 eye, vec3 shadingPos, vec3 texPos ){
         return color;
 
     n = normalize(n);
-
     vec3 lightVec = u_light.xyz - shadingPos;
     float dist = length(lightVec);
     lightVec = normalize(lightVec);
@@ -138,9 +130,7 @@ vec4 densityToColor( float d, vec3 eye, vec3 shadingPos, vec3 texPos ){
     float attenuation = 1.0 / (u_attenuation.x
                                + u_attenuation.y * dist
                                + u_attenuation.z * dist * dist);
-    //    float diffuse = clamp(dot(lightVec, n), 0.1, 1.0);
     float diffuse = (dot(lightVec, n)) * 0.66;
-    //    float diffuse2 = clamp(dot(revLightVec, n), 0.1, 1.0);
     float diffuse2 = (dot(revLightVec, n)) * 0.33;
     
     color.rgb += color.rgb * diffuse
@@ -170,8 +160,8 @@ void  main(void) {
     vec3 rayorg = eye;
 	vec3 raydir = p - eye;
     raydir = normalize(raydir);
-    vec3 pmin = vec3(-0.5, -0.5, -0.5) * volumescale + offset;
-    vec3 pmax = vec3( 0.5,  0.5,  0.5) * volumescale + offset;
+    vec3 pmin = vec3(-0.5, -0.5, -0.5) * volumescale + u_offset;
+    vec3 pmax = vec3( 0.5,  0.5,  0.5) * volumescale + u_offset;
     float tmin, tmax;
     IntersectP(rayorg, raydir, pmin, pmax, tmin, tmax);
 	tmin = max(0.0, tmin);
@@ -189,8 +179,8 @@ void  main(void) {
           && (col.w < 0.999)
           && t <= tmax) {
         
-		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
-		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
+		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + u_offset
+		vec3 texpos = (p - u_offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);
 
         if (abs(temp.x) < 0.00001 &&
@@ -210,13 +200,12 @@ void  main(void) {
 
             tfCol.rgb *= tfCol.a;
             col = (1. - col.a) * tfCol + col;
-            
         }
 
 		t += tstep;
 		i = i + 1.0;
 	}
 	col.w = min(1.0, col.w);
-    col.rgb = pow(col.rgb, vec3(1.0)); 
+    //    col.rgb = pow(col.rgb, vec3(1.0)); 
 	gl_FragColor = col;
 }
