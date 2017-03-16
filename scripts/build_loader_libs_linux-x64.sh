@@ -298,6 +298,7 @@ function build_cpmlib {
 clean_install_dir
 build_netcdf
 build_tp
+build_cpmlib
 build_cdmlib
 build_polylib
 build_bcmtools
@@ -306,5 +307,4 @@ build_pdmlib
 build_udmlib
 build_compositor
 build_pmlib
-build_cpmlib
 build_nanomsg

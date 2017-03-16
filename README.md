@@ -52,7 +52,7 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
     $ cd $HIVE
     $ ./scripts/build_loader_libs_linux-x64.sh
 
-### MacOSX
+### MacOSX(Before Sierra)
 
 MacOSX requires gcc-4.8 and openmpi, also requres homebrew supplied HDF5(gcc4.8 failed to compile HDF5 1.8.10 patch1).
 (gcc-5 is not supported due to New ABI problem)
@@ -69,6 +69,25 @@ Assume homebrew is installed.
     $ cd $HIVE
     $ ./scripts/build_loader_libs_macosx.sh
 
+### macOS Sierra(Work in progress)
+
+For some reason, custom gcc(e.g. gcc installed through homebrew) does not work on Sierra, Thus we forced to use Apple gcc(clang) which does not support OpenMP.
+
+openmpi must be installed with cxx binding, otherwise it fails to compile BCMTools.
+
+Use NetCDF(and HDF5) using homebrew.
+Use gfotran-5 for fotran compiler.
+
+#### Setup
+
+Assume homebrew is installed.
+
+    $ brew install gcc@5
+    $ brew install openmpi --with-cxx-binding
+    $ brew install netcdf
+    $ cd $HIVE
+    # Edit `netcdf_dir` if requied in `scripts/build_loader_libs_macosx_sierra.sh`, then
+    $ ./scripts/build_loader_libs_macosx_sierra.sh
 
 ## How to build HIVE
 
@@ -156,11 +175,18 @@ We recommend to use recent clang compiler(gcc 4.8+ works, but clang has much bet
 Plese set clang compiler to cmake and mpi(e.g. through CC/CXX environment), then add `-DSANITIZE_ADDRESS=On` to cmake flag.
 
 
-### MacOSX OpenMP + MPI build
+### MacOSX OpenMP + MPI build(Before Sierra)
 
     $ cd $HIVE
     $ mkdir build
     $ ./scripts/cmake_macosx_mpi.sh
+    $ cd build
+    $ make
+
+### macOS Sierra
+
+    $ cd $HIVE
+    $ ./scripts/cmake_macosx_mpi_sierra.sh
     $ cd build
     $ make
     
