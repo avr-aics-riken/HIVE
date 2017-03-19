@@ -101,6 +101,9 @@ function build_cdmlib {
 
 	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no ../CDMlib && make && make install
 
+	# Build utils(e.g. fconv). Requires CPMlib and linking with HDF5
+	# CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_CPM:PATH=${installdir}/CPMlib Dwith_NetCDF=${installdir} -Dwith_HDF:PATH=${installdir} -Dwith_util=yes -Dwith_example=no ../CDMlib && make && make install
+
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
