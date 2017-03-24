@@ -82,6 +82,7 @@ class TransferFunction extends React.Component {
         this.minInputChange   = this.minInputChange.bind(this);
         this.maxInputChange   = this.maxInputChange.bind(this);
         this.nodeInputChanged    = this.nodeInputChanged.bind(this);
+        this.luaDataRecieved     = this.luaDataRecieved.bind(this);
         this.componentDidMount   = this.componentDidMount.bind(this);
         this.componentWillUnmount= this.componentWillUnmount.bind(this);
         this.transFunc           = this.transFunc.bind(this);
@@ -280,7 +281,7 @@ class TransferFunction extends React.Component {
     nodeInputChanged(err, data){
         const varname = this.node.varname;
         if (varname !== data.varname){return;}
-
+        
 		if (data.input[0].value.length >= this.numVals * 4) {
 			for (let i = 0; i < this.numVals; ++i) {
 				this.value.r[i] = data.input[0].value[i * 4 + 0] / 0xFF;
@@ -311,6 +312,7 @@ class TransferFunction extends React.Component {
         const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
         this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.on("lua_data_recieved", this.luaDataRecieved);
     }
     componentWillUnmount() {
         this.canvas.removeEventListener('mousedown', this.mouseDownFunc);
@@ -320,7 +322,33 @@ class TransferFunction extends React.Component {
         const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
         this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.off("lua_data_recieved", this.luaDataRecieved);
     }
+    
+	luaDataRecieved(data) {
+		if (data.hasOwnProperty("name") && data.name === this.node.name) {
+			if (data.hasOwnProperty('type') && data.type === "filedata") {
+                var rgba = JSON.parse(JSON.stringify(data.rgba));
+                this.action.changeNodeInput({
+                    varname : this.node.varname,
+                    input : {
+                        "rgba" : rgba,
+                        "minval" : data.minval,
+                        "maxval" : data.maxval
+                    }
+                });
+                if (rgba.length >= this.numVals * 4) {
+                    for (let i = 0; i < this.numVals; ++i) {
+                        this.value.r[i] = rgba[i * 4 + 0] / 0xFF;
+                        this.value.g[i] = rgba[i * 4 + 1] / 0xFF;
+                        this.value.b[i] = rgba[i * 4 + 2] / 0xFF;
+                        this.value.a[i] = rgba[i * 4 + 3] / 0xFF;
+                    }
+                }
+                this.undoBuffer.unshift(JSON.stringify(this.value));
+			}
+		}
+	}
     
     mouseDownFunc(eve) {
         this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;

@@ -5,6 +5,8 @@ TransferFunction.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=TransferFunction})
     this.gentex = GenTexture()
+    this.loader = require('VisioColorMapLoader')()
+    this.prefilepath = ""
     return this
 end
 
@@ -45,6 +47,35 @@ function TransferFunction:Do()
                 }]]
                 --print('json=', analyzedInfo)        
                 network:SendJSON(analyzedInfo);
+            end
+        end
+    end
+    
+    if self.value.filepath ~= nil then
+        if self.prefilepath ~= self.value.filepath then
+            if self.loader:Load(self.value.filepath) then
+                self.prefilepath = self.value.filepath
+                self.value.rgba = {}
+                local size = self.loader:RGBASize()
+                for i = 0, size do
+                    table.insert(self.value.rgba, math.floor(self.loader:RGBAValue(i) * 0xFF + 0.5))
+                end
+                if targetClientId ~= nil then
+                    if network then
+                        local data = {}
+                        data["JSONRPC"] = "2.0"
+                        data["method"] = "luaData"
+                        data["to"] = targetClientId
+                        data["id"] = 0
+                        data["param"] = {}
+                        data["param"]["name"] = "TransferFunction"
+                        data["param"]["type"] = "filedata"
+                        data["param"]["rgba"] = self.value.rgba
+                        data["param"]["minval"] = self.loader:MinValue()
+                        data["param"]["maxval"] = self.loader:MaxValue()
+                        network:SendJSON( JSON.encode(data) );
+                    end
+                end
             end
         end
     end

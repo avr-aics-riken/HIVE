@@ -12,4 +12,4 @@ add_subdirectory(SphLoader)
 add_subdirectory(UdmLoader)
 add_subdirectory(VtkLoader)
 add_subdirectory(BcmLoader)
-
+add_subdirectory(VisioColorMapLoader)
