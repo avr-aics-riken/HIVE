@@ -10,9 +10,9 @@ precision mediump float;
 uniform sampler3D tex0;
 //uniform vec2      resolution;
 uniform vec3      eye;
-uniform vec3      lookat;
-uniform vec3      up;
-uniform vec3      eyedir;
+//uniform vec3      lookat;
+//uniform vec3      up;
+//uniform vec3      eyedir;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
 uniform vec3 u_offset;
@@ -30,11 +30,6 @@ uniform vec3 u_ambient;
 uniform vec3 u_specular;
 
 uniform mat4 lsgl_WorldInverse; // inverse of object to world matrix
-
-uniform float u_constAttenuation;
-uniform float u_linearAttenuation;
-uniform float u_quadraticAttenuation;
-
 
 // gradient map
 uniform float u_enableGradientMap;
@@ -57,6 +52,26 @@ vec3 computeGradient(vec3 t){
 vec4 samplingVolume(vec3 texpos) {
 	vec4 col = texture3D(tex0, texpos);
 	return col;
+}
+
+void orthoBasis(out vec3 basis0,out vec3 basis1,out vec3 basis2, vec3 n) {
+	basis2 = vec3(n.x, n.y, n.z);
+	basis1 = vec3(0.0, 0.0, 0.0);
+
+	if ((n.x < 0.6) && (n.x > -0.6))
+	basis1.x = 1.0;
+	else if ((n.y < 0.6) && (n.y > -0.6))
+	basis1.y = 1.0;
+	else if ((n.z < 0.6) && (n.z > -0.6))
+	basis1.z = 1.0;
+	else
+	basis1.x = 1.0;
+
+	basis0 = cross(basis1, basis2);
+	basis0 = normalize(basis0);
+
+	basis1 = cross(basis2, basis0);
+	basis1 = normalize(basis1);
 }
 
 int IntersectP(vec3 rayorg, vec3 raydir, vec3 pMin, vec3 pMax, out float hit0, out float hit1) {
@@ -132,7 +147,7 @@ vec4 densityToColor( float d, vec3 eye, vec3 shadingPos, vec3 texPos ){
                                + u_attenuation.z * dist * dist);
     float diffuse = (dot(lightVec, n)) * 0.66;
     float diffuse2 = (dot(revLightVec, n)) * 0.33;
-    
+
     color.rgb += color.rgb * diffuse
         + color.rgb * diffuse2
         + u_ambient
@@ -166,19 +181,33 @@ void  main(void) {
     IntersectP(rayorg, raydir, pmin, pmax, tmin, tmax);
 	tmin = max(0.0, tmin);
 	tmax = max(0.0, tmax);
-	
+
     // raymarch.
-    float t = tmin + 0.01;
+    float t = tmin + 0.0001;
     float tstep = (tmax - tmin) / u_samples;
-	
+
 	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
 	float i = 0.0;
-	while((i < u_samples)
+    float thickness = max(max(volumescale.x, volumescale.y), volumescale.z) / u_samples;
+
+    vec3 nx, ny, nz;
+    orthoBasis(nx, ny, nz, n);
+
+    float dist = abs(dot(nx, (tmax * raydir) - tmin * raydir));
+    dist = max(dist, abs(dot(ny, (tmax * raydir) - tmin * raydir)));
+    dist = max(dist, abs(dot(nz, (tmax * raydir) - tmin * raydir)));
+
+    float samples = floor(dist / thickness) + 1.;
+    tstep = (tmax - tmin - 0.0001) / samples;
+    //    samples = u_samples;
+
+
+	while((i < samples)
           && (min(min(col.x, col.y), col.z) < 1.0)
           && (col.w < 0.999)
           && t <= tmax) {
-        
+
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + u_offset
 		vec3 texpos = (p - u_offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);
@@ -206,6 +235,6 @@ void  main(void) {
 		i = i + 1.0;
 	}
 	col.w = min(1.0, col.w);
-    //    col.rgb = pow(col.rgb, vec3(1.0)); 
+    //    col.rgb = pow(col.rgb, vec3(1.0));
 	gl_FragColor = col;
 }
