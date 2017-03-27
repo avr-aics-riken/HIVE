@@ -112,3 +112,7 @@ function TransferFunction:Max()
     print('TransferFunction:Max() > ', self.value.maxval)
     return self.value.maxval
 end
+
+function TransferFunction:RGBA()
+    return self.value.rgba
+end
