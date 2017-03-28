@@ -9,6 +9,40 @@
 #include "BufferVolumeData.h"
 #include "Ref.h"
 
+//
+// GlobalOffset
+// |
+// |/
+//
+// +-------------------------------+
+// |                               |
+// |                               |
+// |                               |
+// |            LocalOffset        |
+// |              |                |
+// |              |/               |
+// |                               |
+// |              +================+
+// |              |                |
+// |              |                |
+// |              |                |
+// |              |                |
+// |              |                |
+// +--------------+================+
+//                <- LocalRegion  ->
+//
+// <------  GlobalRegion     ------>
+//
+//
+// Global : Whole volume region
+// Local  : Actual volume region per MPI ranks.
+//          For Mx1 loading. Global == Local
+//
+// Note that LocalOffset is an absolute value and within
+//
+// [GlobalOffset, GlobalOffset + GlobalRegion]
+//
+
 /**
  * CDMデータローダー
  */
@@ -98,86 +132,50 @@ class CDMLoader : public RefCount
 	/// The following methods are Valid after `Load`
 	///
 
-	int Width();
-	int Height();
-	int Depth();
-	int Component();
+	int Width();	 ///< Width of local voxel
+	int Height();	///< Height of local voxel
+	int Depth();	 ///< Depth of local voxel
+	int Component(); ///< The number of components
 
+	/// Global volume offset(same for all MPI ranks)
 	void GlobalOffset(double ret[3]);
-	//{
-	//	ret[0] = m_globalOffset[0];
-	//	ret[1] = m_globalOffset[1];
-	//	ret[2] = m_globalOffset[2];
-	//}
 
+	/// Global region(same for all MPI ranks)
 	void GlobalRegion(double ret[3]);
-	//{
-	//	ret[0] = m_globalRegion[0];
-	//	ret[1] = m_globalRegion[1];
-	//	ret[2] = m_globalRegion[2];
-	//}
 
+	/// Global voxel size(same for all MPI ranks)
 	void GlobalVoxel(int ret[3]);
-	//{
-	//	ret[0] = m_globalVoxel[0];
-	//	ret[1] = m_globalVoxel[1];
-	//	ret[2] = m_globalVoxel[2];
-	//}
 
+	/// Global division(same for all MPI ranks)
 	void GlobalDiv(int ret[3]);
-	//{
-	//	ret[0] = m_globalDiv[0];
-	//	ret[1] = m_globalDiv[1];
-	//	ret[2] = m_globalDiv[2];
-	//}
+
+	/// Local volume offset(offset to actual volume data. may have different
+	/// value for each MPI rank)
+	void LocalOffset(double ret[3]);
+
+	/// Local volume region(region of actual volume data. may have different
+	/// value for each MPI rank)
+	void LocalRegion(double ret[3]);
+
+	/// Local voxel size(voxel size of actual volume data. may have different
+	/// value for each MPI rank)
+	void LocalVoxel(int ret[3]);
 
 	void HeadIndex(int ret[3]);
-	//{
-	//	ret[0] = m_head[0];
-	//	ret[1] = m_head[1];
-	//	ret[2] = m_head[2];
-	//}
-
 	void TailIndex(int ret[3]);
-	//{
-	//	ret[0] = m_tail[0];
-	//	ret[1] = m_tail[1];
-	//	ret[2] = m_tail[2];
-	//}
 
 	int NumTimeSteps(); // { return m_timeSteps.size(); }
 
 	///< Get i'th timestep
-	int GetTimeStep(int i); 
-	//{
-	//	if (i < m_timeSteps.size())
-	//	{
-	//		return m_timeSteps[i];
-	//	}
-	//	return 0;
-	//}
+	int GetTimeStep(int i);
 
 	FloatBuffer *Buffer();
 
 	BufferVolumeData *VolumeData();
 
   private:
-  class Impl;
-  Impl* m_imp;
-
-	//RefPtr<BufferVolumeData> m_volume;
-	//std::vector<unsigned int> m_timeSteps;
-
-	//double m_globalOffset[3];
-	//double m_globalRegion[3];
-	//int m_globalVoxel[3];
-	//int m_globalDiv[3];
-	//int m_head[3];
-	//int m_tail[3];
-
-	//int m_divisionMode;
-	//int m_divisionAxis0;
-	//int m_divisionAxis1;
+	class Impl;
+	Impl *m_imp;
 };
 
 #endif //_CDMLOADER_H_
