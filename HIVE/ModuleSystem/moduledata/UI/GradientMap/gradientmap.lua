@@ -5,6 +5,8 @@ GradientMap.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=GradientMap})
     this.gentex = GenTexture()
+    this.loader = require('VisioGradientMapLoader')()
+    this.prefilepath = ""
     return this
 end
 
@@ -45,6 +47,35 @@ function GradientMap:Do()
                 }]]
                 --print('json=', analyzedInfo)        
                 network:SendJSON(analyzedInfo);
+            end
+        end
+    end
+
+    if self.value.filepath ~= nil then
+        if self.prefilepath ~= self.value.filepath then
+            if self.loader:Load(self.value.filepath) then
+                self.prefilepath = self.value.filepath
+                self.value.values = {}
+                local size = self.loader:GradientSize()
+                for i = 0, size do
+                   table.insert(self.value.values, math.floor(self.loader:GradientValue(i) * 0xFF + 0.5))
+                end
+                if targetClientId ~= nil then
+                    if network then
+                        local data = {}
+                        data["JSONRPC"] = "2.0"
+                        data["method"] = "luaData"
+                        data["to"] = targetClientId
+                        data["id"] = 0
+                        data["param"] = {}
+                        data["param"]["name"] = "GradientMap"
+                        data["param"]["type"] = "filedata"
+                        data["param"]["values"] = self.value.values
+                        data["param"]["minval"] = self.loader:MinValue()
+                        data["param"]["maxval"] = self.loader:MaxValue()
+                        network:SendJSON( JSON.encode(data) );
+                    end
+                end
             end
         end
     end
