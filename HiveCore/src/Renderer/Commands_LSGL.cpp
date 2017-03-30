@@ -1215,6 +1215,9 @@ void TexImage3DPointer_SGL(unsigned int width, unsigned int height, unsigned int
     if (clampToEdgeR) {
         sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     }
+
+    sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    sgl.glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 /**

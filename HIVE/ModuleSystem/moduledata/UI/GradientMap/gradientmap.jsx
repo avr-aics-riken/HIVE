@@ -58,6 +58,7 @@ class GradientMap extends React.Component {
         this.minInputChange   = this.minInputChange.bind(this);
         this.maxInputChange   = this.maxInputChange.bind(this);
         this.nodeInputChanged    = this.nodeInputChanged.bind(this);
+        this.luaDataRecieved     = this.luaDataRecieved.bind(this);
         this.componentDidMount   = this.componentDidMount.bind(this);
         this.componentWillUnmount= this.componentWillUnmount.bind(this);
         this.transFunc           = this.transFunc.bind(this);
@@ -245,6 +246,7 @@ class GradientMap extends React.Component {
         const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
         this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.on("lua_data_recieved", this.luaDataRecieved);
     }
     componentWillUnmount() {
         this.canvas.removeEventListener('mousedown', this.mouseDownFunc);
@@ -254,8 +256,38 @@ class GradientMap extends React.Component {
         const NODE_INPUT_CHANGED = "node_input_changed";
         this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);
         this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);
+        this.store.off("lua_data_recieved", this.luaDataRecieved);
     }
-    
+
+    luaDataRecieved(data) {
+        if (data.hasOwnProperty("name") && data.name === this.node.name) {
+			if (data.hasOwnProperty('type') && data.type === "filedata") {
+                let values = JSON.parse(JSON.stringify(data.values));
+                let rgba = [this.numVals * 4];
+                for(let i = 0; i < this.numVals; ++i){
+                    rgba[i * 4 + 0] = values[i];
+                    rgba[i * 4 + 1] = rgba[i * 4 + 0];
+                    rgba[i * 4 + 2] = rgba[i * 4 + 0];
+                    rgba[i * 4 + 3] = rgba[i * 4 + 0];
+                }
+                this.action.changeNodeInput({
+                    varname : this.node.varname,
+                    input : {
+                        "values" : rgba,
+                        "minval" : data.minval,
+                        "maxval" : data.maxval
+                    }
+                });
+                if (values.length >= this.numVals) {
+                    for (let i = 0; i < this.numVals; ++i) {
+                        this.value[i] = values[i] / 0xFF;
+                    }
+                }
+                this.undoBuffer.unshift(JSON.stringify(this.value));
+			}
+		}
+    }
+
     mouseDownFunc(eve) {
         this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;
         this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;
