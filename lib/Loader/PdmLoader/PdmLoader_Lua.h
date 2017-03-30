@@ -30,6 +30,12 @@ class PDMLoader_Lua : public PDMLoader
 		return PDMLoader::Load(filename, timeStep, coordinateName, migration);
 	}
 
+	bool LoadMx1(const char *filename, int timeStep = -1,
+			  const char *coordinateName = NULL)
+	{
+		return PDMLoader::LoadMx1(filename, timeStep, coordinateName);
+	}
+
 	BufferPointData_Lua *PointData(const char *containerName = "Coordinate",
 								   double radius = 1.0)
 	{
@@ -50,6 +56,8 @@ class PDMLoader_Lua : public PDMLoader
 	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("PDMLoader", bool, Load,
 											 const char *, int, const char *,
 											 bool)
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("PDMLoader", bool, LoadMx1,
+											 const char *, int, const char *)
 	LUA_SCRIPTCLASS_METHOD_ARG2(BufferPointData_Lua *, PointData, const char *,
 								double)
 	LUA_SCRIPTCLASS_METHOD_ARG1(BufferExtraData_Lua *, ExtraData, const char *)

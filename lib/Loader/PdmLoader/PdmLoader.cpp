@@ -156,12 +156,6 @@ bool PDMLoader::CachePoints(const char *containerName)
 		return false;
 	}
 
-	if (m_numData < 1)
-	{
-		fprintf(stderr, "[PDMLoader] Invalid data size.\n");
-		return false;
-	}
-
 	const ContainerInfo *info =
 		FindContainer(m_containerInfoList, containerName);
 	if (info == NULL)
@@ -170,6 +164,13 @@ bool PDMLoader::CachePoints(const char *containerName)
 				containerName);
 		return false;
 	}
+
+	if (info->num_data < 1)
+	{
+		fprintf(stderr, "[PDMLoader] Invalid data size.\n");
+		return false;
+	}
+
 
 	bool valid = false;
 
@@ -192,9 +193,9 @@ bool PDMLoader::CachePoints(const char *containerName)
 
 	// Alloc
 	BufferPointData *buf = BufferPointData::CreateInstance();
-	buf->Create(m_numData);
+	buf->Create(info->num_data);
 	// position
-	size_t n = m_numData * 3;
+	size_t n = info->num_data  * 3;
 
 	if (info->type == PDMLoader::PDM_TYPE_FLOAT)
 	{
@@ -259,7 +260,7 @@ bool PDMLoader::CacheExtraData(const char *containerName)
 		assert(info->data_ptr.f_ptr);
 
 		// Alloc
-		int numElems = m_numData;
+		int numElems = info->num_data;
 		assert((info->n >= 1) && (info->n <= 4));
 
 		const size_t n = numElems * info->n;
@@ -313,7 +314,7 @@ bool PDMLoader::CacheExtraData(const char *containerName)
 		}
 
 		// Alloc
-		int numElems = m_numData;
+		int numElems = info->num_data;
 
 		const size_t n = numElems * info->n;
 
@@ -434,6 +435,8 @@ bool PDMLoader::Load(const char *filename, int timeStep,
 			containerInfo.data_ptr.f_ptr = NULL;
 			containerInfo.data_ptr.d_ptr = NULL;
 
+            containerInfo.num_data = 0;
+
 			m_containerInfoList.push_back(containerInfo);
 
 			if (rank == 0)
@@ -491,6 +494,7 @@ bool PDMLoader::Load(const char *filename, int timeStep,
 							"data.\n");
 		}
 
+        // TODO(IDS): Delay loading data and/or load container indendependently.
 		size_t num_data =
 			PDMlib::PDMlib::GetInstance().ReadAll(&timeStep, doMigration);
 
@@ -501,7 +505,12 @@ bool PDMLoader::Load(const char *filename, int timeStep,
 					int(num_data));
 			// May OK.
 		}
-		m_numData = num_data;
+
+        // Store num_data for each container info.
+        // FIXME(IDS): num_data may be different for each container.
+		for (size_t i = 0; i < m_containerInfoList.size(); i++) {
+            m_containerInfoList[i].num_data = num_data;
+        }
 
 		printf("[PDMLoader] MPI rank = %d, num_data = %d\n", rank, int(num_data));
 	}
@@ -513,6 +522,158 @@ bool PDMLoader::Load(const char *filename, int timeStep,
 
 	return true;
 }
+
+/**
+ * PDMデータの Mx1 ロード
+ * @param filename ファイルパス
+ * @param timeStep time step
+ * @param coordinateName name of Coordinate container.
+ * @retval true 成功
+ * @retval false 失敗
+ */
+bool PDMLoader::LoadMx1(const char* filename, int timeStep, const char *coordinateName){
+	Clear();
+
+	std::string fname = std::string(filename);
+
+	int rank = 0;
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+	if (rank == 0)
+	{
+		printf("[PDMloader] Initializing PDMLib with Mx1 loading: filename = %s, timeStep = %d, "
+			   "coordinateName = %s, profile = %d\n",
+			   filename, timeStep, coordinateName, m_profiling);
+	}
+
+	// Its OK to pass argc=0,argv=NULL since its only used to initialize MPI inside of Zoltan lib(called from PDMlib::Init()).
+	// We alreadly initialized MPI, thus argc and argv will not be used.
+	PDMlib::PDMlib::GetInstance().Init(0, NULL, /* write filename = */"",  fname);
+
+	std::vector<PDMlib::ContainerInfo>& infos = PDMlib::PDMlib::GetInstance().GetContainerInfo();
+ 
+	if (rank == 0) {
+	    printf("[PDMloader] # of infos = %d\n", int(infos.size()));
+    }
+
+	bool hasCoordinate = false;
+	m_coordianteName = coordinateName ? std::string(coordinateName) : "";
+
+	for (size_t i = 0; i < infos.size(); i++)
+	{
+		if (rank == 0)
+		{
+			printf("[PDMLoader] [%d] name = %s, type = %d, ncomp = %d, order = "
+				   "%d, "
+				   "suffix = %s, annotation = %s, compression = %s\n",
+				   int(i), infos[i].Name.c_str(), infos[i].Type, infos[i].nComp,
+				   infos[i].VectorOrder, infos[i].Suffix.c_str(),
+				   infos[i].Annotation.c_str(), infos[i].Compression.c_str());
+		}
+
+		std::string type = GetTypeName(infos[i]);
+		if (type != "UNKNOWN")
+		{
+			ContainerInfo containerInfo;
+			containerInfo.name = infos[i].Name;
+			containerInfo.type_name = type;
+			containerInfo.type = GetType(infos[i]);
+			containerInfo.n = infos[i].nComp;
+
+			containerInfo.data_ptr.i_ptr = NULL;
+			containerInfo.data_ptr.f_ptr = NULL;
+			containerInfo.data_ptr.d_ptr = NULL;
+
+			m_containerInfoList.push_back(containerInfo);
+
+			if (rank == 0)
+			{
+				printf("[PDMLoader] Add container info: name = %s, type = %s\n",
+					   containerInfo.name.c_str(),
+					   containerInfo.type_name.c_str());
+			}
+
+			if ((!m_coordianteName.empty()) &&
+				infos[i].Name.compare(m_coordianteName) == 0)
+			{
+				hasCoordinate = true;
+			}
+		}
+	}
+
+	if (!hasCoordinate)
+	{
+		if (m_coordianteName.empty())
+		{
+			fprintf(stdout, "[PDMLoader] Null for Coordinate container.\n");
+		}
+		else
+		{
+			fprintf(stdout, "[PDMLoader] Coordinate container: %s not found.\n",
+					m_coordianteName.c_str());
+		}
+	}
+
+	// Read all container data.
+	// TODO(IDS): Delay reading each container.
+	{
+
+		for (size_t i = 0; i < m_containerInfoList.size(); i++)
+		{
+#if 0
+			int ret = RegisterContainer(PDMlib::PDMlib::GetInstance(),
+										&(m_containerInfoList[i]));
+			if (ret != 0)
+			{
+				fprintf(stderr, "[PDMLoader] Failed to register container [ %s "
+								"]. ret = %d.\n",
+						m_containerInfoList[i].name.c_str(), ret);
+				return false;
+			}
+		}
+#endif
+
+            int ret = 0;
+		    size_t n = 0;
+            ContainerInfo *info = &(m_containerInfoList[i]);
+	        if (info->type == PDMLoader::PDM_TYPE_INT) {
+                ret = PDMlib::PDMlib::GetInstance().Read(m_containerInfoList[i].name, &n, &(info->data_ptr.i_ptr), &timeStep, /* read_all_files*/ true);
+            } else if (info->type == PDMLoader::PDM_TYPE_FLOAT) {
+                ret = PDMlib::PDMlib::GetInstance().Read(m_containerInfoList[i].name, &n, &(info->data_ptr.f_ptr), &timeStep, /* read_all_files*/ true);
+            } else if (info->type == PDMLoader::PDM_TYPE_DOUBLE) {
+                ret = PDMlib::PDMlib::GetInstance().Read(m_containerInfoList[i].name, &n, &(info->data_ptr.d_ptr), &timeStep, /* read_all_files*/ true);
+            } else {
+                // ???
+                continue;
+            }
+
+            if (ret < 1) {
+                fprintf(stderr, "[PDMLoader] Read() err: %d.\n", ret);
+                // May OK.
+                continue;
+            }
+
+            if (n < 1)
+            {
+                fprintf(stderr, "[PDMLoader] Invalid data size: %d.\n",
+                        int(n));
+                // May OK.
+                continue;
+            }
+            m_containerInfoList[i].num_data = n;
+
+            printf("[PDMLoader] MPI rank = %d, containerName = %s, num_data = %d\n", rank, m_containerInfoList[i].name.c_str(), int(n));
+        }
+	}
+
+	// Converting read data to HIVE buffer will be done in subsequent call of
+	// `PointData` or `ExtraData`
+
+	m_initialized = true;
+
+    return true;
+}
+
 
 /**
  * 点データ取得
@@ -561,6 +722,7 @@ BufferPointData *PDMLoader::PointData(const char *containerName, float radius)
 	// Container not found.
 	return NULL;
 }
+
 
 BufferExtraData *PDMLoader::ExtraData(const char *containerName)
 {

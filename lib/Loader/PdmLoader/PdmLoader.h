@@ -42,6 +42,8 @@ class PDMLoader : public RefCount
 			double *d_ptr;
 		} data_ptr;
 
+    size_t num_data;  // # of data read.
+
 	} ContainerInfo;
 
 	PDMLoader();
@@ -70,6 +72,12 @@ class PDMLoader : public RefCount
 			  bool migration = false);
 
 	/**
+	 * Mx1 loading version of `Load`.
+   * Each MPI ranks loads all PDM data.
+	 */
+  bool LoadMx1(const char *filename, int timeStep = 1, const char *coordinateName = "Coordinate");
+
+	/**
 	 * Read point(coordinate) data.
 	 */
 	BufferPointData *PointData(const char *containerName = "Coordinate",
@@ -81,7 +89,6 @@ class PDMLoader : public RefCount
 	BufferExtraData *ExtraData(const char *containerName);
 
 	bool m_initialized; // True upon the success of `Load`.
-	size_t m_numData;   // data size read.
 	bool m_profiling;
 	std::string m_coordianteName;
 
