@@ -37,18 +37,24 @@ class GradientMap extends React.Component {
         // state
         this.state = {
             selValue: "0",
-            selValues: [
-                {value: "0", text: "Custom"},
-                {value: "1", text: "RAMP"},
-            ],
+            viewType : "0", 
             valMin: null,//this.props.node.input[2].value,
             valMax: null,//this.props.node.input[3].value,
             btnFlags: [],
         };
+        this.selValues = [
+            {value: "0", text: "Custom"},
+            {value: "1", text: "RAMP"},
+        ];
+        this.viewTypes = [
+            {value: "0", text: "Logscale"},
+            {value: "1", text: "Liner"},
+        ];
 
         // methods
         this.onRecieveAnalyzed   = this.onRecieveAnalyzed.bind(this);
         this.onSelectChange      = this.onSelectChange.bind(this);
+        this.onViewChange        = this.onViewChange.bind(this);
         this.minInputChange   = this.minInputChange.bind(this);
         this.maxInputChange   = this.maxInputChange.bind(this);
         this.nodeInputChanged    = this.nodeInputChanged.bind(this);
@@ -117,6 +123,16 @@ class GradientMap extends React.Component {
             this.changeCallback();
             this.redoBuffer = [];
         }
+    }
+    
+     onViewChange(eve){
+        var e = eve.target.value;
+        var t = parseInt(e);
+        var changed =  (t !== Number(this.state.viewType));
+        this.setState({viewType: e});
+        this.state.viewType = e;
+
+        this.drawGraph();
     }
     
 	onMinKeyPress(ev) {
@@ -263,9 +279,19 @@ class GradientMap extends React.Component {
         document.removeEventListener('mousemove', this.mouseMoveFunc);
     }
     
-    transFunc(x){return Math.sqrt(x);}
+    transFunc(x){
+        if (Number(this.state.viewType) === 0) {
+            return Math.sqrt(x);
+        }
+        return x;
+    }
     
-    invTransFunc(x){return x*x;}
+    invTransFunc(x){
+        if (Number(this.state.viewType) === 0) {
+            return x*x;
+        }
+        return x;
+    }
     
     init(){
         this.canvas       = ReactDOM.findDOMNode(this.refs.canvas);
@@ -338,7 +364,6 @@ class GradientMap extends React.Component {
             gscale = defDiff / valDiff;
         }
         for (var i = 0; i < this.numVals; ++i){
-            //this.ctx.lineTo(i / this.numVals *  cw, (1.0 - vals[i]) * ch); // MODE NORMAL
             this.ctx.lineTo(((i / this.numVals + goffset)  * gscale) *  cw, ch - this.transFunc(vals[i]) * ch); // MODE SQRT
         }
         this.ctx.stroke();
@@ -471,7 +496,9 @@ class GradientMap extends React.Component {
             undoframe : {
                 lineHeight: "30px",
                 width: "300px",
-                height: "28px"
+                height: "28px",
+                display: "flex",
+                flexDirection: "row"
             },
             btnframe: {
                 textAlign: "center",
@@ -486,15 +513,29 @@ class GradientMap extends React.Component {
                 display: "flex",
                 flexDirection: "row"
             },
+            presetframe2: {
+                lineHeight: "30px",
+                height: "30px",
+                flex: "1.2"
+            },
             preText: {
                 padding: "2px",
                 width: "80px",
-                color: "#fff",
+                color: "#fff"
+            },
+            viewText: {
+                padding: "2px",
+                width: "40px",
+                color: "#fff"
             },
             preSelect: {
                 margin: "auto 0px",
                 width: "200px"
             },
+            viewSelect :{
+                margin: "auto 0px",
+                width: "100px"
+            }, 
             minmaxframe: {
                 height: "30px",
                 display: "flex",
@@ -520,14 +561,21 @@ class GradientMap extends React.Component {
                 borderRadius: "3px 5px",
                 width: "60px",
                 height: "22px",
-                marginLeft : "3px"
+                marginTop : "3px",
+                marginLeft : "3px",
+                flex: "0.2"
             }
         };
     }
 
     render(){
         const styles = this.styles();
-        const optionGenerator = this.state.selValues.map(((value, key)=>{
+        const optionGenerator = this.selValues.map(((value, key)=>{
+            return (
+                <option value={value.value} key={Date.now() + ':' + key}>{value.text}</option>
+            );
+        }).bind(this));
+        const viewtypeOptionGenerator = this.viewTypes.map(((value, key)=>{
             return (
                 <option value={value.value} key={Date.now() + ':' + key}>{value.text}</option>
             );
@@ -539,6 +587,17 @@ class GradientMap extends React.Component {
                 <div ref="undoframe" style={styles.undoframe}>
                     <input ref="undoButton" type="button" value={"Undo"} style={styles.undoredoButton} onClick={this.undo}/>
                     <input ref="redoButton" type="button" value={"Redo"} style={styles.undoredoButton}  onClick={this.redo}/>
+
+                    <span ref="presetframe2" style={styles.presetframe2}>
+                        <span ref="preText2" className="KCaption" style={styles.viewText}>Graph:</span>
+                        <select ref="viewSelect" className="KDropdownList"
+                                value={this.state.viewType}
+                                onChange={this.onViewChange}
+                                style={styles.viewSelect}
+                        >
+                            {viewtypeOptionGenerator}
+                        </select>
+                    </span>
                 </div>
                 <div ref="presetframe" style={styles.presetframe}>
                     <div ref="preText" className="KCaption" style={styles.preText}>Preset</div>
