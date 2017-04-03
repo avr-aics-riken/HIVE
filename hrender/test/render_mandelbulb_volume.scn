@@ -1,0 +1,53 @@
+
+print('Render Mandelbulb Volume')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_mandelbulb_volume.jpg')
+
+camera:LookAt(
+	200, 200, 200,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+function CreateTransferFunctionTexture()
+   -- Create 1D transfer function texture
+   -- Jet color table from OSPray example
+   -- r, g, b, alpha
+   local tf =
+        { 0         , 0           , 1 ,      0
+        , 1         , 0           , 0        , 0.1
+        , 0.5         ,0.5            , 0        , 0.1
+        , 0         , 0.0           , 0.5        , 0.1
+        , 0  , 0           , 1.0        , 0.1 }
+
+   local width = #tf / 4
+   local tfTex = GenTexture()
+   tfTex:Create2D(tf, 3, width, 1); -- 3 = RGBA32F
+
+   return tfTex;
+end
+
+local tftex = CreateTransferFunctionTexture()
+
+
+local mandelbulb = require("MandelbulbVolGen")()
+print('Generating Mandelbulb...')
+mandelbulb:Generate(300)
+print('done.')
+
+
+local volume = VolumeModel()
+local volumedata = mandelbulb:VolumeData()
+volume:Create(volumedata)
+
+volume:SetShader('def_volume_raymarch_tf2.frag')
+volume:SetTexture('tf_tex', tftex:ImageData())
+volume:SetClampToEdge(true, true, true)
+volume:SetTextureWrapping('tf_tex', true, true, true) -- CLAMP_TO_EDGE wrap mode for transfer function texture.
+volume:SetFloat('tf_min', 0.0)
+volume:SetFloat('tf_max', 1.7)
+
+render {camera, volume}
