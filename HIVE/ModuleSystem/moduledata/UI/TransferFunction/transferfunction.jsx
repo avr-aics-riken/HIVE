@@ -54,7 +54,7 @@ class TransferFunction extends React.Component {
         // state
         this.state = {
             selValue: "0",
-            viewType: "0",
+            viewType: "1",
             valMin: null,//this.props.node.input[2].value,
             valMax: null,//this.props.node.input[3].value,
             btnFlags: [],
