@@ -1,0 +1,40 @@
+
+local loader = require("ObjLoader")
+
+print('Render Obj')
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+-- Set to FLOAT RGBA format
+camera:SetImageBufferFormat('RGBA32F')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local obj = loader()
+obj:Load('bunny.obj')
+
+local model = PolygonModel()
+local meshdata = obj:MeshData()
+model:SetShader('normal.frag')
+
+model:Create(meshdata)
+
+local analy = require("Analyzer").PolygonAnalyzer()
+analy:Execute(meshdata)
+print(analy:MinX())
+print(analy:MaxX())
+print(analy:MinY())
+print(analy:MaxY())
+print(analy:MinZ())
+print(analy:MaxZ())
+
+render {camera, model}
+
+-- save to file
+local saver = ImageSaver()
+local issaved = saver:Save("image_buffer_hdr.exr", camera:GetImageBuffer())
+print(issaved)

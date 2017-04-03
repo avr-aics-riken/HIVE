@@ -75,24 +75,33 @@ namespace {
         std::transform(in.begin(), in.end(), std::back_inserter(out), ::tolower);
         return out;
     }
-    BufferImageData::FORMAT getFileFomat(const std::string& filename)
+    BufferImageData::FORMAT getImageBufferFomat(const std::string& filename, const std::string &imagebuffer_format)
     {
-        if (filename == "") {
-            return BufferImageData::RGBA8;
-        }
-        
-        std::string::size_type pos = filename.rfind('.');
-        if (pos == std::string::npos) {
+        if (filename.empty()) {
+            // Determinte image buffer format by imagebuffer format.
+            if (imagebuffer_format.compare("RGBA32F") == 0) {
+                return BufferImageData::RGBA32F;
+            } else if (imagebuffer_format.compare("RGBA8") == 0) {
+                return BufferImageData::RGBA8;
+            }
+            
             return BufferImageData::INVALID;
-        }
-        
-        const std::string ext = make_lowercase(filename.substr(pos + 1));
-        if (ext == "jpg" || ext == "png") {
-            return BufferImageData::RGBA8;
-        } else if (ext == "hdr" || ext == "exr") {
-            return BufferImageData::RGBA32F;
         } else {
-            return BufferImageData::RGBA8;
+            // Determinte image buffer format by filename extension.
+    
+            std::string::size_type pos = filename.rfind('.');
+            if (pos == std::string::npos) {
+                return BufferImageData::INVALID;
+            }
+            
+            const std::string ext = make_lowercase(filename.substr(pos + 1));
+            if (ext == "jpg" || ext == "png") {
+                return BufferImageData::RGBA8;
+            } else if (ext == "hdr" || ext == "exr") {
+                return BufferImageData::RGBA32F;
+            } else {
+                return BufferImageData::RGBA8;
+            }
         }
     }
     
@@ -636,7 +645,8 @@ private:
     void resize(Camera* camera)
     {
         const std::string& outfile = camera->GetOutputFile();
-        BufferImageData::FORMAT colorfmt = getFileFomat(outfile);
+        const std::string& imagebuffer_format = camera->GetImageBufferFormat();
+        BufferImageData::FORMAT colorfmt = getImageBufferFomat(outfile, imagebuffer_format);
         
         BufferImageData* color = camera->GetImageBuffer();
         BufferImageData* depth = camera->GetDepthBuffer();
