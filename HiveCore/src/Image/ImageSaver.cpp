@@ -27,7 +27,7 @@ namespace
     
     unsigned char toByte(float f)
     {
-        return (std::min)(static_cast<unsigned char>(f * 0xFF + 0.5), static_cast<unsigned char>(0xFF));
+        return static_cast<unsigned char>((std::min)(f * 0xFF, float(0xFF)) + 0.5);
     }
     
     float toFloat(char b)

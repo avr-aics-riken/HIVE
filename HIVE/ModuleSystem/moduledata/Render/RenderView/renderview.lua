@@ -53,6 +53,11 @@ function RenderView:Do()
         targetcam = self.cam
     end
 
+    if v.floatbuffer then
+        targetcam:SetImageBufferFormat('RGBA32F')
+    else
+        targetcam:SetImageBufferFormat('RGBA8')
+    end
 -- dump
 --[[
     for i,v in pairs(temp) do

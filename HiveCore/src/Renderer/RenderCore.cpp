@@ -378,6 +378,8 @@ public:
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
                 const std::string& depth_outfile = camera->GetDepthOutputFile();
+                const std::string& imagebuffer_format = camera->GetImageBufferFormat();
+                BufferImageData::FORMAT colorfmt = getImageBufferFomat(outfile, imagebuffer_format);
                 BufferImageData* color = camera->GetImageBuffer();
                 BufferImageData* depth = camera->GetDepthBuffer();
                 
@@ -392,7 +394,7 @@ public:
 #if defined(HIVE_WITH_COMPOSITOR)
                 PMon::Start("Compositor");
 #endif
-                readbackImage(color, clr[0], clr[1], clr[2], clr[3]);
+                readbackImage(colorfmt, color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
 #if defined(HIVE_WITH_COMPOSITOR)
                 PMon::Stop("Compositor");
@@ -547,15 +549,16 @@ private:
     }
     /// 画像の書き戻し
     /// @param color カラーバッファ
-    void readbackImage(BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
+    void readbackImage(BufferImageData::FORMAT format, BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
     {
         const float clearcolor_r = clr_r;
         const float clearcolor_g = clr_g;
         const float clearcolor_b = clr_b;
         const float clearcolor_a = clr_a;
 
-        ByteBuffer* bbuf = color->ImageBuffer();
-        if (bbuf) {
+        if (format == BufferImageData::RGBA8) {
+            ByteBuffer* bbuf = color->ImageBuffer();
+            if (!bbuf) { return; }
             unsigned char* imgbuf = bbuf->GetBuffer();
             const int colorbit = 8;
             GetColorBuffer_GS[m_mode](m_width, m_height, imgbuf, colorbit);
@@ -586,6 +589,7 @@ private:
             }
         } else {
             FloatBuffer* fbuf = color->FloatImageBuffer();
+            if (!fbuf) { return; }
             float* imgbuf = fbuf->GetBuffer();
             const int colorbit = 32;
             GetColorBuffer_GS[m_mode](m_width, m_height, reinterpret_cast<unsigned char*>(imgbuf), colorbit);
