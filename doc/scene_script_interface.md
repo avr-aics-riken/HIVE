@@ -293,9 +293,21 @@ RenderObjectは共通のインターフェースを持つ
   * filename ファイルパス
 
         boolean SetFilename(filename)
-    
 
 画像には tga, jpg, png, exr, hdr フォーマットを指定できる.
+    
+- 結果画像のフォーマットの設定.
+  * format フォーマット文字列
+
+        boolean SetImageBufferFormat(format)
+    
+メモリ上に画像を保存したり, メモリ上で画像処理を行うときなどに利用します.
+現在は `"RGBA8"`(BYTE) もしくは `"RGBA32F"`(FLOAT) のみ設定可能.
+デフォルトは `"RGBG32F"`.
+`SetFilename` が呼ばれた場合は, そちらの設定を優先する(ファイル拡張子で判断)
+
+サンプルシーン: `image_buffer_ldr.scn`, `image_buffer_hdr.scn`
+
 
 - 結果デプス画像のファイルパスの設定.
   * filename ファイルパス

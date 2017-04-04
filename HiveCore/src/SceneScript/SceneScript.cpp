@@ -651,7 +651,10 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
     fseek(fp, 0, SEEK_SET);
     
     char* luascript = new char[scriptsize + 1];
-    fread(luascript, scriptsize, 1, fp);
+    size_t n = fread(luascript, scriptsize, 1, fp);
+    if (n != 1) {
+        return false;
+    }
     luascript[scriptsize] = 0; // END
 
     bool r = Execute(luascript, sceneargs);
