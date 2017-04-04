@@ -36,7 +36,7 @@ void MandelbulbVolGen::Clear()
 bool MandelbulbVolGen::Generate(const int w, const int h, const int d, const int c)
 {
     Clear();
-    m_volume->create(w, h, d, c);
+    m_volume->Create(w, h, d, c);
     return true;
 }
 

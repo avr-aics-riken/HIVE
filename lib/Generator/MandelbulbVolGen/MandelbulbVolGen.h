@@ -1,3 +1,4 @@
+#ifndef _MANDELBULBVOLGEN_H_
 #define _MANDELBULBVOLGEN_H_
 
 #include "Ref.h"
