@@ -65,6 +65,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0 (BufferImageData_Lua*,GetDepthBuffer)
     LUA_SCRIPTCLASS_METHOD_ARG0 (std::string, GetOutputFile)
     LUA_SCRIPTCLASS_METHOD_ARG0 (std::string, GetDepthOutputFile)
+    LUA_SCRIPTCLASS_METHOD_ARG0 (std::string , GetImageBufferFormat)
     
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetPosition)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTarget)
