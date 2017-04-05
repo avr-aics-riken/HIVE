@@ -13,7 +13,8 @@ uniform vec3 up;
 uniform vec3 eyedir;
 const float fov = 45.0;
 // const float num_steps = 64.0;
-const float step_dist = 0.10;
+//const float step_dist = 0.10;
+const float maxSamples = 100.;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
 uniform vec3 offset;
@@ -22,6 +23,27 @@ const float kOpacityThreshold = 0.99;
 const float kBrightness = 1.0;
 const float kScale = 0.025;
 const float kDensity = 0.05;
+
+void orthoBasis(out vec3 basis0,out vec3 basis1,out vec3 basis2, vec3 n) {
+  basis2 = vec3(n.x, n.y, n.z);
+  basis1 = vec3(0.0, 0.0, 0.0);
+
+  if ((n.x < 0.6) && (n.x > -0.6))
+    basis1.x = 1.0;
+  else if ((n.y < 0.6) && (n.y > -0.6))
+    basis1.y = 1.0;
+  else if ((n.z < 0.6) && (n.z > -0.6))
+    basis1.z = 1.0;
+  else
+    basis1.x = 1.0;
+
+  basis0 = cross(basis1, basis2);
+  basis0 = normalize(basis0);
+
+  basis1 = cross(basis2, basis0);
+  basis1 = normalize(basis1);
+}
+
 
 // Simple transfer function
 vec4 density_to_color(float dens) {
@@ -145,7 +167,8 @@ void main(void) {
   tmax = max(0.0, tmax);
 
   // raymarch.
-  float t = tmin;
+  const float EPSILON = 0.0001;
+  float t = tmin + EPSILON;
   // float tstep = 1.0 / num_steps; //(tmax - tmin) / num_steps;
   float cnt = 0.0;
 
@@ -158,40 +181,33 @@ void main(void) {
 
   float tau = 0.0;
 
-  while (t < tmax) {
-    // vec4 acol;
-    // float hit = 0.0;
-    // int pds;
-    // rayoption(pds, 0);
-    // hit = trace(rayorg+t*raydir, tstep*raydir, acol, 0.0);
-    // if (hit > 0.0 && hit < 1.0) {
-    //	sum += acol;
-    //	break;
-    //}
+  float thickness = max(max(volumescale.x, volumescale.y), volumescale.z) / maxSamples;
+
+  vec3 nx, ny, nz;
+  orthoBasis(nx, ny, nz, n);
+
+  float dist = abs(dot(nx, (tmax * raydir) - tmin * raydir));
+  dist = max(dist, abs(dot(ny, (tmax * raydir) - tmin * raydir)));
+  dist = max(dist, abs(dot(nz, (tmax * raydir) - tmin * raydir)));
+
+  float samples = floor(dist / thickness) + 1.;
+  float step_dist = (tmax - tmin - EPSILON) / samples;
+
+  while ((cnt < samples) &&
+         (min(min(sum.x, sum.y), sum.z) < 1.0) &&
+         (sum.w < 0.999) &&
+         t <= tmax) {
 
     vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
     vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
-    // transmittance *= atten;
-    // sum.xyz += 0.01f * texpos;
-    // sum.a = 1.0;
-    // float atten = exp(-tau);
-    // if (atten < 0.0005) {
-    //  break;
-    //}
 
-    //(sigma_s + sigma_a)
     vec4 rgba = samplingVolume(texpos, sum);
-    // if (sum.a > kOpacityThreshold)
-    //  break;
     sum += step_dist * sigma_s * rgba;
 
-    // tau += step_dist * (sigma_a + sigma_s) * rgba.a;
     t += step_dist;
     cnt += 1.0;
   }
 
-  // sum.xyz *= kBrightness;
-  // sum.a = 1.0;
   sum.a = min(1.0, sum.a); // alpha clamp
 
   float ntmin = 0.0;
@@ -201,6 +217,5 @@ void main(void) {
   //	ntmin = trace(rayorg + (tmax+0.001)*raydir, raydir, ncol, 0.0);
   // if (ntmin < 0.0)
   gl_FragColor = sum;
-  // else
   //	gl_FragColor = sum + (1.0-sum.a)*ncol;
 }

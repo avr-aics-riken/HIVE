@@ -14,7 +14,7 @@ public:
     MandelbulbVolGen();
     ~MandelbulbVolGen();
     void Clear();
-    bool Generate(const int w, const int h, const int d, const int c);
+    bool Generate(const int size);
     int Width();
     int Height();
     int Depth();

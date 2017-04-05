@@ -24,7 +24,7 @@ uniform float     tf_max;
 uniform float     tf_opacity;
 
 #define EPS        0.005
-#define SAMPLES    2500.0
+#define SAMPLES    512.0
 #define num_steps  SAMPLES
 
 void orthoBasis(out vec3 basis0,out vec3 basis1,out vec3 basis2, vec3 n) {
@@ -124,7 +124,7 @@ void  main(void) {
 	float pp  = 0.0;
 	float phi = 0.0;
 	float psi = 0.0;
-	
+
 	vec3 sumN = vec3(0.0);
 	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
@@ -161,9 +161,10 @@ void  main(void) {
             float x = (f - tf_min) / (tf_max - tf_min); // normalize
 
             vec4 tfCol = texture2D(tf_tex, vec2(x, 0));
-            tfCol = tf_opacity * vec4(tfCol.rgb, 1.0);
-            col += (1.0 - col.w) * tfCol;
-            col += tfCol;
+            //            tfCol.w *= min(min(volumedim.x, volumedim.y), volumedim.z) / num_steps;
+
+            tfCol.rgb *= tfCol.a;
+            col = (1. - col.a) * tfCol + col;
         }
 
 		count = count + 1.0;
