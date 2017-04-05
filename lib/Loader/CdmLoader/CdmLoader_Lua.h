@@ -109,6 +109,70 @@ class CDMLoader_Lua : public CDMLoader
 		return buf[2];
 	}
 
+	double LocalOffsetX()
+	{
+		double buf[3];
+		CDMLoader::LocalOffset(buf);
+		return buf[0];
+	}
+
+	double LocalOffsetY()
+	{
+		double buf[3];
+		CDMLoader::LocalOffset(buf);
+		return buf[1];
+	}
+
+	double LocalOffsetZ()
+	{
+		double buf[3];
+		CDMLoader::LocalOffset(buf);
+		return buf[2];
+	}
+
+	double LocalRegionX()
+	{
+		double buf[3];
+		CDMLoader::LocalRegion(buf);
+		return buf[0];
+	}
+
+	double LocalRegionY()
+	{
+		double buf[3];
+		CDMLoader::LocalRegion(buf);
+		return buf[1];
+	}
+
+	double LocalRegionZ()
+	{
+		double buf[3];
+		CDMLoader::LocalRegion(buf);
+		return buf[2];
+	}
+
+	int LocalVoxelX()
+	{
+		int buf[3];
+		CDMLoader::LocalVoxel(buf);
+		return buf[0];
+	}
+
+	int LocalVoxelY()
+	{
+		int buf[3];
+		CDMLoader::LocalVoxel(buf);
+		return buf[1];
+	}
+
+	int LocalVoxelZ()
+	{
+		int buf[3];
+		CDMLoader::LocalVoxel(buf);
+		return buf[2];
+	}
+
+	// Head and Tail index starts at 1.
 	int HeadIndexX()
 	{
 		int buf[3];
@@ -213,12 +277,6 @@ class CDMLoader_Lua : public CDMLoader
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, Height)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, Depth)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, Component)
-	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivX)
-	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivY)
-	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivZ)
-	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelX)
-	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelY)
-	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelZ)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexX)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexY)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexZ)
@@ -227,10 +285,10 @@ class CDMLoader_Lua : public CDMLoader
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexZ)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, NumTimeSteps)
 	LUA_SCRIPTCLASS_METHOD_ARG1(int, TimeStepAt, int)
-	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetHeadIndex, int, int, int)
-	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetTailIndex, int, int, int)
-	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalVoxel, int, int, int)
-	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalDivision, int, int, int)
+	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetHeadIndex, int, int, int)
+	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetTailIndex, int, int, int)
+	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalVoxel, int, int, int)
+	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalDivision, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetDivisionMode, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetX)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetY)
@@ -238,6 +296,21 @@ class CDMLoader_Lua : public CDMLoader
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalRegionX)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalRegionY)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalRegionZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalOffsetX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalOffsetY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalOffsetZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalRegionX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalRegionY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalRegionZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelZ)
 	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, Load,
 											 const char *, int)
 	LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua *, VolumeData)

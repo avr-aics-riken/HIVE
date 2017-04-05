@@ -2,9 +2,6 @@
  * @file CdmLoader.cpp
  * CDMデータローダー
  */
-//
-// TODO: - support various volume data type
-//
 
 #ifndef HIVE_WITH_CDMLIB
 #error "HIVE_WITH_CDMLIB must be defined when you compile CDMLoader module"
@@ -44,10 +41,10 @@
 
 class CDMLoader::Impl
 {
-public:
-    void Clear();
+  public:
+	void Clear();
 
-    bool Load(const char *filename, int timeSliceIndex);
+	bool Load(const char *filename, int timeSliceIndex);
 
 	int SetHeadIndex(const int headIndex[3]);
 	int SetTailIndex(const int tailIndex[3]);
@@ -88,6 +85,27 @@ public:
 		ret[2] = m_globalDiv[2];
 	}
 
+	void LocalOffset(double ret[3])
+	{
+		ret[0] = m_localOffset[0];
+		ret[1] = m_localOffset[1];
+		ret[2] = m_localOffset[2];
+	}
+
+	void LocalRegion(double ret[3])
+	{
+		ret[0] = m_localRegion[0];
+		ret[1] = m_localRegion[1];
+		ret[2] = m_localRegion[2];
+	}
+
+	void LocalVoxel(int ret[3])
+	{
+		ret[0] = m_localVoxel[0];
+		ret[1] = m_localVoxel[1];
+		ret[2] = m_localVoxel[2];
+	}
+
 	void HeadIndex(int ret[3])
 	{
 		ret[0] = m_head[0];
@@ -114,12 +132,17 @@ public:
 		return 0;
 	}
 
-    // Mx1 Load(each MPI rank loads all volume data: equivalent to MPI AllGather)
-    bool LoadMx1(cdm_DFI *DFI_IN, unsigned int timeStep, int GVoxel[3], int GDiv[3], int virtualCells, int numVariables, bool isNonUniform, const std::vector<float> coords[3]);
+	// Mx1 Load(each MPI rank loads all volume data: equivalent to MPI
+	// AllGather)
+	bool LoadMx1(cdm_DFI *DFI_IN, unsigned int timeStep, int GVoxel[3],
+				 int GDiv[3], int virtualCells, int numVariables,
+				 bool isNonUniform, const std::vector<float> coords[3]);
 
-    // MxM Load(each MPI rank loads corresponding data stored in .DFI)
-    bool LoadMxM(cdm_DFI *DFI_IN, const cdm_Process &DFI_Process, int RankID, const std::string &infile, unsigned int timeStep, int GVoxel[3], int GDiv[3], int numVariables, bool isNonUniform, const std::vector<float> coords[3]);
-
+	// MxM Load(each MPI rank loads corresponding data stored in .DFI)
+	bool LoadMxM(cdm_DFI *DFI_IN, const cdm_Process &DFI_Process, int RankID,
+				 const std::string &infile, unsigned int timeStep,
+				 int GVoxel[3], int GDiv[3], int virtualCells, int numVariables,
+				 bool isNonUniform, const std::vector<float> coords[3]);
 
 	RefPtr<BufferVolumeData> m_volume;
 	std::vector<unsigned int> m_timeSteps;
@@ -128,6 +151,11 @@ public:
 	double m_globalRegion[3];
 	int m_globalVoxel[3];
 	int m_globalDiv[3];
+
+	double m_localOffset[3];
+	double m_localRegion[3];
+	int m_localVoxel[3];
+
 	int m_head[3];
 	int m_tail[3];
 
@@ -136,28 +164,32 @@ public:
 	int m_divisionAxis1;
 };
 
-bool CDMLoader::Impl::LoadMx1(cdm_DFI *DFI_IN, unsigned int timeStep, int GVoxel[3], int GDiv[3], int virtualCells, int numVariables, bool isNonUniform, const std::vector<float> coords[3]) {
+bool CDMLoader::Impl::LoadMx1(cdm_DFI *DFI_IN, unsigned int timeStep,
+							  int GVoxel[3], int GDiv[3], int virtualCells,
+							  int numVariables, bool isNonUniform,
+							  const std::vector<float> coords[3])
+{
 
-    // Based on `fconv` tool in CDMlib package.
+	// Based on `fconv` tool in CDMlib package.
 
-    float r_time;	 ///<dfiから読込んだ時間
-    unsigned i_dummy; ///<平均化ステップ
-    float f_dummy;	///<平均時間
+	float r_time;	 ///<dfiから読込んだ時間
+	unsigned i_dummy; ///<平均化ステップ
+	float f_dummy;	///<平均時間
 
-    // data size
-    size_t dataSize = (GVoxel[0] + virtualCells) * (GVoxel[1] + virtualCells) *
-                      (GVoxel[2] + virtualCells);
+	// data size
+	size_t dataSize = (GVoxel[0] + virtualCells) * (GVoxel[1] + virtualCells) *
+					  (GVoxel[2] + virtualCells);
 
-    int head[3];
-    int tail[3];
-    
-    // head/tail extent == GVoxel
-    head[0] = 1;
-    head[1] = 1;
-    head[2] = 1;
-    tail[0] = GVoxel[0];
-    tail[1] = GVoxel[1];
-    tail[2] = GVoxel[2];
+	int head[3];
+	int tail[3];
+
+	// head/tail extent == GVoxel
+	head[0] = 1;
+	head[1] = 1;
+	head[2] = 1;
+	tail[0] = GVoxel[0];
+	tail[1] = GVoxel[1];
+	tail[2] = GVoxel[2];
 
 	bool interleaved = false; // data is stored such like [XXXX...YYYY...ZZZZ]
 	if ((DFI_IN->GetArrayShape() == CDM::E_CDM_NIJK))
@@ -168,123 +200,302 @@ bool CDMLoader::Impl::LoadMx1(cdm_DFI *DFI_IN, unsigned int timeStep, int GVoxel
 	{ // must be CDM::E_CDM_IJKN
 		interleaved = false;
 	}
-    
-    // printf("DBG: dataSize: %d\n", dataSize);
-    float *d_v = new float[dataSize * numVariables];
+
+	// printf("DBG: dataSize: %d\n", dataSize);
+	float *d_v = new float[dataSize * numVariables];
 
 	CDM::E_CDM_ERRORCODE ret = CDM::E_CDM_SUCCESS;
-    ret = DFI_IN->ReadData(d_v,				 // pointer to buffer
-                           timeStep,		 // timestep
-                           virtualCells / 2, // virtual cell size
-                           GVoxel,			 // global dim
-                           GDiv,			 // num divs
-                           head,			 // head
-                           tail,			 // tail
-                           r_time,			 // dfi read time
-                           true,			 // don't read averate?
-                           i_dummy, f_dummy);
+	ret = DFI_IN->ReadData(d_v,				 // pointer to buffer
+						   timeStep,		 // timestep
+						   virtualCells / 2, // virtual cell size
+						   GVoxel,			 // global dim
+						   GDiv,			 // num divs
+						   head,			 // head
+						   tail,			 // tail
+						   r_time,			 // dfi read time
+						   true,			 // don't read averate?
+						   i_dummy, f_dummy);
 
-    if (ret != CDM::E_CDM_SUCCESS)
-    {
-        printf("[CdmLoader] Error reading CDM data.");
-        delete [] d_v;
-        delete DFI_IN;
-        return false;
-    }
+	if (ret != CDM::E_CDM_SUCCESS)
+	{
+		printf("[CdmLoader] Error reading CDM data.");
+		delete[] d_v;
+		return false;
+	}
 
+	//
+	// Create volume data by stripping virtual cells.
+	//
+	m_volume->Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables,
+					 isNonUniform); // @fixme
+	float *dst = m_volume->Buffer()->GetBuffer();
 
-    //
-    // Create volume data by stripping virtual cells.
-    //
-    m_volume->Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables,
-                     isNonUniform); // @fixme
-    float *dst = m_volume->Buffer()->GetBuffer();
+	// printf("virtualCells = %d\n", virtualCells);
 
-    // printf("virtualCells = %d\n", virtualCells);
+	size_t sx = GVoxel[0] + virtualCells;
+	size_t sy = GVoxel[1] + virtualCells;
+	for (size_t z = 0; z < GVoxel[2]; z++)
+	{
+		for (size_t y = 0; y < GVoxel[1]; y++)
+		{
+			for (size_t x = 0; x < GVoxel[0]; x++)
+			{
+				for (size_t c = 0; c < numVariables; c++)
+				{
+					size_t srcIdx = 0;
+					if (interleaved)
+					{
+						// size_t srcIdx =  (z + virtualCells/2) * sy * sx + (y
+						// + virtualCells/2) * sx + (x + virtualCells/2);
+						// float val = d_v[numVariables * srcIdx + c];
+						srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables,
+											   GVoxel[0], GVoxel[1], GVoxel[2],
+											   virtualCells / 2);
+					}
+					else
+					{
+						srcIdx = _CDM_IDX_IJKN(x, y, z, c, GVoxel[0], GVoxel[1],
+											   GVoxel[2], virtualCells / 2);
+					}
+					size_t dstIdx =
+						z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
+					float val = d_v[srcIdx];
+					dst[numVariables * dstIdx + c] = val;
+				}
+			}
+		}
+	}
 
-    size_t sx = GVoxel[0] + virtualCells;
-    size_t sy = GVoxel[1] + virtualCells;
-    for (size_t z = 0; z < GVoxel[2]; z++)
-    {
-        for (size_t y = 0; y < GVoxel[1]; y++)
-        {
-            for (size_t x = 0; x < GVoxel[0]; x++)
-            {
-                for (size_t c = 0; c < numVariables; c++)
-                {
-                    size_t srcIdx = 0;
-                    if (interleaved)
-                    {
-                        // size_t srcIdx =  (z + virtualCells/2) * sy * sx + (y
-                        // + virtualCells/2) * sx + (x + virtualCells/2);
-                        // float val = d_v[numVariables * srcIdx + c];
-                        srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables,
-                                               GVoxel[0], GVoxel[1], GVoxel[2],
-                                               virtualCells / 2);
-                    }
-                    else
-                    {
-                        srcIdx = _CDM_IDX_IJKN(x, y, z, c, GVoxel[0], GVoxel[1],
-                                               GVoxel[2], virtualCells / 2);
-                    }
-                    size_t dstIdx =
-                        z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
-                    float val = d_v[srcIdx];
-                    dst[numVariables * dstIdx + c] = val;
-                }
-            }
-        }
-    }
+	if (isNonUniform)
+	{
+		std::copy(coords[0].begin(), coords[0].end(),
+				  m_volume->SpacingX()->GetBuffer());
+		std::copy(coords[1].begin(), coords[1].end(),
+				  m_volume->SpacingY()->GetBuffer());
+		std::copy(coords[2].begin(), coords[2].end(),
+				  m_volume->SpacingZ()->GetBuffer());
+	}
 
-    if (isNonUniform)
-    {
-        std::copy(coords[0].begin(), coords[0].end(),
-                  m_volume->SpacingX()->GetBuffer());
-        std::copy(coords[1].begin(), coords[1].end(),
-                  m_volume->SpacingY()->GetBuffer());
-        std::copy(coords[2].begin(), coords[2].end(),
-                  m_volume->SpacingZ()->GetBuffer());
-    }
+	delete[] d_v;
 
-    delete[] d_v;
+	m_head[0] = head[0];
+	m_head[1] = head[1];
+	m_head[2] = head[2];
 
-    return true;
+	m_tail[0] = tail[0];
+	m_tail[1] = tail[1];
+	m_tail[2] = tail[2];
+
+	// Set local voxel info
+	// For Mx1 loading, Global == Local.
+	{
+		m_localVoxel[0] = m_globalVoxel[0];
+		m_localVoxel[1] = m_globalVoxel[1];
+		m_localVoxel[2] = m_globalVoxel[2];
+
+		m_localRegion[0] = m_globalRegion[0];
+		m_localRegion[1] = m_globalRegion[1];
+		m_localRegion[2] = m_globalRegion[2];
+
+		m_localOffset[0] = m_localOffset[0];
+		m_localOffset[1] = m_localOffset[1];
+		m_localOffset[2] = m_localOffset[2];
+	}
+
+	return true;
 }
 
-bool CDMLoader::Impl::LoadMxM(cdm_DFI *DFI_IN, const cdm_Process &DFI_Process, int RankID, const std::string &infile, unsigned int timeStep, int GVoxel[3], int GDiv[3], int numVariables, bool isNonUniform, const std::vector<float> coords[3]) {
+bool CDMLoader::Impl::LoadMxM(cdm_DFI *DFI_IN, const cdm_Process &DFI_Process,
+							  int RankID, const std::string &infile,
+							  unsigned int timeStep, int GVoxel[3], int GDiv[3],
+							  int virtualCells, int numVariables,
+							  bool isNonUniform,
+							  const std::vector<float> coords[3])
+{
 
-    // Based on `fconv` tool in CDMlib package.
-    // TODO(IDS): interleave, stepList, etc.
+	bool interleaved = false; // data is stored such like [XXXX...YYYY...ZZZZ]
+	if ((DFI_IN->GetArrayShape() == CDM::E_CDM_NIJK))
+	{
+		interleaved = true; // data is stored such like [XYZYXZXYZ...]
+	}
+	else
+	{ // must be CDM::E_CDM_IJKN
+		interleaved = false;
+	}
 
-    int outGc = 0; // # of output guide cells. FIXME(IDS): Support outGc > 0 situation.
-    int readStart[3];
-    int readEnd[3];
+	CDM::E_CDM_ERRORCODE ret;
 
-    unsigned int avr_step; ///<平均化ステップ
-    double l_dtime, avr_time;
-    CDM::E_CDM_ERRORCODE ret;
+	int head[3];
+	int tail[3];
 
-    for (int i = 0; i < 3; i++) {
-        readStart[i] = DFI_Process.RankList[RankID].HeadIndex[i] - outGc;
-        readEnd[i] = DFI_Process.RankList[RankID].TailIndex[i] + outGc;
-    }
+	head[0] = DFI_Process.RankList[RankID].HeadIndex[0];
+	head[1] = DFI_Process.RankList[RankID].HeadIndex[1];
+	head[2] = DFI_Process.RankList[RankID].HeadIndex[2];
 
-    FILE *t_fp;
-    cdm_Array* buf;
-    if( (t_fp = fopen(infile.c_str(),"rb")) ) {
-      fclose(t_fp);
-      buf = DFI_IN->ReadFieldData(infile, timeStep, /* [out] */l_dtime,
-                               readStart,
-                               readEnd,
-                               DFI_Process.RankList[RankID].HeadIndex,
-                               DFI_Process.RankList[RankID].TailIndex,
-                               /* avr_mode */true, /* [out] */avr_step, /* [out]  */avr_time, ret);
-      if( ret != CDM::E_CDM_SUCCESS ) return false;
+	tail[0] = DFI_Process.RankList[RankID].TailIndex[0];
+	tail[1] = DFI_Process.RankList[RankID].TailIndex[1];
+	tail[2] = DFI_Process.RankList[RankID].TailIndex[2];
 
-    }
+	float r_time;	 ///<dfiから読込んだ時間
+	unsigned i_dummy; ///<平均化ステップ
+	float f_dummy;	///<平均時間
 
-    printf("buf len = %d\n", int(buf->getArrayLength()));
-    // TODO(IDS): Compute offset and scale.
+	// Array size is determined by readEnd and readStart
+	// size_t dataSize = (tail[0] - head[0] + 1 + virtualCells) * (tail[1] -
+	// head[1] + 1 + virtualCells) * (tail[2] - head[2] + 1 + virtualCells);
+	size_t dataSize = (GVoxel[0] + virtualCells) * (GVoxel[1] + virtualCells) *
+					  (GVoxel[2] + virtualCells);
+
+	std::cout << "[CDMLoader] DBG: dataSize: " << dataSize << std::endl;
+
+	// TODO(IDS): Use cdm_Array insted of float* for the read buffer.
+	float *d_v = new float[dataSize * numVariables];
+	std::cout << "[CDMLoader] Rank[" << RankID << "] d_v = " << d_v
+			  << std::endl;
+
+	ret = DFI_IN->ReadData(d_v,				 // pointer to buffer
+						   timeStep,		 // timestep
+						   virtualCells / 2, // virtual cell size
+						   GVoxel,			 // global dim
+						   GDiv,			 // num divs
+						   head,			 // head
+						   tail,			 // tail
+						   r_time,			 // dfi read time
+						   true,			 // don't read average?
+						   i_dummy, f_dummy);
+
+	if (ret != CDM::E_CDM_SUCCESS)
+	{
+		printf("[CdmLoader] Error reading CDM data.");
+		delete[] d_v;
+		return false;
+	}
+	std::cout << "[CDMLoader] Rank[" << RankID << "] ReadData OK" << std::endl;
+
+	// TODO(IDS): Compute offset and scale.
+
+	//
+	// Create volume data by stripping virtual(guide) cells.
+	//
+	int voxelSize[3];
+	voxelSize[0] = tail[0] - head[0] + 1;
+	voxelSize[1] = tail[1] - head[1] + 1;
+	voxelSize[2] = tail[2] - head[2] + 1;
+
+	m_volume->Create(voxelSize[0], voxelSize[1], voxelSize[2], numVariables,
+					 isNonUniform); // @fixme
+	float *dst = m_volume->Buffer()->GetBuffer();
+
+	size_t sx = voxelSize[0] + virtualCells; // stride x
+	size_t sy = voxelSize[1] + virtualCells; // stride y
+	for (size_t z = 0; z < voxelSize[2]; z++)
+	{
+		for (size_t y = 0; y < voxelSize[1]; y++)
+		{
+			for (size_t x = 0; x < voxelSize[0]; x++)
+			{
+				for (size_t c = 0; c < numVariables; c++)
+				{
+					size_t srcIdx = 0;
+					if (interleaved)
+					{
+						srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables,
+											   voxelSize[0], voxelSize[1],
+											   voxelSize[2], virtualCells / 2);
+					}
+					else
+					{
+						srcIdx = _CDM_IDX_IJKN(x, y, z, c, voxelSize[0],
+											   voxelSize[1], voxelSize[2],
+											   virtualCells / 2);
+					}
+					size_t dstIdx =
+						z * voxelSize[1] * voxelSize[0] + y * voxelSize[0] + x;
+					float val = d_v[srcIdx];
+					dst[numVariables * dstIdx + c] = val;
+				}
+			}
+		}
+	}
+
+	if (isNonUniform)
+	{
+		// Coords are defined in global voxel size.
+		// Only copy corresponding range where this local voxel covers
+		//
+		// 0       head             tail     N
+		// +-------+-----------------+-------+
+		// |       |<- local voxel ->|       |
+		// +-------+-----------------+-------+
+		// <-          global voxel         ->
+		//
+		// TODO(IDS): Read coordinates of head/tail subregion, not global
+		// region.
+
+		int startPos[3], endPos[3];
+		startPos[0] = head[0] - 1;
+		startPos[1] = head[1] - 1;
+		startPos[2] = head[2] - 1;
+
+		endPos[0] = tail[0] - 1;
+		endPos[1] = tail[1] - 1;
+		endPos[2] = tail[2] - 1;
+
+		assert((startPos[0] >= 0) && (startPos[0] <= GVoxel[0]));
+		assert((startPos[1] >= 0) && (startPos[1] <= GVoxel[1]));
+		assert((startPos[2] >= 0) && (startPos[2] <= GVoxel[2]));
+
+		assert((endPos[0] >= 0) && (endPos[0] <= GVoxel[0]));
+		assert((endPos[1] >= 0) && (endPos[1] <= GVoxel[1]));
+		assert((endPos[2] >= 0) && (endPos[2] <= GVoxel[2]));
+
+		assert(startPos[0] < endPos[0]);
+		assert(startPos[1] < endPos[1]);
+		assert(startPos[2] < endPos[2]);
+
+		std::copy(coords[0].begin() + startPos[0],
+				  coords[0].begin() + endPos[0],
+				  m_volume->SpacingX()->GetBuffer());
+		std::copy(coords[1].begin() + startPos[1],
+				  coords[1].begin() + endPos[1],
+				  m_volume->SpacingY()->GetBuffer());
+		std::copy(coords[2].begin() + startPos[2],
+				  coords[2].begin() + endPos[2],
+				  m_volume->SpacingZ()->GetBuffer());
+	}
+
+	delete[] d_v;
+
+	m_head[0] = head[0];
+	m_head[1] = head[1];
+	m_head[2] = head[2];
+
+	m_tail[0] = tail[0];
+	m_tail[1] = tail[1];
+	m_tail[2] = tail[2];
+
+	// Set local voxel info
+	{
+		m_localVoxel[0] = voxelSize[0];
+		m_localVoxel[1] = voxelSize[1];
+		m_localVoxel[2] = voxelSize[2];
+
+		double pitch[3];
+		pitch[0] = m_globalRegion[0] / m_globalVoxel[0];
+		pitch[1] = m_globalRegion[1] / m_globalVoxel[1];
+		pitch[2] = m_globalRegion[2] / m_globalVoxel[2];
+
+		m_localRegion[0] = pitch[0] * voxelSize[0];
+		m_localRegion[1] = pitch[1] * voxelSize[1];
+		m_localRegion[2] = pitch[2] * voxelSize[2];
+
+		// LocalOffset is defined in absolute coordinate.
+		m_localOffset[0] = m_globalOffset[0] + pitch[0] * (head[0] - 1);
+		m_localOffset[1] = m_globalOffset[1] + pitch[1] * (head[1] - 1);
+		m_localOffset[2] = m_globalOffset[2] + pitch[2] * (head[2] - 1);
+	}
+
+	return true;
 }
 
 void CDMLoader::Impl::Clear()
@@ -296,9 +507,21 @@ void CDMLoader::Impl::Clear()
 	m_globalVoxel[1] = -1;
 	m_globalVoxel[2] = -1;
 
+	m_globalRegion[0] = 0.0;
+	m_globalRegion[1] = 0.0;
+	m_globalRegion[2] = 0.0;
+
 	m_globalDiv[0] = -1;
 	m_globalDiv[1] = -1;
 	m_globalDiv[2] = -1;
+
+	m_localVoxel[0] = -1;
+	m_localVoxel[1] = -1;
+	m_localVoxel[2] = -1;
+
+	m_localRegion[0] = 0.0;
+	m_localRegion[1] = 0.0;
+	m_localRegion[2] = 0.0;
 
 	m_head[0] = -1;
 	m_head[1] = -1;
@@ -307,6 +530,15 @@ void CDMLoader::Impl::Clear()
 	m_tail[0] = -1;
 	m_tail[1] = -1;
 	m_tail[2] = -1;
+
+	// (0, 0, 0) as default.
+	m_globalOffset[0] = 0.0;
+	m_globalOffset[1] = 0.0;
+	m_globalOffset[2] = 0.0;
+
+	m_localOffset[0] = 0.0;
+	m_localOffset[1] = 0.0;
+	m_localOffset[2] = 0.0;
 
 	// use global division stored in .dfi
 	m_divisionMode = DIVISION_DFI;
@@ -366,7 +598,8 @@ int CDMLoader::Impl::SetTailIndex(const int tail[3])
 	return 0; // OK
 }
 
-int CDMLoader::Impl::SetDivisionMode(const int mode, const int axis0, const int axis1)
+int CDMLoader::Impl::SetDivisionMode(const int mode, const int axis0,
+									 const int axis1)
 {
 	if ((m_globalDiv[0] > 0) && (m_globalDiv[1] > 0) && (m_globalDiv[2] > 0))
 	{
@@ -433,6 +666,13 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 	{
 		fprintf(stderr, "[CDMLoader] File not found: %s\n", filename);
 		return false;
+	}
+
+	if (myRank == 0)
+	{
+		// Print CDMlib version.
+		std::cout << "[CDMLoader] CDMlib ver." << cdm_DFI::getVersionInfo()
+				  << std::endl;
 	}
 
 	// Read info from .dfi
@@ -555,10 +795,22 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 		}
 	}
 
-    bool isMx1 = false; // Each MPI rank read all stored data(allgather)
+	std::cout << "[CDMLoader] Rank[" << myRank
+			  << "] GlobalOrigin : " << domain->GlobalOrigin[0] << ", "
+			  << domain->GlobalOrigin[1] << ", " << domain->GlobalOrigin[2]
+			  << std::endl;
+	std::cout << "[CDMLoader] Rank[" << myRank
+			  << "] GlobalRegion : " << domain->GlobalRegion[0] << ", "
+			  << domain->GlobalRegion[1] << ", " << domain->GlobalRegion[2]
+			  << std::endl;
+	std::cout << "[CDMLoader] Rank[" << myRank
+			  << "] Node(1,1,1) : " << domain->NodeX(1) << ", "
+			  << domain->NodeY(1) << ", " << domain->NodeZ(1) << std::endl;
+
+	bool isMx1 = false; // Each MPI rank read all stored data(allgather)
 	bool isMxM = false; // True if stored data division size == MPI process size
 						// of hrender in running.
-    bool isMxN = false; // Load M parallel data in N parallel MPI rank.
+	bool isMxN = false; // Load M parallel data in N parallel MPI rank.
 
 	// Load Process info.
 	cdm_Process process;
@@ -626,6 +878,7 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 			double minval = coords[0][0];
 			double maxval = coords[0][nuDomain->GlobalVoxel[0]];
 
+			// normalize to [0, 1.0]
 			for (size_t x = 0; x < nuDomain->GlobalVoxel[0] + 1; x++)
 			{
 				coords[0][x] = (coords[0][x] - minval) / (maxval - minval);
@@ -642,6 +895,7 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 			double minval = coords[1][0];
 			double maxval = coords[1][nuDomain->GlobalVoxel[1]];
 
+			// normalize to [0, 1.0]
 			for (size_t x = 0; x < nuDomain->GlobalVoxel[1] + 1; x++)
 			{
 				coords[1][x] = (coords[1][x] - minval) / (maxval - minval);
@@ -658,6 +912,7 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 			double minval = coords[2][0];
 			double maxval = coords[2][nuDomain->GlobalVoxel[2]];
 
+			// normalize to [0, 1.0]
 			for (size_t x = 0; x < nuDomain->GlobalVoxel[2] + 1; x++)
 			{
 				coords[2][x] = (coords[2][x] - minval) / (maxval - minval);
@@ -805,6 +1060,8 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 		return false;
 	}
 
+	std::string dfi_dirname = CDM::cdmPath_DirName(filename);
+
 	std::string dfi_filename = std::string(filename);
 
 	CDM::E_CDM_ERRORCODE ret = CDM::E_CDM_SUCCESS;
@@ -876,154 +1133,70 @@ bool CDMLoader::Impl::Load(const char *filename, int timeSliceIndex)
 		}
 	}
 
-    if (isMx1) {
+	if (isMx1)
+	{
 
-#if 0
-        float r_time;	 ///<dfiから読込んだ時間
-        unsigned i_dummy; ///<平均化ステップ
-        float f_dummy;	///<平均時間
+		bool ok = LoadMx1(DFI_IN, step, GVoxel, GDiv, virtualCells,
+						  numVariables, isNonUniform, coords);
 
-        // data size
-        size_t dataSize = (GVoxel[0] + virtualCells) * (GVoxel[1] + virtualCells) *
-                          (GVoxel[2] + virtualCells);
-        // printf("DBG: dataSize: %d\n", dataSize);
-        float *d_v = new float[dataSize * numVariables];
+		delete DFI_IN;
 
-        ret = DFI_IN->ReadData(d_v,				 // pointer to buffer
-                               step,			 // timestep
-                               virtualCells / 2, // virtual cell size
-                               GVoxel,			 // global dim
-                               GDiv,			 // num divs
-                               head,			 // start time
-                               tail,			 // end time
-                               r_time,			 // dfi read time
-                               true,			 // don't read averate?
-                               i_dummy, f_dummy);
+		if (!ok)
+		{
+			return false;
+		}
+	}
+	else if (isMxM)
+	{
 
-        if (ret != CDM::E_CDM_SUCCESS)
-        {
-            printf("[CdmLoader] Error reading CDM data.");
-            // delete [] d_v;
-            delete DFI_IN;
-            return false;
-        }
+		int RankID = myRank;
 
+		unsigned int l_step = step; // TODO(IDS): Use SliceList.step
 
-        //
-        // Create volume data by stripping virtual cells.
-        //
-        m_volume->Create(GVoxel[0], GVoxel[1], GVoxel[2], numVariables,
-                         isNonUniform); // @fixme
-        float *dst = m_volume->Buffer()->GetBuffer();
+		bool mio = false;
+		if (DFI_IN->GetcdmMPI()->NumberOfRank > 1)
+			mio = true;
 
-        // printf("virtualCells = %d\n", virtualCells);
+		// Dummy
+		std::string inPath;
+		std::string infile;
 
-        size_t sx = GVoxel[0] + virtualCells;
-        size_t sy = GVoxel[1] + virtualCells;
-        for (size_t z = 0; z < GVoxel[2]; z++)
-        {
-            for (size_t y = 0; y < GVoxel[1]; y++)
-            {
-                for (size_t x = 0; x < GVoxel[0]; x++)
-                {
-                    for (size_t c = 0; c < numVariables; c++)
-                    {
-                        size_t srcIdx = 0;
-                        if (interleaved)
-                        {
-                            // size_t srcIdx =  (z + virtualCells/2) * sy * sx + (y
-                            // + virtualCells/2) * sx + (x + virtualCells/2);
-                            // float val = d_v[numVariables * srcIdx + c];
-                            srcIdx = _CDM_IDX_NIJK(c, x, y, z, numVariables,
-                                                   GVoxel[0], GVoxel[1], GVoxel[2],
-                                                   virtualCells / 2);
-                        }
-                        else
-                        {
-                            srcIdx = _CDM_IDX_IJKN(x, y, z, c, GVoxel[0], GVoxel[1],
-                                                   GVoxel[2], virtualCells / 2);
-                        }
-                        size_t dstIdx =
-                            z * GVoxel[1] * GVoxel[0] + y * GVoxel[0] + x;
-                        float val = d_v[srcIdx];
-                        dst[numVariables * dstIdx + c] = val;
-                    }
-                }
-            }
-        }
+		bool ok = LoadMxM(DFI_IN, process, RankID, infile, step, GVoxel, GDiv,
+						  virtualCells, numVariables, isNonUniform, coords);
 
-        if (isNonUniform)
-        {
-            std::copy(coords[0].begin(), coords[0].end(),
-                      m_volume->SpacingX()->GetBuffer());
-            std::copy(coords[1].begin(), coords[1].end(),
-                      m_volume->SpacingY()->GetBuffer());
-            std::copy(coords[2].begin(), coords[2].end(),
-                      m_volume->SpacingZ()->GetBuffer());
-        }
+		delete DFI_IN;
 
-	    delete[] d_v;
-#else
-        bool ok = LoadMx1(DFI_IN, step, GVoxel, GDiv, virtualCells, numVariables, isNonUniform, coords);
-
-        if (!ok) {
-            return false;
-        }
-#endif
-
-    } else if (isMxM) {
-
-        // bool CDMLoader::Impl::LoadMxM(cdm_DFI *DFI_IN, const cdm_Process &DFI_Process, int RankID, const std::string &infile, unsigned int timeStep, int GVoxel[3], int GDiv[3], int numVariables, bool isNonUniform, const std::vector<float> coords[3]) {
-
-        int RankID = myRank;
-
-        unsigned int l_step = step; // TODO(IDS): Use SliceList.step
-
-        bool mio = false;
-        if (DFI_IN->GetcdmMPI()->NumberOfRank > 1) mio = true;
-
-        //読込みファイル名の生成
-        std::string inPath = CDM::cdmPath_DirName(DFI_IN->get_dfi_fname());
-        std::string infile =  CDM::cdmPath_ConnectPath(inPath, DFI_IN->Generate_FieldFileName(process.RankList[RankID].RankID,l_step,mio));
-
-
-        bool ok = LoadMxM(DFI_IN, process, RankID, infile, step, GVoxel, GDiv, numVariables, isNonUniform, coords);
-
-        if (!ok) {
-            return false;
-        }
-
-    } else {
-        // TODO
-        assert(0);
-    }
-
-	delete DFI_IN;
+		if (!ok)
+		{
+			return false;
+		}
+	}
+	else
+	{
+		// TODO
+		assert(0);
+	}
 
 	printf("[CdmLoader] CDM load OK\n");
 
 	return true;
 }
 
-
 // ------------------------------------------------------
-
 
 /// コンストラクタ
 CDMLoader::CDMLoader() : m_imp(new CDMLoader::Impl()) { Clear(); }
 
 /// デストラクタ
-CDMLoader::~CDMLoader() {
-    Clear();
+CDMLoader::~CDMLoader()
+{
+	Clear();
 
-    delete m_imp;
+	delete m_imp;
 }
 
 /// ボリュームクリア
-void CDMLoader::Clear()
-{
-    m_imp->Clear();
-}
+void CDMLoader::Clear() { m_imp->Clear(); }
 
 /**
  * CDMデータのロード
@@ -1034,38 +1207,58 @@ void CDMLoader::Clear()
  */
 bool CDMLoader::Load(const char *filename, int timeSliceIndex)
 {
-    return m_imp->Load(filename, timeSliceIndex);
+	return m_imp->Load(filename, timeSliceIndex);
 }
 
 /**
  * CDMWidth取得
  * @retval int Width
  */
-int CDMLoader::Width() { assert(m_imp->m_volume); return m_imp->m_volume->Width(); }
+int CDMLoader::Width()
+{
+	assert(m_imp->m_volume);
+	return m_imp->m_volume->Width();
+}
 
 /**
  * CDMHeight取得
  * @retval int Height
  */
-int CDMLoader::Height() { assert(m_imp->m_volume); return m_imp->m_volume->Height(); }
+int CDMLoader::Height()
+{
+	assert(m_imp->m_volume);
+	return m_imp->m_volume->Height();
+}
 
 /**
  * CDMDepth取得
  * @retval int Depth
  */
-int CDMLoader::Depth() { assert(m_imp->m_volume); return m_imp->m_volume->Depth(); }
+int CDMLoader::Depth()
+{
+	assert(m_imp->m_volume);
+	return m_imp->m_volume->Depth();
+}
 
 /**
  * CDMComponent取得
  * @retval int Component数
  */
-int CDMLoader::Component() { assert(m_imp->m_volume); return m_imp->m_volume->Component(); }
+int CDMLoader::Component()
+{
+	assert(m_imp->m_volume);
+	return m_imp->m_volume->Component();
+}
 
 /**
  * CDMデータバッファ参照取得
  * @retval FloatBuffer* FloatBufferアドレス
  */
-FloatBuffer *CDMLoader::Buffer() { assert(m_imp->m_volume); return m_imp->m_volume->Buffer(); }
+FloatBuffer *CDMLoader::Buffer()
+{
+	assert(m_imp->m_volume);
+	return m_imp->m_volume->Buffer();
+}
 
 /**
  * VolumeData参照取得
@@ -1073,62 +1266,50 @@ FloatBuffer *CDMLoader::Buffer() { assert(m_imp->m_volume); return m_imp->m_volu
  */
 BufferVolumeData *CDMLoader::VolumeData() { return m_imp->m_volume; }
 
-void CDMLoader::GlobalOffset(double ret[3])
+void CDMLoader::GlobalOffset(double ret[3]) { m_imp->GlobalOffset(ret); }
+
+void CDMLoader::GlobalRegion(double ret[3]) { m_imp->GlobalRegion(ret); }
+
+void CDMLoader::GlobalVoxel(int ret[3]) { m_imp->GlobalVoxel(ret); }
+
+void CDMLoader::GlobalDiv(int ret[3]) { m_imp->GlobalDiv(ret); }
+
+void CDMLoader::LocalOffset(double ret[3]) { m_imp->LocalOffset(ret); }
+
+void CDMLoader::LocalRegion(double ret[3]) { m_imp->LocalRegion(ret); }
+
+void CDMLoader::LocalVoxel(int ret[3]) { m_imp->LocalVoxel(ret); }
+
+void CDMLoader::HeadIndex(int ret[3]) { m_imp->HeadIndex(ret); }
+
+void CDMLoader::TailIndex(int ret[3]) { m_imp->TailIndex(ret); }
+
+int CDMLoader::NumTimeSteps() { return m_imp->NumTimeSteps(); }
+
+int CDMLoader::GetTimeStep(int i) { return m_imp->GetTimeStep(i); }
+
+int CDMLoader::SetHeadIndex(const int headIndex[3])
 {
-    m_imp->GlobalOffset(ret);
+	m_imp->SetHeadIndex(headIndex);
 }
 
-void CDMLoader::GlobalRegion(double ret[3])
+int CDMLoader::SetTailIndex(const int tailIndex[3])
 {
-    m_imp->GlobalRegion(ret);
+	m_imp->SetTailIndex(tailIndex);
 }
 
-void CDMLoader::GlobalVoxel(int ret[3])
+int CDMLoader::SetGlobalVoxel(const int voxelSize[3])
 {
-    m_imp->GlobalVoxel(ret);
+	m_imp->SetGlobalVoxel(voxelSize);
 }
 
-void CDMLoader::GlobalDiv(int ret[3])
+int CDMLoader::SetGlobalDivision(const int div[3])
 {
-    m_imp->GlobalDiv(ret);
+	m_imp->SetGlobalDivision(div);
 }
 
-void CDMLoader::HeadIndex(int ret[3])
+int CDMLoader::SetDivisionMode(const int divisionMode, const int divisionAxis0,
+							   const int divisionAxis1)
 {
-    m_imp->HeadIndex(ret);
-}
-
-void CDMLoader::TailIndex(int ret[3])
-{
-    m_imp->TailIndex(ret);
-}
-
-int CDMLoader::NumTimeSteps()
-{
-    return m_imp->NumTimeSteps();
-}
-
-int CDMLoader::GetTimeStep(int i)
-{
-    return m_imp->GetTimeStep(i);
-}
-
-int CDMLoader::SetHeadIndex(const int headIndex[3]) {
-    m_imp->SetHeadIndex(headIndex);
-}
-
-int CDMLoader::SetTailIndex(const int tailIndex[3]) {
-    m_imp->SetTailIndex(tailIndex);
-}
-
-int CDMLoader::SetGlobalVoxel(const int voxelSize[3]) {
-    m_imp->SetGlobalVoxel(voxelSize);
-}
-
-int CDMLoader::SetGlobalDivision(const int div[3]) {
-    m_imp->SetGlobalDivision(div);
-}
-
-int CDMLoader::SetDivisionMode(const int divisionMode, const int divisionAxis0, const int divisionAxis1) {
-    m_imp->SetDivisionMode(divisionMode, divisionAxis0, divisionAxis1);
+	m_imp->SetDivisionMode(divisionMode, divisionAxis0, divisionAxis1);
 }
