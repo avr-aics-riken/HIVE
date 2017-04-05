@@ -364,7 +364,14 @@ public:
         return true;
     }
     
-    
+    bool ClearShaderCache(const char* srcname)
+    {
+        ShaderCache::iterator it = m_shaderCache.find(srcname);
+        if (it != m_shaderCache.end()) {
+            m_shaderCache.erase(it);
+        }
+        return true;
+    }
     
     /// レンダリング
     void Render()
@@ -790,4 +797,10 @@ bool RenderCore::CreateProgramSrc(const char* src, unsigned int& prg)
 {
     return m_imp->CreateProgramSrc(src, prg);
 }
+
+bool RenderCore::ClearShaderCache(const char* src)
+{
+    return m_imp->ClearShaderCache(src);
+}
+
 

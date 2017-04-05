@@ -23,6 +23,10 @@ function VectorObject:Do()
 	pm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
+    
+    if pm:GetShader() ~= v.shadername then
+        clearShaderCache(v.shadername)
+    end
 	pm:SetShader(v.shadername)
 
 	local uniforms = self.connection.Uniform

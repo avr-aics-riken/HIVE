@@ -45,6 +45,7 @@ export default class ItemView extends React.Component {
 		this.changeLabelFunc = this.changeLabelFunc.bind(this);
 		this.onLabelChanged = this.onLabelChanged.bind(this);
 		this.openFilebrowser = this.openFilebrowser.bind(this);
+		this.reloadFile = this.reloadFile.bind(this);
 		this.okFileBrowser = this.okFileBrowser.bind(this);
 	}
 
@@ -318,6 +319,21 @@ export default class ItemView extends React.Component {
 			});
 		};
 	}
+	
+	reloadFile(hole) {
+		return () => {
+			this.props.action.okFileBrowser({
+					varname : hole.nodeVarname,
+					inputName : hole.name
+			}, "");
+			setTimeout(() => {
+				this.props.action.okFileBrowser({
+						varname : hole.nodeVarname,
+						inputName : hole.name
+				}, hole.value);
+			}, 0);
+		};
+	}
 
 	contents() {
 		const styles = this.styles.bind(this)();
@@ -372,6 +388,9 @@ export default class ItemView extends React.Component {
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
 							initialParam={hole} key={id} changeFunc={this.changeFunc(hole)}
+							filebrowser={true}
+							openFilebrowserFunc={this.openFilebrowser(hole)}
+							reloadFileFunc={this.reloadFile(hole)}
                             top={topRow}
                             bottom={bottom} />);
 			} else if (hole.type === 'vec2' || hole.type === 'vec3' || hole.type === 'vec4') {

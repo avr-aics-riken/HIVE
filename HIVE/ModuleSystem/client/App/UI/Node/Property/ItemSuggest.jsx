@@ -144,7 +144,7 @@ export default class ItemSuggest extends React.Component {
                 marginBottom: "1px",
                 verticalAlign: "middle",
                 padding: "1px",
-                width : "152px",
+                width : "126px",
                 height: "19px",
                 display: "inline-block",
             },
@@ -170,7 +170,7 @@ export default class ItemSuggest extends React.Component {
                     marginTop: "1px",
                     marginBottom: "1px",
                     padding: "1px",
-                    width: "165px",
+                    width: "126px",
                     height: "19px",
                     verticalAlign: "middle",
                     display: "inline-block"
@@ -238,6 +238,39 @@ export default class ItemSuggest extends React.Component {
 		return this.props.initialParam.hasOwnProperty('label') ? this.props.initialParam.label : this.props.initialParam.name;
 	}
 
+	onFilebrowserClick() {
+		this.props.openFilebrowserFunc();
+	}
+    
+    onFileReload() {
+		this.props.reloadFileFunc();
+    }
+
+	filebrowser() {
+		if (this.props.filebrowser) {
+			return (
+                <span>
+                    <span style={{
+                            position : "absolute",
+                            cursor : "pointer",
+                            right : "34px"}}
+                        onClick={this.onFilebrowserClick.bind(this)}
+                        className={"dir2"}
+                    >
+                    </span>
+                    <span style={{
+                            position : "absolute",
+                            cursor : "pointer",
+                            right : "15px"}}
+                        onClick={this.onFileReload.bind(this)}
+                        className={"reload"}
+                    >
+                    </span>
+                </span>
+            );
+		}
+	}
+
     render () {
         const styles = this.styles.bind(this)();
         const {value, suggestions} = this.state;
@@ -260,6 +293,7 @@ export default class ItemSuggest extends React.Component {
                     inputProps={inputProps}
                     ref="suggest"
                 />
+                {this.filebrowser.bind(this)()}
             </div>
         );
     }
