@@ -4,10 +4,7 @@
 	"info":"Mandelbulbを生成するためのノード",
 	"customfuncfile":"generator.lua",
     "input": [
-		{"name": "width", "type": "int", "value": 10},
-		{"name": "height", "type": "int", "value": 10},
-		{"name": "depth", "type": "int", "value": 10},
-		{"name": "component", "type": "int", "value": 3}
+		{"name": "size", "type": "int", "value": 30}
 	],
 	"output": [
 		{"name": "VolumeData",  "type": "BufferVolumeData"}

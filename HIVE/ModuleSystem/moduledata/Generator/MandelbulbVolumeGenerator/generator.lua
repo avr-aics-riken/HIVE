@@ -16,7 +16,7 @@ end
 
 function MandelbulbVolumeGenerator:VolumeData()
     local v = self.value
-    if self.gen:Generate(v.width, v.height, v.depth, v.component) then
+    if self.gen:Generate(v.size) then
         return self.gen:VolumeData()
     end
     print("Mandelbulb generate failed")
