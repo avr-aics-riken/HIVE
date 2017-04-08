@@ -110,9 +110,6 @@ void  main(void) {
 	tmax = max(0.0, tmax);
 
     // raymarch.
-    const float EPSILON = 0.0001;
-    float t = tmin + EPSILON;
-    //    float tstep = (tmax - tmin) / num_steps;
     float cnt = 0.0;
     float subcnt = 0.0;
 	float state = 0.0;
@@ -131,6 +128,8 @@ void  main(void) {
     float thickness = max(max(volumescale.x, volumescale.y),
                           volumescale.z) / num_steps;
 
+    float tOffset = thickness / 10.;
+    float t = tmin + tOffset;
     vec3 nx, ny, nz;
     orthoBasis(nx, ny, nz, n);
 
@@ -139,7 +138,7 @@ void  main(void) {
     dist = max(dist, abs(dot(nz, (tmax * raydir) - tmin * raydir)));
 
     float samples = floor(dist / thickness) + 1.;
-    float tstep = (tmax - tmin - EPSILON) / samples;
+    float tstep = (tmax - tmin - tOffset) / samples;
 
 	float i = 0.0;
 	while((i < samples) &&
