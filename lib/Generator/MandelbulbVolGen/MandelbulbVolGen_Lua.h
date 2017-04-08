@@ -25,6 +25,10 @@ public:
         return MandelbulbVolGen::Generate(size);
     }
 
+    bool GenerateOriginShift(int size, float originX, float originY, float originZ) {
+        return MandelbulbVolGen::Generate(size, originX, originY, originZ);
+    }
+
     int Width() {
         return MandelbulbVolGen::Width();
     }
@@ -52,6 +56,8 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("MandelbulbVolGen",bool,Generate,
                                              int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("MandelbulbVolGen",bool,GenerateOriginShift,
+                                             int, float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 };

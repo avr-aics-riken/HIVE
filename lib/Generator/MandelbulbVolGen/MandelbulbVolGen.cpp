@@ -46,7 +46,7 @@ void mandelbulb(const float px, const float py, const float pz,
             iterationCount = 0;
             return;
         }
-        
+
         float zr = pow( r, power);
         float theta = acos(z[1] / r);
 		float phi = atan2(z[2], z[0]);
@@ -58,11 +58,12 @@ void mandelbulb(const float px, const float py, const float pz,
     }
 }
 
-float* calcMandelbulb(const int w, const int h, const int d)
+float* calcMandelbulb(const int w, const int h, const int d,
+                      const float originX, const float originY, const float originZ)
 {
     float* voldata = new float [w * h * d * 1];
     float* p = voldata;
-    
+
     float bmin[3] = {-1.5, -1.5, -1.5};
     float bmax[3] = {1.5, 1.5, 1.5};
     float step[3] = {(bmax[0] - bmin[0]) / w,
@@ -71,11 +72,11 @@ float* calcMandelbulb(const int w, const int h, const int d)
     float offset[3] = {step[0] / 2., step[1] / 2., step[2] / 2.};
 
     for (int vz = 0 ; vz < d ; vz++) {
-        float z = step[2] * vz + bmin[2] + offset[2];
+        float z = step[2] * vz + bmin[2] + offset[2] + originX;
         for (int vy = 0 ; vy < h ; vy++) {
-            float y = step[1] * vy + bmin[1] + offset[1];
+            float y = step[1] * vy + bmin[1] + offset[1] + originY;
             for (int vx = 0 ; vx < w ; vx++) {
-                float x = step[0] * vx + bmin[0] + offset[0];
+                float x = step[0] * vx + bmin[0] + offset[0] + originZ;
                 float iterationCount, minDist, maxDist;
                 mandelbulb(x, y, z,
                            iterationCount, minDist, maxDist);
@@ -106,15 +107,53 @@ bool MandelbulbVolGen::Generate(const int size)
     const int w = size;
     const int h = size;
     const int d = size;
+    const float originX = 0;
+    const float originY = 0;
+    const float originZ = 0;
+
     // Mandelbulb Volume has 1 components
     // Use minDist as density
     const int c = 1;
-    const float* buf = calcMandelbulb(w, h, d);
+    const float* buf = calcMandelbulb(w, h, d,
+                                      originX, originY, originZ);
     m_volume->Create(w, h, d, c);
     const int fnum = w * h * d * c;
     memcpy(m_volume->Buffer()->GetBuffer(), buf, fnum * sizeof(float));
     delete [] buf;
-    
+
+    return true;
+}
+
+/**
+ * Generate Mandelbulb Volume
+ * @param size size
+ * @param originX originX
+ * @param originY originY
+ * @param originZ originZ
+ * @retval true 成功
+ * @retval false 失敗
+ */
+bool MandelbulbVolGen::Generate(const int size,
+                                const float originX, const float originY, const float originZ)
+{
+    Clear();
+    fprintf(stderr,"size: %d\n", size);
+
+    // resolution ... size * size * size
+    const int w = size;
+    const int h = size;
+    const int d = size;
+
+    // Mandelbulb Volume has 1 components
+    // Use minDist as density
+    const int c = 1;
+    const float* buf = calcMandelbulb(w, h, d,
+                                      originX, originY, originZ);
+    m_volume->Create(w, h, d, c);
+    const int fnum = w * h * d * c;
+    memcpy(m_volume->Buffer()->GetBuffer(), buf, fnum * sizeof(float));
+    delete [] buf;
+
     return true;
 }
 
@@ -171,4 +210,3 @@ BufferVolumeData *MandelbulbVolGen::VolumeData()
 {
     return m_volume;
 }
-
