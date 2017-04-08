@@ -2,7 +2,7 @@
 print('load STL')
 
 local stl = require("StlLoader")()
-stl:Load('porsche.stl')
+stl:Load('bunny.stl')
 
 local mesh = stl:MeshData()
 print(mesh)

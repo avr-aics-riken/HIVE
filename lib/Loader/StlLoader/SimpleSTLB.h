@@ -11,8 +11,6 @@
 
 #include "SimpleSTL.h"
 
-
-#if 0
 inline unsigned int swap4(const unsigned int* val)
 {
     unsigned int tmp = *val;
@@ -32,11 +30,24 @@ inline float swap4(float* f)
     unsigned int i = swap4(d);
     return *reinterpret_cast<float*>(&i);
 }
-#else
-inline float swap4(const unsigned int* i){ return *i; }
-inline float swap4(float* f)       { return *f; }
 
-#endif
+inline unsigned int read4(const unsigned int* val, bool swapEndian)
+{
+    if (swapEndian) {
+        return swap4(val);
+    } else {
+        return (*val);
+    }
+}
+
+inline float read4(float* val, bool swapEndian)
+{
+    if (swapEndian) {
+        return swap4(val);
+    } else {
+        return (*val);
+    }
+}
 
 
 /**
@@ -48,7 +59,7 @@ public:
     SimpleSTLB() : SimpleSTL() {}
 	~SimpleSTLB(){}
 	
-  	bool Load(const char* filename, bool generateIndex = false)
+  	bool Load(const char* filename, bool swapEndian = false, bool generateIndex = false)
 	{
 		FILE* fp = fopen(filename, "rb");
 		if (!fp)
@@ -67,7 +78,7 @@ public:
 		const unsigned char* data = static_cast<const unsigned char*>(fbuf);
 		data += 80; //skip header
 		
-		const unsigned int triCount = swap4(reinterpret_cast<const unsigned int*>(&data[0])); data+=sizeof(unsigned int);
+		const unsigned int triCount = read4(reinterpret_cast<const unsigned int*>(&data[0]), swapEndian); data+=sizeof(unsigned int);
 		const unsigned int vertexCount = triCount * 3;
 		
 		m_pos.resize(vertexCount);
@@ -83,24 +94,24 @@ public:
 			const unsigned int i0 = 0;
 			const unsigned int i1 = 1;
 			const unsigned int i2 = 2;
-			m_pos[i+i0].x      = swap4(&tri.vtx0[0]);
-			m_pos[i+i0].y      = swap4(&tri.vtx0[1]);
-			m_pos[i+i0].z      = swap4(&tri.vtx0[2]);
-			m_normal[i+i0].x   = swap4(&tri.normal[0]);
-			m_normal[i+i0].y   = swap4(&tri.normal[1]);
-			m_normal[i+i0].z   = swap4(&tri.normal[2]);
-			m_pos[i+i1].x    = swap4(&tri.vtx1[0]);
-			m_pos[i+i1].y    = swap4(&tri.vtx1[1]);
-			m_pos[i+i1].z    = swap4(&tri.vtx1[2]);
-			m_normal[i+i1].x = swap4(&tri.normal[0]);
-			m_normal[i+i1].y = swap4(&tri.normal[1]);
-			m_normal[i+i1].z = swap4(&tri.normal[2]);
-			m_pos[i+i2].x    = swap4(&tri.vtx2[0]);
-			m_pos[i+i2].y    = swap4(&tri.vtx2[1]);
-			m_pos[i+i2].z    = swap4(&tri.vtx2[2]);
-			m_normal[i+i2].x = swap4(&tri.normal[0]);
-			m_normal[i+i2].y = swap4(&tri.normal[1]);
-			m_normal[i+i2].z = swap4(&tri.normal[2]);
+			m_pos[i+i0].x      = read4(&tri.vtx0[0], swapEndian);
+			m_pos[i+i0].y      = read4(&tri.vtx0[1], swapEndian);
+			m_pos[i+i0].z      = read4(&tri.vtx0[2], swapEndian);
+			m_normal[i+i0].x   = read4(&tri.normal[0], swapEndian);
+			m_normal[i+i0].y   = read4(&tri.normal[1], swapEndian);
+			m_normal[i+i0].z   = read4(&tri.normal[2], swapEndian);
+			m_pos[i+i1].x    = read4(&tri.vtx1[0], swapEndian);
+			m_pos[i+i1].y    = read4(&tri.vtx1[1], swapEndian);
+			m_pos[i+i1].z    = read4(&tri.vtx1[2], swapEndian);
+			m_normal[i+i1].x = read4(&tri.normal[0], swapEndian);
+			m_normal[i+i1].y = read4(&tri.normal[1], swapEndian);
+			m_normal[i+i1].z = read4(&tri.normal[2], swapEndian);
+			m_pos[i+i2].x    = read4(&tri.vtx2[0], swapEndian);
+			m_pos[i+i2].y    = read4(&tri.vtx2[1], swapEndian);
+			m_pos[i+i2].z    = read4(&tri.vtx2[2], swapEndian);
+			m_normal[i+i2].x = read4(&tri.normal[0], swapEndian);
+			m_normal[i+i2].y = read4(&tri.normal[1], swapEndian);
+			m_normal[i+i2].z = read4(&tri.normal[2], swapEndian);
 						
 			if (tri.normal[0] == 0 && tri.normal[1] == 0 && tri.normal[2] == 0)
 			{
