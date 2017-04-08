@@ -43,11 +43,16 @@ local volume = VolumeModel()
 local volumedata = mandelbulb:VolumeData()
 volume:Create(volumedata)
 
-volume:SetShader('def_volume_raymarch_tf2.frag')
+volume:SetShader('volume_raymarch_tf_adaptive_split_step.frag')
+-- volume:SetShader('volume_raymarch_tf_const_split_step.frag')
+-- volume:SetShader('volume_raymarch_adaptive_split_step.frag')
+-- volume:SetShader('volume_raymarch_const_split_step.frag')
+
 volume:SetTexture('tf_tex', tftex:ImageData())
 volume:SetClampToEdge(true, true, true)
 volume:SetTextureWrapping('tf_tex', true, true, true) -- CLAMP_TO_EDGE wrap mode for transfer function texture.
 volume:SetFloat('tf_min', 0.0)
 volume:SetFloat('tf_max', 1.7)
+volume:SetFloat('u_numSteps', 512.0)
 
 render {camera, volume}
