@@ -14,7 +14,8 @@ camera:LookAt(
 
 
 local stl = require("StlLoader")()
-stl:Load('bunny.stl')
+local swapEndian = false
+stl:Load('bunny.stl', swapEndian)
 
 local model = PolygonModel()
 local meshdata = stl:MeshData()
