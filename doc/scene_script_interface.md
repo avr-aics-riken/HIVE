@@ -682,10 +682,13 @@ STLファイルを読み込むローダークラス
 以下はSTLファイルを読み込みPolygonModelを作成し、データをセットする例
 
     local loader = require("StlLoader")()
-    loader:Load('bunny.stl')
+    local swapEndian = false
+    loader:Load('bunny.stl', swapEndian)
     local model = PolygonModel()
     local meshdata = loader:MeshData()
     model:Create(meshdata)
+
+swapEndian でエンディアンを変換して読み込むかどうかを指定できます(Binary STL の場合のみ有効)
 
 ## SphLoader
 

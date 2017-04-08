@@ -19,7 +19,7 @@ public:
 	void Clear();
 	RefPtr<BufferMeshData> mesh;
 protected:
-	bool Load(const char* filename);
+	bool Load(const char* filename, bool swap_endian = false);
 	BufferMeshData *MeshData();
 };
 

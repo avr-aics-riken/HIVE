@@ -61,17 +61,18 @@ void STLLoader::Clear()
 /**
  * STLデータのロード
  * @param filename ファイルパス
+ * @param swap_endian Swap endian for Binary STL?
  * @retval true 成功
  * @retval false 失敗
  */
-bool STLLoader::Load(const char* filename){
+bool STLLoader::Load(const char* filename, bool swap_endian){
 	Clear();
     
     bool r = false;
     SimpleSTL* obj;
     if (isSTLBinaryFile(filename)) {
         obj = new SimpleSTLB();
-        r = obj->Load(filename);
+        r = obj->Load(filename, swap_endian);
     } else {
         obj = new SimpleSTLA();
         r = obj->Load(filename);
