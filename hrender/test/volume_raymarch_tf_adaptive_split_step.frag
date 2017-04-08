@@ -21,11 +21,8 @@ uniform vec3 offset;
 uniform sampler2D tf_tex;
 uniform float     tf_min;
 uniform float     tf_max;
-uniform float     tf_opacity;
 
-#define EPS        0.005
-#define SAMPLES    2500.0
-#define num_steps  SAMPLES
+uniform float u_numSteps;
 
 void orthoBasis(out vec3 basis0,out vec3 basis1,out vec3 basis2, vec3 n) {
     basis2 = vec3(n.x, n.y, n.z);
@@ -100,8 +97,6 @@ void  main(void) {
     vec3 rayorg = eye;
 	vec3 raydir = p - eye;
     raydir = normalize(raydir);
-    vec4 sum   = vec4(0.0, 0.0, 0.0, 0.0);
-    vec4 sum_k = vec4(0.0, 0.0, 0.0, 0.0);
     vec3 pmin = vec3(-0.5, -0.5, -0.5) * volumescale + offset;
     vec3 pmax = vec3( 0.5,  0.5,  0.5) * volumescale + offset;
     float tmin, tmax;
@@ -110,24 +105,10 @@ void  main(void) {
 	tmax = max(0.0, tmax);
 
     // raymarch.
-    float cnt = 0.0;
-    float subcnt = 0.0;
-	float state = 0.0;
-	float press  = 0.0;
-	float kotai  = 0.0;
-	float ekitai = 0.0;
-	float count = 0.0;
-	float pu  = 0.0;
-	float pp  = 0.0;
-	float phi = 0.0;
-	float psi = 0.0;
-	
-	vec3 sumN = vec3(0.0);
 	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
     float thickness = max(max(volumescale.x, volumescale.y),
-                          volumescale.z) / num_steps;
-
+                          volumescale.z) / u_numSteps;
     float tOffset = thickness / 10.;
     float t = tmin + tOffset;
     vec3 nx, ny, nz;
@@ -137,11 +118,11 @@ void  main(void) {
     dist = max(dist, abs(dot(ny, (tmax * raydir) - tmin * raydir)));
     dist = max(dist, abs(dot(nz, (tmax * raydir) - tmin * raydir)));
 
-    float samples = floor(dist / thickness) + 1.;
-    float tstep = (tmax - tmin - tOffset) / samples;
+    float maxSamples = floor(dist / thickness) + 1.;
+    float tstep = (tmax - tmin - tOffset) / maxSamples;
 
 	float i = 0.0;
-	while((i < samples) &&
+	while((i < maxSamples) &&
           (min(min(col.x, col.y), col.z) < 1.0) &&
           (col.w < 0.999)) {
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
@@ -160,16 +141,16 @@ void  main(void) {
             float x = (f - tf_min) / (tf_max - tf_min); // normalize
 
             vec4 tfCol = texture2D(tf_tex, vec2(x, 0));
-            tfCol = tf_opacity * vec4(tfCol.rgb, 1.0);
-            col += (1.0 - col.w) * tfCol;
-            col += tfCol;
+            tfCol.w *= min(min(volumedim.x, volumedim.y), volumedim.z) / u_numSteps;
+
+            tfCol.rgb *= tfCol.a;
+            col = (1. - col.a) * tfCol + col;
         }
 
-		count = count + 1.0;
 		t += tstep;
 		i = i + 1.0;
 	}
-	//col.xyz  /= count;
+
 	col.w = 1.0;
 
 	gl_FragColor = col;

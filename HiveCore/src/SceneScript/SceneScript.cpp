@@ -283,6 +283,15 @@ int clearCache(lua_State* L)
     return 1;
 }
 
+int clearShaderCache(lua_State* L)
+{
+    RenderCore* core = RenderCore::GetInstance();
+    const char* src = lua_tostring(L, 1);
+    core->ClearShaderCache(src);
+    lua_pushnumber(L, 1);
+    return 1;
+}
+
 int screenParallelRendering(lua_State* L)
 {
     RenderCore* core = RenderCore::GetInstance();
@@ -305,6 +314,7 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
     SetFunction(L, "render", render);
     SetFunction(L, "clearCache", clearCache);
+    SetFunction(L, "clearShaderCache", clearShaderCache);
     SetFunction(L, "renderMode", renderMode);
     
     SetFunction(L, "mpiMode", mpiMode);

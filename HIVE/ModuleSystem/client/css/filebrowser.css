@@ -73,3 +73,36 @@
 .dir2:hover {
 	background : #eee
 }
+
+.reload {
+	height: 18px;
+	padding: 2.5px;
+	width: 18px;
+}
+
+.reload::before, .reload::after {
+	content: '';
+	display: block;
+}
+.reload:before {
+	border-color: transparent white white white;
+	border-radius: 50%;
+	border-style: solid;
+	border-width: 2px;
+	height: 10px;
+	width: 10px;
+	-webkit-transform: rotate(125deg);
+	transform: rotate(125deg);
+}
+.reload:after {
+	border-color: transparent transparent transparent white;
+	border-style: solid;
+	border-width: 3.2px 6px 3.2px;
+	height: 0;
+	position: absolute;
+	top: 6px;
+	left: 70%;
+	width: 0;
+	-webkit-transform: rotate(-25deg);
+	transform: rotate(-25deg);
+}

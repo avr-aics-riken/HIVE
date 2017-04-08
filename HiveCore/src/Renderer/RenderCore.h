@@ -39,6 +39,8 @@ public:
     
     void SetProgressCallback(bool (*func)(double));
 
+    bool ClearShaderCache(const char* srcname);
+    
 private:
     RenderCore(RENDER_MODE mode);
     ~RenderCore();

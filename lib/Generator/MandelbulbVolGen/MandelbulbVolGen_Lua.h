@@ -1,6 +1,6 @@
 /**
- * @file VOLLoader_Lua.h
- * VOLLoader_Lua Luaラッパー
+ * @file MandelbulbVolGen_Lua.h
+ * MandelbulbVolGen Luaラッパー
  */
 #ifndef _MANDELBULBVOLGEN_LUA_H_
 #define _MANDELBULBVOLGEN_LUA_H_
@@ -21,8 +21,12 @@ public:
         MandelbulbVolGen::Clear();
     }
 
-    bool Generate(const int w, const int h, const int d, const int c) {
-        return MandelbulbVolGen::Generate(w, h, d, c);
+    bool Generate(int size) {
+        return MandelbulbVolGen::Generate(size);
+    }
+
+    bool GenerateOriginShift(int size, float originX, float originY, float originZ) {
+        return MandelbulbVolGen::Generate(size, originX, originY, originZ);
     }
 
     int Width() {
@@ -50,12 +54,13 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
     LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
-    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("MandelbulbVolGen",bool,Generate,
-                                             const int, const int, const int, const int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1("MandelbulbVolGen",bool,Generate,
+                                             int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("MandelbulbVolGen",bool,GenerateOriginShift,
+                                             int, float, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(MandelbulbVolGen_Lua);
 
 #endif //_MANDELBULBVOLGEN_LUA_H_
-
