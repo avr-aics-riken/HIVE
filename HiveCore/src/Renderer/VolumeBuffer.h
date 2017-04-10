@@ -47,5 +47,6 @@ public:
     bool Create(const VolumeModel* model);
     void Render() const;
     void Update();
+    void Clear();
 };
 
