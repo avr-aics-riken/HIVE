@@ -39,6 +39,17 @@ VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
 /// デストラクタ
 VolumeBuffer::~VolumeBuffer()
 {
+    Clear();
+}
+
+// バッファのクリア
+void VolumeBuffer::Clear()
+{
+    if (m_vtx_id) ReleaseBufferVBIB_SGL(m_vtx_id);
+    if (m_normal_id) ReleaseBufferVBIB_SGL(m_normal_id);
+    if (m_mat_id) ReleaseBufferVBIB_SGL(m_mat_id);
+    if (m_tex_id) ReleaseBufferVBIB_SGL(m_tex_id);
+    if (m_index_id) ReleaseBufferVBIB_SGL(m_index_id);
 }
 
 /**
@@ -51,7 +62,7 @@ VolumeBuffer::~VolumeBuffer()
  */
 bool VolumeBuffer::MakeBox(float width, float height, float depth)
 {
-    static float vtx[] = {
+    float vtx[] = {
         -width*.5f, height*.5f,-depth*.5f,
         width*.5f, height*.5f,-depth*.5f,
         -width*.5f,-height*.5f,-depth*.5f,
@@ -61,11 +72,11 @@ bool VolumeBuffer::MakeBox(float width, float height, float depth)
         width*.5f,-height*.5f, depth*.5f,
         -width*.5f,-height*.5f, depth*.5f
     };
-    static float* normal = vtx;
-    static unsigned int index[] = { 0,1,2, 1,3,2,  1,4,3, 4,6,3,  4,5,6, 5,7,6,  5,0,7, 0,2,7,  5,4,0, 4,1,0,  2,3,7, 3,6,7 };
+    float* normal = vtx;
+    unsigned int index[] = { 0,1,2, 1,3,2,  1,4,3, 4,6,3,  4,5,6, 5,7,6,  5,0,7, 0,2,7,  5,4,0, 4,1,0,  2,3,7, 3,6,7 };
     const unsigned int vertexnum = sizeof(vtx)/sizeof(float)/3;
     const unsigned int indexnum  = sizeof(index)/sizeof(unsigned int);
-    static float mat[vertexnum*3] = {0};
+    float mat[vertexnum*3] = {0};
 
     CreateVBIB_SGL(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
             m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);

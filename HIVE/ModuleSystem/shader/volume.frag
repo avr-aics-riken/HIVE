@@ -22,6 +22,7 @@ uniform float power;
 const float kOpacityThreshold = 0.99;
 const float kBrightness = 1.0;
 const float kDensity = 0.05;
+const float FLT_MAX = 1.0 / 0.000000000001;
 
 // Simple transfer function
 vec4 density_to_color(float dens)
@@ -79,7 +80,7 @@ int inside(vec3 p,vec3 pmin, vec3 pmax) {
 
 int
 IntersectP(vec3 rayorg, vec3 raydir, vec3 pMin, vec3 pMax, out float hit0, out float hit1) {
-    float t0 = -10000.0, t1 = 10000.0;
+    float t0 = -FLT_MAX, t1 = FLT_MAX;
     hit0 = t0;
     hit1 = t1;
 
@@ -147,6 +148,7 @@ void  main(void) {
     float tstep = (tmax - tmin) / num_steps;
     float cnt = 0.0;
     while (cnt < float(num_steps)) {
+        /* this encounts wrong recursion loop
 		vec4 acol;
 		float hit = 0.0;
 		int pds;
@@ -156,6 +158,7 @@ void  main(void) {
 			sum += acol;
 			break;
 		}
+        */
 		
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
