@@ -21,8 +21,10 @@ public:
     SimpleSTLA() : SimpleSTL() {}
 	~SimpleSTLA(){}
 	
-	bool Load(const char* filename, bool generateIndex = false)
+	bool Load(const char* filename, bool swapEndian = false, bool generateIndex = false)
 	{
+        (void)swapEndian; // swapEndian is not used for ASCII format.
+
         // read file all
 		FILE* fp = fopen(filename, "rb");
 		if (!fp)

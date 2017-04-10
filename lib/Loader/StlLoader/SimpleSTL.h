@@ -169,7 +169,7 @@ public:
 		unsigned short pad;
 	};
     
-    virtual bool Load(const char* filename, bool generateIndex = false) = 0;
+    virtual bool Load(const char* filename, bool swapEndian = false, bool generateIndex = false) = 0;
 	
 protected:
 	struct vec3{

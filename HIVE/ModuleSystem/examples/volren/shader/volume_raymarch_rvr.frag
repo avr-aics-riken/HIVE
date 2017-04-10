@@ -183,13 +183,14 @@ void  main(void) {
 	tmax = max(0.0, tmax);
 
     // raymarch.
-    float t = tmin + 0.0001;
     float tstep = (tmax - tmin) / u_samples;
 
 	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
 	float i = 0.0;
     float thickness = max(max(volumescale.x, volumescale.y), volumescale.z) / u_samples;
+    float tOffset = thickness / 10.;
+    float t = tmin + tOffset;
 
     vec3 nx, ny, nz;
     orthoBasis(nx, ny, nz, n);
@@ -199,7 +200,7 @@ void  main(void) {
     dist = max(dist, abs(dot(nz, (tmax * raydir) - tmin * raydir)));
 
     float samples = floor(dist / thickness) + 1.;
-    tstep = (tmax - tmin - 0.0001) / samples;
+    tstep = (tmax - tmin - tOffset) / samples;
     //    samples = u_samples;
 
 
