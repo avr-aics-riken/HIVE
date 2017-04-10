@@ -16,8 +16,15 @@
 #include <locale>
 #include <wchar.h>
 #elif __APPLE__
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1012
+// Carbon is deprecated from macOS Sierra(10.12)
+// http://stackoverflow.com/questions/1528298/get-path-of-executable
+#include <mach-o/dyld.h>
+#else
+// Use Carbon
 #undef __BLOCKS__ // avoid BCMLib::block.h miss include
 #include <CoreFoundation/CFBundle.h>
+#endif
 #else
 #include <unistd.h>
 #endif
@@ -48,6 +55,13 @@ std::string getBinaryDir()
 	return stdstr;
     
 #elif __APPLE__
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1012
+    uint32_t size = sizeof(exepath);
+    int ret = _NSGetExecutablePath(exepath, &size);
+    if (0 != ret) {
+        return ""; // FIXME(IDS): 
+    } 
+#else
     CFBundleRef bundle         = CFBundleGetMainBundle();
     CFURLRef    executableURL  = CFBundleCopyExecutableURL(bundle);
     CFStringRef executablePath = CFURLCopyFileSystemPath(executableURL, kCFURLPOSIXPathStyle);
@@ -55,6 +69,7 @@ std::string getBinaryDir()
     CFStringGetFileSystemRepresentation(executablePath, exepath, MAXPATHLEN);
     CFRelease(executablePath);
     CFRelease(executableURL);
+#endif
 #else // Linux
     readlink("/proc/self/exe", exepath, sizeof(exepath));
 #endif
