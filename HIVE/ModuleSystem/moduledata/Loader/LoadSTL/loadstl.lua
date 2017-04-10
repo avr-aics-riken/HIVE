@@ -11,7 +11,9 @@ end
 
 function LoadSTL:Do()
     self:UpdateValue()
-    return self.loader:Load(self.value.filepath)
+    print("swapendian")
+    print(self.value.swapEndian)
+    return self.loader:Load(self.value.filepath, self.value.swapEndian)
 end
 
 function LoadSTL:MeshData()

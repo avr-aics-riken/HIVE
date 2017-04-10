@@ -4,7 +4,8 @@
 	"info":"STLをロードするためのノード",
 	"customfuncfile":"loadstl.lua",
     "input": [
-		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"}
+		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
+        {"name": "swapEndian", "type": "bool", "value": false}
 	],
 	"output": [
 		{"name": "MeshData",  "type": "BufferMeshData"}

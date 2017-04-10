@@ -19,6 +19,7 @@ export default class Container extends React.Component {
 			containerHover : null // or zindex
         };
         this.isLeftDown = false;
+        this.isLeaved = false;
         this.isScaleLeftDown = false;
 
         this.nodeChanged = this.nodeChanged.bind(this);
@@ -75,6 +76,9 @@ export default class Container extends React.Component {
 
     onMouseUp(ev) {
         this.isLeftDown = false;
+        if (this.isLeaved) {
+            this.setState({ containerHover : null });
+        }
     }
 
     onMouseMove(ev) {
@@ -145,6 +149,7 @@ export default class Container extends React.Component {
 
 	onContainerEnter(ev) {
 		if (this.state.containerHover) { return; }
+        this.isLeaved = false; 
 
 		let panel = JSON.parse(JSON.stringify(this.state.node.panel));
 		let preZIndex = panel.zindex;
@@ -171,6 +176,7 @@ export default class Container extends React.Component {
 	}
 
 	onContainerLeave(ev) {
+        if (ev.buttons > 0) { this.isLeaved = true; return; }
 		if (this.scaleAnimeHandle) {
 			clearTimeout(this.scaleAnimeHandle);
 		}

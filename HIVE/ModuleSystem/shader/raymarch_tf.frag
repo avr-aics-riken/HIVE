@@ -111,6 +111,7 @@ void  main(void) {
 	while((i < SAMPLES) && (min(min(col.x, col.y), col.z) < 1.0) && (col.w < 0.999)) {
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
+        texpos = clamp(texpos, 0.0, 1.0);
 		vec4 temp = samplingVolume(texpos);
 
         float f = clamp(temp.x, volumemin, volumemax);

@@ -146,6 +146,7 @@ void  main(void) {
 		
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
+		texpos = clamp(texpos, 0.0, 1.0);
         sum += samplingVolume(texpos, sum);
 		if (sum.a > kOpacityThreshold)
 			break;
