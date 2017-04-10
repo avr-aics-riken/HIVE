@@ -424,9 +424,9 @@ class GradientMap extends React.Component {
         var ch = this.cw;
         var x = eve.clientX - this.wrapper.getBoundingClientRect().left,
             y = eve.clientY - this.wrapper.getBoundingClientRect().top;
-            x = Math.min(x, this.cw);
-            x = Math.min(cw, Math.max(0.0, x));
-            y = Math.min(ch, Math.max(0.0, y));
+            //x = Math.min(x, this.cw);
+            //x = Math.min(cw, Math.max(0.0, x));
+            //y = Math.min(ch, Math.max(0.0, y));
         if (this.mspress){
             var minx = Math.min(x, this.oldx),
                 maxx = Math.max(x, this.oldx),
@@ -518,6 +518,7 @@ class GradientMap extends React.Component {
         return {
             wrapper: {
                 width: "300px",
+                margin : "8px"
             },
             canvas: {},
             colorframe: {
