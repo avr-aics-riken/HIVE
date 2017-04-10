@@ -37,4 +37,4 @@ url=https://github.com/avr-aics-riken/UDMlib.git
 	url = https://github.com/avr-aics-riken/PMlib.git
 [submodule "third_party/CPMlib"]
 	path = third_party/CPMlib
-	url = git@github.com:avr-aics-riken/CPMlib
+	url = https://github.com/avr-aics-riken/CPMlib.git

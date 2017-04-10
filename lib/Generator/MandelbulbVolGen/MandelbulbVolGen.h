@@ -15,6 +15,8 @@ public:
     ~MandelbulbVolGen();
     void Clear();
     bool Generate(const int size);
+    bool Generate(const int size,
+                  const float originX, const float originY, const float originZ);
     int Width();
     int Height();
     int Depth();

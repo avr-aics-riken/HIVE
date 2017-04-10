@@ -209,10 +209,9 @@ function build_compositor {
 
 	cd third_party/ 
 	cd 234Compositor/
-
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
+	# if [ -f "Makefile" ]; then
+	# 	make distclean
+	# fi
 
 	autoreconf -ivf
 
