@@ -1,0 +1,6 @@
+
+print('TextParser util test')
+
+local tp = require("TpUtil")()
+
+tp:Parse('cdm_sample.dfi')
