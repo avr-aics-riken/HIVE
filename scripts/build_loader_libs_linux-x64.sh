@@ -278,10 +278,25 @@ function build_pmlib {
 	cd ${topdir}
 }
 
+function build_cpmlib {
+
+        cd third_party
+
+        rm -rf CPMlib_build
+        mkdir -p CPMlib_build
+        cd CPMlib_build
+
+        CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CPMlib -Dwith_MPI=yes -Dwith_example=no -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Denable_LMR=no ../CPMlib && make && make install
+
+        if [[ $? != 0 ]]; then exit $?; fi
+        cd ${topdir}
+}
+
 
 clean_install_dir
 build_netcdf
 build_tp
+build_cpmlib
 build_cdmlib
 build_polylib
 build_bcmtools
