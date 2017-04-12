@@ -11,14 +11,10 @@ end
 
 function MandelbulbVolumeGenerator:Do()
     self:UpdateValue()
-    return true
+    return self.gen:Generate(self.value.size)
 end
 
 function MandelbulbVolumeGenerator:VolumeData()
     local v = self.value
-    if self.gen:Generate(v.size) then
-        return self.gen:VolumeData()
-    end
-    print("Mandelbulb generate failed")
-    return nil
+    return self.gen:VolumeData()
 end
