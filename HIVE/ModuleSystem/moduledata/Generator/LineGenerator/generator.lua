@@ -21,11 +21,11 @@ function LineGenerator:Do()
 		table.insert(self.value.vertices, 3 * math.cos(i) * math.sin(i))
 	end
 	]]
-
-    return true
+    local v = self.value
+    self.line = self.gen:LineList(v.vertices, #v.vertices / 3, v.radius);
+    return (self.line ~= nil);
 end
 
 function LineGenerator:LineData()
-    local v = self.value
-    return self.gen:LineList(v.vertices, #v.vertices / 3, v.radius);
+    return self.line;
 end

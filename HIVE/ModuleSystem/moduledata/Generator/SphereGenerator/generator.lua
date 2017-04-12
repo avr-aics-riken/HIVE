@@ -11,11 +11,12 @@ end
 
 function SphereGenerator:Do()
     self:UpdateValue()
-    return true
+    local v = self.value
+    local radius = v.radius
+    self.point = self.gen:Sphere(radius);
+    return (self.point ~= nil);
 end
 
 function SphereGenerator:PointData()
-    local v = self.value
-    local radius = v.radius
-    return self.gen:Sphere(radius);
+    return self.point;
 end

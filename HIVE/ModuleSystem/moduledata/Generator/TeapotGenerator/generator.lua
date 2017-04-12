@@ -11,11 +11,12 @@ end
 
 function TeapotGenerator:Do()
     self:UpdateValue()
-    return true
+    local v = self.value    
+    local size = v.size    
+    self.mesh = self.gen:Teapot(size);
+    return (self.mesh ~= nil)
 end
 
 function TeapotGenerator:MeshData()
-    local v = self.value    
-    local size = v.size    
-    return self.gen:Teapot(size);
+    return self.mesh;
 end

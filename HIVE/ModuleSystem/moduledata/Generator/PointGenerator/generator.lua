@@ -21,11 +21,11 @@ function PointGenerator:Do()
 		table.insert(self.value.vertices, 3 * math.cos(i) * math.sin(i))
 	end
 	]]
-
-    return true
+    local v = self.value
+    self.point = self.gen:PointList(v.vertices, #v.vertices / 3, v.radius);
+    return (self.point ~= nil)
 end
 
 function PointGenerator:PointData()
-    local v = self.value
-    return self.gen:PointList(v.vertices, #v.vertices / 3, v.radius);
+    return self.point
 end

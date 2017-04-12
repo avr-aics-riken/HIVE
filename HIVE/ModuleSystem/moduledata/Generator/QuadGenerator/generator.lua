@@ -11,12 +11,13 @@ end
 
 function QuadGenerator:Do()
     self:UpdateValue()
-    return true
-end
-
-function QuadGenerator:MeshData()
     local v = self.value
     local width = v.width
 	local height = v.height
-    return self.gen:Quad(width, height);
+    self.mesh = self.gen:Quad(width, height);
+    return (self.point ~= nil);
+end
+
+function QuadGenerator:MeshData()
+    return self.mesh;
 end

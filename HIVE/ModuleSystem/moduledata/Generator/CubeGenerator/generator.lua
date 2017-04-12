@@ -11,13 +11,14 @@ end
 
 function CubeGenerator:Do()
     self:UpdateValue()
-    return true
-end
-
-function CubeGenerator:MeshData()
     local v = self.value
     local width = v.width
 	local height = v.height
 	local depth = v.depth
-    return self.gen:Cube(width, height, depth);
+    self.mesh = self.gen:Cube(width, height, depth);
+    return (self.mesh ~= nil)
+end
+
+function CubeGenerator:MeshData()
+    return self.mesh
 end
