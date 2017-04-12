@@ -11,10 +11,10 @@ end
 
 function MandelbulbVolumeGenerator:Do()
     self:UpdateValue()
-    return self.gen:Generate(self.value.size)
+    local v = self.value
+    return self.gen:GenerateOriginShift(v.size, v.originX, v.originY, v.originZ)
 end
 
 function MandelbulbVolumeGenerator:VolumeData()
-    local v = self.value
     return self.gen:VolumeData()
 end
