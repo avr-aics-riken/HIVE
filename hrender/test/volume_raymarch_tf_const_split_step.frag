@@ -89,6 +89,14 @@ int IntersectP(vec3 rayorg, vec3 raydir, vec3 pMin, vec3 pMax, out float hit0, o
 }
 
 void  main(void) {
+    int depth;
+    raydepth(depth);
+
+    if (depth > 15) {
+        gl_FragColor = vec4(0);
+        return;
+    }
+
 	vec3 p;
     vec3 n;
     vec3 dir;
@@ -112,6 +120,18 @@ void  main(void) {
     float tOffset = thickness / 10.;
     float t = tmin + tOffset;
     float tstep = (tmax - tmin - tOffset) / u_numSteps;
+
+    float tminOffset = tOffset * 0.1;
+    vec4 otherObjCol = vec4(0);
+    float otherObjDist = trace(rayorg + raydir * (tmin + tminOffset), raydir, otherObjCol, 0.0);
+    if(otherObjDist <= 0.){
+        otherObjCol = vec4(0);
+        otherObjDist = tmax + 1.;
+    }else{
+        otherObjDist += tmin + tminOffset;
+    }
+
+    bool hitOtherObj = false;
 
 	float i = 0.0;
 	while((i < u_numSteps) &&
@@ -141,9 +161,20 @@ void  main(void) {
 
 		t += tstep;
 		i = i + 1.0;
+
+        if(t > otherObjDist && hitOtherObj == false) {
+            otherObjCol.rgb *= otherObjCol.a;
+            col = (1. - col.a) * otherObjCol + col;
+            hitOtherObj = true;
+        }
 	}
 
-	col.w = 1.0;
+    if(hitOtherObj == false) {
+        otherObjCol.rgb *= otherObjCol.a;
+        col = (1. - col.a) * otherObjCol + col;
+    }
+
+	col.w = min(1.0, col.w);
 
 	gl_FragColor = col;
 }

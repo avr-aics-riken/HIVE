@@ -203,6 +203,17 @@ void  main(void) {
     tstep = (tmax - tmin - tOffset) / samples;
     //    samples = u_samples;
 
+    float tminOffset = tOffset * 0.1;
+    vec4 otherObjCol = vec4(0);
+    float otherObjDist = trace(rayorg + raydir * (tmin + tminOffset), raydir, otherObjCol, 0.0);
+    if(otherObjDist <= 0.){
+        otherObjCol = vec4(0);
+        otherObjDist = tmax + 1.;
+    }else{
+        otherObjDist += tmin + tminOffset;
+    }
+
+    bool hitOtherObj = false;
 
 	while((i < samples)
           && (min(min(col.x, col.y), col.z) < 1.0)
@@ -234,7 +245,19 @@ void  main(void) {
 
 		t += tstep;
 		i = i + 1.0;
+
+        if(t > otherObjDist && hitOtherObj == false) {
+            otherObjCol.rgb *= otherObjCol.a;
+            col = (1. - col.a) * otherObjCol + col;
+            hitOtherObj = true;
+        }
 	}
+
+    if(hitOtherObj == false) {
+        otherObjCol.rgb *= otherObjCol.a;
+        col = (1. - col.a) * otherObjCol + col;
+    }
+
 	col.w = min(1.0, col.w);
     //    col.rgb = pow(col.rgb, vec3(1.0));
 	gl_FragColor = col;

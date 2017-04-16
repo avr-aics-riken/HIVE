@@ -45,7 +45,7 @@ vec4 density_to_color(float dens)
 		float t = 0.1 * (dens - 1.0); // [0, 1]
         return vec4(0.5*t, 0.0, 0.2-0.2*t,0.5);
 	} else {
-        return vec4(0.8, 0.0, 0.0,0.5);	
+        return vec4(0.8, 0.0, 0.0,0.5);
 	}
 }
 
@@ -53,17 +53,17 @@ vec4 samplingVolume(vec3 texpos, vec4 sum)
 {
 	vec4 dens = texture3D(tex0, texpos);
 	vec4 col = density_to_color(0.4 * dens.x);
-	
+
 	col.w *= kDensity;
-	
+
 	// pre-multiply alpha
 	col.x *= col.w;
-	col.y *= col.y;
-	col.z *= col.z;
-	
+	col.y *= col.w;
+	col.z *= col.w;
+
 	// front-to-back blending.
 	col *= (1.0f - sum.a);
-	
+
 	return col; // add to sum
 }
 
@@ -122,8 +122,8 @@ void  main(void) {
 
 	int dpt;
 	raydepth(dpt);
-	if (dpt > 15){
-		gl_FragColor = vec4(0,0,0,0);
+	if (dpt > 8){
+		gl_FragColor = vec4(0);
 		return;
 	}
 
@@ -140,48 +140,54 @@ void  main(void) {
     vec3 pmax = vec3( 0.5,  0.5,  0.5)*volumescale + offset;
     float tmin, tmax;
     IntersectP(rayorg, raydir, pmin, pmax, tmin, tmax);
-	tmin = max(0.0, tmin);
+
+    float thickness = max(max(volumescale.x, volumescale.y),
+                          volumescale.z) / num_steps;
+    float tOffset = thickness / 10.;
+
+    tmin = max(0.0, tmin);
 	tmax = max(0.0, tmax);
-	
-    // raymarch.
-    float t = tmin;
-    float tstep = (tmax - tmin) / num_steps;
+
+    float t = tmin + tOffset;
+    float tstep = (tmax - tmin - tOffset) / num_steps;
     float cnt = 0.0;
-    while (cnt < float(num_steps)) {
-        /* this encounts wrong recursion loop
-		vec4 acol;
-		float hit = 0.0;
-		int pds;
-		rayoption(pds, 0);
-		hit = trace(rayorg+t*raydir, tstep*raydir, acol, 0.0);
-		if (hit > 0.0 && hit < 1.0) {
-			sum += acol;
-			break;
-		}
-        */
-		
-		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
-		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
-		texpos = clamp(texpos, 0.0, 1.0);
-		sum += samplingVolume(texpos, sum);
-		if (sum.a > kOpacityThreshold)
-			break;
-		
+
+    float tminOffset = tOffset * 0.1;
+    vec4 otherObjCol = vec4(0);
+    float otherObjDist = trace(rayorg + raydir * (tmin + tminOffset), raydir, otherObjCol, 0.0);
+    if(otherObjDist <= 0.){
+        otherObjCol = vec4(0);
+        otherObjDist = tmax + 1.;
+    }else{
+        otherObjDist += tmin + tminOffset;
+    }
+
+    bool hitOtherObj = false;
+    while (cnt < float(num_steps) &&
+           sum.a < kOpacityThreshold &&
+           t < tmax) {
+        vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
+        vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
+        texpos = clamp(texpos, 0.0, 1.0);
+        sum += samplingVolume(texpos, sum);
+
         t += tstep;
         cnt += 1.0;
+
+        if(t > otherObjDist && hitOtherObj == false) {
+            otherObjCol.rgb *= otherObjCol.a;
+            sum = (1. - sum.a) * otherObjCol + sum;
+            hitOtherObj = true;
+        }
     }
-	
-	sum *= kBrightness;
-	
-	sum.a = min(1.0, sum.a); // alpha clamp
-	
-	float ntmin = 0.0;
-	vec4 ncol = vec4(0,0,0,0);
-	// another primitve
-	if (sum.a < 1.0)
-		ntmin = trace(rayorg + (tmax+0.001)*raydir, raydir, ncol, 0.0);
-	if (ntmin < 0.0)
-		gl_FragColor = sum;
-	else
-		gl_FragColor = sum + (1.0-sum.a)*ncol;
+
+    if(hitOtherObj == false) {
+        otherObjCol.rgb *= otherObjCol.a;
+        sum = (1. - sum.a) * otherObjCol + sum;
+    }
+
+    sum *= kBrightness;
+
+    sum.a = min(1.0, sum.a); // alpha clamp
+    gl_FragColor = sum;
 }
