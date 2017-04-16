@@ -15,6 +15,7 @@
 	],
 	"output": [
         {"name": "Image", "type": "BufferImageData"},
+        {"name": "RGBA", "type": "floatarray"},
         {"name": "Min", "type": "float"},
         {"name": "Max", "type": "float"}
 	]

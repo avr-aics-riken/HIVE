@@ -1,0 +1,15 @@
+{
+	"name": "SaveVisioGradientMap",
+	"funcname": "SaveVisioGradientMap",
+	"info":"VisioGradientMapファイルを出力するためのノード",
+	"customfuncfile":"savevisiogradientmap.lua",
+    "input": [
+		{"name": "filepath",  "type": "string", "value": "", "meta": "filebrowser"},
+        {"name": "rgba",  "type": "floatarray", "value": []},
+        {"name": "minval",  "type": "float", "value": 0},
+		{"name": "maxval",  "type": "float", "value": 0},
+		{"name": "only_export",  "type": "bool", "value": true }
+	],
+	"output": [
+	]
+}
