@@ -112,3 +112,7 @@ function GradientMap:Max()
     print('GradientMap:Max() > ', self.value.maxval)
     return self.value.maxval
 end
+
+function GradientMap:RGBA()
+    return self.value.values
+end
