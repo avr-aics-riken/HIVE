@@ -254,6 +254,10 @@ export default class NodeExecutor extends EventEmitter {
     eventNodeDeleted(err, data) {
         console.log('NS catched:NODE_DELETED', err, data);
 
+        if (this.nodeGraph.hasOwnProperty(data.varname)) {
+            delete this.nodeGraph[data.varname];
+        }
+
         this.eventExecute();        
     }
     eventPlugAdded(err, data) {
