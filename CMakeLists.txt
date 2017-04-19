@@ -53,8 +53,8 @@ add_subdirectory(third_party/lua)
 add_subdirectory(tools)
 
 # build
-add_subdirectory(HiveCore)
-add_subdirectory(lib)
+#add_subdirectory(HiveCore)
+#add_subdirectory(lib)
 add_subdirectory(hrender)
 add_subdirectory(HIVE)
 
