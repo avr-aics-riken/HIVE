@@ -15,7 +15,6 @@
 
 #include "BcmLoader.h"
 //#include "SimpleVOL.h"
-
 #include "BCMTools.h"
 #include "BCMOctree.h"
 //#include "PolygonBBoxDivider.h"
@@ -37,7 +36,7 @@ BCMLoader::~BCMLoader()
 /// クリア
 void BCMLoader::Clear()
 {
-    m_volume.Clear();
+    m_volume->Clear();
 }
 
 /**
@@ -83,7 +82,7 @@ bool BCMLoader::Load(const char* filename)
  * @retval int Width
  */
 int BCMLoader::Width()    {
-    return m_volume.Width();
+    return m_volume->Width();
 }
 
 /**
@@ -91,7 +90,7 @@ int BCMLoader::Width()    {
  * @retval int Height
  */
 int BCMLoader::Height()   {
-    return m_volume.Height();
+    return m_volume->Height();
 }
 
 /**
@@ -99,7 +98,7 @@ int BCMLoader::Height()   {
  * @retval int Depth
  */
 int BCMLoader::Depth()    {
-    return m_volume.Depth();
+    return m_volume->Depth();
 }
 
 /**
@@ -107,7 +106,7 @@ int BCMLoader::Depth()    {
  * @retval int Component数
  */
 int BCMLoader::Component() {
-    return m_volume.Component();
+    return m_volume->Component();
 }
 
 /**
@@ -115,7 +114,7 @@ int BCMLoader::Component() {
  * @retval FloatBuffer* FloatBufferアドレス
  */
 FloatBuffer* BCMLoader::Buffer() {
-    return m_volume.Buffer();
+    return m_volume->Buffer();
 }
 
 /**
@@ -124,7 +123,7 @@ FloatBuffer* BCMLoader::Buffer() {
  */
 BufferVolumeData *BCMLoader::VolumeData()
 {
-    return &m_volume;
+    return m_volume;
 }
 
 
