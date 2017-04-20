@@ -199,370 +199,381 @@ INCLUDE_DIRECTORIES(${INCLUDES})
 # Source files
 set(HRENDER_SOURCES
   src/main.cpp
-  
-  ../HiveCore/src/Core/Path.cpp
-  ../HiveCore/src/Core/Perf.cpp
-  ../HiveCore/src/Buffer/Buffer.cpp
-  ../HiveCore/src/Buffer/BufferMeshData.cpp
-  ../HiveCore/src/Buffer/BufferVolumeData.cpp
-  ../HiveCore/src/Buffer/BufferLineData.cpp
-  ../HiveCore/src/Buffer/BufferSparseVolumeData.cpp
-  ../HiveCore/src/Buffer/BufferSolidData.cpp
-  ../HiveCore/src/Buffer/BufferPointData.cpp
-  ../HiveCore/src/Buffer/BufferVectorData.cpp
-  ../HiveCore/src/Buffer/BufferTetraData.cpp
-  ../HiveCore/src/Buffer/BufferImageData.cpp
-  ../HiveCore/src/Buffer/BufferExtraData.cpp
-  ../HiveCore/src/Buffer/UserBufferData.cpp
-  ../HiveCore/src/Renderer/RenderCore.cpp
-  ../HiveCore/src/Renderer/BaseBuffer.cpp
-  ../HiveCore/src/Renderer/Commands_GL.cpp
-  ../HiveCore/src/Renderer/Commands_LSGL.cpp
-  ../HiveCore/src/Renderer/PolygonBuffer.cpp
-  ../HiveCore/src/Renderer/VolumeBuffer.cpp
-  ../HiveCore/src/Renderer/SparseVolumeBuffer.cpp
-  ../HiveCore/src/Renderer/LineBuffer.cpp
-  ../HiveCore/src/Renderer/PointBuffer.cpp
-  ../HiveCore/src/Renderer/TetraBuffer.cpp
-  ../HiveCore/src/Renderer/SolidBuffer.cpp
-  ../HiveCore/src/Renderer/VectorBuffer.cpp
-  ../HiveCore/src/SceneScript/SceneScript.cpp
-  ../HiveCore/src/RenderObject/Camera.cpp
-  ../HiveCore/src/RenderObject/RenderObject.cpp
-  ../HiveCore/src/RenderObject/PolygonModel.cpp
-  ../HiveCore/src/RenderObject/VolumeModel.cpp
-  ../HiveCore/src/RenderObject/SparseVolumeModel.cpp
-  ../HiveCore/src/RenderObject/LineModel.cpp
-  ../HiveCore/src/RenderObject/PointModel.cpp
-  ../HiveCore/src/RenderObject/TetraModel.cpp
-  ../HiveCore/src/RenderObject/SolidModel.cpp
-  ../HiveCore/src/RenderObject/VectorModel.cpp
-  ../HiveCore/src/Image/jpge.cpp
-  ../HiveCore/src/Image/jpgd.cpp
-  ../HiveCore/src/Image/lodepng.cpp
-  ../HiveCore/src/Image/tinyexr.cpp
-  ../HiveCore/src/Image/ImageLoader.cpp
-  ../HiveCore/src/Image/GenTexture.cpp
-  ../HiveCore/src/Image/ImageSaver.cpp
-  ../HiveCore/src/Generator/PrimitiveGenerator.cpp
-
-  ../lib/Analyzer/PolygonAnalyzer.cpp
-  ../lib/Analyzer/VolumeAnalyzer.cpp
-  ../lib/Analyzer/SparseVolumeAnalyzer.cpp
-  ../lib/Analyzer/SolidAnalyzer.cpp
-
-  ../lib/Builder/FloatsToFloat/FloatsToFloat.cpp
-  ../lib/Builder/MeshAttribToVolume/MeshAttribToVolume.cpp
-  ../lib/Builder/PointToVolume/PointToVolume.cpp
-  ../lib/Builder/SparseVolumeToVolume/SparseVolumeToVolume.cpp
-  ../lib/Builder/VolumeFilter/CompileUtil.cpp
-  ../lib/Builder/VolumeFilter/VolumeFilter.cpp
-  ../lib/Builder/VolumeToMeshData/VolumeToMeshData.cpp
-  ../lib/Builder/VolumeToVector/VolumeToVector.cpp
-  ../lib/Builder/VolumeQuantizer/VolumeQuantizer.cpp
-  ../lib/Builder/SolidToVolume/SolidToVolume.cpp
-  ../lib/Builder/SolidDfToVolume/SolidDfToVolume.cpp
-  ../lib/Builder/SolidAttribToVolume/SolidAttribToVolume.cpp
-  ../lib/Builder/ImageFilter/ImageFilter.cpp
-
-  ../lib/ClusterParallelCoord/VolumeClustering.cpp
-  ../lib/ClusterParallelCoord/VolumeScatterPlot.cpp
-  ../lib/Generator/MandelbulbVolGen/MandelbulbVolGen.cpp
-  ../lib/Loader/ObjLoader/ObjLoader.cpp
-  ../lib/Loader/PdbLoader/tiny_pdb.cpp
-  ../lib/Loader/PdbLoader/PdbLoader.cpp
-  ../lib/Loader/RawSparseVolumeLoader/RawSparseVolumeLoader.cpp
-  ../lib/Loader/RawVolumeLoader/RawVolumeLoader.cpp
-  ../lib/Loader/SphLoader/SphLoader.cpp
-  ../lib/Loader/StlLoader/StlLoader.cpp
-  ../lib/Loader/VisioColorMapLoader/VisioColorMapLoader.cpp
-  ../lib/Loader/VisioGradientMapLoader/VisioGradientMapLoader.cpp
-  ../lib/Loader/VolLoader/VolLoader.cpp
-  ../lib/Loader/VtkLoader/tiny_vtkxml.cpp
-  ../lib/Loader/VtkLoader/VtkLoader.cpp
-  ../lib/Network/Connection.cpp
-  ../lib/Network/easywsclient.cpp
-  ../lib/Network/happyhttp.cpp
-  ../lib/Network/MetaBinary.cpp
-  ../lib/Saver/RawVolumeSaver/RawVolumeSaver.cpp
-  ../lib/Saver/SphSaver/SphSaver.cpp
-  ../lib/Saver/VisioColorMapSaver/VisioColorMapSaver.cpp
-  ../lib/Saver/VisioGradientMapSaver/VisioGradientMapSaver.cpp
 )
 
-IF(HIVE_BUILD_WITH_CDMLIB)
-  SET(HIVE_BUILD_WITH_BCMTOOLS On)
-  add_definitions(-DHIVE_WITH_CDMLIB)
+IF (NOT BUILD_SHARED_LIBS)
+  add_definitions(-DHIVE_STATIC) 
+  set(HRENDER_SOURCES_STATIC
+    ../HiveCore/src/Core/Path.cpp
+    ../HiveCore/src/Core/Perf.cpp
+    ../HiveCore/src/Buffer/Buffer.cpp
+    ../HiveCore/src/Buffer/BufferMeshData.cpp
+    ../HiveCore/src/Buffer/BufferVolumeData.cpp
+    ../HiveCore/src/Buffer/BufferLineData.cpp
+    ../HiveCore/src/Buffer/BufferSparseVolumeData.cpp
+    ../HiveCore/src/Buffer/BufferSolidData.cpp
+    ../HiveCore/src/Buffer/BufferPointData.cpp
+    ../HiveCore/src/Buffer/BufferVectorData.cpp
+    ../HiveCore/src/Buffer/BufferTetraData.cpp
+    ../HiveCore/src/Buffer/BufferImageData.cpp
+    ../HiveCore/src/Buffer/BufferExtraData.cpp
+    ../HiveCore/src/Buffer/UserBufferData.cpp
+    ../HiveCore/src/Renderer/RenderCore.cpp
+    ../HiveCore/src/Renderer/BaseBuffer.cpp
+    ../HiveCore/src/Renderer/Commands_GL.cpp
+    ../HiveCore/src/Renderer/Commands_LSGL.cpp
+    ../HiveCore/src/Renderer/PolygonBuffer.cpp
+    ../HiveCore/src/Renderer/VolumeBuffer.cpp
+    ../HiveCore/src/Renderer/SparseVolumeBuffer.cpp
+    ../HiveCore/src/Renderer/LineBuffer.cpp
+    ../HiveCore/src/Renderer/PointBuffer.cpp
+    ../HiveCore/src/Renderer/TetraBuffer.cpp
+    ../HiveCore/src/Renderer/SolidBuffer.cpp
+    ../HiveCore/src/Renderer/VectorBuffer.cpp
+    ../HiveCore/src/SceneScript/SceneScript.cpp
+    ../HiveCore/src/RenderObject/Camera.cpp
+    ../HiveCore/src/RenderObject/RenderObject.cpp
+    ../HiveCore/src/RenderObject/PolygonModel.cpp
+    ../HiveCore/src/RenderObject/VolumeModel.cpp
+    ../HiveCore/src/RenderObject/SparseVolumeModel.cpp
+    ../HiveCore/src/RenderObject/LineModel.cpp
+    ../HiveCore/src/RenderObject/PointModel.cpp
+    ../HiveCore/src/RenderObject/TetraModel.cpp
+    ../HiveCore/src/RenderObject/SolidModel.cpp
+    ../HiveCore/src/RenderObject/VectorModel.cpp
+    ../HiveCore/src/Image/jpge.cpp
+    ../HiveCore/src/Image/jpgd.cpp
+    ../HiveCore/src/Image/lodepng.cpp
+    ../HiveCore/src/Image/tinyexr.cpp
+    ../HiveCore/src/Image/ImageLoader.cpp
+    ../HiveCore/src/Image/GenTexture.cpp
+    ../HiveCore/src/Image/ImageSaver.cpp
+    ../HiveCore/src/Generator/PrimitiveGenerator.cpp
 
-  IF(NOT HIVE_BUILD_WITH_MPI)
-    add_definitions(-D_CDM_WITHOUT_MPI_)        # Use stub MPI defines(provided in CDMlib/include/mpi_stubs.h)
-  ENDIF()
+    ../lib/Analyzer/PolygonAnalyzer.cpp
+    ../lib/Analyzer/VolumeAnalyzer.cpp
+    ../lib/Analyzer/SparseVolumeAnalyzer.cpp
+    ../lib/Analyzer/SolidAnalyzer.cpp
 
-  SET(CDMLIB_SOURCES
-    ../lib/Loader/CdmLoader/CdmLoader.cpp
+    ../lib/Builder/FloatsToFloat/FloatsToFloat.cpp
+    ../lib/Builder/MeshAttribToVolume/MeshAttribToVolume.cpp
+    ../lib/Builder/PointToVolume/PointToVolume.cpp
+    ../lib/Builder/SparseVolumeToVolume/SparseVolumeToVolume.cpp
+    ../lib/Builder/VolumeFilter/CompileUtil.cpp
+    ../lib/Builder/VolumeFilter/VolumeFilter.cpp
+    ../lib/Builder/VolumeToMeshData/VolumeToMeshData.cpp
+    ../lib/Builder/VolumeToVector/VolumeToVector.cpp
+    ../lib/Builder/VolumeQuantizer/VolumeQuantizer.cpp
+    ../lib/Builder/SolidToVolume/SolidToVolume.cpp
+    ../lib/Builder/SolidDfToVolume/SolidDfToVolume.cpp
+    ../lib/Builder/SolidAttribToVolume/SolidAttribToVolume.cpp
+    ../lib/Builder/ImageFilter/ImageFilter.cpp
+
+    ../lib/ClusterParallelCoord/VolumeClustering.cpp
+    ../lib/ClusterParallelCoord/VolumeScatterPlot.cpp
+    ../lib/Generator/MandelbulbVolGen/MandelbulbVolGen.cpp
+    ../lib/Loader/ObjLoader/ObjLoader.cpp
+    ../lib/Loader/PdbLoader/tiny_pdb.cpp
+    ../lib/Loader/PdbLoader/PdbLoader.cpp
+    ../lib/Loader/RawSparseVolumeLoader/RawSparseVolumeLoader.cpp
+    ../lib/Loader/RawVolumeLoader/RawVolumeLoader.cpp
+    ../lib/Loader/SphLoader/SphLoader.cpp
+    ../lib/Loader/StlLoader/StlLoader.cpp
+    ../lib/Loader/VisioColorMapLoader/VisioColorMapLoader.cpp
+    ../lib/Loader/VisioGradientMapLoader/VisioGradientMapLoader.cpp
+    ../lib/Loader/VolLoader/VolLoader.cpp
+    ../lib/Loader/VtkLoader/tiny_vtkxml.cpp
+    ../lib/Loader/VtkLoader/VtkLoader.cpp
+    ../lib/Network/Connection.cpp
+    ../lib/Network/easywsclient.cpp
+    ../lib/Network/happyhttp.cpp
+    ../lib/Network/MetaBinary.cpp
+    ../lib/Saver/RawVolumeSaver/RawVolumeSaver.cpp
+    ../lib/Saver/SphSaver/SphSaver.cpp
+    ../lib/Saver/VisioColorMapSaver/VisioColorMapSaver.cpp
+    ../lib/Saver/VisioGradientMapSaver/VisioGradientMapSaver.cpp
   )
 
-  IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
-    SET(NETCDF_LIBS netcdf hdf5_hl hdf5 sz)
-  ELSE()
-    SET(NETCDF_LIBS netcdf hdf5_hl hdf5 z)
-  ENDIF()
+  IF(HIVE_BUILD_WITH_CDMLIB)
+    SET(HIVE_BUILD_WITH_BCMTOOLS On)
+    add_definitions(-DHIVE_WITH_CDMLIB)
 
-  IF(HIVE_BUILD_WITH_MPI)
-    SET(CDMLIB_LIBS
-      CDMmpi TPmpi ${NETCDF_LIBS}
+    IF(NOT HIVE_BUILD_WITH_MPI)
+      add_definitions(-D_CDM_WITHOUT_MPI_)        # Use stub MPI defines(provided in CDMlib/include/mpi_stubs.h)
+    ENDIF()
+
+    SET(CDMLIB_SOURCES
+      ../lib/Loader/CdmLoader/CdmLoader.cpp
     )
-  ELSE()
-    SET(CDMLIB_LIBS
-      CDM TP ${NETCDF_LIBS}
+
+    IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+      SET(NETCDF_LIBS netcdf hdf5_hl hdf5 sz)
+    ELSE()
+      SET(NETCDF_LIBS netcdf hdf5_hl hdf5 z)
+    ENDIF()
+
+    IF(HIVE_BUILD_WITH_MPI)
+      SET(CDMLIB_LIBS
+        CDMmpi TPmpi ${NETCDF_LIBS}
+      )
+    ELSE()
+      SET(CDMLIB_LIBS
+        CDM TP ${NETCDF_LIBS}
+      )
+    ENDIF()
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
+
+    IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
+      set(CMAKE_SHARED_LINKER_FLAGS -L/opt/aics/netcdf/k/lib-static)
+      include_directories(/opt/aics/netcdf/k/include)
+      link_directories(/opt/aics/netcdf/k/lib-static)
+    ENDIF()
+  ENDIF() # HIVE_WITH_CDMLIB
+
+  IF(HIVE_BUILD_WITH_BCMTOOLS)
+    add_definitions(-DHIVE_WITH_BCMTOOLS)
+
+    # Additional Libraries
+    if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+        if(HIVE_BUILD_WITH_BCMTOOLS)
+            add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
+        endif()
+    endif()
+
+    SET(BCMTOOLS_SOURCES
+      ../lib/Loader/BcmLoader/BcmLoader.cpp
     )
+
+    SET(BCMTOOLS_LIBS
+      BCM POLYmpi TPmpi
+    )
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
+  ENDIF() # HIVE_BUILD_WITH_BCMTOOLS
+
+  IF(HIVE_BUILD_WITH_HDMLIB)
+    SET(HIVE_BUILD_WITH_BCMTOOLS On)
+    add_definitions(-DHIVE_WITH_HDMLIB)
+
+    # Source files
+    SET(HDMLIB_SOURCES
+      ../lib/Loader/HdmLoader/HdmLoader.cpp
+    )
+    SET(HDMLIB_LIBS
+      HDM BCM TPmpi
+    )
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
+  ENDIF() # HIVE_BUILD_WITH_HDMLIB
+
+  IF(HIVE_BUILD_WITH_PDMLIB)
+    add_definitions(-DHIVE_WITH_PDMLIB)
+
+    SET(PDMLIB_SOURCES
+      ../lib/Loader/PdmLoader/PdmLoader.cpp
+      ../lib/Saver/PdmSaver/PdmSaver.cpp
+    )
+
+    SET(PDMLIB_LIBS
+      PDM TPmpi fpzip zoltan z
+    )
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
+  ENDIF() # HIVE_BUILD_WITH_PDMLIB
+
+
+  IF(HIVE_BUILD_WITH_UDMLIB)
+    add_definitions(-DHIVE_WITH_UDMLIB)
+
+    SET(UDMLIB_SOURCES
+    ../lib/Loader/UdmLoader/UdmLoader.cpp
+    )
+
+    SET(UDMLIB_LIBS
+      udm TPmpi zoltan cgns
+    )
+
+    include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
+    include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
+    link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
   ENDIF()
 
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
+  IF(HIVE_BUILD_WITH_COMPOSITOR)
+    add_definitions(-DHIVE_WITH_COMPOSITOR)
 
-  IF (HIVE_BUILD_K_CROSS_COMPILE) # K specific option.
-    set(CMAKE_SHARED_LINKER_FLAGS -L/opt/aics/netcdf/k/lib-static)
-    include_directories(/opt/aics/netcdf/k/include)
-    link_directories(/opt/aics/netcdf/k/lib-static)
+    SET(COMPOSITOR_LIBS
+      234comp
+    )
+
+    include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/include)
+    link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/lib)
+    
   ENDIF()
-ENDIF() # HIVE_WITH_CDMLIB
 
-IF(HIVE_BUILD_WITH_BCMTOOLS)
-  add_definitions(-DHIVE_WITH_BCMTOOLS)
+  IF(HIVE_BUILD_WITH_TPUTIL)
+    add_definitions(-DHIVE_WITH_TPUTIL)
+
+    SET(TPLIB_SOURCES
+    ../lib/Util/TpUtil/TpUtil.cpp
+    )
+
+    SET(TPLIB_LIBS
+      TPmpi
+    )
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
+
+  ENDIF() # HIVE_BUILD_WITH_TPUTIL
+
+
+  IF(NOT EXECUTABLE_OUTPUT_PATH)
+    SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+  ENDIF()
+
+
+  IF(NOT EXECUTABLE_OUTPUT_PATH)
+    SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+  ENDIF()
+
+  # --------- Ext lib ------------------
+  # PMlib
+  IF(HIVE_BUILD_WITH_PMLIB)
+    #SET(PMLIB_LIBS
+    #  PMmpi
+    #)
+
+    #include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
+  ENDIF()
+
+  # Compositor
+
+  IF(HIVE_BUILD_WITH_COMPOSITOR)
+
+    SET(COMPOSITOR_LIBS
+      234comp
+    )
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/include)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/lib)
+    
+  ENDIF()
+  # ---------------------------------------
+ENDIF() # !BUILD_SHARED_LIBS
+
+# hrender
+add_executable (hrender ${HRENDER_SOURCES} ${HRENDER_SOURCES_STATIC}
+    ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES} ${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES}
+     ${TPLIB_SOURCES}
+  )
+add_sanitizers (hrender)
+
+IF (BUILD_SHARED_LIBS)
+  # HIVE Core		
+  link_directories(${PROJECT_SOURCE_DIR}/../bin)		
+  target_link_libraries(hrender hiveCore)		
+ENDIF() # BUILD_SHARED_LIBS
+
+IF (NOT BUILD_SHARED_LIBS)
+  target_link_libraries(hrender pthread)
+  target_link_libraries(hrender liblua)
+  target_link_libraries(hrender LSGLES)
+  target_link_libraries(hrender ${CDMLIB_LIBS})
+  target_link_libraries(hrender ${HDMLIB_LIBS})
+  target_link_libraries(hrender ${UDMLIB_LIBS})
+  target_link_libraries(hrender ${PDMLIB_LIBS})
+  target_link_libraries(hrender ${BCMTOOLS_LIBS})
+  target_link_libraries(hrender ${COMPOSITOR_LIBS})
+  target_link_libraries(hrender ${TPLIB_LIBS})
+
+  # Link
+  if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    find_library(COCOA Cocoa)
+    if (NOT COCOA)
+      message(FATAL_ERROR "Cocoa Framework not found")
+    endif()
+    target_link_libraries(hrender ${COCOA})
+    if (HIVE_BUILD_WITH_OPENGL)
+      find_library(OPENGL OpenGL)
+      if (NOT OPENGL)
+        message(FATAL_ERROR "OpenGL Framework not found")
+      endif()
+      target_link_libraries(hrender ${OPENGL})
+    endif()
+
+  endif()
+
+  if (HIVE_BUILD_WITH_OPENGL)
+  if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    find_library(OPENGL OpenGL)
+    if (NOT OPENGL)
+      message(FATAL_ERROR "OpenGL Framework not found")
+    endif()
+    target_link_libraries(hrender ${OPENGL})
+  else()
+    find_library(OPENGL GL)
+    if (NOT OPENGL)
+      message(FATAL_ERROR "OpenGL Framework not found")
+    endif()
+    target_link_libraries(hrender ${OPENGL})
+  endif()
+  endif()
 
   # Additional Libraries
   if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       if(HIVE_BUILD_WITH_BCMTOOLS)
           add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
       endif()
+          find_library(COCOA Cocoa)
+          if (NOT COCOA)
+              message(FATAL_ERROR "Cocoa Framework not found")
+          endif()
+          target_link_libraries(hrender ${COCOA})
   endif()
 
-  SET(BCMTOOLS_SOURCES
-    ../lib/Loader/BcmLoader/BcmLoader.cpp
-  )
+  # Copy GLSL Compiler in post build phase
+  # @todo { Don't copy whole directory files }
+  SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
+  ADD_CUSTOM_TARGET(glslc-copy-files ALL COMMAND cmake -E copy_directory
+    ${CMAKE_SOURCE_DIR}/third_party/SURFACE/glsl
+    ${EXECUTABLE_OUTPUT_PATH}/glsl)
 
-  SET(BCMTOOLS_LIBS
-    BCM POLYmpi TPmpi
-  )
+  # NOTE: COPY command only works at CMake configure phase
+  #file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
 
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
-ENDIF() # HIVE_BUILD_WITH_BCMTOOLS
+  # ------------------
+  # [For develop]
 
-IF(HIVE_BUILD_WITH_HDMLIB)
-  SET(HIVE_BUILD_WITH_BCMTOOLS On)
-  add_definitions(-DHIVE_WITH_HDMLIB)
+  # create symbolic link version (but can't work)
+  #ADD_CUSTOM_COMMAND(OUTPUT myLinkDebug COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Debug/glsl)
+  #ADD_CUSTOM_COMMAND(OUTPUT myLinkRelease COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Release/glsl)
+  #ADD_DEPENDENCIES(hrender myLinkDebug)
+  #ADD_DEPENDENCIES(hrender myLinkRelease)
 
-  # Source files
-  SET(HDMLIB_SOURCES
-    ../lib/Loader/HdmLoader/HdmLoader.cpp
-  )
-  SET(HDMLIB_LIBS
-    HDM BCM TPmpi
-  )
-
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
-ENDIF() # HIVE_BUILD_WITH_HDMLIB
-
-IF(HIVE_BUILD_WITH_PDMLIB)
-  add_definitions(-DHIVE_WITH_PDMLIB)
-
-  SET(PDMLIB_SOURCES
-    ../lib/Loader/PdmLoader/PdmLoader.cpp
-    ../lib/Saver/PdmSaver/PdmSaver.cpp
-  )
-
-  SET(PDMLIB_LIBS
-    PDM TPmpi fpzip zoltan z
-  )
-
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
-ENDIF() # HIVE_BUILD_WITH_PDMLIB
-
-
-IF(HIVE_BUILD_WITH_UDMLIB)
-  add_definitions(-DHIVE_WITH_UDMLIB)
-
-  SET(UDMLIB_SOURCES
-  ../lib/Loader/UdmLoader/UdmLoader.cpp
-  )
-
-  SET(UDMLIB_LIBS
-    udm TPmpi zoltan cgns
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
-ENDIF()
-
-IF(HIVE_BUILD_WITH_COMPOSITOR)
-  add_definitions(-DHIVE_WITH_COMPOSITOR)
-
-  SET(COMPOSITOR_LIBS
-    234comp
-  )
-
-  include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/include)
-  link_directories(${PROJECT_SOURCE_DIR}/../third_party/local/234Compositor/lib)
-  
-ENDIF()
-
-IF(HIVE_BUILD_WITH_TPUTIL)
-  add_definitions(-DHIVE_WITH_TPUTIL)
-
-  SET(TPLIB_SOURCES
-  ../lib/Util/TpUtil/TpUtil.cpp
-  )
-
-  SET(TPLIB_LIBS
-    TPmpi
-  )
-
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
-
-ENDIF() # HIVE_BUILD_WITH_TPUTIL
-
-
-IF(NOT EXECUTABLE_OUTPUT_PATH)
-  SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-ENDIF()
-
-
-IF(NOT EXECUTABLE_OUTPUT_PATH)
-  SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-ENDIF()
-
-# --------- Ext lib ------------------
-# PMlib
-IF(HIVE_BUILD_WITH_PMLIB)
-  #SET(PMLIB_LIBS
-  #  PMmpi
-  #)
-
-  #include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
-ENDIF()
-
-# Compositor
-
-IF(HIVE_BUILD_WITH_COMPOSITOR)
-
-  SET(COMPOSITOR_LIBS
-    234comp
-  )
-
-  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/include)
-  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/234Compositor/lib)
-  
-ENDIF()
-# ---------------------------------------
-
-
-# hrender
-add_executable (hrender ${HRENDER_SOURCES}
-    ${CDMLIB_SOURCES} ${BCMTOOLS_SOURCES} ${HDMLIB_SOURCES} ${PDMLIB_SOURCES} ${UDMLIB_SOURCES}
-     ${TPLIB_SOURCES}
-  )
-add_sanitizers (hrender)
-
-target_link_libraries(hrender pthread)
-target_link_libraries(hrender liblua)
-target_link_libraries(hrender LSGLES)
-target_link_libraries(hrender ${CDMLIB_LIBS})
-target_link_libraries(hrender ${HDMLIB_LIBS})
-target_link_libraries(hrender ${UDMLIB_LIBS})
-target_link_libraries(hrender ${PDMLIB_LIBS})
-target_link_libraries(hrender ${BCMTOOLS_LIBS})
-target_link_libraries(hrender ${COMPOSITOR_LIBS})
-target_link_libraries(hrender ${TPLIB_LIBS})
-
-# Link
-if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  find_library(COCOA Cocoa)
-  if (NOT COCOA)
-    message(FATAL_ERROR "Cocoa Framework not found")
-  endif()
-  target_link_libraries(hrender ${COCOA})
-  if (HIVE_BUILD_WITH_OPENGL)
-    find_library(OPENGL OpenGL)
-    if (NOT OPENGL)
-      message(FATAL_ERROR "OpenGL Framework not found")
-    endif()
-    target_link_libraries(hrender ${OPENGL})
-  endif()
-
-endif()
-
-if (HIVE_BUILD_WITH_OPENGL)
- if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  find_library(OPENGL OpenGL)
-  if (NOT OPENGL)
-    message(FATAL_ERROR "OpenGL Framework not found")
-  endif()
-  target_link_libraries(hrender ${OPENGL})
- else()
-  find_library(OPENGL GL)
-  if (NOT OPENGL)
-    message(FATAL_ERROR "OpenGL Framework not found")
-  endif()
-  target_link_libraries(hrender ${OPENGL})
- endif()
-endif()
-
-# Additional Libraries
-if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    if(HIVE_BUILD_WITH_BCMTOOLS)
-        add_definitions(-U__BLOCKS__) # work around for BCMlib's Block.h header
-    endif()
-        find_library(COCOA Cocoa)
-        if (NOT COCOA)
-            message(FATAL_ERROR "Cocoa Framework not found")
-        endif()
-        target_link_libraries(hrender ${COCOA})
-endif()
-
-# Copy GLSL Compiler in post build phase
-# @todo { Don't copy whole directory files }
-SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
-ADD_CUSTOM_TARGET(glslc-copy-files ALL COMMAND cmake -E copy_directory
-	${CMAKE_SOURCE_DIR}/third_party/SURFACE/glsl
-	${EXECUTABLE_OUTPUT_PATH}/glsl)
-
-# NOTE: COPY command only works at CMake configure phase
-#file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-
-# ------------------
-# [For develop]
-
-# create symbolic link version (but can't work)
-#ADD_CUSTOM_COMMAND(OUTPUT myLinkDebug COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Debug/glsl)
-#ADD_CUSTOM_COMMAND(OUTPUT myLinkRelease COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Release/glsl)
-#ADD_DEPENDENCIES(hrender myLinkDebug)
-#ADD_DEPENDENCIES(hrender myLinkRelease)
-
-# Alt. copy folders
-file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
-file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
-# ------------------
-
+  # Alt. copy folders
+  file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
+  file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
+  # ------------------
+ENDIF() # !BUILD_SHARED_LIBS
 
 #
 # For INSTALL
