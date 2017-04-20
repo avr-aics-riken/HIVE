@@ -48,7 +48,7 @@
 #include "PrimitiveGenerator_Lua.h"
 
 #ifdef HIVE_STATIC
-    #include "Connection_Lua.h"
+    #include "Network_Lua.h"
     #include "ObjLoader_Lua.h"
     #include "StlLoader_Lua.h"
     #include "VolLoader_Lua.h"
@@ -82,6 +82,7 @@
     #include "SolidAnalyzer_Lua.h"
     #include "SparseVolumeAnalyzer_Lua.h"
     #include "VolumeAnalyzer_Lua.h"
+    #include "Analyzer_Lua.h"
     #include "FloatsToFloat_Lua.h"
     #include "PointToVolume_Lua.h"
     #include "VolumeToVector_Lua.h"
@@ -92,6 +93,7 @@
 
     #include "VolumeClustering_Lua.h"    
     #include "VolumeScatterPlot_Lua.h"
+    #include "ClusterParallelCoord_Lua.h"
     #include "ImageFilter_Lua.h"
     #include "MandelbulbVolGen_Lua.h"
     #include "RawSparseVolumeLoader_Lua.h"
@@ -102,48 +104,6 @@
     #include "VisioColorMapSaver_Lua.h"
     #include "VisioGradientMapLoader_Lua.h"
     #include "VisioGradientMapSaver_Lua.h"
-
-    int luaopen_Analyzer(lua_State* L)
-    {
-        LUA_SCRIPTCLASS_REGISTER(L, VolumeAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, SolidAnalyzer_Lua);
-        lua_newtable(L);
-        lua_pushstring(L, "VolumeAnalyzer");
-        lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeAnalyzer_Lua));
-        lua_settable(L, -3);
-
-        lua_pushstring(L, "SparseVolumeAnalyzer");
-        lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeAnalyzer_Lua));
-        lua_settable(L, -3);
-
-        lua_pushstring(L, "PolygonAnalyzer");
-        lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonAnalyzer_Lua));
-        lua_settable(L, -3);
-
-        lua_pushstring(L, "SolidAnalyzer");
-        lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(SolidAnalyzer_Lua));
-        lua_settable(L, -3);
-
-        return 1;
-    }
-
-    int luaopen_ClusterParallelCoord(lua_State* L)
-    {
-        LUA_SCRIPTCLASS_REGISTER(L, VolumeClustering_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VolumeScatterPlot_Lua);
-        lua_newtable(L);
-        lua_pushstring(L, "VolumeClustering");
-        lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeClustering_Lua));
-        lua_settable(L, -3);
-        
-        lua_pushstring(L, "VolumeScatterPlot");
-        lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeScatterPlot_Lua));
-        lua_settable(L, -3);
-
-        return 1;
-    }
 #endif
 
 void RegisterSceneClass(lua_State* L)
@@ -172,6 +132,8 @@ void RegisterSceneClass(lua_State* L)
 
 #ifdef HIVE_STATIC
         LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, MetaBinary_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, Network_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
@@ -201,7 +163,12 @@ void RegisterSceneClass(lua_State* L)
         LUA_SCRIPTCLASS_REGISTER(L, TPUtil_Lua);
     #endif
         LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
-        //LUA_SCRIPTCLASS_REGISTER(L, Analyzer_Lua);
+        
+        LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SolidAnalyzer_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeAnalyzer_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeAnalyzer_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, Analyzer_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, PointToVolume_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, VolumeToVector_Lua);
@@ -210,7 +177,9 @@ void RegisterSceneClass(lua_State* L)
         LUA_SCRIPTCLASS_REGISTER(L, VolumeQuantizer_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeToVolume_Lua);
         
-        //LUA_SCRIPTCLASS_REGISTER(L, ClusterParallelCoord_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeClustering_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeScatterPlot_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, ClusterParallelCoord_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, ImageFilter_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, MandelbulbVolGen_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, RawSparseVolumeLoader_Lua);
@@ -246,7 +215,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
 
 #ifdef HIVE_STATIC
-        SetFunction(L, "Network",          LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
+        SetFunction(L, "Network",          LUA_SCRIPTCLASS_NEW_FUNCTION(Network_Lua));
         SetFunction(L, "ObjLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
         SetFunction(L, "StlLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
         
@@ -277,7 +246,7 @@ void RegisterSceneClass(lua_State* L)
         SetFunction(L, "TpUtil",               LUA_SCRIPTCLASS_NEW_FUNCTION(TPUtil_Lua));
     #endif
         SetFunction(L, "PdbLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
-        SetFunction(L, "Analyzer",     luaopen_Analyzer);
+        SetFunction(L, "Analyzer",            LUA_SCRIPTCLASS_NEW_FUNCTION(Analyzer_Lua));
         SetFunction(L, "FloatsToFloat",       LUA_SCRIPTCLASS_NEW_FUNCTION(FloatsToFloat_Lua));
         SetFunction(L, "PointToVolume",       LUA_SCRIPTCLASS_NEW_FUNCTION(PointToVolume_Lua));
         SetFunction(L, "VolumeToVector",      LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));
@@ -286,7 +255,7 @@ void RegisterSceneClass(lua_State* L)
         SetFunction(L, "VolumeQuantizer",        LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeQuantizer_Lua));
         SetFunction(L, "SparseVolumeToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
         
-        SetFunction(L, "ClusterParallelCoord",        luaopen_ClusterParallelCoord);
+        SetFunction(L, "ClusterParallelCoord",        LUA_SCRIPTCLASS_NEW_FUNCTION(ClusterParallelCoord_Lua));
         SetFunction(L, "ImageFilter",        LUA_SCRIPTCLASS_NEW_FUNCTION(ImageFilter_Lua));
         SetFunction(L, "MandelbulbVolGen",        LUA_SCRIPTCLASS_NEW_FUNCTION(MandelbulbVolGen_Lua));
         SetFunction(L, "RawSparseVolumeLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(RawSparseVolumeLoader_Lua));

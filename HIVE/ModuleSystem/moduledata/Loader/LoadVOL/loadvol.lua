@@ -4,7 +4,7 @@ setmetatable(LoadVOL, {__index = HiveBaseModule})
 
 LoadVOL.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('VolLoader')()
+    this.loader = LoadModule('VolLoader')
     setmetatable(this, {__index=LoadVOL})
     return this
 end

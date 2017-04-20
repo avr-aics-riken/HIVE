@@ -5,7 +5,7 @@ TransferFunction.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=TransferFunction})
     this.gentex = GenTexture()
-    this.loader = require('VisioColorMapLoader')()
+    this.loader = LoadModule('VisioColorMapLoader')
     this.prefilepath = ""
     return this
 end
@@ -17,7 +17,7 @@ function TransferFunction:Do()
     -- Analyze min/max
     if v.volume and self.vol ~= v.volume then
         self.vol = v.volume
-        local analyzer = require('Analyzer').VolumeAnalyzer()
+        local analyzer = LoadModule('Analyzer').VolumeAnalyzer()
         analyzer:Execute(v.volume)
         minval = analyzer:MinX()
         maxval = analyzer:MaxX()

@@ -1,4 +1,4 @@
-print('custom expression for require("VolumeFilter")')
+print('custom expression for LoadModule("VolumeFilter")')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)

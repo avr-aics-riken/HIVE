@@ -4,7 +4,7 @@ setmetatable(SaveRaw, {__index = HiveBaseModule})
 SaveRaw.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=SaveRaw})
-    this.saver = require("RawVolumeSaver")()
+    this.saver = LoadModule("RawVolumeSaver")
     return this
 end
 

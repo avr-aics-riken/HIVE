@@ -4,7 +4,7 @@ setmetatable(ParallelCoordinate, {__index = HiveBaseModule})
 ParallelCoordinate.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=ParallelCoordinate})
-    this.volQ = require('VolumeQuantizer')()
+    this.volQ = LoadModule('VolumeQuantizer')
     this.volCache = {}
     --print('VVVVVVVVVVVV', this.volQ)
     return this
@@ -180,7 +180,7 @@ function ParallelCoordinate:Do()
 
     local minmaxstring = ''
     if vol then
-        local volquant = require('VolumeQuantizer')()
+        local volquant = LoadModule('VolumeQuantizer')
         self.volquant = volquant
         volquant:Create(vol)
         local minmax = volquant:GetMinMax()

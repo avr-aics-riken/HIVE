@@ -4,7 +4,7 @@ setmetatable(VolumeLaplacian, {__index = HiveBaseModule})
 
 VolumeLaplacian.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    local vf = require("VolumeFilter")();
+    local vf = LoadModule("VolumeFilter")
 	this.vf = vf
     setmetatable(this, {__index=VolumeLaplacian})
     return this

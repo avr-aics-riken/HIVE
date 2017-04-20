@@ -4,7 +4,7 @@ setmetatable(SaveVisioGradientMap, {__index = HiveBaseModule})
 SaveVisioGradientMap.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=SaveVisioGradientMap})
-    this.saver = require("VisioGradientMapSaver")()
+    this.saver = LoadModule("VisioGradientMapSaver")
     return this
 end
 

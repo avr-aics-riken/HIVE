@@ -17,6 +17,10 @@ private:
 	~Connection_Lua(){}
 
 public:
+    static Connection_Lua* CreateInstance() {
+        return new Connection_Lua();
+    }
+    
     LUA_SCRIPTCLASS_BEGIN(Connection_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1 (bool, Connect, const std::string&)
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG1 ("Connection", bool, SendText, const std::string&)

@@ -4,7 +4,7 @@ setmetatable(SaveSPH, {__index = HiveBaseModule})
 SaveSPH.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=SaveSPH})
-    this.saver = require("SphSaver")()
+    this.saver = LoadModule("SphSaver")
     return this
 end
 

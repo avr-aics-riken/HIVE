@@ -42,7 +42,7 @@ print('HIVE renderer START. Connect to', connectAddress);
 
 if ipcAddress then
 	print('IPC open=', ipcAddress);
-	network_ipc = require("Network").Connection()
+	network_ipc = LoadModule("Network").Connection()
 	local ipcr = network_ipc:Connect(ipcAddress)
 	print('IPC ret=', ipcr)
 end
@@ -55,7 +55,7 @@ package.path = package.path .. ";../../third_party/?.lua" -- for debug
 JSON = require('dkjson')
 
 -- Global Weboket Connection
-network = require("Network").Connection()
+network = LoadModule("Network").Connection()
 network:SetTimeout(100)
 HIVE_network = network
 
@@ -63,7 +63,7 @@ HIVE_network = network
 HIVE_ImageSaver = ImageSaver()
 
 -- Global Metabin
-HIVE_metabin = require("Network").MetaBinary()
+HIVE_metabin = LoadModule("Network").MetaBinary()
 
 
 local defaultCamera = Camera() -- 'view'

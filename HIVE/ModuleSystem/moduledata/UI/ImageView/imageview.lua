@@ -62,7 +62,7 @@ function ImageView:Do()
         if self.network_ipc == nil then
             local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname
             print('IPC open=', ipcAddress);
-	        self.network_ipc = require("Network").Connection()
+	        self.network_ipc = LoadModule("Network").Connection()
 	        local ipcr = self.network_ipc:Connect(ipcAddress)
 	        print('IPC ret=', ipcr)
         end

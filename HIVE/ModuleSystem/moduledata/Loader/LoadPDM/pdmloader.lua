@@ -3,7 +3,7 @@ setmetatable(LoadPDM, {__index = HiveBaseModule})
 
 LoadPDM.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('PdmLoader')()
+    this.loader = LoadModule('PdmLoader')
     setmetatable(this, {__index=LoadPDM})
     return this
 end

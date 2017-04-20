@@ -3,7 +3,7 @@ setmetatable(LoadVTK, {__index = HiveBaseModule})
 
 LoadVTK.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('VtkLoader')()
+    this.loader = LoadModule('VtkLoader')
     setmetatable(this, {__index=LoadVTK})
     return this
 end

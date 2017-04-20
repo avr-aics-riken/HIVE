@@ -4,7 +4,7 @@ setmetatable(SaveVisioColorMap, {__index = HiveBaseModule})
 SaveVisioColorMap.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=SaveVisioColorMap})
-    this.saver = require("VisioColorMapSaver")()
+    this.saver = LoadModule("VisioColorMapSaver")
     return this
 end
 

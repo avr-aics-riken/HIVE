@@ -4,7 +4,7 @@ setmetatable(LoadOBJ, {__index = HiveBaseModule})
 
 LoadOBJ.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('ObjLoader')()
+    this.loader = LoadModule('ObjLoader')
     setmetatable(this, {__index=LoadOBJ})
     return this
 end
