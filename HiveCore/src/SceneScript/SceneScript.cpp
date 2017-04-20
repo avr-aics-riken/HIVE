@@ -48,6 +48,8 @@
 #include "PrimitiveGenerator_Lua.h"
 
 #ifdef HIVE_STATIC
+    #include "Connection_Lua.h"
+    #include "MetaBinary_Lua.h"
     #include "Network_Lua.h"
     #include "ObjLoader_Lua.h"
     #include "StlLoader_Lua.h"
@@ -840,7 +842,12 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
 #ifdef HIVE_STATIC
     std::string requireFunction = "function LoadModule(name) return loadstring('return ' .. name .. '()')() end\n";
 #else     
-    std::string requireFunction = "function LoadModule(name) return require(name)() end\n";
+    std::string requireFunction = "\
+        function LoadModule(name) \n \
+            local m = require(name) \n \
+            if (type(m) == 'table') then return m \n \
+            else return m() end \n \
+        end \n";
 #endif
     
     char* luascript = new char[scriptsize + 1];
@@ -849,7 +856,7 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
         return false;
     }
     luascript[scriptsize] = 0; // END
-
+printf("%s\n", (requireFunction + luascript).c_str());
     bool r = Execute( (requireFunction + luascript).c_str(), sceneargs);
     
     delete [] luascript;
