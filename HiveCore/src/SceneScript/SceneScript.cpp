@@ -860,7 +860,7 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
     fseek(fp, 0, SEEK_SET);
     
 #ifdef HIVE_STATIC
-    std::string requireFunction = "function LoadModule(name) return loadstring(name .. ()) end\n";
+    std::string requireFunction = "function LoadModule(name) return loadstring('return ' .. name .. '()')() end\n";
 #else     
     std::string requireFunction = "function LoadModule(name) return require(name)() end\n";
 #endif
