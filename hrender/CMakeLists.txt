@@ -292,7 +292,6 @@ IF (NOT BUILD_SHARED_LIBS)
     ../lib/Saver/SphSaver/SphSaver.cpp
     ../lib/Saver/VisioColorMapSaver/VisioColorMapSaver.cpp
     ../lib/Saver/VisioGradientMapSaver/VisioGradientMapSaver.cpp
-    ../lib/Util/TpUtil/TpUtil.cpp
   )
 
   IF(HIVE_BUILD_WITH_CDMLIB)
