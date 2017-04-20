@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local stl = require("StlLoader")()
+local stl = LoadModule("StlLoader")
 local swapEndian = false
 stl:Load('bunny.stl', swapEndian)
 
@@ -23,7 +23,7 @@ model:Create(meshdata)
 model:SetShader('white.frag')
 
 --[[
-local analy = require("Analyzer").PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())

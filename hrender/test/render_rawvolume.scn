@@ -96,7 +96,7 @@ local tftex = JetTransferFunctionTexture()
 -- local tftex = CoolToWarmTransferFunctionTexture()
 -- local tftex = BlueToRedTransferFunctionTexture()
 
-local loader = require("RawVolumeLoader")()
+local loader = LoadModule("RawVolumeLoader")
 -- .raw volume file can be found at http://ospray.github.io/demos.html for example.
 loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
 local volume = VolumeModel()
@@ -104,7 +104,7 @@ local volumedata = loader:VolumeData()
 
 volume:Create(volumedata)
 
-local analy = require("Analyzer").VolumeAnalyzer()
+local analy = requLoadModuleire("Analyzer").VolumeAnalyzer()
 analy:Execute(volume)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())

@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local sph = require("VolLoader")()
+local sph = LoadModule("VolLoader")
 sph:Load('output32.vol')
 local volume = VolumeModel()
 local volumedata = sph:VolumeData()

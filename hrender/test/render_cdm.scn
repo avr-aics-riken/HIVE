@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local cdm = require("CdmLoader")()
+local cdm = LoadModule("CdmLoader")
 cdm:Load('cdm_sample.dfi')
 
 local volume = VolumeModel()

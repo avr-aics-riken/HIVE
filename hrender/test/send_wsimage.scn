@@ -6,7 +6,7 @@ function sleep(n)  -- seconds
   while clock() - t0 <= n do end
 end
 
-local network = require("Network").Connection()
+local network = LoadModule("Network").Connection()
 network:Connect('ws://localhost:8080/')
 network:SendImage('render_obj.jpg')
 
