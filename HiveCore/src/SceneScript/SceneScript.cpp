@@ -856,7 +856,7 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
         return false;
     }
     luascript[scriptsize] = 0; // END
-printf("%s\n", (requireFunction + luascript).c_str());
+
     bool r = Execute( (requireFunction + luascript).c_str(), sceneargs);
     
     delete [] luascript;
