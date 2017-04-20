@@ -6,7 +6,7 @@ extern "C" {
 int luaopen_ClusterParallelCoord(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, ClusterParallelCoord_Lua);
-    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(NetworkLua));
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(ClusterParallelCoord_Lua));
     return 1;
 }
 
