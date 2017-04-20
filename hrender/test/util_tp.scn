@@ -1,6 +1,6 @@
 
 print('TextParser util test')
 
-local tp = LoadModule("TpUtil")()
+local tp = LoadModule("TpUtil")
 
 tp:Parse('cdm_sample.dfi')

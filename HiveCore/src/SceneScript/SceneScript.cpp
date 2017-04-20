@@ -74,6 +74,9 @@
     #ifdef HIVE_WITH_BCMTOOLS
         #include "BcmLoader_Lua.h"
     #endif
+    #ifdef HIVE_WITH_TPUTIL
+        #include "TpUtil_Lua.h"
+    #endif
     #include "PdbLoader_Lua.h"
     #include "PolygonAnalyzer_Lua.h"
     #include "SolidAnalyzer_Lua.h"
@@ -194,6 +197,9 @@ void RegisterSceneClass(lua_State* L)
     #ifdef HIVE_WITH_BCMTOOLS
         LUA_SCRIPTCLASS_REGISTER(L, BCMLoader_Lua);
     #endif
+    #ifdef HIVE_WITH_TPUTIL
+        LUA_SCRIPTCLASS_REGISTER(L, TPUtil_Lua);
+    #endif
         LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
         //LUA_SCRIPTCLASS_REGISTER(L, Analyzer_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
@@ -266,6 +272,9 @@ void RegisterSceneClass(lua_State* L)
     #endif
     #ifdef HIVE_WITH_BCMTOOLS
         SetFunction(L, "BcmLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(BCMLoader_Lua));
+    #endif
+    #ifdef HIVE_WITH_TPUTIL
+        SetFunction(L, "TpUtil",               LUA_SCRIPTCLASS_NEW_FUNCTION(TPUtil_Lua));
     #endif
         SetFunction(L, "PdbLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
         SetFunction(L, "Analyzer",     luaopen_Analyzer);
