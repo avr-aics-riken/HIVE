@@ -15,7 +15,7 @@ function SaveVisioColorMap:executeSave()
         return false
     end
 	self.saver:SetMinValue(v.minval)
-    self.saver:SetMinValue(v.maxval)
+    self.saver:SetMaxValue(v.maxval)
     for i = 1, 256 * 4 do
         self.saver:SetRGBAValue(i - 1, v.rgba[i] / 0xFF);
     end
