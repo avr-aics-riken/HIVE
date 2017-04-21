@@ -9,28 +9,21 @@
 #include "Connection_Lua.h"
 #include "MetaBinary_Lua.h"
 
-/**
- * Network Luaラッパー
- */
-class Network_Lua  : public RefCount
+void register_Network_Lua(lua_State* L)
 {
-private:
-	Network_Lua(){}
-	~Network_Lua(){}
-public:
+    LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, MetaBinary_Lua);
+    
+    lua_newtable(L);
+    lua_pushstring(L, "Connection"); 
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
+    lua_settable(L, -3);
 
-    Connection_Lua* Connection() {
-        return Connection_Lua::CreateInstance();
-    }
-    MetaBinary_Lua* MetaBinary() {
-        return MetaBinary_Lua::CreateInstance();
-    }
-
-    LUA_SCRIPTCLASS_BEGIN(Network_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (Connection_Lua*, Connection)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (MetaBinary_Lua*, MetaBinary)
-    LUA_SCRIPTCLASS_END();
-};
-LUA_SCRIPTCLASS_CAST_AND_PUSH(Network_Lua);
+    lua_pushstring(L, "MetaBinary"); 
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(MetaBinary_Lua));
+    lua_settable(L, -3);
+    
+    lua_setglobal(L, "Network");
+}
 
 #endif //_NETWORK_LUA_H_

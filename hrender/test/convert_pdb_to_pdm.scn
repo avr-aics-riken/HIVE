@@ -1,8 +1,8 @@
 
 print('convert pdb to pdm(currently particle only)')
 
-local pdb = require("PdbLoader")()
-local pdm = require("PdmSaver")()
+local pdb = LoadModule("PdbLoader")
+local pdm = LoadModule("PdmSaver")
 
 pdb:Load('4CL8.pdb')
 local ball = pdb:BallData()

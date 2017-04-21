@@ -12,25 +12,20 @@
 /**
  * ClusterParallelCoord Luaラッパー
  */
-class ClusterParallelCoord_Lua  : public RefCount
+void register_ClusterParallelCoord_Lua(lua_State* L)
 {
-private:
-	ClusterParallelCoord_Lua(){}
-	~ClusterParallelCoord_Lua(){}
-public:
-
-    VolumeClustering_Lua* VolumeClustering() {
-        return new VolumeClustering_Lua();
-    }
-    VolumeScatterPlot_Lua* VolumeScatterPlot() {
-        return new VolumeScatterPlot_Lua();
-    }
-
-    LUA_SCRIPTCLASS_BEGIN(ClusterParallelCoord_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (VolumeClustering_Lua*, VolumeClustering)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (VolumeScatterPlot_Lua*, VolumeScatterPlot)
-    LUA_SCRIPTCLASS_END();
-};
-LUA_SCRIPTCLASS_CAST_AND_PUSH(ClusterParallelCoord_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, VolumeClustering_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, VolumeScatterPlot_Lua);
+    lua_newtable(L);
+    lua_pushstring(L, "VolumeClustering");
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeClustering_Lua));
+    lua_settable(L, -3);
+    
+    lua_pushstring(L, "VolumeScatterPlot");
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeScatterPlot_Lua));
+    lua_settable(L, -3);
+    
+    lua_setglobal(L, "ClusterParallelCoord");
+}
 
 #endif //_CLUSTERPARALLELCOORD_LUA_H_

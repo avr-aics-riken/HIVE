@@ -14,33 +14,30 @@
 /**
  * Analyzer Luaラッパー
  */
-class Analyzer_Lua  : public RefCount
+void register_Analyzer_Lua(lua_State* L)
 {
-private:
-	Analyzer_Lua(){}
-	~Analyzer_Lua(){}
-public:
+    LUA_SCRIPTCLASS_REGISTER(L, VolumeAnalyzer_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeAnalyzer_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, SolidAnalyzer_Lua);
+    lua_newtable(L);
+    lua_pushstring(L, "VolumeAnalyzer");
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeAnalyzer_Lua));
+    lua_settable(L, -3);
 
-    VolumeAnalyzer_Lua* VolumeAnalyzer() {
-        return new VolumeAnalyzer_Lua();
-    }
-    SparseVolumeAnalyzer_Lua* SparseVolumeAnalyzer() {
-        return new SparseVolumeAnalyzer_Lua();
-    }
-    PolygonAnalyzer_Lua* PolygonAnalyzer() {
-        return new PolygonAnalyzer_Lua();
-    }
-    SolidAnalyzer_Lua* SolidAnalyzer() {
-        return new SolidAnalyzer_Lua();
-    }
+    lua_pushstring(L, "SparseVolumeAnalyzer");
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeAnalyzer_Lua));
+    lua_settable(L, -3);
 
-    LUA_SCRIPTCLASS_BEGIN(Analyzer_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (VolumeAnalyzer_Lua*, VolumeAnalyzer)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (SparseVolumeAnalyzer_Lua*, SparseVolumeAnalyzer)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (PolygonAnalyzer_Lua*, PolygonAnalyzer)
-    LUA_SCRIPTCLASS_METHOD_ARG0 (SolidAnalyzer_Lua*, SolidAnalyzer)
-    LUA_SCRIPTCLASS_END();
+    lua_pushstring(L, "PolygonAnalyzer");
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonAnalyzer_Lua));
+    lua_settable(L, -3);
+
+    lua_pushstring(L, "SolidAnalyzer");
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(SolidAnalyzer_Lua));
+    lua_settable(L, -3);
+    
+    lua_setglobal(L, "Analyzer");
 };
-LUA_SCRIPTCLASS_CAST_AND_PUSH(Analyzer_Lua);
 
 #endif //_ANALYZER_LUA_H_

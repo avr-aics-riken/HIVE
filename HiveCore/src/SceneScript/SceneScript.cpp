@@ -48,8 +48,6 @@
 #include "PrimitiveGenerator_Lua.h"
 
 #ifdef HIVE_STATIC
-    #include "Connection_Lua.h"
-    #include "MetaBinary_Lua.h"
     #include "Network_Lua.h"
     #include "ObjLoader_Lua.h"
     #include "StlLoader_Lua.h"
@@ -80,10 +78,6 @@
         #include "TpUtil_Lua.h"
     #endif
     #include "PdbLoader_Lua.h"
-    #include "PolygonAnalyzer_Lua.h"
-    #include "SolidAnalyzer_Lua.h"
-    #include "SparseVolumeAnalyzer_Lua.h"
-    #include "VolumeAnalyzer_Lua.h"
     #include "Analyzer_Lua.h"
     #include "FloatsToFloat_Lua.h"
     #include "PointToVolume_Lua.h"
@@ -93,8 +87,6 @@
     #include "VolumeQuantizer_Lua.h"
     #include "SparseVolumeToVolume_Lua.h"
 
-    #include "VolumeClustering_Lua.h"    
-    #include "VolumeScatterPlot_Lua.h"
     #include "ClusterParallelCoord_Lua.h"
     #include "ImageFilter_Lua.h"
     #include "MandelbulbVolGen_Lua.h"
@@ -132,10 +124,29 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
 
+    SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
+    SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
+    SetFunction(L, "SparseVolumeModel",   LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeModel_Lua));
+    SetFunction(L, "PointModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointModel_Lua));
+    SetFunction(L, "LineModel",           LUA_SCRIPTCLASS_NEW_FUNCTION(LineModel_Lua));
+    SetFunction(L, "VectorModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VectorModel_Lua));
+    SetFunction(L, "TetraModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(TetraModel_Lua));
+    SetFunction(L, "SolidModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(SolidModel_Lua));
+    SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
+    SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
+    SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
+    SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
+    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
+    SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
+    SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
+    SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
+    SetFunction(L, "VectorData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVectorData_Lua));
+    SetFunction(L, "PrimitiveGenerator",  LUA_SCRIPTCLASS_NEW_FUNCTION(PrimitiveGenerator_Lua));
+    SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
+    SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
+    SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
+    
 #ifdef HIVE_STATIC
-        LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, MetaBinary_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, Network_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
@@ -166,11 +177,6 @@ void RegisterSceneClass(lua_State* L)
     #endif
         LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
         
-        LUA_SCRIPTCLASS_REGISTER(L, PolygonAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, SolidAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VolumeAnalyzer_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, Analyzer_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, PointToVolume_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, VolumeToVector_Lua);
@@ -179,9 +185,6 @@ void RegisterSceneClass(lua_State* L)
         LUA_SCRIPTCLASS_REGISTER(L, VolumeQuantizer_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeToVolume_Lua);
         
-        LUA_SCRIPTCLASS_REGISTER(L, VolumeClustering_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VolumeScatterPlot_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, ClusterParallelCoord_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, ImageFilter_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, MandelbulbVolGen_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, RawSparseVolumeLoader_Lua);
@@ -192,32 +195,7 @@ void RegisterSceneClass(lua_State* L)
         LUA_SCRIPTCLASS_REGISTER(L, VisioColorMapSaver_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, VisioGradientMapLoader_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, VisioGradientMapSaver_Lua);
-#endif 
-
-    SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
-    SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
-    SetFunction(L, "SparseVolumeModel",   LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeModel_Lua));
-    SetFunction(L, "PointModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(PointModel_Lua));
-    SetFunction(L, "LineModel",           LUA_SCRIPTCLASS_NEW_FUNCTION(LineModel_Lua));
-    SetFunction(L, "VectorModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VectorModel_Lua));
-    SetFunction(L, "TetraModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(TetraModel_Lua));
-    SetFunction(L, "SolidModel",          LUA_SCRIPTCLASS_NEW_FUNCTION(SolidModel_Lua));
-    SetFunction(L, "Camera",              LUA_SCRIPTCLASS_NEW_FUNCTION(Camera_Lua));
-    SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
-    SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
-    SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
-    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
-    SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
-    SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
-    SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
-    SetFunction(L, "VectorData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVectorData_Lua));
-    SetFunction(L, "PrimitiveGenerator",  LUA_SCRIPTCLASS_NEW_FUNCTION(PrimitiveGenerator_Lua));
-    SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
-    SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
-    SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
-
-#ifdef HIVE_STATIC
-        SetFunction(L, "Network",          LUA_SCRIPTCLASS_NEW_FUNCTION(Network_Lua));
+        
         SetFunction(L, "ObjLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
         SetFunction(L, "StlLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
         
@@ -248,7 +226,6 @@ void RegisterSceneClass(lua_State* L)
         SetFunction(L, "TpUtil",               LUA_SCRIPTCLASS_NEW_FUNCTION(TPUtil_Lua));
     #endif
         SetFunction(L, "PdbLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
-        SetFunction(L, "Analyzer",            LUA_SCRIPTCLASS_NEW_FUNCTION(Analyzer_Lua));
         SetFunction(L, "FloatsToFloat",       LUA_SCRIPTCLASS_NEW_FUNCTION(FloatsToFloat_Lua));
         SetFunction(L, "PointToVolume",       LUA_SCRIPTCLASS_NEW_FUNCTION(PointToVolume_Lua));
         SetFunction(L, "VolumeToVector",      LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));
@@ -257,7 +234,6 @@ void RegisterSceneClass(lua_State* L)
         SetFunction(L, "VolumeQuantizer",        LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeQuantizer_Lua));
         SetFunction(L, "SparseVolumeToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
         
-        SetFunction(L, "ClusterParallelCoord",        LUA_SCRIPTCLASS_NEW_FUNCTION(ClusterParallelCoord_Lua));
         SetFunction(L, "ImageFilter",        LUA_SCRIPTCLASS_NEW_FUNCTION(ImageFilter_Lua));
         SetFunction(L, "MandelbulbVolGen",        LUA_SCRIPTCLASS_NEW_FUNCTION(MandelbulbVolGen_Lua));
         SetFunction(L, "RawSparseVolumeLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(RawSparseVolumeLoader_Lua));
@@ -268,6 +244,12 @@ void RegisterSceneClass(lua_State* L)
         SetFunction(L, "VisioColorMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioColorMapSaver_Lua));
         SetFunction(L, "VisioGradientMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioGradientMapLoader_Lua));
         SetFunction(L, "VisioGradientMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioGradientMapSaver_Lua));
+        
+        // nested modules
+        register_Network_Lua(L);                // Network_Lua.h
+        register_ClusterParallelCoord_Lua(L);   // ClusterParallelCoord_Lua.h
+        register_Analyzer_Lua(L);               // Analyzer_Lua.h
+        
 #endif // HIVE_STATIC
     
 }
@@ -840,7 +822,14 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
     fseek(fp, 0, SEEK_SET);
     
 #ifdef HIVE_STATIC
-    std::string requireFunction = "function LoadModule(name) return loadstring('return ' .. name .. '()')() end\n";
+    std::string requireFunction = "\
+        function LoadModule(name) \n \
+            local m = loadstring('return type(' .. name .. ')')()  \n \
+            if (m == 'table') then \n \
+                return loadstring('return ' .. name)() \n \
+            end \n \
+            return loadstring('return ' .. name .. '()')() \n \
+        end\n";
 #else     
     std::string requireFunction = "\
         function LoadModule(name) \n \
