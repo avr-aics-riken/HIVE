@@ -12,9 +12,16 @@ camera:LookAt(
 	60
 )
 
+local endianness = endian()
+print(endianness)
 
 local stl = LoadModule("StlLoader")
 local swapEndian = false
+
+-- Assume 'bunny.stl' is binary format and little endian.
+if endianness == 'big' then
+   swapEndian = true
+end
 stl:Load('bunny.stl', swapEndian)
 
 local model = PolygonModel()
