@@ -266,7 +266,7 @@ function build_cpmlib {
 	mkdir CPMlib_build
 	cd CPMlib_build
 
-	cmake -DINSTALL_DIR=${installdir}/CPMlib -DCMAKE_TOOLCHAIN_FILE=../CPMlib/cmake/Toolchain_K.cmake -Dwith_MPI=yes -Dreal_type=float -Denable_LMR=no -Dwith_example=no -Dwith_TP=${installdir}/TextParser ../CPMlib && make && make install
+	${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CPMlib -DCMAKE_TOOLCHAIN_FILE=../CPMlib/cmake/Toolchain_K.cmake -Dwith_MPI=yes -Dreal_type=float -Denable_LMR=no -Dwith_example=no -Dwith_TP=${installdir}/TextParser ../CPMlib && make && make install
         if [[ $? != 0 ]]; then exit $?; fi
 
         cd ${topdir}

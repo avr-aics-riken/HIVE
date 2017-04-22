@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <fstream>
 
 #include "SceneScript.h"
 
@@ -810,8 +811,21 @@ UserBufferData* SceneScript::GetUserBufferData()
 
 bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std::string>& sceneargs)
 {
-    
     printf("Execute Scene file:%s\n", scenefile);
+
+    // NOTE(IDS): Workaround for K + dllmodule.
+    // Call `std::getline` for any ifstream here,
+    // otherwise calling std::getline inside dll module will cause segmentation fault for some reason(K stdc++ runtime bug?)
+    // For now, we call `std::getline` for input scenefile.
+    {
+        std::ifstream ifs(scenefile);
+        if (!ifs) {
+            return false;
+        }
+        // Dummy call of `std::getline`
+        std::string line;
+        std::getline(ifs, line);
+    }
     
     FILE* fp = fopen(scenefile, "rb");
     if (!fp)
