@@ -744,7 +744,6 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
 (一様/非一様)ボリュームプリミティブが取得可能.
 データが非一様で読み込まれるかは .dfi ファイルでの指定に従う.
-デフォルトでは `.dfi` ファイルに記述されたボクセルサイズ(GlobalVoxel)と分割数(GlobalDivision)を利用します. 後述の `SetGlobalVoxelSize`, `SetDivisionMode`, `SetGlobalDivision` で読み込みボクセルサイズや分割形式を指定することができます.
 timeStepIndex には 0 からのインデックス番号を指定する(timeStep の時刻ではないことに注意. 省略可能. デフォルトは 0)
 
     local loader = require("CdmLoader")()
@@ -822,7 +821,7 @@ Local Offset = Global Offset + offset of the volume for each MPI rank
 ### Volume extent
 
 HIVE では, 原点を中心とし, LocalRegion を extent としてボリュームプリミティブを作成します.
-つまり, volume primitive の extent は以下となります.
+つまり, volume primitive のバウンディングボックスは以下となります.
 
     [-LocalRegion/2, LocalRegion/2]
 
