@@ -18,12 +18,13 @@ add_definitions(-DHIVE_WITH_CDMLIB)
   ENDIF()
 
   SET(CDMLIB_LIBS
-    CDMmpi TPmpi ${NETCDF_LIBS}
+    CDMmpi TPmpi CPMmpi ${NETCDF_LIBS}
   )
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
+  include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CPMlib/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/lib)
-
+  link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CPMlib/lib)
 # Headers
 set(INCLUDES
 	.

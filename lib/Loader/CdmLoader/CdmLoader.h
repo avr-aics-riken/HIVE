@@ -59,6 +59,14 @@ class CDMLoader : public RefCount
 		DIVISION_USER_SPECIFIED = 5
 	};
 
+    enum LOAD_MODE
+    {
+        LOAD_Mx1 = 0, // Each MPI rank read all stored data(allgather)
+        LOAD_MxM = 1, // Stored data division size == MPI process size
+                      // of hrender in running.
+        LOAD_MxN = 2  // Load M parallel data in N parallel MPI rank.
+    };
+
 	CDMLoader();
 	~CDMLoader();
 	void Clear();
@@ -127,6 +135,9 @@ class CDMLoader : public RefCount
 	/// To enable data parallel loading, `SetGlobalDivision` or
 	/// `SetDivisionMode` must be called before this `Load` function.
 	bool Load(const char *filename, int timeSliceIndex = 0);
+    bool LoadMx1(const char *filename, int timeSliceIndex = 0);
+    bool LoadMxM(const char *filename, int timeSliceIndex = 0);
+    bool LoadMxN(const char *filename, int divX, int divY, int divZ, int timeSliceIndex = 0);
 
 	///
 	/// The following methods are Valid after `Load`

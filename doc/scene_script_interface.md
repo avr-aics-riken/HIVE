@@ -833,7 +833,35 @@ CDMLib の .dfi では, ボリュームのバウンディングボックスは
 
 したがって, 元の .dfi に対応するように, HIVE でボリュームプリミティブを移動させる場合は以下のように translation を算出します.
 
-    translation =  LocalOffset - LocalRegion / 2.
+    translation =  LocalRegion / 2. + LocalOffset - GlobalRegion / 2.
+
+HIVEにおいて，ボリュームはバウンディングボックスの中心にずらされてレンダリングされます．そのため，まずは (LocalRegion/2) だけずらし，バウンディングボックスの位置を.dfiと揃えます．その後LocalOffsetを加えてLocalの位置に動かします．最後に (GlobalRegion/2) 分ずらすことで，ボリューム全体が中心に揃います．
+
+<pre>
+           <------   GlobalRegion    ------>
+                           <- LocalRegion ->
+           +-------------------------------+
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              +================+
+           |              |                |
+           |              |   HIVEOrigin   |
+           |              +======-+-=======|
+           |              |                |
+           |              |                |
+           +--------------+================+
+          /|\            /|\
+     GlobalOffset     LocalOffset
+
+Global : While volume region
+Local  : Actual volume region per MPI ranks.
+         For Mx1 loading, Global == Local
+</pre>
 
 ### データ並列ロード
 

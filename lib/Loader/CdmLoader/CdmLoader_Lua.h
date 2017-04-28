@@ -263,9 +263,25 @@ class CDMLoader_Lua : public CDMLoader
 	}
 
 	bool Load(const char *filename, int timeStepIndex)
-	{
-		return CDMLoader::Load(filename, timeStepIndex);
+    {
+	 	return CDMLoader::Load(filename, timeStepIndex);
 	}
+
+	bool LoadMx1(const char *filename, int timeStepIndex)
+	{
+		return CDMLoader::LoadMx1(filename, timeStepIndex);
+	}
+
+    bool LoadMxM(const char *filename, int timeStepIndex)
+    {
+		return CDMLoader::LoadMxM(filename, timeStepIndex);
+	}
+
+    bool LoadMxN(const char *filename, int divX, int divY, int divZ, int timeStepIndex)
+    {
+        return CDMLoader::LoadMxN(filename, divX, divY, divZ, timeStepIndex);
+    }
+
 
 	BufferVolumeData_Lua *VolumeData()
 	{
@@ -312,7 +328,13 @@ class CDMLoader_Lua : public CDMLoader
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelY)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelZ)
 	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, Load,
+	 										 const char *, int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, LoadMx1,
 											 const char *, int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, LoadMxM,
+											 const char *, int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG5("CDMLoader", bool, LoadMxN,
+											 const char *, int, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua *, VolumeData)
 	LUA_SCRIPTCLASS_END()
 };
