@@ -1399,6 +1399,17 @@ bool CDMLoader::LoadMxM(const char *filename, int timeSliceIndex)
 bool CDMLoader::LoadMxN(const char *filename, int divX, int divY, int divZ,
 						int timeSliceIndex)
 {
+  // Check if total number(divX * divY * divZ) does not exceed MPI size.
+  size_t num_divs = divX * divY * divZ;
+
+  int mpi_size;
+  MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+
+  if (num_divs != mpi_size) {
+    fprintf(stderr, "[CDMLoader] Err: divX * divY * divZ(%d) must be equal to MPI size(%d).", int(num_divs), mpi_size);
+    return false;
+  }
+
 	m_imp->m_mxnDivision[0] = divX;
 	m_imp->m_mxnDivision[1] = divY;
 	m_imp->m_mxnDivision[2] = divZ;
