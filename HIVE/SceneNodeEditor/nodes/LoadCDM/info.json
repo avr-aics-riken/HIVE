@@ -6,7 +6,9 @@
 	"varname": "instCDMLoader",
 	"customfuncfile":"cdmloader.lua", 
 	"input": [
-		{"name": "filepath", "type": "string", "value": "input.dfi"}
+		{"name": "filepath", "type": "string", "value": "input.dfi"},
+        {"name": "migration",  "type": "float", "value": 0 },
+        {"name": "division", "type": "vec3", "value": [1, 1, 1]}
 	],
 	"output": [
 		{"name": "VolumeData", "type": "BufferVolumeData"}
