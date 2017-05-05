@@ -999,7 +999,21 @@ bool CDMLoader::Impl::Load(const char *filename, const int loadMode,
 		}
 	}
 
-	if (myRank == 0)
+	if(loadMode == LOAD_MxM &&
+	   process.RankList.size() != mpiSize) {
+		fprintf(stderr,
+				"[CDMLoader] MxM Loading Error: MPI size (%d) must be equal to M (%lu) \n",
+				mpiSize, process.RankList.size());
+		return false;
+	} else if(loadMode == LOAD_MxN &&
+			  (m_mxnDivision[0] * m_mxnDivision[1] * m_mxnDivision[2]) != mpiSize) {
+		fprintf(stderr,
+				"[CDMLoader] MxN Loading Error: MPI size (%d) must be equal to N (%d * %d * %d) \n",
+				mpiSize, m_mxnDivision[0], m_mxnDivision[1], m_mxnDivision[2]);
+		return false;
+	}
+
+	if (myRank == 0 && loadMode == LOAD_MxM)
 	{
 		printf("Ranks in .DFI: %d\n", int(process.RankList.size()));
 		for (size_t i = 0; i < process.RankList.size(); i++)

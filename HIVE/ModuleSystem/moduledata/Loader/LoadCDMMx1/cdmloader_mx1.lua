@@ -1,64 +1,56 @@
-LoadCDM = {}
-setmetatable(LoadCDM, {__index = HiveBaseModule})
+LoadCDMMx1 = {}
+setmetatable(LoadCDMMx1, {__index = HiveBaseModule})
 
-LoadCDM.new = function (varname)
+LoadCDMMx1.new = function (varname)
     local this = HiveBaseModule.new(varname);
     this.loader = require('CdmLoader')()
-    setmetatable(this, {__index=LoadCDM})
+    setmetatable(this, {__index=LoadCDMMx1})
     return this
 end
 
-function LoadCDM:Do()
+function LoadCDMMx1:Do()
     self:UpdateValue()
 	if self.value.filepath ~= nil and self.value.filepath ~= "" then
-       if self.value.migration then
-          return self.loader:LoadMxN(self.value.filepath,
-                                     self.value.division[1],
-                                     self.value.division[2],
-                                     self.value.division[3],
-                                     self.value.time)
-       else
-          return self.loader:LoadMxM(self.value.filepath, self.value.time)
-       end
+       return self.loader:LoadMx1(self.value.filepath, self.value.time)
 	else
 		return false
 	end
 end
 
-function LoadCDM:VolumeData()
+function LoadCDMMx1:VolumeData()
     return self.loader:VolumeData()
 end
 
-function LoadCDM:Size()
+function LoadCDMMx1:Size()
     local size = {self.loader:Width(), self.loader:Height(), self.loader:Depth()}
     return size
 end
 
-function LoadCDM:Component()
+function LoadCDMMx1:Component()
     return self.loader:Component()
 end
 
-function LoadCDM:GlobalDiv()
+function LoadCDMMx1:GlobalDiv()
     local globalDiv = {self.loader:GlobalDivX(), self.loader:GlobalDivY(), self.loader:GlobalDivZ()}
     return globalDiv
 end
 
-function LoadCDM:GlobalVoxel()
+function LoadCDMMx1:GlobalVoxel()
     local globalVoxel = {self.loader:GlobalVoxelX(), self.loader:GlobalVoxelY(), self.loader:GlobalVoxelZ()}
     return globalVoxel
 end
 
-function LoadCDM:GlobalOffset()
+function LoadCDMMx1:GlobalOffset()
     local globalOffset = {self.loader:GlobalOffsetX(), self.loader:GlobalOffsetY(), self.loader:GlobalOffsetZ()}
     return globalOffset
 end
 
-function LoadCDM:GlobalRegion()
+function LoadCDMMx1:GlobalRegion()
     local globalRegion = {self.loader:GlobalRegionX(), self.loader:GlobalRegionY(), self.loader:GlobalRegionZ()}
     return globalRegion
 end
 
 
-function LoadCDM:NumTimeSteps()
+function LoadCDMMx1:NumTimeSteps()
     return self.loader:NumTimeSteps()
 end
