@@ -752,6 +752,26 @@ timeStepIndex には 0 からのインデックス番号を指定する(timeStep
     loader:Load('input.dfi', timeStepIndex)
     local volumeData = loader:VolumeData() -- volume プリミティブを取得
 
+### ロード関数
+
+    -- Mx1 ロードを行う(deprecated method)
+    -- 互換性のために残してあります.
+    Load(filename, timeStepIndex) 
+
+    -- Mx1 ロードを行う
+    LoadMx1(filename, timeStepIndex)
+
+    -- MxM ロードを行う. 
+    -- CDM データの分割数と, 実行中の MPI ランク数が同じである必要があります.
+    LoadMxM(filename, timeStepIndex) 
+                                      
+    -- MxN ロードを行う. 
+    -- divX, divY, divZ に分割数を指定する.
+    -- データの分割読み込みの領域計算は, CPMlib を介して自動で行われます.
+    -- divX * divY * divZ の数が実行中の MPI ランク数と同じである必要があります.
+    LoadMxN(filename, timeStepIndex, divX, divY, divZ)
+                                       
+
 ### メソッド
 
 #### GlobalOffset

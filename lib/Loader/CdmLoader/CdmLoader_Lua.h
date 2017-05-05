@@ -219,49 +219,10 @@ class CDMLoader_Lua : public CDMLoader
 
 	int TimeStepAt(int i) { return CDMLoader::GetTimeStep(i); }
 
-	int SetGlobalVoxel(int x, int y, int z)
-	{
-		int buf[3];
-		buf[0] = x;
-		buf[1] = y;
-		buf[2] = z;
-		return CDMLoader::SetGlobalVoxel(buf);
-	}
-
-	int SetGlobalDivision(int x, int y, int z)
-	{
-		int buf[3];
-		buf[0] = x;
-		buf[1] = y;
-		buf[2] = z;
-		return CDMLoader::SetGlobalDivision(buf);
-	}
-
-	int SetHeadIndex(int x, int y, int z)
-	{
-		int buf[3];
-		buf[0] = x;
-		buf[1] = y;
-		buf[2] = z;
-		return CDMLoader::SetHeadIndex(buf);
-	}
-
-	int SetTailIndex(int x, int y, int z)
-	{
-		int buf[3];
-		buf[0] = x;
-		buf[1] = y;
-		buf[2] = z;
-		return CDMLoader::SetTailIndex(buf);
-	}
-
-	int SetDivisionMode(int divisionMode, int divisionAxis0 = 0,
-						int divisionAxis1 = 1)
-	{
-		return CDMLoader::SetDivisionMode(divisionMode, divisionAxis0,
-										  divisionAxis1);
-	}
-
+  //
+  // For backward compatibility.
+  // `Load` will be delegated to `LoadMx1` inside CDMLoader. 
+  //
 	bool Load(const char *filename, int timeStepIndex)
 	{
 		return CDMLoader::Load(filename, timeStepIndex);
@@ -301,11 +262,6 @@ class CDMLoader_Lua : public CDMLoader
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexZ)
 	LUA_SCRIPTCLASS_METHOD_ARG0(int, NumTimeSteps)
 	LUA_SCRIPTCLASS_METHOD_ARG1(int, TimeStepAt, int)
-	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetHeadIndex, int, int, int)
-	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetTailIndex, int, int, int)
-	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalVoxel, int, int, int)
-	// LUA_SCRIPTCLASS_METHOD_ARG3(int, SetGlobalDivision, int, int, int)
-	LUA_SCRIPTCLASS_METHOD_ARG3(int, SetDivisionMode, int, int, int)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetX)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetY)
 	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetZ)

@@ -48,13 +48,6 @@ class CDMLoader::Impl
 
 	bool Load(const char *filename, int loadMode, int timeSliceIndex);
 
-	int SetHeadIndex(const int headIndex[3]);
-	int SetTailIndex(const int tailIndex[3]);
-	int SetGlobalVoxel(const int voxelSize[3]);
-	int SetGlobalDivision(const int div[3]);
-	int SetDivisionMode(const int divisionMode, const int divisionAxis0 = 0,
-						const int divisionAxis1 = 1);
-
 	///
 	/// The following methods are Valid after `Load`
 	///
@@ -169,8 +162,6 @@ class CDMLoader::Impl
 	int m_tail[3];
 
 	int m_divisionMode;
-	int m_divisionAxis0;
-	int m_divisionAxis1;
 
 	int m_mxnDivision[3];
 };
@@ -719,104 +710,9 @@ void CDMLoader::Impl::Clear()
 	m_localOffset[1] = 0.0;
 	m_localOffset[2] = 0.0;
 
-	// use global division stored in .dfi
+	// Currently we only support global division information stored in .dfi
 	m_divisionMode = DIVISION_DFI;
 
-	m_divisionAxis0 = 0; // x
-	m_divisionAxis1 = 1; // y
-}
-
-int CDMLoader::Impl::SetGlobalDivision(const int div[3])
-{
-	m_globalDiv[0] = div[0];
-	m_globalDiv[1] = div[1];
-	m_globalDiv[2] = div[2];
-
-	return 0; // OK
-}
-
-int CDMLoader::Impl::SetGlobalVoxel(const int sz[3])
-{
-	if ((sz[0] <= 0) || (sz[1] <= 0) || (sz[2] <= 0))
-	{
-		return -1;
-	}
-
-	m_globalDiv[0] = sz[0];
-	m_globalDiv[1] = sz[1];
-	m_globalDiv[2] = sz[2];
-
-	return 0; // OK
-}
-
-int CDMLoader::Impl::SetHeadIndex(const int head[3])
-{
-	if ((head[0] <= 0) || (head[1] <= 0) || (head[2] <= 0))
-	{
-		return -1;
-	}
-
-	m_head[0] = head[0];
-	m_head[1] = head[1];
-	m_head[2] = head[2];
-
-	return 0; // OK
-}
-
-int CDMLoader::Impl::SetTailIndex(const int tail[3])
-{
-	if ((tail[0] <= 0) || (tail[1] <= 0) || (tail[2] <= 0))
-	{
-		return -1;
-	}
-
-	m_tail[0] = tail[0];
-	m_tail[1] = tail[1];
-	m_tail[2] = tail[2];
-
-	return 0; // OK
-}
-
-int CDMLoader::Impl::SetDivisionMode(const int mode, const int axis0,
-									 const int axis1)
-{
-	if ((m_globalDiv[0] > 0) && (m_globalDiv[1] > 0) && (m_globalDiv[2] > 0))
-	{
-		// Guess `SetGlobalDivision` was called before
-		return -1;
-	}
-
-	if ((mode < 0) || (mode > 4))
-	{
-		fprintf(stderr, "[CDMLoader] invalid division mode: %d\n", mode);
-		return -1;
-	}
-
-	if (mode == 0)
-	{
-		m_divisionMode = DIVISION_NODIVISION;
-	}
-	else if (mode == 1)
-	{
-		m_divisionMode = DIVISION_1D;
-	}
-	else if (mode == 2)
-	{
-		m_divisionMode = DIVISION_2D;
-	}
-	else if (mode == 3)
-	{
-		m_divisionMode = DIVISION_3D;
-	}
-	else
-	{
-		assert(0);
-	}
-
-	m_divisionAxis0 = axis0;
-	m_divisionAxis1 = axis1;
-
-	return 0; // OK
 }
 
 /**
@@ -1116,27 +1012,7 @@ bool CDMLoader::Impl::Load(const char *filename, const int loadMode,
 		m_globalDiv[1] = 1;
 		m_globalDiv[2] = 1;
 	}
-	else if (m_divisionMode == DIVISION_1D)
-	{
-
-		int numProcs = 1;
-		MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
-
-		m_globalDiv[0] = 1;
-		m_globalDiv[1] = 1;
-		m_globalDiv[2] = 1;
-
-		m_globalDiv[m_divisionAxis0] = numProcs;
-	}
-	else if (m_divisionMode == DIVISION_2D)
-	{
-
-		// TODO
-		assert(0);
-	}
-	else if (m_divisionMode == DIVISION_3D)
-	{
-		// TODO(IDS): Use CPMlib to find good division.
+  else {
 		assert(0);
 		return false;
 	}
@@ -1165,7 +1041,17 @@ bool CDMLoader::Impl::Load(const char *filename, const int loadMode,
 	GDiv[1] = m_globalDiv[1];
 	GDiv[2] = m_globalDiv[2];
 
-	if (loadMode == LOAD_MxM)
+  if (loadMode == LOAD_Mx1)
+  {
+    head[0] = 1;
+    head[1] = 1;
+    head[2] = 1;
+
+    tail[0] = GVoxel[0];
+    tail[1] = GVoxel[1];
+    tail[2] = GVoxel[2];
+  } 
+	else if (loadMode == LOAD_MxM)
 	{
 		printf("Do MxM parallel loading\n");
 		// TODO(IDS): Find Process info whose RankID equals to current MPI
@@ -1177,26 +1063,6 @@ bool CDMLoader::Impl::Load(const char *filename, const int loadMode,
 		tail[0] = process.RankList[myRank].TailIndex[0];
 		tail[1] = process.RankList[myRank].TailIndex[1];
 		tail[2] = process.RankList[myRank].TailIndex[2];
-	}
-	else if (m_divisionMode == DIVISION_USER_SPECIFIED)
-	{
-		// Use user specified head/tail info.
-
-		assert(m_head[0] > 0);
-		assert(m_head[1] > 0);
-		assert(m_head[2] > 0);
-
-		assert(m_tail[0] > 0);
-		assert(m_tail[1] > 0);
-		assert(m_tail[2] > 0);
-
-		head[0] = m_head[0];
-		head[1] = m_head[1];
-		head[2] = m_head[2];
-
-		tail[0] = m_tail[0];
-		tail[1] = m_tail[1];
-		tail[2] = m_tail[2];
 	}
 	else if (loadMode == LOAD_MxN)
 	{
@@ -1507,29 +1373,3 @@ void CDMLoader::TailIndex(int ret[3]) { m_imp->TailIndex(ret); }
 int CDMLoader::NumTimeSteps() { return m_imp->NumTimeSteps(); }
 
 int CDMLoader::GetTimeStep(int i) { return m_imp->GetTimeStep(i); }
-
-int CDMLoader::SetHeadIndex(const int headIndex[3])
-{
-	m_imp->SetHeadIndex(headIndex);
-}
-
-int CDMLoader::SetTailIndex(const int tailIndex[3])
-{
-	m_imp->SetTailIndex(tailIndex);
-}
-
-int CDMLoader::SetGlobalVoxel(const int voxelSize[3])
-{
-	m_imp->SetGlobalVoxel(voxelSize);
-}
-
-int CDMLoader::SetGlobalDivision(const int div[3])
-{
-	m_imp->SetGlobalDivision(div);
-}
-
-int CDMLoader::SetDivisionMode(const int divisionMode, const int divisionAxis0,
-							   const int divisionAxis1)
-{
-	m_imp->SetDivisionMode(divisionMode, divisionAxis0, divisionAxis1);
-}

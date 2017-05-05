@@ -71,6 +71,7 @@ class CDMLoader : public RefCount
 	~CDMLoader();
 	void Clear();
 
+#if 0 // TODO(IDS): Remove
 	/// Manually specify Head index.
 	/// Must be called before `Load()`.
 	/// Without calling this function, CDMLoader uses the setting of Head index
@@ -129,12 +130,12 @@ class CDMLoader : public RefCount
 	/// Returns <0 upon error or `SetGlobalDivision` was called before.
 	int SetDivisionMode(const int divisionMode, const int divisionAxis0 = 0,
 						const int divisionAxis1 = 1);
+#endif
 
 	/// Load CDMlib data.
 	/// timeSliceIndex may have different value for each MPI rank.
-	/// To enable data parallel loading, `SetGlobalDivision` or
-	/// `SetDivisionMode` must be called before this `Load` function.
 	bool Load(const char *filename, int timeSliceIndex = 0);
+
 	bool LoadMx1(const char *filename, int timeSliceIndex = 0);
 	bool LoadMxM(const char *filename, int timeSliceIndex = 0);
 	bool LoadMxN(const char *filename, int divX, int divY, int divZ,
