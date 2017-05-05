@@ -1,7 +1,6 @@
-function LoadPDM(property)
+function LoadPDMMx1(property)
 	local loader = require("PdmLoader")()
-	loader:Load(property.filepath, property.timestep,
-                nil, (property.migration >= 1))
+	loader:LoadMx1(property.filepath, property.timestep)
 	local pointData = loader:PointData(property.container, property.radius)
 
 	--local extraData = pdm:ExtraData('velocity')
