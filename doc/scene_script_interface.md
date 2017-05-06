@@ -753,16 +753,31 @@ timeStepIndex には 0 からのインデックス番号を指定する(timeStep
 ## PDMLoader()
 
 PDMファイルを読み込むローダークラス. hrender が PDMlib とリンクされているときのみ利用可能.
-Load() でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
-`migration` を `true` にすると, データの並列ロードを行います. 入力のデータ分散数(M)から, 実行時の MPI プロセス数(N)に合うように自動でデータのマイグレーション処理を行い, データ分散のロードを行います(MxN loading).
-
-`false` の場合, データの並列ロードは行いません. データを各ノードがすべて保持するようにロードします(Mx1 loading).
+`Load()` でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
 
     local loader = PDMLoader()
     local timestep = 0
     local migration = false
     loader:Load('input.dfi', timestep, migration)
     
+### MxN 並列ロード
+
+`Load()` 関数で `migration` パラメータを `true` にすると, データの並列ロードを行います. 入力のデータ分散数(M)から, 実行時の MPI プロセス数(N)に合うように自動でデータのマイグレーション処理を行い, データ分散のロードを行います(MxN loading).
+
+### MxM 並列ロード
+
+`Load()` 関数で `migration` パラメータを `true` にすると, `MxM` 相当の並列ロードを行います.
+PDM データの分割数よりも, 実行 MPI ランク数が多いと, 空のデータを持つ MPI ランクが発生します.
+
+### Mx1 ロード
+
+`LoadMx1()` 関数で, PDM データを各 MPI ランクがすべて保持するようにロードします.
+(ただし, PDMlib の不都合により, 現在 Mx1 ロードは動作しません)
+
+    loader:LoadMx1('input.dfi', timestep)
+
+### データの取得
+
     -- 座標データのコンテナ名(省略時は `Coordinatge`, に設定)と, 点の半径を指定(省略時は 1.0 に設定)
     local pointData = pdm:PointData('Coordinate', 0.2)
     -- local pointData = pdm:PointData() -- container name = `Coordinate`, radius = 1.0 
