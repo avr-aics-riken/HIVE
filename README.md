@@ -115,6 +115,7 @@ Use `CXX` and `CC` flag to specify custom compiler. e.g.:
     HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     SANITIZE_ADDRESS=On/Off : Enable/Disable Address sanitizer(HiveCore/Modules/SURFACE). Default = off.
+    BUILD_SHARED_LIBS=On/Off : Build HiveCore as module(.so) or static.
 
 ### K/FX10
 
@@ -125,6 +126,11 @@ Optionally edit `./scripts/cmake_k_cross.sh`, then
     $ ./scripts/cmake_k_cross.sh
     $ cd build
     $ make
+
+#### Known issues
+
+`hrender` must be build with `BUILD_SHARED_LIBS` `OFF`.
+Module build is not supported on K/FX10 platform at this time(causes runtime libstdc++ exception due to linkage/shared_lib problem)
 
 ### Linux
 
