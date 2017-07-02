@@ -5,146 +5,295 @@
 #ifndef _CDMLOADER_LUA_H_
 #define _CDMLOADER_LUA_H_
 
-#include "LuaUtil.h"
-#include "CdmLoader.h"
 #include "BufferVolumeData_Lua.h"
+#include "CdmLoader.h"
+#include "LuaUtil.h"
 /**
  * CDMLoader Luaラッパー
  */
 class CDMLoader_Lua : public CDMLoader
 {
-public:
-    CDMLoader_Lua() {}
-    ~CDMLoader_Lua() {}
+  public:
+	CDMLoader_Lua() {}
+	~CDMLoader_Lua() {}
 
-    int Width() {
-        return Width();
-    }
+	int Width() { return Width(); }
 
-    int Height() {
-        return Height();
-    }
+	int Height() { return Height(); }
 
-    int Depth() {
-        return Depth();
-    }
+	int Depth() { return Depth(); }
 
-    int Component() {
-        return Component();
-    }
+	int Component() { return Component(); }
 
-    double GlobalOffsetX() {
-      double buf[3];
-      CDMLoader::GlobalOffset(buf);
-      return buf[0];
-    }
+	double GlobalOffsetX()
+	{
+		double buf[3];
+		CDMLoader::GlobalOffset(buf);
+		return buf[0];
+	}
 
-    double GlobalOffsetY() {
-      double buf[3];
-      CDMLoader::GlobalOffset(buf);
-      return buf[1];
-    }
+	double GlobalOffsetY()
+	{
+		double buf[3];
+		CDMLoader::GlobalOffset(buf);
+		return buf[1];
+	}
 
-    double GlobalOffsetZ() {
-      double buf[3];
-      CDMLoader::GlobalOffset(buf);
-      return buf[2];
-    }
+	double GlobalOffsetZ()
+	{
+		double buf[3];
+		CDMLoader::GlobalOffset(buf);
+		return buf[2];
+	}
 
-    double GlobalRegionX() {
-      double buf[3];
-      CDMLoader::GlobalRegion(buf);
-      return buf[0];
-    }
+	double GlobalRegionX()
+	{
+		double buf[3];
+		CDMLoader::GlobalRegion(buf);
+		return buf[0];
+	}
 
-    double GlobalRegionY() {
-      double buf[3];
-      CDMLoader::GlobalRegion(buf);
-      return buf[1];
-    }
+	double GlobalRegionY()
+	{
+		double buf[3];
+		CDMLoader::GlobalRegion(buf);
+		return buf[1];
+	}
 
-    double GlobalRegionZ() {
-      double buf[3];
-      CDMLoader::GlobalRegion(buf);
-      return buf[2];
-    }
+	double GlobalRegionZ()
+	{
+		double buf[3];
+		CDMLoader::GlobalRegion(buf);
+		return buf[2];
+	}
 
-    int GlobalVoxelX() {
-      int buf[3];
-      CDMLoader::GlobalVoxel(buf);
-      return buf[0];
-    }
+	int GlobalVoxelX()
+	{
+		int buf[3];
+		CDMLoader::GlobalVoxel(buf);
+		return buf[0];
+	}
 
-    int GlobalVoxelY() {
-      int buf[3];
-      CDMLoader::GlobalVoxel(buf);
-      return buf[1];
-    }
+	int GlobalVoxelY()
+	{
+		int buf[3];
+		CDMLoader::GlobalVoxel(buf);
+		return buf[1];
+	}
 
-    int GlobalVoxelZ() {
-      int buf[3];
-      CDMLoader::GlobalVoxel(buf);
-      return buf[2];
-    }
+	int GlobalVoxelZ()
+	{
+		int buf[3];
+		CDMLoader::GlobalVoxel(buf);
+		return buf[2];
+	}
 
-    int GlobalDivX() {
-      int buf[3];
-      CDMLoader::GlobalDiv(buf);
-      return buf[0];
-    }
+	int GlobalDivX()
+	{
+		int buf[3];
+		CDMLoader::GlobalDiv(buf);
+		return buf[0];
+	}
 
-    int GlobalDivY() {
-      int buf[3];
-      CDMLoader::GlobalDiv(buf);
-      return buf[1];
-    }
+	int GlobalDivY()
+	{
+		int buf[3];
+		CDMLoader::GlobalDiv(buf);
+		return buf[1];
+	}
 
-    int GlobalDivZ() {
-      int buf[3];
-      CDMLoader::GlobalDiv(buf);
-      return buf[2];
-    }
+	int GlobalDivZ()
+	{
+		int buf[3];
+		CDMLoader::GlobalDiv(buf);
+		return buf[2];
+	}
 
-    int NumTimeSteps() {
-      return CDMLoader::NumTimeSteps();
-    }
+	double LocalOffsetX()
+	{
+		double buf[3];
+		CDMLoader::LocalOffset(buf);
+		return buf[0];
+	}
 
-    int TimeStepAt(int i) {
-      return CDMLoader::GetTimeStep(i);
-    }
+	double LocalOffsetY()
+	{
+		double buf[3];
+		CDMLoader::LocalOffset(buf);
+		return buf[1];
+	}
 
-    bool Load(const char* filename, int timeStepIndex) {
-        return CDMLoader::Load(filename, timeStepIndex);
-    }
+	double LocalOffsetZ()
+	{
+		double buf[3];
+		CDMLoader::LocalOffset(buf);
+		return buf[2];
+	}
 
-    BufferVolumeData_Lua* VolumeData() {
-        return new BufferVolumeData_Lua(CDMLoader::VolumeData());
-    }
+	double LocalRegionX()
+	{
+		double buf[3];
+		CDMLoader::LocalRegion(buf);
+		return buf[0];
+	}
 
-    LUA_SCRIPTCLASS_BEGIN(CDMLoader_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,Width)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,Height)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,Depth)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,Component)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalDivX)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalDivY)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalDivZ)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalVoxelX)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalVoxelY)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,GlobalVoxelZ)
-    LUA_SCRIPTCLASS_METHOD_ARG0(int,NumTimeSteps)
-    LUA_SCRIPTCLASS_METHOD_ARG1(int,TimeStepAt,int)
-    LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalOffsetX)
-    LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalOffsetY)
-    LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalOffsetZ)
-    LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionX)
-    LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionY)
-    LUA_SCRIPTCLASS_METHOD_ARG0(double,GlobalRegionZ)
-    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader",bool,Load,const char*,int)
-    LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
-    LUA_SCRIPTCLASS_END()
+	double LocalRegionY()
+	{
+		double buf[3];
+		CDMLoader::LocalRegion(buf);
+		return buf[1];
+	}
+
+	double LocalRegionZ()
+	{
+		double buf[3];
+		CDMLoader::LocalRegion(buf);
+		return buf[2];
+	}
+
+	int LocalVoxelX()
+	{
+		int buf[3];
+		CDMLoader::LocalVoxel(buf);
+		return buf[0];
+	}
+
+	int LocalVoxelY()
+	{
+		int buf[3];
+		CDMLoader::LocalVoxel(buf);
+		return buf[1];
+	}
+
+	int LocalVoxelZ()
+	{
+		int buf[3];
+		CDMLoader::LocalVoxel(buf);
+		return buf[2];
+	}
+
+	// Head and Tail index starts at 1.
+	int HeadIndexX()
+	{
+		int buf[3];
+		CDMLoader::HeadIndex(buf);
+		return buf[0];
+	}
+
+	int HeadIndexY()
+	{
+		int buf[3];
+		CDMLoader::HeadIndex(buf);
+		return buf[1];
+	}
+
+	int HeadIndexZ()
+	{
+		int buf[3];
+		CDMLoader::HeadIndex(buf);
+		return buf[2];
+	}
+
+	int TailIndexX()
+	{
+		int buf[3];
+		CDMLoader::TailIndex(buf);
+		return buf[0];
+	}
+
+	int TailIndexY()
+	{
+		int buf[3];
+		CDMLoader::TailIndex(buf);
+		return buf[1];
+	}
+
+	int TailIndexZ()
+	{
+		int buf[3];
+		CDMLoader::TailIndex(buf);
+		return buf[2];
+	}
+
+	int NumTimeSteps() { return CDMLoader::NumTimeSteps(); }
+
+	int TimeStepAt(int i) { return CDMLoader::GetTimeStep(i); }
+
+  //
+  // For backward compatibility.
+  // `Load` will be delegated to `LoadMx1` inside CDMLoader. 
+  //
+	bool Load(const char *filename, int timeStepIndex)
+	{
+		return CDMLoader::Load(filename, timeStepIndex);
+	}
+
+	bool LoadMx1(const char *filename, int timeStepIndex)
+	{
+		return CDMLoader::LoadMx1(filename, timeStepIndex);
+	}
+
+	bool LoadMxM(const char *filename, int timeStepIndex)
+	{
+		return CDMLoader::LoadMxM(filename, timeStepIndex);
+	}
+
+	bool LoadMxN(const char *filename, int divX, int divY, int divZ,
+				 int timeStepIndex)
+	{
+		return CDMLoader::LoadMxN(filename, divX, divY, divZ, timeStepIndex);
+	}
+
+	BufferVolumeData_Lua *VolumeData()
+	{
+		return new BufferVolumeData_Lua(CDMLoader::VolumeData());
+	}
+
+	LUA_SCRIPTCLASS_BEGIN(CDMLoader_Lua)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, Width)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, Height)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, Depth)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, Component)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, HeadIndexZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, TailIndexZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, NumTimeSteps)
+	LUA_SCRIPTCLASS_METHOD_ARG1(int, TimeStepAt, int)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalOffsetZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalRegionX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalRegionY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, GlobalRegionZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalDivZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, GlobalVoxelZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalOffsetX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalOffsetY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalOffsetZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalRegionX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalRegionY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(double, LocalRegionZ)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelX)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelY)
+	LUA_SCRIPTCLASS_METHOD_ARG0(int, LocalVoxelZ)
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, Load,
+											 const char *, int)
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, LoadMx1,
+											 const char *, int)
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG2("CDMLoader", bool, LoadMxM,
+											 const char *, int)
+	LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG5("CDMLoader", bool, LoadMxN,
+											 const char *, int, int, int, int)
+	LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua *, VolumeData)
+	LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(CDMLoader_Lua);
 
 #endif //_CDMLOADER_LUA_H_
-

@@ -66,6 +66,7 @@ IF(HIVE_BUILD_WITH_NANOMSG)
     MESSAGE(FATAL_ERROR "Cannot found Nanomsg installation. Please build nanomsg and install it to `HIVE/third_party/local/nanomsg`!")
   ENDIF()
 ENDIF()
+SET(HIVE_BUILD_WITH_CPMLIB OFF CACHE BOOL "Build with CPMlib support?")
 
 # PROJECT OUTPUT SETTING
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)

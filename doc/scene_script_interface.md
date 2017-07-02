@@ -773,6 +773,145 @@ timeStepIndex には 0 からのインデックス番号を指定する(timeStep
     loader:Load('input.dfi', timeStepIndex)
     local volumeData = loader:VolumeData() -- volume プリミティブを取得
 
+### ロード関数
+
+    -- Mx1 ロードを行う(deprecated method)
+    -- 互換性のために残してあります.
+    Load(filename, timeStepIndex) 
+
+    -- Mx1 ロードを行う
+    LoadMx1(filename, timeStepIndex)
+
+    -- MxM ロードを行う. 
+    -- CDM データの分割数と, 実行中の MPI ランク数が同じである必要があります.
+    LoadMxM(filename, timeStepIndex) 
+                                      
+    -- MxN ロードを行う. 
+    -- divX, divY, divZ に分割数を指定する.
+    -- データの分割読み込みの領域計算は, CPMlib を介して自動で行われます.
+    -- divX * divY * divZ の数が実行中の MPI ランク数と同じである必要があります.
+    LoadMxN(filename, timeStepIndex, divX, divY, divZ)
+                                       
+
+### メソッド
+
+#### GlobalOffset
+
+Global ボリュームの global offset を絶対値で取得します.
+全 MPI ランクで共通の値になります.
+
+    GlobalOffsetX() : ボリュームの global offset X
+    GlobalOffsetY() : ボリュームの global offset Y
+    GlobalOffsetZ() : ボリュームの global offset Z
+
+#### GlobalVoxel
+
+Global ボリュームの voxel size を取得します.
+全 MPI ランクで共通の値になります.
+
+    GlobalVoxelX() : ボリュームの global voxel size X
+    GlobalVoxelY() : ボリュームの global voxel size Y
+    GlobalVoxelZ() : ボリュームの global voxel size Z
+
+#### GlobalRegion
+
+Global ボリュームの region(extent) を取得します.
+全 MPI ランクで共通の値になります.
+
+    GlobalRegionX() : ボリュームの global region X
+    GlobalRegionY() : ボリュームの global region Y
+    GlobalRegionZ() : ボリュームの global region Z
+
+#### LocalOffset
+
+各 MPI ランクごとに対応するボリュームのローカルオフセットを絶対値で取得します.
+
+Local Offset = Global Offset + offset of the volume for each MPI rank
+
+で設定されます. したがって Local Offset は [GLobal Offset, Global Offset + Global Region] の範囲内の値を取ります.
+
+`Mx1` ロード時はグローバルオフセットと同じ値になります.
+`MxN`, `MxM` ロード時は各 MPI ランクごとに値が変わります.
+
+    LocalOffsetX() : ボリュームのローカルオフセット X. 
+    LocalOffsetY() : ボリュームのローカルオフセット Y.
+    LocalOffsetZ() : ボリュームのローカルオフセット Z.
+
+#### LocalVoxel
+
+各 MPI ランクごとに対応するボリュームの local voxel size を取得します.
+
+`Mx1` ロード時は GlobalVoxel と同じ値になります.
+`MxN`, `MxM` ロード時は各 MPI ランクごとに値が変わります.
+
+    LocalVoxelX() : ボリュームの local voxel size X. 
+    LocalVoxelY() : ボリュームの local voxel size Y.
+    LocalVoxelZ() : ボリュームの local voxel size Z.
+
+#### LocalRegion
+
+各 MPI ランクごとに対応するボリュームの local region を取得します.
+
+`Mx1` ロード時は GlobalRegion と同じ値になります.
+`MxN`, `MxM` ロード時は各 MPI ランクごとに値が変わります.
+
+    LocalRegionX() : ボリュームの local region X. 
+    LocalRegionY() : ボリュームの local region Y.
+    LocalRegionZ() : ボリュームの local region Z.
+
+### Volume extent
+
+HIVE では, 原点を中心とし, LocalRegion を extent としてボリュームプリミティブを作成します.
+つまり, volume primitive のバウンディングボックスは以下となります.
+
+    [-LocalRegion/2, LocalRegion/2]
+
+CDMLib の .dfi では, ボリュームのバウンディングボックスは
+   
+    [LocalOffset, LocalOffset + LocalRegion]
+
+と定義されます.
+
+したがって, 元の .dfi に対応するように, HIVE でボリュームプリミティブを移動させる場合は以下のように translation を算出します.
+
+    translation =  LocalRegion / 2. + LocalOffset - GlobalRegion / 2.
+
+HIVEにおいて，ボリュームはバウンディングボックスの中心にずらされてレンダリングされます．そのため，まずは (LocalRegion/2) だけずらし，バウンディングボックスの位置を.dfiと揃えます．その後LocalOffsetを加えてLocalの位置に動かします．最後に (GlobalRegion/2) 分ずらすことで，ボリューム全体が中心に揃います．
+
+<pre>
+           <------   GlobalRegion    ------>
+                           <- LocalRegion ->
+           +-------------------------------+
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              +================+
+           |              |                |
+           |              |   HIVEOrigin   |
+           |              +======-+-=======|
+           |              |                |
+           |              |                |
+           +--------------+================+
+          /|\            /|\
+     GlobalOffset     LocalOffset
+
+Global : While volume region
+Local  : Actual volume region per MPI ranks.
+         For Mx1 loading, Global == Local
+</pre>
+
+### データ並列ロード
+
+#### MxM ロード
+
+読み込み元の .dfi の並列数と, 実行時の MPI 並列数が同じ場合, MxM ロードを行います.
+
+
+
 [render_cdm.scn](hrender/test/render_cdm.scn) 参考例
 [render_cdm_nonuni.scn](hrender/test/render_cdm_nonuni.scn) 参考例(非一様)
 

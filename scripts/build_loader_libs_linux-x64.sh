@@ -44,23 +44,27 @@ function clean_install_dir {
 	rm -rf ${installdir}
 }
 
+# Must ust TP version 1.7.4 which includes tp-config(tp-config is requred for building UDMlib)
 function build_tp {
 	#
 	# TextParser
 	#
 	cd third_party/ 
-	cd TextParser/
 
-	# It looks like setting CXX/CC require regeneration of configure.
-	autoreconf -ivf
+	# For configure build
+        # cd TextParser
+	# autoreconf -ivf
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf TextParser_build
+	mkdir -p TextParser_build
+	cd TextParser_build
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/TextParser -Dwith_MPI=yes -Denable_test=no -Denable_fapi=no ../TextParser && make && make install
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/TextParser && make && make install
+	# for configure build
+	# CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/TextParser && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
+
 }
 
 function build_netcdf {
@@ -97,6 +101,9 @@ function build_cdmlib {
 
 	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_NetCDF=${installdir} -Dwith_util=no -Dwith_example=no ../CDMlib && make && make install
 
+	# Build utils(e.g. fconv). Requires CPMlib and linking with HDF5
+	# CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CDMlib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_CPM:PATH=${installdir}/CPMlib Dwith_NetCDF=${installdir} -Dwith_HDF:PATH=${installdir} -Dwith_util=yes -Dwith_example=no ../CDMlib && make && make install
+
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -106,16 +113,13 @@ function build_polylib {
 	# Polylib
 	#
 	cd third_party/
-	cd Polylib/
 
-	# It looks like setting CXX/CC require regeneration of configure.
-	autoreconf -ivf
+	rm -rf Polylib_build
+	mkdir -p Polylib_build
+	cd Polylib_build
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/Polylib -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Dwith_example=no ../Polylib && make && make install
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ../configure --prefix=${installdir}/Polylib --with-parser=${installdir}/TextParser && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -125,12 +129,12 @@ function build_bcmtools {
 	# BCMTools
 	#
 	cd third_party/
-	cd BCMTools/
-	if [ -f "Makefile" ]; then
-		make distclean
-	fi
-	autoreconf -ivf
-	CXX=${cxx_compiler} CC=${c_compiler}  CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ./configure --prefix=${installdir}/BCMTools --with-parser=${installdir}/TextParser --with-polylib=${installdir}/Polylib && make && make install
+
+	rm -rf BCMTools_build
+	mkdir -p BCMTools_build
+	cd BCMTools_build
+
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/BCMTools -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib ../BCMTools && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -140,14 +144,16 @@ function build_hdmlib {
 	# HDMlib
 	#
 	cd third_party/
-	cd HDMlib/
-	autoreconf -ivf
+	#cd HDMlib/
+	#autoreconf -ivf
 
-	rm -rf build
-	mkdir -p build
-	cd build
+	rm -rf HDMlib_build
+	mkdir -p HDMlib_build
+	cd HDMlib_build
 
-	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
+	#CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ../configure --prefix=${installdir}/HDMlib --with-parser=${installdir}/TextParser --with-bcm=${installdir}/BCMTools && make && make install
+
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/HDMlib -Denable_OPENMP=yes -Dwith_MPI=yes -Dwith_TP=${installdir}/TextParser -Dwith_PL=${installdir}/Polylib -Dwith_BCM=${installdir}/BCMTools -Dreal_type=float ../HDMlib && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -268,8 +274,8 @@ function build_pmlib {
 	cd third_party/PMlib
 	autoreconf -ivf
 
-       rm -rf BUILD_DIR
-       mkdir -p BUILD_DIR
+	rm -rf BUILD_DIR
+	mkdir -p BUILD_DIR
 	cd BUILD_DIR
 
 	CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -O3 -fopenmp" CFLAGS="${c_flags} -O3 -fopenmp" ../configure --prefix=${installdir}/PMlib --with-comp=GNU && make && make install
@@ -279,18 +285,17 @@ function build_pmlib {
 
 function build_cpmlib {
 
-        cd third_party
+	cd third_party
 
-        rm -rf CPMlib_build
-        mkdir -p CPMlib_build
-        cd CPMlib_build
+	rm -rf CPMlib_build
+	mkdir -p CPMlib_build
+	cd CPMlib_build
 
-        CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CPMlib -Dwith_MPI=yes -Dwith_example=no -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Denable_LMR=no ../CPMlib && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ${CMAKE_BIN} -DINSTALL_DIR=${installdir}/CPMlib -Dwith_MPI=yes -Dwith_example=no -Dwith_TP=${installdir}/TextParser -Dreal_type=float -Denable_LMR=no ../CPMlib && make && make install
 
-        if [[ $? != 0 ]]; then exit $?; fi
-        cd ${topdir}
+	if [[ $? != 0 ]]; then exit $?; fi
+	cd ${topdir}
 }
-
 
 clean_install_dir
 build_netcdf
