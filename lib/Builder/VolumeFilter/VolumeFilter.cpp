@@ -243,7 +243,7 @@ int VolumeFilter::Expr(BufferVolumeData *volume0, BufferVolumeData *volume1, Buf
     ss << "  return NULL; // @todo" << std::endl;
     ss << "}" << std::endl;
 
-    printf(ss.str().c_str());
+    printf("%s\n", ss.str().c_str());
 
     m_cutil.SetSource(ss.str());
     bool ret = m_cutil.Compile("filter");

@@ -3,7 +3,7 @@ IF(HIVE_BUILD_WITH_UDMLIB)
 add_definitions(-DHIVE_WITH_UDMLIB)
 
   SET(UDMLIB_LIBS
-    udm TPmpi zoltan cgns
+    UDMmpi TPmpi zoltan cgns
   )
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)

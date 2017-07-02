@@ -62,7 +62,10 @@ MPIモードで起動している場合、MPIのサイズを取得する。
 - big - ビッグエンディアン
 
 ## screenParallelRendering(enable)
-MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。以下のいずれかの値が設定可能
+MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。N プロセスで N 領域に画面を分割してレンダリングします。
+の分割方法は自動で行われます。
+
+以下のいずれかの値が設定可能
 
 - true - 有効
 - false - 無効
@@ -776,19 +779,49 @@ timeStepIndex には 0 からのインデックス番号を指定する(timeStep
 ## PdmLoader
 
 PDMファイルを読み込むローダークラス. hrender が PDMlib とリンクされているときのみ利用可能.
-Load() でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
-ファイル名に相対パスが含まれていてはならない.
+`Load()` でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
 
     local loader = require("PdmLoader")()
     local timestep = 0
-    loader:Load('input.dfi', timestep)
+    local migration = false
+    loader:Load('input.dfi', timestep, migration)
     
-    -- 点データのコンテナ名と, 点の半径を指定(半径は省略可能. 省略時は 1.0 に設定)
+### MxN 並列ロード
+
+`Load()` 関数で `migration` パラメータを `true` にすると, データの並列ロードを行います. 入力のデータ分散数(M)から, 実行時の MPI プロセス数(N)に合うように自動でデータのマイグレーション処理を行い, データ分散のロードを行います(MxN loading).
+
+### MxM 並列ロード
+
+`Load()` 関数で `migration` パラメータを `true` にすると, `MxM` 相当の並列ロードを行います.
+PDM データの分割数よりも, 実行 MPI ランク数が多いと, 空のデータを持つ MPI ランクが発生します.
+
+### Mx1 ロード
+
+`LoadMx1()` 関数で, PDM データを各 MPI ランクがすべて保持するようにロードします.
+(ただし, PDMlib の不都合により, 現在 Mx1 ロードは動作しません)
+
+    loader:LoadMx1('input.dfi', timestep)
+
+### データの取得
+
+    -- 座標データのコンテナ名(省略時は `Coordinatge`, に設定)と, 点の半径を指定(省略時は 1.0 に設定)
     local pointData = pdm:PointData('Coordinate', 0.2)
+    -- local pointData = pdm:PointData() -- container name = `Coordinate`, radius = 1.0 
+    -- local pointData = pdm:PointData('Coordinate') --  radius = 1.0 
 
     -- 任意形式のコンテナデータを取得.
     -- コンテナ名に対するデータ形式(float, vec3, etc)はユーザが既知とする.
     local extraData = pdm:ExtraData('velocity')
+
+### EnableProfiling
+
+PDMLib の profiling 機能を有効にします. `Load` の前に呼び出す必要があります.
+
+    local loader = PDMLoader()
+    local timestep = 0
+    local migration = false
+    loader:EnableProfiling(true)
+    loader:Load('input.dfi', timestep, migration)
 
 [render_pdm.scn](hrender/test/render_pdm.scn) 参考例
 

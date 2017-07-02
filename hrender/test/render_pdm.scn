@@ -1,6 +1,9 @@
 print('Render PDM')
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
+
+-- Uncomment SetFilename if you want parallel rendering of PDMdata, and
+-- Use ImageSaver() commented in the end line of this file instead.
 camera:SetFilename('render_pdm.jpg')
 
 camera:LookAt(
@@ -13,7 +16,14 @@ camera:LookAt(
 
 local pdm = require("PdmLoader")()
 -- 4CL8.pdb.dfi is created by running `convert_pdb_to_pdm.scn`.
-pdm:Load('4CL8.pdm.dfi', -1) -- -1 => load first timeStep
+local timeStep = -1 -- => load first timeStep
+local coordinateName = 'Coordinate'
+local migration = false
+
+-- Uncomment if you want PDMlib's profiling support.
+-- pdm:EnableProfiling(true)
+
+pdm:Load('4CL8.pdm.dfi', timeStep, coordinateName, migration)
 
 local pointmodel = PointModel()
 local pointdata = pdm:PointData('Coordinate', 0.2) -- container name, radius
@@ -21,3 +31,9 @@ pointmodel:Create(pointdata)
 pointmodel:SetShader('white.frag')
 
 render {camera, pointmodel}
+
+-- -- Save image for each MPI node.
+-- local saver = ImageSaver()
+-- local outputFilename = string.format('render_pdmlib.%06d.jpg', mpiRank());
+-- local imageBuffer = saver:Save(outputFilename, camera:GetImageBuffer())
+
