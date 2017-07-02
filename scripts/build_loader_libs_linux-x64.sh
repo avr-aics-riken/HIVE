@@ -226,14 +226,13 @@ function build_udmlib {
 	# UDMlib
 	#
 	cd third_party/UDMlib
-	autoreconf -ivf
 
 	rm -rf build
 	mkdir -p build
 	cd build
 
-	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags} ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	# Assume HDF5 was compiled and installed in advance(e.g. build_netcdf)
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ${CMAKE_BIN} -Dwith_TP=${installdir}/TextParser -Dwith_ZOLTAN=${installdir} -Dwith_CGNS=${installdir} -Dwith_MPI=yes -Dreal_type=float -Dwith_util=no -Dwith_example=no -Dwith_HDF5=${installdir} -DINSTALL_DIR=${installdir}/UDMlib .. && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
