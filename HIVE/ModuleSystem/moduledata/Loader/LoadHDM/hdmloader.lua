@@ -1,7 +1,7 @@
 
 
 function LoadHDM(property)
-	local hdm = require("HdmLoader")()
+	local hdm = LoadModule("HdmLoader")
 	hdm:Init(property.cellidpath, property.datapath)
 	-- field name, field type, components(1=scalar, 3=vector), stepNo
 	local volumedata = hdm:LoadField(self.value.fieldname, self.value.fieldtype, 1, 0)
@@ -17,7 +17,7 @@ setmetatable(LoadHDM, {__index = HiveBaseModule})
 
 LoadHDM.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('HdmLoader')()
+    this.loader = LoadModule('HdmLoader')
     setmetatable(this, {__index=LoadHDM})
     return this
 end

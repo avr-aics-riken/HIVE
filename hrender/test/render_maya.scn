@@ -294,7 +294,7 @@ local img = loader:ImageData()
 -- model0:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
 
 
-local obj1 = require("ObjLoader")()
+local obj1 = LoadModule("ObjLoader")
 obj1:Load('maya_polygon.obj')
 local model1 = PolygonModel()
 local meshdata1 = obj1:MeshData()
@@ -309,7 +309,7 @@ model1:SetFloat("pbs_num_lights", numLights);
 model1:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
 model1:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-local analy = require("Analyzer").PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(model1)
 print(analy:MinX())
 print(analy:MaxX())
@@ -319,7 +319,7 @@ print(analy:MinZ())
 print(analy:MaxZ())
 
 -- light poly
--- local obj2 = require("ObjLoader")()
+-- local obj2 = LoadModule("ObjLoader")
 -- obj2:Load('arealight.obj')
 -- local model2 = PolygonModel()
 -- local meshdata2 = obj2:MeshData()

@@ -108,7 +108,7 @@ model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we us
 
 
 -- blob surface
--- local obj0 = require("ObjLoader")()
+-- local obj0 = LoadModule("ObjLoader")
 -- obj0:Load('blob.obj')
 -- local model0 = PolygonModel()
 -- local meshdata0 = obj0:MeshData()
@@ -120,7 +120,7 @@ model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we us
 -- model0:SetFloat("pbs_num_materials", numMaterials);
 -- model0:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-local analy = require("Analyzer").PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(model0)
 print(analy:MinX())
 print(analy:MaxX())
@@ -130,7 +130,7 @@ print(analy:MinZ())
 print(analy:MaxZ())
 
 -- floor surface
-local obj1 = require("ObjLoader")()
+local obj1 = LoadModule("ObjLoader")
 obj1:Load('md_plane.obj')
 local model1 = PolygonModel()
 local meshdata1 = obj1:MeshData()

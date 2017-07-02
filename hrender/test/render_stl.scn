@@ -12,9 +12,16 @@ camera:LookAt(
 	60
 )
 
+local endianness = endian()
+print(endianness)
 
-local stl = require("StlLoader")()
+local stl = LoadModule("StlLoader")
 local swapEndian = false
+
+-- Assume 'bunny.stl' is binary format and little endian.
+if endianness == 'big' then
+   swapEndian = true
+end
 stl:Load('bunny.stl', swapEndian)
 
 local model = PolygonModel()
@@ -23,7 +30,7 @@ model:Create(meshdata)
 model:SetShader('white.frag')
 
 --[[
-local analy = require("Analyzer").PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())

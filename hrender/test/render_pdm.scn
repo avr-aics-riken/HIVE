@@ -14,7 +14,7 @@ camera:LookAt(
 )
 
 
-local pdm = require("PdmLoader")()
+local pdm = LoadModule("PdmLoader")
 -- 4CL8.pdb.dfi is created by running `convert_pdb_to_pdm.scn`.
 local timeStep = -1 -- => load first timeStep
 local coordinateName = 'Coordinate'

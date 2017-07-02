@@ -1,14 +1,19 @@
+/**
+ * @file Network_Lua.h
+ * Network Luaラッパー
+ */
+#ifndef _NETWORK_LUA_H_
+#define _NETWORK_LUA_H_
 
+#include "LuaUtil.h"
 #include "Connection_Lua.h"
 #include "MetaBinary_Lua.h"
 
-extern "C" {
-
-
-int luaopen_Network(lua_State* L)
+void register_Network_Lua(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, Connection_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, MetaBinary_Lua);
+    
     lua_newtable(L);
     lua_pushstring(L, "Connection"); 
     lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(Connection_Lua));
@@ -18,7 +23,7 @@ int luaopen_Network(lua_State* L)
     lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(MetaBinary_Lua));
     lua_settable(L, -3);
     
-    return 1;
+    lua_setglobal(L, "Network");
 }
 
-}
+#endif //_NETWORK_LUA_H_

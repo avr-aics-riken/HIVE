@@ -1,9 +1,9 @@
 print('save SPH')
 
-local sph = require("SphLoader")()
+local sph = LoadModule("SphLoader")
 sph:Load('fvel_0000001470.sph')
 
-local saver = require("SphSaver")()
+local saver = LoadModule("SphSaver")
 saver:SetVolumeData(sph:VolumeData())
 saver:Save('output.sph')
 

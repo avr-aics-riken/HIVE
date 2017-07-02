@@ -2,8 +2,8 @@
  * @file VolumeQuantizer_Lua.h
  * VolumeToVector Luaラッパー
  */
-#ifndef _VOLUMETOVECTOR_LUA_H_
-#define _VOLUMETOVECTOR_LUA_H_
+#ifndef _VOLUMEQUANTIZER_LUA_H_
+#define _VOLUMEQUANTIZER_LUA_H_
 
 #include "LuaUtil.h"
 #include "BufferVolumeData_Lua.h"
@@ -55,5 +55,5 @@ public:
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(VolumeQuantizer_Lua);
 
-#endif //_VOLUMETOVECTOR_LUA_H_
+#endif //_VOLUMETOVECTOR_VOLUMEQUANTIZER_LUA_H__LUA_H_
 

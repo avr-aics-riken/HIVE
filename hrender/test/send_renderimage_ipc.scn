@@ -14,10 +14,10 @@ local height = 512
 local camera = Camera()
 camera:SetScreenSize(width, height)
 
-local obj = require("ObjLoader")()
+local obj = LoadModule("ObjLoader")
 local saver = ImageSaver()
-local metabin = require("Network").MetaBinary()
-local network = require("Network").Connection()
+local metabin = LoadModule("Network").MetaBinary()
+local network = LoadModule("Network").Connection()
 network:Connect('ipc:///tmp/HIVEtest')
 
 obj:Load('bunny.obj')

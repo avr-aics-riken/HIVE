@@ -19,7 +19,7 @@ local pm = PolygonModel();
 pm:Create(ppp);
 pm:SetShader("white.frag");
 
-local stl = require("StlLoader")()
+local stl = LoadModule("StlLoader")
 stl:Load('bunny.stl')
 local model = PolygonModel()
 model:Create(stl:MeshData())

@@ -22,7 +22,7 @@ function VolumeObject:Do()
         if v.volume:Width() > 0 and v.volume:Height() > 0 and v.volume:Depth() > 0 then 
             pm:Create(v.volume)
             -- Analyze min/max
-            local analyzer = require('Analyzer').VolumeAnalyzer()
+            local analyzer = LoadModule('Analyzer').VolumeAnalyzer()
             analyzer:Execute(v.volume)
             minval = analyzer:MinX()
             maxval = analyzer:MaxX()

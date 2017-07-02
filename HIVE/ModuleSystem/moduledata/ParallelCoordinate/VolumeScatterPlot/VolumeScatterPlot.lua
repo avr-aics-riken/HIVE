@@ -23,7 +23,7 @@ function VolumeScatterPlot:Do()
 	    pm:Create(v.volume)
         
         -- Analyze min/max
-        local analyzer = require('Analyzer').VolumeAnalyzer()
+        local analyzer = LoadModule('Analyzer').VolumeAnalyzer()
         analyzer:Execute(v.volume)
         minval = analyzer:MinX()
         maxval = analyzer:MaxX()

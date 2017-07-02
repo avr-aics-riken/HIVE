@@ -1,13 +1,13 @@
 print('load PDB and convert particles as SPH volume data')
 
-local pdb = require("PdbLoader")()
+local pdb = LoadModule("PdbLoader")
 pdb:Load('4CL8.pdb')
 
-local p2v = require("PointToVolume")()
+local p2v = LoadModule("PointToVolume")
 p2v:Create(pdb:BallData())
 
 p2v:ToVolume(128,128,128)
 
-local sph = require("SphSaver")()
+local sph = LoadModule("SphSaver")
 sph:SetVolumeData(p2v:VolumeData())
 sph:Save('volume_pdb.sph')

@@ -17,6 +17,9 @@ private:
 	~MetaBinary_Lua(){}
 
 public:
+    static MetaBinary_Lua* CreateInstance() {
+        return new MetaBinary_Lua();
+    }
     LUA_SCRIPTCLASS_BEGIN(MetaBinary_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG3 (bool, Create, const std::string&, const MetaBinary::Buffer, int)
     LUA_SCRIPTCLASS_METHOD_ARG0 (const MetaBinary::Buffer, BinaryBuffer)

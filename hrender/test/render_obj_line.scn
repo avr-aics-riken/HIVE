@@ -12,7 +12,7 @@ camera:LookAt(
 )
 
 
-local obj = require("ObjLoader")()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
 local model = LineModel()

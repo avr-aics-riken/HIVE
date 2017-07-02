@@ -19,7 +19,7 @@ print(buffer)
 print(saver:MemorySize())
 
 -- send image by websocket
-local network = require("Network").Connection()
+local network = LoadModule("Network").Connection()
 network:Connect('ws://localhost:8080/')
 network:SendBinary(buffer, saver:MemorySize())
 network:Close()

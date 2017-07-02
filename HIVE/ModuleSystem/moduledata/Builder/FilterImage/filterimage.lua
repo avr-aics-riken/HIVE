@@ -4,7 +4,7 @@ setmetatable(FilterImage, {__index = HiveBaseModule})
 FilterImage.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=FilterImage});
-    this.filter = require("ImageFilter")();
+    this.filter = LoadModule("ImageFilter")
     this.res = nil;
     return this
 end

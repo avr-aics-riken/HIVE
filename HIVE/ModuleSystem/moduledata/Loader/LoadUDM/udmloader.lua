@@ -1,7 +1,7 @@
 
 
 function LoadUDM(property)
-	local udm = require("UdmLoader")()
+	local udm = LoadModule("UdmLoader")
 	udm:Load(property.filepath)
 	local udminst = {
 		Tetra = function()
@@ -35,7 +35,7 @@ setmetatable(LoadUDM, {__index = HiveBaseModule})
 
 LoadUDM.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('UdmLoader')()
+    this.loader = LoadModule('UdmLoader')
     setmetatable(this, {__index=LoadUDM})
     return this
 end

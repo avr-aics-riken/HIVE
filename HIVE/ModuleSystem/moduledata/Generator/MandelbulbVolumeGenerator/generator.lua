@@ -4,7 +4,7 @@ setmetatable(MandelbulbVolumeGenerator, {__index = HiveBaseModule})
 
 MandelbulbVolumeGenerator.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    this.gen = require("MandelbulbVolGen")()
+    this.gen = LoadModule("MandelbulbVolGen")
     setmetatable(this, {__index=MandelbulbVolumeGenerator})
     return this
 end

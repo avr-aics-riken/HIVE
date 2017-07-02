@@ -12,7 +12,7 @@ camera:LookAt(
 )
 
 
-local pdb = require("PdbLoader")()
+local pdb = LoadModule("PdbLoader")
 local generateBond = false
 pdb:Load('4CL8.pdb', generateBond)
 

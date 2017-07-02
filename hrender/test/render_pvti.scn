@@ -12,25 +12,25 @@ camera:LookAt(
 )
 
 
-local vtk = require("VtkLoader")()
+local vtk = LoadModule("VtkLoader")
 vtk:Load('data-flow-0000180100.pvti', '/mnt/data/data/SC14/VTI/', 'p', true) -- Need to specify field name. The last param is whether apply byteswap or not.
 local volume = VolumeModel()
 local volumedata = vtk:VolumeData()
 
 -- Compute laplacian
-local filter = require("VolumeFilter")();
+local filter = LoadModule("VolumeFilter");
 filter:Laplacian(volumedata);
 
 volume:Create(filter:VolumeData())
 
-local analy = require("Analyzer").VolumeAnalyzer()
+local analy = LoadModule("Analyzer").VolumeAnalyzer()
 analy:Execute(volume)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())
 print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
 
 -- -- Create isosurface mesh
--- local surfacer = require("VolumeToMeshData")()
+-- local surfacer = LoadModule("VolumeToMeshData")
 -- local isovalue = 0.0005
 -- surfacer:Create(filter:VolumeData())
 -- surfacer:SetIsoValue(isovalue)

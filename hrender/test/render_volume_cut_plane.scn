@@ -32,7 +32,7 @@ function JetTransferFunctionTexture()
 end
 
 
-local sph = require("SphLoader")()
+local sph = LoadModule("SphLoader")
 sph:Load('fvel_0000001470.sph')
 
 print("origin", sph:OriginX(), sph:OriginY(), sph:OriginZ())
@@ -45,7 +45,7 @@ local volumedata = sph:VolumeData()
 
 volume:Create(volumedata)
 
-local analy = require("Analyzer").VolumeAnalyzer()
+local analy = LoadModule("Analyzer").VolumeAnalyzer()
 analy:Execute(volume)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())

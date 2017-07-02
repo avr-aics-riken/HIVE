@@ -4,7 +4,7 @@ setmetatable(VolumeToVector, {__index = HiveBaseModule})
 
 VolumeToVector.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    local vm = require("VolumeToVector")();
+    local vm = LoadModule("VolumeToVector")
 	this.vm = vm
     setmetatable(this, {__index=VolumeToVector})
     return this

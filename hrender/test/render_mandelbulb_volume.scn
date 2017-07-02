@@ -33,7 +33,7 @@ end
 local tftex = CreateTransferFunctionTexture()
 
 
-local mandelbulb = require("MandelbulbVolGen")()
+local mandelbulb = LoadModule("MandelbulbVolGen")
 print('Generating Mandelbulb...')
 mandelbulb:Generate(300)
 print('done.')

@@ -4,7 +4,7 @@ setmetatable(LoadSPH, {__index = HiveBaseModule})
 
 LoadSPH.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('SphLoader')()
+    this.loader = LoadModule('SphLoader')
     setmetatable(this, {__index=LoadSPH})
     return this
 end

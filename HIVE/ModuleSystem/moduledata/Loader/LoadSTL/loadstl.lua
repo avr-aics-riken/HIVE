@@ -4,7 +4,7 @@ setmetatable(LoadSTL, {__index = HiveBaseModule})
 
 LoadSTL.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('StlLoader')()
+    this.loader = LoadModule('StlLoader')
     setmetatable(this, {__index=LoadSTL})
     return this
 end

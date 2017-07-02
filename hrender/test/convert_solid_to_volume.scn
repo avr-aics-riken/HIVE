@@ -14,7 +14,7 @@ camera:LookAt(
 )
 
 
-local udm = require("UdmLoader")()
+local udm = LoadModule("UdmLoader")
 -- Specify .dfi file
 udm:Load('bcm2gf/index.dfi')
 
@@ -22,7 +22,7 @@ local model = SolidModel()
 local hexadata = udm:SolidData(8) -- 8 = HEXA
 print(hexadata)
 
-local analy = require("Analyzer").SolidAnalyzer()
+local analy = LoadModule("Analyzer").SolidAnalyzer()
 analy:Execute(hexadata)
 print(analy:MinX())
 print(analy:MaxX())
@@ -31,7 +31,7 @@ print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
 
-local s2v = require("SolidToVolume")()
+local s2v = LoadModule("SolidToVolume")
 s2v:Create(hexadata, analy:MinX(), analy:MinY(), analy:MinZ(), analy:MaxX(), analy:MaxY(), analy:MaxZ())
 s2v:ToVolume(128, 128, 128)
 

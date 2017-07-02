@@ -3,7 +3,7 @@ setmetatable(LoadCDM, {__index = HiveBaseModule})
 
 LoadCDM.new = function (varname)
     local this = HiveBaseModule.new(varname);
-    this.loader = require('CdmLoader')()
+    this.loader = LoadModule('CdmLoader')
     setmetatable(this, {__index=LoadCDM})
     return this
 end

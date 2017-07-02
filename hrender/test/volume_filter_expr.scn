@@ -1,4 +1,4 @@
-print('custom expression for require("VolumeFilter")')
+print('custom expression for LoadModule("VolumeFilter")')
 
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
@@ -11,10 +11,10 @@ camera:LookAt(
 	60
 )
 
-local sph = require("SphLoader")()
+local sph = LoadModule("SphLoader")
 sph:Load('prs_0000002000.sph')
 
-local filter = require("VolumeFilter")();
+local filter = LoadModule("VolumeFilter")
 
 -- Simple copy filter
 local filterCode = [[
@@ -29,7 +29,7 @@ filter:Expr(sph:VolumeData(), nil, nil, nil, 1, filterCode);
 
 local volumedata = filter:VolumeData()
 
-local surfacer = require("VolumeToMeshData")()
+local surfacer = requiLoadModulere("VolumeToMeshData")
 print(surfacer)
 
 local isovalue = 0.0005

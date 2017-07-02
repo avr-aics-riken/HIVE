@@ -4,7 +4,7 @@ setmetatable(SavePDM, {__index = HiveBaseModule})
 SavePDM.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=SavePDM})
-    this.saver = require("PdmSaver")()
+    this.saver = LoadModule("PdmSaver")
     return this
 end
 

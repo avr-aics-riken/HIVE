@@ -24,7 +24,7 @@ function ChOWDER:Do()
     local imageBufferSize = saver:MemorySize()
 
     -- create metabinary
-    local metabin = require("Network").MetaBinary()
+    local metabin = LoadModule("Network").MetaBinary()
     local json = [[{
             "jsonrpc" : "2.0",
             "method" : "AddContent",
@@ -52,7 +52,7 @@ function ChOWDER:Do()
 
     -- send through websocket
     if (self.ws == nil) then
-        self.ws = require("Network").Connection()
+        self.ws = LoadModule("Network").Connection()
         local nr = self.ws:Connect(v.url) --'ws://localhost:8082/v1/')
         self.url = v.url
         if not nr then

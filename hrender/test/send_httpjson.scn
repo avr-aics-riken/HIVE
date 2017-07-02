@@ -1,6 +1,6 @@
 print('Send JSON through http')
 
-local network = require("Network").Connection()
+local network = LoadModule("Network").Connection()
 
 local json = "{ AAA: 'BBB', CCC:10 }"
 network:Connect('http://localhost:8080/')

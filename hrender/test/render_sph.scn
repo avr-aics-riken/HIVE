@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local sph = require("SphLoader")()
+local sph = LoadModule("SphLoader")
 sph:Load('fvel_0000001470.sph')
 
 print("origin", sph:OriginX(), sph:OriginY(), sph:OriginZ())
@@ -27,7 +27,7 @@ volume:Create(volumedata)
 volume:SetShader('def_volume_raymarch.frag')
 
 
-local analy = require("Analyzer").VolumeAnalyzer()
+local analy = LoadModule("Analyzer").VolumeAnalyzer()
 analy:Execute(volumedata)
 print(analy:MinX())
 print(analy:MaxX())

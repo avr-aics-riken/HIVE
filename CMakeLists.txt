@@ -91,8 +91,10 @@ add_subdirectory(third_party/lua)
 add_subdirectory(tools)
 
 # build
-add_subdirectory(HiveCore)
-add_subdirectory(lib)
+IF (BUILD_SHARED_LIBS)
+  add_subdirectory(HiveCore)
+  add_subdirectory(lib)
+ENDIF()
 add_subdirectory(hrender)
 add_subdirectory(HIVE)
 

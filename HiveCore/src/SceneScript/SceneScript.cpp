@@ -48,6 +48,59 @@
 #include "GenTexture_Lua.h"
 #include "PrimitiveGenerator_Lua.h"
 
+#ifdef HIVE_STATIC
+    #include "Network_Lua.h"
+    #include "ObjLoader_Lua.h"
+    #include "StlLoader_Lua.h"
+    #include "VolLoader_Lua.h"
+    #include "RawVolumeLoader_Lua.h"
+    #include "RawVolumeSaver_Lua.h"
+    #include "SphLoader_Lua.h"
+    #include "SphSaver_Lua.h"
+    #include "VtkLoader_Lua.h"
+    #include "MeshAttribToVolume_Lua.h"
+    #ifdef HIVE_WITH_CDMLIB
+        #include "CdmLoader_Lua.h"
+    #endif
+    #ifdef HIVE_WITH_PDMLIB
+        #include "PdmLoader_Lua.h"
+        #include "PdmSaver_Lua.h"
+    #endif
+    #ifdef HIVE_WITH_HDMLIB
+        #include "HdmLoader_Lua.h"
+    #endif
+    #ifdef HIVE_WITH_UDMLIB
+        #include "UdmLoader_Lua.h"
+    #endif
+    #ifdef HIVE_WITH_BCMTOOLS
+        #include "BcmLoader_Lua.h"
+    #endif
+    #ifdef HIVE_WITH_TPUTIL
+        #include "TpUtil_Lua.h"
+    #endif
+    #include "PdbLoader_Lua.h"
+    #include "Analyzer_Lua.h"
+    #include "FloatsToFloat_Lua.h"
+    #include "PointToVolume_Lua.h"
+    #include "VolumeToVector_Lua.h"
+    #include "VolumeToMeshData_Lua.h"
+    #include "VolumeFilter_Lua.h"
+    #include "VolumeQuantizer_Lua.h"
+    #include "SparseVolumeToVolume_Lua.h"
+
+    #include "ClusterParallelCoord_Lua.h"
+    #include "ImageFilter_Lua.h"
+    #include "MandelbulbVolGen_Lua.h"
+    #include "RawSparseVolumeLoader_Lua.h"
+    #include "SolidAttribToVolume_Lua.h"
+    #include "SolidDfToVolume_Lua.h"
+    #include "SolidToVolume_Lua.h"
+    #include "VisioColorMapLoader_Lua.h"
+    #include "VisioColorMapSaver_Lua.h"
+    #include "VisioGradientMapLoader_Lua.h"
+    #include "VisioGradientMapSaver_Lua.h"
+#endif
+
 void RegisterSceneClass(lua_State* L)
 {
     LUA_SCRIPTCLASS_REGISTER(L, PolygonModel_Lua);
@@ -71,6 +124,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
+
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
     SetFunction(L, "SparseVolumeModel",   LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeModel_Lua));
@@ -92,6 +146,113 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
+    
+#ifdef HIVE_STATIC
+        LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, STLLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VOLLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, RawVolumeLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, RawVolumeSaver_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SPHLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SPHSaver_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VTKLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, MeshAttribToVolume_Lua);
+    #ifdef HIVE_WITH_CDMLIB
+        LUA_SCRIPTCLASS_REGISTER(L, CDMLoader_Lua);
+    #endif
+    #ifdef HIVE_WITH_PDMLIB
+        LUA_SCRIPTCLASS_REGISTER(L, PDMLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, PDMSaver_Lua);
+    #endif
+    #ifdef HIVE_WITH_HDMLIB
+        LUA_SCRIPTCLASS_REGISTER(L, HDMLoader_Lua);
+    #endif
+    #ifdef HIVE_WITH_UDMLIB
+        LUA_SCRIPTCLASS_REGISTER(L, UDMLoader_Lua);
+    #endif
+    #ifdef HIVE_WITH_BCMTOOLS
+        LUA_SCRIPTCLASS_REGISTER(L, BCMLoader_Lua);
+    #endif
+    #ifdef HIVE_WITH_TPUTIL
+        LUA_SCRIPTCLASS_REGISTER(L, TPUtil_Lua);
+    #endif
+        LUA_SCRIPTCLASS_REGISTER(L, PDBLoader_Lua);
+        
+        LUA_SCRIPTCLASS_REGISTER(L, FloatsToFloat_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, PointToVolume_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeToVector_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeToMeshData_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeFilter_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VolumeQuantizer_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SparseVolumeToVolume_Lua);
+        
+        LUA_SCRIPTCLASS_REGISTER(L, ImageFilter_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, MandelbulbVolGen_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, RawSparseVolumeLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SolidAttribToVolume_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SolidDfToVolume_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, SolidToVolume_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VisioColorMapLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VisioColorMapSaver_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VisioGradientMapLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, VisioGradientMapSaver_Lua);
+        
+        SetFunction(L, "ObjLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
+        SetFunction(L, "StlLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
+        
+        SetFunction(L, "VolLoader",   LUA_SCRIPTCLASS_NEW_FUNCTION(VOLLoader_Lua));
+        SetFunction(L, "RawVolumeLoader",     LUA_SCRIPTCLASS_NEW_FUNCTION(RawVolumeLoader_Lua));
+        SetFunction(L, "RawVolumeSaver",      LUA_SCRIPTCLASS_NEW_FUNCTION(RawVolumeSaver_Lua));
+        SetFunction(L, "SphLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(SPHLoader_Lua));
+        SetFunction(L, "SphSaver",            LUA_SCRIPTCLASS_NEW_FUNCTION(SPHSaver_Lua));
+        SetFunction(L, "VtkLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(VTKLoader_Lua));
+        SetFunction(L, "MeshAttribToVolume",  LUA_SCRIPTCLASS_NEW_FUNCTION(MeshAttribToVolume_Lua));
+    #ifdef HIVE_WITH_CDMLIB
+        SetFunction(L, "CdmLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(CDMLoader_Lua));
+    #endif
+    #ifdef HIVE_WITH_PDMLIB
+        SetFunction(L, "PdmLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDMLoader_Lua));
+        SetFunction(L, "PdmSaver",            LUA_SCRIPTCLASS_NEW_FUNCTION(PDMSaver_Lua));
+    #endif
+    #ifdef HIVE_WITH_HDMLIB
+        SetFunction(L, "HdmLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(HDMLoader_Lua));
+    #endif
+    #ifdef HIVE_WITH_UDMLIB
+        SetFunction(L, "UdmLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(UDMLoader_Lua));
+    #endif
+    #ifdef HIVE_WITH_BCMTOOLS
+        SetFunction(L, "BcmLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(BCMLoader_Lua));
+    #endif
+    #ifdef HIVE_WITH_TPUTIL
+        SetFunction(L, "TpUtil",               LUA_SCRIPTCLASS_NEW_FUNCTION(TPUtil_Lua));
+    #endif
+        SetFunction(L, "PdbLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(PDBLoader_Lua));
+        SetFunction(L, "FloatsToFloat",       LUA_SCRIPTCLASS_NEW_FUNCTION(FloatsToFloat_Lua));
+        SetFunction(L, "PointToVolume",       LUA_SCRIPTCLASS_NEW_FUNCTION(PointToVolume_Lua));
+        SetFunction(L, "VolumeToVector",      LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToVector_Lua));
+        SetFunction(L, "VolumeToMeshData",    LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeToMeshData_Lua));
+        SetFunction(L, "VolumeFilter",        LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeFilter_Lua));
+        SetFunction(L, "VolumeQuantizer",        LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeQuantizer_Lua));
+        SetFunction(L, "SparseVolumeToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SparseVolumeToVolume_Lua));
+        
+        SetFunction(L, "ImageFilter",        LUA_SCRIPTCLASS_NEW_FUNCTION(ImageFilter_Lua));
+        SetFunction(L, "MandelbulbVolGen",        LUA_SCRIPTCLASS_NEW_FUNCTION(MandelbulbVolGen_Lua));
+        SetFunction(L, "RawSparseVolumeLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(RawSparseVolumeLoader_Lua));
+        SetFunction(L, "SolidAttribToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SolidAttribToVolume_Lua));
+        SetFunction(L, "SolidDfToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SolidDfToVolume_Lua));
+        SetFunction(L, "SolidToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SolidToVolume_Lua));
+        SetFunction(L, "VisioColorMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioColorMapLoader_Lua));
+        SetFunction(L, "VisioColorMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioColorMapSaver_Lua));
+        SetFunction(L, "VisioGradientMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioGradientMapLoader_Lua));
+        SetFunction(L, "VisioGradientMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioGradientMapSaver_Lua));
+        
+        // nested modules
+        register_Network_Lua(L);                // Network_Lua.h
+        register_ClusterParallelCoord_Lua(L);   // ClusterParallelCoord_Lua.h
+        register_Analyzer_Lua(L);               // Analyzer_Lua.h
+        
+#endif // HIVE_STATIC
+    
 }
 
 // ------------------------
@@ -674,6 +835,24 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
     const int scriptsize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     
+#ifdef HIVE_STATIC
+    std::string requireFunction = "\
+        function LoadModule(name) \n \
+            local m = loadstring('return type(' .. name .. ')')()  \n \
+            if (m == 'table') then \n \
+                return loadstring('return ' .. name)() \n \
+            end \n \
+            return loadstring('return ' .. name .. '()')() \n \
+        end\n";
+#else     
+    std::string requireFunction = "\
+        function LoadModule(name) \n \
+            local m = require(name) \n \
+            if (type(m) == 'table') then return m \n \
+            else return m() end \n \
+        end \n";
+#endif
+    
     char* luascript = new char[scriptsize + 1];
     size_t n = fread(luascript, scriptsize, 1, fp);
     if (n != 1) {
@@ -681,7 +860,7 @@ bool SceneScript::Impl::ExecuteFile(const char* scenefile, const std::vector<std
     }
     luascript[scriptsize] = 0; // END
 
-    bool r = Execute(luascript, sceneargs);
+    bool r = Execute( (requireFunction + luascript).c_str(), sceneargs);
     
     delete [] luascript;
     

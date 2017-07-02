@@ -4,7 +4,7 @@ setmetatable(VolumeElementFilter, {__index = HiveBaseModule})
 
 VolumeElementFilter.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    local vm = require("FloatsToFloat")();
+    local vm = LoadModule("FloatsToFloat")
 	this.vm = vm
     setmetatable(this, {__index=VolumeElementFilter})
     return this

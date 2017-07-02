@@ -4,7 +4,7 @@ setmetatable(VolumeNorm, {__index = HiveBaseModule})
 
 VolumeNorm.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    local vf = require("VolumeFilter")();
+    local vf = LoadModule("VolumeFilter")
 	this.vf = vf
     setmetatable(this, {__index=VolumeNorm})
     return this

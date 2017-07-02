@@ -1,7 +1,7 @@
 
 print('load STL')
 
-local stl = require("StlLoader")()
+local stl = LoadModule("StlLoader")
 stl:Load('invalid.stl')
 
 local mesh = stl:MeshData()

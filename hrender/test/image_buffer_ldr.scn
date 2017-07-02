@@ -1,5 +1,5 @@
 
-local loader = require("ObjLoader")
+local loader = LoadModule("ObjLoader")
 
 print('Render Obj')
 local camera = Camera()
@@ -23,7 +23,7 @@ model:SetShader('normal.frag')
 
 model:Create(meshdata)
 
-local analy = require("Analyzer").PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(meshdata)
 print(analy:MinX())
 print(analy:MaxX())

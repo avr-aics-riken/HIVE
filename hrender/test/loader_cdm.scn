@@ -1,7 +1,7 @@
 
 print('load CDM')
 
-local cdm = require("CdmLoader")()
+local cdm = LoadModule("CdmLoader")
 
 -- @todo { Add `step` parameter } 
 cdm:Load('cdm_sample.dfi')

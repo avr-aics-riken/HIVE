@@ -11,7 +11,7 @@ camera:LookAt(
 	60
 )
 
-local obj = require("ObjLoader")()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 local model = PolygonModel()
 local meshdata = obj:MeshData()
@@ -38,7 +38,7 @@ local json = [[{
 metabin:Create(json, imageBuffer, imageBufferSize)
 
 -- send through websockt
-local network = require("Network").Connection()
+local network = LoadModule("Network").Connection()
 network:Connect('ws://localhost:8082/v1/')
 network:SendBinary(metabin:BinaryBuffer(), metabin:BinaryBufferSize())
 network:Close()
