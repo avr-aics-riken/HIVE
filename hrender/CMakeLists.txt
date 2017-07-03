@@ -314,16 +314,18 @@ IF (NOT BUILD_SHARED_LIBS)
 
     IF(HIVE_BUILD_WITH_MPI)
       SET(CDMLIB_LIBS
-        CDMmpi TPmpi ${NETCDF_LIBS}
+        CDMmpi TPmpi CPMmpi ${NETCDF_LIBS}
       )
     ELSE()
       SET(CDMLIB_LIBS
-        CDM TP ${NETCDF_LIBS}
+        CDM TP CPM ${NETCDF_LIBS}
       )
     ENDIF()
 
     include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/include)
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/CPMlib/include)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CDMlib/lib)
+    link_directories(${CMAKE_SOURCE_DIR}/third_party/local/CPMlib/lib)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/lib)
 
@@ -348,9 +350,15 @@ IF (NOT BUILD_SHARED_LIBS)
       ../lib/Loader/BcmLoader/BcmLoader.cpp
     )
 
-    SET(BCMTOOLS_LIBS
-      BCM POLYmpi TPmpi
-    )
+    IF(HIVE_BUILD_WITH_MPI)
+      SET(BCMTOOLS_LIBS
+        BCMmpi POLYmpi TPmpi
+      )
+    ELSE()
+      SET(BCMTOOLS_LIBS
+        BCM POLY TP
+      )
+    ENDIF()
 
     include_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/include)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/BCMTools/lib)
@@ -367,9 +375,15 @@ IF (NOT BUILD_SHARED_LIBS)
     SET(HDMLIB_SOURCES
       ../lib/Loader/HdmLoader/HdmLoader.cpp
     )
-    SET(HDMLIB_LIBS
-      HDM BCM TPmpi
-    )
+    IF(HIVE_BUILD_WITH_MPI)
+      SET(HDMLIB_LIBS
+        HDMmpi BCMmpi TPmpi
+      )
+    ELSE()
+      SET(HDMLIB_LIBS
+        HDM BCM TP
+      )
+    ENDIF()
 
     include_directories(${CMAKE_SOURCE_DIR}/third_party/local/Polylib/include)
     include_directories(${CMAKE_SOURCE_DIR}/third_party/local/HDMlib/include)
@@ -387,9 +401,15 @@ IF (NOT BUILD_SHARED_LIBS)
       ../lib/Saver/PdmSaver/PdmSaver.cpp
     )
 
-    SET(PDMLIB_LIBS
-      PDM TPmpi fpzip zoltan z
-    )
+    IF(HIVE_BUILD_WITH_MPI)
+      SET(PDMLIB_LIBS
+        PDM TPmpi fpzip zoltan z
+      )
+    ELSE()
+      SET(PDMLIB_LIBS
+        PDM TP fpzip zoltan z
+      )
+    ENDIF()
 
     include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/include)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/lib)
@@ -405,9 +425,15 @@ IF (NOT BUILD_SHARED_LIBS)
     ../lib/Loader/UdmLoader/UdmLoader.cpp
     )
 
-    SET(UDMLIB_LIBS
-      udm TPmpi zoltan cgns
-    )
+    IF(HIVE_BUILD_WITH_MPI)
+      SET(UDMLIB_LIBS
+        UDMmpi TPmpi zoltan cgns
+      )
+    ELSE()
+      SET(UDMLIB_LIBS
+        UDM TP zoltan cgns
+      )
+    ENDIF()
 
     include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/Polylib/include)
     include_directories(${PROJECT_SOURCE_DIR}/../third_party/local/UDMlib/include)
@@ -435,9 +461,15 @@ IF (NOT BUILD_SHARED_LIBS)
     ../lib/Util/TpUtil/TpUtil.cpp
     )
 
-    SET(TPLIB_LIBS
-      TPmpi
-    )
+    IF(HIVE_BUILD_WITH_MPI)
+      SET(TPLIB_LIBS
+        TPmpi
+      )
+    ELSE()
+      SET(TPLIB_LIBS
+        TP
+      )
+    ENDIF()
 
     include_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/include)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib)
