@@ -19,15 +19,9 @@ add_definitions(-DHIVE_WITH_CDMLIB)
 
   IF(HIVE_BUILD_WITH_MPI)
     SET(CDMLIB_LIBS
-      CDMmpi TPmpi ${NETCDF_LIBS}
-    )
-    SET(CDMLIB_LIBS
       CDMmpi TPmpi CPMmpi ${NETCDF_LIBS}
     )
   ELSE()
-    SET(CDMLIB_LIBS
-      CDM TP ${NETCDF_LIBS}
-    )
     SET(CDMLIB_LIBS
       CDM TP CPM ${NETCDF_LIBS}
     )
