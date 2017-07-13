@@ -297,16 +297,16 @@ function build_cpmlib {
 	cd ${topdir}
 }
 
-#clean_install_dir
-#build_netcdf
-#build_tp
+clean_install_dir
+build_netcdf
+build_tp
 build_cpmlib
 build_cdmlib
-#build_polylib
-#build_bcmtools
-#build_hdmlib
+build_polylib
+build_bcmtools
+build_hdmlib
 build_pdmlib
-#build_udmlib
-#build_compositor
-#build_pmlib
-#build_nanomsg
+build_udmlib
+build_compositor
+build_pmlib
+build_nanomsg
