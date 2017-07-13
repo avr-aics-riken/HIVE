@@ -403,7 +403,7 @@ IF (NOT BUILD_SHARED_LIBS)
 
     IF(HIVE_BUILD_WITH_MPI)
       SET(PDMLIB_LIBS
-        PDM TPmpi fpzip zoltan z
+        PDMmpi TPmpi fpzip zoltan z
       )
     ELSE()
       SET(PDMLIB_LIBS
