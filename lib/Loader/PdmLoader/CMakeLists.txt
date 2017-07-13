@@ -7,9 +7,15 @@ add_definitions(-DHIVE_WITH_PDMLIB)
     ../../Saver/PdmSaver/PdmSaver.cpp
   )
 
-  SET(PDMLIB_LIBS
-    PDM TPmpi fpzip zoltan z
-  )
+  IF(HIVE_BUILD_WITH_MPI)
+    SET(PDMLIB_LIBS
+      PDMmpi TPmpi fpzip zoltan z
+    )
+  ELSE()
+    SET(PDMLIB_LIBS
+      PDM TP fpzip zoltan z
+    )
+  ENDIF()
 
   include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/include)
   link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PDMlib/lib)
