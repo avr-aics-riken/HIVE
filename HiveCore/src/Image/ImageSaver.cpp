@@ -181,7 +181,29 @@ public:
             path += ".jpg";
         }
         
-        if (ext == "png" || ext == "PNG")
+        int format = 1; // default jpg
+        if (ext == "png") {
+            format = ImageSaver::PNG;
+        } else if (ext == "tga") {
+            format = ImageSaver::TGA;
+        } else if (ext == "exr") {
+            format = ImageSaver::EXR;
+        } else if (ext == "hdr") {
+            format = ImageSaver::HDR;
+        }
+        
+        // convert float <==> byte buffers
+        if (format == ImageSaver::JPG || format == ImageSaver::TGA || format == ImageSaver::PNG)
+        {
+            if (data->Format() == BufferImageData::RGBA32F) {
+                data = convertRGBA32FToRGBA8(data);
+            }
+            if (data->Format() == BufferImageData::R32F) {
+                data = convertR32FToRGBA8(data);
+            }
+        }
+        
+        if (format == ImageSaver::PNG)
         {
             const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             if (data->Format() == BufferImageData::RGBA8)
@@ -196,7 +218,7 @@ public:
                 delete [] pngbuffer;
             }
         }
-        else if (ext == "jpg" || ext == "jpeg")
+        else if (format == ImageSaver::JPG)
         {
             const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             if (data->Format() == BufferImageData::RGBA8)
@@ -210,7 +232,7 @@ public:
                 free(jpgbuffer);
             }
         }
-        else if (ext == "tga")
+        else if (format == ImageSaver::TGA)
         {
             const unsigned char* srcbuffer = data->ImageBuffer()->GetBuffer();
             if (data->Format() == BufferImageData::RGBA8)
@@ -224,7 +246,7 @@ public:
                 free(tgabuffer);
             }
         }
-        else if (ext == "exr" || ext == "EXR")
+        else if (format == ImageSaver::EXR)
         {
             if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
                 const float* srcbuffer = data->FloatImageBuffer()->GetBuffer();
@@ -268,7 +290,7 @@ public:
                 }
             }
         }
-        else if (ext == "hdr")
+        else if (format == ImageSaver::HDR)
         {
             if (data->FloatImageBuffer()) { // rendererd onto HDR buffer
                 if (data->Format() == BufferImageData::RGBA32F)
