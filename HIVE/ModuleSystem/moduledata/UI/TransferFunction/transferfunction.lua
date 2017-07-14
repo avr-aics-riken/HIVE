@@ -5,7 +5,7 @@ TransferFunction.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=TransferFunction})
     this.gentex = GenTexture()
-    this.loader = LoadModule('VisioColorMapLoader')
+    this.loader = LoadModule('ColorMapLoader')
     this.prefilepath = ""
     return this
 end

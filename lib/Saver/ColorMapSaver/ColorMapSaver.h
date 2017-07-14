@@ -1,22 +1,22 @@
 /**
- * @file VisioGradientMapSaver.h
- * VisioGradientMapデータセーバー
+ * @file ColorMapSaver.h
+ * ColorMapデータローダー
  */
-#ifndef _VISIOGRADIENTMAPSAVER_H_
-#define _VISIOGRADIENTMAPSAVER_H_
+#ifndef _COLORMAPSAVER_H_
+#define _COLORMAPSAVER_H_
 
 #include "Ref.h"
 #include "Buffer.h"
 
 /**
- * VisioGradientMapデータセーバー
+ * ColorMapデータローダー
  */
-class VisioGradientMapSaver : public RefCount
+class ColorMapSaver : public RefCount
 {
 public:
-	VisioGradientMapSaver();
-	~VisioGradientMapSaver();
-
+	ColorMapSaver();
+	~ColorMapSaver();
+	
 	RefPtr<FloatBuffer> m_rgba;
 	float m_minValue;
 	float m_maxValue;
@@ -31,4 +31,4 @@ protected:
 	bool SetMaxValue(float maxValue) { m_maxValue = maxValue; return true; }
 };
 
-#endif //_VISIOGRADIENTMAPSAVER_H_
+#endif //_COLORMAPSAVER_H_

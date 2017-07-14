@@ -1,6 +1,6 @@
 /**
- * @file VisioColorMapSaver.cpp
- * Visio TranferFunction Lutデータローダー
+ * @file ColorMapSaver.cpp
+ *  TranferFunction Lutデータローダー
  */
 #include <math.h>
 #include <string>
@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "VisioColorMapSaver.h"
+#include "ColorMapSaver.h"
 #include "Buffer.h"
 
 namespace {
@@ -22,17 +22,17 @@ namespace {
 }
 
 /// コンストラクタ
-VisioColorMapSaver::VisioColorMapSaver()
+ColorMapSaver::ColorMapSaver()
 {
     m_rgba = new FloatBuffer();
     m_rgba->Create(256 * 4);
 }
 
 /// デストラクタ
-VisioColorMapSaver::~VisioColorMapSaver(){};
+ColorMapSaver::~ColorMapSaver(){};
 
 /// メンバクリア
-void VisioColorMapSaver::Clear()
+void ColorMapSaver::Clear()
 {
     m_rgba = new FloatBuffer();
     m_rgba->Create(256 * 4);
@@ -44,7 +44,7 @@ void VisioColorMapSaver::Clear()
  * @retval true 成功
  * @retval false 失敗
  */
-bool VisioColorMapSaver::Save(const char* filename)
+bool ColorMapSaver::Save(const char* filename)
 {
     std::ofstream ofs(filename, std::ios::out | std::ios::trunc);
     if (ofs.good() && RGBASize() == 256 * 4) {
@@ -62,12 +62,12 @@ bool VisioColorMapSaver::Save(const char* filename)
 	return false;
 }
 
-int VisioColorMapSaver::RGBASize() const
+int ColorMapSaver::RGBASize() const
 {
     return m_rgba->GetNum();
 }
 
-bool VisioColorMapSaver::SetRGBAValue(int pos, float value)
+bool ColorMapSaver::SetRGBAValue(int pos, float value)
 {
     if (pos < RGBASize()) {
         m_rgba->GetBuffer()[pos] = value;

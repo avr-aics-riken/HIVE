@@ -13,9 +13,9 @@ include_directories(${INCLUDES})
 
 # Source files
 set(SOURCES
-	VisioGradientMapSaver.cpp
+	GradientMapSaver.cpp
 	LuaEntry.cpp
 )
-add_library(VisioGradientMapSaver ${HIVE_LIBRARY_TYPE} ${SOURCES})
-target_link_libraries(VisioGradientMapSaver hiveCore)
-set_target_properties(VisioGradientMapSaver PROPERTIES PREFIX "")
+add_library(GradientMapSaver ${HIVE_LIBRARY_TYPE} ${SOURCES})
+target_link_libraries(GradientMapSaver hiveCore)
+set_target_properties(GradientMapSaver PROPERTIES PREFIX "")

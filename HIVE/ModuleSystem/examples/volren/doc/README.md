@@ -37,7 +37,7 @@
 
 ### Transfer Function
 TransferFunctionノードにはVolume LoaderからVolumeDataを接続する. 
-また，filepathにlutファイルを指定することでTransfer Functionをインポートすることができる．lutファイルは後述するSaveVisioColorMapノードで保存したものや，Visioからエクスポートしたものを用いることができる．  
+また，filepathにlutファイルを指定することでTransfer Functionをインポートすることができる．lutファイルは後述するSaveColorMapノードで保存したものや，Visioからエクスポートしたものを用いることができる．  
 TransferFunctionノードからはImageをtf_texに, MinとMaxをtf_min, tf_maxのUniform変数に接続して使用する.   
 ![TF-Node](img/TFNode.png)   
 Transfer Functionではボリュームの濃度が0から1に正規化され, その値で色テーブルを参照し, 色をつける. 
@@ -46,7 +46,7 @@ Transfer Functionではボリュームの濃度が0から1に正規化され, �
 橙色のヒストグラムはボリュームのデータにおいて, 同じ値が多い部分を表している. 
 ヒストグラムを参考に, データが多い部分のアルファ値を低くすると, 特徴を抽出することができる.   
 ![TF-alpha](img/tf_alpha.png)  
-SaveVisioColorMapノードを以下のように繋ぐことで，設定したTransfer Functionをlutファイルとしてエクスポートすることができる．エクスポートしたファイルはMosuleSystemやVisioで読み込むことができる．  
+SaveColorMapノードを以下のように繋ぐことで，設定したTransfer Functionをlutファイルとしてエクスポートすることができる．エクスポートしたファイルはMosuleSystemやVisioで読み込むことができる．  
 ![saveColorMap](img/saveColorMap.png)  
 関連するUniform変数には次のものがある．
 - Sampler2D tf_tex  
@@ -69,7 +69,7 @@ Gradient Mapではボリュームの濃度の勾配の大きさによって, 色
 ![GradientMap](img/gradMapMax.png)  ![GradientMap-alpha](img/gradMapMin.png)  
 右側の画像では勾配が小さい部分の不透明度を小さくすることで, 勾配が大きい部分を目立たせた.   
 
-SaveVisioGradientMapノードを以下のように繋ぐことで，設定したGradient Mapをlutファイルとしてエクスポートすることができる．エクスポートしたファイルはMosuleSystemやVisioで読み込むことができる．  
+SaveGradientMapノードを以下のように繋ぐことで，設定したGradient Mapをlutファイルとしてエクスポートすることができる．エクスポートしたファイルはMosuleSystemやVisioで読み込むことができる．  
 ![saveGradientMap](img/saveGradientMap.png)  
 
 関連するUniform変数には次のものがある．

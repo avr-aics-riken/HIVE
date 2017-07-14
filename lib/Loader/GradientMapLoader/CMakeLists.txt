@@ -13,9 +13,9 @@ include_directories(${INCLUDES})
 
 # Source files
 set(SOURCES
-    VisioGradientMapLoader.cpp
+    GradientMapLoader.cpp
     LuaEntry.cpp
 )
-add_library(VisioGradientMapLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
-target_link_libraries(VisioGradientMapLoader hiveCore)
-set_target_properties(VisioGradientMapLoader PROPERTIES PREFIX "")
+add_library(GradientMapLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
+target_link_libraries(GradientMapLoader hiveCore)
+set_target_properties(GradientMapLoader PROPERTIES PREFIX "")

@@ -1,14 +1,14 @@
-SaveVisioGradientMap = {}
-setmetatable(SaveVisioGradientMap, {__index = HiveBaseModule})
+SaveGradientMap = {}
+setmetatable(SaveGradientMap, {__index = HiveBaseModule})
 
-SaveVisioGradientMap.new = function (varname)
+SaveGradientMap.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    setmetatable(this, {__index=SaveVisioGradientMap})
-    this.saver = LoadModule("VisioGradientMapSaver")
+    setmetatable(this, {__index=SaveGradientMap})
+    this.saver = LoadModule("GradientMapSaver")
     return this
 end
 
-function SaveVisioGradientMap:executeSave()
+function SaveGradientMap:executeSave()
     local v = self.value
 
     if v.rgba == nil or #v.rgba ~= (256 * 4) then
@@ -31,7 +31,7 @@ function SaveVisioGradientMap:executeSave()
     end
 end
 
-function SaveVisioGradientMap:Do()
+function SaveGradientMap:Do()
     self:UpdateValue()
 
     if mpiMode() == true then

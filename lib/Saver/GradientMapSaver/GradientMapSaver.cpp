@@ -1,6 +1,6 @@
 /**
- * @file VisioGradientMapSaver.cpp
- * Visio Gradient map Lutデータセーバー
+ * @file GradientMapSaver.cpp
+ *  Gradient map Lutデータセーバー
  */
 #include <math.h>
 #include <string>
@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "VisioGradientMapSaver.h"
+#include "GradientMapSaver.h"
 #include "Buffer.h"
 
 namespace {
@@ -22,17 +22,17 @@ namespace {
 }
 
 /// コンストラクタ
-VisioGradientMapSaver::VisioGradientMapSaver()
+GradientMapSaver::GradientMapSaver()
 {
     m_rgba = new FloatBuffer();
     m_rgba->Create(256 * 4);
 }
 
 /// デストラクタ
-VisioGradientMapSaver::~VisioGradientMapSaver(){};
+GradientMapSaver::~GradientMapSaver(){};
 
 /// メンバクリア
-void VisioGradientMapSaver::Clear()
+void GradientMapSaver::Clear()
 {
     m_rgba = new FloatBuffer();
     m_rgba->Create(256 * 4);
@@ -44,7 +44,7 @@ void VisioGradientMapSaver::Clear()
  * @retval true 成功
  * @retval false 失敗
  */
-bool VisioGradientMapSaver::Save(const char* filename)
+bool GradientMapSaver::Save(const char* filename)
 {
     std::ofstream ofs(filename, std::ios::out | std::ios::trunc);
     if (ofs.good() && RGBASize() == 256 * 4) {
@@ -62,12 +62,12 @@ bool VisioGradientMapSaver::Save(const char* filename)
 	return false;
 }
 
-int VisioGradientMapSaver::RGBASize() const
+int GradientMapSaver::RGBASize() const
 {
     return m_rgba->GetNum();
 }
 
-bool VisioGradientMapSaver::SetRGBAValue(int pos, float value)
+bool GradientMapSaver::SetRGBAValue(int pos, float value)
 {
     if (pos < RGBASize()) {
         m_rgba->GetBuffer()[pos] = value;

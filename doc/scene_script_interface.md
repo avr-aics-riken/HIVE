@@ -1062,12 +1062,12 @@ PDM 形式で点群データを保存する. hrender が PDMlib とリンクさ�
     saver:SetPointData(ball)
     saver:Save('output') -- ベースファイル名を指定.
 
-## VisioColorMapSaver
+## ColorMapSaver
 
 lut 形式でColor Mapデータを保存する．保存されたデータはTransfer Functionノードや，Visioでインポートして使用することができる．
 
      -- minValue, maxValue, rgba
-    local saver = require("VisioColorMapSaver")()
+    local saver = require("ColorMapSaver")()
     saver:SetMinValue(minValue)
     saver:SetMaxValue(maxValue)
     for i = 1, 256 * 4 do
@@ -1075,12 +1075,12 @@ lut 形式でColor Mapデータを保存する．保存されたデータはTran
     end
     saver:Save('output.lut')
 
-## VisioGradientMapSaver
+## GradientMapSaver
 
 lut 形式でGradientMapデータを保存する．保存されたデータはGradient Mapノードや，Visioでインポートして使用することができる．
 
     -- minValue, maxValue, rgba
-    local saver = require("VisioGradientMapSaver")()
+    local saver = require("GradientMapSaver")()
     saver:SetMinValue(minValue)
     saver:SetMaxValue(maxValue)
     for i = 1, 256 * 4 do

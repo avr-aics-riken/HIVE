@@ -1,8 +1,8 @@
 {
-	"name": "SaveVisioColorMap",
-	"funcname": "SaveVisioColorMap",
-	"info":"VisioColorMapファイルを出力するためのノード",
-	"customfuncfile":"savevisiocolormap.lua",
+	"name": "SaveGradientMap",
+	"funcname": "SaveGradientMap",
+	"info": "GradientMapファイルを出力するためのノード",
+	"customfuncfile":"savegradientmap.lua",
     "input": [
 		{"name": "filepath",  "type": "string", "value": "", "meta": "filebrowser"},
         {"name": "rgba",  "type": "floatarray", "value": []},

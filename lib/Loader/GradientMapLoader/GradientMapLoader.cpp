@@ -1,6 +1,6 @@
 /**
- * @file VisioColorMapLoader.cpp
- * Visio TranferFunction Lutデータローダー
+ * @file GradientMapLoader.cpp
+ *  GradientMap Lutデータローダー
  */
 #include <cstdio>
 #include <cstdlib>
@@ -11,24 +11,24 @@
 #include <vector>
 
 #include "Buffer.h"
-#include "VisioColorMapLoader.h"
+#include "GradientMapLoader.h"
 
 /// コンストラクタ
-VisioColorMapLoader::VisioColorMapLoader() { m_rgba = new FloatBuffer(); }
+GradientMapLoader::GradientMapLoader() { m_rgba = new FloatBuffer(); }
 
 /// デストラクタ
-VisioColorMapLoader::~VisioColorMapLoader(){};
+GradientMapLoader::~GradientMapLoader(){};
 
 /// メンバクリア
-void VisioColorMapLoader::Clear() { m_rgba = new FloatBuffer(); }
+void GradientMapLoader::Clear() { m_rgba = new FloatBuffer(); }
 
 /**
- * STLデータのロード
+ * GradientMapデータのロード
  * @param filename ファイルパス
  * @retval true 成功
  * @retval false 失敗
  */
-bool VisioColorMapLoader::Load(const char *filename)
+bool GradientMapLoader::Load(const char *filename)
 {
 	Clear();
 
@@ -71,13 +71,24 @@ bool VisioColorMapLoader::Load(const char *filename)
 	return false;
 }
 
-int VisioColorMapLoader::RGBASize() const { return m_rgba->GetNum(); }
+int GradientMapLoader::RGBASize() const { return m_rgba->GetNum(); }
 
-float VisioColorMapLoader::RGBAValue(int pos) const
+float GradientMapLoader::RGBAValue(int pos) const
 {
 	if (pos < RGBASize())
 	{
 		return m_rgba->GetBuffer()[pos];
+	}
+	return 0.0f;
+}
+
+int GradientMapLoader::GradientSize() const { return 256; }
+
+float GradientMapLoader::GradientValue(int pos) const
+{
+	if (pos < GradientSize())
+	{
+		return m_rgba->GetBuffer()[4 * pos + 3];
 	}
 	return 0.0f;
 }

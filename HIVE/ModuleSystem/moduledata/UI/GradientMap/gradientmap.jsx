@@ -48,7 +48,7 @@ class GradientMap extends React.Component {
         ];
         this.viewTypes = [
             {value: "0", text: "Logscale"},
-            {value: "1", text: "Liner"},
+            {value: "1", text: "Linear"},
         ];
 
         // methods

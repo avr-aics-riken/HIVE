@@ -1,21 +1,21 @@
 /**
- * @file VisioColorMapLoader.h
- * VisioColorMapデータローダー
+ * @file GradientMapLoader.h
+ * GradientMapデータローダー
  */
-#ifndef _VISIOCOLORMAPLOADER_H_
-#define _VISIOCOLORMAPLOADER_H_
+#ifndef _GRADIENTMAPLOADER_H_
+#define _GRADIENTMAPLOADER_H_
 
 #include "Buffer.h"
 #include "Ref.h"
 
 /**
- * VisioColorMapデータローダー
+ * GradientMapデータローダー
  */
-class VisioColorMapLoader : public RefCount
+class GradientMapLoader : public RefCount
 {
   public:
-	VisioColorMapLoader();
-	~VisioColorMapLoader();
+	GradientMapLoader();
+	~GradientMapLoader();
 	void Clear();
 	RefPtr<FloatBuffer> m_rgba;
 	float m_minValue;
@@ -26,8 +26,10 @@ class VisioColorMapLoader : public RefCount
 	FloatBuffer *RGBAData() { return m_rgba; }
 	int RGBASize() const;
 	float RGBAValue(int pos) const;
+	int GradientSize() const;
+	float GradientValue(int pos) const;
 	float MinValue() const { return m_minValue; }
 	float MaxValue() const { return m_maxValue; }
 };
 
-#endif //_VISIOCOLORMAPLOADER_H_
+#endif //_GRADIENTMAPLOADER_H_

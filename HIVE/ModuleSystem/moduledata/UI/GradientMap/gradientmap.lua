@@ -5,7 +5,7 @@ GradientMap.new = function (varname)
     local this = HiveBaseModule.new(varname)
     setmetatable(this, {__index=GradientMap})
     this.gentex = GenTexture()
-    this.loader = LoadModule('VisioGradientMapLoader')
+    this.loader = LoadModule('GradientMapLoader')
     this.prefilepath = ""
     return this
 end

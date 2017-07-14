@@ -13,10 +13,10 @@ include_directories(${INCLUDES})
 
 # Source files
 set(SOURCES
-	VisioColorMapLoader.cpp
+	ColorMapLoader.cpp
 	LuaEntry.cpp
 )
-add_library(VisioColorMapLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
-target_link_libraries(VisioColorMapLoader hiveCore)
-set_target_properties(VisioColorMapLoader PROPERTIES PREFIX "")
+add_library(ColorMapLoader ${HIVE_LIBRARY_TYPE} ${SOURCES})
+target_link_libraries(ColorMapLoader hiveCore)
+set_target_properties(ColorMapLoader PROPERTIES PREFIX "")
  

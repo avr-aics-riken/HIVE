@@ -1,14 +1,14 @@
-SaveVisioColorMap = {}
-setmetatable(SaveVisioColorMap, {__index = HiveBaseModule})
+SaveColorMap = {}
+setmetatable(SaveColorMap, {__index = HiveBaseModule})
 
-SaveVisioColorMap.new = function (varname)
+SaveColorMap.new = function (varname)
     local this = HiveBaseModule.new(varname)
-    setmetatable(this, {__index=SaveVisioColorMap})
-    this.saver = LoadModule("VisioColorMapSaver")
+    setmetatable(this, {__index=SaveColorMap})
+    this.saver = LoadModule("ColorMapSaver")
     return this
 end
 
-function SaveVisioColorMap:executeSave()
+function SaveColorMap:executeSave()
     local v = self.value
     
     if v.rgba == nil or #v.rgba ~= (256 * 4) then
@@ -31,7 +31,7 @@ function SaveVisioColorMap:executeSave()
     end
 end
 
-function SaveVisioColorMap:Do()
+function SaveColorMap:Do()
     self:UpdateValue()
     
     if mpiMode() == true then
