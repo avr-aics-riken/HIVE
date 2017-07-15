@@ -180,8 +180,8 @@ set(INCLUDES
   ${PROJECT_SOURCE_DIR}/../lib/Loader/SphLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/StlLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/UdmLoader
-  ${PROJECT_SOURCE_DIR}/../lib/Loader/VisioColorMapLoader
-  ${PROJECT_SOURCE_DIR}/../lib/Loader/VisioGradientMapLoader
+  ${PROJECT_SOURCE_DIR}/../lib/Loader/ColorMapLoader
+  ${PROJECT_SOURCE_DIR}/../lib/Loader/GradientMapLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/VolLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/VtkLoader
   ${PROJECT_SOURCE_DIR}/../lib/Network
@@ -189,8 +189,8 @@ set(INCLUDES
   ${PROJECT_SOURCE_DIR}/../lib/Saver/PdmSaver
   ${PROJECT_SOURCE_DIR}/../lib/Saver/RawVolumeSaver
   ${PROJECT_SOURCE_DIR}/../lib/Saver/SphSaver
-  ${PROJECT_SOURCE_DIR}/../lib/Saver/VisioColorMapSaver
-  ${PROJECT_SOURCE_DIR}/../lib/Saver/VisioGradientMapSaver
+  ${PROJECT_SOURCE_DIR}/../lib/Saver/ColorMapSaver
+  ${PROJECT_SOURCE_DIR}/../lib/Saver/GradientMapSaver
   ${PROJECT_SOURCE_DIR}/../lib/Util/TpUtil
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
@@ -279,8 +279,8 @@ IF (NOT BUILD_SHARED_LIBS)
     ../lib/Loader/RawVolumeLoader/RawVolumeLoader.cpp
     ../lib/Loader/SphLoader/SphLoader.cpp
     ../lib/Loader/StlLoader/StlLoader.cpp
-    ../lib/Loader/VisioColorMapLoader/VisioColorMapLoader.cpp
-    ../lib/Loader/VisioGradientMapLoader/VisioGradientMapLoader.cpp
+    ../lib/Loader/ColorMapLoader/ColorMapLoader.cpp
+    ../lib/Loader/GradientMapLoader/GradientMapLoader.cpp
     ../lib/Loader/VolLoader/VolLoader.cpp
     ../lib/Loader/VtkLoader/tiny_vtkxml.cpp
     ../lib/Loader/VtkLoader/VtkLoader.cpp
@@ -290,8 +290,8 @@ IF (NOT BUILD_SHARED_LIBS)
     ../lib/Network/MetaBinary.cpp
     ../lib/Saver/RawVolumeSaver/RawVolumeSaver.cpp
     ../lib/Saver/SphSaver/SphSaver.cpp
-    ../lib/Saver/VisioColorMapSaver/VisioColorMapSaver.cpp
-    ../lib/Saver/VisioGradientMapSaver/VisioGradientMapSaver.cpp
+    ../lib/Saver/ColorMapSaver/ColorMapSaver.cpp
+    ../lib/Saver/GradientMapSaver/GradientMapSaver.cpp
   )
 
   IF(HIVE_BUILD_WITH_CDMLIB)
