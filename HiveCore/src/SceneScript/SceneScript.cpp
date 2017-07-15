@@ -95,10 +95,10 @@
     #include "SolidAttribToVolume_Lua.h"
     #include "SolidDfToVolume_Lua.h"
     #include "SolidToVolume_Lua.h"
-    #include "VisioColorMapLoader_Lua.h"
-    #include "VisioColorMapSaver_Lua.h"
-    #include "VisioGradientMapLoader_Lua.h"
-    #include "VisioGradientMapSaver_Lua.h"
+    #include "ColorMapLoader_Lua.h"
+    #include "ColorMapSaver_Lua.h"
+    #include "GradientMapLoader_Lua.h"
+    #include "GradientMapSaver_Lua.h"
 #endif
 
 void RegisterSceneClass(lua_State* L)
