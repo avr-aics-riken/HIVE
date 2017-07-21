@@ -1,0 +1,22 @@
+{
+	"name": "LoadCDM",
+	"funcname": "LoadCDM",
+	"info":"CDMファイルを読み込むためのノード",
+	"customfuncfile":"cdmloader.lua",
+	"input": [
+		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
+        {"name": "time", "type": "float", "value": 0},
+        {"name": "migration",  "type": "bool", "value": false },
+        {"name": "division", "type": "vec3", "value": [1, 1, 1]}
+	],
+	"output": [
+		{"name": "VolumeData", "type": "BufferVolumeData"},
+        {"name": "Size",  "type": "vec3"},
+	    {"name": "Component",  "type": "float"},
+	    {"name": "GlobalDiv",  "type": "vec3"},
+		{"name": "GlobalVoxel",  "type": "vec3"},
+		{"name": "GlobalOffset",  "type": "vec3"},
+		{"name": "GlobalRegion",  "type": "vec3"},
+		{"name": "NumTimeSteps",  "type": "int"}
+	]
+}

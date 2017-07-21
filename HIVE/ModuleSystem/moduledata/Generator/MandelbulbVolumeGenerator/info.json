@@ -1,0 +1,15 @@
+{
+	"name": "MandelbulbVolumeGenerator",
+	"funcname": "MandelbulbVolumeGenerator",
+	"info":"Mandelbulbを生成するためのノード",
+	"customfuncfile":"generator.lua",
+    "input": [
+		{"name": "size", "type": "int", "value": 30},
+		{"name": "originX", "type": "int", "value": 0},
+		{"name": "originY", "type": "int", "value": 0},
+		{"name": "originZ", "type": "int", "value": 0}
+	],
+	"output": [
+		{"name": "VolumeData",  "type": "BufferVolumeData"}
+	]
+}

@@ -11,19 +11,19 @@ camera:LookAt(
 	60
 )
 
-local obj = OBJLoader()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
 local meshdata = obj:MeshData()
-model:Create(meshdata)
 model:SetShader('extra.frag')
+model:Create(meshdata)
 
 local buf = obj:ExtraData()
 print('EXT buf', buf)
 model:AddExtraBuffer("testvec3", buf)
 
-local analy = PolygonAnalyzer()
+--[[local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
@@ -31,8 +31,6 @@ print(analy:MinY())
 print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
-
+]]
 
 render {camera, model}
-
-

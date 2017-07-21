@@ -1,0 +1,21 @@
+{
+    "name": "ParallelCoordCluster",
+    "funcname": "ParallelCoordCluster",
+    "info":"ParallelCoordinateをつくるノードCluster版",
+    "customfuncfile":"parallelcoordcluster.lua",
+    "uifile":[
+        "glutil.js",
+        "parallel.js",
+        "parallelcoordcluster.jsx"
+    ],
+    "input": [
+        {"name": "volume", "type": "BufferVolumeData"},
+        {"name": "rgba", "type": "floatarray", "value": [], "visible": false},
+        {"name": "axisjson", "type": "string", "value": ""},
+        {"name": "plotX", "type": "float", "value": -1, "visible": false},
+        {"name": "plotY", "type": "float", "value": -1, "visible": false}
+    ],
+    "output": [
+        {"name": "select", "type": "BufferImageData"}
+    ]
+}

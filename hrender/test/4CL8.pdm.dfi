@@ -1,8 +1,10 @@
 
 Header{
-  Version = "0.1"
+  Version = "0.2"
   Endian = "little"
-  BaseFileName = "4CL8.pdm"
+  Prefix = "4CL8.pdm"
+  DirectoryPath = "pdm"
+  FieldFilenameFormat = "rank_step"
   NumContainer = 1
 }
 

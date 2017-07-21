@@ -4,25 +4,48 @@
 (function (window) {
 	'use strict';
 	
-	function HiveConnect() {
-		var url = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
-		this.url = url;
+	function HiveConnect(opt) { //wsUrl, ipcAddress) {
+		var wsUrl, ipcAddress, openglMode;
+		
+		if (opt) {
+			if (opt.url) {
+				wsUrl = opt.url;
+			}
+			if (opt.ipc) {
+				ipcAddress = opt.ipc;				
+			}
+			if (opt.opengl) {
+				openglMode = opt.opengl;
+			}
+		}
+		if (!wsUrl) {
+			wsUrl = location.host === '' ? "ws://localhost:8080/" : "ws://" + location.host;
+		}
+		this.url = wsUrl;
+		this.ipcAddress = ipcAddress;
+		this.openGLMode = openglMode;
 		this.messageCount = 0;
 		this.callbacks = {};
+		this.methodFuncs = {};
+		this.myid = -1;
+		this.rendererId = -1;
 		this.reconnectTimeout = 2000;
 		this.reconnect();
-		this.methodFuncs = {};
+	}
+	
+	HiveConnect.prototype.setRendererId = function (id) {
+		this.rendererId = parseInt(id);		
 	}
 	
 	// public:
 	HiveConnect.prototype.masterResult = function (result) {
 		var id = 0; // TODO
-		this.ws.send(JSON.stringify({jsonrpc: "2.0", result: result, id: id, to: 'master'}));
+		this.ws.send(JSON.stringify({jsonrpc: "2.0", result: result, id: id, to: 'master', from: this.myid}));
 	};
 
 	HiveConnect.prototype.rendererResult = function (result) {
 		var id = 0; // TODO
-		this.ws.send(JSON.stringify({jsonrpc: "2.0", result: result, id: id, to: 'renderer'}));
+		this.ws.send(JSON.stringify({jsonrpc: "2.0", result: result, id: id, to: this.rendererId, from: this.myid}));
 	};
 
 	HiveConnect.prototype.masterMethod = function (method, param, callback) {
@@ -30,7 +53,7 @@
 		if (callback) {
 			this.callbacks[this.messageCount] = callback;
 		}
-		this.ws.send(JSON.stringify({jsonrpc: "2.0", method: method, param: param, id: this.messageCount, to: 'master'}));
+		this.ws.send(JSON.stringify({jsonrpc: "2.0", method: method, param: param, id: this.messageCount, to: 'master', from: this.myid}));
 	};
 
 	HiveConnect.prototype.rendererMethod = function (method, param, callback) {
@@ -38,7 +61,7 @@
 		if (callback) {
 			this.callbacks[this.messageCount] = callback;
 		}
-		this.ws.send(JSON.stringify({jsonrpc: "2.0", method: method, param: param, id: this.messageCount, to: 'renderer'}));
+		this.ws.send(JSON.stringify({jsonrpc: "2.0", method: method, param: param, id: this.messageCount, to: this.rendererId, from: this.myid}));
 	};
 	
 	HiveConnect.prototype.method = function (methodname, func) {
@@ -50,12 +73,16 @@
 	HiveConnect.prototype.reconnect = function () {
 		var ws  = new WebSocket(this.url);
 		this.ws = ws;
+		this.myid = -1;
 		console.log('[wsConnect] Connecting:', this.url);
 
 		ws.addEventListener('open', (function (self) {
 			return function (event) {
 				console.log('[NETWORK] Connected.');
-				self.masterMethod('register', {mode: 'client'}); // Initial response
+				self.masterMethod('register', {mode: 'client', opengl:self.openGLMode, ipc:self.ipcAddress}, function (err, ret) {
+					console.log('Reigstered', ret);
+					self.myid = ret.id;
+				}); // Initial response
 				if (self.methodFuncs.open) {
 					self.methodFuncs.open();
 				}
@@ -85,10 +112,11 @@
 					if (data.error) {
 						//console.error('[Error] Response => ', data.error);
 						self.callbacks[data.id](data.error, null);
+						delete self.callbacks[data.id];
 					} else if (data.method) {
 						if (self.methodFuncs[data.method]) {
 							//console.log('[DEBUG] Call Method=>', data.method);
-							self.methodFuncs[data.method](data.param, null);
+							self.methodFuncs[data.method](JSON.parse(data.param), null);
 						}
 					} else if (data.result) {
 						//console.log('[DEBUG] Result => ', data.result);
@@ -99,6 +127,7 @@
 						}
 						if (self.callbacks[data.id]) {
 							self.callbacks[data.id](null, JSON.parse(data.result), data.id);
+							delete self.callbacks[data.id];
 						}
 					}
 				}

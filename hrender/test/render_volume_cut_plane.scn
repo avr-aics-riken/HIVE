@@ -15,7 +15,7 @@ function JetTransferFunctionTexture()
    -- Create 1D transfer function texture
    -- Jet color table from OSPray example
    -- r, g, b, alpha
-   local tf = 
+   local tf =
         { 0         , 0           , 0.562493 , 1.0
         , 0         , 0           , 1        , 1.0
         , 0         , 1           , 1        , 1.0
@@ -32,7 +32,7 @@ function JetTransferFunctionTexture()
 end
 
 
-local sph = SPHLoader()
+local sph = LoadModule("SphLoader")
 sph:Load('fvel_0000001470.sph')
 
 print("origin", sph:OriginX(), sph:OriginY(), sph:OriginZ())
@@ -45,7 +45,7 @@ local volumedata = sph:VolumeData()
 
 volume:Create(volumedata)
 
-local analy = VolumeAnalyzer()
+local analy = LoadModule("Analyzer").VolumeAnalyzer()
 analy:Execute(volume)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())

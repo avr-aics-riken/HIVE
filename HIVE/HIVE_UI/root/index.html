@@ -1,5 +1,6 @@
 <html>
 	<head>
+		<title>HIVE UI</title>
 		<meta name="viewport" content="width=320, height=480">
 		<link rel="stylesheet" href="css/filedlg.css" type="text/css">
 		<link rel="stylesheet" href="css/kvtoolsUI.css" type="text/css">
@@ -36,10 +37,11 @@
 		<div class="KFrame" id="part-main">
 			<div class="KFrameWindow" id="window-view">
 
-				<!--<canvas id="tmp" ></canvas>
-				<canvas id="result" ></canvas>-->
-				<div id="resultdiv"><img id="result"></div>
-
+				<!--<canvas id="tmp" ></canvas>-->
+				<div id="resultdiv">
+					<canvas id="resultcanvas" style="transform: scale(1.0,-1.0);" ></canvas>
+					<img id="result">
+				</div>
 
 				<div class="KCaption" id="viewmode">[View]</div>
 				

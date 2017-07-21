@@ -1,0 +1,17 @@
+{
+	"name": "LoadHDM",
+	"funcname": "LoadHDM",
+	"info":"HDMファイルを読み込むためのノード",
+	"customfuncfile":"hdmloader.lua",
+	"input": [
+		{"name": "cellidpath", "type": "string", "value": "cellid.bcm", "meta": "filebrowser"},
+		{"name": "datapath", "type": "string", "value": "data.bcm", "meta": "filebrowser"},
+		{"name": "fieldname", "type": "string", "value": ""},
+		{"name": "fieldtype", "type": "string", "value": ""}
+	],
+	"output": [
+		{"name": "sparsevolume", "type": "BufferSparseVolumeData"},
+        {"name": "Size",  "type": "vec3"},
+	    {"name": "Component",  "type": "float"}
+	]
+}

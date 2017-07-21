@@ -18,7 +18,14 @@
 
 
 ## clearCache()
-レンダラにキャッシュされた内部データを削除する
+レンダラにキャッシュされた内部データを削除する。
+
+また, 別途collectgarbage("collect")を呼び出すことで
+luaのGCが呼び出され,メモリ解放が行われる。
+
+## clearShaderCache(name)
+指定したシェーダをレンダラのキャッシュから削除する.
+- name - 格納されているシェーダの識別名(string)
 
 ## mpiMode()
 
@@ -28,10 +35,13 @@ MPIモードで起動しているかどうかを取得する。
 - true
 - false
 
-
 ## mpiRank()
 
 MPIモードで起動している場合、MPIのランク番号を取得する。
+
+## mpiSize()
+
+MPIモードで起動している場合、MPIのサイズを取得する。
 
 ## platform()
 レンダラが動作するプラットフォーム環境を取得する。取得可能な値は以下のいずれかの文字列。
@@ -40,7 +50,7 @@ MPIモードで起動している場合、MPIのランク番号を取得する�
 - MacOSX
 - Linux
 
-## dllExtenstion()	
+## dllExtension()	
 レンダラが動作するプラットフォームのダイナミックリンクライブラリの拡張子を取得する
 取得可能な値は以下のいずれかの文字列。
 
@@ -55,14 +65,48 @@ MPIモードで起動している場合、MPIのランク番号を取得する�
 - big - ビッグエンディアン
 
 ## screenParallelRendering(enable)
-MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。以下のいずれかの値が設定可能
+MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。N プロセスで N 領域に画面を分割してレンダリングします。
+の分割方法は自動で行われます。
+
+以下のいずれかの値が設定可能
 
 - true - 有効
 - false - 無効
  
 初期値はfalse。
 
+## getMemoryDataNames()
 
+libHiveCoreを利用するネイティブから、インメモリ経由でデータの受けられるインターフェース。格納されているデータの識別名(string)一覧(table型)を取得する。
+
+
+## getMemoryData(name)
+
+libHiveCoreを利用するネイティブから、インメモリ経由でデータの受けられるインターフェース。
+- name - 格納されているデータの識別名(string)
+
+戻り値はtable型. ```{pointer=[データのポインタ], size=[データサイズ]}```
+データ識別名が存在しない場合は```nil```を返す
+
+## setBufferData(name, bufferData)
+メモリ上にバッファデータを name をキーとして保存する。
+既に同じキーで保存されたデータがある場合は上書きされる。
+- name - 格納されるデータの識別名(string)
+
+## getBufferData(name)
+setBufferDataによってメモリ上に保存したバッファデータを、取得する。
+- name - 格納されているデータの識別名(string)
+戻り値はBufferData型
+データ識別名が存在しない場合は```nil```を返す
+
+## getBufferDataNames()
+格納されているバッファデータの識別名(string)一覧(table型)を取得する。
+
+## deleteBufferData(name)
+setBufferDataにより格納されているバッファデータを、キーを指定して削除する。
+
+## clearBufferData()
+setBufferDataにより格納されているバッファデータを、全て削除する。
 
 --------------
 
@@ -78,7 +122,8 @@ RenderObjectは以下の種類がある。
 - LineMode
 - SparseVolumeModel
 - TetraModel
-- VectorModel
+- SolidModel(多面体. PYRA_5, PENTA_6, HEXA_8 に対応. Tetra も Solid に統合予定)
+- VectorModel(Vector arrow)
 
 レンダリングし、画像を保存するには１つ以上のCameraが必要となる。
 以下は何もないシーンをレンダリングし、image.jpgに保存する例
@@ -130,6 +175,10 @@ RenderObjectは共通のインターフェースを持つ
 
 	  SetFloat(uniform_name, x)
 
+- オブジェクトのシェーダのUniform変数(int)の値を設定
+
+	  SetInt(uniform_name, x)
+
 - オブジェクトのシェーダのUniform変数(sampler2D)の値を設定
 
 	  SetTexture(uniform_name, texture)
@@ -170,6 +219,10 @@ RenderObjectは共通のインターフェースを持つ
 
       LuaTable GetFloatTable()
       
+- シェーダのUniform変数(int)の値をすべて取得
+
+      LuaTable GetIntTable()
+      
 - シェーダのUniform変数(sampler2D)の値をすべて取得
 
       LuaTable GetTextureTable()
@@ -186,9 +239,9 @@ RenderObjectは共通のインターフェースを持つ
 
       LuaTable GetVec2(string)
       
-- シェーダのUniform変数(float)の指定変数の値を取得
+- シェーダのUniform変数(int)の指定変数の値を取得
 
-      float GetFloat(string)
+      int GetInt(string)
       
 - シェーダのUniform変数(sampler2D)の指定変数の値を取得
 
@@ -249,9 +302,21 @@ RenderObjectは共通のインターフェースを持つ
   * filename ファイルパス
 
         boolean SetFilename(filename)
-    
 
 画像には tga, jpg, png, exr, hdr フォーマットを指定できる.
+    
+- 結果画像のフォーマットの設定.
+  * format フォーマット文字列
+
+        boolean SetImageBufferFormat(format)
+    
+メモリ上に画像を保存したり, メモリ上で画像処理を行うときなどに利用します.
+現在は `"RGBA8"`(BYTE) もしくは `"RGBA32F"`(FLOAT) のみ設定可能.
+デフォルトは `"RGBG32F"`.
+`SetFilename` が呼ばれた場合は, そちらの設定を優先する(ファイル拡張子で判断)
+
+サンプルシーン: `image_buffer_ldr.scn`, `image_buffer_hdr.scn`
+
 
 - 結果デプス画像のファイルパスの設定.
   * filename ファイルパス
@@ -478,10 +543,30 @@ RenderObjectは共通のインターフェースを持つ
 
         string GetShader()
 
-- tetraデータからポリゴンモデルを作成する
+- tetraデータからモデルを作成する
 
         boolean Create(BufferTetraData)
 
+
+## SolidModel
+
+Solid構造のデータをレンダリングするためのオブジェクト.
+(CGNS の TETRA_4, PYRA_5, PENTA_6, HEXA_8 相当)
+
+     local model = SolidModel()
+
+- shaderファイルを設定する
+  * shaderfile シェーダファイルパス
+
+        boolean SetShader(shaderfile)
+
+- shaderファイルを取得する
+
+        string GetShader()
+
+- solidデータからモデルを作成する
+
+        boolean Create(BufferTetraData)
 
 ## VectorModel
 
@@ -586,58 +671,61 @@ RenderObjectは共通のインターフェースを持つ
 ---------------------------------
 
 # Loader
-## OBJLoader()
+## ObjLoader
 
 Objファイルを読み込むローダークラス.
 以下はObjファイルを読み込みPolygonModelを作成し、データをセットする例
 
-    local loader = OBJLoader()
+    local loader = require("ObjLoader")()
     loader:Load('bunny.obj')
     local model = PolygonModel()
     local meshdata = loader:MeshData()
     model:Create(meshdata)
 
-## STLLoader()
+## StlLoader
 
 STLファイルを読み込むローダークラス
 以下はSTLファイルを読み込みPolygonModelを作成し、データをセットする例
 
-    local loader = STLLoader()
-    loader:Load('bunny.stl')
+    local loader = require("StlLoader")()
+    local swapEndian = false
+    loader:Load('bunny.stl', swapEndian)
     local model = PolygonModel()
     local meshdata = loader:MeshData()
     model:Create(meshdata)
 
-## SPHLoader()
+swapEndian でエンディアンを変換して読み込むかどうかを指定できます(Binary STL の場合のみ有効)
+
+## SphLoader
 
 SPHファイルを読み込むローダークラス
 STLファイルはバイナリ形式のみ. 
 ビッグエンディアン・リトルエンディアンの判定は自動で行われる.
 以下はSPHファイルを読み込みVolumeModelを作成し、データをセットする例
 
-    local loader = SPHLoader()
+    local loader = require("SphLoader")()
     loader:Load('data.sph')
     local volume = VolumeModel()
     local volumedata = loader:VolumeData()
     volume:Create(volumedata)
 
-## VOLLoader()
+## VolLoader
 
 VOLファイルを読み込むローダークラス
 以下はVOLファイルを読み込みVolumeModelを作成し、データをセットする例
 
-    local loader = VOLLoader()
+    local loader = require("VolLoader")()
     loader:Load('data.vol')
     local volume = VolumeModel()
     local volumedata = loader:VolumeData()
     volume:Create(volumedata)
 
-## RawVolumeLoader()
+## RawVolumeLoader
 
 RAW 形式のボリュームデータを読み込む. 他のボリュームツールから出力されたデータなどを読み込むときに利用する.
 (e.g. http://ospray.github.io )
 
-    local loader = RawVolumeLoader()
+    local loader = require("RawVolumeLoader")()
     -- width, height, depth, component, type
     loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
     local volume = VolumeModel()
@@ -648,13 +736,13 @@ type には現状 'float' のみ指定可能.
 
 [render_rawvolume.scn](hrender/test/render_rawvolume.scn) 参考例
 
-## PDBLoader()
+## PdbLoader
 
 PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 第二引数で bond(line) を生成するかどうかを指定する.
 デフォルトは false.
 
-    local loader = PDBLoader()
+    local loader = require("PdbLoader")()
     loader:Load('input.pdb')
     loader:Load('input.pdb', true) -- generate bond
 
@@ -663,61 +751,230 @@ PDB(Protein Data Bank)ファイルを読み込むローダークラス.
 
 [render_pdb.scn](hrender/test/render_pdb.scn) 参考例
 
-## VTKLoader()
+## VtkLoader
 
 .pvti 形式の VTK 階層一様ボリュームを読み込むローダークラス.
 第二引数で実データへのパスを設定する.
 第三引数でフィールド名を指定する.
 第四引数でデータのバイトスワップを行うかどうかを指定する.
 
-    local vtk = VTKLoader()
+    local vtk = require("VtkLoader")()
     vtk:Load('input.pvti', '/path/to/data/VTI/', 'p', true)
 
 [render_pvti.scn](hrender/test/render_pvti.scn) 参考例
 
-## CDMLoader()
+## CdmLoader
 
 CDMファイルを読み込むローダークラス. hrender が CDMlib とリンクされているときのみ利用可能.
 (一様/非一様)ボリュームプリミティブが取得可能.
 データが非一様で読み込まれるかは .dfi ファイルでの指定に従う.
 timeStepIndex には 0 からのインデックス番号を指定する(timeStep の時刻ではないことに注意. 省略可能. デフォルトは 0)
 
-    local loader = CDMLoader()
+    local loader = require("CdmLoader")()
     local timeStepIndex = 0
     local virtualCellSize = 2
     loader:Load('input.dfi', timeStepIndex)
     local volumeData = loader:VolumeData() -- volume プリミティブを取得
 
+### ロード関数
+
+    -- Mx1 ロードを行う(deprecated method)
+    -- 互換性のために残してあります.
+    Load(filename, timeStepIndex) 
+
+    -- Mx1 ロードを行う
+    LoadMx1(filename, timeStepIndex)
+
+    -- MxM ロードを行う. 
+    -- CDM データの分割数と, 実行中の MPI ランク数が同じである必要があります.
+    LoadMxM(filename, timeStepIndex) 
+                                      
+    -- MxN ロードを行う. 
+    -- divX, divY, divZ に分割数を指定する.
+    -- データの分割読み込みの領域計算は, CPMlib を介して自動で行われます.
+    -- divX * divY * divZ の数が実行中の MPI ランク数と同じである必要があります.
+    LoadMxN(filename, timeStepIndex, divX, divY, divZ)
+                                       
+
+### メソッド
+
+#### GlobalOffset
+
+Global ボリュームの global offset を絶対値で取得します.
+全 MPI ランクで共通の値になります.
+
+    GlobalOffsetX() : ボリュームの global offset X
+    GlobalOffsetY() : ボリュームの global offset Y
+    GlobalOffsetZ() : ボリュームの global offset Z
+
+#### GlobalVoxel
+
+Global ボリュームの voxel size を取得します.
+全 MPI ランクで共通の値になります.
+
+    GlobalVoxelX() : ボリュームの global voxel size X
+    GlobalVoxelY() : ボリュームの global voxel size Y
+    GlobalVoxelZ() : ボリュームの global voxel size Z
+
+#### GlobalRegion
+
+Global ボリュームの region(extent) を取得します.
+全 MPI ランクで共通の値になります.
+
+    GlobalRegionX() : ボリュームの global region X
+    GlobalRegionY() : ボリュームの global region Y
+    GlobalRegionZ() : ボリュームの global region Z
+
+#### LocalOffset
+
+各 MPI ランクごとに対応するボリュームのローカルオフセットを絶対値で取得します.
+
+Local Offset = Global Offset + offset of the volume for each MPI rank
+
+で設定されます. したがって Local Offset は [GLobal Offset, Global Offset + Global Region] の範囲内の値を取ります.
+
+`Mx1` ロード時はグローバルオフセットと同じ値になります.
+`MxN`, `MxM` ロード時は各 MPI ランクごとに値が変わります.
+
+    LocalOffsetX() : ボリュームのローカルオフセット X. 
+    LocalOffsetY() : ボリュームのローカルオフセット Y.
+    LocalOffsetZ() : ボリュームのローカルオフセット Z.
+
+#### LocalVoxel
+
+各 MPI ランクごとに対応するボリュームの local voxel size を取得します.
+
+`Mx1` ロード時は GlobalVoxel と同じ値になります.
+`MxN`, `MxM` ロード時は各 MPI ランクごとに値が変わります.
+
+    LocalVoxelX() : ボリュームの local voxel size X. 
+    LocalVoxelY() : ボリュームの local voxel size Y.
+    LocalVoxelZ() : ボリュームの local voxel size Z.
+
+#### LocalRegion
+
+各 MPI ランクごとに対応するボリュームの local region を取得します.
+
+`Mx1` ロード時は GlobalRegion と同じ値になります.
+`MxN`, `MxM` ロード時は各 MPI ランクごとに値が変わります.
+
+    LocalRegionX() : ボリュームの local region X. 
+    LocalRegionY() : ボリュームの local region Y.
+    LocalRegionZ() : ボリュームの local region Z.
+
+### Volume extent
+
+HIVE では, 原点を中心とし, LocalRegion を extent としてボリュームプリミティブを作成します.
+つまり, volume primitive のバウンディングボックスは以下となります.
+
+    [-LocalRegion/2, LocalRegion/2]
+
+CDMLib の .dfi では, ボリュームのバウンディングボックスは
+   
+    [LocalOffset, LocalOffset + LocalRegion]
+
+と定義されます.
+
+したがって, 元の .dfi に対応するように, HIVE でボリュームプリミティブを移動させる場合は以下のように translation を算出します.
+
+    translation =  LocalRegion / 2. + LocalOffset - GlobalRegion / 2.
+
+HIVEにおいて，ボリュームはバウンディングボックスの中心にずらされてレンダリングされます．そのため，まずは (LocalRegion/2) だけずらし，バウンディングボックスの位置を.dfiと揃えます．その後LocalOffsetを加えてLocalの位置に動かします．最後に (GlobalRegion/2) 分ずらすことで，ボリューム全体が中心に揃います．
+
+<pre>
+           <------   GlobalRegion    ------>
+                           <- LocalRegion ->
+           +-------------------------------+
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              |                |
+           |              +================+
+           |              |                |
+           |              |   HIVEOrigin   |
+           |              +======-+-=======|
+           |              |                |
+           |              |                |
+           +--------------+================+
+          /|\            /|\
+     GlobalOffset     LocalOffset
+
+Global : While volume region
+Local  : Actual volume region per MPI ranks.
+         For Mx1 loading, Global == Local
+</pre>
+
+### データ並列ロード
+
+#### MxM ロード
+
+読み込み元の .dfi の並列数と, 実行時の MPI 並列数が同じ場合, MxM ロードを行います.
+
+
+
 [render_cdm.scn](hrender/test/render_cdm.scn) 参考例
 [render_cdm_nonuni.scn](hrender/test/render_cdm_nonuni.scn) 参考例(非一様)
 
-## PDMLoader()
+## PdmLoader
 
 PDMファイルを読み込むローダークラス. hrender が PDMlib とリンクされているときのみ利用可能.
-Load() でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
-ファイル名に相対パスが含まれていてはならない.
+`Load()` でファイル名と timestep 番号を指定し, 該当の timestep のときのデータをロードする.
 
-    local loader = PDMLoader()
+    local loader = require("PdmLoader")()
     local timestep = 0
-    loader:Load('input.dfi', timestep)
+    local migration = false
+    loader:Load('input.dfi', timestep, migration)
     
-    -- 点データのコンテナ名と, 点の半径を指定(半径は省略可能. 省略時は 1.0 に設定)
+### MxN 並列ロード
+
+`Load()` 関数で `migration` パラメータを `true` にすると, データの並列ロードを行います. 入力のデータ分散数(M)から, 実行時の MPI プロセス数(N)に合うように自動でデータのマイグレーション処理を行い, データ分散のロードを行います(MxN loading).
+
+### MxM 並列ロード
+
+`Load()` 関数で `migration` パラメータを `true` にすると, `MxM` 相当の並列ロードを行います.
+PDM データの分割数よりも, 実行 MPI ランク数が多いと, 空のデータを持つ MPI ランクが発生します.
+
+### Mx1 ロード
+
+`LoadMx1()` 関数で, PDM データを各 MPI ランクがすべて保持するようにロードします.
+(ただし, PDMlib の不都合により, 現在 Mx1 ロードは動作しません)
+
+    loader:LoadMx1('input.dfi', timestep)
+
+### データの取得
+
+    -- 座標データのコンテナ名(省略時は `Coordinatge`, に設定)と, 点の半径を指定(省略時は 1.0 に設定)
     local pointData = pdm:PointData('Coordinate', 0.2)
+    -- local pointData = pdm:PointData() -- container name = `Coordinate`, radius = 1.0 
+    -- local pointData = pdm:PointData('Coordinate') --  radius = 1.0 
 
     -- 任意形式のコンテナデータを取得.
     -- コンテナ名に対するデータ形式(float, vec3, etc)はユーザが既知とする.
     local extraData = pdm:ExtraData('velocity')
 
+### EnableProfiling
+
+PDMLib の profiling 機能を有効にします. `Load` の前に呼び出す必要があります.
+
+    local loader = PDMLoader()
+    local timestep = 0
+    local migration = false
+    loader:EnableProfiling(true)
+    loader:Load('input.dfi', timestep, migration)
+
 [render_pdm.scn](hrender/test/render_pdm.scn) 参考例
 
-## HDMLoader()
+## HdmLoader
 
 HDMファイルを読み込むローダークラス. hrender が HDMlib とリンクされているときのみ利用可能.
 Sparse ボリュームプリミティブが取得可能.
 HDMlib の制約により, 1 シーン内で 1 HDMlib 形式のファイルしか読む事ができない.
 (Init() を呼べるのは .scn 内で一回のみ)
 
-    local loader = HDMLoader()
+    local loader = require("HdmLoader")()
     loader:Init('cellid.bcm', 'data.bcm')
 
     # 指定されたフィールドと timestep の sparse volume プリミティブを取得
@@ -729,20 +986,25 @@ HDMlib の制約により, 1 シーン内で 1 HDMlib 形式のファイルし�
 
 [render_hdm.scn](hrender/test/render_hdm.scn) 参考例
 
-## UDMLoader()
+## UdmLoader
 
 UDMファイルを読み込むローダークラス. hrender が UDMlib とリンクされているときのみ利用可能.
-非構造プリミティブ(三角形, テトラ, 六面体)が取得可能.
-六面体はポリゴンへと変換される.
+非構造プリミティブ((TRI_3, QUAD_4)(MeshData), TETRA_4(TetraData), (PYRA_5, PENTA_6, HEXA_8)(SolidData))が取得可能.
 
-    local loader = UDMLoader()
+    local loader = require("UdmLoader")()
     loader:Load('index.dfi')
 
+    local mesh = loader:MeshData() -- Meshプリミティブを取得
     local tetra = loader:TetraData() -- テトラプリミティブを取得
+    local hexa =  loader:SolidData(8) -- Hexaプリミティブを取得
+
+頂点アトリビュート(ソリューションデータ)については, ExtraData() で取得が可能(float, vec2, vec3, vec4, uint に対応).
+
 
 [render_udm_tetra.scn](hrender/test/render_udm_tetra.scn) 参考例
+[render_udm_hexa.scn](hrender/test/render_udm_hexa.scn) 参考例
 
-## ImageLoader()
+## ImageLoader
 
 画像データを読み込む.
 オブジェクトにテクスチャとして画像を設定したい場合は以下のように行う.
@@ -756,7 +1018,7 @@ UDMファイルを読み込むローダークラス. hrender が UDMlib とリ�
 ---------------------------------
 # Saver
 
-## ImageSaver()
+## ImageSaver
 
 イメージデータを保存できる.
 以下は読み込んだ画像データを別形式で保存する例.
@@ -768,38 +1030,63 @@ UDMファイルを読み込むローダークラス. hrender が UDMlib とリ�
 	saver:Save("output_image.jpg", loader:ImageData())
 
 
-## SPHSaver()
+## SphSaver
 
 SPH 形式でボリュームデータを保存する.
 float 形式の SPH の書き出しのみに対応する.
 
-    local sphSaver = SPHSaver()
+    local sphSaver = require("SphSaver")()
     sphSaver:SetVolumeDatta(volumedata)
     sphSaver:Save('output.sph')
 
 
-## RawVolumeSaver()
+## RawVolumeSaver
 
 RAW 形式でボリュームデータを保存する. 他のボリュームデータビューアなどで閲覧するときに利用する.
 データはメモリ上の生の形式で(endian 変換は行われない), `width * height * depth * sizeof(type)` bytes のデータが保存される.
 Save() にはファイル名と, footer を付けるかどうか(HIVE 独自形式)を指定する.
 
-    local volSaver = RawVolumeSaver()
+    local volSaver = require("RawVolumeSaver")()
     local appendFooter = false
     volSaver:SetVolumeData(volumedata)
     volSaver:Save("output.raw", appendFooter)
 
 footer を付ける場合, 20 bytes(4 int x 5)のデータ `(width, height, depth, type, components)` がフッターとしてファイルの最後に追記される.
 
-## PDMSaver()
+## PdmSaver
 
 PDM 形式で点群データを保存する. hrender が PDMlib とリンクされているときのみ利用可能.
 現時点では timestep の変化する点群は保存出来ない(timestep=0 として書き出し)
 
-    local saver = PDMSaver()
+    local saver = require("PdmSaver")()
     saver:SetPointData(ball)
     saver:Save('output') -- ベースファイル名を指定.
 
+## ColorMapSaver
+
+lut 形式でColor Mapデータを保存する．保存されたデータはTransfer Functionノードや，Visioでインポートして使用することができる．
+
+     -- minValue, maxValue, rgba
+    local saver = require("ColorMapSaver")()
+    saver:SetMinValue(minValue)
+    saver:SetMaxValue(maxValue)
+    for i = 1, 256 * 4 do
+        saver:SetRGBAValue(i - 1, rgba[i]); -- rgba[i]は[0, 1]の範囲
+    end
+    saver:Save('output.lut')
+
+## GradientMapSaver
+
+lut 形式でGradientMapデータを保存する．保存されたデータはGradient Mapノードや，Visioでインポートして使用することができる．
+
+    -- minValue, maxValue, rgba
+    local saver = require("GradientMapSaver")()
+    saver:SetMinValue(minValue)
+    saver:SetMaxValue(maxValue)
+    for i = 1, 256 * 4 do
+        saver:SetRGBAValue(i - 1, rgba[i]); -- rgba[i]は[0, 1]の範囲
+    end
+    saver:Save('output.lut')
 
 ---------------------------------
 
@@ -809,7 +1096,7 @@ PDM 形式で点群データを保存する. hrender が PDMlib とリンクさ�
 
 PolygonModelから情報を取得する
 
-	local analyzer = PolygonAnalyzer()
+	local analyzer = require("Analyzer").PolygonAnalyzer()
 
 
 インターフェース一覧
@@ -847,7 +1134,7 @@ PolygonModelから情報を取得する
 
 VolumeModelから情報を取得する
 
-	local analyzer = VolumeAnalyzer()
+	local analyzer = require("Analyzer").VolumeAnalyzer()
 
 インターフェース一覧
 
@@ -895,7 +1182,7 @@ VolumeModelから情報を取得する
 
 ネットワークの接続処理を行う。
 
-	local con = Connection()
+	local con = require("Network").Connection()
 
 インターフェース一覧
 
@@ -942,24 +1229,24 @@ VolumeModelから情報を取得する
 ---------------------------------
 # Builder
 
-## VolumeToVector()
+## VolumeToVector
 
 ボリュームデータからベクトルアローに変換する.
 ベクトルアローの間隔を設定し、ベクトルアローを生成する
 
-     local vtv = VolumeToVector()
+     local vtv = require("VolumeToVector")()
 	 vtv:DivideNumber(divX, divY, divZ)
 	 vtv:Create(volumedata)
 	 local vectordata = vtv:VectorData()
 	 local vm = VectorModel();
 	 vm:Create(vectordata);
 	
-## VolumeToMeshData()
+## VolumeToMeshData
 
 marching cubes 法を用いて, ボリュームデータをメッシュ(triangle)に変換する. 
 等値面を生成する基準となる値(isovalue)をセットしてからメッシュを生成する.
 
-    local surfacer = VolumeToMeshData()
+    local surfacer = require("VolumeToMeshData")()
     local isovalue = 0.0005
     surfacer:Create(volumedata)
     surfacer:SetIsoValue(isovalue)
@@ -969,18 +1256,18 @@ marching cubes 法を用いて, ボリュームデータをメッシュ(triangle
 入力のボリュームデータは scalar ボリューム(`Component() = 1`) でなければならない.
 vector ボリュームは一度 VolumeFilter や FloatsToFloat を介して scalar ボリュームに変換する必要がある.
 
-## PointToVolume()	
+## PointToVolume
 
 ポイントデータをボリュームデータに変換する.
 ToVolume メソッドにはボリュームの解像度を指定する.
 ボリュームの各セルの密度は, ポイントの個数に比例する.
 
-    local p2v = PointToVolume()
+    local p2v = require("PointToVolume")()
     p2v:Create(pnt:PointData())
     
     p2v:ToVolume(128,128,128)
 
-## MeshAttribToVolume()	
+## MeshAttribToVolume
 
 ポリゴンモデルの頂点アトリビュート(ExtraData)をボリュームデータに変換する.
 頂点の位置に対応するボクセル要素にアトリビュートを付与する.
@@ -988,31 +1275,70 @@ ToVolume メソッドにはボリュームの解像度を指定する.
 (バウンディングボックスは PolygonAnalyzer で計算することができる)
 ToVolume メソッドにはボリュームの解像度を指定する.
 
-    local ma2v = PointToVolume()
+    local ma2v = require("MeshAttribToVolume")()
     ma2v:Create(mesh, attrib, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
     
     ma2v:ToVolume(128,128,128)
 
-## SparseVolumeToVolume()	
+## SparseVolumeToVolume
 
 疎ボリュームを(一様)ボリュームデータに変換する.
 Create メソッドにはリサンプリングレートを指定する.
 たとえば 0.25 だと疎ボリュームの元データの 1/4 の解像度で一様ボリュームを生成する.
 2.0 だと 2 倍となる.
 
-    local s2v = SparseVolumeToVolume()
+    local s2v = require("SparseVolumeToVolume")()
     local resampleRate = 0.25
     s2v:Create(volumedata, resampleRate)
     
+## SolidAttribToVolume
 
-## VolumeFilter()
+Solid モデルの頂点アトリビュートを(一様)ボリュームデータに変換する.
+Solid 内部に対応する Voxel は頂点アトリビュートが補間されてボクセライズされる.
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
+(バウンディングボックスは SolidAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度と補間のモード(3 パターン)を指定する.
+
+    local sa2v = require("SolidAttribToVolume")()
+    sa2v:Create(solid, attrib, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+   
+    local mode = 0 -- 0 : 0 order continuous , 1 : primary succession , 2 n order continuous
+    sa2v:ToVolume(128,128,128, mode)
+    
+## SolidToVolume
+
+Solid モデルを(一様)ボリュームデータに変換する.
+Solid 内部に対応する Voxel は Solid が覆う回数でボクセライズされる(つまり, 重なり合う Solid が 2 つあると 2 になる).
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
+(バウンディングボックスは SolidAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度を指定する.
+
+    local s2v = require("SolidToVolume")()
+    s2v:Create(solid, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+   
+    s2v:ToVolume(128,128,128)
+
+## SolidDfToVolume
+
+Solid モデルを(一様)ボリュームデータに変換する.
+Solid 内部に対応する Voxel は Solid の distance field 値でボクセライズされる.
+(bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)には Solid のバウンディングボックスを指定する.
+(バウンディングボックスは SolidAnalyzer で計算することができる)
+ToVolume メソッドにはボリュームの解像度を指定する.
+
+    local sd2v = require("SolidDfToVolume")()
+    sd2v:Create(solid, bminX, bminY, bminZ, bmaxX, bmaxY, bmaxZ)
+   
+    sd2v:ToVolume(128,128,128)
+
+## VolumeFilter
 
 ボリュームデータに対してフィルタ処理を行う. 疎ボリュームに対しては適用できない.
 ボリュームの型は `float` のみとする.
 
 `Expr` では C 言語でのフィルタコードを走らせて処理を行うことができる.
 
-    local filter = VolumeFilter()
+    local filter = require("VolumeFilter")()
     filter:Laplacian(volumedata)    -- Laplacian を計算する
     filter:Norm(volumedata)         -- Norm を計算する
 
@@ -1042,5 +1368,23 @@ Create メソッドにはリサンプリングレートを指定する.
 
     filter:SetCompoleOption('gcc', '-O2')
 
+## ImageFilter
 
+BufferImageDataに対してフィルタ処理を行い, 画像を合成する. 
+2つのBufferImageDataの幅, 高さ, フォーマットが, 同一のもののみ受け付ける.
+
+    local filter = require("ImageFilter")()
+    local operation = 4 -- Average Filter
+    local factor = 1.0  -- ブレンド率
+    local output = filter:Filter(operation, imageA, imageB, factor);
+
+インターフェース一覧
+
+- 画像フィルターを実行する
+  * operation フィルターのタイプ (ImageFilter::Operation)
+  * imageA ソースイメージ
+  * imageB ソースイメージ
+  * factor ブレンド率
+    
+        BufferImageData Filter(operation, imageA, imageB, factor)
 

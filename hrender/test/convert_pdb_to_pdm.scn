@@ -1,10 +1,11 @@
 
 print('convert pdb to pdm(currently particle only)')
 
-local pdb = PDBLoader()
+local pdb = LoadModule("PdbLoader")
+local pdm = LoadModule("PdmSaver")
+
 pdb:Load('4CL8.pdb')
 local ball = pdb:BallData()
 
-local pdm = PDMSaver()
 pdm:SetPointData(ball)
 pdm:Save('4CL8.pdm')

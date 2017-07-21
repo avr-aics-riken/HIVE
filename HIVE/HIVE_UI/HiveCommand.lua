@@ -48,11 +48,11 @@ local function updateInfo()
 	local data = {
 		JSONRPC = "2.0",
 		method  = "updateInfo",
-		param   = {
+		param   = JSON.encode({
 			objectlist = objlst,
 			objecttimeline = objtimeline
-		},
-		to = "client",
+		}),
+		to = targetClientId,
 		id = 0
 	}
 	local json = JSON.encode(data)
@@ -72,7 +72,7 @@ local function ClearObjects()
 	print('MEMORY=', collectgarbage('count') .. '[KB]')
 	return 'ClearObject'
 end
-	
+
 local function CreateCamera(name)
 	local camera = Camera()
 	camera:SetScreenSize(512, 512)
@@ -142,8 +142,8 @@ end
 local function GetVolumeAnalyzerData(name, min, max)
 	local model = HIVE_ObjectTable[name]
 	if model == nil then return 'Not found Model:' .. name end
-	local analyzer = VolumeAnalyzer()
-	analyzer:Execute(model)
+	local analyzer = require('Analyzer').VolumeAnalyzer()
+	analyzer:Execute(model:GetVolume())
 	local histgram;
 	local volMin = analyzer:MinX()
 	local volMax = analyzer:MaxX()
@@ -209,6 +209,22 @@ local function SetModelUniformTex(name, vname, width, height, rgba)
 	return 'SetModelUniformTex:' .. name
 end
 
+local function SetColorMapTex(texname, width, height, rgba)
+	local gentex = GenTexture()
+	gentex:Create2D(rgba, 1, width, height);
+	HIVE_TextureTable[texname] = gentex;
+	return 'SetColorMapTex:' .. texname
+end
+
+local function ApplyColorMapTex(name, texname, uniformName)
+	local model = HIVE_ObjectTable[name]
+	if model == nil then return 'Not found Model:' .. name end
+	local texture = HIVE_TextureTable[texname]
+	if texture == nil then return 'Not found Texture:' .. texname end
+
+	model:SetTexture(uniformName, texture:ImageData())
+	return 'ApplyColorMapTex:' .. name
+end
 
 local function DeleteObject(name)
 	local obj = HIVE_ObjectTable[name]
@@ -218,9 +234,9 @@ local function DeleteObject(name)
 	HIVE_DataTable[name] = nil
 	updateInfo();
 end
-	
+
 local function LoadSPH(name, filename, shader)
-	local sph = SPHLoader()
+	local sph = require("SphLoader")()
 	local ret = sph:Load(filename)
 	if ret then
 	    local volumemodel = VolumeModel()
@@ -235,7 +251,7 @@ local function LoadSPH(name, filename, shader)
 end
 
 local function LoadOBJ(name, filename, shader)
-	local obj = OBJLoader()
+	local obj = require("ObjLoader")()
 	local ret = obj:Load(filename)
 	if ret then
 		local model = PolygonModel()
@@ -251,7 +267,7 @@ end
 
 
 local function LoadSTL(name, filename, shader)
-	local stl = STLLoader()
+	local stl = require("StlLoader")()
 	local ret = stl:Load(filename)
 	if ret then
 		local model = PolygonModel()
@@ -266,7 +282,7 @@ local function LoadSTL(name, filename, shader)
 end
 
 local function LoadPDB(name, filename, shader)
-	local pdb = PDBLoader()
+	local pdb = require("PdbLoader")()
 	local ret = pdb:Load(filename)
 	if ret then
 	    local ballmodel = PointModel()
@@ -286,8 +302,8 @@ local function LoadPDB(name, filename, shader)
 	end
 	return 'LoadPDB:' .. tostring(ret)
 end
-local function RenderCamera(w, h, cameraname)
-	--print('RenderCamera', w, h, cameraname)
+local function RenderCamera(w, h, cameraname, imagemode, ipcmode)
+	--print('RenderCamera', w, h, cameraname, imagemode, ipcmode)
 	local starttm = os.clock()
 	local camera = HIVE_ObjectTable[cameraname]
 	if camera == nil then return "No Camera" end
@@ -295,7 +311,7 @@ local function RenderCamera(w, h, cameraname)
 	local oldfilename   = camera:GetOutputFile();
 	local renderList = {camera}
 	for i,v in pairs(HIVE_ObjectTable) do
-		print ("OBJECT = ", i, v)
+		--print ("OBJECT = ", i, v)
 	    if v:GetType() ~= "CAMERA" then
 		        renderList[#renderList + 1] = v
 	    end
@@ -303,7 +319,7 @@ local function RenderCamera(w, h, cameraname)
 	--print('RenderObject = ', #renderList)
 	local prefetchNextEvent = HIVE_fetchEvent(0)
 	if prefetchNextEvent == false then -- false is any queued
-		print('Skip rendering')
+		--print('Skip rendering')
 		return 'Skip rendering'
 	end
 
@@ -315,37 +331,57 @@ local function RenderCamera(w, h, cameraname)
 	camera:SetScreenSize(oldscreensize[1], oldscreensize[2])
 	camera:SetFilename(oldfilename)
 
-	
-	--print('Render Ret = ', r)
-	
-	-- save jpg
 	local rendertm = os.clock()
-	local imageBuffer = HIVE_ImageSaver:SaveMemory(1, camera:GetImageBuffer())
-	local imageBufferSize = HIVE_ImageSaver:MemorySize()
-	local savetm = os.clock()
+	--print('Render Ret = ', r)
+
 	-- make metabin
+
+	local sendmode = "jpg"
+	if imagemode ~= nil then
+		sendmode = imagemode
+	end
+
 	local json = [[{
 		"JSONRPC": "2.0",
 		"method" : "renderedImage",
 		"param" : {
-		 	"type": "jpg",
+		 	"type": "]] .. sendmode .. [[",
 		    "width" : ]] .. w .. [[,
 			"height" : ]] .. h .. [[,
 		 	"canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[
 		},
-		"to": "client",
+		"to": "]] .. targetClientId .. [[",
 		"id": 0
 	}]]
-	local createtm = os.clock()
+	local createtm = 0
 	if HIVE_metabin then
-		HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
-	-- 	send through websocket
-		network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+		if (sendmode == "jpg") then
+			-- save jpg
+			local imageBuffer = HIVE_ImageSaver:SaveMemory(1, camera:GetImageBuffer())
+			local imageBufferSize = HIVE_ImageSaver:MemorySize()
+			savetm = os.clock()
+			HIVE_metabin:Create(json, imageBuffer, imageBufferSize)
+			createtm = os.clock()
+		elseif (sendmode == "raw") then
+			savetm = rendertm -- no save
+			local img = camera:GetImageBuffer()
+			HIVE_metabin:Create(json, img:GetBuffer(), img:GetSize())
+			createtm = os.clock()
+		else
+			print('[Error] Unsupported data type sendmode =>', sendmode)
+		end
+
+		-- 	send through websocket
+		if ipcmode == true and network_ipc then
+			network_ipc:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+		else
+			network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())
+		end
 	end
 	local sendtm = os.clock()
-	print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
+	--print("render=", rendertm-starttm, "save=", savetm-rendertm,"createmeta=", createtm-savetm, "send=", sendtm-createtm, "all=", sendtm-starttm)
 
-	
+
 	collectgarbage('collect') -- NEED for GC
 	return {objectnum=tostring(r), width=w, height=h}
 end
@@ -365,6 +401,8 @@ return {
 	SetModelUniformVec2 = SetModelUniformVec2,
 	SetModelUniformFloat = SetModelUniformFloat,
 	SetModelUniformTex = SetModelUniformTex,
+	SetColorMapTex = SetColorMapTex,
+	ApplyColorMapTex = ApplyColorMapTex,
 	DeleteObject = DeleteObject,
 	LoadSPH = LoadSPH,
 	LoadOBJ = LoadOBJ,

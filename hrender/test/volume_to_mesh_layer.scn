@@ -11,13 +11,13 @@ camera:LookAt(
 	60
 )
 
-local sph = SPHLoader()
+local sph = LoadModule("SphLoader")
 sph:Load('prs_0000002000.sph')
 
 local volumedata = sph:VolumeData()
 print("vol:Components", sph:Component())
 
-local surfacer0 = VolumeToMeshData()
+local surfacer0 = LoadModule("VolumeToMeshData")
 local isovalue0 = 0.0001
 surfacer0:Create(volumedata)
 surfacer0:SetIsoValue(isovalue0)
@@ -27,7 +27,7 @@ local isosurface0 = surfacer0:MeshData()
 model0:Create(isosurface0)
 model0:SetShader('blue.frag')
 
-local surfacer1 = VolumeToMeshData()
+local surfacer1 = LoadModule("VolumeToMeshData")
 local isovalue1 = 0.0025
 surfacer1:Create(volumedata)
 surfacer1:SetIsoValue(isovalue1)

@@ -1,0 +1,17 @@
+{
+	"name": "LoadPDMMx1",
+	"funcname": "LoadPDMMx1",
+	"info":"PDMファイルを読み込むためのノード",
+	"pos": [100, 100],
+	"varname": "instPDMMx1Loader",
+	"customfuncfile":"pdmloader_mx1.lua",
+	"input": [
+		{"name": "filepath", "type": "string", "value": "data.dfi"},
+		{"name": "timestep", "type": "float", "value": "0.0"},
+		{"name": "container", "type": "string", "value": "Coordinate"},
+		{"name": "radius", "type": "string", "value": "1.0"}
+	],
+	"output": [
+		{"name": "pointdata", "type": "BufferPointData"}
+	]
+}

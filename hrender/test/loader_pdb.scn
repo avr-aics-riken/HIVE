@@ -1,6 +1,6 @@
 
 print('load pdb')
 
-local pdb = PDBLoader()
+local pdb = LoadModule("PdbLoader")
 pdb:Load('4CL8.pdb')
 

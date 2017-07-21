@@ -21,7 +21,7 @@ local meshdata = gen:Quad( width, height )
 model:Create( meshdata )
 model:SetShader( 'perlin.frag' )
 
-local analy = PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute( model )
 print( analy:MinX() )
 print( analy:MaxX() )

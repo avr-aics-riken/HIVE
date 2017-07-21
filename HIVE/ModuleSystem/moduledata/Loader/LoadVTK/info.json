@@ -1,0 +1,20 @@
+{
+	"name": "LoadVTK",
+	"funcname": "LoadVTK",
+	"info":"VTKファイルを読み込むためのノード",
+	"customfuncfile":"vtkloader.lua",
+	"input": [
+		{"name": "filename", "type": "string", "value": "data.pvti"},
+		{"name": "dirpath", "type": "string", "value": "/path/to/datadir/", "meta": "filebrowser"},
+		{"name": "fieldname", "type": "string", "value": "p"}
+	],
+	"output": [
+		{"name": "VolumeData", "type": "BufferVolumeData"},
+        {"name": "Size",  "type": "vec3"},
+	    {"name": "Component",  "type": "float"},
+		{"name": "Pitch",  "type": "vec3"},
+		{"name": "Origin",  "type": "vec3"},
+		{"name": "Time",  "type": "float"},
+		{"name": "Step",  "type": "float"}
+	]
+}

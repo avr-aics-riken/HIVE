@@ -1,0 +1,11 @@
+--- config/generate-makeoptions.pl	2017-01-19 14:07:58.784642199 +0900
++++ ../../../HIVE/third_party/Zoltan_v3.81/config/generate-makeoptions.pl	2017-01-19 14:08:24.580462394 +0900
+@@ -10,7 +10,7 @@
+ #
+ use strict;
+ 
+-if( !(defined(@ARGV) && scalar(@ARGV)==2) ) {
++if( !(@ARGV && scalar(@ARGV)==2) ) {
+   die "Error, this script takes two and only two arguments (makefile_name package_name).!\n";
+ }
+ 

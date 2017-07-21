@@ -1,6 +1,6 @@
 function LoadOBJ(property)
 	local objloader
-	objloader = OBJLoader()
+	objloader = LoadModule("ObjLoader")
 	objloader:Load(property.filepath)
 	return objloader
 end
@@ -73,7 +73,7 @@ end
 
 
 function CreateCamera(property)
-	local cam;	
+	local cam;
 	print('create camera',
 		property.screensize[1], property.screensize[2],
 		property.filename)
@@ -86,7 +86,7 @@ function CreateCamera(property)
 		property.up[1], property.up[2], property.up[3],
 		property.fov
 	)
-	
+
 	function camera()
 		return cam
 	end

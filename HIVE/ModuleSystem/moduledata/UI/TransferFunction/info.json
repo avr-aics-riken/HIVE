@@ -1,0 +1,22 @@
+{
+	"name": "TransferFunction",
+	"funcname": "TransferFunction",
+	"info":"TransferFunctionをつくるノード",
+	"customfuncfile":"transferfunction.lua",
+	"uifile":"transferfunction.jsx",
+    "input": [
+        {"name": "rgba",  "type": "floatarray", "value":[] },
+        {"name": "volume",  "type": "BufferVolumeData" },
+        {"name": "minval", "type": "float", "value": 0.0},
+        {"name": "maxval", "type": "float", "value": 0.0},
+        {"name": "defaultminval", "type": "float", "value": 0.0, "visible": false},
+        {"name": "defaultmaxval", "type": "float", "value": 0.0, "visible": false},
+        {"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"}
+	],
+	"output": [
+        {"name": "Image", "type": "BufferImageData"},
+        {"name": "RGBA", "type": "floatarray"},
+        {"name": "Min", "type": "float"},
+        {"name": "Max", "type": "float"}
+	]
+}

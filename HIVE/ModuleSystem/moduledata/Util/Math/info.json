@@ -1,0 +1,16 @@
+
+{
+	"name": "Math",
+	"funcname": "Math",
+	"info":"算術演算ノード",
+	"customfuncfile":"math.lua",
+	"uifile" : "math.jsx",
+    "input": [
+		{"name": "value0",  "type": "float", "value": 0.0},
+		{"name": "value1",  "type": "float", "value": 0.0},
+		{"name": "operation",  "type": "string", "value": "value0 + value1" }
+	],
+	"output": [
+		{"name": "result",  "type": "float" }
+	]
+}

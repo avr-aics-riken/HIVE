@@ -1,0 +1,21 @@
+{
+	"name": "LoadUDM",
+	"funcname": "LoadUDM",
+	"info":"UDMファイルを読み込むためのノード",
+	"customfuncfile":"udmloader.lua",
+	"input": [
+		{"name": "filepath", "type": "string", "value": "", "meta": "filebrowser"},
+		{"name": "step", "type": "float", "value": 0.0},
+		{"name": "solidtype", "type": "float", "value": 0.0},
+		{"name": "extraname", "type": "string", "array": [
+			{"name": "extraname[0]", "type": "string", "value" : ""}
+		]}
+	],
+	"output": [
+		{"name": "Tetra", "type": "BufferTetraData"},
+		{"name": "Mesh", "type": "BufferMeshData"},
+		{"name": "extraname", "type": "BufferExtraData", "array": [
+			{"name": "ExtraData[0]", "type": "BufferExtraData"}
+		]}
+	]
+}

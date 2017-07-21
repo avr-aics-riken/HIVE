@@ -1,7 +1,7 @@
 
 print('Render Obj')
 
-local sph = VOLLoader()
+local sph = LoadModule("VolLoader")
 
 local camera = Camera()
 --camera:SetScreenSize(1024, 1024)

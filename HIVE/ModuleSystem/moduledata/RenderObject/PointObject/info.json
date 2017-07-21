@@ -1,0 +1,24 @@
+{
+	"name": "PointObject",
+	"funcname": "PointObject",
+	"info":"ポイントデータを表示させるためのノード",
+	"customfuncfile": "PointObject.lua",
+    "input": [
+		{"name": "point", "type": "BufferPointData"},
+		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
+		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},
+		{"name": "scale", "type": "vec3", "value": [1.0, 1.0, 1.0]},
+		{"name": "shadername", "type": "string", "value": "../shader/white.frag", "meta": "shaderlist"},
+		{"name": "Varying",  "type": "Varying", "array": [
+			{"name": "Varying[0]",  "type": "Varying"}
+		]},
+		{"name": "Uniform",  "type": "Uniform", "array": [
+			{"name": "Uniform[0]",  "type": "Uniform"},
+			{"name": "Uniform[1]",  "type": "Uniform"},
+			{"name": "Uniform[2]",  "type": "Uniform"}
+		]}
+	],
+	"output": [
+		{"name": "model", "type": "RenderObject"}
+	]
+}

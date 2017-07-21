@@ -12,7 +12,7 @@ camera:LookAt(
 )
 
 
-local obj = OBJLoader()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
 local model = PointModel()
@@ -21,5 +21,3 @@ model:Create(pointdata)
 model:SetShader('white.frag')
 
 render {camera, model}
-
-

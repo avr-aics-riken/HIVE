@@ -1,8 +1,8 @@
 
 print('load STL')
 
-local stl = STLLoader()
-stl:Load('porsche.stl')
+local stl = LoadModule("StlLoader")
+stl:Load('bunny.stl')
 
 local mesh = stl:MeshData()
 print(mesh)

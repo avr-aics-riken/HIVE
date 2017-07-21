@@ -27,6 +27,26 @@ uniform float     tf_opacity;
 #define SAMPLES    2500.0
 #define num_steps  SAMPLES
 
+void orthoBasis(out vec3 basis0,out vec3 basis1,out vec3 basis2, vec3 n) {
+    basis2 = vec3(n.x, n.y, n.z);
+    basis1 = vec3(0.0, 0.0, 0.0);
+
+    if ((n.x < 0.6) && (n.x > -0.6))
+        basis1.x = 1.0;
+    else if ((n.y < 0.6) && (n.y > -0.6))
+        basis1.y = 1.0;
+    else if ((n.z < 0.6) && (n.z > -0.6))
+        basis1.z = 1.0;
+    else
+        basis1.x = 1.0;
+
+    basis0 = cross(basis1, basis2);
+    basis0 = normalize(basis0);
+
+    basis1 = cross(basis2, basis0);
+    basis1 = normalize(basis1);
+}
+
 vec4 samplingVolume(vec3 texpos) {
 	vec4 col = texture3D(tex0, texpos);
 	return col;
@@ -88,10 +108,8 @@ void  main(void) {
     IntersectP(rayorg, raydir, pmin, pmax, tmin, tmax);
 	tmin = max(0.0, tmin);
 	tmax = max(0.0, tmax);
-	
+
     // raymarch.
-    float t = tmin;
-    float tstep = (tmax - tmin) / num_steps;
     float cnt = 0.0;
     float subcnt = 0.0;
 	float state = 0.0;
@@ -107,8 +125,25 @@ void  main(void) {
 	vec3 sumN = vec3(0.0);
 	vec4 col  = vec4(0.0, 0.0, 0.0, 0.0);
 
+    float thickness = max(max(volumescale.x, volumescale.y),
+                          volumescale.z) / num_steps;
+
+    float tOffset = thickness / 10.;
+    float t = tmin + tOffset;
+    vec3 nx, ny, nz;
+    orthoBasis(nx, ny, nz, n);
+
+    float dist = abs(dot(nx, (tmax * raydir) - tmin * raydir));
+    dist = max(dist, abs(dot(ny, (tmax * raydir) - tmin * raydir)));
+    dist = max(dist, abs(dot(nz, (tmax * raydir) - tmin * raydir)));
+
+    float samples = floor(dist / thickness) + 1.;
+    float tstep = (tmax - tmin - tOffset) / samples;
+
 	float i = 0.0;
-	while((i < SAMPLES) && (min(min(col.x, col.y), col.z) < 1.0) && (col.w < 0.999)) {
+	while((i < samples) &&
+          (min(min(col.x, col.y), col.z) < 1.0) &&
+          (col.w < 0.999)) {
 		vec3 p = rayorg + t * raydir; // [-0.5*volscale, 0.5*volscale]^3 + offset
 		vec3 texpos = (p - offset) / volumescale + 0.5; // [0, 1]^3
 		vec4 temp = samplingVolume(texpos);

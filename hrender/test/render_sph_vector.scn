@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local sph = SPHLoader()
+local sph = LoadModule("SphLoader")
 sph:Load('fvel_0000001470.sph')
 
 local volume = VolumeModel()

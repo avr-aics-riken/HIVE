@@ -1,0 +1,15 @@
+{
+	"name": "StringFormat",
+	"funcname": "StringFormat",
+	"info":"Format情報に基づいてStringをつくるノード",
+	"customfuncfile":"format.lua",
+	"input": [
+		{"name": "format", "type": "string", "value": "format%06d"},
+		{"name": "input",  "type": "float", "array": [
+			{"name": "input[0]",  "type": "float"}
+		]}
+	],
+	"output": [
+		{"name": "String",  "type": "string"}
+	]
+}

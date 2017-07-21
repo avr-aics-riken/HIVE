@@ -1,0 +1,11 @@
+{
+	"name": "ChOWDER",
+	"funcname": "ChOWDER",
+	"info":"ChOWDERノード",
+	"customfuncfile":"chowder.lua",
+    "input": [
+        {"name": "image", "type": "BufferImageData"},
+		{"name": "url", "type": "string", "value": "ws://localhost:8082/v2/"}
+	],
+	"output": []
+}

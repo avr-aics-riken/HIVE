@@ -13,7 +13,7 @@ camera:LookAt(
 )
 
 
-local udm = UDMLoader()
+local udm = LoadModule("UdmLoader")
 -- Specify .dfi file
 udm:Load('torus.tetra/index.dfi')
 

@@ -1,7 +1,7 @@
 
 print('load VOL')
 
-local vol = VOLLoader()
+local vol = LoadModule("VolLoader")
 vol:Load('invalid.vol')
 
 

@@ -1,6 +1,6 @@
 
 print('load obj')
 
-local obj = OBJLoader()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 

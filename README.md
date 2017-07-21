@@ -7,13 +7,15 @@ HIVE is the acronym for "Heterogeneously Integrated Visualization Environment" a
 ## Requirements
 
 * cmake 2.8 or later
-* MPI compiler(optional for macosx and linux x64 environment)
+* Autotools
+* MPI C/C++ compiler(optional for macosx and linux x64 environment)
 * Zoltan v.3.81(Required when you build HIVE with PDMlib support)
 * fpzip 1.0.1(Required when you build HIVE with PDMlib support)
 * cgnslib 3.2.1(Required when you build HIVE with UDMlib support)
 * netcdf4 4.2.1.1(Required when you build HIVE with CDMlib support)
 * HDF5 1.8.10 patch1(Required when you buil HIVE with CDMlib support)
   * Use brew install hdf5 for MacOSX.
+* Fortran compiler(e.g. gfortran. Optional. Required for building OpenMPI and CDMlib)
 
 ## git clone
 
@@ -46,10 +48,11 @@ Assume cmake2.8 and hdf5 has been installed somewhere.
 #### Ubuntu 14.04
 
     $ sudo apt-get install libhdf5-dev
+    $ sudo apt-get install gfortran
     $ cd $HIVE
     $ ./scripts/build_loader_libs_linux-x64.sh
 
-### MacOSX
+### MacOSX(Before Sierra)
 
 MacOSX requires gcc-4.8 and openmpi, also requres homebrew supplied HDF5(gcc4.8 failed to compile HDF5 1.8.10 patch1).
 (gcc-5 is not supported due to New ABI problem)
@@ -66,6 +69,54 @@ Assume homebrew is installed.
     $ cd $HIVE
     $ ./scripts/build_loader_libs_macosx.sh
 
+### macOS Sierra(Work in progress)
+
+For some reason, custom gcc(e.g. gcc installed through homebrew) does not work on Sierra, Thus we forced to use Apple gcc(clang) which does not support OpenMP.
+
+openmpi must be installed with cxx binding, otherwise it fails to compile BCMTools.
+
+Use NetCDF(and HDF5) using homebrew.
+
+#### Using Apple gcc(clang) 
+
+OpenMP feature is not available.
+
+Assume homebrew is installed.
+
+Use gfotran-5 for a fotran compiler.
+
+    $ brew install gcc@5
+    $ brew install openmpi --with-cxx-binding
+    $ brew install netcdf
+    $ cd $HIVE
+    # Edit `netcdf_dir` if requied in `scripts/build_loader_libs_macosx_sierra.sh`, then
+    $ ./scripts/build_loader_libs_macosx_sierra.sh
+
+#### Using gcc6 
+
+OpenMP available.
+Some OSX specific feature(e.g. OpenGL) is not available since OSX header assumes clang.
+
+Assume homebrew is installed.
+
+Use gfotran-6 for a fotran compiler.
+
+    $ brew install gcc@6
+    $ brew install netcdf
+
+Install OpenMPI 2.0.2 from source(use gcc6 and enable C++ binding).
+
+    $ cd /path/to/openmpi-2.0.2-source
+    $ CC=gcc-6 CXX=g++-6 ./configure --prefix=/path/to/openmpi --enable-mpi-cxx 
+    $ make && make install
+
+Use `mpicc` and `mpicxx` complied as the above
+
+    $ export PATH=/path/to/openmpi/bin:$PATH
+
+    $ cd $HIVE
+    # Edit `netcdf_dir` if requied in `scripts/build_loader_libs_macosx_sierra.sh`, then
+    $ ./scripts/build_loader_libs_macosx_sierra.sh
 
 ## How to build HIVE
 
@@ -110,6 +161,9 @@ Use `CXX` and `CC` flag to specify custom compiler. e.g.:
     HIVE_BUILD_WITH_UDMLIB OFF CACHE BOOL "Build with UDMlib support?"
     HIVE_BUILD_WITH_BCMTOOLS OFF CACHE BOOL "Build with BCMTools support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
     HIVE_BUILD_WITH_COMPOSITOR OFF CACHE BOOL "Build with 234Compositor support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?(Also need to enable HIVE_BUILD_WITH_MPI option)"
+    SANITIZE_ADDRESS=On/Off : Enable/Disable Address sanitizer(HiveCore/Modules/SURFACE). Default = off.
+    BUILD_SHARED_LIBS=On/Off : Build HiveCore as module(.so) or static.
 
 ### K/FX10
 
@@ -120,6 +174,11 @@ Optionally edit `./scripts/cmake_k_cross.sh`, then
     $ ./scripts/cmake_k_cross.sh
     $ cd build
     $ make
+
+#### Known issues
+
+`hrender` must be build with `BUILD_SHARED_LIBS` `OFF`.
+Module build is not supported on K/FX10 platform at this time(causes runtime libstdc++ exception due to linkage/shared_lib problem)
 
 ### Linux
 
@@ -143,11 +202,26 @@ Optionally edit `./scripts/cmake_linux-x64-all.sh`, then
     $ cd build
     $ make
 
-### MacOSX OpenMP + MPI build
+##### Address sanitizer
+
+HiveCore, Modules and SURFACE can be built with address sanitizer(ASAN) support.
+We recommend to use recent clang compiler(gcc 4.8+ works, but clang has much better ASAN support)
+
+Plese set clang compiler to cmake and mpi(e.g. through CC/CXX environment), then add `-DSANITIZE_ADDRESS=On` to cmake flag.
+
+
+### MacOSX OpenMP + MPI build(Before Sierra)
 
     $ cd $HIVE
     $ mkdir build
     $ ./scripts/cmake_macosx_mpi.sh
+    $ cd build
+    $ make
+
+### macOS Sierra
+
+    $ cd $HIVE
+    $ ./scripts/cmake_macosx_mpi_sierra.sh
     $ cd build
     $ make
     
@@ -187,9 +261,9 @@ Optionally edit `./scripts/cmake_linux-x64-all.sh`, then
   * [x] triangle element
   * [ ] quad element
   * [x] tetra element
-  * [ ] pyramid element
-  * [ ] pentahedron element
-  * [x] hexahedron element(converted to triangle)
+  * [x] pyramid element
+  * [x] prism element
+  * [x] hexahedron element
   * [x] custom attributes
     * float and vec3 type
 

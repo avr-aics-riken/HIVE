@@ -12,7 +12,7 @@ camera:LookAt(
 	60
 )
 
-local obj= OBJLoader()
+local obj= LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 local poly = PolygonModel()
 poly:Create(obj:MeshData());
@@ -20,7 +20,7 @@ poly:SetShader('polygon.frag')
 poly:SetTranslate(50,0,0)
 
 
-local sph = VOLLoader()
+local sph = LoadModule("VolLoader")
 sph:Load('norm_u_lap_p_phi_psi_0000200100.4.vol')
 
 local volume = VolumeModel()
@@ -28,5 +28,3 @@ local volumedata = sph:VolumeData()
 volume:Create(volumedata)
 volume:SetShader('def_volume.frag')
 render {camera, volume, poly}
-
-

@@ -15,7 +15,7 @@ function JetTransferFunctionTexture()
    -- Create 1D transfer function texture
    -- Jet color table from OSPray example
    -- r, g, b, alpha
-   local tf = 
+   local tf =
         { 0         , 0           , 0.562493 , 1.0
         , 0         , 0           , 1        , 1.0
         , 0         , 1           , 1        , 1.0
@@ -35,8 +35,8 @@ function IceFireTransferFunctionTexture()
    -- Create 1D transfer function texture
    -- Ice/fire color table from OSPray example
    -- r, g, b, alpha
-   local tf = 
-        { 0         , 0           , 0           , 1.0 
+   local tf =
+        { 0         , 0           , 0           , 1.0
         , 0         , 0.120394    , 0.302678    , 1.0
         , 0         , 0.216587    , 0.524575    , 1.0
         , 0.0552529 , 0.345022    , 0.659495    , 1.0
@@ -65,8 +65,8 @@ function CoolToWarmTransferFunctionTexture()
    -- Create 1D transfer function texture
    -- Cool to warm color table from OSPray example
    -- r, g, b, alpha
-   local tf = 
-        { 0.231373  , 0.298039    , 0.752941    , 1.0 
+   local tf =
+        { 0.231373  , 0.298039    , 0.752941    , 1.0
         , 0.865003  , 0.865003    , 0.865003    , 1.0
         , 0.705882  , 0.0156863   , 0.14902     , 1.0 }
 
@@ -80,8 +80,8 @@ end
 function BlueToRedTransferFunctionTexture()
    -- Create 1D transfer function texture
    -- r, g, b, alpha
-   local tf = 
-        { 0         , 0           , 1           , 1.0 
+   local tf =
+        { 0         , 0           , 1           , 1.0
         , 1         , 0           , 0           , 1.0 }
 
    local width = #tf / 4
@@ -96,7 +96,7 @@ local tftex = JetTransferFunctionTexture()
 -- local tftex = CoolToWarmTransferFunctionTexture()
 -- local tftex = BlueToRedTransferFunctionTexture()
 
-local loader = RawVolumeLoader()
+local loader = LoadModule("RawVolumeLoader")
 -- .raw volume file can be found at http://ospray.github.io/demos.html for example.
 loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
 local volume = VolumeModel()
@@ -104,7 +104,7 @@ local volumedata = loader:VolumeData()
 
 volume:Create(volumedata)
 
-local analy = VolumeAnalyzer()
+local analy = requLoadModuleire("Analyzer").VolumeAnalyzer()
 analy:Execute(volume)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())
@@ -120,5 +120,3 @@ volume:SetFloat('tf_opacity', 0.01)
 
 
 render {camera, volume}
-
-

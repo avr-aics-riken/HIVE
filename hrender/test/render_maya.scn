@@ -55,11 +55,11 @@ function BuildLight(lightjson)
    local u = {2, 0, 0}
    local v = {0, -2, 0}
    local m = lightjson["matrix"]
-   local u_dir = {u[1] * m[1] + u[2] * m[5] + u[3] * m[9], 
-                  u[1] * m[2] + u[2] * m[6] + u[3] * m[10], 
+   local u_dir = {u[1] * m[1] + u[2] * m[5] + u[3] * m[9],
+                  u[1] * m[2] + u[2] * m[6] + u[3] * m[10],
                   u[1] * m[3] + u[2] * m[7] + u[3] * m[11]}
-   local v_dir = {v[1] * m[1] + v[2] * m[5] + v[3] * m[9], 
-                  v[1] * m[2] + v[2] * m[6] + v[3] * m[10], 
+   local v_dir = {v[1] * m[1] + v[2] * m[5] + v[3] * m[9],
+                  v[1] * m[2] + v[2] * m[6] + v[3] * m[10],
                   v[1] * m[3] + v[2] * m[7] + v[3] * m[11]}
    print(u_dir[1], u_dir[2], u_dir[3])
    print(v_dir[1], v_dir[2], v_dir[3])
@@ -108,7 +108,7 @@ function BuildLight(lightjson)
    -- [12:15] 3 floats: light v dir(quad)
    -- [16:19] shadow bias(1 float), invisible(1 float), no decay(1 float), double sided(1 float)
    -- [20:31] reserved.
-   for j = 1, numLights do 
+   for j = 1, numLights do
 
       table.insert(lighttextable, lightjson["color"][1]);
       table.insert(lighttextable, lightjson["color"][2]);
@@ -147,7 +147,7 @@ function BuildLight(lightjson)
 
    -- Build light shape
 
-   local gen = PrimitiveGenerator() 
+   local gen = PrimitiveGenerator()
    local shape = gen:Quad(1, 1)
    local lightPoly = PolygonModel()
    lightPoly:Create(shape)
@@ -155,7 +155,7 @@ function BuildLight(lightjson)
    --lightPoly:SetRotate(rotate[1], rotate[2], rotate[3])
    --lightPoly:SetTranslate(translate[1], translate[2], translate[3])
    lightPoly:SetTransformMatrix(m)
-   lightPoly:SetShader('pbs.frag') 
+   lightPoly:SetShader('pbs.frag')
    print("mat0", m[1], m[2], m[3], m[4])
    print("mat1", m[5], m[6], m[7], m[8])
    print("mat2", m[9], m[10], m[11], m[12])
@@ -188,7 +188,7 @@ local mattexWidth = 8
 -- [12:15] fresnel(float), ior(float), 2 floats: unused
 -- [16:19] 3 floats: emission, 1 float: unused
 -- [20:31] reserved.
-for j = 1, numMaterials do 
+for j = 1, numMaterials do
 
 	-- 0:3   diffuse(vec3, alpha not used)
 	if j == 1 then
@@ -294,7 +294,7 @@ local img = loader:ImageData()
 -- model0:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
 
 
-local obj1 = OBJLoader()
+local obj1 = LoadModule("ObjLoader")
 obj1:Load('maya_polygon.obj')
 local model1 = PolygonModel()
 local meshdata1 = obj1:MeshData()
@@ -309,7 +309,7 @@ model1:SetFloat("pbs_num_lights", numLights);
 model1:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
 model1:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-local analy = PolygonAnalyzer()
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
 analy:Execute(model1)
 print(analy:MinX())
 print(analy:MaxX())
@@ -319,7 +319,7 @@ print(analy:MinZ())
 print(analy:MaxZ())
 
 -- light poly
--- local obj2 = OBJLoader()
+-- local obj2 = LoadModule("ObjLoader")
 -- obj2:Load('arealight.obj')
 -- local model2 = PolygonModel()
 -- local meshdata2 = obj2:MeshData()

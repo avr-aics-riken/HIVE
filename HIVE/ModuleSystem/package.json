@@ -1,0 +1,46 @@
+{
+  "name": "HiveReact",
+  "main": "main.js",
+  "version": "1.0.0",
+  "dependencies": {
+    "buffercopy": "*",
+    "nanomsg": "*",
+    "react-color": "1.3.8",
+    "websocket": "*"
+  },
+  "devDependencies": {
+    "babel": "^5.8.35",
+    "babel-loader": "^5.0.0",
+    "webpack": "^1.12.11",
+    "webpack-dev-server": "^1.14.1",
+    "flux": "2.1.1",
+    "react": "0.14.7",
+    "react-dom": "0.14.7",
+    "superagent": "^1.7.1",
+    "eventemitter3": "*",
+    "electron-packager": "*",
+    "react-split-pane": "0.1.25",
+    "react-autosuggest": "4.0.0",
+    "react-vendor-prefix":"0.0.1",
+    "rc-menu": "4.12.4",
+    "react-slider": "0.6.1"
+  },
+  "window": {
+    "toolbar": true,
+    "resizable": false,
+    "fullscreen": false,
+    "width": 1280,
+    "height": 800
+  },
+  "scripts": {
+    "debug": "node --debug client/js/main.js",
+    "install": "node install.js",
+    "start": "..\\electron\\electron .",
+    "test": "export ENVIRONMENT=DEV && /Applications/Electron.app/Contents/MacOS/Electron .",
+    "linux": "export ENVIRONMENT=DEV && electron .",
+    "mac": "../electron/Electron.app/Contents/MacOS/Electron .",
+    "webpack": ".\\node_modules\\.bin\\webpack",
+    "watch": ".\\node_modules\\.bin\\webpack --watch",
+    "release": ".\\node_modules\\.bin\\webpack && node release.js"
+  }
+}

@@ -1,20 +1,35 @@
 language: cpp
 os:
-  - linux
-  - osx
-
+- linux
+- osx
 compiler: gcc
 sudo: required
 before_install:
-  - ./scripts/travis_setup.sh
-  - git submodule update --init
-
+- ./scripts/travis_setup.sh
+- git submodule update --init
+- CXX=mpicxx CC=mpicc ./scripts/build_nanomsg.sh
 install:
-  - export OMPI_CC=gcc-4.8
-  - export OMPI_CXX=g++-4.8
-  - CXX=mpicxx CC=mpicc cmake -H. -DLUA_USE_READLINE=Off -DLUA_USE_CURSES=Off -DHIVE_BUILD_WITH_MPI=On -DHIVE_BUILD_WITH_OPENMP=On -DBUILD_SHARED_LIBS=Off -DCMAKE_BUILD_TYPE=Release -Bbuild
-
+- export OMPI_CC=gcc-4.8
+- export OMPI_CXX=g++-4.8
+- CXX=mpicxx CC=mpicc cmake -H. -DLUA_USE_READLINE=Off -DLUA_USE_CURSES=Off -DHIVE_BUILD_WITH_MPI=On
+  -DHIVE_BUILD_WITH_OPENMP=On -DBUILD_SHARED_LIBS=Off -DCMAKE_BUILD_TYPE=Release -Bbuild
 script:
-  - export OMPI_CC=gcc-4.8
-  - export OMPI_CXX=g++-4.8
-  - make -C build VERBOSE=1
+- export OMPI_CC=gcc-4.8
+- export OMPI_CXX=g++-4.8
+- make -C build VERBOSE=1
+notifications:
+  slack: rikenhivedev:RQkEy9ZpqsW18gIXDPoWg1F0
+before_deploy:
+  - ./scripts/travis_packager.sh
+  - export RELEASE_PKG_FILE=$(ls dist/*.tar.gz)
+  - echo "deploying $RELEASE_PKG_FILE to GitHub releases"
+deploy:
+  provider: releases
+  api_key:
+    secure: EfGFHZxNSoyDmOnfPB87UvvR3zup/JoAzblnNMMlGy8nD0YjJIxif0LDBKb3VrXGKdg35NKOvt+uvmYPiZ11G0BBerprz5gjRewDkjR1i9Nb/eIF8cbB3SV8w4Sp7C8D/6U6nwdNhKd5u7wtDg6UGREwzPV7UwEkmow8s6CAFe81sO2swdSEK4Ap75gllrQrE6C65Zk6HjVi3+PDQPpl4/j15S5vInMgVBE4Tt6XE8J3fgheShWC3ewH7U5gjnNP+LpkVHq9xjpBMmekQHN4WlDejU0Ur1R06GR8aH4MHClzWQJ3oezbeXqptuKjwst/F/CcQK+iA1ZaB8VJQyYcdfB08PYo/ZlJ1UnKdXATlKFrRPDgXd8rS10nP4E+KnksFapQErz+oGw+PqFYJgopD9CXQS9jRaW++JEGH7XUbLzX3/TgU0yZP1WD98a3Mr5xWetPl+8RmJfEFnVB74fg0WdtYVxN7XpxmkXVaxa2UWKo0DtSrP/QODmLDLol9Yr5UotNVQhYid41MtzPaXVE8GSfwrYUdtomeycWSZoR5l+FVw/oRDEmFmAlydp9/ijQ37OJkvuz28Qq8z00HUwFctxl64P2JhmmY1llRBmhvQiX9p4H1LYe/vWZXV7rthZs6sdD+6x6jnCXAS0ALqeKkwaQjDTgNbowODbaIAAiEVU=
+  file: "${RELEASE_PKG_FILE}"
+  all_branches: true
+  skip_cleanup: true
+  on:
+    repo: avr-aics-riken/HIVE
+    tags: true

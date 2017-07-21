@@ -18,13 +18,13 @@ local meshdata = gen:Teapot(3.0)
 model:Create(meshdata)
 model:SetShader('normal.frag')
 
-local analy = PolygonAnalyzer()
-analy:Execute(model)
+local analy = LoadModule("Analyzer").PolygonAnalyzer()
+--[[analy:Execute(model)
 print(analy:MinX())
 print(analy:MaxX())
 print(analy:MinY())
 print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
-
+]]
 render {camera, model}

@@ -19,11 +19,11 @@ local depth  = 5
 
 local model = PolygonModel()
 local meshdata = gen:Cube(width, height, depth)
-model:Create(meshdata)
 model:SetShader('textured.frag')
+model:Create(meshdata)
 
 local loader = ImageLoader()
-local isloaded = loader:Load("testimg.jpg")
+local isloaded = loader:Load("testimg.tga")
 print('TEXTUREAAA', isloaded)
 local img = loader:ImageData()
 model:SetTexture('mytex0', img)

@@ -1,0 +1,14 @@
+{
+	"name": "Cube Generator",
+	"funcname": "CubeGenerator",
+	"info":"Cubeを生成するためのノード",
+	"customfuncfile":"generator.lua",
+    "input": [
+		{"name": "width", "type": "float", "value": 30.0},
+		{"name": "height", "type": "float", "value": 30.0},
+		{"name": "depth", "type": "float", "value": 30.0}
+	],
+	"output": [
+		{"name": "MeshData",  "type": "BufferMeshData"}
+	]
+}
