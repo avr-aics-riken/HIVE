@@ -192,10 +192,10 @@ void RegisterSceneClass(lua_State* L)
         LUA_SCRIPTCLASS_REGISTER(L, SolidAttribToVolume_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, SolidDfToVolume_Lua);
         LUA_SCRIPTCLASS_REGISTER(L, SolidToVolume_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VisioColorMapLoader_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VisioColorMapSaver_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VisioGradientMapLoader_Lua);
-        LUA_SCRIPTCLASS_REGISTER(L, VisioGradientMapSaver_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, ColorMapLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, ColorMapSaver_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, GradientMapLoader_Lua);
+        LUA_SCRIPTCLASS_REGISTER(L, GradientMapSaver_Lua);
         
         SetFunction(L, "ObjLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(OBJLoader_Lua));
         SetFunction(L, "StlLoader",           LUA_SCRIPTCLASS_NEW_FUNCTION(STLLoader_Lua));
@@ -241,10 +241,10 @@ void RegisterSceneClass(lua_State* L)
         SetFunction(L, "SolidAttribToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SolidAttribToVolume_Lua));
         SetFunction(L, "SolidDfToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SolidDfToVolume_Lua));
         SetFunction(L, "SolidToVolume",        LUA_SCRIPTCLASS_NEW_FUNCTION(SolidToVolume_Lua));
-        SetFunction(L, "VisioColorMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioColorMapLoader_Lua));
-        SetFunction(L, "VisioColorMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioColorMapSaver_Lua));
-        SetFunction(L, "VisioGradientMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioGradientMapLoader_Lua));
-        SetFunction(L, "VisioGradientMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(VisioGradientMapSaver_Lua));
+        SetFunction(L, "ColorMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(ColorMapLoader_Lua));
+        SetFunction(L, "ColorMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(ColorMapSaver_Lua));
+        SetFunction(L, "GradientMapLoader",        LUA_SCRIPTCLASS_NEW_FUNCTION(GradientMapLoader_Lua));
+        SetFunction(L, "GradientMapSaver",        LUA_SCRIPTCLASS_NEW_FUNCTION(GradientMapSaver_Lua));
         
         // nested modules
         register_Network_Lua(L);                // Network_Lua.h
