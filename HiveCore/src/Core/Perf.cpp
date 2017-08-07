@@ -1,10 +1,15 @@
 #include "Perf.h"
 
+#if !defined (__ICC) || !defined (__INTEL_COMPILER)
+#include <cstdio>
+#endif
+
 #ifdef HIVE_WITH_PMLIB
 #include "PerfMonitor.h" // PMlib
 
-// For Intel Compiler (mpi.h before cstdio)
+#if defined (__ICC) || defined (__INTEL_COMPILER)
 #include <cstdio>
+#endif
 
 #include <map>
 
