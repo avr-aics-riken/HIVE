@@ -1,9 +1,10 @@
 #include "Perf.h"
 
-#include <cstdio>
-
 #ifdef HIVE_WITH_PMLIB
 #include "PerfMonitor.h" // PMlib
+
+// For Intel Compiler (mpi.h before cstdio)
+#include <cstdio>
 
 #include <map>
 
