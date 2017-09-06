@@ -489,11 +489,13 @@ IF (NOT BUILD_SHARED_LIBS)
   # --------- Ext lib ------------------
   # PMlib
   IF(HIVE_BUILD_WITH_PMLIB)
-    #SET(PMLIB_LIBS
-    #  PMmpi
-    #)
+    SET(PMLIB_LIBS
+      PMmpi
+    )
 
-    #include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
+    add_definitions(-DHIVE_WITH_PMLIB)
+
+    include_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/include)
     link_directories(${CMAKE_SOURCE_DIR}/third_party/local/PMlib/lib)
   ENDIF()
 
@@ -536,6 +538,7 @@ IF (NOT BUILD_SHARED_LIBS)
   target_link_libraries(hrender ${BCMTOOLS_LIBS})
   target_link_libraries(hrender ${COMPOSITOR_LIBS})
   target_link_libraries(hrender ${TPLIB_LIBS})
+  target_link_libraries(hrender ${PMLIB_LIBS})
 
   # Link
   if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
