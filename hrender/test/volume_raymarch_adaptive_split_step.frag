@@ -163,7 +163,7 @@ void  main(void) {
         otherObjDist += tmin + tminOffset;
     }
 
-    bool hitOtherObj = false;
+    int hitOtherObj = 0;
 
 	float i = 0.0;
 	while((i < maxSamples) &&
@@ -194,14 +194,14 @@ void  main(void) {
 		t += tstep;
 		i = i + 1.0;
 
-        if(t > otherObjDist && hitOtherObj == false) {
+        if(t > otherObjDist && hitOtherObj == 0) {
             otherObjCol.rgb *= otherObjCol.a;
             col = (1. - col.a) * otherObjCol + col;
-            hitOtherObj = true;
+            hitOtherObj = 1;
         }
 	}
 
-    if(hitOtherObj == false) {
+    if(hitOtherObj == 0) {
         otherObjCol.rgb *= otherObjCol.a;
         col = (1. - col.a) * otherObjCol + col;
     }
