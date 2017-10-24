@@ -669,4 +669,9 @@ function stopHRenderServer() {
 	spawnProcesses = [];
 }
 
+function getPort() {
+	return port;
+}
+
 module.exports.stopHRenderServer = stopHRenderServer;
+module.exports.getPort = getPort;

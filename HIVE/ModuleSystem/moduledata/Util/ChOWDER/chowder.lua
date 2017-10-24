@@ -53,7 +53,7 @@ function ChOWDER:Do()
     -- send through websocket
     if (self.ws == nil) then
         self.ws = LoadModule("Network").Connection()
-        local nr = self.ws:Connect(v.url) --'ws://localhost:8082/v1/')
+        local nr = self.ws:Connect(v.url) --'ws://localhost:8081/v2/')
         self.url = v.url
         if not nr then
             print('Chowder Connect faild:', v.url);

@@ -44,7 +44,7 @@ app.on('ready', function () {
     
     
     //mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html') + '?url=' + encodedURL);
-    mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html'));
+    mainWindow.loadURL(path.join('file://' + __dirname, './client/index.html') + '?port=' + String(server.getPort()));
 
 	mainWindow.on('close', function () {
 		if (server.stopHRenderServer) {
