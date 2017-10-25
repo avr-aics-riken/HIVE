@@ -18,6 +18,8 @@ function ChOWDER:Do()
         print "image nil"
         return "Image is not connected."
     end
+    local width = v.screensize[1] 
+    local height = v.screensize[2] 
     
     local saver = ImageSaver()
     local imageBuffer = saver:SaveMemory(1, image)
@@ -25,18 +27,38 @@ function ChOWDER:Do()
 
     -- create metabinary
     local metabin = LoadModule("Network").MetaBinary()
-    local json = [[{
-            "jsonrpc" : "2.0",
-            "method" : "AddContent",
-            "to" : "master",
-            "params" : {
-                "id" : "]] .. self.id .. [[",
-                "content_id" : "]] .. self.id .. [[",
-                "type" : "image",
-                "width" : "512",
-                "height" : "512"
-            }
-    }]]
+    local json; 
+    if self.preWidth ~= width or self.preHeight ~= height then
+        json = [[{
+                "jsonrpc" : "2.0",
+                "method" : "AddContent",
+                "to" : "master",
+                "params" : {
+                    "id" : "]] .. self.id .. [[",
+                    "content_id" : "]] .. self.id .. [[",
+                    "type" : "image",
+                    "orgWidth" : "]] .. width .. [[",
+                    "orgHeight" : "]] .. height .. [[",
+                    "width" : "]] .. width .. [[",
+                    "height" : "]] .. height .. [["
+                }
+        }]]
+    else
+        json = [[{
+                "jsonrpc" : "2.0",
+                "method" : "AddContent",
+                "to" : "master",
+                "params" : {
+                    "id" : "]] .. self.id .. [[",
+                    "content_id" : "]] .. self.id .. [[",
+                    "type" : "image",
+                    "orgWidth" : "]] .. width .. [[",
+                    "orgHeight" : "]] .. height .. [["
+                }
+        }]]
+    end
+    self.preWidth = width
+    self.preHeight = height
     
     print(json)
     metabin:Create(json, imageBuffer, imageBufferSize) 
