@@ -1,6 +1,8 @@
 function RenderForSIP(arg)
+	local id = "id_" .. tostring(arg.ID)
 	render(arg.RenderObject)
 	for i,v in pairs(arg.RenderObject) do
+		--print("ID", id)
 		print(i, v:GetType())
 		if v:GetType() == 'CAMERA' then
 			-- save render image as jpg on memory
@@ -15,11 +17,11 @@ function RenderForSIP(arg)
 				 "method" : "AddContent",
 				 "to" : "master",
 				 "params" : {
+					"id" : "]] .. id .. [[",
+					"content_id" : "]] .. id .. [[",
 					 "type" : "image",
-					 "posx" : "100",
-					 "posy" : "100",
-					 "width" : "512",
-					 "height" : "512"
+					 "orgWidth" : "512",
+					 "orgHeight" : "512"
 				 }
 			}]]
 			metabin:Create(json, imageBuffer, imageBufferSize) 
