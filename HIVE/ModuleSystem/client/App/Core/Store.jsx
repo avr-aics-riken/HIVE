@@ -101,12 +101,26 @@ export default class Store extends EventEmitter {
 		this.getFrameRange = this.getFrameRange.bind(this);
 	}
 
+	getPortFromLoaction() {
+		if (location.search){
+			/* URLの「?」以降のパラメータを変数nに代入 */
+			let port = location.search.split("?port=").join("");
+			return port;
+		}
+		return "";
+	}
+			
     // private:
 	initHive(nodePlugData) {
 		this.hive = new Hive();
 		var hostaddr = location.host;
+		let port = this.getPortFromLoaction();
 		if (hostaddr === "") { // electron
-			hostaddr = "localhost:8080";
+			if (port) {
+				hostaddr = "localhost:" + port;
+			} else {
+				hostaddr = "localhost:8080";
+			}
 		}
 		this.hive.connect('ws://' + hostaddr); //, '', true);
 

@@ -5,7 +5,8 @@
 	"customfuncfile":"chowder.lua",
     "input": [
         {"name": "image", "type": "BufferImageData"},
-		{"name": "url", "type": "string", "value": "ws://localhost:8082/v2/"}
+		{"name": "url", "type": "string", "value": "ws://localhost:8081/v2/"},
+		{"name": "screensize", "type": "vec2", "value": [512,512]}
 	],
 	"output": []
 }

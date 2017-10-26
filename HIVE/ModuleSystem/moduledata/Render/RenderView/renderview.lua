@@ -147,3 +147,7 @@ end
 function RenderView:Image()
     return self.cam:GetImageBuffer()
 end
+
+function RenderView:ScreenSize()
+    return self.value.screensize
+end
