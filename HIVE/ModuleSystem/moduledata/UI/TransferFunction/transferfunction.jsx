@@ -1,6 +1,25 @@
 import React from 'react';
 import ReactDOM from "react-dom";
 
+function getData(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = (function(xhr) {
+        if (this.readyState == 4) { // DONE
+            if (this.status == 200) { // OK
+                if (callback) {
+                    const jsondata = JSON.parse(this.response);
+                    const errmsg = jsondata.error;
+                    callback(errmsg, jsondata.data);
+                }
+            } else {
+                console.log("status = " + this.status);
+            } 
+        }    
+    }).bind(xhr);
+    xhr.open("GET", url);
+    xhr.send();
+}
+
 class TransferFunction extends React.Component {
     constructor(props) {
         super(props);
@@ -53,7 +72,7 @@ class TransferFunction extends React.Component {
 
         // state
         this.state = {
-            selValue: "0",
+            selValue: "Custom",
             viewType: "1",
             valMin: null,//this.props.node.input[2].value,
             valMax: null,//this.props.node.input[3].value,
@@ -65,11 +84,23 @@ class TransferFunction extends React.Component {
             allbtnColor: '#fff'
         };
         this.selValues =  [
-            {value: "0", text: "Custom"},
+            {value: "Custom", text: "Custom"}
+            /*,
             {value: "1", text: "Blue and Red"},
             {value: "2", text: "Black and White"},
-            {value: "3", text: "BGR Gradation"}
+            {value: "3", text: "BGR Gradation"},
+            {value: "4", text: "Ocean"},
+            {value: "5", text: "GreenFluid"},
+            {value: "6", text: "Orange Gradation"}
+            */
         ];
+        
+        this.hostaddr = this.store.getHostAddress();
+       
+        this.colormapPreset = {};
+        this.colormapOrder = [];
+        this.loadColorMapPresets();
+        
         this.viewTypes = [
             {value: "0", text: "Logscale"},
             {value: "1", text: "Linear"},
@@ -132,41 +163,82 @@ class TransferFunction extends React.Component {
             });
         };
      }
+     
+     loadColorMapPresets() {
+        const url = "http://" + this.hostaddr + "/colormap_preset";
+        getData(url, (err, data) => {
+            console.log("colormap_preset", data)
+            for (let fileName in data) {
+                if (data.hasOwnProperty(fileName)) {
+                    if (fileName.indexOf(".json") >= 0) {
+                        let jsonData = JSON.parse(data[fileName]);
+                        for (let setting in jsonData) {
+                            if (jsonData.hasOwnProperty(setting)) {
+                                let fileName = jsonData[setting].name;
+                                let name = fileName.split(".txt").join("");
+                                this.colormapOrder.push(name);
+                            }
+                        }
+                    }
+                }
+            }
+            for (let fileName in data) {
+                if (data.hasOwnProperty(fileName)) {
+                    if (fileName.indexOf(".txt") >= 0) {
+                        let rgbaData = {
+                            r : [],
+                            g : [],
+                            b : [],
+                            a : []
+                        }
+                        let colorData = data[fileName].split(/\r\n|\r|\n/);
+                        for (let i = 0; i < colorData.length; ++i) {
+                            if (i > 0 && i <= 256) {
+                                let rgba = colorData[i].split(" ");
+                                rgbaData.r[i - 1] = Number(rgba[0]);
+                                rgbaData.g[i - 1] = Number(rgba[1]);
+                                rgbaData.b[i - 1] = Number(rgba[2]);
+                                rgbaData.a[i - 1] = Number(rgba[3]);
+                            }
+                        }
+                        let name = fileName.split(".txt").join("");
+                        this.colormapPreset[name] = rgbaData;
+                    }
+                }
+            }
+            for (let name in this.colormapPreset) {
+                if (this.colormapOrder.indexOf(name) >= 0) {
+                    let index = this.colormapOrder.indexOf(name) + 1;
+                    this.selValues[index] = {
+                        value : name,
+                        text : name
+                    }
+                }
+            }
+            for (let name in this.colormapPreset) {
+                if (this.colormapOrder.indexOf(name) < 0) {
+                    this.selValues.push({
+                        value : name,
+                        text : name
+                    });
+                }
+            }
+        });
+     }
+     
      onRecieveAnalyzed(data) {
         this.setAnalyzeResult(data);
      }
      onSelectChange(eve){
-        var e = eve.target.value;
-        var t = parseInt(e);
-        var changed =  (t !== this.state.selValue);
-        this.setState({selValue: t});
-        if (t === 1) {
-            for (let i = 0; i < this.numVals; ++i){
-                this.value.r[i]   = i / this.numVals;
-                this.value.g[i] = 0.0;
-                this.value.b[i]  = 1.0 - i / this.numVals;
-                this.value.a[i] = 1.0;
-            }
-        } else if (t === 2) {
-            for (let i = 0; i < this.numVals; ++i){
-                this.value.r[i]   = i / this.numVals;
-                this.value.g[i] = i / this.numVals;
-                this.value.b[i]  = i / this.numVals;
-                this.value.a[i] = 1.0;
-            }
-        } else if (t === 3) {
-            for (let i = 0; i < this.numVals; ++i){
-                this.value.r[i]   = i / this.numVals;
-                this.value.g[i] = Math.sin(i / this.numVals * Math.PI);
-                this.value.b[i]  = 1.0 - i / this.numVals;
-                this.value.a[i] = 1.0;
-            }
-        }
+        let t = eve.target.value;
+        let changed =  (t !== this.state.selValue);
         
+        if (t !== "Custom") {
+            this.value = JSON.parse(JSON.stringify(this.colormapPreset[t]));
+        }
         if (changed) {
             this.undoBuffer.unshift(JSON.stringify(this.value));
         }
-
 
         this.drawGraph();
         if (this.changeCallback){
@@ -637,7 +709,7 @@ class TransferFunction extends React.Component {
             var undoValue = this.undoBuffer[0];
             this.value = JSON.parse(undoValue);
             this.changeCallback();
-            this.setState({selValue: 0});
+            this.setState({selValue: "Custom"});
         }
     }
     
@@ -647,7 +719,7 @@ class TransferFunction extends React.Component {
             this.value = JSON.parse(redoValue);
             this.undoBuffer.unshift(redoValue);
             this.changeCallback();
-            this.setState({selValue: 0});
+            this.setState({selValue: "Custom"});
         }
     }
     
