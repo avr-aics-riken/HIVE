@@ -4,30 +4,14 @@
 
 #include "Volren.h"
 
-class Volren::Impl
-{
-public:
-    /// コンストラクタ
-    Impl()
-    {
-    }
-
-    /// デストラクタ
-    ~Impl()
-    {
-    }
-};
-
 /// コンストラクタ
-Volren::Volren() : RenderObject(TYPE_VOLUME)
+Volren::Volren()
 {
-    m_imp = new Impl();
 }
 
 /// デストラクタ
 Volren::~Volren()
 {
-    delete m_imp;
 }
 
 int Volren::SetTransferFunctionTexture(BufferImageData* tex)

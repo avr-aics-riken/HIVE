@@ -6,6 +6,8 @@
 #define _VOLREN_H
 
 #include "Ref.h"
+#include "../Core/vxmath.h"
+#include "../HiveCore/src/RenderObject/VolumeModel.h"
 #include "../HiveCore/src/RenderObject/RenderObject.h"
 
 class BufferImageData;
@@ -13,12 +15,8 @@ class BufferImageData;
 /**
  * Volren
  */
-class Volren : public RenderObject
+class Volren : public VolumeModel
 {
-private:
-    class Impl;
-    Impl* m_imp;
-    
 public:
 	Volren();
 	~Volren();
