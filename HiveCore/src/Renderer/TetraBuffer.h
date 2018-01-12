@@ -25,7 +25,7 @@ private:
     RefPtr<const TetraModel> m_model;
     
 public:
-    TetraBuffer(RENDER_MODE mode);
+    TetraBuffer(RenderPlugin* render);
     ~TetraBuffer();
 
     bool Create(const TetraModel* model);

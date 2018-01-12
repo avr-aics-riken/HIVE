@@ -31,7 +31,7 @@ namespace {
 }
 
 /// コンストラクタ
-VectorBuffer::VectorBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+VectorBuffer::VectorBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_line_vtx_id    = 0;
     m_tetra_vtx_id   = 0;

@@ -25,7 +25,7 @@ namespace {
 }
 
 /// コンストラクタ.
-PolygonBuffer::PolygonBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+PolygonBuffer::PolygonBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtx_id     = 0;
     m_normal_id  = 0;

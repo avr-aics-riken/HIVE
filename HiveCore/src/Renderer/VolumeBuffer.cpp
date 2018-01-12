@@ -14,7 +14,7 @@
 #include <string.h>
 
 /// コンストラクタ
-VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+VolumeBuffer::VolumeBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtx_id     = 0;
     m_normal_id  = 0;

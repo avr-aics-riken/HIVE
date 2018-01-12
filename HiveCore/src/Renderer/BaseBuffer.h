@@ -15,6 +15,7 @@
 class Camera;
 class RenderObject;
 class BufferImageData;
+class RenderPlugin;
 
 #include <map>
 #include <string>
@@ -25,10 +26,11 @@ class BufferImageData;
 class BaseBuffer : public RefCount
 {
 protected:
-    BaseBuffer(RENDER_MODE mode);
+    BaseBuffer(RenderPlugin* render);
     virtual ~BaseBuffer();
     
-    RENDER_MODE m_mode;
+    RenderPlugin* m_render;
+    RENDER_MODE m_mode; // deprecated
     unsigned int m_prog;
     
     std::map<std::string, unsigned int> m_extraIdx;

@@ -25,7 +25,7 @@ namespace {
 
 
 /// コンストラクタ
-TetraBuffer::TetraBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+TetraBuffer::TetraBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_model       = 0;
     m_vtxnum      = 0;

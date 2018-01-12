@@ -28,7 +28,7 @@ namespace {
 
 
 /// コンストラクタ
-LineBuffer::LineBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+LineBuffer::LineBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtxnum      = 0;
     m_indexnum    = 0;

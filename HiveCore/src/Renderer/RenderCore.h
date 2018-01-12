@@ -14,8 +14,10 @@
 class RenderObject;
 class BufferImageData;
 
+class RenderPlugin;
+
 /**
- * hrenderコア機能部クラス
+ * Renderingコア機能部クラス
  */
 class RenderCore
 {
@@ -42,9 +44,8 @@ public:
     bool ClearShaderCache(const char* srcname);
     
 private:
-    RenderCore(RENDER_MODE mode);
+    RenderCore(RenderPlugin* render);
     ~RenderCore();
 
-    class Impl;
-    Impl* m_imp;
+    RenderPlugin* m_imp;
 };

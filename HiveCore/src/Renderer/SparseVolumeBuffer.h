@@ -40,7 +40,7 @@ private:
     bool MakeBox(float width, float height, float depth);
     bool CreateSparseTexture3D(const BufferSparseVolumeData* volume, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
 public:
-    SparseVolumeBuffer(RENDER_MODE mode);
+    SparseVolumeBuffer(RenderPlugin* render);
     ~SparseVolumeBuffer();
 
     bool Create(const SparseVolumeModel* model);

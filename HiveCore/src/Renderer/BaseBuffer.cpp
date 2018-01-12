@@ -10,7 +10,8 @@
 #include "../Buffer/BufferImageData.h"
 #include "../Buffer/BufferExtraData.h"
 
-#include "../Renderer/RenderCore.h"
+//#include "../Renderer/RenderCore.h"
+#include "../Renderer/RenderPlugin.h"
 
 #include "Commands.h"
 
@@ -49,8 +50,8 @@ namespace {
 }
 
 /// コンストラクタ
-BaseBuffer::BaseBuffer(RENDER_MODE mode)
-: m_mode(mode), m_prog(0)
+BaseBuffer::BaseBuffer(RenderPlugin* render)
+: m_render(render), m_prog(0), m_mode(render->GetRenderMode())
 {
 }
 
@@ -272,9 +273,8 @@ void BaseBuffer::unbindExtraBuffers(const RenderObject* obj) const
  */
 bool BaseBuffer::loadShaderSrc(const char* srcname)
 {
-    RenderCore* core = RenderCore::GetInstance();
     m_prog = 0;
-    return core->CreateProgramSrc(srcname, m_prog);
+    return m_render->CreateProgramSrc(srcname, m_prog);
 }
 
 /// シェーダプログラムを返す.
@@ -290,9 +290,8 @@ unsigned int BaseBuffer::getProgram() const
  */
 unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
 {
-    RenderCore* core = RenderCore::GetInstance();
     unsigned int tex = 0;
-    bool haveTex = core->GetTexture(buf, tex);
+    bool haveTex = m_render->GetTexture(buf, tex);
     if (!haveTex) {
         fprintf(stderr, "Not Cached texture\n");
     }
@@ -305,11 +304,11 @@ unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
  */
 bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
-    RenderCore* core = RenderCore::GetInstance();
+    //RenderCore* core = RenderCore::GetInstance();
     unsigned int tex;
-    bool haveTex = core->GetTexture(buf, tex);
+    bool haveTex = m_render->GetTexture(buf, tex);
     if (!haveTex) {
-        core->CreateTexture(buf, tex);
+        m_render->CreateTexture(buf, tex);
     }
     if (buf->IsNeedUpdate()) {
         buf->updated();

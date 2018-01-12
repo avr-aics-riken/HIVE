@@ -15,7 +15,7 @@
 #include "Commands.h"
 
 /// コンストラクタ
-SparseVolumeBuffer::SparseVolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+SparseVolumeBuffer::SparseVolumeBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtx_id     = 0;
     m_normal_id  = 0;

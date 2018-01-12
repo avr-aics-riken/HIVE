@@ -24,7 +24,7 @@ private:
     RefPtr<const SolidModel> m_model;
     
 public:
-    SolidBuffer(RENDER_MODE mode);
+    SolidBuffer(RenderPlugin* render);
     ~SolidBuffer();
 
     bool Create(const SolidModel* model);

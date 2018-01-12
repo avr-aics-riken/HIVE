@@ -22,7 +22,7 @@ namespace {
 
 
 /// コンストラクタ
-PointBuffer::PointBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+PointBuffer::PointBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtxnum      = 0;
     m_model       = 0;

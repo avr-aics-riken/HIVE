@@ -67,8 +67,12 @@ extern "C" {
 }
 #endif
 
+#include "RenderPlugin.h"
 
 namespace {
+
+    ImageSaver m_imagesaver;
+
     inline std::string make_lowercase(const std::string& in)
     {
         std::string out;
@@ -119,74 +123,11 @@ namespace {
 }
 
 /**
- * hrenderコア機能部
+ * RenderPlugin
  */
-class RenderCore::Impl {
 
-private:
-    int m_width;
-    int m_height;
-    RENDER_MODE m_mode;
-    
-    // Framebuffers
-    unsigned int m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer;
-    VX::Math::vec4 m_clearcolor;
-    
-    const Camera* m_currentCamera;
-    
-    // Rendering nodes
-    typedef std::vector<RefPtr<RenderObject> > RenderObjectArray;
-    RenderObjectArray m_renderObjects;
-    
-    // Device caches
-    /*typedef std::map<const PolygonModel*, RefPtr<PolygonBuffer> > PolygonBufferMap;
-    typedef std::map<const PointModel*,   RefPtr<PointBuffer> >   PointBufferMap;
-    typedef std::map<const VolumeModel*,  RefPtr<VolumeBuffer> >  VolumeBufferMap;
-    PolygonBufferMap m_polygonBuffers;
-    PointBufferMap   m_pointBuffers;
-    VolumeBufferMap  m_volumeBuffers;*/
-    typedef std::map<const std::string, unsigned int> ShaderCache;
-    typedef std::map<const BufferImageData*, unsigned int> TextureCache;
-    typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
-    BufferMap m_buffers;
-    TextureCache m_textureCache;
-    ShaderCache  m_shaderCache;
-    
-    ImageSaver m_imagesaver;
-
-#ifdef HIVE_WITH_COMPOSITOR
-	int  m_compPixelType;
-	bool m_compInitialized;
-#endif
-    
-    double m_renderTimeout;
-    double m_oldCallbackTime;
-    bool (*m_progressCallback)(double);
-    static bool progressCallbackFunc_(int progress, int y, int height, void* ptr) {
-        return static_cast<Impl*>(ptr)->progressCallbackFunc(progress, y, height);
-    }
-    
-    bool progressCallbackFunc(int progress, int y, int height) {
-        const double tm = GetTimeCount();
-        const int minimumRenderingHeight = 16; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
-        if (height > minimumRenderingHeight
-        && (tm - m_oldCallbackTime > m_renderTimeout)) {
-            m_oldCallbackTime = tm;
-            if (!m_progressCallback)
-                return true;
-            return m_progressCallback(static_cast<double>(progress));
-        }
-        return true;
-    }
-    static bool defaultProgressCallbackFunc(double progress) {
-        printf("[Rendering] %3d%%\n", static_cast<int>(progress));
-        return true;
-    }
-    
-    
-public:
     /// コンストラクタ
-    Impl(RENDER_MODE mode)
+    RenderPlugin::RenderPlugin(RENDER_MODE mode)
     {
         m_mode       = mode;
         m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
@@ -202,7 +143,7 @@ public:
 #ifndef USE_GLSL_CONFIG
         LSGL_CompilerSetting();
 #endif
-        SetCallback_SGL(Impl::progressCallbackFunc_, this);
+        SetCallback_SGL(RenderPlugin::progressCallbackFunc_, this);
         
         
         if (m_mode == RENDER_OPENGL) {
@@ -227,16 +168,29 @@ public:
     }
     
     /// デストラクタ
-    ~Impl() {
+    RenderPlugin::~RenderPlugin() {
         ReleaseBuffer_GS[m_mode](m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer);
         
 #ifdef HIVE_WITH_COMPOSITOR
 
 #endif
     }
-    
+
+    bool RenderPlugin::progressCallbackFunc(int progress, int y, int height) {
+        const double tm = GetTimeCount();
+        const int minimumRenderingHeight = 16; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
+        if (height > minimumRenderingHeight
+        && (tm - m_oldCallbackTime > m_renderTimeout)) {
+            m_oldCallbackTime = tm;
+            if (!m_progressCallback)
+                return true;
+            return m_progressCallback(static_cast<double>(progress));
+        }
+        return true;
+    }
+
     /// LSGLコンパイラセッティング
-    void LSGL_CompilerSetting()
+    void RenderPlugin::LSGL_CompilerSetting()
     {
         std::string binaryPath = getBinaryDir();
 #ifdef __APPLE__
@@ -272,7 +226,7 @@ public:
     }
     
     /// バッファのクリア
-    void ClearBuffers()
+    void RenderPlugin::ClearBuffers()
     {
         m_buffers.clear();
         
@@ -292,7 +246,7 @@ public:
         
     }
     
-    void SetParallelRendering(bool enableParallel)
+    void RenderPlugin::SetParallelRendering(bool enableParallel)
     {
         if (m_mode != RENDER_SURFACE)
             return;
@@ -301,24 +255,24 @@ public:
 
     /// レンダーオブジェクトの追加
     /// @param robj レンダーオブジェクト
-    void AddRenderObject(RenderObject* robj)
+    void RenderPlugin::AddRenderObject(RenderObject* robj)
     {
         m_renderObjects.push_back(robj);
     }
     
     /// レンダーオブジェクトのクリア
-    void ClearRenderObject()
+    void RenderPlugin::ClearRenderObject()
     {
         m_renderObjects.clear();
     }
     
     /// プログレスコールバックの設定
-    void SetProgressCallback(bool (*func)(double))
+    void RenderPlugin::SetProgressCallback(bool (*func)(double))
     {
         m_progressCallback = func;
     }
  
-    bool GetTexture(const BufferImageData* bufimg, unsigned int& id)
+    bool RenderPlugin::GetTexture(const BufferImageData* bufimg, unsigned int& id)
     {
         TextureCache::const_iterator it = m_textureCache.find(bufimg);
         if (it != m_textureCache.end()) {
@@ -328,7 +282,7 @@ public:
         return false;
     }
 
-    bool CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+    bool RenderPlugin::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
     {
         TextureCache::const_iterator it = m_textureCache.find(bufimg);
         if (it != m_textureCache.end()) {
@@ -339,7 +293,7 @@ public:
         return true;
     }
 
-    bool DeleteTexture(const BufferImageData* bufimg)
+    bool RenderPlugin::DeleteTexture(const BufferImageData* bufimg)
     {
         TextureCache::iterator it = m_textureCache.find(bufimg);
         if (it != m_textureCache.end()) {
@@ -350,7 +304,7 @@ public:
         return false;
     }
     
-    bool CreateProgramSrc(const char* srcname, unsigned int& prg)
+    bool RenderPlugin::CreateProgramSrc(const char* srcname, unsigned int& prg)
     {
         ShaderCache::const_iterator it = m_shaderCache.find(srcname);
         if (it != m_shaderCache.end()) {
@@ -364,7 +318,7 @@ public:
         return true;
     }
     
-    bool ClearShaderCache(const char* srcname)
+    bool RenderPlugin::ClearShaderCache(const char* srcname)
     {
         ShaderCache::iterator it = m_shaderCache.find(srcname);
         if (it != m_shaderCache.end()) {
@@ -374,7 +328,7 @@ public:
     }
     
     /// レンダリング
-    void Render()
+    void RenderPlugin::Render()
     {
         m_oldCallbackTime = 0.0;//GetTimeCount();
         RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
@@ -433,50 +387,50 @@ public:
         }
     }
    
-private:
     
     /// カレントカメラのセット
     /// @param camera カメラ
-    void setCurrentCamera(const Camera* camera)
+    void RenderPlugin::setCurrentCamera(const Camera* camera)
     {
         m_currentCamera = camera;
     }
     
     /// SGLバッファの作成
     /// @param robj レンダーオブジェクト
-    BaseBuffer* createBuffer(const RenderObject* robj, RENDER_MODE mode)
+    BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)
     {
+        RenderPlugin* render = this;
         BaseBuffer* buffer = 0;
         if (robj->GetType() == RenderObject::TYPE_POLYGON) {
-            PolygonBuffer* pbuf = new PolygonBuffer(mode);
+            PolygonBuffer* pbuf = new PolygonBuffer(render);
             pbuf->Create(static_cast<const PolygonModel*>(robj));
             buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_POINT) {
-            PointBuffer* pbuf = new PointBuffer(mode);
+            PointBuffer* pbuf = new PointBuffer(render);
             pbuf->Create(static_cast<const PointModel*>(robj));
             buffer = pbuf;
         } else if (robj->GetType() == RenderObject::TYPE_LINE) {
-            LineBuffer* lbuf = new LineBuffer(mode);
+            LineBuffer* lbuf = new LineBuffer(render);
             lbuf->Create(static_cast<const LineModel*>(robj));
             buffer = lbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VOLUME) {
-             VolumeBuffer* vbuf = new VolumeBuffer(mode);
+             VolumeBuffer* vbuf = new VolumeBuffer(render);
              vbuf->Create(static_cast<const VolumeModel*>(robj));
              buffer = vbuf;
         } else if (robj->GetType() == RenderObject::TYPE_SPARSEVOLUME) {
-             SparseVolumeBuffer* vbuf = new SparseVolumeBuffer(mode);
+             SparseVolumeBuffer* vbuf = new SparseVolumeBuffer(render);
              vbuf->Create(static_cast<const SparseVolumeModel*>(robj));
              buffer = vbuf;
         } else if (robj->GetType() == RenderObject::TYPE_TETRA) {
-            TetraBuffer* tbuf = new TetraBuffer(mode);
+            TetraBuffer* tbuf = new TetraBuffer(render);
             tbuf->Create(static_cast<const TetraModel*>(robj));
             buffer = tbuf;
         } else if (robj->GetType() == RenderObject::TYPE_SOLID) {
-            SolidBuffer* tbuf = new SolidBuffer(mode);
+            SolidBuffer* tbuf = new SolidBuffer(render);
             tbuf->Create(static_cast<const SolidModel*>(robj));
             buffer = tbuf;
         } else if (robj->GetType() == RenderObject::TYPE_VECTOR) {
-             VectorBuffer* vbuf = new VectorBuffer(mode);
+             VectorBuffer* vbuf = new VectorBuffer(render);
              vbuf->Create(static_cast<const VectorModel*>(robj));
              buffer = vbuf;
         } else {
@@ -489,7 +443,7 @@ private:
     
     /// SGLで描画
     /// @param robj レンダーオブジェクト
-    void draw(const RenderObject* robj, RENDER_MODE mode)
+    void RenderPlugin::draw(const RenderObject* robj)
     {
         if (robj->GetType() == RenderObject::TYPE_CAMERA) {
             return;
@@ -500,7 +454,7 @@ private:
         if (it != m_buffers.end()) {
             buffer = it->second.Get();
         } else {
-            BaseBuffer* buf = createBuffer(robj, mode);
+            BaseBuffer* buf = createBuffer(robj);
             m_buffers[robj] = buf;
             buffer = buf;
         }
@@ -520,7 +474,7 @@ private:
 
     /// 画像の書き戻し
     /// @param color カラーバッファ
-    void readbackDepth(BufferImageData* depth)
+    void RenderPlugin::readbackDepth(BufferImageData* depth)
     {
         FloatBuffer* fbuf = depth->FloatImageBuffer();
         if (fbuf) {
@@ -556,7 +510,7 @@ private:
     }
     /// 画像の書き戻し
     /// @param color カラーバッファ
-    void readbackImage(BufferImageData::FORMAT format, BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
+    void RenderPlugin::readbackImage(BufferImageData::FORMAT format, BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
     {
         const float clearcolor_r = clr_r;
         const float clearcolor_g = clr_g;
@@ -630,7 +584,7 @@ private:
     }
     
     /// オブジェクトのレンダリング
-    void renderObjects()
+    void RenderPlugin::renderObjects()
     {
         //printf("RenderCore::RENDER!!!!\n");
         
@@ -644,7 +598,7 @@ private:
         RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
-            draw((*it), m_mode);
+            draw((*it));
         }
         
         //BindProgram_SGL(0); // TODO: not need to release?
@@ -653,7 +607,7 @@ private:
     
     /// リサイズ
     /// @param camera カメラ
-    void resize(Camera* camera)
+    void RenderPlugin::resize(Camera* camera)
     {
         const std::string& outfile = camera->GetOutputFile();
         const std::string& imagebuffer_format = camera->GetImageBufferFormat();
@@ -711,10 +665,10 @@ private:
         }
     }
 
-    
-};
 
 // ----------------------------------------------------
+// RenderCore
+// ---------------
 
 /// インスタンスの取得
 namespace {
@@ -724,7 +678,7 @@ namespace {
 RenderCore* RenderCore::GetInstance(RENDER_MODE mode)
 {
     if (!rc_inst) {
-        rc_inst = new RenderCore(mode);
+        rc_inst = new RenderCore(new RenderPlugin(mode));
     }
 	return rc_inst;
 }
@@ -737,7 +691,7 @@ void RenderCore::Finalize()
 
 
 /// コンストラクタ
-RenderCore::RenderCore(RENDER_MODE mode) : m_imp(new Impl(mode)) {}
+RenderCore::RenderCore(RenderPlugin* render) : m_imp(render) {}
 /// デストラクタ
 RenderCore::~RenderCore()  { delete m_imp; }
 

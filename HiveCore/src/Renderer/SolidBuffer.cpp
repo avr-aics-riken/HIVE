@@ -11,7 +11,7 @@
 #include "Commands.h"
 
 /// コンストラクタ
-SolidBuffer::SolidBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+SolidBuffer::SolidBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_model       = 0;
     m_vtxnum      = 0;
