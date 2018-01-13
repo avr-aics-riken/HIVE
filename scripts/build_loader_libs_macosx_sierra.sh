@@ -1,12 +1,19 @@
 #!/bin/sh
 
-# OpenMP is disabled.
+# <<Setup>>
+#
+# To use OpenMP (-fopenmp) with clang on OSX High Sierra
+#
+# brew install llvm
+# export PATH=/usr/local/opt/llvm/bin:$PATH
+# export LD_LIBRARY_PATH="/usr/local/opt/llvm/lib:$LD_LIBRARY_PATH"
+# export LIBRARY_PATH="/usr/local/opt/llvm/lib:$LIBRARY_PATH"
 
 topdir=`pwd`
 installdir=`pwd`/third_party/local
 
 # Path to homebew intalled NetCDF dir
-netcdf_dir=/usr/local/
+netcdf_dir=/usr/local/Cellar/netcdf/4.5.0
 
 if [ -z "${CMAKE_BIN+x}" ]; then
   CMAKE_BIN=cmake
@@ -182,6 +189,12 @@ function build_udmlib {
 	rm -rf Zoltan_v3.81/
 	rm -rf Zoltan_build/
 	tar -zxvf zoltan_distrib_v3.81.tar.gz
+
+        # Apply a patch for perl script(e.g. Newer Perl 5.22 on Ubuntu 16.04 fails to exec without this patch)
+        cd Zoltan_v3.81
+        patch -p0 < ../zoltan_installscript_patch.diff
+        cd ..
+
 	mkdir Zoltan_build
 	cd Zoltan_build
 	CXX=${cxx_compiler} CC=${c_compiler} ../Zoltan_v3.81/configure --prefix=${installdir} && make && make install
@@ -192,14 +205,15 @@ function build_udmlib {
 	# UDMlib
 	#
 	cd third_party/UDMlib
-	autoreconf -ivf
 
 	rm -rf BUILD_DIR
 	mkdir -p BUILD_DIR
 	cd BUILD_DIR
 
 	# Work around: Use cxx compiler even for CC to compile example programs.
-	CXX=${cxx_compiler} CC=${cxx_compiler} ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
+	# Assume HDF5 was compiled and installed in advance(e.g. build_netcdf)
+        CXX=${cxx_compiler} CC=${c_compiler} CFLAGS=${c_flags} CXXFLAGS=${cxx_flags}  ${CMAKE_BIN} -Dwith_TP=${installdir}/TextParser -Dwith_ZOLTAN=${installdir} -Dwith_CGNS=${installdir} -Dwith_MPI=yes -Dreal_type=float -Dwith_util=no -Dwith_example=no -Dwith_HDF5=${installdir} -DINSTALL_DIR=${installdir}/UDMlib .. && make && make install		
+	# CXX=${cxx_compiler} CC=${cxx_compiler} ../configure --prefix=${installdir}/UDMlib --with-tp=${installdir}/TextParser --with-zoltan=${installdir} --with-cgns=${installdir} && make && make install
 	if [[ $? != 0 ]]; then exit $?; fi
 	cd ${topdir}
 }
@@ -212,7 +226,7 @@ function build_compositor {
 	#	make distclean
 	#fi
 
-	CXX=${cxx_compiler} CC=${c_compiler} ./configure --prefix=${installdir}/234Compositor && make && make install
+	CXX=${cxx_compiler} CC=${c_compiler} CFLAGS="${c_flags} -fopenmp" CXXFLAGS="${cxx_flags} -fopenmp" ./configure --prefix=${installdir}/234Compositor && make && make install
 	cd ${topdir}
 }
 
@@ -222,7 +236,7 @@ function build_pmlib {
 
         autoreconf -ivf
         cd BUILD_DIR
-        CXX=${cxx_compiler} CC=${c_compiler} ../configure --prefix=${installdir}/PMlib && make && make install
+        CXX=${cxx_compiler} CC=${c_compiler} CXXFLAGS="${cxx_flags} -O3 -fopenmp" CFLAGS="${c_flags} -O3 -fopenmp" ../configure --prefix=${installdir}/PMlib && make && make install
         if [[ $? != 0 ]]; then exit $?; fi
         cd ${topdir}
 }
