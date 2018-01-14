@@ -47,6 +47,39 @@ namespace {
                                         unsigned int component, const float* pixeldata,
                                         bool filter, bool clampToEdgeS, bool clampToEdgeT) = {TexImage2DFloat_GL, TexImage2DFloat_SGL};
  
+    
+    void (* const ReleaseBufferVBIB_GS[])(unsigned int buffer_id) = {ReleaseBufferVBIB_GL, ReleaseBufferVBIB_SGL};
+    void (* const CreateVBIB_GS[])(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer,
+                                   float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
+                                   unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id,
+                                   unsigned int& tex_id, unsigned int& index_id) = {CreateVBIB_GL, CreateVBIB_SGL};
+    void (* const BindVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
+                                 unsigned int vtx_material, unsigned int texidx, unsigned int indexidx) = {BindVBIB_GL, BindVBIB_SGL};
+    void (* const UnBindVBIB_GS[])(unsigned int prg) = {UnBindVBIB_GL, UnBindVBIB_SGL};
+    void (* const DrawElements_GS[])(unsigned int indexnum) = {DrawElements_GL, DrawElements_SGL};
+    void (* const DrawArrays_GS[])(unsigned int vtxnum) = {DrawArrays_GL, DrawArrays_SGL};
+    
+    void (* const GenTextures_GS[])(int n, unsigned int* tex) = {GenTextures_GL, GenTextures_SGL};
+
+    void (* const BindLineVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) = {BindLineVBIB_GL, BindLineVBIB_SGL};
+    void (* const UnBindLineVBIB_GS[])(unsigned int prg) = {UnBindLineVBIB_GL, UnBindLineVBIB_SGL};
+    void (* const DrawLineElements_GS[])(unsigned int indexnum) = {DrawLineElements_GL, DrawLineElements_SGL};
+    void (* const DrawLineArrays_GS[])(unsigned int vtxnum) = {DrawLineArrays_GL, DrawLineArrays_SGL};
+    void (* const CreateVBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                                   unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) = {CreateVBRM_GL, CreateVBRM_SGL};
+    void (* const CreateVBIBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                                     unsigned int indexnum, unsigned int* indexbuffer,
+                                     unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id) = {CreateVBIBRM_GL, CreateVBIBRM_SGL};
+    void (* const LineWidth_GS[])(float w) = {LineWidth_GL, LineWidth_SGL};
+    void (* const BindPointVB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) = {BindPointVB_GL, BindPointVB_SGL};
+    void (* const UnBindPointVB_GS[])(unsigned int prg) = {UnBindPointVB_GL, UnBindPointVB_SGL};
+    void (* const DrawPointArrays_GS[])(unsigned int vtxnum) = {DrawPointArrays_GL, DrawPointArrays_SGL};
+    
+    
+    void (* const BindTetraVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) = {BindTetraVBIB_GL, BindTetraVBIB_SGL};
+    void (* const UnBindTetraVBIB_GS[])(unsigned int prg) = {UnBindTetraVBIB_GL, UnBindTetraVBIB_SGL};
+    void (* const DrawTetraArrays_GS[])(unsigned int vtxnum) = {DrawTetraArrays_GL, DrawTetraArrays_SGL};
+
 }
 
 /// コンストラクタ
@@ -364,6 +397,152 @@ void BaseBuffer::cacheTextures(const RenderObject* model)
             }
         }
         cacheTexture(it->second, filter, clampToEdgeS, clampToEdgeT);
+    }
+}
+
+//-----------------------
+
+void BaseBuffer::ReleaseBuffer(unsigned int bufferId) const {
+    ReleaseBufferVBIB_GS[m_mode](bufferId);
+}
+
+void BaseBuffer::CreateVBIB(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer,
+                float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
+                unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id,
+                unsigned int& tex_id, unsigned int& index_id) const
+{
+    CreateVBIB_GS[m_mode](vertexnum, posbuffer, normalbuffer, matbuffer,
+                          texbuffer, indexnum, indexbuffer,
+                          vtx_id, normal_id, mat_id,
+                          tex_id, index_id);
+    
+}
+void BaseBuffer::BindVBIB(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
+              unsigned int vtx_material, unsigned int texidx, unsigned int indexidx) const
+{
+    BindVBIB_GS[m_mode](prg, vtxidx, normalidx, vtx_material, texidx, indexidx);
+}
+void BaseBuffer::UnBindVBIB(unsigned int prg) const
+{
+    UnBindVBIB_GS[m_mode](prg);
+}
+void BaseBuffer::DrawElements(unsigned int indexnum) const
+{
+    DrawElements_GS[m_mode](indexnum);
+}
+void BaseBuffer::DrawArrays(unsigned int vtxnum) const
+{
+    DrawArrays_GS[m_mode](vtxnum);
+}
+
+void BaseBuffer::GenTextures(int n, unsigned int* tex) const
+{
+    GenTextures_GS[m_mode](n, tex);
+}
+
+void BaseBuffer::BindTexture3D(unsigned int tex) const
+{
+    if (m_mode == RENDER_SURFACE)
+        BindTexture3D_SGL(tex);
+}
+
+void BaseBuffer::TexImage3DPointer(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const
+{
+    if (m_mode == RENDER_SURFACE)
+        TexImage3DPointer_SGL(width, height, depth, component, volumedata, clampToEdgeS, clampToEdgeT, clampToEdgeR);
+}
+
+void BaseBuffer::SetUniform3fv(unsigned int prg, const char* name, const float* val) const
+{
+    SetUniform3fv_GS[m_mode](prg, name, val);
+}
+void BaseBuffer::SetUniform1i(unsigned int prg, const char* name, int val) const
+{
+    SetUniform1i_GS[m_mode](prg, name, val);
+}
+
+void BaseBuffer::TexCoordRemap3D(int axis, int n, const float* values) const
+{
+    if (m_mode == RENDER_SURFACE)
+        TexCoordRemap3D_SGL(axis, n, values);
+}
+
+void BaseBuffer::BindLineVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) const {
+    BindLineVBIB_GS[m_mode](prg, vtxidx, vtx_radius, vtx_material, indexidx);
+}
+void BaseBuffer::UnBindLineVBIB(unsigned int prg) const {
+    UnBindLineVBIB_GS[m_mode](prg);
+}
+void BaseBuffer::DrawLineElements(unsigned int indexnum) const {
+    DrawLineElements_GS[m_mode](indexnum);
+}
+void BaseBuffer::DrawLineArrays(unsigned int vtxnum) const {
+    DrawLineArrays_GS[m_mode](vtxnum);
+}
+void BaseBuffer::CreateVBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                                  unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) const {
+    CreateVBRM_GS[m_mode](vertexnum, posbuffer, radiusbuffer, matbuffer, vtx_id, radius_id, mat_id);
+}
+void BaseBuffer::CreateVBIBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                              unsigned int indexnum, unsigned int* indexbuffer,
+                              unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id)const
+{
+    CreateVBIBRM_GS[m_mode](vertexnum, posbuffer, radiusbuffer, matbuffer, indexnum, indexbuffer, vtx_id, radius_id, mat_id, index_id);
+}
+
+void BaseBuffer::LineWidth(float w) const {
+    LineWidth_GS[m_mode](w);
+}
+
+void BaseBuffer::BindPointVB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) const {
+    BindPointVB_GS[m_mode](prg, vtxidx, vtx_radius, vtx_material);
+}
+void BaseBuffer::UnBindPointVB(unsigned int prg) const
+{
+    UnBindPointVB_GS[m_mode](prg);
+}
+void BaseBuffer::DrawPointArrays(unsigned int vtxnum) const
+{
+    DrawPointArrays_GS[m_mode](vtxnum);
+}
+
+
+
+void BaseBuffer::BindTetraVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) const
+{
+    BindTetraVBIB_GS[m_mode](prg, vtxidx, vtx_material, indexidx);
+}
+void BaseBuffer::UnBindTetraVBIB(unsigned int prg) const {
+    UnBindPointVB_GS[m_mode](prg);
+}
+void BaseBuffer::DrawTetraArrays(unsigned int vtxnum) const {
+    DrawTetraArrays_GS[m_mode](vtxnum);
+}
+
+void BaseBuffer::BindSolidVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) const
+{
+    if (m_mode == RENDER_SURFACE){
+        BindSolidVBIB_SGL(prg, vtxidx, vtx_material, indexidx);
+    }
+}
+void BaseBuffer::UnBindSolidVBIB(unsigned int prg) const {
+    if (m_mode == RENDER_SURFACE){
+        UnBindSolidVBIB_SGL(prg);
+    }
+}
+
+void BaseBuffer::DrawSolidArrays(int solidType, unsigned int vtxnum) const
+{
+    if (m_mode == RENDER_SURFACE)
+        DrawSolidArrays_SGL(solidType, vtxnum);
+}
+
+void BaseBuffer::SparseTexImage3DPointer(int level, unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int cellWidth, unsigned int cellHeight, unsigned int cellDepth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const
+{
+    if (m_mode == RENDER_SURFACE) {
+        SparseTexImage3DPointer_SGL(level, xoffset, yoffset, zoffset, width, height, depth,
+                                    cellWidth, cellHeight, cellDepth, component, volumedata,
+                                    clampToEdgeS, clampToEdgeT, clampToEdgeR);
     }
 }
 

@@ -8,23 +8,6 @@
 #include "BufferLineData.h"
 #include "../RenderObject/LineModel.h"
 #include "Buffer.h"
-#include "Commands.h"
-
-
-namespace {
-    void (* const ReleaseBufferVBIB_GS[])(unsigned int buffer_id) = {ReleaseBufferVBIB_GL, ReleaseBufferVBIB_SGL};
-    void (* const BindLineVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) = {BindLineVBIB_GL, BindLineVBIB_SGL};
-    void (* const UnBindLineVBIB_GS[])(unsigned int prg) = {UnBindLineVBIB_GL, UnBindLineVBIB_SGL};
-    void (* const DrawLineElements_GS[])(unsigned int indexnum) = {DrawLineElements_GL, DrawLineElements_SGL};
-    void (* const DrawLineArrays_GS[])(unsigned int vtxnum) = {DrawLineArrays_GL, DrawLineArrays_SGL};
-    void (* const CreateVBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
-                                   unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) = {CreateVBRM_GL, CreateVBRM_SGL};
-    void (* const CreateVBIBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
-                                     unsigned int indexnum, unsigned int* indexbuffer,
-                                     unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id) = {CreateVBIBRM_GL, CreateVBIBRM_SGL};
-
-    void (* const LineWidth_GS[])(float w) = {LineWidth_GL, LineWidth_SGL};
-}
 
 
 /// コンストラクタ
@@ -48,10 +31,10 @@ LineBuffer::~LineBuffer()
 /// クリア
 void LineBuffer::Clear()
 {
-    if (m_vtx_id)      ReleaseBufferVBIB_GS[m_mode](m_vtx_id);
-    if (m_radius_id)   ReleaseBufferVBIB_GS[m_mode](m_radius_id);
-    if (m_material_id) ReleaseBufferVBIB_GS[m_mode](m_material_id);
-    if (m_idx_id)      ReleaseBufferVBIB_GS[m_mode](m_idx_id);
+    if (m_vtx_id)      ReleaseBuffer(m_vtx_id);
+    if (m_radius_id)   ReleaseBuffer(m_radius_id);
+    if (m_material_id) ReleaseBuffer(m_material_id);
+    if (m_idx_id)      ReleaseBuffer(m_idx_id);
     m_vtx_id      = 0;
     m_radius_id   = 0;
     m_material_id = 0;
@@ -101,13 +84,13 @@ bool LineBuffer::Create(const LineModel* model)
         return false;
     }
     if (!m_indexnum) {
-        CreateVBRM_GS[m_mode](linePointNum,
+        CreateVBRM(linePointNum,
                        line->Position()->GetBuffer(),
                        line->Radius()->GetBuffer(),
                        line->Material()->GetBuffer(),
                        m_vtx_id, m_radius_id, m_material_id);
     } else {
-        CreateVBIBRM_GS[m_mode](linePointNum,
+        CreateVBIBRM(linePointNum,
                          line->Position()->GetBuffer(),
                          line->Radius()->GetBuffer(),
                          line->Material()->GetBuffer(),
@@ -142,15 +125,15 @@ void LineBuffer::Render() const
     bindExtraBuffers(m_model);
     
     float w = m_model->GetLineWidth();
-    LineWidth_GS[m_mode](w);
+    LineWidth(w);
     
-    BindLineVBIB_GS[m_mode](getProgram(), m_vtx_id, m_radius_id, m_material_id, m_idx_id);
+    BindLineVBIB(getProgram(), m_vtx_id, m_radius_id, m_material_id, m_idx_id);
     if (!m_indexnum)
-        DrawLineArrays_GS[m_mode](m_vtxnum);
+        DrawLineArrays(m_vtxnum);
     else
-        DrawLineElements_GS[m_mode](m_indexnum);
+        DrawLineElements(m_indexnum);
         
-    UnBindLineVBIB_GS[m_mode](getProgram());
+    UnBindLineVBIB(getProgram());
     unbindExtraBuffers(m_model);
 }
 

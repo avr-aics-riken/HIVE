@@ -8,7 +8,6 @@
 #include "BufferSolidData.h"
 #include "../RenderObject/SolidModel.h"
 #include "Buffer.h"
-#include "Commands.h"
 
 /// コンストラクタ
 SolidBuffer::SolidBuffer(RenderPlugin* render) : BaseBuffer(render)
@@ -28,8 +27,8 @@ SolidBuffer::~SolidBuffer()
 /// クリア
 void SolidBuffer::Clear()
 {
-    if (m_vtx_id)      ReleaseBufferVBIB_SGL(m_vtx_id);
-    if (m_material_id) ReleaseBufferVBIB_SGL(m_material_id);
+    if (m_vtx_id)      ReleaseBuffer(m_vtx_id);
+    if (m_material_id) ReleaseBuffer(m_material_id);
     m_vtx_id      = 0;
     m_material_id = 0;
     m_vtxnum      = 0;
@@ -72,7 +71,7 @@ bool SolidBuffer::Create(const SolidModel* model)
     
 	// Create solid VB/IB
 	unsigned int normal_id, mat_id, tex_id, index_id;
-    CreateVBIB_SGL(vnum, solid->Position()->GetBuffer(),
+    CreateVBIB(vnum, solid->Position()->GetBuffer(),
                    /* normal */ 0,
                    /* material(todo) */ 0,
                    /* texcoord */ 0,
@@ -105,11 +104,11 @@ void SolidBuffer::Render() const
 
     bindExtraBuffers(m_model);
 
-    BindSolidVBIB_SGL(getProgram(), m_vtx_id, 0, 0);
+    BindSolidVBIB(getProgram(), m_vtx_id, 0, 0);
 	// Use draw array method.
-    DrawSolidArrays_SGL(m_model->GetSolid()->Type(), m_vtxnum);
+    DrawSolidArrays(m_model->GetSolid()->Type(), m_vtxnum);
     
-    UnBindSolidVBIB_SGL(getProgram());
+    UnBindSolidVBIB(getProgram());
     unbindExtraBuffers(m_model);
 }
 
