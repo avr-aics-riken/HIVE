@@ -5,9 +5,13 @@
 
 #pragma once
 
+#include <vector>
 #include "../Core/Ref.h"
 #include "../Core/vxmath.h"
 #include "BaseBuffer.h"
+#include "BufferImageData.h"
+
+
 
 class RenderPlugin {
 

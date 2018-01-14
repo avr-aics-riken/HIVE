@@ -337,7 +337,6 @@ unsigned int BaseBuffer::getTextureId(const BufferImageData* buf) const
  */
 bool BaseBuffer::cacheTexture(const BufferImageData *buf, bool filter, bool clampToEdgeS, bool clampToEdgeT)
 {
-    //RenderCore* core = RenderCore::GetInstance();
     unsigned int tex;
     bool haveTex = m_render->GetTexture(buf, tex);
     if (!haveTex) {

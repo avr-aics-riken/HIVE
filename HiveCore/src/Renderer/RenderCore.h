@@ -9,8 +9,6 @@
     RenderCore.h
 */
 
-#include "RenderMode.h"
-
 class RenderObject;
 class BufferImageData;
 
@@ -22,8 +20,8 @@ class RenderPlugin;
 class RenderCore
 {
 public:
-    static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
-    static void Finalize();
+    //static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
+    //static void Finalize();
     
     void AddRenderObject(RenderObject* robj);
     

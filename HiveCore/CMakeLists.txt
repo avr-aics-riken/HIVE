@@ -201,6 +201,7 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferExtraData.cpp
   src/Buffer/UserBufferData.cpp
   src/Renderer/RenderCore.cpp
+  src/Renderer/RenderPlugin.cpp
   src/Renderer/BaseBuffer.cpp
   src/Renderer/Commands_GL.cpp
   src/Renderer/Commands_LSGL.cpp

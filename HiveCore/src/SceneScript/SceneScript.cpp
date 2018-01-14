@@ -380,7 +380,7 @@ static bool progressCallback(double val)
     lua_pop(g_L, 1);  // pop returned value
     return true; // true:continue, false: exit
 }
-
+/*
 int renderMode(lua_State* L)
 {
     if (lua_isstring(L, -1)) {
@@ -392,8 +392,9 @@ int renderMode(lua_State* L)
         }
     }
     return 0;
-}
+}*/
 
+/*
 int render(lua_State* L)
 {
     const int stnum = lua_gettop(L);
@@ -461,7 +462,7 @@ int screenParallelRendering(lua_State* L)
     core->SetParallelRendering(para);
     lua_pushboolean(L, true);
     return 1;
-}
+}*/
 
 int getMemoryData(lua_State* L);
 int getMemoryDataNames(lua_State* L);
@@ -474,11 +475,12 @@ int clearBufferData(lua_State* L);
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
-    SetFunction(L, "render", render);
-    SetFunction(L, "clearCache", clearCache);
-    SetFunction(L, "clearShaderCache", clearShaderCache);
-    SetFunction(L, "renderMode", renderMode);
-    
+//    SetFunction(L, "render", render);
+//    SetFunction(L, "clearCache", clearCache);
+//    SetFunction(L, "clearShaderCache", clearShaderCache);
+    //SetFunction(L, "renderMode", renderMode);
+    //SetFunction(L, "screenParallelRendering", screenParallelRendering);
+
     SetFunction(L, "mpiMode", mpiMode);
     SetFunction(L, "mpiRank", mpiRank);
     SetFunction(L, "mpiSize", mpiSize);
@@ -487,8 +489,6 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
     SetFunction(L, "endian", endian);
     SetFunction(L, "sleep", h_sleep);
     
-    SetFunction(L, "screenParallelRendering", screenParallelRendering);
-
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
     
@@ -880,11 +880,11 @@ void SceneScript::Impl::Begin(const std::vector<std::string>& sceneargs)
 {
     RegisterHiveCoreProfilingPoints();
 
-    for (size_t i = 0; i < sceneargs.size(); ++i) {
+    /*for (size_t i = 0; i < sceneargs.size(); ++i) {
         if (sceneargs[i] == "--opengl") {
             RenderCore::GetInstance(RENDER_OPENGL); // Switch OpenGL mode
         }
-    }
+    }*/
     m_L = createLua();
     registerFuncs(m_L, this);
     
@@ -910,7 +910,7 @@ void SceneScript::Impl::End()
     }
     m_L = 0;
 
-    RenderCore::Finalize();
+    //RenderCore::Finalize();
 }
 
 
