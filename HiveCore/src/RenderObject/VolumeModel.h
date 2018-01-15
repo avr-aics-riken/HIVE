@@ -6,7 +6,7 @@
 #define _VOLUMEMODEL_H_
 
 #include <string>
-#include "RenderObject.h"
+#include <RenderObject/RenderObject.h>
 #include "BufferVolumeData.h"
 
 

@@ -5,10 +5,10 @@
 #ifndef _VOLREN_H
 #define _VOLREN_H
 
-#include "Ref.h"
-#include "../Core/vxmath.h"
-#include "../HiveCore/src/RenderObject/VolumeModel.h"
-#include "../HiveCore/src/RenderObject/RenderObject.h"
+#include <Core/Ref.h>
+#include <Core/vxmath.h>
+#include <RenderObject/VolumeModel.h>
+#include <RenderObject/RenderObject.h>
 
 class BufferImageData;
 

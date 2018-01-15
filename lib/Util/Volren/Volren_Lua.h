@@ -8,8 +8,8 @@
 #include "Volren.h"
 #include "BufferImageData_Lua.h"
 #include "BufferVolumeData_Lua.h"
-#include "../HiveCore/src/RenderObject/RenderObject.h"
-#include "../HiveCore/src/SceneScript/RenderObject_Lua.h"
+#include <RenderObject/RenderObject.h>
+#include <SceneScript/RenderObject_Lua.h>
 
 /**
  * Volren
