@@ -11,6 +11,7 @@
 
 #include <limits>
 #include <cstring>
+#include <algorithm>
 
 /**
  * BufferSparseVolumeDataクラス
