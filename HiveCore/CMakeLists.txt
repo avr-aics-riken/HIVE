@@ -189,13 +189,11 @@ set(RENDERPLUGIN_SOURCES
   
   src/Renderer/Commands_GL.cpp
   src/Renderer/Commands_LSGL.cpp
-  
-)
-set(HIVECORE_SOURCES
   src/Renderer/RenderPlugin.cpp
-  src/Renderer/BaseBuffer.cpp
-
+)
+set(HIVECORE_SOURCES  
   src/Renderer/render_bvh_tree.cc
+  src/Renderer/BaseBuffer.cpp
   src/Buffer/BufferSparseVolumeData.cpp
   src/Core/Path.cpp
   src/Core/Perf.cpp
@@ -302,7 +300,7 @@ add_sanitizers(renderPlugin)
 # LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
 #target_link_libraries(hiveCore LINK_PRIVATE) # TODO: DELETE?
 target_link_libraries(renderPlugin LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
-target_link_libraries(hiveCore LINK_PUBLIC renderPlugin)
+target_link_libraries(renderPlugin LINK_PUBLIC hiveCore)
 
 # Link
 if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

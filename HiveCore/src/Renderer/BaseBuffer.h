@@ -30,7 +30,6 @@ protected:
     virtual ~BaseBuffer();
     
     RenderPlugin* m_render;
-    RENDER_MODE m_mode; // deprecated
     unsigned int m_prog;
     
     std::map<std::string, unsigned int> m_extraIdx;
@@ -68,7 +67,7 @@ public:
                     unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) const;
     void CreateVBIBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
                                   unsigned int indexnum, unsigned int* indexbuffer,
-                      unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id)const;
+                      unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id) const;
     
     void LineWidth(float w) const;
     
@@ -92,11 +91,13 @@ public:
     void UnBindSolidVBIB(unsigned int prg) const;
 
     void DrawSolidArrays(int solidType, unsigned int vtxnum) const;
-    void SparseTexImage3DPointer(int level, unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int cellWidth, unsigned int cellHeight, unsigned int cellDepth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const;
+    void SparseTexImage3DPointer(int level, unsigned int xoffset, unsigned int yoffset, unsigned int zoffset,
+        unsigned int width, unsigned int height, unsigned int depth,
+        unsigned int cellWidth, unsigned int cellHeight, unsigned int cellDepth,
+        unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const;
 
     //-------------------------------------------------------------------
 
-protected:
     bool loadShaderSrc(const char* srcname);
     unsigned int getProgram() const;
     void bindUniforms(const RenderObject* obj) const;

@@ -59,7 +59,7 @@ extern "C" {
 }
 #endif
 
-#include "RenderPlugin.h"
+#include "RenderPluginSURFACE.h"
 
 namespace {
 
@@ -112,16 +112,79 @@ namespace {
     void (* const CreateBuffer_GS[])(int w, int h, unsigned int& framebuffer, unsigned int& colorRenderbuffer, int colorbit, unsigned int& depthRenderbuffer, int depthbit) = {CreateBuffer_GL, CreateBuffer_SGL};
     void (* const ReleaseBuffer_GS[])(unsigned int framebuffer, unsigned int colorRenderbuffer, unsigned int depthRenderbuffer) = {ReleaseBuffer_GL, ReleaseBuffer_SGL};
 
+
+    void (* const SetUniform4fv_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniform4fv_GL, SetUniform4fv_SGL};
+    void (* const SetUniform3fv_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniform3fv_GL, SetUniform3fv_SGL};
+    void (* const SetUniform2fv_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniform2fv_GL, SetUniform2fv_SGL};
+    void (* const SetUniform1f_GS[])(unsigned int prg, const char* name, float val) = {SetUniform1f_GL, SetUniform1f_SGL};
+    void (* const SetUniform1i_GS[])(unsigned int prg, const char* name, int val) = {SetUniform1i_GL, SetUniform1i_SGL};
+    void (* const BindProgram_GS[])(unsigned int prg) = {BindProgram_GL, BindProgram_SGL};
+    void (* const SetUniformMatrix_GS[])(unsigned int prg, const char* name, const float* val) = {SetUniformMatrix_GL, SetUniformMatrix_SGL};
+    
+    void (* const CreateFloatBuffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateFloatBuffer_GL, CreateFloatBuffer_SGL};
+    void (* const CreateUintBuffer_GS[])(unsigned int num, unsigned int* buffer, unsigned int& buf_id) = {CreateUintBuffer_GL, CreateUintBuffer_SGL};
+    void (* const CreateVec4Buffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateVec4Buffer_GL, CreateVec4Buffer_SGL};
+    void (* const CreateVec3Buffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateVec3Buffer_GL, CreateVec3Buffer_SGL};
+    void (* const CreateVec2Buffer_GS[])(unsigned int num, float* buffer, unsigned int& buf_id) = {CreateVec2Buffer_GL, CreateVec2Buffer_SGL};
+    void (* const BindBufferFloat_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferFloat_GL, BindBufferFloat_SGL};
+    void (* const BindBufferUint_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferUint_GL, BindBufferUint_SGL};
+    void (* const BindBufferVec4_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec4_GL, BindBufferVec4_SGL};
+    void (* const BindBufferVec3_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec3_GL, BindBufferVec3_SGL};
+    void (* const BindBufferVec2_GS[])(unsigned int prg, const char* attrname, unsigned int bufidx) = {BindBufferVec2_GL, BindBufferVec2_SGL};
+    void (* const UnBindBuffer_GS[])(unsigned int prg, const char* attrname) = {UnBindBuffer_GL, UnBindBuffer_SGL};
+
+    void (* const BindTexture2D_GS[])(unsigned int texid) = {BindTexture2D_GL, BindTexture2D_SGL};
+    void (* const ActiveTexture_GS[])(unsigned int n) = {ActiveTexture_GL, ActiveTexture_SGL};
+    
+    void (* const TexImage2D_GS[])(unsigned int width, unsigned int height,
+                                   unsigned int component, const unsigned char* pixeldata,
+                                   bool filter, bool clampToEdgeS, bool clampToEdgeT) = {TexImage2D_GL, TexImage2D_SGL};
+ 
+    void (* const TexImage2DFloat_GS[])(unsigned int width, unsigned int height,
+                                        unsigned int component, const float* pixeldata,
+                                        bool filter, bool clampToEdgeS, bool clampToEdgeT) = {TexImage2DFloat_GL, TexImage2DFloat_SGL};
+ 
+    
+    void (* const ReleaseBufferVBIB_GS[])(unsigned int buffer_id) = {ReleaseBufferVBIB_GL, ReleaseBufferVBIB_SGL};
+    void (* const CreateVBIB_GS[])(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer,
+                                   float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
+                                   unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id,
+                                   unsigned int& tex_id, unsigned int& index_id) = {CreateVBIB_GL, CreateVBIB_SGL};
+    void (* const BindVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
+                                 unsigned int vtx_material, unsigned int texidx, unsigned int indexidx) = {BindVBIB_GL, BindVBIB_SGL};
+    void (* const UnBindVBIB_GS[])(unsigned int prg) = {UnBindVBIB_GL, UnBindVBIB_SGL};
+    void (* const DrawElements_GS[])(unsigned int indexnum) = {DrawElements_GL, DrawElements_SGL};
+    void (* const DrawArrays_GS[])(unsigned int vtxnum) = {DrawArrays_GL, DrawArrays_SGL};
+    
+    void (* const BindLineVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) = {BindLineVBIB_GL, BindLineVBIB_SGL};
+    void (* const UnBindLineVBIB_GS[])(unsigned int prg) = {UnBindLineVBIB_GL, UnBindLineVBIB_SGL};
+    void (* const DrawLineElements_GS[])(unsigned int indexnum) = {DrawLineElements_GL, DrawLineElements_SGL};
+    void (* const DrawLineArrays_GS[])(unsigned int vtxnum) = {DrawLineArrays_GL, DrawLineArrays_SGL};
+    void (* const CreateVBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                                   unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) = {CreateVBRM_GL, CreateVBRM_SGL};
+    void (* const CreateVBIBRM_GS[])(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+                                     unsigned int indexnum, unsigned int* indexbuffer,
+                                     unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id) = {CreateVBIBRM_GL, CreateVBIBRM_SGL};
+    void (* const LineWidth_GS[])(float w) = {LineWidth_GL, LineWidth_SGL};
+    void (* const BindPointVB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) = {BindPointVB_GL, BindPointVB_SGL};
+    void (* const UnBindPointVB_GS[])(unsigned int prg) = {UnBindPointVB_GL, UnBindPointVB_SGL};
+    void (* const DrawPointArrays_GS[])(unsigned int vtxnum) = {DrawPointArrays_GL, DrawPointArrays_SGL};
+    
+    
+    void (* const BindTetraVBIB_GS[])(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) = {BindTetraVBIB_GL, BindTetraVBIB_SGL};
+    void (* const UnBindTetraVBIB_GS[])(unsigned int prg) = {UnBindTetraVBIB_GL, UnBindTetraVBIB_SGL};
+    void (* const DrawTetraArrays_GS[])(unsigned int vtxnum) = {DrawTetraArrays_GL, DrawTetraArrays_SGL};
+
 }
 
 /**
- * RenderPlugin
+ * RenderPluginSURFACE
  */
 
 /// コンストラクタ
-RenderPlugin::RenderPlugin(RENDER_MODE mode)
+RenderPluginSURFACE::RenderPluginSURFACE() : RenderPlugin()
 {
-    m_mode       = mode;
+    m_mode       = 1;
     m_clearcolor = VX::Math::vec4(0,0,0,0); // Always (0,0,0,0). we set clearcolor at readbacked.
     m_gs_depthbuffer = 0;
     m_gs_colorbuffer = 0;
@@ -129,7 +192,7 @@ RenderPlugin::RenderPlugin(RENDER_MODE mode)
 
     m_renderTimeout    = 0.2; // sec
     m_oldCallbackTime  = 0.0;
-    m_progressCallback = defaultProgressCallbackFunc;
+    m_progressCallback = RenderPlugin::defaultProgressCallbackFunc;
     
     
 #ifndef USE_GLSL_CONFIG
@@ -160,7 +223,7 @@ RenderPlugin::RenderPlugin(RENDER_MODE mode)
 }
 
 /// デストラクタ
-RenderPlugin::~RenderPlugin() {
+RenderPluginSURFACE::~RenderPluginSURFACE() {
     ReleaseBuffer_GS[m_mode](m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer);
     
 #ifdef HIVE_WITH_COMPOSITOR
@@ -168,7 +231,7 @@ RenderPlugin::~RenderPlugin() {
 #endif
 }
 
-bool RenderPlugin::progressCallbackFunc(int progress, int y, int height) {
+bool RenderPluginSURFACE::progressCallbackFunc(int progress, int y, int height) {
     const double tm = GetTimeCount();
     const int minimumRenderingHeight = 16; // TODO: Now, FORCE rendering minimum size for Interactive rendring.
     if (height > minimumRenderingHeight
@@ -182,7 +245,7 @@ bool RenderPlugin::progressCallbackFunc(int progress, int y, int height) {
 }
 
 /// LSGLコンパイラセッティング
-void RenderPlugin::LSGL_CompilerSetting()
+void RenderPluginSURFACE::LSGL_CompilerSetting()
 {
     std::string binaryPath = getBinaryDir();
 #ifdef __APPLE__
@@ -218,7 +281,7 @@ void RenderPlugin::LSGL_CompilerSetting()
 }
 
 /// バッファのクリア
-void RenderPlugin::ClearBuffers()
+void RenderPluginSURFACE::ClearBuffers()
 {
     m_buffers.clear();
     
@@ -238,7 +301,7 @@ void RenderPlugin::ClearBuffers()
     
 }
 
-void RenderPlugin::SetParallelRendering(bool enableParallel)
+void RenderPluginSURFACE::SetParallelRendering(bool enableParallel)
 {
     if (m_mode != RENDER_SURFACE)
         return;
@@ -247,24 +310,24 @@ void RenderPlugin::SetParallelRendering(bool enableParallel)
 
 /// レンダーオブジェクトの追加
 /// @param robj レンダーオブジェクト
-void RenderPlugin::AddRenderObject(RenderObject* robj)
+void RenderPluginSURFACE::AddRenderObject(RenderObject* robj)
 {
     m_renderObjects.push_back(robj);
 }
 
 /// レンダーオブジェクトのクリア
-void RenderPlugin::ClearRenderObject()
+void RenderPluginSURFACE::ClearRenderObject()
 {
     m_renderObjects.clear();
 }
 
 /// プログレスコールバックの設定
-void RenderPlugin::SetProgressCallback(bool (*func)(double))
+void RenderPluginSURFACE::SetProgressCallback(bool (*func)(double))
 {
     m_progressCallback = func;
 }
 
-bool RenderPlugin::GetTexture(const BufferImageData* bufimg, unsigned int& id)
+bool RenderPluginSURFACE::GetTexture(const BufferImageData* bufimg, unsigned int& id)
 {
     TextureCache::const_iterator it = m_textureCache.find(bufimg);
     if (it != m_textureCache.end()) {
@@ -274,7 +337,7 @@ bool RenderPlugin::GetTexture(const BufferImageData* bufimg, unsigned int& id)
     return false;
 }
 
-bool RenderPlugin::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+bool RenderPluginSURFACE::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
 {
     TextureCache::const_iterator it = m_textureCache.find(bufimg);
     if (it != m_textureCache.end()) {
@@ -285,7 +348,7 @@ bool RenderPlugin::CreateTexture(const BufferImageData* bufimg, unsigned int& te
     return true;
 }
 
-bool RenderPlugin::DeleteTexture(const BufferImageData* bufimg)
+bool RenderPluginSURFACE::DeleteTexture(const BufferImageData* bufimg)
 {
     TextureCache::iterator it = m_textureCache.find(bufimg);
     if (it != m_textureCache.end()) {
@@ -296,7 +359,7 @@ bool RenderPlugin::DeleteTexture(const BufferImageData* bufimg)
     return false;
 }
 
-bool RenderPlugin::CreateProgramSrc(const char* srcname, unsigned int& prg)
+bool RenderPluginSURFACE::CreateProgramSrc(const char* srcname, unsigned int& prg)
 {
     ShaderCache::const_iterator it = m_shaderCache.find(srcname);
     if (it != m_shaderCache.end()) {
@@ -310,7 +373,7 @@ bool RenderPlugin::CreateProgramSrc(const char* srcname, unsigned int& prg)
     return true;
 }
 
-bool RenderPlugin::ClearShaderCache(const char* srcname)
+bool RenderPluginSURFACE::ClearShaderCache(const char* srcname)
 {
     ShaderCache::iterator it = m_shaderCache.find(srcname);
     if (it != m_shaderCache.end()) {
@@ -320,7 +383,7 @@ bool RenderPlugin::ClearShaderCache(const char* srcname)
 }
 
 /// レンダリング
-void RenderPlugin::Render()
+void RenderPluginSURFACE::Render()
 {
     m_oldCallbackTime = 0.0;//GetTimeCount();
     RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
@@ -382,14 +445,14 @@ void RenderPlugin::Render()
 
 /// カレントカメラのセット
 /// @param camera カメラ
-void RenderPlugin::setCurrentCamera(const Camera* camera)
+void RenderPluginSURFACE::setCurrentCamera(const Camera* camera)
 {
     m_currentCamera = camera;
 }
 
 /// SGLバッファの作成
 /// @param robj レンダーオブジェクト
-BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)
+BaseBuffer* RenderPluginSURFACE::createBuffer(const RenderObject* robj)
 {
     RenderPlugin* render = this;
     BaseBuffer* buffer = 0;
@@ -435,7 +498,7 @@ BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)
 
 /// SGLで描画
 /// @param robj レンダーオブジェクト
-void RenderPlugin::draw(const RenderObject* robj)
+void RenderPluginSURFACE::draw(const RenderObject* robj)
 {
     if (robj->GetType() == RenderObject::TYPE_CAMERA) {
         return;
@@ -466,7 +529,7 @@ void RenderPlugin::draw(const RenderObject* robj)
 
 /// 画像の書き戻し
 /// @param color カラーバッファ
-void RenderPlugin::readbackDepth(BufferImageData* depth)
+void RenderPluginSURFACE::readbackDepth(BufferImageData* depth)
 {
     FloatBuffer* fbuf = depth->FloatImageBuffer();
     if (fbuf) {
@@ -502,7 +565,7 @@ void RenderPlugin::readbackDepth(BufferImageData* depth)
 }
 /// 画像の書き戻し
 /// @param color カラーバッファ
-void RenderPlugin::readbackImage(BufferImageData::FORMAT format, BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
+void RenderPluginSURFACE::readbackImage(BufferImageData::FORMAT format, BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
 {
     const float clearcolor_r = clr_r;
     const float clearcolor_g = clr_g;
@@ -576,7 +639,7 @@ void RenderPlugin::readbackImage(BufferImageData::FORMAT format, BufferImageData
 }
 
 /// オブジェクトのレンダリング
-void RenderPlugin::renderObjects()
+void RenderPluginSURFACE::renderObjects()
 {
     //printf("RenderCore::RENDER!!!!\n");
     
@@ -599,7 +662,7 @@ void RenderPlugin::renderObjects()
 
 /// リサイズ
 /// @param camera カメラ
-void RenderPlugin::resize(Camera* camera)
+void RenderPluginSURFACE::resize(Camera* camera)
 {
     const std::string& outfile = camera->GetOutputFile();
     const std::string& imagebuffer_format = camera->GetImageBufferFormat();
