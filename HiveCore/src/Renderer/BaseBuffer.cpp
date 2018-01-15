@@ -512,7 +512,7 @@ void BaseBuffer::BindTetraVBIB(unsigned int prg, unsigned int vtxidx, unsigned i
     BindTetraVBIB_GS[m_mode](prg, vtxidx, vtx_material, indexidx);
 }
 void BaseBuffer::UnBindTetraVBIB(unsigned int prg) const {
-    UnBindPointVB_GS[m_mode](prg);
+    UnBindTetraVBIB_GS[m_mode](prg);
 }
 void BaseBuffer::DrawTetraArrays(unsigned int vtxnum) const {
     DrawTetraArrays_GS[m_mode](vtxnum);

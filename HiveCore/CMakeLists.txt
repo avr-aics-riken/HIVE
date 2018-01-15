@@ -185,14 +185,24 @@ link_directories(${LIBS})
 
 # Source files
 
+set(RENDERPLUGIN_SOURCES
+  
+  src/Renderer/Commands_GL.cpp
+  src/Renderer/Commands_LSGL.cpp
+  
+)
 set(HIVECORE_SOURCES
+  src/Renderer/RenderPlugin.cpp
+  src/Renderer/BaseBuffer.cpp
+
+  src/Renderer/render_bvh_tree.cc
+  src/Buffer/BufferSparseVolumeData.cpp
   src/Core/Path.cpp
   src/Core/Perf.cpp
   src/Buffer/Buffer.cpp
   src/Buffer/BufferMeshData.cpp
   src/Buffer/BufferVolumeData.cpp
   src/Buffer/BufferLineData.cpp
-  src/Buffer/BufferSparseVolumeData.cpp
   src/Buffer/BufferSolidData.cpp
   src/Buffer/BufferPointData.cpp
   src/Buffer/BufferVectorData.cpp
@@ -201,10 +211,6 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferExtraData.cpp
   src/Buffer/UserBufferData.cpp
   src/Renderer/RenderCore.cpp
-  src/Renderer/RenderPlugin.cpp
-  src/Renderer/BaseBuffer.cpp
-  src/Renderer/Commands_GL.cpp
-  src/Renderer/Commands_LSGL.cpp
   src/Renderer/PolygonBuffer.cpp
   src/Renderer/VolumeBuffer.cpp
   src/Renderer/SparseVolumeBuffer.cpp
@@ -281,17 +287,22 @@ ELSE()
 ENDIF()
 
 # HIVE Core
-add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
+add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES})
+
+# Render Plugin(SURFACE/OPENGL)
+add_library (renderPlugin ${HIVE_LIBRARY_TYPE} ${RENDERPLUGIN_SOURCES} ${GLDEV_SOURCES})
 
 # Enable address sanitizer(if available).
 add_sanitizers(hiveCore)
+add_sanitizers(renderPlugin)
 
 
 
 
 # LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
-target_link_libraries(hiveCore LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
-
+#target_link_libraries(hiveCore LINK_PRIVATE) # TODO: DELETE?
+target_link_libraries(renderPlugin LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
+target_link_libraries(hiveCore LINK_PUBLIC renderPlugin)
 
 # Link
 if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -299,13 +310,13 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if (NOT COCOA)
     message(FATAL_ERROR "Cocoa Framework not found")
   endif()
-  target_link_libraries(hiveCore ${COCOA})
+  target_link_libraries(renderPlugin ${COCOA})
   if (HIVE_BUILD_WITH_OPENGL)
     find_library(OPENGL OpenGL)
     if (NOT OPENGL)
       message(FATAL_ERROR "OpenGL Framework not found")
     endif()
-    target_link_libraries(hiveCore ${OPENGL})
+    target_link_libraries(renderPlugin ${OPENGL})
   endif()
 
 endif()
@@ -316,18 +327,18 @@ if (HIVE_BUILD_WITH_OPENGL)
   if (NOT OPENGL)
     message(FATAL_ERROR "OpenGL Framework not found")
   endif()
-  target_link_libraries(hiveCore ${OPENGL})
+  target_link_libraries(renderPlugin ${OPENGL})
  else()
   find_library(OPENGL GL)
   if (NOT OPENGL)
     message(FATAL_ERROR "OpenGL Framework not found")
   endif()
-  target_link_libraries(hiveCore ${OPENGL})
+  target_link_libraries(renderPlugin ${OPENGL})
  endif()
 endif()
 
-target_link_libraries(hiveCore pthread)
-target_link_libraries(hiveCore LSGLES)
+target_link_libraries(renderPlugin pthread)
+target_link_libraries(renderPlugin LSGLES)
 
 # LINK_PUBLIC is required since liblua needs to be linked as a dynamic library.
 target_link_libraries(hiveCore LINK_PUBLIC liblua)
@@ -348,12 +359,12 @@ endif()
 # For test
 add_executable (hiveCoreSimpleTest test/simpletest.cpp)
 add_sanitizers (hiveCoreSimpleTest)
-target_link_libraries (hiveCoreSimpleTest hiveCore)
+target_link_libraries (hiveCoreSimpleTest hiveCore renderPlugin)
 
 # For test
 add_executable (hiveCoreSolverSample test/solversample.cpp)
 add_sanitizers (hiveCoreSolverSample)
-target_link_libraries (hiveCoreSolverSample hiveCore)
+target_link_libraries (hiveCoreSolverSample hiveCore renderPlugin)
 
 
 # Copy GLSL Compiler in post build phase
