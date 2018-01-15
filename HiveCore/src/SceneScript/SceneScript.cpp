@@ -24,7 +24,7 @@
 #include "BufferMeshData_Lua.h"
 #include "BufferLineData_Lua.h"
 #include "BufferVolumeData_Lua.h"
-#include "BufferSparseVolumeData_Lua.h"
+//#include "BufferSparseVolumeData_Lua.h"
 #include "BufferPointData_Lua.h"
 #include "BufferPointData_Lua.h"
 #include "BufferImageData_Lua.h"
@@ -115,7 +115,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferLineData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
-    LUA_SCRIPTCLASS_REGISTER(L, BufferSparseVolumeData_Lua);
+//    LUA_SCRIPTCLASS_REGISTER(L, BufferSparseVolumeData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferPointData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferImageData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferTetraData_Lua);
@@ -137,7 +137,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
     SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
-    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
+//    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
     SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
     SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
     SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
@@ -380,7 +380,7 @@ static bool progressCallback(double val)
     lua_pop(g_L, 1);  // pop returned value
     return true; // true:continue, false: exit
 }
-
+/*
 int renderMode(lua_State* L)
 {
     if (lua_isstring(L, -1)) {
@@ -392,8 +392,9 @@ int renderMode(lua_State* L)
         }
     }
     return 0;
-}
+}*/
 
+/*
 int render(lua_State* L)
 {
     const int stnum = lua_gettop(L);
@@ -461,7 +462,7 @@ int screenParallelRendering(lua_State* L)
     core->SetParallelRendering(para);
     lua_pushboolean(L, true);
     return 1;
-}
+}*/
 
 int getMemoryData(lua_State* L);
 int getMemoryDataNames(lua_State* L);
@@ -474,11 +475,12 @@ int clearBufferData(lua_State* L);
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
-    SetFunction(L, "render", render);
-    SetFunction(L, "clearCache", clearCache);
-    SetFunction(L, "clearShaderCache", clearShaderCache);
-    SetFunction(L, "renderMode", renderMode);
-    
+//    SetFunction(L, "render", render);
+//    SetFunction(L, "clearCache", clearCache);
+//    SetFunction(L, "clearShaderCache", clearShaderCache);
+    //SetFunction(L, "renderMode", renderMode);
+    //SetFunction(L, "screenParallelRendering", screenParallelRendering);
+
     SetFunction(L, "mpiMode", mpiMode);
     SetFunction(L, "mpiRank", mpiRank);
     SetFunction(L, "mpiSize", mpiSize);
@@ -487,8 +489,6 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
     SetFunction(L, "endian", endian);
     SetFunction(L, "sleep", h_sleep);
     
-    SetFunction(L, "screenParallelRendering", screenParallelRendering);
-
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
     
@@ -675,11 +675,11 @@ namespace {
                     if (instance) {
                         return LUAPUSH<BufferVolumeData_Lua*>(L, instance);
                     }
-                } else if (data->GetType() == BufferData::TYPE_SPARSEVOLUME) {
+/*                } else if (data->GetType() == BufferData::TYPE_SPARSEVOLUME) {
                     BufferSparseVolumeData_Lua* instance = static_cast<BufferSparseVolumeData_Lua*>(data);
                     if (instance) {
                         return LUAPUSH<BufferSparseVolumeData_Lua*>(L, instance);
-                    }
+                    }*/
                 } else if (data->GetType() == BufferData::TYPE_IMAGE) {
                     BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
                     if (instance) {
@@ -880,11 +880,11 @@ void SceneScript::Impl::Begin(const std::vector<std::string>& sceneargs)
 {
     RegisterHiveCoreProfilingPoints();
 
-    for (size_t i = 0; i < sceneargs.size(); ++i) {
+    /*for (size_t i = 0; i < sceneargs.size(); ++i) {
         if (sceneargs[i] == "--opengl") {
             RenderCore::GetInstance(RENDER_OPENGL); // Switch OpenGL mode
         }
-    }
+    }*/
     m_L = createLua();
     registerFuncs(m_L, this);
     
@@ -910,7 +910,7 @@ void SceneScript::Impl::End()
     }
     m_L = 0;
 
-    RenderCore::Finalize();
+    //RenderCore::Finalize();
 }
 
 

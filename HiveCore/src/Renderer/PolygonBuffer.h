@@ -28,7 +28,7 @@ private:
     RefPtr<const PolygonModel> m_model;
     
 public:
-    PolygonBuffer(RENDER_MODE mode);
+    PolygonBuffer(RenderPlugin* render);
     ~PolygonBuffer();
     
     bool Create(const PolygonModel* model);

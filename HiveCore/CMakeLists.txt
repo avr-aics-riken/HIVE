@@ -170,6 +170,7 @@ set(INCLUDES
 	${CMAKE_SOURCE_DIR}/include/Core
 	${CMAKE_SOURCE_DIR}/include/Image
 	${CMAKE_SOURCE_DIR}/include/Generator
+	${CMAKE_SOURCE_DIR}/include/Renderer
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
@@ -185,14 +186,16 @@ link_directories(${LIBS})
 
 # Source files
 
-set(HIVECORE_SOURCES
+set(HIVECORE_SOURCES  
+  src/Renderer/render_bvh_tree.cc
+  src/Renderer/BaseBuffer.cpp
+  src/Buffer/BufferSparseVolumeData.cpp
   src/Core/Path.cpp
   src/Core/Perf.cpp
   src/Buffer/Buffer.cpp
   src/Buffer/BufferMeshData.cpp
   src/Buffer/BufferVolumeData.cpp
   src/Buffer/BufferLineData.cpp
-  src/Buffer/BufferSparseVolumeData.cpp
   src/Buffer/BufferSolidData.cpp
   src/Buffer/BufferPointData.cpp
   src/Buffer/BufferVectorData.cpp
@@ -201,9 +204,7 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferExtraData.cpp
   src/Buffer/UserBufferData.cpp
   src/Renderer/RenderCore.cpp
-  src/Renderer/BaseBuffer.cpp
-  src/Renderer/Commands_GL.cpp
-  src/Renderer/Commands_LSGL.cpp
+  src/Renderer/RenderPlugin.cpp
   src/Renderer/PolygonBuffer.cpp
   src/Renderer/VolumeBuffer.cpp
   src/Renderer/SparseVolumeBuffer.cpp
@@ -232,22 +233,6 @@ set(HIVECORE_SOURCES
   src/Image/ImageSaver.cpp
   src/Generator/PrimitiveGenerator.cpp
 )
-
-IF(HIVE_BUILD_WITH_OPENGL)
-  if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    # MacOSX
-    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceCGL.cpp
-                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
-  else()
-    # Linux
-    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceGLX.cpp
-                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
-  endif()
-ELSEIF(HIVE_BUILD_WITH_OSMESA)
-    # Mesa
-    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceOSMesa.cpp
-                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
-ENDIF()
 
 IF(HIVE_BUILD_WITH_COMPOSITOR)
 
@@ -280,53 +265,11 @@ ELSE()
 ENDIF()
 
 # HIVE Core
-add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES} ${GLDEV_SOURCES})
+add_library (hiveCore ${HIVE_LIBRARY_TYPE} ${HIVECORE_SOURCES})
 
 # Enable address sanitizer(if available).
 add_sanitizers(hiveCore)
 
-
-
-
-# LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
-target_link_libraries(hiveCore LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
-
-
-# Link
-if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  find_library(COCOA Cocoa)
-  if (NOT COCOA)
-    message(FATAL_ERROR "Cocoa Framework not found")
-  endif()
-  target_link_libraries(hiveCore ${COCOA})
-  if (HIVE_BUILD_WITH_OPENGL)
-    find_library(OPENGL OpenGL)
-    if (NOT OPENGL)
-      message(FATAL_ERROR "OpenGL Framework not found")
-    endif()
-    target_link_libraries(hiveCore ${OPENGL})
-  endif()
-
-endif()
-
-if (HIVE_BUILD_WITH_OPENGL)
- if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  find_library(OPENGL OpenGL)
-  if (NOT OPENGL)
-    message(FATAL_ERROR "OpenGL Framework not found")
-  endif()
-  target_link_libraries(hiveCore ${OPENGL})
- else()
-  find_library(OPENGL GL)
-  if (NOT OPENGL)
-    message(FATAL_ERROR "OpenGL Framework not found")
-  endif()
-  target_link_libraries(hiveCore ${OPENGL})
- endif()
-endif()
-
-target_link_libraries(hiveCore pthread)
-target_link_libraries(hiveCore LSGLES)
 
 # LINK_PUBLIC is required since liblua needs to be linked as a dynamic library.
 target_link_libraries(hiveCore LINK_PUBLIC liblua)
@@ -354,27 +297,3 @@ add_executable (hiveCoreSolverSample test/solversample.cpp)
 add_sanitizers (hiveCoreSolverSample)
 target_link_libraries (hiveCoreSolverSample hiveCore)
 
-
-# Copy GLSL Compiler in post build phase
-# @todo { Don't copy whole directory files }
-SET(GLSLC_OUTPUT_PATH ${EXECUTABLE_OUTPUT_PATH}/glsl)
-ADD_CUSTOM_TARGET(glslc-copy-files ALL COMMAND cmake -E copy_directory
-	${CMAKE_SOURCE_DIR}/third_party/SURFACE/glsl
-	${EXECUTABLE_OUTPUT_PATH}/glsl)
-
-# NOTE: COPY command only works at CMake configure phase
-#file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH})
-
-# ------------------
-# [For develop]
-
-# create symbolic link version (but can't work)
-#ADD_CUSTOM_COMMAND(OUTPUT myLinkDebug COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Debug/glsl)
-#ADD_CUSTOM_COMMAND(OUTPUT myLinkRelease COMMAND ln;-s;${EXECUTABLE_OUTPUT_PATH}/glsl;${EXECUTABLE_OUTPUT_PATH}/Release/glsl)
-#ADD_DEPENDENCIES(hrender myLinkDebug)
-#ADD_DEPENDENCIES(hrender myLinkRelease)
-
-# Alt. copy folders
-file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Debug)
-file(COPY ${GLSL_PATH} DESTINATION ${EXECUTABLE_OUTPUT_PATH}/Release)
-# ------------------

@@ -1,7 +1,6 @@
 
-local loader = LoadModule("ObjLoader")
-
 print('Render Obj')
+print('loader = ', loader)
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_obj.jpg')
@@ -13,7 +12,7 @@ camera:LookAt(
 	60
 )
 
-local obj = loader()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
 local model = PolygonModel()

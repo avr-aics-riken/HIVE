@@ -9,19 +9,19 @@
     RenderCore.h
 */
 
-#include "RenderMode.h"
-
 class RenderObject;
 class BufferImageData;
 
+class RenderPlugin;
+
 /**
- * hrenderコア機能部クラス
+ * Renderingコア機能部クラス
  */
 class RenderCore
 {
 public:
-    static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
-    static void Finalize();
+    //static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
+    //static void Finalize();
     
     void AddRenderObject(RenderObject* robj);
     
@@ -42,9 +42,8 @@ public:
     bool ClearShaderCache(const char* srcname);
     
 private:
-    RenderCore(RENDER_MODE mode);
+    RenderCore(RenderPlugin* render);
     ~RenderCore();
 
-    class Impl;
-    Impl* m_imp;
+    RenderPlugin* m_imp;
 };

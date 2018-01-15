@@ -219,6 +219,7 @@ IF (NOT BUILD_SHARED_LIBS)
     ../HiveCore/src/Buffer/BufferExtraData.cpp
     ../HiveCore/src/Buffer/UserBufferData.cpp
     ../HiveCore/src/Renderer/RenderCore.cpp
+    ../HiveCore/src/Renderer/RenderPlugin.cpp
     ../HiveCore/src/Renderer/BaseBuffer.cpp
     ../HiveCore/src/Renderer/Commands_GL.cpp
     ../HiveCore/src/Renderer/Commands_LSGL.cpp

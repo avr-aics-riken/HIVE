@@ -93,6 +93,7 @@ add_subdirectory(tools)
 # build
 IF (BUILD_SHARED_LIBS)
   add_subdirectory(HiveCore)
+  add_subdirectory(RenderPluginSURFACE)
   add_subdirectory(lib)
 ENDIF()
 add_subdirectory(hrender)

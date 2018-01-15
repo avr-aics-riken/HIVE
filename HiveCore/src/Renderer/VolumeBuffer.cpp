@@ -10,11 +10,10 @@
 #include "../RenderObject/VolumeModel.h"
 #include "../Buffer/BufferMeshData.h"
 #include "Buffer.h"
-#include "Commands.h"
 #include <string.h>
 
 /// コンストラクタ
-VolumeBuffer::VolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+VolumeBuffer::VolumeBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtx_id     = 0;
     m_normal_id  = 0;
@@ -45,11 +44,11 @@ VolumeBuffer::~VolumeBuffer()
 // バッファのクリア
 void VolumeBuffer::Clear()
 {
-    if (m_vtx_id) ReleaseBufferVBIB_SGL(m_vtx_id);
-    if (m_normal_id) ReleaseBufferVBIB_SGL(m_normal_id);
-    if (m_mat_id) ReleaseBufferVBIB_SGL(m_mat_id);
-    if (m_tex_id) ReleaseBufferVBIB_SGL(m_tex_id);
-    if (m_index_id) ReleaseBufferVBIB_SGL(m_index_id);
+    if (m_vtx_id) ReleaseBuffer(m_vtx_id);
+    if (m_normal_id) ReleaseBuffer(m_normal_id);
+    if (m_mat_id) ReleaseBuffer(m_mat_id);
+    if (m_tex_id) ReleaseBuffer(m_tex_id);
+    if (m_index_id) ReleaseBuffer(m_index_id);
 }
 
 /**
@@ -78,7 +77,7 @@ bool VolumeBuffer::MakeBox(float width, float height, float depth)
     const unsigned int indexnum  = sizeof(index)/sizeof(unsigned int);
     float mat[vertexnum*3] = {0};
 
-    CreateVBIB_SGL(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
+    CreateVBIB(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
             m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     m_vertex_num = vertexnum;
     m_index_num  = indexnum;
@@ -108,9 +107,9 @@ bool VolumeBuffer::MakeBox(float width, float height, float depth)
 bool VolumeBuffer::CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
     printf("CreateTexture3D(%d,%d,%d,%d)\n", width, height, depth, component);
-    GenTextures_SGL(1, &m_sgl_voltex);
-    BindTexture3D_SGL(m_sgl_voltex);
-    TexImage3DPointer_SGL(width, height, depth, component, volumedata, clampToEdgeS, clampToEdgeT, clampToEdgeR);
+    GenTextures(1, &m_sgl_voltex);
+    BindTexture3D(m_sgl_voltex);
+    TexImage3DPointer(width, height, depth, component, volumedata, clampToEdgeS, clampToEdgeT, clampToEdgeR);
     m_voldim[0] = width;
     m_voldim[1] = height;
     m_voldim[2] = depth;
@@ -174,10 +173,10 @@ bool VolumeBuffer::Create(const VolumeModel* model)
         r = CreateTexture3D(sw, sh, sd, volume->Component(), volume->Buffer()->GetBuffer(), model->GetClampToEdgeS(), model->GetClampToEdgeT(), model->GetClampToEdgeR());
 		if (volume->NonUniform()) {
 			// Register remap table for non-uniform volume
-    		BindTexture3D_SGL(m_sgl_voltex);
-			TexCoordRemap3D_SGL(0 /* = x */, volume->SpacingX()->GetNum(), volume->SpacingX()->GetBuffer());
-			TexCoordRemap3D_SGL(1 /* = y */, volume->SpacingY()->GetNum(), volume->SpacingY()->GetBuffer());
-			TexCoordRemap3D_SGL(2 /* = z */, volume->SpacingZ()->GetNum(), volume->SpacingZ()->GetBuffer());
+    		BindTexture3D(m_sgl_voltex);
+			TexCoordRemap3D(0 /* = x */, volume->SpacingX()->GetNum(), volume->SpacingX()->GetBuffer());
+			TexCoordRemap3D(1 /* = y */, volume->SpacingY()->GetNum(), volume->SpacingY()->GetBuffer());
+			TexCoordRemap3D(2 /* = z */, volume->SpacingZ()->GetNum(), volume->SpacingZ()->GetBuffer());
 		}
 
         MakeBox(sw,sh,sd);
@@ -212,27 +211,27 @@ void VolumeBuffer::Render() const
     printf("VolumeBuffer Size = (%f %f %f)\n", volumescale[0], volumescale[1], volumescale[2]);
     
     const unsigned int prg = getProgram();
-    SetUniform3fv_SGL(prg, "volumescale", volumescale);
-    SetUniform3fv_SGL(prg, "volumedim", m_voldim);
-    SetUniform1i_SGL(prg, "volumecomponent", m_volcomp);
+    SetUniform3fv(prg, "volumescale", volumescale);
+    SetUniform3fv(prg, "volumedim", m_voldim);
+    SetUniform1i(prg, "volumecomponent", m_volcomp);
 
     VX::Math::vec3 translate = m_model->GetTranslate();
-    SetUniform3fv_SGL(prg, "offset", (float *)&translate);
+    SetUniform3fv(prg, "offset", (float *)&translate);
     
     bindUniforms(m_model);
     
     bindExtraBuffers(m_model);
     
-    BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
-    BindTexture3D_SGL(m_sgl_voltex);
-    SetUniform1i_SGL(getProgram(), "tex0", 0);
+    BindVBIB(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
+    BindTexture3D(m_sgl_voltex);
+    SetUniform1i(getProgram(), "tex0", 0);
     if (m_index_id)
     {
-        DrawElements_SGL(m_index_num);
+        DrawElements(m_index_num);
     } else {
-        DrawArrays_SGL(m_vertex_num);
+        DrawArrays(m_vertex_num);
     }
-    UnBindVBIB_SGL(getProgram());
+    UnBindVBIB(getProgram());
     unbindExtraBuffers(m_model);
 }
 

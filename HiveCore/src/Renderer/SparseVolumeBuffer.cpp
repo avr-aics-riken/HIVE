@@ -12,10 +12,9 @@
 #include "../Buffer/BufferMeshData.h"
 #include "../Buffer/BufferVolumeData.h"
 #include "Buffer.h"
-#include "Commands.h"
 
 /// コンストラクタ
-SparseVolumeBuffer::SparseVolumeBuffer(RENDER_MODE mode) : BaseBuffer(mode)
+SparseVolumeBuffer::SparseVolumeBuffer(RenderPlugin* render) : BaseBuffer(render)
 {
     m_vtx_id     = 0;
     m_normal_id  = 0;
@@ -62,7 +61,7 @@ bool SparseVolumeBuffer::MakeBox(float width, float height, float depth)
     const unsigned int indexnum  = sizeof(index)/sizeof(unsigned int);
     static float mat[vertexnum*3] = {0};
 
-    CreateVBIB_SGL(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
+    CreateVBIB(vertexnum, &vtx[0], &normal[0], &mat[0], 0, indexnum, &index[0],
             m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
     m_vertex_num = vertexnum;
     m_index_num  = indexnum;
@@ -92,16 +91,16 @@ bool SparseVolumeBuffer::MakeBox(float width, float height, float depth)
 bool SparseVolumeBuffer::CreateSparseTexture3D(const BufferSparseVolumeData* volume, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR)
 {
     printf("CreateSparseTexture3D(%d,%d,%d)\n", volume->Width(), volume->Height(), volume->Depth());
-    GenTextures_SGL(1, &m_sgl_voltex);
-    BindTexture3D_SGL(m_sgl_voltex);
+    GenTextures(1, &m_sgl_voltex);
+    BindTexture3D(m_sgl_voltex);
 
 	for (size_t i = 0; i < volume->VolumeBlocks().size(); i++) {
 		const BufferSparseVolumeData::VolumeBlock& block = volume->VolumeBlocks()[i];
 
         if (block.isRaw) {
-            SparseTexImage3DPointer_SGL(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.size[0], block.size[1], block.size[2], block.components, reinterpret_cast<const float*>(block.rawData), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+            SparseTexImage3DPointer(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.size[0], block.size[1], block.size[2], block.components, reinterpret_cast<const float*>(block.rawData), clampToEdgeS, clampToEdgeT, clampToEdgeR);
         } else {
-            SparseTexImage3DPointer_SGL(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.volume->Width(), block.volume->Height(), block.volume->Depth(), block.volume->Component(), block.volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
+            SparseTexImage3DPointer(block.level, block.offset[0], block.offset[1], block.offset[2], block.extent[0], block.extent[1], block.extent[2], block.volume->Width(), block.volume->Height(), block.volume->Depth(), block.volume->Component(), block.volume->Buffer()->GetBuffer(), clampToEdgeS, clampToEdgeT, clampToEdgeR);
         }
 	}
     m_voldim[0] = volume->Width();
@@ -193,23 +192,23 @@ void SparseVolumeBuffer::Render() const
     printf("SparseVolumeBuffer Size = (%f %f %f)\n", volumescale[0], volumescale[1], volumescale[2]);
     
     const unsigned int prg = getProgram();
-    SetUniform3fv_SGL(prg, "volumescale", volumescale);
-    SetUniform3fv_SGL(prg, "volumedim", m_voldim);
+    SetUniform3fv(prg, "volumescale", volumescale);
+    SetUniform3fv(prg, "volumedim", m_voldim);
     VX::Math::vec3 translate = m_model->GetTranslate();
-    SetUniform3fv_SGL(prg, "offset", (float *)&translate);
+    SetUniform3fv(prg, "offset", (float *)&translate);
     
     bindUniforms(m_model);
     
-    BindVBIB_SGL(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
-    BindTexture3D_SGL(m_sgl_voltex);
-    SetUniform1i_SGL(getProgram(), "tex0", 0);
+    BindVBIB(getProgram(), m_vtx_id, m_normal_id, m_mat_id, m_tex_id, m_index_id);
+    BindTexture3D(m_sgl_voltex);
+    SetUniform1i(getProgram(), "tex0", 0);
     if (m_index_id)
     {
-        DrawElements_SGL(m_index_num);
+        DrawElements(m_index_num);
     } else {
-        DrawArrays_SGL(m_vertex_num);
+        DrawArrays(m_vertex_num);
     }
-    UnBindVBIB_SGL(getProgram());
+    UnBindVBIB(getProgram());
 }
 
 void SparseVolumeBuffer::Update()
