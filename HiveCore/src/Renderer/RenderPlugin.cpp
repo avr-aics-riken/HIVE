@@ -23,7 +23,16 @@
 #include "SolidBuffer.h"
 
 
-/// SGLバッファの作成
+bool RenderPlugin::progressCallbackFunc_(int progress, int y, int height, void* ptr) {
+    return static_cast<RenderPlugin*>(ptr)->progressCallbackFunc(progress, y, height);
+}
+
+bool RenderPlugin::defaultProgressCallbackFunc(double progress) {
+    printf("[Rendering] %3d%%\n", static_cast<int>(progress));
+    return true;
+}
+
+/// 各種バッファの作成
 /// @param robj レンダーオブジェクト
 BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)
 {
@@ -69,34 +78,3 @@ BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)
     return buffer;
 }
 
-
-/// SGLで描画
-/// @param robj レンダーオブジェクト
-void RenderPlugin::draw(const RenderObject* robj)
-{
-    if (robj->GetType() == RenderObject::TYPE_CAMERA) {
-        return;
-    }
-    
-    BaseBuffer* buffer = 0;
-    BufferMap::const_iterator it = m_buffers.find(robj);
-    if (it != m_buffers.end()) {
-        buffer = it->second.Get();
-    } else {
-        BaseBuffer* buf = createBuffer(robj);
-        m_buffers[robj] = buf;
-        buffer = buf;
-    }
-
-    assert(buffer);
-
-    const float res[] = {m_width, m_height};
-    buffer->Update();
-    buffer->BindProgram();
-    buffer->Uniform2fv("resolution", res);
-    buffer->Uniform4fv("backgroundColor", &m_clearcolor.x);
-    buffer->SetCamera(m_currentCamera);
-    buffer->Render();
-    buffer->UnbindProgram();
-    
-}

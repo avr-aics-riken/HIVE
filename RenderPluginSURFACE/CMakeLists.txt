@@ -237,17 +237,17 @@ ELSE()
 ENDIF()
 
 # Render Plugin(SURFACE/OPENGL)
-add_library (renderPlugin ${HIVE_LIBRARY_TYPE} ${RENDERPLUGIN_SOURCES} ${GLDEV_SOURCES})
+add_library (RenderPluginSURFACE ${HIVE_LIBRARY_TYPE} ${RENDERPLUGIN_SOURCES} ${GLDEV_SOURCES})
 
 # Enable address sanitizer(if available).
-add_sanitizers(renderPlugin)
+add_sanitizers(RenderPluginSURFACE)
 
 
 
 
 # LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
-target_link_libraries(renderPlugin LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
-target_link_libraries(renderPlugin LINK_PUBLIC hiveCore)
+target_link_libraries(RenderPluginSURFACE LINK_PRIVATE ${COMPOSITOR_LIBS} ${PMLIB_LIBS})
+target_link_libraries(RenderPluginSURFACE LINK_PUBLIC hiveCore)
 
 # Link
 if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -255,13 +255,13 @@ if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if (NOT COCOA)
     message(FATAL_ERROR "Cocoa Framework not found")
   endif()
-  target_link_libraries(renderPlugin ${COCOA})
+  target_link_libraries(RenderPluginSURFACE ${COCOA})
   if (HIVE_BUILD_WITH_OPENGL)
     find_library(OPENGL OpenGL)
     if (NOT OPENGL)
       message(FATAL_ERROR "OpenGL Framework not found")
     endif()
-    target_link_libraries(renderPlugin ${OPENGL})
+    target_link_libraries(RenderPluginSURFACE ${OPENGL})
   endif()
 
 endif()
@@ -272,18 +272,18 @@ if (HIVE_BUILD_WITH_OPENGL)
   if (NOT OPENGL)
     message(FATAL_ERROR "OpenGL Framework not found")
   endif()
-  target_link_libraries(renderPlugin ${OPENGL})
+  target_link_libraries(RenderPluginSURFACE ${OPENGL})
  else()
   find_library(OPENGL GL)
   if (NOT OPENGL)
     message(FATAL_ERROR "OpenGL Framework not found")
   endif()
-  target_link_libraries(renderPlugin ${OPENGL})
+  target_link_libraries(RenderPluginSURFACE ${OPENGL})
  endif()
 endif()
 
-target_link_libraries(renderPlugin pthread)
-target_link_libraries(renderPlugin LSGLES)
+target_link_libraries(RenderPluginSURFACE pthread)
+target_link_libraries(RenderPluginSURFACE LSGLES)
 
 
 # Copy GLSL Compiler in post build phase

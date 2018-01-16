@@ -59,7 +59,6 @@ bool RenderCore::DeleteTexture(const BufferImageData* bufimg)
     return m_imp->DeleteTexture(bufimg);
 }
 
-
 /// レンダー
 void RenderCore::Render()
 {
@@ -76,11 +75,6 @@ void RenderCore::ClearRenderObject()
 void RenderCore::ClearBuffers()
 {
     m_imp->ClearBuffers();
-}
-
-void RenderCore::SetParallelRendering(bool enableParallel)
-{
-    m_imp->SetParallelRendering(enableParallel);
 }
 
 /// プログレスコールバックの設定

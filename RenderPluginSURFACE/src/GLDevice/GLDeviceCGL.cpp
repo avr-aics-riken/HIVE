@@ -18,7 +18,6 @@ namespace
 	bool make_pbuffer(int colorbit, int depthbit, int width, int height, CGLPBufferObj* pbuffer, CGLContextObj *ctxRet)
 	{
 		int err=0;
-		long numberOfVirtual;
 		CGLPixelFormatObj pixelFormat;
 		CGLContextObj oldContext = CGLGetCurrentContext();
 		CGLPBufferObj pbuf;
@@ -34,8 +33,8 @@ namespace
 			(CGLPixelFormatAttribute)0
 		};
 		
-		GLint nov = numberOfVirtual;
-		err = CGLChoosePixelFormat(attribs, &pixelFormat, &nov);
+        GLint numberOfVirtual;
+		err = CGLChoosePixelFormat(attribs, &pixelFormat, &numberOfVirtual);
 		if(err)
 		{
 			printf("Fail: CGLChoosePixelFormat\n");

@@ -5,69 +5,34 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
-#include <map>
-
 #include "../Core/Ref.h"
-#include "../Core/vxmath.h"
-#include "BufferImageData.h"
-
 #include "BaseBuffer.h"
 class RenderObject;
+class BufferImageData;
 
 class RenderPlugin {
 
 protected:
-
-    static bool progressCallbackFunc_(int progress, int y, int height, void* ptr) {
-        return static_cast<RenderPlugin*>(ptr)->progressCallbackFunc(progress, y, height);
-    }
-    
-    virtual bool progressCallbackFunc(int progress, int y, int height) = 0;
-    
-    static bool defaultProgressCallbackFunc(double progress) {
-        printf("[Rendering] %3d%%\n", static_cast<int>(progress));
-        return true;
-    }
-
-
-    int m_width;
-    int m_height;
-    // Framebuffers
-    unsigned int m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer;
-    VX::Math::vec4 m_clearcolor;
-    
-    const Camera* m_currentCamera;
-
-
-     // Device caches
-    typedef std::map<const std::string, unsigned int> ShaderCache;
-    typedef std::map<const BufferImageData*, unsigned int> TextureCache;
-    typedef std::map<const RenderObject*, RefPtr<BaseBuffer> > BufferMap;
-    BufferMap m_buffers;
-    TextureCache m_textureCache;
-    ShaderCache  m_shaderCache;
-
+    static bool progressCallbackFunc_(int progress, int y, int height, void* ptr);
+    static bool defaultProgressCallbackFunc(double progress);
+    virtual bool progressCallbackFunc(int progress, int y, int height) const = 0;
     
     /// コンストラクタ
     RenderPlugin(){};
     
-    BaseBuffer* createBuffer(const RenderObject* robj);
-    void draw(const RenderObject* robj);
-
 public:
     /// デストラクタ
     virtual ~RenderPlugin(){};
-
-    /// LSGLコンパイラセッティング
-    virtual void LSGL_CompilerSetting() = 0;
     
+    BaseBuffer* createBuffer(const RenderObject* robj);
+
+    virtual int GetWidth() const = 0;
+    virtual int GetHeight() const = 0;
+
+
     /// バッファのクリア
     virtual void ClearBuffers() = 0;
     
-    virtual void SetParallelRendering(bool enableParallel) = 0;
-
     /// レンダーオブジェクトの追加
     /// @param robj レンダーオブジェクト
     virtual void AddRenderObject(RenderObject* robj) = 0;
