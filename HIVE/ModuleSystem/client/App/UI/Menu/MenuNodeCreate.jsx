@@ -69,7 +69,9 @@ export default class MenuNodeCreate extends React.Component {
         // add node action
         if(flg){
             this.props.action.addNodeByName(value);
-            this.props.hiddenFunction();
+            if (this.floating) {
+                this.props.hiddenFunction();
+            }
         }
 
         if(nodeNames.length === 0){return [];}
