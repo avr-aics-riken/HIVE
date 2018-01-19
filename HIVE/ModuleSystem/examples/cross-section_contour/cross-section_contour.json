@@ -1,0 +1,2339 @@
+﻿{
+  "name": "",
+  "varname": "Root",
+  "type": "scene",
+  "nodes": [
+    {
+      "name": "MandelbulbVolumeGenerator",
+      "funcname": "MandelbulbVolumeGenerator",
+      "info": "Mandelbulbを生成するためのノード",
+      "customfuncfile": "generator.lua",
+      "input": [
+        {
+          "name": "size",
+          "type": "int",
+          "value": "50",
+          "nodeVarname": "MandelbulbVolumeGeneratorc676c14c_1627_4b08_ab06_d3b6b330ae14"
+        },
+        {
+          "name": "originX",
+          "type": "int",
+          "value": 0,
+          "nodeVarname": "MandelbulbVolumeGeneratorc676c14c_1627_4b08_ab06_d3b6b330ae14"
+        },
+        {
+          "name": "originY",
+          "type": "int",
+          "value": 0,
+          "nodeVarname": "MandelbulbVolumeGeneratorc676c14c_1627_4b08_ab06_d3b6b330ae14"
+        },
+        {
+          "name": "originZ",
+          "type": "int",
+          "value": 0,
+          "nodeVarname": "MandelbulbVolumeGeneratorc676c14c_1627_4b08_ab06_d3b6b330ae14"
+        }
+      ],
+      "output": [
+        {
+          "name": "VolumeData",
+          "type": "BufferVolumeData",
+          "nodeVarname": "MandelbulbVolumeGeneratorc676c14c_1627_4b08_ab06_d3b6b330ae14"
+        }
+      ],
+      "customfunc": "\nMandelbulbVolumeGenerator = {}\nsetmetatable(MandelbulbVolumeGenerator, {__index = HiveBaseModule})\n\nMandelbulbVolumeGenerator.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    this.gen = LoadModule(\"MandelbulbVolGen\")\n    setmetatable(this, {__index=MandelbulbVolumeGenerator})\n    return this\nend\n\nfunction MandelbulbVolumeGenerator:Do()\n    self:UpdateValue()\n    local v = self.value\n    return self.gen:GenerateOriginShift(v.size, v.originX, v.originY, v.originZ)\nend\n\nfunction MandelbulbVolumeGenerator:VolumeData()\n    return self.gen:VolumeData()\nend\n",
+      "uiFunc": "",
+      "varname": "MandelbulbVolumeGeneratorc676c14c_1627_4b08_ab06_d3b6b330ae14",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          860.6046511627907,
+          1674.6976744186045
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          100,
+          100
+        ],
+        "zindex": -4
+      }
+    },
+    {
+      "name": "VolumeObject",
+      "funcname": "VolumeObject",
+      "info": "ボリュームデータを表示させるためのノード",
+      "customfuncfile": "VolumeObject.lua",
+      "input": [
+        {
+          "name": "volume",
+          "type": "BufferVolumeData",
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        },
+        {
+          "name": "translate",
+          "type": "vec3",
+          "value": [
+            0,
+            0,
+            0
+          ],
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        },
+        {
+          "name": "rotate",
+          "type": "vec3",
+          "value": [
+            0,
+            0,
+            0
+          ],
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        },
+        {
+          "name": "scale",
+          "type": "vec3",
+          "value": [
+            1,
+            1,
+            1
+          ],
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        },
+        {
+          "name": "shadername",
+          "type": "string",
+          "value": "../shader/volume_contour.frag",
+          "meta": "shaderlist",
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        },
+        {
+          "name": "Varying",
+          "type": "Varying",
+          "array": [
+            {
+              "name": "Varying[0]",
+              "type": "Varying",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+            }
+          ],
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        },
+        {
+          "name": "Uniform",
+          "type": "Uniform",
+          "array": [
+            {
+              "name": "Uniform[0]",
+              "type": "Uniform",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+            },
+            {
+              "name": "Uniform[1]",
+              "type": "Uniform",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+            },
+            {
+              "name": "Uniform[2]",
+              "type": "Uniform",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+            },
+            {
+              "name": "Uniform[3]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
+            },
+            {
+              "name": "Uniform[4]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
+            },
+            {
+              "name": "Uniform[5]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
+            },
+            {
+              "name": "Uniform[6]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
+            },
+            {
+              "name": "Uniform[7]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
+            }
+          ],
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        }
+      ],
+      "output": [
+        {
+          "name": "model",
+          "type": "RenderObject",
+          "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
+        }
+      ],
+      "customfunc": "VolumeObject = {}\nsetmetatable(VolumeObject, {__index = HiveBaseModule})\n\nVolumeObject.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    local pm = PolygonModel();\n    this.pmodel = pm\n    \n    setmetatable(this, {__index=VolumeObject})\n    return this\nend\n\nfunction VolumeObject:Do()    \n    self:UpdateValue()\n    local v = self.value    \n    local pm = VolumeModel(); -- make new Model!\n    self.pmodel = pm           -- replace\n    \n    local minval = 0.0\n    local maxval = 1.0\n    if v.volume then\n        if v.volume:Width() > 0 and v.volume:Height() > 0 and v.volume:Depth() > 0 then \n            pm:Create(v.volume)\n            -- Analyze min/max\n            local analyzer = LoadModule('Analyzer').VolumeAnalyzer()\n            analyzer:Execute(v.volume)\n            minval = analyzer:MinX()\n            maxval = analyzer:MaxX()\n            print('analyzer: min=', minval, ' max=', maxval)\n       end\n    end    \n    \n    pm:SetFloat('volumemin', minval)\n    pm:SetFloat('volumemax', maxval)\n    \n\tpm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])\n\tpm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])\n\tpm:SetScale(v.scale[1], v.scale[2], v.scale[3])\n    \n    if pm:GetShader() ~= v.shadername then\n        clearShaderCache(v.shadername)\n    end\n\tpm:SetShader(v.shadername)\n\n\tlocal uniforms = self.connection.Uniform\n    if uniforms ~= nil then    \n        for i,v in pairs(uniforms) do\n            if v.type == 'vec4' then\n                print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')\n                pm:SetVec4(v.name, v.value[1], v.value[2], v.value[3], v.value[4])\n            end\n            if v.type == 'vec3' then\n                print('vec3[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], ')')\n                pm:SetVec3(v.name, v.value[1], v.value[2], v.value[3])\n            end\n            if v.type == 'vec2' then\n                print('vec2[' .. v.name .. '] = (', v.value[1], v.value[2], ')')\n                pm:SetVec2(v.name, v.value[1], v.value[2])\n            end\n            if v.type == 'float' then\n                print('float[' .. v.name .. '] = (', v.value, ')')\n                pm:SetFloat(v.name, v.value)\n            end\n            if v.type == 'int' then\n                print('int[' .. v.name .. '] = (', v.value, ')')\n                pm:SetInt(v.name, v.value)\n            end\n            if v.type == 'texture' then\n                print('texture[' .. v.name .. '] = (', v.value, ')')\n                pm:SetTexture(v.name, v.value)\n            end\n        end\n    end\n    \n    pm:ClearExtraBuffer()\n    local varyings = self.connection.Varying\n    if varyings ~= nil then\n        for i, v in pairs(varyings) do\n            pm:AddExtraBuffer(v.name, v.value)\n        end\n    end\n    \n    return true\nend\n\nfunction VolumeObject:model()\n    return self.pmodel;\nend\n",
+      "uiFunc": "",
+      "varname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          2039.3255813953488,
+          1990
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          150,
+          150
+        ],
+        "zindex": -4
+      }
+    },
+    {
+      "name": "RenderView",
+      "funcname": "RenderView",
+      "info": "レンダリングを行うためのノード",
+      "customfuncfile": "renderview.lua",
+      "uifile": "renderview.jsx",
+      "input": [
+        {
+          "name": "position",
+          "type": "vec3",
+          "value": [
+            -62.96260654080562,
+            15.949494932670031,
+            -27.04743773948041
+          ],
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "target",
+          "type": "vec3",
+          "value": [
+            0,
+            0,
+            0
+          ],
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "up",
+          "type": "vec3",
+          "value": [
+            0,
+            1,
+            0
+          ],
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "fov",
+          "type": "float",
+          "value": 60,
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "presets",
+          "type": "CameraPreset",
+          "value": null,
+          "visible": false,
+          "hole": false,
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "screensize",
+          "type": "vec2",
+          "value": [
+            512,
+            512
+          ],
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "rendersize",
+          "type": "vec2",
+          "value": [
+            512,
+            512
+          ],
+          "visible": false,
+          "hole": false,
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "clearcolor",
+          "type": "vec4",
+          "value": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "floatbuffer",
+          "type": "bool",
+          "value": true,
+          "hole": false,
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "ipcmode",
+          "type": "bool",
+          "value": false,
+          "hole": false,
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "Camera",
+          "type": "RenderObject",
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "RenderObject",
+          "type": "RenderObject",
+          "array": [
+            {
+              "name": "RenderObject[0]",
+              "type": "RenderObject",
+              "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+            },
+            {
+              "name": "RenderObject[1]",
+              "type": "RenderObject",
+              "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+            },
+            {
+              "name": "RenderObject[2]",
+              "type": "RenderObject",
+              "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+            }
+          ],
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        }
+      ],
+      "output": [
+        {
+          "name": "Camera",
+          "type": "RenderObject",
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "Image",
+          "type": "BufferImageData",
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        },
+        {
+          "name": "ScreenSize",
+          "type": "vec2",
+          "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
+        }
+      ],
+      "customfunc": "\nRenderView = {}\nsetmetatable(RenderView, {__index = HiveBaseModule})\n\nRenderView.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    this.cam = Camera()    \n    this.property = {\n        screensize = {512, 512},\n        position = {0,0,300},\n        target = {0,0,0},\n        up = {0,1,0},\n        fov = 60,\n        clearcolor = {0,0,0,1},\n        color_file = \"\",\n        depth_file = \"\",\n        ipcmode = false\n    }\n    this.network_ipc = nil\n    \n    setmetatable(this, {__index=RenderView})\n    return this\nend\n\nfunction RenderView:Do()\n    self:UpdateValue()\n    local v = self.value\n    \n    self.cam:SetScreenSize(v.rendersize[1], v.rendersize[2])--v.screensize[1], v.screensize[2])\n    self.cam:SetFilename(v.color_file)\n    self.cam:SetDepthFilename(v.depth_file)\n    self.cam:ClearColor(v.clearcolor[1],v.clearcolor[2],v.clearcolor[3],v.clearcolor[4])\n    self.cam:LookAt(\n        v.position[1], v.position[2], v.position[3],\n        v.target[1],   v.target[2],   v.target[3],\n        v.up[1],       v.up[2],       v.up[3],\n        v.fov\n    )\n    \n    local temp = {}\n    local targetcam\n-- For Object\n    if v.RenderObject then\n        temp = v.RenderObject\n    end\n        \n-- For Camera\n    if v.Camera then\n        temp[#temp + 1] = v.Camera\n        targetcam = v.Camera\n    else\n        temp[#temp + 1] = self.cam\n        targetcam = self.cam\n    end\n\n    if v.floatbuffer then\n        targetcam:SetImageBufferFormat('RGBA32F')\n    else\n        targetcam:SetImageBufferFormat('RGBA8')\n    end\n-- dump\n--[[\n    for i,v in pairs(temp) do\n         print('RenderObject->', v);   \n    end\n--]]\n--[[\n    if v.screensize[1] / 10 < v.rendersize[1] then\n        render(temp, HIVE_fetchEvent)\n    else\n    ]]\n        render(temp)\n    --end\n    \n    if network == nil and HIVE_metabin == nil then -- no UI mode        \n        return true\n    end \n    \n    local mode = 'png'\n    -- image save\n    local imageBuffer\n    local imageBufferSize\n    if self.property.ipcmode then\n        mode = 'raw'\n        -- image save\n        local img = targetcam:GetImageBuffer()\t\n        imageBuffer = img:GetBuffer()\n        imageBufferSize = img:GetSize()\n    else    \n        -- image save\n        imageBuffer = HIVE_ImageSaver:SaveMemory(5, targetcam:GetImageBuffer())\n        imageBufferSize = HIVE_ImageSaver:MemorySize()\n    end\n    \n    -- create metabinary\n    --local w = v.screensize[1]\n    --local h = v.screensize[2]\n    local w = v.rendersize[1]\n    local h = v.rendersize[2]\n    print('rendersize=('.. w ..\",\".. h ..\")\", 'cancel=', tostring(HIVE_isRenderCanceled))\n    \n    if targetClientId == nil then\n        return false\n    end\n    local json = [[{\n            \"JSONRPC\" : \"2.0\",\n            \"method\" : \"renderedImage\",            \n            \"to\" : ]] .. targetClientId ..[[,\n            \"param\" : {\n                \"type\" : \"]] .. mode .. [[\",\n                \"width\" : \"]] .. w .. [[\",\n                \"height\" : \"]] .. h .. [[\",\n                \"canceled\": ]] .. tostring(HIVE_isRenderCanceled) .. [[,\n                \"varname\": \"]] .. self.varname .. [[\"\n            },\n            \"id\":0\n    }]]\n    HIVE_metabin:Create(json, imageBuffer, imageBufferSize)\n    --print('JSON=', json, 'size=', imageBufferSize)\n    -- send\n    print('ipcmode', self.property.ipcmode)        \n    if self.property.ipcmode then       \n        if self.network_ipc == nil then\n            local ipcAddress = 'ipc:///tmp/HIVE_IPC_' .. self.varname\n            print('IPC open=', ipcAddress);\n\t        self.network_ipc = LoadModule(\"Network\").Connection()\n\t        local ipcr = self.network_ipc:Connect(ipcAddress)\n\t        print('IPC ret=', ipcr)\n        end\n        print('IPC->', self.network_ipc)\n        self.network_ipc:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())\n        print('IPC SEND!!!!!!!!!!!')\t\t\t   \n\n    else\n        network:SendBinary(HIVE_metabin:BinaryBuffer(), HIVE_metabin:BinaryBufferSize())\n        print('WEBSOCKET SEND!!!!!!!!!!!')\t\t\t   \n\n    end\n    return true\nend\n\n\nfunction RenderView:Camera()\n    return self.cam\nend\n\nfunction RenderView:Image()\n    return self.cam:GetImageBuffer()\nend\n\nfunction RenderView:ScreenSize()\n    return self.value.screensize\nend",
+      "uiFunc": "'use strict';\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactDom = require('react-dom');\n\nvar _reactDom2 = _interopRequireDefault(_reactDom);\n\n//import nanomsg from 'nanomsg'\n//import buffercopy from 'buffercopy'\n\nvar minWidth = 256;\nvar minHeight = 100;\nvar footerHeight = 50;\n\nfunction progressiveMin(val) {\n\treturn parseInt(val / 16.0, 10);\n}\n\nvar RenderView = (function (_React$Component) {\n\t_inherits(RenderView, _React$Component);\n\n\tfunction RenderView(props) {\n\t\t_classCallCheck(this, RenderView);\n\n\t\t_get(Object.getPrototypeOf(RenderView.prototype), 'constructor', this).call(this, props);\n\t\tconsole.log('RenderView Constructor:', props);\n\n\t\tthis.node = props.node;\n\t\tthis.action = props.action;\n\t\tthis.store = props.store;\n\n\t\tthis.varname = this.node.varname;\n\n\t\tthis.state = {\n\t\t\twidth: minWidth,\n\t\t\theight: minHeight\n\t\t};\n\n\t\t// Mouse\n\t\tthis.mouseState = 0;\n\t\tthis.oldmx = 0;\n\t\tthis.oldmy = 0;\n\n\t\t// View\n\t\tthis.componentDidUpdate = this.componentDidUpdate.bind(this);\n\t\tthis.imageRecieved = this.imageRecieved.bind(this);\n\t\tthis.imageRecieveWrap = this.imageRecieveWrap.bind(this);\n\t\tthis.onPanelSizeChanged = this.onPanelSizeChanged.bind(this);\n\t\tthis.getInputValue = this.getInputValue.bind(this);\n\t\tthis.onEnterCameraButton = this.onEnterCameraButton.bind(this);\n\t\tthis.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);\n\t\tthis.onClickCameraButton = this.onClickCameraButton.bind(this);\n\t\tthis.onClickCameraRegisterButton = this.onClickCameraRegisterButton.bind(this);\n\t\tthis.reRender = this.reRender.bind(this);\n\n\t\tthis.updatePreset = this.updatePreset.bind(this);\n\n\t\tthis.reRender(true);\n\t}\n\n\t_createClass(RenderView, [{\n\t\tkey: 'progressiveUpdate',\n\t\tvalue: function progressiveUpdate(param) {\n\t\t\tvar _this = this;\n\n\t\t\tvar w = param.width;\n\t\t\tvar h = param.height;\n\t\t\tvar varname = this.node.varname;\n\t\t\tvar ssize = this.getInputValue(\"screensize\");\n\t\t\tif (this.mouseState > 0) {\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tif (w < ssize[0] || h < ssize[1]) {\n\t\t\t\tw = ssize[0];\n\t\t\t\th = ssize[1];\n\t\t\t\t//console.log('PROGRESSIVE:', w, h);\n\t\t\t\tsetTimeout(function () {\n\t\t\t\t\t_this.action.changeNodeInput({\n\t\t\t\t\t\tvarname: varname,\n\t\t\t\t\t\tinput: {\n\t\t\t\t\t\t\t\"rendersize\": [w, h]\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}, 0);\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'imageRecieved',\n\t\tvalue: function imageRecieved(err, param, data) {\n\t\t\tvar buffer;\n\t\t\tvar varname = this.node.varname;\n\t\t\tif (param.varname !== varname) {\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tif (param.type === 'jpg') {\n\t\t\t\tbuffer = new Blob([data]);\n\t\t\t} else if (param.type == 'png') {\n\t\t\t\tbuffer = new Blob([data]);\n\t\t\t} else {\n\t\t\t\tbuffer = data;\n\t\t\t}\n\t\t\tthis.setState({\n\t\t\t\timage: buffer\n\t\t\t});\n\n\t\t\t// progressive update\n\t\t\tthis.progressiveUpdate(param);\n\t\t}\n\t}, {\n\t\tkey: 'hasIPCAddress',\n\t\tvalue: function hasIPCAddress() {\n\t\t\treturn this.getInputValue('ipcmode');\n\t\t}\n\t}, {\n\t\tkey: 'closeForIPCImageTransfer',\n\t\tvalue: function closeForIPCImageTransfer() {\n\t\t\tif (this.sc === undefined) {} else {\n\t\t\t\tthis.sc.close();\n\t\t\t\tthis.sc = undefined;\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'readyForIPCImageTransfer',\n\t\tvalue: function readyForIPCImageTransfer() {\n\t\t\tvar _this2 = this;\n\n\t\t\t// Electron only\n\t\t\tif (this.sc === undefined && window && window.process && window.process.type) {\n\t\t\t\tvar nano = process.mainModule.require('nanomsg');\n\t\t\t\tvar buffercopy = process.mainModule.require('buffercopy');\n\t\t\t\tvar sc = nano.socket('pair');\n\t\t\t\tthis.sc = sc;\n\t\t\t\tvar meta = process.mainModule.require(process.mainModule.require(\"path\").resolve('./lib/metabinary')); // path from index.html\n\t\t\t\tthis.meta = meta;\n\t\t\t\tvar ipcAddress = 'ipc:///tmp/HIVE_IPC_' + this.varname;\n\t\t\t\tvar ret = sc.bind(ipcAddress);\n\t\t\t\tconsole.log('IPC bind = ', ret, ipcAddress);\n\n\t\t\t\tthis.sc.on('data', function (data) {\n\t\t\t\t\t//console.log('ONDATAA!!!!', this.meta);\n\t\t\t\t\tif (meta === undefined) {\n\t\t\t\t\t\t// ????? Why undefined???\n\t\t\t\t\t\tmeta = meta;\n\t\t\t\t\t\treturn;\n\t\t\t\t\t}\n\t\t\t\t\tif (!_this2.meta.loadMetaBinary(data, function (meta, data) {\n\t\t\t\t\t\tvar w,\n\t\t\t\t\t\t    h,\n\t\t\t\t\t\t    param = meta.param;\n\t\t\t\t\t\tif (param.type === 'jpg') {\n\t\t\t\t\t\t\t// resultElement is img.\n\t\t\t\t\t\t\tvar resultElement = document.getElementById(_this2.getCanvasName('img'));\n\t\t\t\t\t\t\tresultElement.src = URL.createObjectURL(new Blob([data], { type: \"image/jpeg\" }));\n\t\t\t\t\t\t} else if (param.type === 'png') {\n\t\t\t\t\t\t\t// resultElement is img.\n\t\t\t\t\t\t\tvar resultElement = document.getElementById(_this2.getCanvasName('img'));\n\t\t\t\t\t\t\tresultElement.src = URL.createObjectURL(new Blob([data], { type: \"image/png\" }));\n\t\t\t\t\t\t} else if (param.type === 'raw') {\n\t\t\t\t\t\t\t//console.log('UPDATE CANVAS!!!');\n\n\t\t\t\t\t\t\t// resultElement is canvas.\n\t\t\t\t\t\t\tvar resultElement = document.getElementById(_this2.getCanvasName('canvas'));\n\t\t\t\t\t\t\tif (resultElement) {\n\t\t\t\t\t\t\t\t// why undefined, sometime??\n\t\t\t\t\t\t\t\tresultElement.setAttribute('width', param.width), resultElement.setAttribute('height', param.height);\n\t\t\t\t\t\t\t\tvar context = resultElement.getContext('2d');\n\t\t\t\t\t\t\t\tvar imageData = context.createImageData(param.width, param.height);\n\t\t\t\t\t\t\t\tbuffercopy.buffercopy(data, imageData.data);\n\t\t\t\t\t\t\t\tcontext.putImageData(imageData, 0, 0);\n\n\t\t\t\t\t\t\t\t_this2.progressiveUpdate(param);\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t})) {\n\t\t\t\t\t\tconsole.error('Not metabin foramt');\n\t\t\t\t\t};\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'componentDidUpdate',\n\t\tvalue: function componentDidUpdate() {\n\t\t\t// キャンバスの更新.\n\t\t\tif (this.state && this.state.image) {\n\t\t\t\tif (this.hasIPCAddress()) {\n\t\t\t\t\t/*    let canvas = document.getElementById(this.getCanvasName());\n     //let canvas = ReactDOM.findDOMNode(this.refs.canvas);\n     let context = canvas.getContext('2d');\n     let width = this.state.param.width;\n     let height = this.state.param.height;\n     canvas.setAttribute('width', width);\n     canvas.setAttribute('height', height);\n         //console.error('[inst]', nanomsg, buffercopy);\n     if (width * height * 4 == this.state.image.length) {\n     let imageData = context.createImageData(width, height);\n     buffercopy.buffercopy(this.state.image, imageData.data);\n     context.putImageData(imageData, 0, 0);\n     } else {\n     console.error(\"image size err:\", width, height);\n     }*/\n\t\t\t\t} else {\n\t\t\t\t\t\t//\t\tlet imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);\n\t\t\t\t\t\t//\t\timgElem.src = URL.createObjectURL(this.state.image, {type: \"image/jpeg\"});\n\t\t\t\t\t\tvar imgElem = document.getElementById(this.getCanvasName('img'));\n\t\t\t\t\t\timgElem.src = URL.createObjectURL(this.state.image, { type: \"image/png\" });\n\t\t\t\t\t\t//console.log(imgElem);\n\t\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'reRender',\n\t\tvalue: function reRender(useProgressive) {\n\t\t\tvar _this3 = this;\n\n\t\t\tvar screensize = this.getInputValue(\"screensize\");\n\t\t\tsetTimeout(function () {\n\t\t\t\tif (useProgressive) {\n\t\t\t\t\t_this3.action.changeNodeInput({\n\t\t\t\t\t\tvarname: _this3.props.node.varname,\n\t\t\t\t\t\tinput: {\n\t\t\t\t\t\t\t\"rendersize\": [progressiveMin(screensize[0]), progressiveMin(screensize[1])]\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t} else {\n\t\t\t\t\t_this3.action.changeNodeInput({\n\t\t\t\t\t\tvarname: _this3.props.node.varname,\n\t\t\t\t\t\tinput: {\n\t\t\t\t\t\t\t\"rendersize\": [screensize[0], screensize[1]]\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t}, 0);\n\t\t}\n\t}, {\n\t\tkey: 'getInputValue',\n\t\tvalue: function getInputValue(key) {\n\t\t\tfor (var i = 0; i < this.node.input.length; i = i + 1) {\n\t\t\t\tif (this.node.input[i].name === key) {\n\t\t\t\t\treturn this.node.input[i].value;\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'viewRot',\n\t\tvalue: function viewRot(rotx, roty, rotz) {\n\t\t\tvar target = JSON.parse(JSON.stringify(this.getInputValue(\"target\")));\n\t\t\tvar position = JSON.parse(JSON.stringify(this.getInputValue(\"position\")));\n\t\t\tvar eyedir = subtract(position, target);\n\t\t\tvar v = vec4(eyedir[0], eyedir[1], eyedir[2], 0.0);\n\t\t\tvar az = normalize(subtract(position, target));\n\t\t\tvar ax = normalize(cross(vec3(0, 1, 0), az));\n\t\t\tvar ay = normalize(cross(az, ax));\n\t\t\tvar rx = rotate(rotx, ax);\n\t\t\tvar ry = rotate(roty, ay);\n\t\t\tvar ssize = JSON.parse(JSON.stringify(this.getInputValue(\"screensize\")));\n\t\t\tvar rw = progressiveMin(ssize[0]);\n\t\t\tvar rh = progressiveMin(ssize[1]);\n\n\t\t\tv = vec4(dot(ry[0], v), dot(ry[1], v), dot(ry[2], v), 0.0);\n\t\t\tv = vec3(dot(rx[0], v), dot(rx[1], v), dot(rx[2], v));\n\t\t\tvar pos = add(target, v);\n\n\t\t\tif (Math.abs(dot(normalize(subtract(target, pos)), vec3(0, 1, 0))) < 0.99) {\n\t\t\t\tvar varname = this.node.varname;\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": pos,\n\t\t\t\t\t\t\"target\": target,\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'updatePreset',\n\t\tvalue: function updatePreset() {\n\t\t\tvar layer = Number(this.refs.presetSelect.value);\n\t\t\tvar presets = this.getInputValue(\"presets\");\n\t\t\tif (!presets) {\n\t\t\t\tpresets = {};\n\t\t\t}\n\t\t\tif (!presets.hasOwnProperty(layer)) {\n\t\t\t\tpresets[layer] = {};\n\t\t\t}\n\t\t\tvar preset = presets[layer];\n\t\t\tpreset.position = JSON.parse(JSON.stringify(this.getInputValue(\"position\")));\n\t\t\tpreset.target = JSON.parse(JSON.stringify(this.getInputValue(\"target\")));\n\t\t\tpreset.up = JSON.parse(JSON.stringify(this.getInputValue(\"up\")));\n\t\t\tpreset.fov = this.getInputValue(\"fov\");\n\n\t\t\tthis.action.changeNodeInput({\n\t\t\t\tvarname: this.node.varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"presets\": presets\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: 'viewTrans',\n\t\tvalue: function viewTrans(tx, ty, tz) {\n\t\t\tvar target = JSON.parse(JSON.stringify(this.getInputValue(\"target\")));\n\t\t\tvar position = JSON.parse(JSON.stringify(this.getInputValue(\"position\")));\n\t\t\tvar mv = vec3(-tx, ty, 0.0);\n\t\t\tvar az = normalize(subtract(position, target));\n\t\t\tvar ax = normalize(cross(vec3(0, 1, 0), az));\n\t\t\tvar ay = normalize(cross(az, ax));\n\t\t\tvar mx = transpose(mat3(ax, ay, az));\n\t\t\tvar mm = vec3(vec3(dot(mv, mx[0]), dot(mv, mx[1]), dot(mv, mx[2])));\n\t\t\tvar pos = add(add(position, scale(-tx, ax)), scale(ty, ay));\n\t\t\tvar tar = add(add(target, scale(-tx, ax)), scale(ty, ay));\n\t\t\tvar ssize = JSON.parse(JSON.stringify(this.getInputValue(\"screensize\")));\n\t\t\tvar rw = progressiveMin(ssize[0]);\n\t\t\tvar rh = progressiveMin(ssize[1]);\n\n\t\t\tvar varname = this.node.varname;\n\t\t\tthis.action.changeNodeInput({\n\t\t\t\tvarname: varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"position\": pos,\n\t\t\t\t\t\"target\": tar,\n\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: 'viewZoom',\n\t\tvalue: function viewZoom(zoom) {\n\t\t\tvar target = JSON.parse(JSON.stringify(this.getInputValue(\"target\")));\n\t\t\tvar position = JSON.parse(JSON.stringify(this.getInputValue(\"position\")));\n\t\t\tvar v = subtract(position, target);\n\t\t\tvar ssize = JSON.parse(JSON.stringify(this.getInputValue(\"screensize\")));\n\t\t\tvar rw = progressiveMin(ssize[0]);\n\t\t\tvar rh = progressiveMin(ssize[1]);\n\n\t\t\tvar r = 1.0 - zoom / 1000.0;\n\t\t\tv = scale(r, v);\n\t\t\tposition = add(target, v);\n\t\t\tvar varname = this.node.varname;\n\t\t\tthis.action.changeNodeInput({\n\t\t\t\tvarname: varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"position\": position,\n\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: 'onImgMouseDown',\n\t\tvalue: function onImgMouseDown(event) {\n\t\t\tevent.preventDefault();\n\t\t\tthis.mouseState = 1;\n\t\t\tthis.oldmx = event.clientX;\n\t\t\tthis.oldmy = event.clientY;\n\t\t}\n\t}, {\n\t\tkey: 'onImgMouseMove',\n\t\tvalue: function onImgMouseMove(event) {\n\t\t\tif (this.mouseState > 0) {\n\t\t\t\tevent.preventDefault();\n\n\t\t\t\tvar dx = event.clientX - this.oldmx;\n\t\t\t\tvar dy = event.clientY - this.oldmy;\n\t\t\t\t//console.log('mmove', dx, dy);\n\n\t\t\t\tif (event.button === 0) {\n\t\t\t\t\tthis.viewRot(-dy * 0.5, -dx * 0.5, 0.0);\n\t\t\t\t} else if (event.button === 1) {\n\t\t\t\t\tthis.viewTrans(dx, dy);\n\t\t\t\t} else if (event.button === 2) {\n\t\t\t\t\tthis.viewZoom(dx + dy);\n\t\t\t\t}\n\n\t\t\t\tthis.oldmx = event.clientX;\n\t\t\t\tthis.oldmy = event.clientY;\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'onImgMouseUp',\n\t\tvalue: function onImgMouseUp(event) {\n\t\t\tif (this.mouseState !== 0) {\n\t\t\t\tthis.reRender(false);\n\t\t\t}\n\t\t\tthis.mouseState = 0;\n\t\t}\n\t}, {\n\t\tkey: 'imageRecieveWrap',\n\t\tvalue: function imageRecieveWrap(err, data) {\n\t\t\tvar _this4 = this;\n\n\t\t\tif (data.varname !== this.node.varname) {\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tif (this.hasIPCAddress()) {\n\t\t\t\tthis.readyForIPCImageTransfer();\n\t\t\t}\n\n\t\t\tvar screensize = this.getInputValue(\"screensize\");\n\t\t\tvar panelsize = data.panel.size;\n\t\t\tif (screensize[0] !== panelsize[0] || screensize[1] + footerHeight !== panelsize[1]) {\n\t\t\t\t(function () {\n\t\t\t\t\tvar panel = JSON.parse(JSON.stringify(data.panel));\n\t\t\t\t\tpanel.size[0] = Number(screensize[0]);\n\t\t\t\t\tpanel.size[1] = Number(screensize[1] + footerHeight);\n\t\t\t\t\tsetTimeout(function () {\n\t\t\t\t\t\t_this4.action.changeNode({\n\t\t\t\t\t\t\tvarname: _this4.node.varname,\n\t\t\t\t\t\t\tpanel: panel\n\t\t\t\t\t\t});\n\t\t\t\t\t}, 0);\n\t\t\t\t})();\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'onPanelSizeChanged',\n\t\tvalue: function onPanelSizeChanged(err, data) {\n\t\t\tvar _this5 = this;\n\n\t\t\tif (data.varname !== this.node.varname) {\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tif (this.props.node.panel.visible) {\n\t\t\t\tvar width = Math.max(this.props.node.panel.size[0], minWidth);\n\t\t\t\tvar height = Math.max(this.props.node.panel.size[1] - footerHeight, minHeight);\n\t\t\t\tif (Number(this.state.width) !== width || Number(this.state.height) !== height) {\n\t\t\t\t\tthis.setState({\n\t\t\t\t\t\twidth: width,\n\t\t\t\t\t\theight: height\n\t\t\t\t\t});\n\n\t\t\t\t\tsetTimeout(function () {\n\t\t\t\t\t\tvar width = Math.max(_this5.props.node.panel.size[0], minWidth);\n\t\t\t\t\t\tvar height = Math.max(_this5.props.node.panel.size[1] - footerHeight, minHeight);\n\n\t\t\t\t\t\t_this5.action.changeNodeInput({\n\t\t\t\t\t\t\tvarname: _this5.props.node.varname,\n\t\t\t\t\t\t\tinput: {\n\t\t\t\t\t\t\t\t\"screensize\": [width, height],\n\t\t\t\t\t\t\t\t\"rendersize\": [progressiveMin(width), progressiveMin(height)]\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t});\n\t\t\t\t\t}, 0);\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'onPresetChange',\n\t\tvalue: function onPresetChange(ev) {\n\t\t\tvar number = Number(ev.target.value);\n\t\t\tif (number === null || number === undefined) {\n\t\t\t\tconsole.error(\"invalid camera layer\");return;\n\t\t\t}\n\t\t\tvar ssize = this.getInputValue(\"screensize\");\n\t\t\tvar presets = this.getInputValue(\"presets\");\n\t\t\tif (!presets) {\n\t\t\t\treturn;\n\t\t\t}\n\t\t\tpresets.currentPreset = number;\n\t\t\tvar rw = progressiveMin(ssize[0]);\n\t\t\tvar rh = progressiveMin(ssize[1]);\n\t\t\tif (presets.hasOwnProperty(number)) {\n\t\t\t\tvar preset = presets[number];\n\t\t\t\tif (preset.hasOwnProperty(\"position\") && preset.hasOwnProperty(\"target\") && preset.hasOwnProperty(\"up\") && preset.hasOwnProperty(\"fov\")) {\n\t\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\t\t\tinput: {\n\t\t\t\t\t\t\tposition: preset.position,\n\t\t\t\t\t\t\ttarget: preset.target,\n\t\t\t\t\t\t\tup: preset.up,\n\t\t\t\t\t\t\tfov: preset.fov,\n\t\t\t\t\t\t\tpresets: presets\n\t\t\t\t\t\t}\n\t\t\t\t\t});\n\t\t\t\t}\n\t\t\t} else {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [0, 0, 300],\n\t\t\t\t\t\t\"target\": [0, 0, 0],\n\t\t\t\t\t\t\"up\": [0, 1, 0],\n\t\t\t\t\t\t\"fov\": 60,\n\t\t\t\t\t\t\"rendersize\": [rw, rh],\n\t\t\t\t\t\t\"presets\": presets\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'componentDidMount',\n\t\tvalue: function componentDidMount() {\n\t\t\tvar imgElem = document.getElementById(this.getCanvasName('img'));\n\t\t\timgElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);\n\n\t\t\tvar canElem = document.getElementById(this.getCanvasName('canvas'));\n\t\t\tcanElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);\n\n\t\t\t// canvas.tabIndex = 1000;\n\t\t\twindow.addEventListener('mouseup', this.onImgMouseUp.bind(this));\n\t\t\twindow.addEventListener('mousemove', this.onImgMouseMove.bind(this), true);\n\n\t\t\tvar NODE_INPUT_CHANGED = \"node_input_changed\";\n\t\t\tthis.store.on(NODE_INPUT_CHANGED, this.imageRecieveWrap);\n\n\t\t\tvar Store_IMAGE_RECIEVED = \"image_revieved\";\n\t\t\tthis.store.on(Store_IMAGE_RECIEVED, this.imageRecieved);\n\n\t\t\tthis.store.on(\"panel_size_changed\", this.onPanelSizeChanged);\n\n\t\t\tvar presets = this.getInputValue(\"presets\");\n\t\t\tif (presets && presets.hasOwnProperty(\"currentPreset\")) {\n\t\t\t\tthis.refs.presetSelect.selectedIndex = presets.currentPreset - 1;\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'componentWillUnmount',\n\t\tvalue: function componentWillUnmount() {\n\t\t\tvar imgElem = document.getElementById(this.getCanvasName('img'));\n\t\t\timgElem.removeEventListener('mousedown', this.onImgMouseDown.bind(this), true);\n\t\t\tvar canElem = document.getElementById(this.getCanvasName('canvas'));\n\t\t\tcanElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);\n\n\t\t\twindow.removeEventListener('mouseup', this.onImgMouseUp.bind(this));\n\t\t\twindow.removeEventListener('mousemove', this.onImgMouseMove.bind(this));\n\t\t\tvar Store_IMAGE_RECIEVED = \"image_revieved\";\n\t\t\tthis.store.off(Store_IMAGE_RECIEVED, this.imageRecieved);\n\n\t\t\tvar NODE_INPUT_CHANGED = \"node_input_changed\";\n\t\t\tthis.store.off(NODE_INPUT_CHANGED, this.imageRecieveWrap);\n\n\t\t\tthis.store.off(\"panel_size_changed\", this.onPanelSizeChanged);\n\t\t\tthis.closeForIPCImageTransfer();\n\t\t}\n\t}, {\n\t\tkey: 'styles',\n\t\tvalue: function styles() {\n\t\t\treturn {\n\t\t\t\tbounds: {\n\t\t\t\t\tminWidth: String(minWidth) + \"px\",\n\t\t\t\t\tminHeight: String(minHeight) + \"px\"\n\t\t\t\t},\n\t\t\t\tcanvas: {\n\t\t\t\t\tpostion: \"relative\",\n\t\t\t\t\tleft: \"0px\",\n\t\t\t\t\ttop: \"0px\",\n\t\t\t\t\twidth: String(this.canvasSize.bind(this)()[0]) + \"px\",\n\t\t\t\t\theight: String(this.canvasSize.bind(this)()[1]) + \"px\",\n\t\t\t\t\ttransform: \"scale(1.0,-1.0)\",\n\t\t\t\t\tdisplay: this.hasIPCAddress() ? \"block\" : \"none\"\n\t\t\t\t},\n\t\t\t\timage: {\n\t\t\t\t\tpostion: \"relative\",\n\t\t\t\t\tleft: \"0px\",\n\t\t\t\t\ttop: \"0px\",\n\t\t\t\t\twidth: String(this.canvasSize.bind(this)()[0]) + \"px\",\n\t\t\t\t\theight: String(this.canvasSize.bind(this)()[1]) + \"px\",\n\t\t\t\t\tdisplay: this.hasIPCAddress() ? \"none\" : \"block\"\n\t\t\t\t},\n\t\t\t\tcameraButtonArea: {\n\t\t\t\t\theight: \"25px\",\n\t\t\t\t\tbackgroundColor: \"rgba(67, 67, 67, 0.9)\"\n\t\t\t\t},\n\t\t\t\tcameraButton: {\n\t\t\t\t\twidth: \"32px\",\n\t\t\t\t\theight: \"20px\",\n\t\t\t\t\tfloat: \"left\",\n\t\t\t\t\tbackgroundColor: \"gray\",\n\t\t\t\t\tborder: \"1px solid darkgray\",\n\t\t\t\t\tborderRadius: \"3px\",\n\t\t\t\t\tmargin: \"2px\",\n\t\t\t\t\ttextAlign: \"center\",\n\t\t\t\t\tfontSize: \"11px\"\n\t\t\t\t},\n\t\t\t\tregisterButton: {\n\t\t\t\t\twidth: \"50px\",\n\t\t\t\t\theight: \"20px\",\n\t\t\t\t\tbackgroundColor: \"gray\",\n\t\t\t\t\tborder: \"1px solid darkgray\",\n\t\t\t\t\tborderRadius: \"3px\",\n\t\t\t\t\tmarginLeft: \"2px\",\n\t\t\t\t\ttextAlign: \"center\",\n\t\t\t\t\tfontSize: \"11px\",\n\t\t\t\t\tposition: \"absolute\"\n\t\t\t\t},\n\t\t\t\tpresetArea: {\n\t\t\t\t\theight: \"25px\",\n\t\t\t\t\tpadding: \"2px\",\n\t\t\t\t\tbackgroundColor: \"rgba(67, 67, 67, 0.9)\"\n\t\t\t\t},\n\t\t\t\tpresetsSelect: {\n\t\t\t\t\twidth: \"100px\",\n\t\t\t\t\theight: \"20px\",\n\t\t\t\t\tbackgroundColor: \"white\"\n\t\t\t\t}\n\t\t\t};\n\t\t}\n\n\t\t/*onChange(i, event) {\n      let text = event.target.value;\n      this.setState({text});\n      const inputs = JSON.parse(JSON.stringify(this.node.input));\n      inputs[5].value[i] = parseFloat(text);\n      const varname = this.node.varname;\n      this.action.changeNode({\n          varname: varname,\n          input: inputs\n      });\n  }*/\n\n\t}, {\n\t\tkey: 'onEnterCameraButton',\n\t\tvalue: function onEnterCameraButton(ev) {\n\t\t\tev.target.style.backgroundColor = \"darkgray\";\n\t\t\tev.target.style.cursor = \"pointer\";\n\t\t}\n\t}, {\n\t\tkey: 'onLeaveCameraButton',\n\t\tvalue: function onLeaveCameraButton(ev) {\n\t\t\tev.target.style.backgroundColor = \"gray\";\n\t\t\tev.target.style.cursor = \"default\";\n\t\t}\n\t}, {\n\t\tkey: 'onClickCameraRegisterButton',\n\t\tvalue: function onClickCameraRegisterButton(ev) {\n\t\t\tthis.updatePreset();\n\t\t}\n\t}, {\n\t\tkey: 'onClickCameraButton',\n\t\tvalue: function onClickCameraButton(ev) {\n\t\t\tvar varname = this.node.varname;\n\t\t\tvar pos = this.getInputValue('position');\n\t\t\tvar tar = this.getInputValue('target');\n\t\t\tvar up = this.getInputValue('up');\n\t\t\tvar len = length(subtract(tar, pos));\n\t\t\tvar ssize = this.getInputValue(\"screensize\");\n\t\t\tvar rw = progressiveMin(ssize[0]);\n\t\t\tvar rh = progressiveMin(ssize[1]);\n\n\t\t\tif (ev.target === this.refs.reset) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [0, 0, 300],\n\t\t\t\t\t\t\"target\": [0, 0, 0],\n\t\t\t\t\t\t\"up\": [0, 1, 0],\n\t\t\t\t\t\t\"fov\": 60,\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else if (ev.target === this.refs.plusX) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [len, tar[1], tar[2]],\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else if (ev.target === this.refs.minusX) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [-len, tar[1], tar[2]],\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else if (ev.target === this.refs.plusY) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [tar[0], len, tar[2] + 0.001],\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else if (ev.target === this.refs.minusY) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [tar[0], -len, tar[2] + 0.001],\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else if (ev.target === this.refs.plusZ) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [tar[0], tar[1], -len],\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t} else if (ev.target === this.refs.minusZ) {\n\t\t\t\tthis.action.changeNodeInput({\n\t\t\t\t\tvarname: varname,\n\t\t\t\t\tinput: {\n\t\t\t\t\t\t\"position\": [tar[0], tar[1], len],\n\t\t\t\t\t\t\"rendersize\": [rw, rh]\n\t\t\t\t\t}\n\t\t\t\t});\n\t\t\t}\n\t\t}\n\t}, {\n\t\tkey: 'canvasSize',\n\t\tvalue: function canvasSize() {\n\t\t\tif (this.refs.canvas_wrap) {\n\t\t\t\tvar ssize = JSON.parse(JSON.stringify(this.getInputValue(\"screensize\")));\n\t\t\t\treturn [Math.max(Number(ssize[0]), minWidth), Math.max(Number(ssize[1]), minHeight)];\n\t\t\t}\n\t\t\treturn [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[1], minHeight)];\n\t\t}\n\t}, {\n\t\tkey: 'content',\n\t\tvalue: function content() {\n\t\t\tvar styles = this.styles();\n\t\t\treturn _react2['default'].createElement(\n\t\t\t\t'div',\n\t\t\t\t{ style: styles.bounds },\n\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t'div',\n\t\t\t\t\t{ ref: 'canvas_wrap' },\n\t\t\t\t\t_react2['default'].createElement('canvas', { id: this.getCanvasName('canvas'), style: styles.canvas,\n\t\t\t\t\t\twidth: this.canvasSize.bind(this)()[0],\n\t\t\t\t\t\theight: this.canvasSize.bind(this)()[1] })\n\t\t\t\t),\n\t\t\t\t_react2['default'].createElement('img', { id: this.getCanvasName('img'), style: styles.image, src: '' }),\n\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t'div',\n\t\t\t\t\t{ style: styles.cameraButtonArea },\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'reset', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'Reset'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'plusX', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'+X'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'minusX', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'-X'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'plusY', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'+Y'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'minusY', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'-Y'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'plusZ', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'+Z'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'div',\n\t\t\t\t\t\t{ ref: 'minusZ', style: styles.cameraButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'-Z'\n\t\t\t\t\t)\n\t\t\t\t),\n\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t'div',\n\t\t\t\t\t{ style: styles.presetArea },\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'span',\n\t\t\t\t\t\t{ style: { marginLeft: \"3px\", marginRight: \"3px\", fontSize: \"11px\" } },\n\t\t\t\t\t\t'Camera:'\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'select',\n\t\t\t\t\t\t{ ref: 'presetSelect', style: styles.presetSelect, onChange: this.onPresetChange.bind(this) },\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'1'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'2'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'3'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'4'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'5'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'6'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'7'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'8'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'9'\n\t\t\t\t\t\t),\n\t\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t\t'option',\n\t\t\t\t\t\t\tnull,\n\t\t\t\t\t\t\t'10'\n\t\t\t\t\t\t)\n\t\t\t\t\t),\n\t\t\t\t\t_react2['default'].createElement(\n\t\t\t\t\t\t'span',\n\t\t\t\t\t\t{ ref: 'registerButton', style: styles.registerButton,\n\t\t\t\t\t\t\tonClick: this.onClickCameraRegisterButton,\n\t\t\t\t\t\t\tonMouseEnter: this.onEnterCameraButton,\n\t\t\t\t\t\t\tonMouseLeave: this.onLeaveCameraButton },\n\t\t\t\t\t\t'Register'\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t);\n\t\t}\n\t}, {\n\t\tkey: 'getCanvasName',\n\t\tvalue: function getCanvasName(prefix) {\n\t\t\treturn prefix + '-' + this.varname;\n\t\t}\n\t}, {\n\t\tkey: 'render',\n\t\tvalue: function render() {\n\t\t\tvar styles = this.styles();\n\t\t\treturn this.content();\n\t\t}\n\t}]);\n\n\treturn RenderView;\n})(_react2['default'].Component);\n\nmodule.exports = RenderView;",
+      "varname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          2308,
+          1950
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          512,
+          562
+        ],
+        "pos": [
+          -251.80774780774777,
+          -488.66153145100526
+        ],
+        "zindex": 3
+      }
+    },
+    {
+      "name": "UniformTexture",
+      "funcname": "UniformTexture",
+      "info": "Uniform textureをつくるノード",
+      "customfuncfile": "texture.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_tfTexture",
+          "nodeVarname": "UniformTexturec05008fd_284b_4906_9897_f7b2bef26877"
+        },
+        {
+          "name": "image",
+          "type": "BufferImageData",
+          "nodeVarname": "UniformTexturec05008fd_284b_4906_9897_f7b2bef26877"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformTexturec05008fd_284b_4906_9897_f7b2bef26877"
+        }
+      ],
+      "customfunc": "UniformTexture = {}\nsetmetatable(UniformTexture, {__index = HiveBaseModule})\n\nUniformTexture.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformTexture})\n    return this\nend\n\nfunction UniformTexture:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformTexture:uniform()\n    local v = self.value\n    return {name=v.name, value=v.image, type='texture'}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformTexturec05008fd_284b_4906_9897_f7b2bef26877",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1624.2,
+          2154.8
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          250,
+          250
+        ],
+        "zindex": -4
+      }
+    },
+    {
+      "name": "UniformFloat",
+      "funcname": "UniformFloat",
+      "info": "Uniform floatをつくるノード",
+      "customfuncfile": "float.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_sliceRatio",
+          "nodeVarname": "UniformFloat24278e5f_e9ff_452a_926d_e2024c7f177d"
+        },
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.5,
+          "nodeVarname": "UniformFloat24278e5f_e9ff_452a_926d_e2024c7f177d"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformFloat24278e5f_e9ff_452a_926d_e2024c7f177d"
+        }
+      ],
+      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformFloat24278e5f_e9ff_452a_926d_e2024c7f177d",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1614.2,
+          2069.6
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          300,
+          300
+        ],
+        "zindex": -4
+      }
+    },
+    {
+      "name": "Slider",
+      "funcname": "Slider",
+      "info": "sliderをつくるノード",
+      "customfuncfile": "slider.lua",
+      "uifile": "slider.jsx",
+      "input": [
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.04,
+          "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9"
+        },
+        {
+          "name": "min",
+          "type": "float",
+          "value": 0,
+          "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9"
+        },
+        {
+          "name": "max",
+          "type": "float",
+          "value": 1,
+          "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9"
+        },
+        {
+          "name": "step",
+          "type": "float",
+          "value": 0.01,
+          "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9"
+        }
+      ],
+      "output": [
+        {
+          "name": "fval",
+          "type": "float",
+          "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9"
+        }
+      ],
+      "customfunc": "Slider = {}\nsetmetatable(Slider, {__index = HiveBaseModule})\n\nSlider.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=Slider})\n    return this\nend\n\nfunction Slider:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction Slider:fval()\n    local v = self.value\n    return v.value\nend\n",
+      "uiFunc": "\"use strict\";\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if (\"value\" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { \"default\": obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactSlider = require(\"react-slider\");\n\nvar _reactSlider2 = _interopRequireDefault(_reactSlider);\n\nvar Slider = (function (_React$Component) {\n\t_inherits(Slider, _React$Component);\n\n\tfunction Slider(props) {\n\t\t_classCallCheck(this, Slider);\n\n\t\t_get(Object.getPrototypeOf(Slider.prototype), \"constructor\", this).call(this, props);\n\t\tthis.componentDidUpdate = this.componentDidUpdate.bind(this);\n\t}\n\n\t_createClass(Slider, [{\n\t\tkey: \"componentDidUpdate\",\n\t\tvalue: function componentDidUpdate() {\n\t\t\tthis.refs.slider._handleResize();\n\t\t}\n\t}, {\n\t\tkey: \"onChange\",\n\t\tvalue: function onChange(val) {\n\t\t\tthis.props.action.changeNodeInput({\n\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"value\": Number(val)\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: \"render\",\n\t\tvalue: function render() {\n\t\t\treturn _react2[\"default\"].createElement(\n\t\t\t\t\"div\",\n\t\t\t\t{ className: 'slider', style: { margin: '4', minWidth: \"250px\", height: '70', padding: '2' } },\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t_reactSlider2[\"default\"],\n\t\t\t\t\t{\n\t\t\t\t\t\tref: \"slider\",\n\t\t\t\t\t\tvalue: [Number(this.props.node.input[0].value)],\n\t\t\t\t\t\tmin: Number(this.props.node.input[1].value),\n\t\t\t\t\t\tmax: Number(this.props.node.input[2].value),\n\t\t\t\t\t\tstep: Number(this.props.node.input[3].value),\n\t\t\t\t\t\tonChange: this.onChange.bind(this),\n\t\t\t\t\t\twithBars: true\n\t\t\t\t\t},\n\t\t\t\t\t_react2[\"default\"].createElement(\"div\", { className: \"thum\" })\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"left\" } },\n\t\t\t\t\t\"min:\",\n\t\t\t\t\tthis.props.node.input[1].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"right\" } },\n\t\t\t\t\t\"max:\",\n\t\t\t\t\tthis.props.node.input[2].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"-18px\", textAlign: \"center\", width: \"100%\", height: \"30px\", float: \"left\" } },\n\t\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\t\"div\",\n\t\t\t\t\t\t{ style: {} },\n\t\t\t\t\t\t\"step:\",\n\t\t\t\t\t\tthis.props.node.input[3].value\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t);\n\t\t}\n\t}]);\n\n\treturn Slider;\n})(_react2[\"default\"].Component);\n\nmodule.exports = Slider;",
+      "varname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9",
+      "label": "SliceSlider",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1351.1860465116279,
+          2040.3023255813953
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          -180.10012794223303,
+          121.0704617020408
+        ],
+        "zindex": 6
+      }
+    },
+    {
+      "name": "TransferFunction",
+      "funcname": "TransferFunction",
+      "info": "TransferFunctionをつくるノード",
+      "customfuncfile": "transferfunction.lua",
+      "uifile": "transferfunction.jsx",
+      "input": [
+        {
+          "name": "rgba",
+          "type": "floatarray",
+          "value": [
+            0,
+            0,
+            255,
+            255,
+            0,
+            3,
+            254,
+            255,
+            1,
+            6,
+            253,
+            255,
+            2,
+            9,
+            252,
+            255,
+            3,
+            12,
+            251,
+            255,
+            4,
+            15,
+            250,
+            255,
+            5,
+            18,
+            249,
+            255,
+            6,
+            21,
+            248,
+            255,
+            7,
+            24,
+            247,
+            255,
+            8,
+            28,
+            246,
+            255,
+            9,
+            31,
+            245,
+            255,
+            10,
+            34,
+            244,
+            255,
+            11,
+            37,
+            243,
+            255,
+            12,
+            40,
+            242,
+            255,
+            13,
+            43,
+            241,
+            255,
+            14,
+            46,
+            240,
+            255,
+            15,
+            49,
+            239,
+            255,
+            16,
+            52,
+            238,
+            255,
+            17,
+            55,
+            237,
+            255,
+            18,
+            58,
+            236,
+            255,
+            19,
+            61,
+            235,
+            255,
+            20,
+            64,
+            234,
+            255,
+            21,
+            68,
+            233,
+            255,
+            22,
+            71,
+            232,
+            255,
+            23,
+            74,
+            231,
+            255,
+            24,
+            77,
+            230,
+            255,
+            25,
+            79,
+            229,
+            255,
+            26,
+            82,
+            228,
+            255,
+            27,
+            85,
+            227,
+            255,
+            28,
+            88,
+            226,
+            255,
+            29,
+            91,
+            225,
+            255,
+            30,
+            94,
+            224,
+            255,
+            31,
+            97,
+            223,
+            255,
+            32,
+            100,
+            222,
+            255,
+            33,
+            103,
+            221,
+            255,
+            34,
+            106,
+            220,
+            255,
+            35,
+            109,
+            219,
+            255,
+            36,
+            111,
+            218,
+            255,
+            37,
+            114,
+            217,
+            255,
+            38,
+            117,
+            216,
+            255,
+            39,
+            120,
+            215,
+            255,
+            40,
+            122,
+            214,
+            255,
+            41,
+            125,
+            213,
+            255,
+            42,
+            128,
+            212,
+            255,
+            43,
+            131,
+            211,
+            255,
+            44,
+            133,
+            210,
+            255,
+            45,
+            136,
+            209,
+            255,
+            46,
+            139,
+            208,
+            255,
+            47,
+            141,
+            207,
+            255,
+            48,
+            144,
+            206,
+            255,
+            49,
+            146,
+            205,
+            255,
+            50,
+            149,
+            204,
+            255,
+            51,
+            151,
+            203,
+            255,
+            52,
+            154,
+            202,
+            255,
+            53,
+            156,
+            201,
+            255,
+            54,
+            159,
+            200,
+            255,
+            55,
+            161,
+            199,
+            255,
+            56,
+            164,
+            198,
+            255,
+            57,
+            166,
+            197,
+            255,
+            58,
+            168,
+            196,
+            255,
+            59,
+            171,
+            195,
+            255,
+            60,
+            173,
+            194,
+            255,
+            61,
+            175,
+            193,
+            255,
+            62,
+            178,
+            192,
+            255,
+            63,
+            180,
+            191,
+            255,
+            64,
+            182,
+            190,
+            255,
+            65,
+            184,
+            189,
+            255,
+            66,
+            186,
+            188,
+            255,
+            67,
+            188,
+            187,
+            255,
+            68,
+            191,
+            186,
+            255,
+            69,
+            193,
+            185,
+            13,
+            70,
+            195,
+            184,
+            0,
+            71,
+            197,
+            183,
+            0,
+            72,
+            199,
+            182,
+            0,
+            73,
+            201,
+            181,
+            0,
+            74,
+            202,
+            180,
+            0,
+            75,
+            204,
+            179,
+            0,
+            76,
+            206,
+            178,
+            0,
+            77,
+            208,
+            177,
+            0,
+            78,
+            210,
+            176,
+            0,
+            79,
+            212,
+            175,
+            3,
+            80,
+            213,
+            174,
+            6,
+            81,
+            215,
+            173,
+            255,
+            82,
+            217,
+            172,
+            255,
+            83,
+            218,
+            171,
+            255,
+            84,
+            220,
+            170,
+            255,
+            85,
+            221,
+            169,
+            255,
+            86,
+            223,
+            168,
+            255,
+            87,
+            224,
+            167,
+            255,
+            88,
+            226,
+            166,
+            255,
+            89,
+            227,
+            165,
+            255,
+            90,
+            229,
+            164,
+            255,
+            91,
+            230,
+            163,
+            255,
+            92,
+            231,
+            162,
+            255,
+            93,
+            233,
+            161,
+            255,
+            94,
+            234,
+            160,
+            255,
+            95,
+            235,
+            159,
+            255,
+            96,
+            236,
+            158,
+            255,
+            97,
+            237,
+            157,
+            255,
+            98,
+            239,
+            156,
+            255,
+            99,
+            240,
+            155,
+            255,
+            100,
+            241,
+            154,
+            255,
+            101,
+            242,
+            153,
+            255,
+            102,
+            243,
+            152,
+            255,
+            103,
+            244,
+            151,
+            255,
+            104,
+            244,
+            150,
+            255,
+            105,
+            245,
+            149,
+            255,
+            106,
+            246,
+            148,
+            255,
+            107,
+            247,
+            147,
+            255,
+            108,
+            248,
+            146,
+            255,
+            109,
+            248,
+            145,
+            255,
+            110,
+            249,
+            144,
+            255,
+            111,
+            250,
+            143,
+            255,
+            112,
+            250,
+            142,
+            255,
+            113,
+            251,
+            141,
+            255,
+            114,
+            251,
+            140,
+            255,
+            115,
+            252,
+            139,
+            255,
+            116,
+            252,
+            138,
+            255,
+            117,
+            253,
+            137,
+            255,
+            118,
+            253,
+            136,
+            255,
+            119,
+            253,
+            135,
+            255,
+            120,
+            254,
+            134,
+            255,
+            121,
+            254,
+            133,
+            255,
+            122,
+            254,
+            132,
+            255,
+            123,
+            254,
+            131,
+            255,
+            124,
+            254,
+            130,
+            255,
+            125,
+            254,
+            129,
+            255,
+            126,
+            254,
+            128,
+            255,
+            127,
+            255,
+            127,
+            255,
+            128,
+            254,
+            126,
+            255,
+            129,
+            254,
+            125,
+            255,
+            130,
+            254,
+            124,
+            255,
+            131,
+            254,
+            123,
+            255,
+            132,
+            254,
+            122,
+            255,
+            133,
+            254,
+            121,
+            255,
+            134,
+            254,
+            120,
+            255,
+            135,
+            253,
+            119,
+            255,
+            136,
+            253,
+            118,
+            255,
+            137,
+            253,
+            117,
+            255,
+            138,
+            252,
+            116,
+            255,
+            139,
+            252,
+            115,
+            255,
+            140,
+            251,
+            114,
+            255,
+            141,
+            251,
+            113,
+            255,
+            142,
+            250,
+            112,
+            255,
+            143,
+            250,
+            111,
+            255,
+            144,
+            249,
+            110,
+            255,
+            145,
+            248,
+            109,
+            255,
+            146,
+            248,
+            108,
+            255,
+            147,
+            247,
+            107,
+            255,
+            148,
+            246,
+            106,
+            255,
+            149,
+            245,
+            105,
+            255,
+            150,
+            244,
+            104,
+            255,
+            151,
+            244,
+            103,
+            255,
+            152,
+            243,
+            102,
+            255,
+            153,
+            242,
+            101,
+            255,
+            154,
+            241,
+            100,
+            255,
+            155,
+            240,
+            99,
+            255,
+            156,
+            239,
+            98,
+            255,
+            157,
+            237,
+            97,
+            255,
+            158,
+            236,
+            96,
+            255,
+            159,
+            235,
+            95,
+            255,
+            160,
+            234,
+            94,
+            255,
+            161,
+            233,
+            93,
+            255,
+            162,
+            231,
+            92,
+            255,
+            163,
+            230,
+            91,
+            255,
+            164,
+            229,
+            90,
+            255,
+            165,
+            227,
+            89,
+            255,
+            166,
+            226,
+            88,
+            255,
+            167,
+            224,
+            87,
+            255,
+            168,
+            223,
+            86,
+            255,
+            169,
+            221,
+            85,
+            255,
+            170,
+            220,
+            84,
+            255,
+            171,
+            218,
+            83,
+            255,
+            172,
+            217,
+            82,
+            255,
+            173,
+            215,
+            81,
+            255,
+            174,
+            213,
+            80,
+            255,
+            175,
+            212,
+            79,
+            255,
+            176,
+            210,
+            78,
+            255,
+            177,
+            208,
+            77,
+            255,
+            178,
+            206,
+            76,
+            255,
+            179,
+            204,
+            75,
+            255,
+            180,
+            202,
+            74,
+            255,
+            181,
+            201,
+            73,
+            255,
+            182,
+            199,
+            72,
+            255,
+            183,
+            197,
+            71,
+            255,
+            184,
+            195,
+            70,
+            255,
+            185,
+            193,
+            69,
+            255,
+            186,
+            191,
+            68,
+            255,
+            187,
+            188,
+            67,
+            255,
+            188,
+            186,
+            66,
+            255,
+            189,
+            184,
+            65,
+            255,
+            190,
+            182,
+            64,
+            255,
+            191,
+            180,
+            63,
+            255,
+            192,
+            178,
+            62,
+            255,
+            193,
+            175,
+            61,
+            255,
+            194,
+            173,
+            60,
+            255,
+            195,
+            171,
+            59,
+            255,
+            196,
+            168,
+            58,
+            255,
+            197,
+            166,
+            57,
+            255,
+            198,
+            164,
+            56,
+            255,
+            199,
+            161,
+            55,
+            255,
+            200,
+            159,
+            54,
+            255,
+            201,
+            156,
+            53,
+            255,
+            202,
+            154,
+            52,
+            255,
+            203,
+            151,
+            51,
+            255,
+            204,
+            149,
+            50,
+            255,
+            205,
+            146,
+            49,
+            255,
+            206,
+            144,
+            48,
+            255,
+            207,
+            141,
+            47,
+            255,
+            208,
+            139,
+            46,
+            255,
+            209,
+            136,
+            45,
+            255,
+            210,
+            133,
+            44,
+            255,
+            211,
+            131,
+            43,
+            255,
+            212,
+            128,
+            42,
+            255,
+            213,
+            125,
+            41,
+            255,
+            214,
+            122,
+            40,
+            255,
+            215,
+            120,
+            39,
+            255,
+            216,
+            117,
+            38,
+            255,
+            217,
+            114,
+            37,
+            255,
+            218,
+            111,
+            36,
+            255,
+            219,
+            109,
+            35,
+            255,
+            220,
+            106,
+            34,
+            255,
+            221,
+            103,
+            33,
+            255,
+            222,
+            100,
+            32,
+            255,
+            223,
+            97,
+            31,
+            255,
+            224,
+            94,
+            30,
+            255,
+            225,
+            91,
+            29,
+            255,
+            226,
+            88,
+            28,
+            255,
+            227,
+            85,
+            27,
+            255,
+            228,
+            82,
+            26,
+            255,
+            229,
+            79,
+            25,
+            255,
+            230,
+            77,
+            24,
+            255,
+            231,
+            74,
+            23,
+            255,
+            232,
+            71,
+            22,
+            255,
+            233,
+            68,
+            21,
+            255,
+            234,
+            64,
+            20,
+            255,
+            235,
+            61,
+            19,
+            255,
+            236,
+            58,
+            18,
+            255,
+            237,
+            55,
+            17,
+            255,
+            238,
+            52,
+            16,
+            255,
+            239,
+            49,
+            15,
+            255,
+            240,
+            46,
+            14,
+            255,
+            241,
+            43,
+            13,
+            255,
+            242,
+            40,
+            12,
+            255,
+            243,
+            37,
+            11,
+            255,
+            244,
+            34,
+            10,
+            255,
+            245,
+            31,
+            9,
+            255,
+            246,
+            28,
+            8,
+            255,
+            247,
+            24,
+            7,
+            255,
+            248,
+            21,
+            6,
+            255,
+            249,
+            18,
+            5,
+            255,
+            250,
+            15,
+            4,
+            255,
+            251,
+            12,
+            3,
+            255,
+            252,
+            9,
+            2,
+            255,
+            253,
+            6,
+            1,
+            255,
+            254,
+            3,
+            0,
+            255
+          ],
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "volume",
+          "type": "BufferVolumeData",
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "minval",
+          "type": "float",
+          "value": -0.33335396647453,
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "maxval",
+          "type": "float",
+          "value": 0.80094641447067,
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "defaultminval",
+          "type": "float",
+          "value": -0.33335396647453,
+          "visible": false,
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "defaultmaxval",
+          "type": "float",
+          "value": 0.80094641447067,
+          "visible": false,
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "filepath",
+          "type": "string",
+          "value": "/home/soma/Downloads/visio.lut",
+          "meta": "filebrowser",
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        }
+      ],
+      "output": [
+        {
+          "name": "Image",
+          "type": "BufferImageData",
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "RGBA",
+          "type": "floatarray",
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "Min",
+          "type": "float",
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        },
+        {
+          "name": "Max",
+          "type": "float",
+          "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed"
+        }
+      ],
+      "customfunc": "TransferFunction = {}\nsetmetatable(TransferFunction, {__index = HiveBaseModule})\n\nTransferFunction.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=TransferFunction})\n    this.gentex = GenTexture()\n    this.loader = LoadModule('ColorMapLoader')\n    this.prefilepath = \"\"\n    return this\nend\n\nfunction TransferFunction:Do()\n    self:UpdateValue()\n    local v = self.value\n    \n    -- Analyze min/max\n    if v.volume and self.vol ~= v.volume then\n        self.vol = v.volume\n        local analyzer = LoadModule('Analyzer').VolumeAnalyzer()\n        analyzer:Execute(v.volume)\n        minval = analyzer:MinX()\n        maxval = analyzer:MaxX()\n        self.property.minval = minval\n        self.property.maxval = maxval        \n        print('Tranferfunction analyzed: min=', minval, ' max=', maxval)\n        local ht = analyzer:GetHistgram()\n        local hist = \"[\"\n        for a,b in pairs(ht) do\n            hist = hist .. string.format(\"%.4f\", b) .. (a ~= #ht and ',' or '')\n        end\n        hist = hist .. \"]\"\n        \n        if targetClientId ~= nil then\n            if network then\n                local analyzedInfo = [[{\n                    \"JSONRPC\" : \"2.0\",\n                    \"method\" : \"analyzedInfo\",            \n                    \"to\" : ]] .. targetClientId ..[[,\n                    \"id\":0,\n                    \"param\" : {\n                        \"minval\" : \"]] .. minval .. [[\",\n                        \"maxval\" : \"]] .. maxval .. [[\",\n                        \"varname\": \"]] .. self.varname .. [[\",\n                        \"histgram\": ]] .. hist .. [[\n                    }\n                }]]\n                --print('json=', analyzedInfo)        \n                network:SendJSON(analyzedInfo);\n            end\n        end\n    end\n    \n    if self.value.filepath ~= nil then\n        if self.prefilepath ~= self.value.filepath then\n            if self.loader:Load(self.value.filepath) then\n                self.prefilepath = self.value.filepath\n                self.value.rgba = {}\n                local size = self.loader:RGBASize()\n                for i = 0, size do\n                    table.insert(self.value.rgba, math.floor(self.loader:RGBAValue(i) * 0xFF + 0.5))\n                end\n                if targetClientId ~= nil then\n                    if network then\n                        local data = {}\n                        data[\"JSONRPC\"] = \"2.0\"\n                        data[\"method\"] = \"luaData\"\n                        data[\"to\"] = targetClientId\n                        data[\"id\"] = 0\n                        data[\"param\"] = {}\n                        data[\"param\"][\"name\"] = \"TransferFunction\"\n                        data[\"param\"][\"type\"] = \"filedata\"\n                        data[\"param\"][\"rgba\"] = self.value.rgba\n                        data[\"param\"][\"minval\"] = self.loader:MinValue()\n                        data[\"param\"][\"maxval\"] = self.loader:MaxValue()\n                        network:SendJSON( JSON.encode(data) );\n                    end\n                end\n            end\n        end\n    end\n        \n    local rgba = self.value.rgba;\n    --print('rgba=', #rgba)\n    \n    if #rgba == 0 then\n        rgba = {}\n        local i\n        for i = 1, 256 do\n            rgba[4*i]   = 255\n            rgba[4*i+1] = 0\n            rgba[4*i+2] = 0\n            rgba[4*i+3] = i-1\n        end\n    end\n    \n\tself.gentex:Create2D(rgba, 1, 256, 1);\n    \n    return true\nend\n\nfunction TransferFunction:Image()\n    return self.gentex:ImageData()\nend\n\nfunction TransferFunction:Min()\n    print('TransferFunction:Min() > ', self.value.minval)\n    return self.value.minval\nend\n\nfunction TransferFunction:Max()\n    print('TransferFunction:Max() > ', self.value.maxval)\n    return self.value.maxval\nend\n\nfunction TransferFunction:RGBA()\n    return self.value.rgba\nend\n",
+      "uiFunc": "'use strict';\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactDom = require(\"react-dom\");\n\nvar _reactDom2 = _interopRequireDefault(_reactDom);\n\nvar TransferFunction = (function (_React$Component) {\n    _inherits(TransferFunction, _React$Component);\n\n    function TransferFunction(props) {\n        var _this = this;\n\n        _classCallCheck(this, TransferFunction);\n\n        _get(Object.getPrototypeOf(TransferFunction.prototype), 'constructor', this).call(this, props);\n\n        this.store = props.store;\n        this.action = props.action;\n        this.node = props.node;\n\n        // members\n        this.wrapper = null;\n        this.cw = 300;\n        this.colorbarHeight = 20;\n        this.canvas = null;\n        this.ctx = null;\n        this.colorctx = null;\n        this.redbtn = null;\n        this.greenbtn = null;\n        this.bluebtn = null;\n        this.alphabtn = null;\n        this.minInput = null;\n        this.maxInput = null;\n        this.graphMode = null;\n        this.changeCallback = null;\n        this.defaultValMin = this.props.node.input[4].value;\n        this.defaultValMax = this.props.node.input[5].value;\n        var numVals = 256;\n        this.numVals = numVals;\n        this.value = {\n            r: [numVals],\n            g: [numVals],\n            b: [numVals],\n            a: [numVals]\n        };\n        this.hist = [numVals];\n        for (var i = 0; i < numVals; ++i) {\n            this.value.r[i] = i / numVals;\n            this.value.g[i] = 0.8;\n            this.value.b[i] = 1.0 - i / numVals;\n            this.value.a[i] = 1.0;\n            this.hist[i] = 0;\n        }\n        this.oldx = 0;\n        this.oldy = 0;\n        this.disableColor = '#8b8b8b';\n        this.mspress = false;\n        this.undo = this.undo.bind(this);\n        this.redo = this.redo.bind(this);\n        this.undoBuffer = [JSON.stringify(this.value)];\n        this.redoBuffer = [];\n\n        // state\n        this.state = {\n            selValue: \"0\",\n            viewType: \"1\",\n            valMin: null, //this.props.node.input[2].value,\n            valMax: null, //this.props.node.input[3].value,\n            btnFlags: [],\n            redbtnColor: this.disableColor,\n            greenbtnColor: this.disableColor,\n            bluebtnColor: this.disableColor,\n            alphabtnColor: this.disableColor,\n            allbtnColor: '#fff'\n        };\n        this.selValues = [{ value: \"0\", text: \"Custom\" }, { value: \"1\", text: \"Blue and Red\" }, { value: \"2\", text: \"Black and White\" }, { value: \"3\", text: \"BGR Gradation\" }];\n        this.viewTypes = [{ value: \"0\", text: \"Logscale\" }, { value: \"1\", text: \"Linear\" }];\n\n        // methods\n        this.onRecieveAnalyzed = this.onRecieveAnalyzed.bind(this);\n        this.onSelectChange = this.onSelectChange.bind(this);\n        this.onViewChange = this.onViewChange.bind(this);\n        this.redbtnClick = this.redbtnClick.bind(this);\n        this.greenbtnClick = this.greenbtnClick.bind(this);\n        this.bluebtnClick = this.bluebtnClick.bind(this);\n        this.alphabtnClick = this.alphabtnClick.bind(this);\n        this.allbtnClick = this.allbtnClick.bind(this);\n        this.allBtnOff = this.allBtnOff.bind(this);\n        this.minInputChange = this.minInputChange.bind(this);\n        this.maxInputChange = this.maxInputChange.bind(this);\n        this.nodeInputChanged = this.nodeInputChanged.bind(this);\n        this.luaDataRecieved = this.luaDataRecieved.bind(this);\n        this.componentDidMount = this.componentDidMount.bind(this);\n        this.componentWillUnmount = this.componentWillUnmount.bind(this);\n        this.transFunc = this.transFunc.bind(this);\n        this.invTransFunc = this.invTransFunc.bind(this);\n        this.init = this.init.bind(this);\n        this.drawGraph = this.drawGraph.bind(this);\n        this.drawValueLine = this.drawValueLine.bind(this);\n        this.drawColorBar = this.drawColorBar.bind(this);\n        this.mouseMoveFunc = this.mouseMoveFunc.bind(this);\n        this.mouseDownFunc = this.mouseDownFunc.bind(this);\n        this.mouseUpFunc = this.mouseUpFunc.bind(this);\n        this.setGraphValue = this.setGraphValue.bind(this);\n        this.setMaskedGraphValue = this.setMaskedGraphValue.bind(this);\n        this.getGraphValueRed = this.getGraphValueRed.bind(this);\n        this.getGraphValueGreen = this.getGraphValueGreen.bind(this);\n        this.getGraphValueBlue = this.getGraphValueBlue.bind(this);\n        this.getGraphValueAlpha = this.getGraphValueAlpha.bind(this);\n        this.getMinValue = this.getMinValue.bind(this);\n        this.getMaxValue = this.getMaxValue.bind(this);\n        this.getNumValues = this.getNumValues.bind(this);\n        this.setAnalyzeResult = this.setAnalyzeResult.bind(this);\n        this.styles = this.styles.bind(this);\n        this.undoBuffer = [JSON.stringify(this.value)];\n        this.redoBuffer = [];\n\n        this.changeCallback = function () {\n            var rgba = [4 * numVals];\n            for (var i = 0; i < numVals; ++i) {\n                rgba[4 * i] = parseInt(_this.value.r[i] * 255);\n                rgba[4 * i + 1] = parseInt(_this.value.g[i] * 255);\n                rgba[4 * i + 2] = parseInt(_this.value.b[i] * 255);\n                rgba[4 * i + 3] = parseInt(_this.value.a[i] * 255);\n            }\n            //this.node.rgba\n            var varname = _this.node.varname;\n            _this.action.changeNodeInput({\n                varname: varname,\n                input: {\n                    \"rgba\": rgba\n                }\n            });\n        };\n    }\n\n    _createClass(TransferFunction, [{\n        key: 'onRecieveAnalyzed',\n        value: function onRecieveAnalyzed(data) {\n            this.setAnalyzeResult(data);\n        }\n    }, {\n        key: 'onSelectChange',\n        value: function onSelectChange(eve) {\n            var e = eve.target.value;\n            var t = parseInt(e);\n            var changed = t !== this.state.selValue;\n            this.setState({ selValue: t });\n            if (t === 1) {\n                for (var i = 0; i < this.numVals; ++i) {\n                    this.value.r[i] = i / this.numVals;\n                    this.value.g[i] = 0.0;\n                    this.value.b[i] = 1.0 - i / this.numVals;\n                    this.value.a[i] = 1.0;\n                }\n            } else if (t === 2) {\n                for (var i = 0; i < this.numVals; ++i) {\n                    this.value.r[i] = i / this.numVals;\n                    this.value.g[i] = i / this.numVals;\n                    this.value.b[i] = i / this.numVals;\n                    this.value.a[i] = 1.0;\n                }\n            } else if (t === 3) {\n                for (var i = 0; i < this.numVals; ++i) {\n                    this.value.r[i] = i / this.numVals;\n                    this.value.g[i] = Math.sin(i / this.numVals * Math.PI);\n                    this.value.b[i] = 1.0 - i / this.numVals;\n                    this.value.a[i] = 1.0;\n                }\n            }\n\n            if (changed) {\n                this.undoBuffer.unshift(JSON.stringify(this.value));\n            }\n\n            this.drawGraph();\n            if (this.changeCallback) {\n                this.changeCallback(this);\n            }\n        }\n    }, {\n        key: 'onViewChange',\n        value: function onViewChange(eve) {\n            var e = eve.target.value;\n            var t = parseInt(e);\n            var changed = t !== Number(this.state.viewType);\n            this.setState({ viewType: e });\n            this.state.viewType = e;\n\n            this.drawGraph();\n        }\n    }, {\n        key: 'redbtnClick',\n        value: function redbtnClick() {\n            this.graphMode = 1;\n            this.allBtnOff();\n            this.setState({ redbtnColor: '#f00' });\n        }\n    }, {\n        key: 'greenbtnClick',\n        value: function greenbtnClick() {\n            this.graphMode = 2;\n            this.allBtnOff();\n            this.setState({ greenbtnColor: '#0f0' });\n        }\n    }, {\n        key: 'bluebtnClick',\n        value: function bluebtnClick() {\n            this.graphMode = 4;\n            this.allBtnOff();\n            this.setState({ bluebtnColor: '#11f' });\n        }\n    }, {\n        key: 'alphabtnClick',\n        value: function alphabtnClick() {\n            this.graphMode = 8;\n            this.allBtnOff();\n            this.setState({ alphabtnColor: '#000' });\n        }\n    }, {\n        key: 'allbtnClick',\n        value: function allbtnClick() {\n            this.graphMode = 1 | 2 | 4;\n            this.allBtnOff();\n            this.setState({ allbtnColor: '#fff' });\n        }\n    }, {\n        key: 'allBtnOff',\n        value: function allBtnOff() {\n            this.setState({\n                redbtnColor: this.disableColor,\n                bluebtnColor: this.disableColor,\n                greenbtnColor: this.disableColor,\n                alphabtnColor: this.disableColor,\n                allbtnColor: this.disableColor\n            });\n        }\n    }, {\n        key: 'onMinKeyPress',\n        value: function onMinKeyPress(ev) {\n            if (ev.key === 'Enter') {\n                this.submitMin.bind(this)(ev);\n            }\n        }\n    }, {\n        key: 'onMinBlur',\n        value: function onMinBlur(ev) {\n            this.submitMin.bind(this)(ev);\n            this.currentEdit = {\n                value: null\n            };\n        }\n    }, {\n        key: 'onMinFocus',\n        value: function onMinFocus(ev) {\n            ev.target.style.border = \"2px solid darkgreen\";\n        }\n    }, {\n        key: 'onMaxKeyPress',\n        value: function onMaxKeyPress(ev) {\n            if (ev.key === 'Enter') {\n                this.submitMax.bind(this)(ev);\n            }\n        }\n    }, {\n        key: 'onMaxBlur',\n        value: function onMaxBlur(ev) {\n            this.submitMax.bind(this)(ev);\n            this.currentEdit = {\n                value: null\n            };\n        }\n    }, {\n        key: 'onMaxFocus',\n        value: function onMaxFocus(ev) {\n            ev.target.style.border = \"2px solid darkgreen\";\n        }\n    }, {\n        key: 'submitMin',\n        value: function submitMin(ev) {\n            if (!isNaN(parseFloat(this.state.valMin))) {\n                var varname = this.node.varname;\n                var minval = parseFloat(this.state.valMin);\n                this.action.changeNodeInput({\n                    varname: varname,\n                    input: {\n                        \"minval\": minval\n                    }\n                });\n            }\n            ev.target.style.border = \"none\";\n            ev.target.blur();\n        }\n    }, {\n        key: 'submitMax',\n        value: function submitMax(ev) {\n            if (!isNaN(parseFloat(this.state.valMax))) {\n                var varname = this.node.varname;\n                var maxval = parseFloat(this.state.valMax);\n                this.action.changeNodeInput({\n                    varname: varname,\n                    input: {\n                        \"maxval\": maxval\n                    }\n                });\n            }\n            ev.target.style.border = \"none\";\n            ev.target.blur();\n        }\n    }, {\n        key: 'minInputChange',\n        value: function minInputChange(eve) {\n            this.setState({\n                valMin: eve.target.value\n            });\n        }\n    }, {\n        key: 'maxInputChange',\n        value: function maxInputChange(eve) {\n            this.setState({\n                valMax: eve.target.value\n            });\n        }\n    }, {\n        key: 'nodeInputChanged',\n        value: function nodeInputChanged(err, data) {\n            var _this2 = this;\n\n            var varname = this.node.varname;\n            if (varname !== data.varname) {\n                return;\n            }\n\n            if (data.input[0].value.length >= this.numVals * 4) {\n                for (var i = 0; i < this.numVals; ++i) {\n                    this.value.r[i] = data.input[0].value[i * 4 + 0] / 0xFF;\n                    this.value.g[i] = data.input[0].value[i * 4 + 1] / 0xFF;\n                    this.value.b[i] = data.input[0].value[i * 4 + 2] / 0xFF;\n                    this.value.a[i] = data.input[0].value[i * 4 + 3] / 0xFF;\n                }\n            }\n\n            this.setState({\n                valMin: data.input[2].value,\n                valMax: data.input[3].value\n            });\n\n            if (this.state.valMin !== data.input[2].value || this.state.valMax !== data.input[3].value) {\n                setTimeout((function () {\n                    if (_this2.changeCallback) {\n                        _this2.changeCallback(_this2);\n                    }\n                }).bind(this), 50);\n            }\n            this.drawGraph();\n        }\n    }, {\n        key: 'componentDidMount',\n        value: function componentDidMount() {\n            this.wrapper = _reactDom2['default'].findDOMNode(this.refs.wrapper);\n            this.graphMode = 1 | 2 | 4;\n            this.init();\n            this.canvas.addEventListener('mousedown', this.mouseDownFunc);\n            window.addEventListener('mouseup', this.mouseUpFunc);\n\n            var ANALYZED_DATA_RECIEVED = \"analyzed_data_recieved\";\n            var NODE_INPUT_CHANGED = \"node_input_changed\";\n            this.store.on(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);\n            this.store.on(NODE_INPUT_CHANGED, this.nodeInputChanged);\n            this.store.on(\"lua_data_recieved\", this.luaDataRecieved);\n        }\n    }, {\n        key: 'componentWillUnmount',\n        value: function componentWillUnmount() {\n            this.canvas.removeEventListener('mousedown', this.mouseDownFunc);\n            window.removeEventListener('mouseup', this.mouseUpFunc);\n\n            var ANALYZED_DATA_RECIEVED = \"analyzed_data_recieved\";\n            var NODE_INPUT_CHANGED = \"node_input_changed\";\n            this.store.off(ANALYZED_DATA_RECIEVED, this.onRecieveAnalyzed);\n            this.store.off(NODE_INPUT_CHANGED, this.nodeInputChanged);\n            this.store.off(\"lua_data_recieved\", this.luaDataRecieved);\n        }\n    }, {\n        key: 'luaDataRecieved',\n        value: function luaDataRecieved(data) {\n            if (data.hasOwnProperty(\"name\") && data.name === this.node.name) {\n                if (data.hasOwnProperty('type') && data.type === \"filedata\") {\n                    var rgba = JSON.parse(JSON.stringify(data.rgba));\n                    this.action.changeNodeInput({\n                        varname: this.node.varname,\n                        input: {\n                            \"rgba\": rgba,\n                            \"minval\": data.minval,\n                            \"maxval\": data.maxval\n                        }\n                    });\n                    if (rgba.length >= this.numVals * 4) {\n                        for (var i = 0; i < this.numVals; ++i) {\n                            this.value.r[i] = rgba[i * 4 + 0] / 0xFF;\n                            this.value.g[i] = rgba[i * 4 + 1] / 0xFF;\n                            this.value.b[i] = rgba[i * 4 + 2] / 0xFF;\n                            this.value.a[i] = rgba[i * 4 + 3] / 0xFF;\n                        }\n                    }\n                    this.undoBuffer.unshift(JSON.stringify(this.value));\n                }\n            }\n        }\n    }, {\n        key: 'mouseDownFunc',\n        value: function mouseDownFunc(eve) {\n            this.oldx = eve.clientX - this.wrapper.getBoundingClientRect().left;\n            this.oldy = eve.clientY - this.wrapper.getBoundingClientRect().top;\n            this.mspress = true;\n            document.addEventListener('mousemove', this.mouseMoveFunc, true);\n        }\n    }, {\n        key: 'mouseUpFunc',\n        value: function mouseUpFunc(eve) {\n            if (this.mspress) {\n                if (this.undoBuffer.length > 30) {\n                    this.undoBuffer.pop();\n                }\n                this.undoBuffer.unshift(JSON.stringify(this.value));\n\n                if (this.changeCallback) {\n                    this.changeCallback(this);\n                }\n            }\n            this.mspress = false;\n            document.removeEventListener('mousemove', this.mouseMoveFunc);\n        }\n    }, {\n        key: 'transFunc',\n        value: function transFunc(x) {\n            if (Number(this.state.viewType) === 0) {\n                return Math.sqrt(x);\n            }\n            return x;\n        }\n    }, {\n        key: 'invTransFunc',\n        value: function invTransFunc(x) {\n            if (Number(this.state.viewType) === 0) {\n                return x * x;\n            }\n            return x;\n        }\n    }, {\n        key: 'init',\n        value: function init() {\n            this.canvas = _reactDom2['default'].findDOMNode(this.refs.canvas);\n            var preSelect = _reactDom2['default'].findDOMNode(this.refs.preSelect);\n            var colorframe = _reactDom2['default'].findDOMNode(this.refs.colorframe);\n            colorframe.width = this.cw;\n            colorframe.height = this.colorbarHeight;\n            this.colorctx = colorframe.getContext('2d');\n            this.redbtn = _reactDom2['default'].findDOMNode(this.refs.redbtn);\n            this.greenbtn = _reactDom2['default'].findDOMNode(this.refs.redbtn);\n            this.bluebtn = _reactDom2['default'].findDOMNode(this.refs.redbtn);\n            this.alphabtn = _reactDom2['default'].findDOMNode(this.refs.redbtn);\n            this.allbtn = _reactDom2['default'].findDOMNode(this.refs.redbtn);\n            this.minInput = _reactDom2['default'].findDOMNode(this.refs.minInput);\n            this.maxInput = _reactDom2['default'].findDOMNode(this.refs.maxInput);\n\n            this.canvas.width = this.cw;\n            this.canvas.height = this.cw;\n            this.ctx = this.canvas.getContext('2d');\n            this.nodeInputChanged(null, this.props.node);\n        }\n    }, {\n        key: 'drawGraph',\n        value: function drawGraph() {\n            var cw = this.cw;\n            var ch = this.cw;\n\n            // clear\n            this.ctx.beginPath();\n            this.ctx.clearRect(0, 0, cw, ch);\n\n            // waku\n            this.ctx.beginPath();\n            this.ctx.fillStyle = \"rgb(60, 60, 60)\";\n            this.ctx.fillRect(0, 0, cw, ch);\n            this.ctx.strokeStyle = \"#676767\";\n            for (var x = 0; x <= cw; x += 50) {\n                this.ctx.moveTo(x, 0);\n                this.ctx.lineTo(x, ch);\n            }\n            for (var y = 0; y <= ch; y += 50) {\n                var yv = this.transFunc(y / ch);\n                this.ctx.moveTo(0, (1.0 - yv) * ch);\n                this.ctx.lineTo(cw, (1.0 - yv) * ch);\n            }\n            this.ctx.font = \"16px\";\n            this.ctx.fillStyle = \"#8e8e8e\";\n            this.ctx.fillText(\"1.0\", 5, 20);\n            this.ctx.fillText(\"0.0\", 5, ch - 30);\n            this.ctx.fillText(\"min\", 20, ch - 5);\n            this.ctx.fillText(\"max\", cw - 40, ch - 5);\n            this.ctx.stroke();\n\n            this.ctx.globalCompositeOperation = 'lighter';\n            /*this.drawValueLine(this.values, '#AAA');\n              this.drawValueLine(this.histRed, '#F00');\n              this.drawValueLine(this.histGreen, '#0F0');\n              this.drawValueLine(this.histBlue, '#00F');*/\n            this.drawValueLine(this.value.r, '#F00');\n            this.drawValueLine(this.value.g, '#0F0');\n            this.drawValueLine(this.value.b, '#11F');\n\n            this.drawColorBar(this.value.r, this.value.g, this.value.b, this.value.a);\n            this.ctx.globalCompositeOperation = 'source-over';\n            this.drawValueLine(this.value.a, '#000');\n            this.drawValueLine(this.hist, 'rgb(154, 79, 40)', true);\n        }\n    }, {\n        key: 'drawValueLine',\n        value: function drawValueLine(vals, col, scaling) {\n            var cw = this.cw;\n            var ch = this.cw;\n            // Graph\n            this.ctx.lineWidth = 2;\n            this.ctx.beginPath();\n            this.ctx.strokeStyle = col;\n            this.ctx.moveTo(0, ch);\n\n            var defDiff = this.defaultValMax - this.defaultValMin,\n                valDiff = this.state.valMax - this.state.valMin,\n                gscale = 1.0,\n                goffset = 0.0;\n\n            if (scaling) {\n                goffset = (this.defaultValMin - this.state.valMin) / defDiff;\n                gscale = defDiff / valDiff;\n            }\n            for (var i = 0; i < this.numVals; ++i) {\n                //this.ctx.lineTo(i / this.numVals *  cw, (1.0 - vals[i]) * ch); // MODE NORMAL\n                this.ctx.lineTo((i / this.numVals + goffset) * gscale * cw, ch - this.transFunc(vals[i]) * ch); // MODE SQRT\n            }\n            this.ctx.stroke();\n            this.ctx.lineWidth = 1;\n        }\n    }, {\n        key: 'drawColorBar',\n        value: function drawColorBar(red, green, blue, alpha) {\n            var colorData = this.colorctx.getImageData(0, 0, this.cw, this.colorbarHeight),\n                i,\n                j,\n                iw = this.cw * 4;\n\n            for (j = 0; j < this.colorbarHeight; j++) {\n                for (i = 0; i < this.cw; i++) {\n                    var d = i * 4,\n                        B,\n                        s = Math.floor(i * this.numVals / this.cw),\n                        backgrd = (1.0 - alpha[s]) * ((i / 10 | 0) % 2 ^ (j / 10 | 0) % 2) * 155;\n                    colorData.data[j * iw + d + 0] = red[s] * 255 * alpha[s] + backgrd | 0;\n                    colorData.data[j * iw + d + 1] = green[s] * 255 * alpha[s] + backgrd | 0;\n                    colorData.data[j * iw + d + 2] = blue[s] * 255 * alpha[s] + backgrd | 0;\n                    colorData.data[j * iw + d + 3] = 255;\n                }\n            }\n            this.colorctx.putImageData(colorData, 0, 0);\n        }\n    }, {\n        key: 'mouseMoveFunc',\n        value: function mouseMoveFunc(eve) {\n            var cw = this.cw;\n            var ch = this.cw;\n            var x = eve.clientX - this.wrapper.getBoundingClientRect().left,\n                y = eve.clientY - this.wrapper.getBoundingClientRect().top;\n            //x = Math.min(x, this.cw);\n            //x = Math.min(cw, Math.max(0.0, x));\n            //y = Math.min(ch, Math.max(0.0, y));\n            if (this.mspress) {\n                var minx = Math.min(x, this.oldx),\n                    maxx = Math.max(x, this.oldx),\n                    miny = this.oldy,\n                    //Math.min(y, this.oldy),\n                maxy = y,\n                    //Math.max(y, this.oldy),\n                i;\n                if (x < this.oldx) {\n                    i = miny;\n                    miny = maxy;\n                    maxy = i;\n                }\n\n                for (i = minx + 1; i <= maxx; ++i) {\n                    var dy = (maxy - miny) * (i - minx + 1) / (maxx - minx + 1) + miny;\n                    //this.setMaskedGraphValue(Math.floor(i/cw*this.numVals), 1.0 - dy/ch); // MODE NORMAL\n                    this.setMaskedGraphValue(Math.floor(i / cw * this.numVals), this.invTransFunc((ch - dy) / ch)); // MODE SQRT\n                }\n\n                this.drawGraph();\n            }\n            this.oldx = x;\n            this.oldy = y;\n        }\n    }, {\n        key: 'setGraphValue',\n        value: function setGraphValue(n, val_r, val_g, val_b, val_a) {\n            if (n < 0 || this.numVals <= n) {\n                return;\n            }\n            this.value.r[n] = val_r;\n            this.value.g[n] = val_g;\n            this.value.b[n] = val_b;\n            this.value.a[n] = val_a;\n        }\n    }, {\n        key: 'setMaskedGraphValue',\n        value: function setMaskedGraphValue(n, val) {\n            if (n < 0 || this.numVals <= n) {\n                return;\n            }\n            val = Math.max(0.0, Math.min(1.0, val));\n            if (this.graphMode & 1) {\n                this.value.r[n] = val;\n            }\n            if (this.graphMode & 2) {\n                this.value.g[n] = val;\n            }\n            if (this.graphMode & 4) {\n                this.value.b[n] = val;\n            }\n            if (this.graphMode & 8) {\n                this.value.a[n] = val;\n            }\n        }\n    }, {\n        key: 'getGraphValueRed',\n        value: function getGraphValueRed() {\n            return this.value.r;\n        }\n    }, {\n        key: 'getGraphValueGreen',\n        value: function getGraphValueGreen() {\n            return this.value.g;\n        }\n    }, {\n        key: 'getGraphValueBlue',\n        value: function getGraphValueBlue() {\n            return this.value.b;\n        }\n    }, {\n        key: 'getGraphValueAlpha',\n        value: function getGraphValueAlpha() {\n            return this.value.a;\n        }\n    }, {\n        key: 'getMinValue',\n        value: function getMinValue() {\n            return this.state.valMin;\n        }\n    }, {\n        key: 'getMaxValue',\n        value: function getMaxValue() {\n            return this.state.valMax;\n        }\n    }, {\n        key: 'getNumValues',\n        value: function getNumValues() {\n            return this.numVals;\n        }\n    }, {\n        key: 'setAnalyzeResult',\n        value: function setAnalyzeResult(result) {\n            if (result) {\n                if (result.histgram) {\n                    var hist = result.histgram;\n                    for (var i = 0; i < this.numVals; ++i) {\n                        this.hist[i] = hist[i];\n                    }\n                }\n                var min = parseFloat(result.minval);\n                var max = parseFloat(result.maxval);\n                var varname = this.node.varname;\n                if (this.defaultValMin !== min || this.defaultValMax !== max) {\n                    this.defaultValMin = min;\n                    this.defaultValMax = max;\n                    this.action.changeNodeInput({\n                        varname: varname,\n                        input: {\n                            minval: min,\n                            maxval: max,\n                            defaultminval: min,\n                            defaultmaxval: max\n                        }\n                    });\n                }\n                this.drawGraph();\n            }\n        }\n\n        /*setAnalyzeResult(result, component){\n            var i, hist, componentNum;\n            if (result && result.histgram) {\n                componentNum = (result.type === \"vector\" ? 3 : 1);\n                if (result.histgram) {\n                    hist = result.histgram;\n                    for (i = 0; i < this.numVals; ++i) {\n                        this.hist[i] = hist[i * componentNum + component];\n                    }\n                }\n                 this.defaultValMin = result.defaultValMin;\n                this.defaultValMax = result.defaultValMax;\n                this.setState({\n                    valMin: result.min[component],\n                    valMax: result.max[component]\n                });\n            }\n        }*/\n\n    }, {\n        key: 'undo',\n        value: function undo() {\n            if (this.undoBuffer.length > 1) {\n                this.redoBuffer.unshift(this.undoBuffer.shift());\n                var undoValue = this.undoBuffer[0];\n                this.value = JSON.parse(undoValue);\n                this.changeCallback();\n                this.setState({ selValue: 0 });\n            }\n        }\n    }, {\n        key: 'redo',\n        value: function redo() {\n            if (this.redoBuffer.length > 0) {\n                var redoValue = this.redoBuffer.shift();\n                this.value = JSON.parse(redoValue);\n                this.undoBuffer.unshift(redoValue);\n                this.changeCallback();\n                this.setState({ selValue: 0 });\n            }\n        }\n    }, {\n        key: 'styles',\n        value: function styles() {\n            return {\n                wrapper: {\n                    width: \"300px\",\n                    margin: \"8px\"\n                },\n                canvas: {},\n                colorframe: {\n                    lineHeight: \"30px\",\n                    width: \"300px\",\n                    height: \"20px\"\n                },\n                undoframe: {\n                    lineHeight: \"30px\",\n                    width: \"300px\",\n                    height: \"28px\",\n                    display: \"flex\",\n                    flexDirection: \"row\"\n                },\n                btnframe: {\n                    textAlign: \"center\",\n                    width: \"300px\",\n                    height: \"30px\",\n                    display: \"flex\",\n                    flexDirection: \"row\"\n                },\n                redbtn: { backgroundColor: this.state.redbtnColor, margin: \"auto 1px\", width: \"58px\", height: \"20px\", fontSize: \"13px\", color: \"#555\", borderRadius: \"3px\", cursor: \"pointer\" },\n                greenbtn: { backgroundColor: this.state.greenbtnColor, margin: \"auto 1px\", width: \"58px\", height: \"20px\", fontSize: \"13px\", color: \"#555\", borderRadius: \"3px\", cursor: \"pointer\" },\n                bluebtn: { backgroundColor: this.state.bluebtnColor, margin: \"auto 1px\", width: \"58px\", height: \"20px\", fontSize: \"13px\", color: \"#555\", borderRadius: \"3px\", cursor: \"pointer\" },\n                alphabtn: { backgroundColor: this.state.alphabtnColor, margin: \"auto 1px\", width: \"58px\", height: \"20px\", fontSize: \"13px\", color: \"#555\", borderRadius: \"3px\", cursor: \"pointer\" },\n                allbtn: { backgroundColor: this.state.allbtnColor, margin: \"auto 1px\", width: \"58px\", height: \"20px\", fontSize: \"13px\", color: \"#555\", borderRadius: \"3px\", cursor: \"pointer\" },\n                presetframe: {\n                    lineHeight: \"30px\",\n                    height: \"30px\",\n                    display: \"flex\",\n                    flexDirection: \"row\"\n                },\n                presetframe2: {\n                    lineHeight: \"30px\",\n                    height: \"30px\",\n                    flex: \"1.2\"\n                },\n                preText: {\n                    padding: \"2px\",\n                    width: \"80px\",\n                    color: \"#fff\"\n                },\n                viewText: {\n                    padding: \"2px\",\n                    width: \"40px\",\n                    color: \"#fff\"\n                },\n                preSelect: {\n                    margin: \"auto 0px\",\n                    width: \"200px\"\n                },\n                viewSelect: {\n                    margin: \"auto 0px\",\n                    width: \"100px\"\n                },\n                minmaxframe: {\n                    height: \"30px\",\n                    display: \"flex\",\n                    flexDirection: \"row\"\n                },\n                numberArea: {\n                    flex: \"1 0 auto\"\n                },\n                minmaxText: {\n                    color: \"#fff\",\n                    fontSize: \"small\",\n                    padding: \"2px\",\n                    width: \"40px\",\n                    display: \"inline-block\"\n                },\n                minmaxInput: {\n                    border: \"none\",\n                    borderRadius: \"3px 5px\",\n                    padding: \"3px\",\n                    width: \"90px\"\n                },\n                undoredoButton: {\n                    borderRadius: \"3px 5px\",\n                    width: \"60px\",\n                    height: \"22px\",\n                    marginTop: \"3px\",\n                    marginLeft: \"3px\",\n                    flex: \"0.2\"\n                }\n            };\n        }\n    }, {\n        key: 'render',\n        value: function render() {\n            var styles = this.styles();\n            var optionGenerator = this.selValues.map((function (value, key) {\n                return _react2['default'].createElement(\n                    'option',\n                    { value: value.value, key: Date.now() + ':' + key },\n                    value.text\n                );\n            }).bind(this));\n            var viewtypeOptionGenerator = this.viewTypes.map((function (value, key) {\n                return _react2['default'].createElement(\n                    'option',\n                    { value: value.value, key: Date.now() + ':' + key },\n                    value.text\n                );\n            }).bind(this));\n            return _react2['default'].createElement(\n                'div',\n                { ref: 'wrapper', style: styles.wrapper },\n                _react2['default'].createElement('canvas', { ref: 'canvas', style: styles.canvas }),\n                _react2['default'].createElement('canvas', { ref: 'colorframe', style: styles.colorframe }),\n                _react2['default'].createElement(\n                    'div',\n                    { ref: 'undoframe', style: styles.undoframe },\n                    _react2['default'].createElement('input', { ref: 'undoButton', type: 'button', value: \"Undo\", style: styles.undoredoButton, onClick: this.undo }),\n                    _react2['default'].createElement('input', { ref: 'redoButton', type: 'button', value: \"Redo\", style: styles.undoredoButton, onClick: this.redo }),\n                    _react2['default'].createElement(\n                        'span',\n                        { ref: 'presetframe2', style: styles.presetframe2 },\n                        _react2['default'].createElement(\n                            'span',\n                            { ref: 'preText2', className: 'KCaption', style: styles.viewText },\n                            'Graph:'\n                        ),\n                        _react2['default'].createElement(\n                            'select',\n                            { ref: 'viewSelect', className: 'KDropdownList',\n                                value: this.state.viewType,\n                                onChange: this.onViewChange,\n                                style: styles.viewSelect\n                            },\n                            viewtypeOptionGenerator\n                        )\n                    )\n                ),\n                _react2['default'].createElement(\n                    'div',\n                    { ref: 'btnframe', style: styles.btnframe },\n                    _react2['default'].createElement(\n                        'div',\n                        { ref: 'redbtn', onClick: this.redbtnClick, style: styles.redbtn },\n                        'RED'\n                    ),\n                    _react2['default'].createElement(\n                        'div',\n                        { ref: 'greenbtn', onClick: this.greenbtnClick, style: styles.greenbtn },\n                        'GREEN'\n                    ),\n                    _react2['default'].createElement(\n                        'div',\n                        { ref: 'bluebtn', onClick: this.bluebtnClick, style: styles.bluebtn },\n                        'BLUE'\n                    ),\n                    _react2['default'].createElement(\n                        'div',\n                        { ref: 'alphabtn', onClick: this.alphabtnClick, style: styles.alphabtn },\n                        'ALPHA'\n                    ),\n                    _react2['default'].createElement(\n                        'div',\n                        { ref: 'allbtn', onClick: this.allbtnClick, style: styles.allbtn },\n                        'RGB'\n                    )\n                ),\n                _react2['default'].createElement(\n                    'div',\n                    { ref: 'presetframe', style: styles.presetframe },\n                    _react2['default'].createElement(\n                        'div',\n                        { ref: 'preText', className: 'KCaption', style: styles.preText },\n                        'Preset'\n                    ),\n                    _react2['default'].createElement(\n                        'select',\n                        { ref: 'preSelect', className: 'KDropdownList',\n                            value: this.state.selValue,\n                            onChange: this.onSelectChange,\n                            style: styles.preSelect\n                        },\n                        optionGenerator\n                    )\n                ),\n                _react2['default'].createElement(\n                    'div',\n                    { ref: 'minmaxframe', style: styles.minmaxframe },\n                    _react2['default'].createElement(\n                        'div',\n                        { style: styles.numberArea },\n                        _react2['default'].createElement(\n                            'div',\n                            { ref: 'minText', className: 'KCaption', style: styles.minmaxText },\n                            'Min'\n                        ),\n                        _react2['default'].createElement('input', { ref: 'minInput', type: 'number', step: 0.00001, value: this.state.valMin, onChange: this.minInputChange, style: styles.minmaxInput,\n                            onKeyPress: this.onMinKeyPress.bind(this),\n                            onBlur: this.onMinBlur.bind(this),\n                            onFocus: this.onMinFocus.bind(this) })\n                    ),\n                    _react2['default'].createElement(\n                        'div',\n                        { style: styles.numberArea },\n                        _react2['default'].createElement(\n                            'div',\n                            { ref: 'maxText', className: 'KCaption', style: styles.minmaxText },\n                            'Max'\n                        ),\n                        _react2['default'].createElement('input', { ref: 'maxInput', type: 'number', step: 0.00001, value: this.state.valMax, onChange: this.maxInputChange, style: styles.minmaxInput,\n                            onKeyPress: this.onMaxKeyPress.bind(this),\n                            onBlur: this.onMaxBlur.bind(this),\n                            onFocus: this.onMaxFocus.bind(this) })\n                    )\n                )\n            );\n        }\n    }]);\n\n    return TransferFunction;\n})(_react2['default'].Component);\n\nmodule.exports = TransferFunction;\n\n// =============================================================\n\n// KTransferFunctionClass.Init = function() {\n//     var lst = document.getElementsByClassName('KTransferFunction');\n//     for (var i=0; i<lst.length;++i) {\n//         _kvtools_UIs[lst[i].id] = new KTransferFunctionClass(lst[i]);\n//     }\n// };\n//\n// KTransferFunctionClass.userInit = function(dom) {\n//     var el = dom.getElementsByClassName('KTransferFunction');\n//     for (var k = 0; k < el.length; ++k) {\n//         _kvtools_UIs[el[k].id] = new KTransferFunctionClass(el[k]);\n//     }\n// };\n//",
+      "varname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1338.3720930232557,
+          2207.232558139535
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          304.2016257652931,
+          -422.6360696462566
+        ],
+        "zindex": null
+      }
+    },
+    {
+      "name": "UniformFloat",
+      "funcname": "UniformFloat",
+      "info": "Uniform floatをつくるノード",
+      "customfuncfile": "float.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_contourStep",
+          "nodeVarname": "UniformFloatf551057a_d153_4aee_aee8_f0183587e439"
+        },
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.5,
+          "nodeVarname": "UniformFloatf551057a_d153_4aee_aee8_f0183587e439"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformFloatf551057a_d153_4aee_aee8_f0183587e439"
+        }
+      ],
+      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformFloatf551057a_d153_4aee_aee8_f0183587e439",
+      "node": {
+        "close": false,
+        "pos": [
+          1586.6,
+          2456.3999999999996
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          400,
+          400
+        ],
+        "zindex": -4
+      },
+      "label": "",
+      "select": false
+    },
+    {
+      "name": "Slider",
+      "funcname": "Slider",
+      "info": "sliderをつくるノード",
+      "customfuncfile": "slider.lua",
+      "uifile": "slider.jsx",
+      "input": [
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.08,
+          "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5"
+        },
+        {
+          "name": "min",
+          "type": "float",
+          "value": 0,
+          "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5"
+        },
+        {
+          "name": "max",
+          "type": "float",
+          "value": 1,
+          "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5"
+        },
+        {
+          "name": "step",
+          "type": "float",
+          "value": 0.01,
+          "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5"
+        }
+      ],
+      "output": [
+        {
+          "name": "fval",
+          "type": "float",
+          "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5"
+        }
+      ],
+      "customfunc": "Slider = {}\nsetmetatable(Slider, {__index = HiveBaseModule})\n\nSlider.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=Slider})\n    return this\nend\n\nfunction Slider:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction Slider:fval()\n    local v = self.value\n    return v.value\nend\n",
+      "uiFunc": "\"use strict\";\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if (\"value\" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { \"default\": obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactSlider = require(\"react-slider\");\n\nvar _reactSlider2 = _interopRequireDefault(_reactSlider);\n\nvar Slider = (function (_React$Component) {\n\t_inherits(Slider, _React$Component);\n\n\tfunction Slider(props) {\n\t\t_classCallCheck(this, Slider);\n\n\t\t_get(Object.getPrototypeOf(Slider.prototype), \"constructor\", this).call(this, props);\n\t\tthis.componentDidUpdate = this.componentDidUpdate.bind(this);\n\t}\n\n\t_createClass(Slider, [{\n\t\tkey: \"componentDidUpdate\",\n\t\tvalue: function componentDidUpdate() {\n\t\t\tthis.refs.slider._handleResize();\n\t\t}\n\t}, {\n\t\tkey: \"onChange\",\n\t\tvalue: function onChange(val) {\n\t\t\tthis.props.action.changeNodeInput({\n\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"value\": Number(val)\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: \"render\",\n\t\tvalue: function render() {\n\t\t\treturn _react2[\"default\"].createElement(\n\t\t\t\t\"div\",\n\t\t\t\t{ className: 'slider', style: { margin: '4', minWidth: \"250px\", height: '70', padding: '2' } },\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t_reactSlider2[\"default\"],\n\t\t\t\t\t{\n\t\t\t\t\t\tref: \"slider\",\n\t\t\t\t\t\tvalue: [Number(this.props.node.input[0].value)],\n\t\t\t\t\t\tmin: Number(this.props.node.input[1].value),\n\t\t\t\t\t\tmax: Number(this.props.node.input[2].value),\n\t\t\t\t\t\tstep: Number(this.props.node.input[3].value),\n\t\t\t\t\t\tonChange: this.onChange.bind(this),\n\t\t\t\t\t\twithBars: true\n\t\t\t\t\t},\n\t\t\t\t\t_react2[\"default\"].createElement(\"div\", { className: \"thum\" })\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"left\" } },\n\t\t\t\t\t\"min:\",\n\t\t\t\t\tthis.props.node.input[1].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"right\" } },\n\t\t\t\t\t\"max:\",\n\t\t\t\t\tthis.props.node.input[2].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"-18px\", textAlign: \"center\", width: \"100%\", height: \"30px\", float: \"left\" } },\n\t\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\t\"div\",\n\t\t\t\t\t\t{ style: {} },\n\t\t\t\t\t\t\"step:\",\n\t\t\t\t\t\tthis.props.node.input[3].value\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t);\n\t\t}\n\t}]);\n\n\treturn Slider;\n})(_react2[\"default\"].Component);\n\nmodule.exports = Slider;",
+      "varname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5",
+      "node": {
+        "close": false,
+        "pos": [
+          1296.2,
+          2432.4
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          94.80152595942104,
+          120.59335401440649
+        ],
+        "zindex": 3
+      },
+      "label": "ContourStepSlider",
+      "select": false
+    },
+    {
+      "name": "UniformFloat",
+      "funcname": "UniformFloat",
+      "info": "Uniform floatをつくるノード",
+      "customfuncfile": "float.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_eps",
+          "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e"
+        },
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.5,
+          "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e"
+        }
+      ],
+      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e",
+      "node": {
+        "close": false,
+        "pos": [
+          1591.2,
+          2543
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          650,
+          650
+        ],
+        "zindex": -4
+      },
+      "label": "",
+      "select": false
+    },
+    {
+      "name": "Slider",
+      "funcname": "Slider",
+      "info": "sliderをつくるノード",
+      "customfuncfile": "slider.lua",
+      "uifile": "slider.jsx",
+      "input": [
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.11,
+          "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435"
+        },
+        {
+          "name": "min",
+          "type": "float",
+          "value": 0,
+          "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435"
+        },
+        {
+          "name": "max",
+          "type": "float",
+          "value": 1,
+          "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435"
+        },
+        {
+          "name": "step",
+          "type": "float",
+          "value": 0.01,
+          "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435"
+        }
+      ],
+      "output": [
+        {
+          "name": "fval",
+          "type": "float",
+          "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435"
+        }
+      ],
+      "customfunc": "Slider = {}\nsetmetatable(Slider, {__index = HiveBaseModule})\n\nSlider.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=Slider})\n    return this\nend\n\nfunction Slider:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction Slider:fval()\n    local v = self.value\n    return v.value\nend\n",
+      "uiFunc": "\"use strict\";\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if (\"value\" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { \"default\": obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactSlider = require(\"react-slider\");\n\nvar _reactSlider2 = _interopRequireDefault(_reactSlider);\n\nvar Slider = (function (_React$Component) {\n\t_inherits(Slider, _React$Component);\n\n\tfunction Slider(props) {\n\t\t_classCallCheck(this, Slider);\n\n\t\t_get(Object.getPrototypeOf(Slider.prototype), \"constructor\", this).call(this, props);\n\t\tthis.componentDidUpdate = this.componentDidUpdate.bind(this);\n\t}\n\n\t_createClass(Slider, [{\n\t\tkey: \"componentDidUpdate\",\n\t\tvalue: function componentDidUpdate() {\n\t\t\tthis.refs.slider._handleResize();\n\t\t}\n\t}, {\n\t\tkey: \"onChange\",\n\t\tvalue: function onChange(val) {\n\t\t\tthis.props.action.changeNodeInput({\n\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"value\": Number(val)\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: \"render\",\n\t\tvalue: function render() {\n\t\t\treturn _react2[\"default\"].createElement(\n\t\t\t\t\"div\",\n\t\t\t\t{ className: 'slider', style: { margin: '4', minWidth: \"250px\", height: '70', padding: '2' } },\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t_reactSlider2[\"default\"],\n\t\t\t\t\t{\n\t\t\t\t\t\tref: \"slider\",\n\t\t\t\t\t\tvalue: [Number(this.props.node.input[0].value)],\n\t\t\t\t\t\tmin: Number(this.props.node.input[1].value),\n\t\t\t\t\t\tmax: Number(this.props.node.input[2].value),\n\t\t\t\t\t\tstep: Number(this.props.node.input[3].value),\n\t\t\t\t\t\tonChange: this.onChange.bind(this),\n\t\t\t\t\t\twithBars: true\n\t\t\t\t\t},\n\t\t\t\t\t_react2[\"default\"].createElement(\"div\", { className: \"thum\" })\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"left\" } },\n\t\t\t\t\t\"min:\",\n\t\t\t\t\tthis.props.node.input[1].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"right\" } },\n\t\t\t\t\t\"max:\",\n\t\t\t\t\tthis.props.node.input[2].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"-18px\", textAlign: \"center\", width: \"100%\", height: \"30px\", float: \"left\" } },\n\t\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\t\"div\",\n\t\t\t\t\t\t{ style: {} },\n\t\t\t\t\t\t\"step:\",\n\t\t\t\t\t\tthis.props.node.input[3].value\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t);\n\t\t}\n\t}]);\n\n\treturn Slider;\n})(_react2[\"default\"].Component);\n\nmodule.exports = Slider;",
+      "varname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435",
+      "node": {
+        "close": false,
+        "pos": [
+          1313.4,
+          2576.4
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          -167.97681565851997,
+          253.5087643137773
+        ],
+        "zindex": null
+      },
+      "label": "",
+      "select": false
+    },
+    {
+      "name": "UniformFloat",
+      "funcname": "UniformFloat",
+      "info": "Uniform floatをつくるノード",
+      "customfuncfile": "float.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_volumeMin",
+          "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff"
+        },
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.5,
+          "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff"
+        }
+      ],
+      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff",
+      "node": {
+        "close": false,
+        "pos": [
+          1633,
+          2253.6
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          450,
+          450
+        ],
+        "zindex": -4
+      },
+      "label": "",
+      "select": false
+    },
+    {
+      "name": "UniformFloat",
+      "funcname": "UniformFloat",
+      "info": "Uniform floatをつくるノード",
+      "customfuncfile": "float.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_volumeMax",
+          "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe"
+        },
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.5,
+          "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe"
+        }
+      ],
+      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe",
+      "node": {
+        "close": false,
+        "pos": [
+          1584.53488372093,
+          2332.046511627907
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          500,
+          500
+        ],
+        "zindex": -4
+      },
+      "label": "",
+      "select": false
+    },
+    {
+      "name": "UniformInt",
+      "funcname": "UniformInt",
+      "info": "Uniform intをつくるノード",
+      "customfuncfile": "int.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_flipSlice",
+          "nodeVarname": "UniformIntdd08c85c_4e14_4aa8_9972_59b564ec37e2"
+        },
+        {
+          "name": "value",
+          "type": "int",
+          "value": "1",
+          "nodeVarname": "UniformIntdd08c85c_4e14_4aa8_9972_59b564ec37e2"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformIntdd08c85c_4e14_4aa8_9972_59b564ec37e2"
+        }
+      ],
+      "customfunc": "UniformInt = {}\nsetmetatable(UniformInt, {__index = HiveBaseModule})\n\nUniformInt.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformInt})\n    return this\nend\n\nfunction UniformInt:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformInt:uniform()\n    local v = self.value\n    return { name = v.name, type = \"int\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformIntdd08c85c_4e14_4aa8_9972_59b564ec37e2",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1588.6,
+          2649.8
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          550,
+          550
+        ],
+        "zindex": -4
+      }
+    },
+    {
+      "name": "LoadSPH",
+      "funcname": "LoadSPH",
+      "info": "SPHをロードするためのノード",
+      "customfuncfile": "loadsph.lua",
+      "input": [
+        {
+          "name": "filepath",
+          "type": "string",
+          "value": "/home/soma/Documents/work/HIVE/hrender/test/fvel_0000001470.sph",
+          "meta": "filebrowser",
+          "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2"
+        }
+      ],
+      "output": [
+        {
+          "name": "VolumeData",
+          "type": "BufferVolumeData",
+          "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2"
+        },
+        {
+          "name": "Size",
+          "type": "vec3",
+          "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2"
+        },
+        {
+          "name": "Component",
+          "type": "float",
+          "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2"
+        }
+      ],
+      "customfunc": "\nLoadSPH = {}\nsetmetatable(LoadSPH, {__index = HiveBaseModule})\n\nLoadSPH.new = function (varname)\n    local this = HiveBaseModule.new(varname);\n    this.loader = LoadModule('SphLoader')\n    setmetatable(this, {__index=LoadSPH})\n    return this\nend\n\nfunction LoadSPH:Do()\n    self:UpdateValue()\n    return self.loader:Load(self.value.filepath)\nend\n\nfunction LoadSPH:VolumeData()\n    return self.loader:VolumeData()\nend\n\nfunction LoadSPH:Size()\n    local size = {self.loader:Width(), self.loader:Height(), self.loader:Depth()}\n    return size\nend\n\nfunction LoadSPH:Component()\n    return self.loader:Component()\nend\n",
+      "uiFunc": "",
+      "varname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          969.3023255813953,
+          1982.9302325581398
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          600,
+          600
+        ],
+        "zindex": -4
+      }
+    },
+    {
+      "name": "UniformInt",
+      "funcname": "UniformInt",
+      "info": "Uniform intをつくるノード",
+      "customfuncfile": "int.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_sliceAxis",
+          "nodeVarname": "UniformIntd8893ff4_7fba_42b4_acdd_85425bf85b52"
+        },
+        {
+          "name": "value",
+          "type": "int",
+          "value": "0",
+          "nodeVarname": "UniformIntd8893ff4_7fba_42b4_acdd_85425bf85b52"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformIntd8893ff4_7fba_42b4_acdd_85425bf85b52"
+        }
+      ],
+      "customfunc": "UniformInt = {}\nsetmetatable(UniformInt, {__index = HiveBaseModule})\n\nUniformInt.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformInt})\n    return this\nend\n\nfunction UniformInt:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformInt:uniform()\n    local v = self.value\n    return { name = v.name, type = \"int\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformIntd8893ff4_7fba_42b4_acdd_85425bf85b52",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1580.0697674418607,
+          2800.6744186046517
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          350,
+          350
+        ],
+        "zindex": -4
+      }
+    }
+  ],
+  "plugs": [
+    {
+      "output": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "model"
+      },
+      "input": {
+        "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023",
+        "name": "RenderObject[0]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformFloat24278e5f_e9ff_452a_926d_e2024c7f177d",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[0]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9",
+        "name": "fval"
+      },
+      "input": {
+        "nodeVarname": "UniformFloat24278e5f_e9ff_452a_926d_e2024c7f177d",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+        "name": "Image"
+      },
+      "input": {
+        "nodeVarname": "UniformTexturec05008fd_284b_4906_9897_f7b2bef26877",
+        "name": "image"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformTexturec05008fd_284b_4906_9897_f7b2bef26877",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[1]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5",
+        "name": "fval"
+      },
+      "input": {
+        "nodeVarname": "UniformFloatf551057a_d153_4aee_aee8_f0183587e439",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformFloatf551057a_d153_4aee_aee8_f0183587e439",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[2]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[3]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435",
+        "name": "fval"
+      },
+      "input": {
+        "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+        "name": "Min"
+      },
+      "input": {
+        "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+        "name": "Max"
+      },
+      "input": {
+        "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[4]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[5]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2",
+        "name": "VolumeData"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "volume"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformIntdd08c85c_4e14_4aa8_9972_59b564ec37e2",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[6]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformIntd8893ff4_7fba_42b4_acdd_85425bf85b52",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[7]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2",
+        "name": "VolumeData"
+      },
+      "input": {
+        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+        "name": "volume"
+      }
+    }
+  ],
+  "input": [],
+  "output": [],
+  "nodePath": [],
+  "timeline": {
+    "frame": 0,
+    "data": {}
+  }
+}
