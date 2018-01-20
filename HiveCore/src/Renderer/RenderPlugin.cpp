@@ -23,15 +23,6 @@
 #include "SolidBuffer.h"
 
 
-bool RenderPlugin::progressCallbackFunc_(int progress, int y, int height, void* ptr) {
-    return static_cast<RenderPlugin*>(ptr)->progressCallbackFunc(progress, y, height);
-}
-
-bool RenderPlugin::defaultProgressCallbackFunc(double progress) {
-    printf("[Rendering] %3d%%\n", static_cast<int>(progress));
-    return true;
-}
-
 /// 各種バッファの作成
 /// @param robj レンダーオブジェクト
 BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)

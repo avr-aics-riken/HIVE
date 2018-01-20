@@ -13,8 +13,6 @@ class BufferImageData;
 class RenderPlugin {
 
 protected:
-    static bool progressCallbackFunc_(int progress, int y, int height, void* ptr);
-    static bool defaultProgressCallbackFunc(double progress);
     virtual bool progressCallbackFunc(int progress, int y, int height) const = 0;
     
     /// コンストラクタ

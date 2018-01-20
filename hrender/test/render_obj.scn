@@ -30,5 +30,6 @@ print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
 
-
+local rp = require('RenderPluginSURFACE')
+print('RP=', rp)
 render {camera, model}

@@ -154,6 +154,8 @@ ENDIF()
 # Headers
 set(INCLUDES
   ${CMAKE_SOURCE_DIR}/include
+  ${CMAKE_BINARY_DIR}/third_party/lua/
+	${CMAKE_SOURCE_DIR}/third_party/LUA/src
 	${CMAKE_SOURCE_DIR}/third_party/SURFACE/include
 	${CMAKE_SOURCE_DIR}/third_party/SURFACE/gles
 	${CMAKE_SOURCE_DIR}/third_party/SURFACE/render
@@ -173,12 +175,10 @@ INCLUDE_DIRECTORIES(${INCLUDES})
 
 
 # Links
-#set(LIBS
-#	${CMAKE_BINARY_DIR}/third_party/lua
-#	${CMAKE_SOURCE_DIR}/third_party/local/lib		# fpzip, zoltan
-#	${CMAKE_SOURCE_DIR}/third_party/local/TextParser/lib
-#)
-#link_directories(${LIBS})
+set(LIBS
+	${CMAKE_BINARY_DIR}/third_party/lua
+)
+link_directories(${LIBS})
 
 
 # Source files
@@ -284,6 +284,7 @@ endif()
 
 target_link_libraries(RenderPluginSURFACE pthread)
 target_link_libraries(RenderPluginSURFACE LSGLES)
+set_target_properties(RenderPluginSURFACE PROPERTIES PREFIX "")
 
 
 # Copy GLSL Compiler in post build phase

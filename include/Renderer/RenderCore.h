@@ -41,8 +41,9 @@ public:
 
     bool ClearShaderCache(const char* srcname);
     
-private:
     RenderCore(RenderPlugin* render);
+    
+private:
     ~RenderCore();
 
     RenderPlugin* m_imp;
