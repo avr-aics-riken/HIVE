@@ -23,6 +23,10 @@ public:
     RenderCore_Lua(RenderCore* core_) : core(core_) {}
     ~RenderCore_Lua(){};
 
+    std::string getRendererName() {
+        return std::string(core->GetRendererName());
+    }
+    
     int render(LuaTable tbl, LuaTable callbackfunc) {
         
         const std::vector<LuaTable>& robjs = tbl.GetTable();
@@ -64,6 +68,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG2(int, render, LuaTable, LuaTable);
     LUA_SCRIPTCLASS_METHOD_ARG0(int, clearCache);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, clearShaderCache, const char*);
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, getRendererName);
     
     LUA_SCRIPTCLASS_END()
 };

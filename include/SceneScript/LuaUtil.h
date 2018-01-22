@@ -161,7 +161,7 @@ inline void closeLua(lua_State* L)
     lua_close(L);
 }
 
-#define SCRIPT_DEBUG
+//#define SCRIPT_DEBUG
 
 // ---------- Lua Class wrapper --------------
 #ifdef SCRIPT_DEBUG
@@ -310,7 +310,7 @@ template <> inline int LUAPUSH<std::string>(lua_State* L, std::string val) {
 		lua_setfield(L, -2, "__gc"); \
 	} \
 	static int LUA_CLASS_NEW(lua_State* L) { \
-		typedef CLASSNAME ICLASS; \
+		/*typedef CLASSNAME ICLASS;*/ \
 		/*ICLASS** object=(ICLASS**)lua_newuserdata(L,sizeof(CLASSNAME*));*/ \
 		/* *object = new CLASSNAME();*/ \
 		LuaRefPtr<CLASSNAME>** object = (LuaRefPtr<CLASSNAME>**)lua_newuserdata(L,sizeof(LuaRefPtr<CLASSNAME>*)); \

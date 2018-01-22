@@ -27,6 +27,7 @@ public:
     virtual void SetProgressCallback(bool (*func)(double)) = 0;
     virtual bool ClearShaderCache(const char* srcname) = 0;
     
+    virtual const char* GetRendererName() = 0;
 protected:
     RenderCore() {};
     virtual ~RenderCore() {};

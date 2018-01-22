@@ -9,16 +9,14 @@
 #include "Renderer/RenderCoreSURFACE.h"
 #include <SceneScript/RenderCore_Lua.h>
 
-namespace {
-
-    RenderCoreSURFACE* core = 0;
-
-}
-
 class RenderCoreSURFACE_Lua : public RenderCore_Lua
 {
 private:
-    RenderCoreSURFACE_Lua() : RenderCore_Lua(static_cast<RenderCore*>(0)) {}
+    
+    RenderCoreSURFACE_Lua()
+    : RenderCore_Lua(static_cast<RenderCore*>(new RenderCoreSURFACE(new RenderDevice())))
+    {
+    }
     
     int setParallelRendering(bool enableParallel)
     {
@@ -37,10 +35,9 @@ private:
         PixelStep_SGL(pixelstep);
         return 0;
     }
-
     
 public:
-    RenderCoreSURFACE_Lua(RenderCoreSURFACE* core) : RenderCore_Lua(static_cast<RenderCore*>(core)){}
+    //RenderCoreSURFACE_Lua(RenderCoreSURFACE* core) : RenderCore_Lua(static_cast<RenderCore*>(core)){}
     ~RenderCoreSURFACE_Lua() {}
     
     LUA_SCRIPTCLASS_BEGIN(RenderCoreSURFACE_Lua)
@@ -49,6 +46,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG2(int, render, LuaTable, LuaTable);
     LUA_SCRIPTCLASS_METHOD_ARG0(int, clearCache);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, clearShaderCache, const char*);
+    LUA_SCRIPTCLASS_METHOD_ARG0(std::string, getRendererName);
 
     /* RenderCoreSURFACE interface */
     LUA_SCRIPTCLASS_METHOD_ARG1(int, setParallelRendering, bool);
@@ -64,17 +62,24 @@ extern "C" {
 
 int luaopen_RenderPluginSURFACE(lua_State* L)
 {
+    
     LUA_SCRIPTCLASS_REGISTER(L, RenderCoreSURFACE_Lua);
     lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCoreSURFACE_Lua));
     
+    /*
     printf("CALL luaopen_RenderPluginSURFACE\n");
+     
+    // make static instance
+    if (core) {
+      LUAPUSH<RenderCoreSURFACE_Lua*>(L, new RenderCoreSURFACE_Lua(core));
+      return 1;
+    }
+    
     RenderDevice* renderPlugin = new RenderDevice();
     core = new RenderCoreSURFACE(renderPlugin);
     
-    LUAPUSH<RenderCoreSURFACE_Lua*>(L, new RenderCoreSURFACE_Lua(core));
+    LUAPUSH<RenderCoreSURFACE_Lua*>(L, new RenderCoreSURFACE_Lua(core));*/
     return 1;
-
-    //return 1;
 }
 
 }

@@ -68,4 +68,10 @@ bool RenderCoreSURFACE::ClearShaderCache(const char* src)
     return m_imp->ClearShaderCache(src);
 }
 
+const char* RenderCoreSURFACE::GetRendererName()
+{
+    return "SURFACE";
+}
+
+
 

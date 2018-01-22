@@ -40,6 +40,8 @@ public:
 
     bool ClearShaderCache(const char* srcname);
     
+    const char* GetRendererName();
+    
     RenderCoreSURFACE(RenderDevice* render);
     
     
