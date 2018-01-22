@@ -161,6 +161,7 @@ inline void closeLua(lua_State* L)
     lua_close(L);
 }
 
+#define SCRIPT_DEBUG
 
 // ---------- Lua Class wrapper --------------
 #ifdef SCRIPT_DEBUG
@@ -736,6 +737,7 @@ public:
         TYPE_STRING,
         TYPE_ARRAY,
         TYPE_MAP,
+        TYPE_FUNCTION
     };
 private:
     std::vector<LuaTable> m_table;
@@ -743,29 +745,34 @@ private:
     VALUE_TYPE m_type;
     double m_number;
     std::string m_string;
+    int m_function;
     void* m_userdata;
     
 public:
-    LuaTable() : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {}
+    LuaTable() : m_type(TYPE_ARRAY), m_number(0.0), m_function(-1), m_userdata(0) {}
     VALUE_TYPE GetType() const { return m_type; }
-
+    ~LuaTable() {
+        if (m_function != -1) {
+            //luaL_unref(L, LUA_REGISTRYINDEX, m_function);
+        }
+    }
     //---------------------------------
     // for initialization
-    LuaTable(double num) : m_type(TYPE_NUMBER), m_number(num), m_userdata(0) {}
-    LuaTable(const std::string& str) : m_type(TYPE_STRING), m_number(0.0), m_string(str), m_userdata(0) {}
-    LuaTable(void* ptr) : m_type(TYPE_USERDATA), m_number(0.0), m_userdata(ptr) {}
-    LuaTable(double x, double y, double z, double w) : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {
+    LuaTable(double num) : m_type(TYPE_NUMBER), m_number(num), m_function(-1), m_userdata(0) {}
+    LuaTable(const std::string& str) : m_type(TYPE_STRING), m_number(0.0), m_string(str), m_function(-1), m_userdata(0) {}
+    LuaTable(void* ptr) : m_type(TYPE_USERDATA), m_number(0.0), m_function(-1), m_userdata(ptr) {}
+    LuaTable(double x, double y, double z, double w) : m_type(TYPE_ARRAY), m_number(0.0), m_function(-1), m_userdata(0) {
         m_table.push_back(x);
         m_table.push_back(y);
         m_table.push_back(z);
         m_table.push_back(w);
     }
-    LuaTable(double x, double y, double z) : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {
+    LuaTable(double x, double y, double z) : m_type(TYPE_ARRAY), m_number(0.0), m_function(-1), m_userdata(0) {
         m_table.push_back(x);
         m_table.push_back(y);
         m_table.push_back(z);
     }
-    LuaTable(double x, double y) : m_type(TYPE_ARRAY), m_number(0.0), m_userdata(0) {
+    LuaTable(double x, double y) : m_type(TYPE_ARRAY), m_number(0.0), m_function(-1), m_userdata(0) {
         m_table.push_back(x);
         m_table.push_back(y);
     }
@@ -782,6 +789,10 @@ public:
         } else if (lua_isstring(L, stacki)) {
             m_type = TYPE_STRING;
             m_string = std::string(lua_tostring(L, stacki));
+        } else if (lua_isfunction(L, stacki)) {
+            m_type = TYPE_FUNCTION;
+            lua_pushvalue(L, stacki);
+            m_function = luaL_ref(L,LUA_REGISTRYINDEX);
         } else if (lua_istable(L, stacki)) {
             lua_pushnil(L); // first nil
             while (lua_next(L, stacki) != 0) {
@@ -884,6 +895,9 @@ public:
             lua_pushnumber(L, GetNumber());
         } else if (type == LuaTable::TYPE_STRING){
             lua_pushstring(L, GetString().c_str());
+        } else if (type == LuaTable::TYPE_FUNCTION) {
+            lua_rawgeti(L, LUA_REGISTRYINDEX, m_function);
+            
         } else if (type == LuaTable::TYPE_USERDATA){
             lua_pushlightuserdata(L, GetUserData());
         } else {

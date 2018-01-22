@@ -23,22 +23,17 @@ public:
     RenderCore_Lua(RenderCore* core_) : core(core_) {}
     ~RenderCore_Lua(){};
 
-    int render(LuaTable tbl) {
+    int render(LuaTable tbl, LuaTable callbackfunc) {
         
-        const int stnum = 0;//lua_gettop(L); // TODO
-        /*if (stnum < 1) {
-            fprintf(stderr,"Invalid function args: render({RenderObjects}");
-            lua_pushnumber(L, 0);
-            return 1;
-        }*/
-        
-        //LuaTable tbl(L, 1);
         const std::vector<LuaTable>& robjs = tbl.GetTable();
         printf("RenderObjects Num = %d\n", static_cast<int>(robjs.size()));
         
-        //if (stnum > 1 && lua_type(L, 2) == LUA_TFUNCTION) { // progress callback function
-            //RenderObject::SetProgressCallback(progressCallback);
-        //}
+        if (callbackfunc.GetType() == LuaTable::TYPE_FUNCTION) {
+            /*
+                TODO: call LUA funciton callback
+             */
+            //core->SetProgressCallback();
+        }
         
         
         for (size_t i = 0; i < robjs.size(); ++i) {
@@ -54,7 +49,6 @@ public:
         // clear
         core->ClearRenderObject();
         
-        //lua_pushnumber(L, 1);
         return 1;
     }
     int clearCache() {
@@ -67,7 +61,7 @@ public:
     }
     
     LUA_SCRIPTCLASS_BEGIN(RenderCore_Lua)
-    LUA_SCRIPTCLASS_METHOD_ARG1(int, render, LuaTable);
+    LUA_SCRIPTCLASS_METHOD_ARG2(int, render, LuaTable, LuaTable);
     LUA_SCRIPTCLASS_METHOD_ARG0(int, clearCache);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, clearShaderCache, const char*);
     
