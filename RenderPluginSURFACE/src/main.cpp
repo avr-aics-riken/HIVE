@@ -7,6 +7,8 @@
 
 #include "RenderPluginSURFACE.h"
 #include <Renderer/RenderCore.h>
+#include <SceneScript/RenderCore_Lua.h>
+
 namespace {
 
     void SetParallelRendering(bool enableParallel)
@@ -25,9 +27,7 @@ namespace {
     }
 
     RenderCore* core = 0;
-    
-
-
+/*
 
     int render(lua_State* L)
     {
@@ -87,7 +87,7 @@ namespace {
         lua_pushboolean(L, true);
         return 1;
     }
-    
+    */
 }
 
 // LUA export
@@ -96,15 +96,23 @@ extern "C" {
 
 int luaopen_RenderPluginSURFACE(lua_State* L)
 {
+    //LUA_SCRIPTCLASS_REGISTER(L, RenderCore_Lua);
+    //lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
+    
     printf("CALL luaopen_RenderPluginSURFACE\n");
     RenderPlugin* renderPlugin = new RenderPluginSURFACE();
-    core = new RenderCore(renderPlugin);
-    SetFunction(L, "render", render);
+    //core = new RenderCore(renderPlugin);
+    
+    /*SetFunction(L, "render", render);
     SetFunction(L, "clearCache", clearCache);
     SetFunction(L, "clearShaderCache", clearShaderCache);
     //SetFunction(L, "renderMode", renderMode);
-    SetFunction(L, "screenParallelRendering", screenParallelRendering);
-    return 0;
+    SetFunction(L, "screenParallelRendering", screenParallelRendering);*/
+    
+    LUAPUSH<RenderCore_Lua*>(L, new RenderCore_Lua(renderPlugin));
+    return 1;
+
+    //return 1;
 }
 
 }

@@ -1,6 +1,5 @@
 
 print('Render Obj')
-print('loader = ', loader)
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_obj.jpg')
@@ -11,6 +10,9 @@ camera:LookAt(
 	0,1,0,
 	60
 )
+
+local core = require('RenderPluginSURFACE')
+print('core=', core)
 
 local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
@@ -32,4 +34,4 @@ print(analy:MaxZ())
 
 local rp = require('RenderPluginSURFACE')
 print('RP=', rp)
-render {camera, model}
+core:render {camera, model}

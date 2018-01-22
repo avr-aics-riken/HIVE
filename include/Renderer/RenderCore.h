@@ -9,6 +9,8 @@
     RenderCore.h
 */
 
+#include <Core/Ref.h>
+
 class RenderObject;
 class BufferImageData;
 
@@ -17,7 +19,7 @@ class RenderPlugin;
 /**
  * Renderingコア機能部クラス
  */
-class RenderCore
+class RenderCore : public RefCount
 {
 public:
     //static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
@@ -43,8 +45,12 @@ public:
     
     RenderCore(RenderPlugin* render);
     
-private:
+    //RenderCore(RenderCore* inst);
+
+    
+protected:
     ~RenderCore();
 
+private:
     RenderPlugin* m_imp;
 };

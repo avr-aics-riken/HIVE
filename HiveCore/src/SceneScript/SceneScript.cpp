@@ -16,6 +16,8 @@
 #include <algorithm>
 
 #include "../Renderer/RenderCore.h"
+#include "RenderCore_Lua.h"
+
 #include "../Buffer/UserBufferData.h"
 
 #include "Core/Perf.h"
@@ -24,7 +26,7 @@
 #include "BufferMeshData_Lua.h"
 #include "BufferLineData_Lua.h"
 #include "BufferVolumeData_Lua.h"
-//#include "BufferSparseVolumeData_Lua.h"
+#include "BufferSparseVolumeData_Lua.h"
 #include "BufferPointData_Lua.h"
 #include "BufferPointData_Lua.h"
 #include "BufferImageData_Lua.h"
@@ -115,7 +117,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, BufferMeshData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferLineData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferVolumeData_Lua);
-//    LUA_SCRIPTCLASS_REGISTER(L, BufferSparseVolumeData_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, BufferSparseVolumeData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferPointData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferImageData_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, BufferTetraData_Lua);
@@ -124,6 +126,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, RenderCore_Lua);
 
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
@@ -137,7 +140,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "MeshData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferMeshData_Lua));
     SetFunction(L, "LineData",            LUA_SCRIPTCLASS_NEW_FUNCTION(BufferLineData_Lua));
     SetFunction(L, "VolumeData",          LUA_SCRIPTCLASS_NEW_FUNCTION(BufferVolumeData_Lua));
-//    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
+    SetFunction(L, "SparseVolumeData",    LUA_SCRIPTCLASS_NEW_FUNCTION(BufferSparseVolumeData_Lua));
     SetFunction(L, "PointData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferPointData_Lua));
     SetFunction(L, "ImageData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferImageData_Lua));
     SetFunction(L, "TetraData",           LUA_SCRIPTCLASS_NEW_FUNCTION(BufferTetraData_Lua));
@@ -146,6 +149,8 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
+    SetFunction(L, "RenderCore",          LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
+
     
 #ifdef HIVE_STATIC
         LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);

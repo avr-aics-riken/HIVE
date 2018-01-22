@@ -34,6 +34,11 @@ void RenderCore::Finalize()
 
 /// コンストラクタ
 RenderCore::RenderCore(RenderPlugin* render) : m_imp(render) {}
+
+/*RenderCore::RenderCore(RenderCore* inst) {
+    m_imp = inst->m_imp;
+}*/
+
 /// デストラクタ
 RenderCore::~RenderCore()  { delete m_imp; }
 
