@@ -1,4 +1,4 @@
-#include "RenderPlugin.h"
+#include "RenderDevice.h"
 
 
 #include <RenderObject/RenderObject.h>
@@ -13,21 +13,21 @@
 #include "../RenderObject/Camera.h"
 #include "../RenderObject/PolygonModel.h"
 
-#include "PolygonBuffer.h"
-#include "PointBuffer.h"
-#include "LineBuffer.h"
-#include "VolumeBuffer.h"
-#include "SparseVolumeBuffer.h"
-#include "VectorBuffer.h"
-#include "TetraBuffer.h"
-#include "SolidBuffer.h"
+#include "Buffer/PolygonBuffer.h"
+#include "Buffer/PointBuffer.h"
+#include "Buffer/LineBuffer.h"
+#include "Buffer/VolumeBuffer.h"
+#include "Buffer/SparseVolumeBuffer.h"
+#include "Buffer/VectorBuffer.h"
+#include "Buffer/TetraBuffer.h"
+#include "Buffer/SolidBuffer.h"
 
 
 /// 各種バッファの作成
 /// @param robj レンダーオブジェクト
-BaseBuffer* RenderPlugin::createBuffer(const RenderObject* robj)
+BaseBuffer* RenderDevice::createBuffer(const RenderObject* robj)
 {
-    RenderPlugin* render = this;
+    RenderDevice* render = this;
     BaseBuffer* buffer = 0;
     if (robj->GetType() == RenderObject::TYPE_POLYGON) {
         PolygonBuffer* pbuf = new PolygonBuffer(render);

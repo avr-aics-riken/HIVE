@@ -1,29 +1,29 @@
 /*
-    RenderPluginSURFACE/main.cpp
+    RenderDeviceSURFACE/main.cpp
 */
 
-#include "Commands.h"
+//#include "Renderer/Commands.h"
 #include "LuaUtil.h"
 
-#include "RenderPluginSURFACE.h"
-#include <Renderer/RenderCore.h>
+#include "Renderer/RenderDevice.h"
+#include "Renderer/RenderCoreSURFACE.h"
 #include <SceneScript/RenderCore_Lua.h>
 
 namespace {
 
     void SetParallelRendering(bool enableParallel)
     {
-        SetScreenParallel_SGL(enableParallel, false);
+        //SetScreenParallel_SGL(enableParallel, false);
     }
 
     void SampleCoverage(float fsaa)
     {
-        SampleCoverage_SGL(fsaa, 0);
+        //SampleCoverage_SGL(fsaa, 0);
     }
 
     void PixelStep(int pixelstep)
     {
-        PixelStep_SGL(pixelstep);
+        //PixelStep_SGL(pixelstep);
     }
 
     RenderCore* core = 0;
@@ -100,8 +100,8 @@ int luaopen_RenderPluginSURFACE(lua_State* L)
     //lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
     
     printf("CALL luaopen_RenderPluginSURFACE\n");
-    RenderPlugin* renderPlugin = new RenderPluginSURFACE();
-    //core = new RenderCore(renderPlugin);
+    RenderDevice* renderPlugin = new RenderDevice();
+    core = new RenderCoreSURFACE(renderPlugin);
     
     /*SetFunction(L, "render", render);
     SetFunction(L, "clearCache", clearCache);
@@ -109,7 +109,7 @@ int luaopen_RenderPluginSURFACE(lua_State* L)
     //SetFunction(L, "renderMode", renderMode);
     SetFunction(L, "screenParallelRendering", screenParallelRendering);*/
     
-    LUAPUSH<RenderCore_Lua*>(L, new RenderCore_Lua(renderPlugin));
+    LUAPUSH<RenderCore_Lua*>(L, new RenderCore_Lua(core));
     return 1;
 
     //return 1;

@@ -11,7 +11,7 @@
 #include "../Core/vxmath.h"
 
 /// コンストラクタ
-VectorBuffer::VectorBuffer(RenderPlugin* render) : BaseBuffer(render)
+VectorBuffer::VectorBuffer(RenderDevice* render) : BaseBuffer(render)
 {
     m_line_vtx_id    = 0;
     m_tetra_vtx_id   = 0;

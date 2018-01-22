@@ -11,7 +11,7 @@
 
 
 /// コンストラクタ
-LineBuffer::LineBuffer(RenderPlugin* render) : BaseBuffer(render)
+LineBuffer::LineBuffer(RenderDevice* render) : BaseBuffer(render)
 {
     m_vtxnum      = 0;
     m_indexnum    = 0;

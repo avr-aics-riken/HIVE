@@ -184,26 +184,37 @@ link_directories(${LIBS})
 # Source files
 
 set(RENDERPLUGIN_SOURCES
-  src/Commands_GL.cpp
-  src/Commands_LSGL.cpp
-  src/RenderPluginSURFACE.cpp
   src/main.cpp
+  src/Renderer/Commands_GL.cpp
+  src/Renderer/Commands_LSGL.cpp
+  src/Renderer/RenderDevice.cpp
+  src/Renderer/RenderDeviceSURFACE.cpp
+  src/Renderer/RenderCoreSURFACE.cpp
+  src/Renderer/Buffer/BaseBuffer.cpp
+  src/Renderer/Buffer/LineBuffer.cpp
+  src/Renderer/Buffer/PointBuffer.cpp
+  src/Renderer/Buffer/PolygonBuffer.cpp
+  src/Renderer/Buffer/SolidBuffer.cpp
+  src/Renderer/Buffer/SparseVolumeBuffer.cpp
+  src/Renderer/Buffer/TetraBuffer.cpp
+  src/Renderer/Buffer/VectorBuffer.cpp
+  src/Renderer/Buffer/VolumeBuffer.cpp
 )
 
 IF(HIVE_BUILD_WITH_OPENGL)
   if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # MacOSX
-    set(GLDEV_SOURCES src/GLDevice/GLDeviceCGL.cpp
-                      src/GLDevice/GLDeviceExtention.cpp)
+    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceCGL.cpp
+                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
   else()
     # Linux
-    set(GLDEV_SOURCES src/GLDevice/GLDeviceGLX.cpp
-                      src/GLDevice/GLDeviceExtention.cpp)
+    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceGLX.cpp
+                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
   endif()
 ELSEIF(HIVE_BUILD_WITH_OSMESA)
     # Mesa
-    set(GLDEV_SOURCES src/GLDevice/GLDeviceOSMesa.cpp
-                      src/GLDevice/GLDeviceExtention.cpp)
+    set(GLDEV_SOURCES src/Renderer/GLDevice/GLDeviceOSMesa.cpp
+                      src/Renderer/GLDevice/GLDeviceExtention.cpp)
 ENDIF()
 
 IF(HIVE_BUILD_WITH_COMPOSITOR)

@@ -22,7 +22,7 @@ private:
     RefPtr<const PointModel> m_model;
     
 public:
-    PointBuffer(RenderPlugin* render);
+    PointBuffer(RenderDevice* render);
     ~PointBuffer();
 
     bool Create(const PointModel* point);

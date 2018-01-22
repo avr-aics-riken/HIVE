@@ -11,7 +11,7 @@
 
 
 /// コンストラクタ
-TetraBuffer::TetraBuffer(RenderPlugin* render) : BaseBuffer(render)
+TetraBuffer::TetraBuffer(RenderDevice* render) : BaseBuffer(render)
 {
     m_model       = 0;
     m_vtxnum      = 0;

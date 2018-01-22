@@ -24,7 +24,7 @@ private:
     RefPtr<const LineModel> m_model;
     
 public:
-    LineBuffer(RenderPlugin* render);
+    LineBuffer(RenderDevice* render);
     ~LineBuffer();
 
     bool Create(const LineModel* point);

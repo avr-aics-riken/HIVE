@@ -170,7 +170,6 @@ set(INCLUDES
 	${CMAKE_SOURCE_DIR}/include/Core
 	${CMAKE_SOURCE_DIR}/include/Image
 	${CMAKE_SOURCE_DIR}/include/Generator
-	${CMAKE_SOURCE_DIR}/include/Renderer
 )
 INCLUDE_DIRECTORIES(${INCLUDES})
 
@@ -187,8 +186,7 @@ link_directories(${LIBS})
 # Source files
 
 set(HIVECORE_SOURCES  
-  src/Renderer/render_bvh_tree.cc
-  src/Renderer/BaseBuffer.cpp
+  src/Buffer/bvhtree/render_bvh_tree.cc
   src/Buffer/BufferSparseVolumeData.cpp
   src/Core/Path.cpp
   src/Core/Perf.cpp
@@ -203,16 +201,6 @@ set(HIVECORE_SOURCES
   src/Buffer/BufferImageData.cpp
   src/Buffer/BufferExtraData.cpp
   src/Buffer/UserBufferData.cpp
-  src/Renderer/RenderCore.cpp
-  src/Renderer/RenderPlugin.cpp
-  src/Renderer/PolygonBuffer.cpp
-  src/Renderer/VolumeBuffer.cpp
-  src/Renderer/SparseVolumeBuffer.cpp
-  src/Renderer/LineBuffer.cpp
-  src/Renderer/PointBuffer.cpp
-  src/Renderer/TetraBuffer.cpp
-  src/Renderer/SolidBuffer.cpp
-  src/Renderer/VectorBuffer.cpp
   src/SceneScript/SceneScript.cpp
   src/RenderObject/Camera.cpp
   src/RenderObject/RenderObject.cpp

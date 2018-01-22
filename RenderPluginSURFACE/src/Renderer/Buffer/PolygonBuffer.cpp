@@ -10,7 +10,7 @@
 #include "Buffer.h"
 
 /// コンストラクタ.
-PolygonBuffer::PolygonBuffer(RenderPlugin* render) : BaseBuffer(render)
+PolygonBuffer::PolygonBuffer(RenderDevice* render) : BaseBuffer(render)
 {
     m_vtx_id     = 0;
     m_normal_id  = 0;

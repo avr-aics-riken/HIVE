@@ -15,7 +15,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "../Renderer/RenderCore.h"
+//#include "../Renderer/RenderCore.h"
 #include "RenderCore_Lua.h"
 
 #include "../Buffer/UserBufferData.h"
@@ -149,7 +149,7 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
-    SetFunction(L, "RenderCore",          LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
+    //SetFunction(L, "RenderCore",          LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
 
     
 #ifdef HIVE_STATIC

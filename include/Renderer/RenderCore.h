@@ -12,45 +12,23 @@
 #include <Core/Ref.h>
 
 class RenderObject;
-class BufferImageData;
-
-class RenderPlugin;
 
 /**
- * Renderingコア機能部クラス
+ * Renderingコア機能部 Interface
  */
 class RenderCore : public RefCount
 {
 public:
-    //static RenderCore* GetInstance(RENDER_MODE mode = RENDER_SURFACE);
-    //static void Finalize();
+    virtual void AddRenderObject(RenderObject* robj) = 0;
+    virtual void Render() = 0;
+    virtual void ClearRenderObject() = 0;
     
-    void AddRenderObject(RenderObject* robj);
-    
-    bool GetTexture(const BufferImageData* bufimg, unsigned int& id);
-    bool CreateTexture(const BufferImageData* bufimg, unsigned int& tex);
-    bool DeleteTexture(const BufferImageData* bufimg);
-
-    void Render();
-    void ClearRenderObject();
-    
-    void ClearBuffers(); // Clear RenderBuffer resouces
-    void SetParallelRendering(bool enableParallel);
-
-    bool CreateProgramSrc(const char* src, unsigned int& prog);
-    
-    void SetProgressCallback(bool (*func)(double));
-
-    bool ClearShaderCache(const char* srcname);
-    
-    RenderCore(RenderPlugin* render);
-    
-    //RenderCore(RenderCore* inst);
-
+    virtual void ClearBuffers() = 0;
+    virtual void SetProgressCallback(bool (*func)(double)) = 0;
+    virtual bool ClearShaderCache(const char* srcname) = 0;
     
 protected:
-    ~RenderCore();
+    RenderCore() {};
+    virtual ~RenderCore() {};
 
-private:
-    RenderPlugin* m_imp;
 };

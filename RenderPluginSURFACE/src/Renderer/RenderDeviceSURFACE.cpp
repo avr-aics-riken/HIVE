@@ -1,5 +1,5 @@
 /**
- * @file RenderPlugin.cpp
+ * @file RenderDevice.cpp
  * hrenderコア機能部
  */
 
@@ -19,7 +19,7 @@
 #include <map>
 #include <algorithm>
 
-#include "RenderPluginSURFACE.h"
+#include "RenderDevice.h"
 
 
 #include <RenderObject/RenderObject.h>
@@ -195,7 +195,7 @@ namespace {
 
 }
 
-class RenderPluginSURFACE::Impl {
+class RenderDevice::Impl {
 
 private:
     // Rendering nodes
@@ -435,14 +435,14 @@ public:
     }
 
     /// レンダリング
-    void Render(RenderPlugin* render)
+    void Render(RenderDevice* render)
     {
         m_oldCallbackTime = 0.0;//GetTimeCount();
         RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
-                PMon::Start("RenderPluginSURFACE::Render");
+                PMon::Start("RenderDevice::Render");
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
                 const std::string& depth_outfile = camera->GetDepthOutputFile();
@@ -456,7 +456,7 @@ public:
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects(render);
-                PMon::Stop("RenderPluginSURFACE::Render");
+                PMon::Stop("RenderDevice::Render");
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
     #if defined(HIVE_WITH_COMPOSITOR)
@@ -469,7 +469,7 @@ public:
     #endif
                 const double readbacktm = GetTimeCount();
 
-                PMon::Start("RenderPluginSURFACE::ImageSave");
+                PMon::Start("RenderDevice::ImageSave");
 
     #ifdef HIVE_ENABLE_MPI
                 int rank = 0;
@@ -487,7 +487,7 @@ public:
     #ifdef HIVE_ENABLE_MPI
                 }
     #endif
-                PMon::Stop("RenderPluginSURFACE::ImageSave");
+                PMon::Stop("RenderDevice::ImageSave");
                 const double savetm = GetTimeCount();
                 //printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
@@ -618,7 +618,7 @@ private:
     }
 
     /// オブジェクトのレンダリング
-    void renderObjects(RenderPlugin* render)
+    void renderObjects(RenderDevice* render)
     {
         Clear_GS[m_mode](m_clearcolor[0], m_clearcolor[1], m_clearcolor[2], m_clearcolor[3]);
         
@@ -693,7 +693,7 @@ private:
 
     /// SGLで描画
     /// @param robj レンダーオブジェクト
-    void draw(RenderPlugin* render, const RenderObject* robj)
+    void draw(RenderDevice* render, const RenderObject* robj)
     {
         if (robj->GetType() == RenderObject::TYPE_CAMERA) {
             return;
@@ -726,67 +726,67 @@ private:
 
 
 /**
- * RenderPluginSURFACE
+ * RenderDeviceSURFACE
  */
-RenderPluginSURFACE::RenderPluginSURFACE() : RenderPlugin(), m_imp(new Impl()) {}
+RenderDevice::RenderDevice() : m_imp(new Impl()) {}
 
-RenderPluginSURFACE::~RenderPluginSURFACE() {
+RenderDevice::~RenderDevice() {
     delete m_imp;
 }
 
-void RenderPluginSURFACE::ClearBuffers() {
+void RenderDevice::ClearBuffers() {
     m_imp->ClearBuffers();
 }
-void RenderPluginSURFACE::AddRenderObject(RenderObject* robj){
+void RenderDevice::AddRenderObject(RenderObject* robj){
     m_imp->AddRenderObject(robj);
 }
-void RenderPluginSURFACE::ClearRenderObject()
+void RenderDevice::ClearRenderObject()
 {
     m_imp->ClearRenderObject();
 }
-void RenderPluginSURFACE::SetProgressCallback(bool (*func)(double))
+void RenderDevice::SetProgressCallback(bool (*func)(double))
 {
     m_imp->SetProgressCallback(func);
 }
-bool RenderPluginSURFACE::GetTexture(const BufferImageData* bufimg, unsigned int& id)
+bool RenderDevice::GetTexture(const BufferImageData* bufimg, unsigned int& id)
 {
     return m_imp->GetTexture(bufimg, id);
 }
-bool RenderPluginSURFACE::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
+bool RenderDevice::CreateTexture(const BufferImageData* bufimg, unsigned int& tex)
 {
     return m_imp->CreateTexture(bufimg, tex);
 }
-bool RenderPluginSURFACE::DeleteTexture(const BufferImageData* bufimg)
+bool RenderDevice::DeleteTexture(const BufferImageData* bufimg)
 {
     return m_imp->DeleteTexture(bufimg);
 }
-bool RenderPluginSURFACE::CreateProgramSrc(const char* srcname, unsigned int& prg)
+bool RenderDevice::CreateProgramSrc(const char* srcname, unsigned int& prg)
 {
     return m_imp->CreateProgramSrc(srcname, prg);
 }
-bool RenderPluginSURFACE::ClearShaderCache(const char* srcname) {
+bool RenderDevice::ClearShaderCache(const char* srcname) {
     return m_imp->ClearShaderCache(srcname);
 };
-void RenderPluginSURFACE::Render()         {
+void RenderDevice::Render()         {
     m_imp->Render(this);
 }
-int RenderPluginSURFACE::GetWidth()  const {
+int RenderDevice::GetWidth()  const {
     return m_imp->GetWidth();
 }
-int RenderPluginSURFACE::GetHeight() const {
+int RenderDevice::GetHeight() const {
     return m_imp->GetHeight();
 }
-bool RenderPluginSURFACE::progressCallbackFunc(int progress, int y, int height) const {
+bool RenderDevice::progressCallbackFunc(int progress, int y, int height) const {
     return m_imp->progressCallbackFunc(progress, y, height);
 }
 
 //----------------
 
-void RenderPluginSURFACE::ReleaseBuffer(unsigned int bufferId) const
+void RenderDevice::ReleaseBuffer(unsigned int bufferId) const
 {
     ReleaseBufferVBIB_GS[m_mode](bufferId);
 }
-void RenderPluginSURFACE::CreateVBIB(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer,
+void RenderDevice::CreateVBIB(unsigned int vertexnum, float* posbuffer, float* normalbuffer, float* matbuffer,
                 float* texbuffer, unsigned int indexnum, unsigned int* indexbuffer,
                 unsigned int& vtx_id, unsigned int& normal_id, unsigned int& mat_id,
                 unsigned int& tex_id, unsigned int& index_id) const
@@ -796,72 +796,72 @@ void RenderPluginSURFACE::CreateVBIB(unsigned int vertexnum, float* posbuffer, f
                           vtx_id, normal_id, mat_id,
                           tex_id, index_id);
 }
-void RenderPluginSURFACE::BindVBIB(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
+void RenderDevice::BindVBIB(unsigned int prg, unsigned int vtxidx, unsigned int normalidx,
               unsigned int vtx_material, unsigned int texidx, unsigned int indexidx) const
 {
     BindVBIB_GS[m_mode](prg, vtxidx, normalidx, vtx_material, texidx, indexidx);
 }
-void RenderPluginSURFACE::UnBindVBIB(unsigned int prg) const
+void RenderDevice::UnBindVBIB(unsigned int prg) const
 {
     UnBindVBIB_GS[m_mode](prg);
 }
-void RenderPluginSURFACE::DrawElements(unsigned int indexnum) const
+void RenderDevice::DrawElements(unsigned int indexnum) const
 {
     DrawElements_GS[m_mode](indexnum);
 }
-void RenderPluginSURFACE::DrawArrays(unsigned int vtxnum) const
+void RenderDevice::DrawArrays(unsigned int vtxnum) const
 {
     DrawArrays_GS[m_mode](vtxnum);
 }
-void RenderPluginSURFACE::GenTextures(int n, unsigned int* tex) const
+void RenderDevice::GenTextures(int n, unsigned int* tex) const
 {
     GenTextures_GS[m_mode](n, tex);
 }
-void RenderPluginSURFACE::BindTexture3D(unsigned int tex) const
+void RenderDevice::BindTexture3D(unsigned int tex) const
 {
     BindTexture3D_SGL(tex);
 }
-void RenderPluginSURFACE::TexImage3DPointer(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const
+void RenderDevice::TexImage3DPointer(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const
 {
     TexImage3DPointer_SGL(width, height, depth, component, volumedata, clampToEdgeS, clampToEdgeT, clampToEdgeR);
 }
 
-void RenderPluginSURFACE::SetUniform4fv(unsigned int prg, const char* name, const float* val) const
+void RenderDevice::SetUniform4fv(unsigned int prg, const char* name, const float* val) const
 {
     SetUniform4fv_GS[m_mode](prg, name, val);
 }
-void RenderPluginSURFACE::SetUniform3fv(unsigned int prg, const char* name, const float* val) const
+void RenderDevice::SetUniform3fv(unsigned int prg, const char* name, const float* val) const
 {
     SetUniform3fv_GS[m_mode](prg, name, val);
 }
-void RenderPluginSURFACE::SetUniform2fv(unsigned int prg, const char* name, const float* val) const
+void RenderDevice::SetUniform2fv(unsigned int prg, const char* name, const float* val) const
 {
     SetUniform2fv_GS[m_mode](prg, name, val);
 }
-void RenderPluginSURFACE::SetUniform1f(unsigned int prg, const char* name, float val) const
+void RenderDevice::SetUniform1f(unsigned int prg, const char* name, float val) const
 {
     SetUniform1f_GS[m_mode](prg, name, val);
 }
-void RenderPluginSURFACE::BindProgram(unsigned int prg) const
+void RenderDevice::BindProgram(unsigned int prg) const
 {
     BindProgram_GS[m_mode](prg);
 }
-void RenderPluginSURFACE::SetUniformMatrix(unsigned int prg, const char* name, const float* val) const
+void RenderDevice::SetUniformMatrix(unsigned int prg, const char* name, const float* val) const
 {
     SetUniformMatrix_GS[m_mode](prg, name, val);
 }
 
-void RenderPluginSURFACE::BindTexture2D(unsigned int texid) const
+void RenderDevice::BindTexture2D(unsigned int texid) const
 {
     BindTexture2D_GS[m_mode](texid);
 }
 
-void RenderPluginSURFACE::ActiveTexture(unsigned int n) const
+void RenderDevice::ActiveTexture(unsigned int n) const
 {
     
 }
 
-void RenderPluginSURFACE::TexImage2D(unsigned int width, unsigned int height,
+void RenderDevice::TexImage2D(unsigned int width, unsigned int height,
                 unsigned int component, const unsigned char* pixeldata,
                 bool filter, bool clampToEdgeS, bool clampToEdgeT) const
 {
@@ -869,7 +869,7 @@ void RenderPluginSURFACE::TexImage2D(unsigned int width, unsigned int height,
                           filter, clampToEdgeS, clampToEdgeT);
 }
 
-void RenderPluginSURFACE::TexImage2DFloat(unsigned int width, unsigned int height,
+void RenderDevice::TexImage2DFloat(unsigned int width, unsigned int height,
                      unsigned int component, const float* pixeldata,
                      bool filter, bool clampToEdgeS, bool clampToEdgeT) const
 {
@@ -877,36 +877,36 @@ void RenderPluginSURFACE::TexImage2DFloat(unsigned int width, unsigned int heigh
                            filter, clampToEdgeS, clampToEdgeT);
 }
 
-void RenderPluginSURFACE::SetUniform1i(unsigned int prg, const char* name, int val) const
+void RenderDevice::SetUniform1i(unsigned int prg, const char* name, int val) const
 {
     SetUniform1i_GS[m_mode](prg, name, val);
 }
-void RenderPluginSURFACE::TexCoordRemap3D(int axis, int n, const float* values) const
+void RenderDevice::TexCoordRemap3D(int axis, int n, const float* values) const
 {
     TexCoordRemap3D_SGL(axis, n, values);
 }
-void RenderPluginSURFACE::BindLineVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) const
+void RenderDevice::BindLineVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material, unsigned int indexidx) const
 {
     BindLineVBIB_GS[m_mode](prg, vtxidx, vtx_radius, vtx_material, indexidx);
 }
-void RenderPluginSURFACE::UnBindLineVBIB(unsigned int prg) const
+void RenderDevice::UnBindLineVBIB(unsigned int prg) const
 {
     UnBindLineVBIB_GS[m_mode](prg);
 }
-void RenderPluginSURFACE::DrawLineElements(unsigned int indexnum) const
+void RenderDevice::DrawLineElements(unsigned int indexnum) const
 {
     DrawLineElements_GS[m_mode](indexnum);
 }
-void RenderPluginSURFACE::DrawLineArrays(unsigned int vtxnum) const
+void RenderDevice::DrawLineArrays(unsigned int vtxnum) const
 {
     DrawLineArrays_GS[m_mode](vtxnum);
 }
-void RenderPluginSURFACE::CreateVBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+void RenderDevice::CreateVBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
                 unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id) const
 {
     CreateVBRM_GS[m_mode](vertexnum, posbuffer, radiusbuffer, matbuffer, vtx_id, radius_id, mat_id);
 }
-void RenderPluginSURFACE::CreateVBIBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
+void RenderDevice::CreateVBIBRM(unsigned int vertexnum, float* posbuffer, float* radiusbuffer, float* matbuffer,
                   unsigned int indexnum, unsigned int* indexbuffer,
                   unsigned int& vtx_id, unsigned int& radius_id, unsigned int& mat_id, unsigned int& index_id) const
 {
@@ -914,99 +914,99 @@ void RenderPluginSURFACE::CreateVBIBRM(unsigned int vertexnum, float* posbuffer,
                             indexnum, indexbuffer,
                             vtx_id, radius_id, mat_id, index_id);
 }
-void RenderPluginSURFACE::LineWidth(float w) const
+void RenderDevice::LineWidth(float w) const
 {
     LineWidth_GS[m_mode](w);
 }
-void RenderPluginSURFACE::BindPointVB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) const
+void RenderDevice::BindPointVB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_radius, unsigned int vtx_material) const
 {
     BindPointVB_GS[m_mode](prg, vtxidx, vtx_radius, vtx_material);
 }
-void RenderPluginSURFACE::UnBindPointVB(unsigned int prg) const
+void RenderDevice::UnBindPointVB(unsigned int prg) const
 {
     UnBindPointVB_GS[m_mode](prg);
 }
-void RenderPluginSURFACE::DrawPointArrays(unsigned int vtxnum) const
+void RenderDevice::DrawPointArrays(unsigned int vtxnum) const
 {
     DrawPointArrays_GS[m_mode](vtxnum);
 }
-void RenderPluginSURFACE::BindTetraVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) const
+void RenderDevice::BindTetraVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) const
 {
     BindTetraVBIB_GS[m_mode](prg, vtxidx, vtx_material, indexidx);
 }
-void RenderPluginSURFACE::UnBindTetraVBIB(unsigned int prg) const
+void RenderDevice::UnBindTetraVBIB(unsigned int prg) const
 {
     UnBindTetraVBIB_GS[m_mode](prg);
 }
-void RenderPluginSURFACE::DrawTetraArrays(unsigned int vtxnum) const
+void RenderDevice::DrawTetraArrays(unsigned int vtxnum) const
 {
     DrawTetraArrays_GS[m_mode](vtxnum);
 }
-void RenderPluginSURFACE::BindSolidVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) const
+void RenderDevice::BindSolidVBIB(unsigned int prg, unsigned int vtxidx, unsigned int vtx_material, unsigned int indexidx) const
 {
     BindSolidVBIB_SGL(prg, vtxidx, vtx_material, indexidx);
 }
-void RenderPluginSURFACE::UnBindSolidVBIB(unsigned int prg) const
+void RenderDevice::UnBindSolidVBIB(unsigned int prg) const
 {
     UnBindSolidVBIB_SGL(prg);
 }
-void RenderPluginSURFACE::DrawSolidArrays(int solidType, unsigned int vtxnum) const
+void RenderDevice::DrawSolidArrays(int solidType, unsigned int vtxnum) const
 {
     DrawSolidArrays_SGL(solidType, vtxnum);
 }
-void RenderPluginSURFACE::SparseTexImage3DPointer(int level, unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int cellWidth, unsigned int cellHeight, unsigned int cellDepth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const
+void RenderDevice::SparseTexImage3DPointer(int level, unsigned int xoffset, unsigned int yoffset, unsigned int zoffset, unsigned int width, unsigned int height, unsigned int depth, unsigned int cellWidth, unsigned int cellHeight, unsigned int cellDepth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR) const
 {
     SparseTexImage3DPointer_SGL(level, xoffset, yoffset, zoffset,
                                 width, height, depth, cellWidth, cellHeight, cellDepth,
                                 component, volumedata, clampToEdgeS, clampToEdgeT, clampToEdgeT);
 }
 
-void RenderPluginSURFACE::SetCamera(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov) const
+void RenderDevice::SetCamera(unsigned int prg, const float* eye, const float* lookat, const float* up, float fov) const
 {
     SetCamera_SGL(prg, eye, lookat, up, fov);
 }
-void RenderPluginSURFACE::CreateFloatBuffer(unsigned int num, float* buffer, unsigned int& buf_id) const
+void RenderDevice::CreateFloatBuffer(unsigned int num, float* buffer, unsigned int& buf_id) const
 {
     CreateFloatBuffer_GS[m_mode](num, buffer, buf_id);
 }
-void RenderPluginSURFACE::CreateUintBuffer(unsigned int num, unsigned int* buffer, unsigned int& buf_id) const
+void RenderDevice::CreateUintBuffer(unsigned int num, unsigned int* buffer, unsigned int& buf_id) const
 {
     CreateUintBuffer_GS[m_mode](num, buffer, buf_id);
 }
-void RenderPluginSURFACE::CreateVec4Buffer(unsigned int num, float* buffer, unsigned int& buf_id) const
+void RenderDevice::CreateVec4Buffer(unsigned int num, float* buffer, unsigned int& buf_id) const
 {
     CreateVec4Buffer_GS[m_mode](num, buffer, buf_id);
 }
-void RenderPluginSURFACE::CreateVec3Buffer(unsigned int num, float* buffer, unsigned int& buf_id) const
+void RenderDevice::CreateVec3Buffer(unsigned int num, float* buffer, unsigned int& buf_id) const
 {
     CreateVec3Buffer_GS[m_mode](num, buffer, buf_id);
 }
-void RenderPluginSURFACE::CreateVec2Buffer(unsigned int num, float* buffer, unsigned int& buf_id) const
+void RenderDevice::CreateVec2Buffer(unsigned int num, float* buffer, unsigned int& buf_id) const
 {
     CreateVec2Buffer_GS[m_mode](num, buffer, buf_id);
 }
 
-void RenderPluginSURFACE::BindBufferFloat(unsigned int prg, const char* attrname, unsigned int bufidx) const
+void RenderDevice::BindBufferFloat(unsigned int prg, const char* attrname, unsigned int bufidx) const
 {
     BindBufferFloat_GS[m_mode](prg, attrname, bufidx);
 }
-void RenderPluginSURFACE::BindBufferUint(unsigned int prg, const char* attrname, unsigned int bufidx) const
+void RenderDevice::BindBufferUint(unsigned int prg, const char* attrname, unsigned int bufidx) const
 {
     BindBufferUint_GS[m_mode](prg, attrname, bufidx);
 }
-void RenderPluginSURFACE::BindBufferVec4(unsigned int prg, const char* attrname, unsigned int bufidx) const
+void RenderDevice::BindBufferVec4(unsigned int prg, const char* attrname, unsigned int bufidx) const
 {
     BindBufferVec4_GS[m_mode](prg, attrname, bufidx);
 }
-void RenderPluginSURFACE::BindBufferVec3(unsigned int prg, const char* attrname, unsigned int bufidx) const
+void RenderDevice::BindBufferVec3(unsigned int prg, const char* attrname, unsigned int bufidx) const
 {
     BindBufferVec3_GS[m_mode](prg, attrname, bufidx);
 }
-void RenderPluginSURFACE::BindBufferVec2(unsigned int prg, const char* attrname, unsigned int bufidx) const
+void RenderDevice::BindBufferVec2(unsigned int prg, const char* attrname, unsigned int bufidx) const
 {
     BindBufferVec2_GS[m_mode](prg, attrname, bufidx);
 }
-void RenderPluginSURFACE::UnBindBuffer(unsigned int prg, const char* attrname) const
+void RenderDevice::UnBindBuffer(unsigned int prg, const char* attrname) const
 {
     UnBindBuffer_GS[m_mode](prg, attrname);
 }

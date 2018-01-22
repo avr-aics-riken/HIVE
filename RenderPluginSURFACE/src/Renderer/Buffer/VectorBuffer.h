@@ -25,7 +25,7 @@ private:
     RefPtr<const VectorModel> m_model;
     
 public:
-    VectorBuffer(RenderPlugin* render);
+    VectorBuffer(RenderDevice* render);
     ~VectorBuffer();
 
     bool Create(const VectorModel* point);

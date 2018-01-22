@@ -1,24 +1,24 @@
 /**
- * @file VolumeBuffer.h
+ * @file SparseVolumeBuffer.h
  * Volumeバッファ
  */
  
 #pragma once
 /*
-   VolumeBuffer.h
+   SparseVolumeBuffer.h
    */
 
 #include <vector>
 #include "BaseBuffer.h"
 #include "../Core/Ref.h"
 
-class VolumeModel;
-class BufferVolumeData;
+class SparseVolumeModel;
+class BufferSparseVolumeData;
 
 /**
  * Volumeバッファ
  */
-class VolumeBuffer : public BaseBuffer
+class SparseVolumeBuffer : public BaseBuffer
 {
 private:
     unsigned int       m_vtx_id;
@@ -30,23 +30,21 @@ private:
     unsigned int       m_index_num;
     float              m_boxsize[3];
     float              m_voldim[3];
-    unsigned int       m_volcomp;
     double             m_volMinVal[3];
     double             m_volMaxVal[3];
     unsigned int       m_sgl_voltex;
-    std::vector<float> m_volHist[3];
+    //std::vector<float> m_volHist[3];
 
-    RefPtr<const VolumeModel> m_model;
+    RefPtr<const SparseVolumeModel> m_model;
 
     bool MakeBox(float width, float height, float depth);
-    bool CreateTexture3D(unsigned int width, unsigned int height, unsigned int depth, unsigned int component, const float* volumedata, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
+    bool CreateSparseTexture3D(const BufferSparseVolumeData* volume, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
 public:
-    VolumeBuffer(RenderPlugin* render);
-    ~VolumeBuffer();
+    SparseVolumeBuffer(RenderDevice* render);
+    ~SparseVolumeBuffer();
 
-    bool Create(const VolumeModel* model);
+    bool Create(const SparseVolumeModel* model);
     void Render() const;
     void Update();
-    void Clear();
 };
 

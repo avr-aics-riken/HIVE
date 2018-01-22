@@ -218,22 +218,23 @@ IF (NOT BUILD_SHARED_LIBS)
     ../HiveCore/src/Buffer/BufferImageData.cpp
     ../HiveCore/src/Buffer/BufferExtraData.cpp
     ../HiveCore/src/Buffer/UserBufferData.cpp
-    ../HiveCore/src/Renderer/RenderCore.cpp
-    ../HiveCore/src/Renderer/RenderPlugin.cpp
-    ../HiveCore/src/Renderer/BaseBuffer.cpp
-    ../HiveCore/src/Renderer/Commands_GL.cpp
-    ../HiveCore/src/Renderer/Commands_LSGL.cpp
-    ../HiveCore/src/Renderer/PolygonBuffer.cpp
-    ../HiveCore/src/Renderer/VolumeBuffer.cpp
-    ../HiveCore/src/Renderer/SparseVolumeBuffer.cpp
-    ../HiveCore/src/Renderer/LineBuffer.cpp
-    ../HiveCore/src/Renderer/PointBuffer.cpp
-    ../HiveCore/src/Renderer/TetraBuffer.cpp
-    ../HiveCore/src/Renderer/SolidBuffer.cpp
-    ../HiveCore/src/Renderer/VectorBuffer.cpp
+    ../HiveCore/src/Buffer/bvhtree/render_bvh_tree.cc
+    ../RenderPluginSURFACE/src/Renderer/RenderDevice.cpp
+    ../RenderPluginSURFACE/src/Renderer/RenderDeviceSURFACE.cpp
+    ../RenderPluginSURFACE/src/Renderer/Commands_GL.cpp
+    ../RenderPluginSURFACE/src/Renderer/Commands_LSGL.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/BaseBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/PolygonBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/VolumeBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/SparseVolumeBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/LineBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/PointBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/TetraBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/SolidBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/VectorBuffer.cpp
     ../HiveCore/src/SceneScript/SceneScript.cpp
-    ../HiveCore/src/RenderObject/Camera.cpp
     ../HiveCore/src/RenderObject/RenderObject.cpp
+    ../HiveCore/src/RenderObject/Camera.cpp
     ../HiveCore/src/RenderObject/PolygonModel.cpp
     ../HiveCore/src/RenderObject/VolumeModel.cpp
     ../HiveCore/src/RenderObject/SparseVolumeModel.cpp

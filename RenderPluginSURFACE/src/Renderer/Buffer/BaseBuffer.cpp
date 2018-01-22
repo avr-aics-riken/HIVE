@@ -10,10 +10,10 @@
 #include "../Buffer/BufferImageData.h"
 #include "../Buffer/BufferExtraData.h"
 
-#include "../Renderer/RenderPlugin.h"
+#include "../RenderDevice.h"
 
 /// コンストラクタ
-BaseBuffer::BaseBuffer(RenderPlugin* render)
+BaseBuffer::BaseBuffer(RenderDevice* render)
 : m_render(render), m_prog(0) {
 }
 

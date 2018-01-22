@@ -6,7 +6,7 @@
 #pragma once
 
 #include "../Core/Ref.h"
-#include "BaseBuffer.h"
+#include "Buffer/BaseBuffer.h"
 class RenderObject;
 class BufferImageData;
 

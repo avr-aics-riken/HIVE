@@ -7,7 +7,7 @@
 #include "BufferVolumeData.h"
 
 // Use SparseVolume feature from SURFACE to provide Sample() function
-#include "../Renderer/render_bvh_tree.h"
+#include "bvhtree/render_bvh_tree.h"
 
 #include <limits>
 #include <cstring>

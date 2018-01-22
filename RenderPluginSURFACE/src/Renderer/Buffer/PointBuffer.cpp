@@ -10,7 +10,7 @@
 #include "Buffer.h"
 
 /// コンストラクタ
-PointBuffer::PointBuffer(RenderPlugin* render) : BaseBuffer(render)
+PointBuffer::PointBuffer(RenderDevice* render) : BaseBuffer(render)
 {
     m_vtxnum      = 0;
     m_model       = 0;

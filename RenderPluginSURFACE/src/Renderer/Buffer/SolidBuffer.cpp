@@ -6,11 +6,11 @@
 
 #include "SolidBuffer.h"
 #include "BufferSolidData.h"
-#include "../RenderObject/SolidModel.h"
+#include <RenderObject/SolidModel.h>
 #include "Buffer.h"
 
 /// コンストラクタ
-SolidBuffer::SolidBuffer(RenderPlugin* render) : BaseBuffer(render)
+SolidBuffer::SolidBuffer(RenderDevice* render) : BaseBuffer(render)
 {
     m_model       = 0;
     m_vtxnum      = 0;

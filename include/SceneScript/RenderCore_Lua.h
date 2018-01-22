@@ -13,11 +13,14 @@ class RenderObject_Lua;
 /**
  * RenderCore Luaラッパー
  */
-class RenderCore_Lua : public RenderCore
+class RenderCore_Lua : public RefCount
 {
+private:
+    RenderCore* core;
+    
 public:
-    RenderCore_Lua() : RenderCore(0) {}
-    RenderCore_Lua(RenderPlugin* renderplug_) : RenderCore(renderplug_) {}
+    RenderCore_Lua() : core(0) {}
+    RenderCore_Lua(RenderCore* core_) : core(core_) {}
     ~RenderCore_Lua(){};
 
     int render(LuaTable tbl) {
@@ -42,24 +45,24 @@ public:
             LuaRefPtr<RenderObject>* ro = robjs[i].GetUserData<RenderObject>();
             if (!ro)
                 continue;
-            RenderCore::AddRenderObject(*ro);
+            core->AddRenderObject(*ro);
         }
         
         // call render
-        RenderCore::Render();
+        core->Render();
         
         // clear
-        RenderCore::ClearRenderObject();
+        core->ClearRenderObject();
         
         //lua_pushnumber(L, 1);
         return 1;
     }
     int clearCache() {
-        RenderCore::ClearBuffers();
+        core->ClearBuffers();
         return 0;
     }
     int clearShaderCache(const char* src) {
-        RenderCore::ClearShaderCache(src);
+        core->ClearShaderCache(src);
         return 0;
     }
     
