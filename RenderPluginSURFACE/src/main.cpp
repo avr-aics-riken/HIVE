@@ -2,7 +2,7 @@
     RenderDeviceSURFACE/main.cpp
 */
 
-//#include "Renderer/Commands.h"
+#include "Renderer/Commands.h"
 #include "LuaUtil.h"
 
 #include "Renderer/RenderDevice.h"
@@ -11,84 +11,52 @@
 
 namespace {
 
-    void SetParallelRendering(bool enableParallel)
-    {
-        //SetScreenParallel_SGL(enableParallel, false);
-    }
+    RenderCoreSURFACE* core = 0;
 
-    void SampleCoverage(float fsaa)
-    {
-        //SampleCoverage_SGL(fsaa, 0);
-    }
-
-    void PixelStep(int pixelstep)
-    {
-        //PixelStep_SGL(pixelstep);
-    }
-
-    RenderCore* core = 0;
-/*
-
-    int render(lua_State* L)
-    {
-        const int stnum = lua_gettop(L);
-        if (stnum < 1) {
-            fprintf(stderr,"Invalid function args: render({RenderObjects}");
-            lua_pushnumber(L, 0);
-            return 1;
-        }
-        
-        LuaTable tbl(L, 1);
-        const std::vector<LuaTable>& robjs = tbl.GetTable();
-        printf("RenderObjects Num = %d\n", static_cast<int>(robjs.size()));
-        
-        if (stnum > 1 && lua_type(L, 2) == LUA_TFUNCTION) { // progress callback function
-            //g_L = L;
-            //core->SetProgressCallback(progressCallback);
-        }
-
-        
-        for (size_t i = 0; i < robjs.size(); ++i) {
-            LuaRefPtr<RenderObject>* ro = robjs[i].GetUserData<RenderObject>();
-            if (!ro)
-                continue;
-            core->AddRenderObject(*ro);
-        }
-        
-        // call render
-        core->Render();
-                
-        // clear
-        core->ClearRenderObject();
-        
-        lua_pushnumber(L, 1);
-        return 1;
-    }
-
-    int clearCache(lua_State* L)
-    {
-        core->ClearBuffers();
-        lua_pushnumber(L, 1);
-        return 1;
-    }
-
-    int clearShaderCache(lua_State* L)
-    {
-        const char* src = lua_tostring(L, 1);
-        core->ClearShaderCache(src);
-        lua_pushnumber(L, 1);
-        return 1;
-    }
-
-    int screenParallelRendering(lua_State* L)
-    {
-        const bool para = lua_toboolean(L, 1);
-        //core->SetParallelRendering(para);
-        lua_pushboolean(L, true);
-        return 1;
-    }
-    */
 }
+
+class RenderCoreSURFACE_Lua : public RenderCore_Lua
+{
+private:
+    RenderCoreSURFACE_Lua() : RenderCore_Lua(static_cast<RenderCore*>(0)) {}
+    
+    int setParallelRendering(bool enableParallel)
+    {
+        SetScreenParallel_SGL(enableParallel, false);
+        return 0;
+    }
+    
+    int sampleCoverage(float fsaa)
+    {
+        SampleCoverage_SGL(fsaa, 0);
+        return 0;
+    }
+    
+    int pixelStep(int pixelstep)
+    {
+        PixelStep_SGL(pixelstep);
+        return 0;
+    }
+
+    
+public:
+    RenderCoreSURFACE_Lua(RenderCoreSURFACE* core) : RenderCore_Lua(static_cast<RenderCore*>(core)){}
+    ~RenderCoreSURFACE_Lua() {}
+    
+    LUA_SCRIPTCLASS_BEGIN(RenderCoreSURFACE_Lua)
+    
+    /* RenderCore compatible interface */
+    LUA_SCRIPTCLASS_METHOD_ARG2(int, render, LuaTable, LuaTable);
+    LUA_SCRIPTCLASS_METHOD_ARG0(int, clearCache);
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, clearShaderCache, const char*);
+
+    /* RenderCoreSURFACE interface */
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, setParallelRendering, bool);
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, sampleCoverage, float);
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, pixelStep, int);
+    LUA_SCRIPTCLASS_END()
+};
+LUA_SCRIPTCLASS_CAST_AND_PUSH(RenderCoreSURFACE_Lua);
 
 // LUA export
 
@@ -96,20 +64,14 @@ extern "C" {
 
 int luaopen_RenderPluginSURFACE(lua_State* L)
 {
-    //LUA_SCRIPTCLASS_REGISTER(L, RenderCore_Lua);
-    //lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
+    LUA_SCRIPTCLASS_REGISTER(L, RenderCoreSURFACE_Lua);
+    lua_pushcfunction(L, LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCoreSURFACE_Lua));
     
     printf("CALL luaopen_RenderPluginSURFACE\n");
     RenderDevice* renderPlugin = new RenderDevice();
     core = new RenderCoreSURFACE(renderPlugin);
     
-    /*SetFunction(L, "render", render);
-    SetFunction(L, "clearCache", clearCache);
-    SetFunction(L, "clearShaderCache", clearShaderCache);
-    //SetFunction(L, "renderMode", renderMode);
-    SetFunction(L, "screenParallelRendering", screenParallelRendering);*/
-    
-    LUAPUSH<RenderCore_Lua*>(L, new RenderCore_Lua(core));
+    LUAPUSH<RenderCoreSURFACE_Lua*>(L, new RenderCoreSURFACE_Lua(core));
     return 1;
 
     //return 1;

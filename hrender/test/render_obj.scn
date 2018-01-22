@@ -14,6 +14,8 @@ camera:LookAt(
 local core = require('RenderPluginSURFACE')
 print('core=', core)
 
+core:pixelStep(4)
+
 local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
