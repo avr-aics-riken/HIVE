@@ -1,0 +1,11 @@
+{
+	"name": "SURFACE",
+	"funcname": "SURFACE",
+	"info":"SURFACE Renderer",
+	"customfuncfile":"surface.lua",
+    "input": [
+	],
+	"output": [
+		{"name": "renderer", "type": "RenderCore"}
+	]
+}
