@@ -344,4 +344,5 @@ lightPoly:SetFloat("pbs_num_lights", numLights);
 lightPoly:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
 lightPoly:SetTextureFiltering("pbs_lighttex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-render {camera, model0, model1, lightPoly}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model0, model1, lightPoly}

@@ -14,8 +14,8 @@ local gentex = GenTexture()
 local textable = {}
 
 --create tax texture
-for j = 0, 255 do 
-	for i = 0, 255 do 
+for j = 0, 255 do
+	for i = 0, 255 do
 		table.insert(textable, bit32.bxor(j , i) / 256);
 	end
 end
@@ -39,4 +39,5 @@ cam:LookAt(
 	60
 )
 
-render({cam, pm})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, pm})

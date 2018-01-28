@@ -20,6 +20,7 @@ local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
 volume:SetShader('def_volume_raymarch.frag')
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}
 
 

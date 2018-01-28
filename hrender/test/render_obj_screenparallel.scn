@@ -35,4 +35,5 @@ if mpiMode() == true then
   screenParallelRendering(true)
 end
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}

@@ -34,7 +34,8 @@ model:SetLengthScale(0.5)
 
 model:Create(vdata)
 model:SetShader('normal.frag')
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}
 
 
 

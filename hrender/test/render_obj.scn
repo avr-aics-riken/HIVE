@@ -1,4 +1,6 @@
 
+local loader = LoadModule("ObjLoader")
+
 print('Render Obj')
 local camera = Camera()
 camera:SetScreenSize(1024, 1024)
@@ -11,12 +13,7 @@ camera:LookAt(
 	60
 )
 
-local core = LoadModule('RenderPluginSURFACE')
-print('core=', core, 'name=', core:getRendererName())
-
---core:pixelStep(4)
-
-local obj = LoadModule("ObjLoader")
+local obj = loader()
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
@@ -34,4 +31,6 @@ print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
 
+
+local core = LoadModule("RenderPluginSURFACE")
 core:render {camera, model}

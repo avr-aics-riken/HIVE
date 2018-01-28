@@ -30,4 +30,5 @@ local balldata = pdb:BallData()
 ballmodel:Create(balldata)
 ballmodel:SetShader('pdb.frag')
 
-render {camera, ballmodel}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, ballmodel}

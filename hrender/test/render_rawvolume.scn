@@ -119,4 +119,5 @@ volume:SetFloat('tf_max', 1.0)
 volume:SetFloat('tf_opacity', 0.01)
 
 
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}

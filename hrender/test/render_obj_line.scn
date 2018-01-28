@@ -21,4 +21,5 @@ local linedata = obj:LineData()
 model:Create(linedata)
 model:SetShader('white.frag')
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}

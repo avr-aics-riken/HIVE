@@ -25,6 +25,7 @@ volume:SetRotate(30, 40, 50)
 volume:SetScale(1,2,3)
 
 volume:SetShader('def_volume_raymarch.frag')
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}
 
 

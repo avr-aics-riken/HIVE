@@ -96,7 +96,8 @@ function CreateCamera(property)
 end
 
 function Render(arg)
-	render(arg.RenderObject)
+	local core = LoadModule("RenderPluginSURFACE")
+	core:render(arg.RenderObject)
 end
 local instOBJLoader7 = LoadOBJ({filepath='bunny.obj'})
 --local instLineModel8 = CreateLineModel({line=instOBJLoader7:LineData(), width = 1, shadername='normal.frag', Uniform={nil, nil, nil}})

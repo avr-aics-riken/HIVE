@@ -42,7 +42,9 @@ print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
 -- model:Create(isosurface)
 -- model:SetShader('normal.frag')
 --
--- render {camera, model}
+-- local core = LoadModule("RenderPluginSURFACE")
+-- core:render {camera, model}
 
 volume:SetShader('def_volume_raymarch4.frag')
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}

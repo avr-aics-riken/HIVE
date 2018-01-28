@@ -27,7 +27,8 @@ print('TEXTUREAAA', isloaded)
 local img = loader:ImageData()
 model:SetTexture('mytex0', img)
 
-local core = LoadModule('RenderPluginSURFACE')
+
+local core = LoadModule("RenderPluginSURFACE")
 core:render {camera, model}
 
 
