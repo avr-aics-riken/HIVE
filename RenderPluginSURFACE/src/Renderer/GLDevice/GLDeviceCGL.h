@@ -3,6 +3,14 @@
 
 #if defined(__APPLE__) || defined(MACOSX)
 
+// for old GCC
+#ifndef __has_feature
+  #define __has_feature(x) 0  // Compatibility with non-clang compilers.
+#endif
+#ifndef __has_extension
+  #define __has_extension __has_feature // Compatibility with pre-3.0 compilers.
+#endif
+
 // MacOSX
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>

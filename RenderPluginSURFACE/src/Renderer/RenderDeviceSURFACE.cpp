@@ -33,6 +33,7 @@
 
 
 #ifdef HIVE_WITH_COMPOSITOR
+#include <mpi.h> // FIRST, include for MPI-C++ binding
 extern "C" {
 #include "234compositor.h"
 }
