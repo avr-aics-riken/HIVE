@@ -22,6 +22,8 @@
 #include "Buffer/TetraBuffer.h"
 #include "Buffer/SolidBuffer.h"
 
+#include <stdio.h>
+
 
 /// 各種バッファの作成
 /// @param robj レンダーオブジェクト
