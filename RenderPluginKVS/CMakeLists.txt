@@ -58,6 +58,15 @@ endif()
 
 # --------------------------------------
 
+# --------------------------------------
+# KVS
+
+if (KVS_FOUND)
+    include_directories(${KVS_INCLUDE_DIRS})
+    link_libraries(${KVS_LIBRARIES})
+endif()
+
+# --------------------------------------
 
 # Headers
 set(INCLUDES
@@ -120,12 +129,11 @@ add_sanitizers(RenderPluginKVS)
 
 
 # link KVS lib
-target_link_libraries(RenderPluginKVS LINK_PRIVATE kvsCore kvsSupportGLUT)
+target_link_libraries(RenderPluginKVS kvsCore)
+target_link_libraries(RenderPluginKVS kvsSupportGLUT)
 
-
-# LINK_PRIVATE is required to hide compositor and pmlib when linking HIVE dll modules
-target_link_libraries(RenderPluginKVS LINK_PRIVATE ${PMLIB_LIBS})
-target_link_libraries(RenderPluginKVS LINK_PUBLIC hiveCore)
+# link HiveCore lib
+target_link_libraries(RenderPluginKVS hiveCore)
 
 # Link
 if (APPLE OR ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")

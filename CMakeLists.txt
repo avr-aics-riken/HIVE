@@ -86,6 +86,7 @@ IF(HIVE_BUILD_WITH_OPENMP)
 ENDIF()
 add_subdirectory(third_party/SURFACE)
 add_subdirectory(third_party/lua)
+add_subdirectory(third_party/KVS)
 
 # standalone tools
 add_subdirectory(tools)
