@@ -25,7 +25,7 @@ public:
     
     virtual void ClearBuffers() = 0;
     virtual void SetProgressCallback(bool (*func)(double)) = 0;
-    virtual bool ClearShaderCache(const char* srcname) = 0;
+    virtual bool ClearShaderCache(const char* srcname) = 0; // TODO: MOVE TO RenderPluginSURFACE
     
     virtual const char* GetRendererName() = 0;
 protected:

@@ -1,5 +1,5 @@
 /*
-    RenderDeviceSURFACE/main.cpp
+    RenderPluginSURFACE/main.cpp
 */
 
 #include "Renderer/Commands.h"
