@@ -29,6 +29,8 @@ SET(HIVE_BUILD_WITH_OPENGL ON CACHE BOOL "Build with OpenGL support?(Also need t
 SET(HIVE_BUILD_WITH_NANOMSG ON CACHE BOOL "Build with Nanomsg support?(Also need to enable HIVE_BUILD_WITH_NANOMSG option)")
 SET(HIVE_BUILD_WITH_PMLIB OFF CACHE BOOL "Build with PMlib support?")
 SET(HIVE_BUILD_WITH_TPUTIL OFF CACHE BOOL "Build with TextParser util support?")
+SET(HIVE_BUILD_WITH_KVS ON CACHE BOOL "Build with KVS Renderer Plugin support?")
+
 
 # Check whether third_party libraries are built
 IF(HIVE_BUILD_WITH_COMPOSITOR)
@@ -86,7 +88,13 @@ IF(HIVE_BUILD_WITH_OPENMP)
 ENDIF()
 add_subdirectory(third_party/SURFACE)
 add_subdirectory(third_party/lua)
+
+
+# KVS
+IF(HIVE_BUILD_WITH_KVS)
+SET(KVS_TOOL Off)
 add_subdirectory(third_party/KVS)
+ENDIF()
 
 # standalone tools
 add_subdirectory(tools)
@@ -95,7 +103,9 @@ add_subdirectory(tools)
 IF (BUILD_SHARED_LIBS)
   add_subdirectory(HiveCore)
   add_subdirectory(RenderPluginSURFACE)
-  add_subdirectory(RenderPluginKVS)
+  IF(HIVE_BUILD_WITH_KVS)
+    add_subdirectory(RenderPluginKVS)
+  ENDIF()
   add_subdirectory(lib)
 ENDIF()
 add_subdirectory(hrender)
