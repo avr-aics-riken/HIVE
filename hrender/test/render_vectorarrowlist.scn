@@ -1,0 +1,56 @@
+print('render_vectorarrowlist')
+
+local cam = Camera()
+cam:SetScreenSize(1024, 1024)
+cam:SetFilename("render_vectorarrowlist.jpg")
+cam:LookAt(
+	0,0,100,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+--Gen VectorArrowt List
+local postable = {0, 0, 0}
+local dirtable = {0, 0, 0}
+local maxnum = 256
+local size   = 40
+
+local rx = 0;
+local ry = 0;
+local rz = 0;
+
+for j = 1, maxnum do 
+	local x0 = (( math.random() * 2.0) - 1.0);
+	local y0 = (( math.random() * 2.0) - 1.0);
+	local z0 = (( math.random() * 2.0) - 1.0);
+	local x1 = (( math.random() * 2.0) - 1.0);
+	local y1 = (( math.random() * 2.0) - 1.0);
+	local z1 = (( math.random() * 2.0) - 1.0);
+
+        local dx = x1 - x0;
+        local dy = y1 - y0;
+        local dz = z1 - z0;
+
+	-- local l = 1.0 / math.sqrt(dx * dx + dy * dy + dz * dz)
+
+	table.insert(postable, x0 * size);
+	table.insert(postable, y0 * size);
+	table.insert(postable, z0 * size);
+
+	table.insert(dirtable, dx * size);
+	table.insert(dirtable, dy * size);
+	table.insert(dirtable, dz * size);
+end
+
+--Create Point List
+local gen   = PrimitiveGenerator()
+local pl    = gen:VectorArrowList(postable, dirtable, maxnum)
+local model = VectorModel()
+
+
+--Create Model Data
+model:Create(pl)
+model:SetShader('normal.frag')
+
+render({cam, model})

@@ -12,7 +12,7 @@
 #include "BufferPointData_Lua.h"
 #include "BufferLineData_Lua.h"
 //#include "BufferTetraData_Lua.h"
-//#include "BufferVectorData_Lua.h"
+#include "BufferVectorData_Lua.h"
 /**
  * PrimitiveGenerator Luaラッパー
  */
@@ -36,6 +36,12 @@ public:
 
     BufferLineData_Lua* CreateLuaLineData(BufferLineData* data) {
         BufferLineData_Lua * newdata = BufferLineData_Lua::CreateInstance(data);
+        //delete data;
+        return newdata;
+    }
+
+    BufferVectorData_Lua* CreateLuaVectorData(BufferVectorData* data) {
+        BufferVectorData_Lua * newdata = BufferVectorData_Lua::CreateInstance(data);
         //delete data;
         return newdata;
     }
@@ -82,6 +88,31 @@ public:
         return CreateLuaLineData(PrimitiveGenerator::LineList(&buf[0], num, radius));
     }
 
+    BufferVectorData_Lua* VectorArrowList(LuaTable p_tbl, LuaTable d_tbl, float num) {
+        const std::vector<LuaTable>&          p_lt       = p_tbl.GetTable();
+        std::vector<LuaTable>::const_iterator p_ite      = p_lt.begin();
+        const std::vector<LuaTable>::const_iterator p_ite_end  = p_lt.end();
+
+        const std::vector<LuaTable>&          d_lt       = d_tbl.GetTable();
+        std::vector<LuaTable>::const_iterator d_ite      = d_lt.begin();
+        const std::vector<LuaTable>::const_iterator d_ite_end  = d_lt.end();
+
+        std::vector<float> p_buf;
+        std::vector<float> d_buf;
+
+        // Assume size of p_tbl and d_tbl are same.
+        while(p_ite != p_ite_end) {
+            double p_param = p_ite->GetNumber();
+            double d_param = d_ite->GetNumber();
+            p_buf.push_back(p_param);
+            d_buf.push_back(d_param);
+            ++p_ite;
+            ++d_ite;
+        }
+        return CreateLuaVectorData(PrimitiveGenerator::VectorArrowList(&p_buf[0], &d_buf[0], num));
+    }
+
+
     BufferMeshData_Lua* TriangleList(LuaTable tbl, float num) {
         const std::vector<LuaTable>&          lt       = tbl.GetTable();
         std::vector<LuaTable>::const_iterator ite      = lt.begin();
@@ -103,6 +134,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG3(BufferPointData_Lua*,  PointList,LuaTable, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG3(BufferLineData_Lua*,   LineList,LuaTable, float, float)
     LUA_SCRIPTCLASS_METHOD_ARG2(BufferMeshData_Lua*,   TriangleList,LuaTable, float)
+    LUA_SCRIPTCLASS_METHOD_ARG3(BufferVectorData_Lua*,   VectorArrowList,LuaTable, LuaTable, float)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferLineData_Lua*,   LineData)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferTetraData_Lua*,  TetraData)
     //LUA_SCRIPTCLASS_METHOD_ARG0(BufferVectorData_Lua*, NormalData)
