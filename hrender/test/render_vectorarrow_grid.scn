@@ -1,0 +1,59 @@
+print('render_vectorarrowlist')
+
+local cam = Camera()
+cam:SetScreenSize(1024, 1024)
+cam:SetFilename("render_vectorarrow_grid.jpg")
+cam:LookAt(
+	0,-50,80,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+-- Create Plane
+local gen   = PrimitiveGenerator()
+local planeWidth  = 80
+local planeHeight = 80
+local planeModel = PolygonModel()
+-- [-planeWidth, -planeHeight]x[planeWidth, planeHeight]
+local meshdata = gen:Quad(planeWidth, planeHeight)
+planeModel:Create(meshdata)
+planeModel:SetShader('white.frag')
+planeModel:SetTranslate(0, 0, 0)
+
+--Gen VectorArrowt List
+local postable = {}
+local dirtable = {}
+
+local gridDivision = 16
+local gridStepX = (planeWidth / gridDivision);
+local gridStepY = (planeHeight / gridDivision);
+local offsetX = -(planeWidth * 0.5) + gridStepX * 0.5;
+local offsetY = -(planeHeight * 0.5) + gridStepY * 0.5;
+
+for x = 0, gridDivision-1, 1 do
+   for y = 0, gridDivision-1, 1 do
+      local x0 = offsetX + gridStepX * x;
+      local y0 = offsetY + gridStepY * y;
+      local z0 = 1;
+      print(x0)
+
+      table.insert(postable, x0);
+      table.insert(postable, y0);
+      table.insert(postable, 1);
+
+      table.insert(dirtable, -x0 * 0.1);
+      table.insert(dirtable, -y0 * 0.1);
+      table.insert(dirtable, 0);
+   end
+end
+
+--Create Point List
+local pl    = gen:VectorArrowList(postable, dirtable, gridDivision * gridDivision)
+local model = VectorModel()
+
+--Create Model Data
+model:Create(pl)
+model:SetShader('normal.frag')
+
+render({cam, model, planeModel})

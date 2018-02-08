@@ -1,0 +1,57 @@
+print('render_vectorarrowlist')
+
+local cam = Camera()
+cam:SetScreenSize(1024, 1024)
+cam:SetFilename("render_vectorarrow_radial.jpg")
+cam:LookAt(
+	0,-80,100,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+--Gen VectorArrowt List
+local postable = {}
+local dirtable = {}
+
+local maxRingNum = 7;
+local maxRingStep = 32;
+local radiusStep = 10;
+
+for i = 1, maxRingNum, 1 do
+   local radius = i * radiusStep;
+   for j = 0, maxRingStep-1, 1 do
+      local p = j * (math.pi * 2) / maxRingStep;
+      local x0 = math.cos(p) * radius;
+      local y0 = math.sin(p) * radius;
+      local z0 = 1;
+
+      table.insert(postable, x0);
+      table.insert(postable, y0);
+      table.insert(postable, 1);
+
+      table.insert(dirtable, -x0 * 0.1);
+      table.insert(dirtable, -y0 * 0.1);
+      table.insert(dirtable, 0);
+   end
+end
+
+--Create Point List
+local gen   = PrimitiveGenerator()
+local pl    = gen:VectorArrowList(postable, dirtable, maxRingNum * maxRingStep)
+local model = VectorModel()
+
+--Create Model Data
+model:Create(pl)
+model:SetShader('normal.frag')
+
+-- Create Plane
+local width  = 80
+local height = 80
+local planeModel = PolygonModel()
+local meshdata = gen:Quad(width, height)
+planeModel:Create(meshdata)
+planeModel:SetShader('white.frag')
+planeModel:SetTranslate(0, 0, 0)
+
+render({cam, model, planeModel})
