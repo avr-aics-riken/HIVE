@@ -82,14 +82,15 @@ function Volren:Do()
     if val.gradTex ~= nil then
         self.volren:SetGradientTexure(val.gradTex)
     end
+    self.volren:EnableGradientMap(val.enableG);
     
     self.volren:EnableLighting(val.enableL);
-    self.volren:SetLight(val.light[0], val.light[1], val.light[2], val.light[3]);
-    self.volren:SetAttenuation(val.attenuation[0], val.attenuation[1], val.attenuation[2]);
-    self.volren:SetAmbient(val.ambient[0], val.ambient[1], val.ambient[2]);
-    self.volren:SetSpecular(val.specular[0], val.specular[1], val.specular[2]);
+    self.volren:SetLight(val.light[1], val.light[2], val.light[3], val.light[4]);
+    self.volren:SetAttenuation(val.attenuation[1], val.attenuation[2], val.attenuation[3]);
+    self.volren:SetAmbient(val.ambient[1], val.ambient[2], val.ambient[3]);
+    self.volren:SetSpecular(val.specular[1], val.specular[2], val.specular[3]);
     self.volren:SetSamples(val.samples);
-    self.volren:SetOffset(val.offset[0], val.offset[1], val.offset[2]);
+    self.volren:SetOffset(val.offset[1], val.offset[2], val.offset[3]);
     
     return true
 end

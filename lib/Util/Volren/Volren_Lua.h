@@ -49,6 +49,7 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(int, SetTransferFunctionTexture, BufferImageData_Lua*);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, SetTransferFunctionMin, float);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, SetTransferFunctionMax, float);
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, EnableGradientMap, bool);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, SetGradientTexure, BufferImageData_Lua*);
     
     LUA_SCRIPTCLASS_METHOD_ARG1(int, EnableLighting, bool);

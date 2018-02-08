@@ -34,6 +34,11 @@ int Volren::SetGradientTexure(BufferImageData* tex)
     SetTexture("u_gradTex", tex);
 }
 
+int Volren::EnableGradientMap(bool enable)
+{
+    SetFloat("u_enableGradientMap", enable ? 1.0f : 0.0f);
+}
+
 int Volren::EnableLighting(bool enable)
 {
     SetFloat("u_enableLighting", enable ? 1.0f : 0.0f);
