@@ -22,10 +22,13 @@ class RenderView extends React.Component {
         this.store = props.store;
 
         this.varname = this.node.varname;
+        this.colorbarHeight = 15;
+		this.colorbarAreaHeight = 40;
 
 		this.state = {
 			width : minWidth,
-			height : minHeight
+			height : minHeight,
+			colorbar : null
 		};
 		
         // Mouse
@@ -84,10 +87,20 @@ class RenderView extends React.Component {
 		} else {
 			buffer = data;
 		}
+		let colorbar = {
+			rgba : param.colorbar.rgba ? JSON.parse(param.colorbar.rgba) : null,
+			min :  Number(param.colorbar.min),
+			max :  Number(param.colorbar.max),
+		};
+			
         this.setState({
-			image : buffer
+			image : buffer,
+			colorbar : colorbar
 		});
+		this.state.colorbar = colorbar; 
+		this.drawColorBar();
 
+		
         // progressive update
         this.progressiveUpdate(param);
 	}
@@ -95,6 +108,10 @@ class RenderView extends React.Component {
     hasIPCAddress() {
 		return this.getInputValue('ipcmode');
     }
+	
+	hasColorBar() {
+		return this.state.colorbar && this.state.colorbar.rgba;
+	}
 
     closeForIPCImageTransfer(){
         if (this.sc === undefined) {
@@ -451,6 +468,11 @@ class RenderView extends React.Component {
 	}
 
 	componentDidMount() {
+        var colorbar    = ReactDOM.findDOMNode(this.refs.colorbar);
+        colorbar.width  = 256;
+        colorbar.height = 40;
+        this.colorctx     = colorbar.getContext ('2d');
+		
         let imgElem = document.getElementById(this.getCanvasName('img'));
         imgElem.addEventListener('mousedown', this.onImgMouseDown.bind(this), true);
 
@@ -544,8 +566,14 @@ class RenderView extends React.Component {
 			},
 			presetArea : {
 				height : "25px",
-			padding : "2px",
+				padding : "2px",
 				backgroundColor : "rgba(67, 67, 67, 0.9)",
+			},
+			colorbar : {
+				position: "absolute",
+				top : (this.state.height - 5) + "px",
+				left : "3px",
+				display : (this.hasColorBar() ? "block" : "none")
 			},
 			presetsSelect : {
 				width : "100px",
@@ -660,7 +688,55 @@ class RenderView extends React.Component {
 		}
 		return [Math.max(this.props.node.panel.size[0], minWidth), Math.max(this.props.node.panel.size[1], minHeight)];
 	}
-
+	
+    drawColorBar() {
+		if (this.hasColorBar()) {
+			let rgba = this.state.colorbar.rgba;
+			this.colorctx.fillStyle = "rgb(255, 255, 255)";
+			this.colorctx.clearRect(0,0, rgba.length / 4, this.colorbarAreaHeight);
+			let colorData = this.colorctx.getImageData(0,0, rgba.length / 4, this.colorbarHeight);
+			
+			this.colorctx.strokeStyle = "rgb(255, 255, 255)";
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(0, 0);
+			this.colorctx.lineTo(0, 22);
+			this.colorctx.stroke();
+			
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(128, 0);
+			this.colorctx.lineTo(128, 22);
+			this.colorctx.stroke();
+			
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(255, 0);
+			this.colorctx.lineTo(255, 22);
+			this.colorctx.stroke();
+			
+			for (let i = 0; i < rgba.length; i += 4) {
+				let r = rgba[i + 0];
+				let g = rgba[i + 1];
+				let b = rgba[i + 2];
+				let a = rgba[i + 3] / 255.0;
+				for (let k = 0; k < this.colorbarHeight; k++) {
+					let backgrd = (1.0 - a) * ((((i/4/8)|0)%2) ^ (((k/8)|0)%2)) * 155;
+					colorData.data[k * rgba.length + i + 0] = r * a + backgrd;
+					colorData.data[k * rgba.length + i + 1] = g * a + backgrd;
+					colorData.data[k * rgba.length + i + 2] = b * a + backgrd;
+					colorData.data[k * rgba.length + i + 3] = 255;
+				}
+			}
+			this.colorctx.putImageData(colorData, 0, 0);
+			
+			let maxVal = (this.state.colorbar.max === 0) ? "0" : this.state.colorbar.max.toFixed(5);
+			let minVal = (this.state.colorbar.min === 0) ? "0" : this.state.colorbar.min.toFixed(5);
+			let maxWidth = this.colorctx.measureText(maxVal).width;
+			
+			this.colorctx.strokeStyle = "white";
+			this.colorctx.fillText(minVal, 2, 25);
+			this.colorctx.fillText(maxVal, 255 - maxWidth - 2, 25);
+		}
+    }
+	
     content() {
 		const styles = this.styles();
         return (<div style={styles.bounds}>
@@ -671,6 +747,8 @@ class RenderView extends React.Component {
 					</div>
 					<img id={this.getCanvasName('img')} style={styles.image} src="" ></img>
 
+					<canvas ref="colorbar" style={styles.colorbar}></canvas>
+					
 					<div style={styles.cameraButtonArea}>
 						<div ref="reset"  style={styles.cameraButton}
 							onClick={this.onClickCameraButton}

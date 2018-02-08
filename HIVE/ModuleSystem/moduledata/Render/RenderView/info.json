@@ -15,6 +15,7 @@
         {"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
         {"name": "floatbuffer", "type": "bool", "value": false, "hole":false},
         {"name": "ipcmode", "type": "bool", "value": false, "hole":false},
+		{"name": "ColorBar", "type": "ColorBar"},
         {"name": "Camera",  "type": "RenderObject"},
         {"name": "RenderObject",  "type": "RenderObject", "array": [
 			{"name": "RenderObject[0]",  "type": "RenderObject"},

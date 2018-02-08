@@ -2,6 +2,8 @@
 RenderView = {}
 setmetatable(RenderView, {__index = HiveBaseModule})
 
+local JSON = require('dkjson')
+
 RenderView.new = function (varname)
     local this = HiveBaseModule.new(varname)
     this.cam = Camera()    
@@ -102,6 +104,16 @@ function RenderView:Do()
     if targetClientId == nil then
         return false
     end
+    
+    local colorbar_rgba = "";
+    local colorbar_min = "0";
+    local colorbar_max = "0";
+    if v.ColorBar then
+        colorbar_rgba = JSON.encode(v.ColorBar.rgba);
+        colorbar_min = tostring(v.ColorBar.min)
+        colorbar_max = tostring(v.ColorBar.max)
+    end
+    
     local json = [[{
             "JSONRPC" : "2.0",
             "method" : "renderedImage",            
@@ -111,7 +123,12 @@ function RenderView:Do()
                 "width" : "]] .. w .. [[",
                 "height" : "]] .. h .. [[",
                 "canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[,
-                "varname": "]] .. self.varname .. [["
+                "varname": "]] .. self.varname .. [[",
+                "colorbar": {
+                    "rgba": "]] .. colorbar_rgba .. [[",
+                    "min": "]] .. colorbar_min .. [[",
+                    "max": "]] .. colorbar_max .. [["
+                }
             },
             "id":0
     }]]
