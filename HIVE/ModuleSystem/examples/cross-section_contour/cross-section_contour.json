@@ -169,6 +169,11 @@
               "name": "Uniform[7]",
               "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
               "type": "Uniform"
+            },
+            {
+              "name": "Uniform[8]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
             }
           ],
           "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
@@ -217,9 +222,9 @@
           "name": "position",
           "type": "vec3",
           "value": [
-            -62.96260654080562,
-            15.949494932670031,
-            -27.04743773948041
+            -68.14810237935058,
+            14.81066882805092,
+            -9.312375113256866
           ],
           "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
         },
@@ -370,7 +375,7 @@
           -251.80774780774777,
           -488.66153145100526
         ],
-        "zindex": 3
+        "zindex": 6
       }
     },
     {
@@ -536,7 +541,7 @@
           -180.10012794223303,
           121.0704617020408
         ],
-        "zindex": 6
+        "zindex": 1
       }
     },
     {
@@ -1661,7 +1666,7 @@
           304.2016257652931,
           -422.6360696462566
         ],
-        "zindex": null
+        "zindex": 0
       }
     },
     {
@@ -1775,7 +1780,7 @@
           94.80152595942104,
           120.59335401440649
         ],
-        "zindex": 3
+        "zindex": 6
       },
       "label": "ContourStepSlider",
       "select": false
@@ -1891,9 +1896,9 @@
           -167.97681565851997,
           253.5087643137773
         ],
-        "zindex": null
+        "zindex": 2
       },
-      "label": "",
+      "label": "Epsilon",
       "select": false
     },
     {
@@ -2155,6 +2160,114 @@
         ],
         "zindex": -4
       }
+    },
+    {
+      "name": "Color",
+      "funcname": "Color",
+      "info": "Colorをつくるノード",
+      "customfuncfile": "color.lua",
+      "uifile": "color.jsx",
+      "input": [
+        {
+          "name": "value",
+          "type": "vec4",
+          "value": [
+            0.91796875,
+            0.109375,
+            0.109375,
+            1
+          ],
+          "nodeVarname": "Colord67281f4_8cfb_4f5d_bc5b_798b00fb7eaa"
+        }
+      ],
+      "output": [
+        {
+          "name": "color",
+          "type": "vec4",
+          "nodeVarname": "Colord67281f4_8cfb_4f5d_bc5b_798b00fb7eaa"
+        }
+      ],
+      "customfunc": "Color = {}\nsetmetatable(Color, {__index = HiveBaseModule})\n\nColor.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    this.property = {\n        value = {1,1,1,1}\n    }\n    setmetatable(this, {__index=Color})\n    return this\nend\n\nfunction Color:Do()\n    -- nothing to do\n    return true\nend\n\nfunction Color:color()\n    self:UpdateValue()\n    local v = self.value\n    local value = v.value\n    return value\nend\n",
+      "uiFunc": "'use strict';\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactColor = require('react-color');\n\nvar _reactColor2 = _interopRequireDefault(_reactColor);\n\nfunction clampIntRGB(v) {\n\treturn Math.max(Math.min(v, 256.0), 0.0);\n}\n\nfunction clampFloatRGB(v) {\n\treturn Math.max(Math.min(v, 1.0), 0.0);\n}\n\nfunction toFloatRGB(v) {\n\treturn clampFloatRGB(Math.floor(v + 0.5) / 256.0);\n}\n\nfunction toIntRGB(v) {\n\treturn clampIntRGB(v * 256.0);\n}\n\nvar Color = (function (_React$Component) {\n\t_inherits(Color, _React$Component);\n\n\tfunction Color(props) {\n\t\t_classCallCheck(this, Color);\n\n\t\t_get(Object.getPrototypeOf(Color.prototype), 'constructor', this).call(this, props);\n\t\tthis.onColorChange = this.onColorChange.bind(this);\n\t}\n\n\t_createClass(Color, [{\n\t\tkey: 'onColorChange',\n\t\tvalue: function onColorChange(color) {\n\t\t\tthis.props.action.changeNodeInput({\n\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"value\": [toFloatRGB(color.rgb.r), toFloatRGB(color.rgb.g), toFloatRGB(color.rgb.b), clampFloatRGB(color.rgb.a)]\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: 'render',\n\t\tvalue: function render() {\n\t\t\treturn _react2['default'].createElement(\n\t\t\t\t'div',\n\t\t\t\tnull,\n\t\t\t\t_react2['default'].createElement(_reactColor2['default'], {\n\t\t\t\t\tcolor: {\n\t\t\t\t\t\tr: toIntRGB(this.props.node.input[0].value[0]),\n\t\t\t\t\t\tg: toIntRGB(this.props.node.input[0].value[1]),\n\t\t\t\t\t\tb: toIntRGB(this.props.node.input[0].value[2]),\n\t\t\t\t\t\ta: clampFloatRGB(this.props.node.input[0].value[3])\n\t\t\t\t\t},\n\t\t\t\t\tonChange: this.onColorChange.bind(this),\n\t\t\t\t\ttype: 'sketch' })\n\t\t\t);\n\t\t}\n\t}]);\n\n\treturn Color;\n})(_react2['default'].Component);\n\nmodule.exports = Color;",
+      "varname": "Colord67281f4_8cfb_4f5d_bc5b_798b00fb7eaa",
+      "label": "ContourColor",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1291,
+          2895
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          130.24638912489354,
+          239.0918531105449
+        ],
+        "zindex": 6
+      }
+    },
+    {
+      "name": "UniformVec4",
+      "funcname": "UniformVec4",
+      "info": "Uniform Vec4をつくるノード",
+      "customfuncfile": "vec4.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_contourColor",
+          "nodeVarname": "UniformVec42d9f0c0a_e7fa_43fe_a0c8_5af847a18f95"
+        },
+        {
+          "name": "value",
+          "type": "vec4",
+          "value": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "nodeVarname": "UniformVec42d9f0c0a_e7fa_43fe_a0c8_5af847a18f95"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformVec42d9f0c0a_e7fa_43fe_a0c8_5af847a18f95"
+        }
+      ],
+      "customfunc": "UniformVec4 = {}\nsetmetatable(UniformVec4, {__index = HiveBaseModule})\n\nUniformVec4.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    this.property = {\n        name = 'univec4',\n        value = {0,0,0,0}               \n    }\n    setmetatable(this, {__index=UniformVec4})\n    return this\nend\n\nfunction UniformVec4:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformVec4:uniform()\n    local v = self.value    \n    return {name=v.name, value=v.value, type='vec4'}\nend\n\n",
+      "uiFunc": "",
+      "varname": "UniformVec42d9f0c0a_e7fa_43fe_a0c8_5af847a18f95",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1576,
+          2884
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          700,
+          700
+        ],
+        "zindex": -1
+      }
     }
   ],
   "plugs": [
@@ -2240,16 +2353,6 @@
     },
     {
       "output": {
-        "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435",
-        "name": "fval"
-      },
-      "input": {
-        "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e",
-        "name": "value"
-      }
-    },
-    {
-      "output": {
         "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
         "name": "Min"
       },
@@ -2326,6 +2429,36 @@
       "input": {
         "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
         "name": "volume"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435",
+        "name": "fval"
+      },
+      "input": {
+        "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "Colord67281f4_8cfb_4f5d_bc5b_798b00fb7eaa",
+        "name": "color"
+      },
+      "input": {
+        "nodeVarname": "UniformVec42d9f0c0a_e7fa_43fe_a0c8_5af847a18f95",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformVec42d9f0c0a_e7fa_43fe_a0c8_5af847a18f95",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[8]"
       }
     }
   ],

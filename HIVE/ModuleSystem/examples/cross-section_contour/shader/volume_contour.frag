@@ -29,6 +29,7 @@ uniform int u_flipSlice;
 
 uniform float u_contourStep;
 uniform float u_eps;
+uniform vec4 u_contourColor;
 
 uniform mat4 lsgl_WorldInverse; // inverse of object to world matrix
 
@@ -155,7 +156,7 @@ vec4 sampleVolumePlane(vec3 p, vec3 planeDirX, vec3 planeDirY,
       abs(mod(volume, u_contourStep)) / length(grad);
     float ee = 0.15;
     float t = smoothstep(u_eps, 2.0 * u_eps, de);
-    sum +=  mix(vec4(0.7), volumeColorPlane(volume), t);
+    sum +=  mix(vec4(u_contourColor.rgb, 1.0), volumeColorPlane(volume), t);
   }
   return sum / sampleNum;
 }
