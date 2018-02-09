@@ -17,19 +17,20 @@ uniform vec3      eye;
 uniform vec3 volumescale;
 uniform vec3 volumedim;
 uniform vec3 u_offset;
+uniform float u_planeAlpha;
 
 // Transfer function parameters
 uniform sampler2D u_tfTexture;
-uniform float     u_volumeMin;
-uniform float     u_volumeMax;
+uniform vec2 u_volumeMinMax; // [min, max]
 
 uniform int u_sliceAxis; // 0 ... x, 1 ... y, 2 ... z
 uniform float u_sliceRatio;
 uniform int u_flipSlice;
 
 uniform float u_contourStep;
-uniform float u_eps;
+uniform float u_contourEps;
 uniform vec4 u_contourColor;
+uniform int u_useComplementColorForPlane; // 0 ... Off, 1 ... On
 
 uniform mat4 lsgl_WorldInverse; // inverse of object to world matrix
 
@@ -55,6 +56,17 @@ const vec4 K = vec4(1.0, .666666, .333333, 3.0);
 vec3 hsv2rgb(const vec3 c){
   vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
   return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+// http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+vec3 rgb2hsv(vec3 c){
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
+  vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
+
+  float d = q.x - min(q.w, q.y);
+  float e = 1.0e-10;
+  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
 bool intersectBox(vec3 rayOrg, vec3 rayDir, vec3 boxMin, vec3 boxMax,
@@ -119,7 +131,7 @@ bool intersectPlane(const vec3 normal, const vec3 p,
 }
 
 float sampleVolume(vec3 p) {
-  return (texture3D(tex0, (p - u_offset) / volumescale + 0.5).x - u_volumeMin) / (u_volumeMax - u_volumeMin);
+  return (texture3D(tex0, (p - u_offset) / volumescale + 0.5).x - u_volumeMinMax.x) / (u_volumeMinMax.y - u_volumeMinMax.x);
 }
 
 vec4 volumeColor(float v) {
@@ -127,7 +139,11 @@ vec4 volumeColor(float v) {
 }
 
 vec4 volumeColorPlane(float v) {
-  return vec4(texture2D(u_tfTexture, vec2(v, 0.5)).rgb, 1.);
+  vec3 vCol = texture2D(u_tfTexture, vec2(v, 0.5)).rgb;
+  vec3 hsv = rgb2hsv(vCol);
+  hsv.r += 0.5;
+  vCol = (u_useComplementColorForPlane == 1) ? hsv2rgb(hsv) : vCol;
+  return vec4(vCol, u_planeAlpha);
 }
 
 vec4 sampleVolumePlane(vec3 p, vec3 planeDirX, vec3 planeDirY,
@@ -155,7 +171,7 @@ vec4 sampleVolumePlane(vec3 p, vec3 planeDirX, vec3 planeDirY,
       1.:
       abs(mod(volume, u_contourStep)) / length(grad);
     float ee = 0.15;
-    float t = smoothstep(u_eps, 2.0 * u_eps, de);
+    float t = smoothstep(u_contourEps, 2.0 * u_contourEps, de);
     sum +=  mix(vec4(u_contourColor.rgb, 1.0), volumeColorPlane(volume), t);
   }
   return sum / sampleNum;
@@ -254,6 +270,8 @@ void main(void) {
   hit = intersectPlane(planeNormal, planeOrg,
                        rayOrg, rayDir,
                        isectPoint, t0);
+
+  vec4 l = vec4(0);
   if (hit && insideBBox(bboxMin, bboxMax, rayOrg + rayDir * (t0 * 1.0001))) {
     vec3 isectX, isectY;
     float tmp;
@@ -265,14 +283,14 @@ void main(void) {
                          isectY, tmp);
     vec2 diff = vec2(distance(isectPoint, isectX),
                      distance(isectPoint, isectY));
-    gl_FragColor = vec4(sampleVolumePlane(isectPoint,
-                                          planeDirX, planeDirY,
-                                          diff).rgb,
-                        1.);
-    return;
+    vec4 planeCol = sampleVolumePlane(isectPoint,
+                                      planeDirX, planeDirY,
+                                      diff);
+    planeCol.a *= 1.;
+    planeCol.rgb *= planeCol.a;
+    l = (1. - l.a) * planeCol + l;
   }
 
-  vec4 l = vec4(0);
   const float MAX_SAMPLES = 150.;
   float t = t0;
   float tStep = (t1 - t0) / MAX_SAMPLES;

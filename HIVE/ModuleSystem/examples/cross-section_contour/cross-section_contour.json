@@ -49,8 +49,8 @@
       "node": {
         "close": false,
         "pos": [
-          860.6046511627907,
-          1674.6976744186045
+          760.0291262135922,
+          1857.5242718446602
         ],
         "zindex": 0
       },
@@ -174,6 +174,16 @@
               "name": "Uniform[8]",
               "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
               "type": "Uniform"
+            },
+            {
+              "name": "Uniform[9]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
+            },
+            {
+              "name": "Uniform[10]",
+              "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+              "type": "Uniform"
             }
           ],
           "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8"
@@ -194,8 +204,8 @@
       "node": {
         "close": false,
         "pos": [
-          2039.3255813953488,
-          1990
+          2167.5436893203882,
+          2073.7087378640776
         ],
         "zindex": 0
       },
@@ -222,9 +232,9 @@
           "name": "position",
           "type": "vec3",
           "value": [
-            -68.14810237935058,
-            14.81066882805092,
-            -9.312375113256866
+            19.414157829812396,
+            21.994450423996245,
+            35.95247027281779
           ],
           "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
         },
@@ -232,9 +242,9 @@
           "name": "target",
           "type": "vec3",
           "value": [
-            0,
-            0,
-            0
+            -14.162022822583417,
+            9.295355484407672,
+            9.001359453737209
           ],
           "nodeVarname": "RenderView2af38ce8_9e33_4445_9ca1_999f90b1c023"
         },
@@ -360,8 +370,8 @@
       "node": {
         "close": false,
         "pos": [
-          2308,
-          1950
+          2418.6796116504856,
+          1934.4660194174758
         ],
         "zindex": 0
       },
@@ -489,7 +499,7 @@
         {
           "name": "value",
           "type": "float",
-          "value": 0.04,
+          "value": 0.05,
           "nodeVarname": "Sliderc9494de4_7f74_4d52_8979_4349858693b9"
         },
         {
@@ -538,10 +548,10 @@
           100
         ],
         "pos": [
-          -180.10012794223303,
-          121.0704617020408
+          -206.26530475676054,
+          136.2388431041885
         ],
-        "zindex": 1
+        "zindex": 6
       }
     },
     {
@@ -830,15 +840,15 @@
             67,
             188,
             187,
-            255,
+            0,
             68,
             191,
             186,
-            255,
+            0,
             69,
             193,
             185,
-            13,
+            0,
             70,
             195,
             184,
@@ -878,15 +888,15 @@
             79,
             212,
             175,
-            3,
+            0,
             80,
             213,
             174,
-            6,
+            252,
             81,
             215,
             173,
-            255,
+            253,
             82,
             217,
             172,
@@ -1651,8 +1661,8 @@
       "node": {
         "close": false,
         "pos": [
-          1338.3720930232557,
-          2207.232558139535
+          1243,
+          2241
         ],
         "zindex": 0
       },
@@ -1663,8 +1673,8 @@
           100
         ],
         "pos": [
-          304.2016257652931,
-          -422.6360696462566
+          316.4465237244767,
+          -396.7857295102022
         ],
         "zindex": 0
       }
@@ -1730,7 +1740,7 @@
         {
           "name": "value",
           "type": "float",
-          "value": 0.08,
+          "value": 0.26,
           "nodeVarname": "Slider5c069830_7398_4df3_9ef0_3a834dd6a8b5"
         },
         {
@@ -1765,8 +1775,8 @@
       "node": {
         "close": false,
         "pos": [
-          1296.2,
-          2432.4
+          1262.990291262136,
+          2433.9417475728155
         ],
         "zindex": 0
       },
@@ -1777,8 +1787,8 @@
           100
         ],
         "pos": [
-          94.80152595942104,
-          120.59335401440649
+          88.12249070895746,
+          127.20492426234034
         ],
         "zindex": 6
       },
@@ -1794,13 +1804,13 @@
         {
           "name": "name",
           "type": "string",
-          "value": "u_eps",
+          "value": "u_contourEps",
           "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e"
         },
         {
           "name": "value",
           "type": "float",
-          "value": 0.5,
+          "value": 0.11,
           "nodeVarname": "UniformFloat7a18f690_a423_4414_9535_b0c0009c693e"
         }
       ],
@@ -1846,7 +1856,7 @@
         {
           "name": "value",
           "type": "float",
-          "value": 0.11,
+          "value": 0.12,
           "nodeVarname": "Slider38b1c2bc_6e49_4570_a0ad_2a935d530435"
         },
         {
@@ -1881,8 +1891,8 @@
       "node": {
         "close": false,
         "pos": [
-          1313.4,
-          2576.4
+          1250.8640776699028,
+          2570.1747572815534
         ],
         "zindex": 0
       },
@@ -1893,115 +1903,13 @@
           100
         ],
         "pos": [
-          -167.97681565851997,
-          253.5087643137773
+          -220.37463429010472,
+          263.7297121970629
         ],
-        "zindex": 2
+        "zindex": 0
       },
       "label": "Epsilon",
-      "select": false
-    },
-    {
-      "name": "UniformFloat",
-      "funcname": "UniformFloat",
-      "info": "Uniform floatをつくるノード",
-      "customfuncfile": "float.lua",
-      "input": [
-        {
-          "name": "name",
-          "type": "string",
-          "value": "u_volumeMin",
-          "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff"
-        },
-        {
-          "name": "value",
-          "type": "float",
-          "value": 0.5,
-          "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff"
-        }
-      ],
-      "output": [
-        {
-          "name": "uniform",
-          "type": "Uniform",
-          "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff"
-        }
-      ],
-      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
-      "uiFunc": "",
-      "varname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff",
-      "node": {
-        "close": false,
-        "pos": [
-          1633,
-          2253.6
-        ],
-        "zindex": 0
-      },
-      "panel": {
-        "size": [
-          100,
-          100
-        ],
-        "pos": [
-          450,
-          450
-        ],
-        "zindex": -4
-      },
-      "label": "",
-      "select": false
-    },
-    {
-      "name": "UniformFloat",
-      "funcname": "UniformFloat",
-      "info": "Uniform floatをつくるノード",
-      "customfuncfile": "float.lua",
-      "input": [
-        {
-          "name": "name",
-          "type": "string",
-          "value": "u_volumeMax",
-          "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe"
-        },
-        {
-          "name": "value",
-          "type": "float",
-          "value": 0.5,
-          "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe"
-        }
-      ],
-      "output": [
-        {
-          "name": "uniform",
-          "type": "Uniform",
-          "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe"
-        }
-      ],
-      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
-      "uiFunc": "",
-      "varname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe",
-      "node": {
-        "close": false,
-        "pos": [
-          1584.53488372093,
-          2332.046511627907
-        ],
-        "zindex": 0
-      },
-      "panel": {
-        "size": [
-          100,
-          100
-        ],
-        "pos": [
-          500,
-          500
-        ],
-        "zindex": -4
-      },
-      "label": "",
-      "select": false
+      "select": true
     },
     {
       "name": "UniformInt",
@@ -2018,7 +1926,7 @@
         {
           "name": "value",
           "type": "int",
-          "value": "1",
+          "value": "0",
           "nodeVarname": "UniformIntdd08c85c_4e14_4aa8_9972_59b564ec37e2"
         }
       ],
@@ -2093,8 +2001,8 @@
       "node": {
         "close": false,
         "pos": [
-          969.3023255813953,
-          1982.9302325581398
+          802.009708737864,
+          2010.1844660194174
         ],
         "zindex": 0
       },
@@ -2144,8 +2052,8 @@
       "node": {
         "close": false,
         "pos": [
-          1580.0697674418607,
-          2800.6744186046517
+          1586,
+          2740.0582524271845
         ],
         "zindex": 0
       },
@@ -2172,9 +2080,9 @@
           "name": "value",
           "type": "vec4",
           "value": [
+            0.16796875,
+            0.109375,
             0.91796875,
-            0.109375,
-            0.109375,
             1
           ],
           "nodeVarname": "Colord67281f4_8cfb_4f5d_bc5b_798b00fb7eaa"
@@ -2195,8 +2103,8 @@
       "node": {
         "close": false,
         "pos": [
-          1291,
-          2895
+          1320.948717948718,
+          2857.6923076923076
         ],
         "zindex": 0
       },
@@ -2210,7 +2118,7 @@
           130.24638912489354,
           239.0918531105449
         ],
-        "zindex": 6
+        "zindex": 4
       }
     },
     {
@@ -2252,8 +2160,8 @@
       "node": {
         "close": false,
         "pos": [
-          1576,
-          2884
+          1586.2564102564102,
+          2841.6923076923076
         ],
         "zindex": 0
       },
@@ -2266,7 +2174,279 @@
           700,
           700
         ],
-        "zindex": -1
+        "zindex": -2
+      }
+    },
+    {
+      "name": "UniformFloat",
+      "funcname": "UniformFloat",
+      "info": "Uniform floatをつくるノード",
+      "customfuncfile": "float.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_planeAlpha",
+          "nodeVarname": "UniformFloatea5461b3_72e8_4550_9da6_cae455687b74"
+        },
+        {
+          "name": "value",
+          "type": "float",
+          "value": 1,
+          "nodeVarname": "UniformFloatea5461b3_72e8_4550_9da6_cae455687b74"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformFloatea5461b3_72e8_4550_9da6_cae455687b74"
+        }
+      ],
+      "customfunc": "UniformFloat = {}\nsetmetatable(UniformFloat, {__index = HiveBaseModule})\n\nUniformFloat.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformFloat})\n    return this\nend\n\nfunction UniformFloat:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformFloat:uniform()\n    local v = self.value\n    return { name = v.name, type = \"float\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformFloatea5461b3_72e8_4550_9da6_cae455687b74",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1582.7948717948718,
+          2953.3076923076924
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          750,
+          750
+        ],
+        "zindex": -2
+      }
+    },
+    {
+      "name": "Slider",
+      "funcname": "Slider",
+      "info": "sliderをつくるノード",
+      "customfuncfile": "slider.lua",
+      "uifile": "slider.jsx",
+      "input": [
+        {
+          "name": "value",
+          "type": "float",
+          "value": 0.3,
+          "nodeVarname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541"
+        },
+        {
+          "name": "min",
+          "type": "float",
+          "value": 0,
+          "nodeVarname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541"
+        },
+        {
+          "name": "max",
+          "type": "float",
+          "value": 1,
+          "nodeVarname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541"
+        },
+        {
+          "name": "step",
+          "type": "float",
+          "value": 0.01,
+          "nodeVarname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541"
+        }
+      ],
+      "output": [
+        {
+          "name": "fval",
+          "type": "float",
+          "nodeVarname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541"
+        }
+      ],
+      "customfunc": "Slider = {}\nsetmetatable(Slider, {__index = HiveBaseModule})\n\nSlider.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=Slider})\n    return this\nend\n\nfunction Slider:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction Slider:fval()\n    local v = self.value\n    return v.value\nend\n",
+      "uiFunc": "\"use strict\";\n\nvar _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();\n\nvar _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if (\"value\" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { \"default\": obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\nfunction _inherits(subClass, superClass) { if (typeof superClass !== \"function\" && superClass !== null) { throw new TypeError(\"Super expression must either be null or a function, not \" + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }\n\nvar _react = require('react');\n\nvar _react2 = _interopRequireDefault(_react);\n\nvar _reactSlider = require(\"react-slider\");\n\nvar _reactSlider2 = _interopRequireDefault(_reactSlider);\n\nvar Slider = (function (_React$Component) {\n\t_inherits(Slider, _React$Component);\n\n\tfunction Slider(props) {\n\t\t_classCallCheck(this, Slider);\n\n\t\t_get(Object.getPrototypeOf(Slider.prototype), \"constructor\", this).call(this, props);\n\t\tthis.componentDidUpdate = this.componentDidUpdate.bind(this);\n\t}\n\n\t_createClass(Slider, [{\n\t\tkey: \"componentDidUpdate\",\n\t\tvalue: function componentDidUpdate() {\n\t\t\tthis.refs.slider._handleResize();\n\t\t}\n\t}, {\n\t\tkey: \"onChange\",\n\t\tvalue: function onChange(val) {\n\t\t\tthis.props.action.changeNodeInput({\n\t\t\t\tvarname: this.props.node.varname,\n\t\t\t\tinput: {\n\t\t\t\t\t\"value\": Number(val)\n\t\t\t\t}\n\t\t\t});\n\t\t}\n\t}, {\n\t\tkey: \"render\",\n\t\tvalue: function render() {\n\t\t\treturn _react2[\"default\"].createElement(\n\t\t\t\t\"div\",\n\t\t\t\t{ className: 'slider', style: { margin: '4', minWidth: \"250px\", height: '70', padding: '2' } },\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t_reactSlider2[\"default\"],\n\t\t\t\t\t{\n\t\t\t\t\t\tref: \"slider\",\n\t\t\t\t\t\tvalue: [Number(this.props.node.input[0].value)],\n\t\t\t\t\t\tmin: Number(this.props.node.input[1].value),\n\t\t\t\t\t\tmax: Number(this.props.node.input[2].value),\n\t\t\t\t\t\tstep: Number(this.props.node.input[3].value),\n\t\t\t\t\t\tonChange: this.onChange.bind(this),\n\t\t\t\t\t\twithBars: true\n\t\t\t\t\t},\n\t\t\t\t\t_react2[\"default\"].createElement(\"div\", { className: \"thum\" })\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"left\" } },\n\t\t\t\t\t\"min:\",\n\t\t\t\t\tthis.props.node.input[1].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"30px\", bottom: \"0px\", float: \"right\" } },\n\t\t\t\t\t\"max:\",\n\t\t\t\t\tthis.props.node.input[2].value\n\t\t\t\t),\n\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\"div\",\n\t\t\t\t\t{ style: { marginTop: \"-18px\", textAlign: \"center\", width: \"100%\", height: \"30px\", float: \"left\" } },\n\t\t\t\t\t_react2[\"default\"].createElement(\n\t\t\t\t\t\t\"div\",\n\t\t\t\t\t\t{ style: {} },\n\t\t\t\t\t\t\"step:\",\n\t\t\t\t\t\tthis.props.node.input[3].value\n\t\t\t\t\t)\n\t\t\t\t)\n\t\t\t);\n\t\t}\n\t}]);\n\n\treturn Slider;\n})(_react2[\"default\"].Component);\n\nmodule.exports = Slider;",
+      "varname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541",
+      "node": {
+        "close": false,
+        "pos": [
+          1302.076923076923,
+          2972.051282051282
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "visible": true,
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          -218.79314218913146,
+          404.1210092117361
+        ],
+        "zindex": -2
+      },
+      "label": "",
+      "select": false
+    },
+    {
+      "name": "UniformInt",
+      "funcname": "UniformInt",
+      "info": "Uniform intをつくるノード",
+      "customfuncfile": "int.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_useComplementColorForPlane",
+          "nodeVarname": "UniformIntcd328b16_dc9b_40d1_8219_5dbfba676212"
+        },
+        {
+          "name": "value",
+          "type": "int",
+          "value": "1",
+          "nodeVarname": "UniformIntcd328b16_dc9b_40d1_8219_5dbfba676212"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformIntcd328b16_dc9b_40d1_8219_5dbfba676212"
+        }
+      ],
+      "customfunc": "UniformInt = {}\nsetmetatable(UniformInt, {__index = HiveBaseModule})\n\nUniformInt.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=UniformInt})\n    return this\nend\n\nfunction UniformInt:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformInt:uniform()\n    local v = self.value\n    return { name = v.name, type = \"int\", value = v.value}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformIntcd328b16_dc9b_40d1_8219_5dbfba676212",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1586,
+          3040.5641025641025
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          800,
+          800
+        ],
+        "zindex": -2
+      }
+    },
+    {
+      "name": "UniformVec2",
+      "funcname": "UniformVec2",
+      "info": "Uniform Vec2をつくるノード",
+      "customfuncfile": "vec2.lua",
+      "input": [
+        {
+          "name": "name",
+          "type": "string",
+          "value": "u_volumeMinMax",
+          "nodeVarname": "UniformVec2eef846f1_f5fd_43cf_8901_a63b406c68b8"
+        },
+        {
+          "name": "value",
+          "type": "vec2",
+          "value": [
+            0,
+            0
+          ],
+          "nodeVarname": "UniformVec2eef846f1_f5fd_43cf_8901_a63b406c68b8"
+        }
+      ],
+      "output": [
+        {
+          "name": "uniform",
+          "type": "Uniform",
+          "nodeVarname": "UniformVec2eef846f1_f5fd_43cf_8901_a63b406c68b8"
+        }
+      ],
+      "customfunc": "UniformVec2 = {}\nsetmetatable(UniformVec2, {__index = HiveBaseModule})\n\nUniformVec2.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    this.property = {\n        name = 'univec2',\n        value = {0,0,0}\n    }\n    setmetatable(this, {__index=UniformVec2})\n    return this\nend\n\nfunction UniformVec2:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction UniformVec2:uniform()\n    local v = self.value\n\n    return {name=v.name, value=v.value, type='vec2'}\nend\n",
+      "uiFunc": "",
+      "varname": "UniformVec2eef846f1_f5fd_43cf_8901_a63b406c68b8",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1742,
+          2267
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          850,
+          850
+        ],
+        "zindex": 0
+      }
+    },
+    {
+      "name": "FloatToVec2",
+      "funcname": "FloatToVec2",
+      "info": "floatからvec2をつくるノード",
+      "customfuncfile": "ftovec2.lua",
+      "input": [
+        {
+          "name": "value0",
+          "type": "float",
+          "value": 0,
+          "nodeVarname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43"
+        },
+        {
+          "name": "value1",
+          "type": "float",
+          "value": 0,
+          "nodeVarname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43"
+        }
+      ],
+      "output": [
+        {
+          "name": "vec2",
+          "type": "vec2",
+          "nodeVarname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43"
+        }
+      ],
+      "customfunc": "FloatToVec2 = {}\nsetmetatable(FloatToVec2, {__index = HiveBaseModule})\n\nFloatToVec2.new = function (varname)\n    local this = HiveBaseModule.new(varname)\n    setmetatable(this, {__index=FloatToVec2})\n    return this\nend\n\nfunction FloatToVec2:Do()\n    -- nothing to do\n    self:UpdateValue()\n    return true\nend\n\nfunction FloatToVec2:vec2()\n    local v = self.value\n    return { v.value0, v.value1 }\nend\n",
+      "uiFunc": "",
+      "varname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43",
+      "label": "",
+      "select": false,
+      "node": {
+        "close": false,
+        "pos": [
+          1495,
+          2282
+        ],
+        "zindex": 0
+      },
+      "panel": {
+        "size": [
+          100,
+          100
+        ],
+        "pos": [
+          900,
+          900
+        ],
+        "zindex": 0
       }
     }
   ],
@@ -2353,46 +2533,6 @@
     },
     {
       "output": {
-        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
-        "name": "Min"
-      },
-      "input": {
-        "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff",
-        "name": "value"
-      }
-    },
-    {
-      "output": {
-        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
-        "name": "Max"
-      },
-      "input": {
-        "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe",
-        "name": "value"
-      }
-    },
-    {
-      "output": {
-        "nodeVarname": "UniformFloate8aa3a21_39f6_4b7f_979d_0a4785b7d3ff",
-        "name": "uniform"
-      },
-      "input": {
-        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
-        "name": "Uniform[4]"
-      }
-    },
-    {
-      "output": {
-        "nodeVarname": "UniformFloat348c6ac2_c3cf_4353_94f0_11252c0754fe",
-        "name": "uniform"
-      },
-      "input": {
-        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
-        "name": "Uniform[5]"
-      }
-    },
-    {
-      "output": {
         "nodeVarname": "LoadSPH3a59cba5_9566_4390_82fd_a96cf1c3ced2",
         "name": "VolumeData"
       },
@@ -2459,6 +2599,76 @@
       "input": {
         "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
         "name": "Uniform[8]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformFloatea5461b3_72e8_4550_9da6_cae455687b74",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[9]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "Sliderbfc4fa87_ba42_4d97_9c56_3c6c7e386541",
+        "name": "fval"
+      },
+      "input": {
+        "nodeVarname": "UniformFloatea5461b3_72e8_4550_9da6_cae455687b74",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformIntcd328b16_dc9b_40d1_8219_5dbfba676212",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[10]"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43",
+        "name": "vec2"
+      },
+      "input": {
+        "nodeVarname": "UniformVec2eef846f1_f5fd_43cf_8901_a63b406c68b8",
+        "name": "value"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+        "name": "Min"
+      },
+      "input": {
+        "nodeVarname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43",
+        "name": "value0"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "TransferFunction9b182a29_eada_4fb2_a758_3a020bbcf2ed",
+        "name": "Max"
+      },
+      "input": {
+        "nodeVarname": "FloatToVec24a576f7d_eb88_4b42_a60e_44857bde2d43",
+        "name": "value1"
+      }
+    },
+    {
+      "output": {
+        "nodeVarname": "UniformVec2eef846f1_f5fd_43cf_8901_a63b406c68b8",
+        "name": "uniform"
+      },
+      "input": {
+        "nodeVarname": "VolumeObjectcc483247_8c82_41e5_9c3e_965751016ff8",
+        "name": "Uniform[4]"
       }
     }
   ],
