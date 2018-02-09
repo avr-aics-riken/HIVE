@@ -4,6 +4,7 @@
 	"info":"ラインデータを表示させるためのノード",
 	"customfuncfile": "LineObject.lua",
     "input": [
+    	{"name": "renderer", "type": "RenderCore"},
 		{"name": "line", "type": "BufferLineData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
 		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},

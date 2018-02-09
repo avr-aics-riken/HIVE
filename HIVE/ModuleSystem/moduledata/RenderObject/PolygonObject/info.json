@@ -4,7 +4,7 @@
 	"info":"メッシュデータを表示させるためのノード",
 	"customfuncfile": "PolygonObject.lua",
     "input": [
-		{"name": "renderer", "type":"RenderCore"},
+		{"name": "renderer", "type": "RenderCore"},
 		{"name": "mesh", "type": "BufferMeshData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
 		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},

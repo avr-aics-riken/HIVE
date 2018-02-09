@@ -4,6 +4,7 @@
 	"info": "ボリュームデータを表示させるためのノード",
 	"customfuncfile": "VolumeObject.lua",
     "input": [
+    	{"name": "renderer", "type": "RenderCore"},
 		{"name": "volume", "type": "BufferVolumeData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
 		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},

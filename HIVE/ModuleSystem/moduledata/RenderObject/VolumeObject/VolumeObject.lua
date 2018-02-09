@@ -5,21 +5,21 @@ VolumeObject.new = function (varname)
     local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
-    
+
     setmetatable(this, {__index=VolumeObject})
     return this
 end
 
-function VolumeObject:Do()    
+function VolumeObject:Do()
     self:UpdateValue()
-    local v = self.value    
+    local v = self.value
     local pm = VolumeModel(); -- make new Model!
     self.pmodel = pm           -- replace
-    
+
     local minval = 0.0
     local maxval = 1.0
     if v.volume then
-        if v.volume:Width() > 0 and v.volume:Height() > 0 and v.volume:Depth() > 0 then 
+        if v.volume:Width() > 0 and v.volume:Height() > 0 and v.volume:Depth() > 0 then
             pm:Create(v.volume)
             -- Analyze min/max
             local analyzer = LoadModule('Analyzer').VolumeAnalyzer()
@@ -28,22 +28,26 @@ function VolumeObject:Do()
             maxval = analyzer:MaxX()
             print('analyzer: min=', minval, ' max=', maxval)
        end
-    end    
-    
+    end
+
     pm:SetFloat('volumemin', minval)
     pm:SetFloat('volumemax', maxval)
-    
+
 	pm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
-    
+
+    if v.renderer == nil then
+        return "Not found renderer"
+    end
+
     if pm:GetShader() ~= v.shadername then
-        clearShaderCache(v.shadername)
+        v.renderer:clearShaderCache(v.shadername)
     end
 	pm:SetShader(v.shadername)
 
 	local uniforms = self.connection.Uniform
-    if uniforms ~= nil then    
+    if uniforms ~= nil then
         for i,v in pairs(uniforms) do
             if v.type == 'vec4' then
                 print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
@@ -71,7 +75,7 @@ function VolumeObject:Do()
             end
         end
     end
-    
+
     pm:ClearExtraBuffer()
     local varyings = self.connection.Varying
     if varyings ~= nil then
@@ -79,7 +83,7 @@ function VolumeObject:Do()
             pm:AddExtraBuffer(v.name, v.value)
         end
     end
-    
+
     return true
 end
 
