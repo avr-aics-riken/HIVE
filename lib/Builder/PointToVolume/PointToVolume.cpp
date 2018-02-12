@@ -6,6 +6,7 @@
 #include "../Core/vxmath.h"
 #include <string.h>
 #include <algorithm>
+#include <iostream>
 
 namespace {
 
@@ -48,8 +49,6 @@ bool PointToVolume::ToVolume(int w, int h, int d) {
     int c = 1; // Store scalar density.
     m_volume->Create(w, h, d, c);
 
-    FloatBuffer* buffer = m_volume->Buffer();
-
     float bmin[3];
     float bmax[3];
 
@@ -62,7 +61,7 @@ bool PointToVolume::ToVolume(int w, int h, int d) {
     bmin[0] = bmax[0] = position[0];
     bmin[1] = bmax[1] = position[1];
     bmin[2] = bmax[2] = position[2];
-    for (size_t i = 1; i < m_point->Position()->GetNum(); i++) {
+    for (size_t i = 0; i < m_point->Position()->GetNum(); i++) {
         bmin[0] = (std::min)(bmin[0], position[3*i+0]);
         bmin[1] = (std::min)(bmin[1], position[3*i+1]);
         bmin[2] = (std::min)(bmin[2], position[3*i+2]);
@@ -83,9 +82,92 @@ bool PointToVolume::ToVolume(int w, int h, int d) {
     // @todo { Consider particle radius. }
 
     size_t dim[3] = { w, h, d };
-    for (size_t i = 1; i < m_point->Position()->GetNum(); i++) {
+    for (size_t i = 0; i < m_point->Position()->GetNum(); i++) {
         size_t loc = findLoc(position[3*i+0], position[3*i+1], position[3*i+2], bmin, bmax, dim);
         voxels[loc] += 1.0f;
+    }
+
+    printf("ToVolume: %zu, %zu, %zu\n", dim[0], dim[1], dim[2]);
+    
+    return true;
+}
+
+/**
+ * 点 vec3 attrib データからVolumeDataへの変換
+ * @param w Width
+ * @param h Height
+ * @param attrib point attribute
+ * @retval true 変換成功
+ * @retval false 変換失敗
+ */
+bool PointToVolume::ToVolumeWithAttrib(int w, int h, int d, BufferExtraData *attrib) {
+
+    assert(m_point);
+    assert(m_point->Position());
+    assert(m_point->Position()->GetNum() > 0);
+
+    assert(vattrib);
+    if (attrib->GetNum() != m_point->Position()->GetNum()) {
+        std::cerr << "Number of elements mismatch. " << std::endl;
+        return false;
+    }
+
+    std::string attribDataType = attrib->GetDataType();
+
+    int c = 0;
+    if ((attribDataType.compare("float") == 0)) {
+        c = 1;
+    } else if (attribDataType.compare("vec3") == 0) {
+        c = 3;
+    } else {
+        // OK
+        std::cerr << "Unsupported attribute type: " << attribDataType << std::endl;
+        return false;
+    }
+
+    m_volume = BufferVolumeData::CreateInstance();
+
+    m_volume->Create(w, h, d, c);
+
+    float bmin[3];
+    float bmax[3];
+
+    // Compute bounding box.
+    float *position = m_point->Position()->GetBuffer();
+    bmin[0] = bmax[0] = position[0];
+    bmin[1] = bmax[1] = position[1];
+    bmin[2] = bmax[2] = position[2];
+    for (size_t i = 0; i < m_point->Position()->GetNum(); i++) {
+        bmin[0] = (std::min)(bmin[0], position[3*i+0]);
+        bmin[1] = (std::min)(bmin[1], position[3*i+1]);
+        bmin[2] = (std::min)(bmin[2], position[3*i+2]);
+
+        bmax[0] = (std::max)(bmax[0], position[3*i+0]);
+        bmax[1] = (std::max)(bmax[1], position[3*i+1]);
+        bmax[2] = (std::max)(bmax[2], position[3*i+2]);
+    }
+        
+    printf("bmin: %f, %f, %f\n", bmin[0], bmin[1], bmin[2]);
+    printf("bmax: %f, %f, %f\n", bmax[0], bmax[1], bmax[2]);
+
+    float* voxels = m_volume->Buffer()->GetBuffer();
+
+    const size_t fnum = w * h * d * c;
+    memset(voxels, 0, fnum * sizeof(float));
+
+    // @todo { Consider particle radius? }
+
+    size_t dim[3] = { w, h, d };
+    for (size_t i = 0; i < m_point->Position()->GetNum(); i++) {
+        size_t loc = findLoc(position[3*i+0], position[3*i+1], position[3*i+2], bmin, bmax, dim);
+        if (c == 1) {
+                voxels[loc] += attrib->Float()->GetBuffer()[i];
+        } else if (c == 3) {
+            for (int k = 0 ; k < c; k++) {
+                voxels[c * loc + k] += attrib->Vec3()->GetBuffer()[c * i + k];
+            }
+        }
+
     }
 
     printf("ToVolume: %zu, %zu, %zu\n", dim[0], dim[1], dim[2]);
