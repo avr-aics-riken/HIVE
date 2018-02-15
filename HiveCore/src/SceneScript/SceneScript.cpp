@@ -463,6 +463,24 @@ int screenParallelRendering(lua_State* L)
     return 1;
 }
 
+int enableDepthComposition(lua_State* L)
+{
+    const bool enableDepth = lua_toboolean(L, 1);
+    RenderCore* core = RenderCore::GetInstance();
+    core->EnableDepthComposition(enableDepth);
+    lua_pushboolean(L, true);
+    return 1;
+}
+
+int setCompositionMergeID(lua_State* L)
+{
+    int mergeID = lua_tointeger(L, 1);
+    RenderCore* core = RenderCore::GetInstance();
+    core->SetCompositionMergeID(mergeID);
+    lua_pushboolean(L, true);
+    return 1;
+}
+
 int getMemoryData(lua_State* L);
 int getMemoryDataNames(lua_State* L);
 
@@ -488,6 +506,8 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
     SetFunction(L, "sleep", h_sleep);
     
     SetFunction(L, "screenParallelRendering", screenParallelRendering);
+    SetFunction(L, "enableDepthComposition", enableDepthComposition);
+    SetFunction(L, "setCompositionMergeID", setCompositionMergeID);
 
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);

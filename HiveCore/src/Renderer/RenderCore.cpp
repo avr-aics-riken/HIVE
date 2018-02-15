@@ -157,6 +157,8 @@ class RenderCore::Impl
 
     // Use depth layer for 234composition.
     bool m_use_depth_234composition;
+	// merge id for 234composition.
+	int m_compositionMergeID;
 
 	// Framebuffers
 	unsigned int m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer;
@@ -227,6 +229,7 @@ class RenderCore::Impl
 	{
 		m_mode = mode;
         m_use_depth_234composition = false;
+		m_compositionMergeID = ALPHA;
 
 		m_clearcolor = VX::Math::vec4(
 			0, 0, 0, 0); // Always (0,0,0,0). we set clearcolor at readbacked.
@@ -452,12 +455,14 @@ class RenderCore::Impl
 				PMon::Start("Compositor");
 #endif
                 if (m_use_depth_234composition) {
-                    readbackDepth(depth);
-                    // TODO(IDS): Ensure depth buffer is float type 
-                    assert(depth->FloatImageBuffer());
-                    const float *depthData = depth->FloatImageBuffer()->GetBuffer();
-                    assert(depthDeta);
-                    readbackImage(colorfmt, color, depthData, clr[0], clr[1], clr[2], clr[3]);
+					if (depth->Format() ==  BufferImageData::R32F && depth->FloatImageBuffer()) {
+						readbackDepth(depth);
+						const float *depthData = depth->FloatImageBuffer()->GetBuffer();
+						assert(depthDeta);
+						readbackImage(colorfmt, color, depthData, clr[0], clr[1], clr[2], clr[3]);
+					} else {
+						printf("[Error] Failed to composite depth buffer\n");
+					}
                 } else {
                     readbackImage(colorfmt, color, NULL, clr[0], clr[1], clr[2], clr[3]);
                     readbackDepth(depth);
@@ -495,6 +500,16 @@ class RenderCore::Impl
 				// readbacktm-rendertm, savetm-readbacktm);
 			}
 		}
+	}
+
+	void EnableDepthComposition(bool enable)
+	{
+		m_use_depth_234composition = enable;
+	}
+
+	void SetCompositionMergeID(int mergeID)
+	{
+		m_compositionMergeID = mergeID;
 	}
 
   private:
@@ -667,17 +682,15 @@ class RenderCore::Impl
 
 			if (nnodes > 1)
 			{
-
 				// Assume m_compPixelType == ID_RGBA32
 				assert(m_compPixelType == ID_RGBA32);
                 if (depth) {
-                    // FIXME(IDS): Do not remove const
                     Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf, depth,
+                                      m_compPixelType, m_compositionMergeID, imgbuf, depth,
                                       MPI_COMM_WORLD);
                 } else {
                     Do_234Composition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf,
+                                      m_compPixelType, m_compositionMergeID, imgbuf,
                                       MPI_COMM_WORLD);
                 }
 			}
@@ -728,12 +741,12 @@ class RenderCore::Impl
 			{
                 if (depth) {
                     Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf,
+                                      m_compPixelType, m_compositionMergeID, imgbuf,
                                       depth,
                                       MPI_COMM_WORLD);
                 } else {
                     Do_234Composition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf,
+                                      m_compPixelType, m_compositionMergeID, imgbuf,
                                       MPI_COMM_WORLD);
                 }
 			}
@@ -935,4 +948,14 @@ bool RenderCore::CreateProgramSrc(const char *src, unsigned int &prg)
 bool RenderCore::ClearShaderCache(const char *src)
 {
 	return m_imp->ClearShaderCache(src);
+}
+
+void RenderCore::EnableDepthComposition(bool enable)
+{
+	return m_imp->EnableDepthComposition(enable);
+}
+
+void RenderCore::SetCompositionMergeID(int mergeID)
+{
+	return m_imp->SetCompositionMergeID(mergeID);
 }

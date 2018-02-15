@@ -13,6 +13,8 @@
 		{"name": "screensize", "type": "vec2", "value": [256,256]},
 		{"name": "rendersize", "type": "vec2", "value": [128,128], "visible" : false, "hole":false},
         {"name": "clearcolor", "type": "vec4", "value": [0,0,0,1]},
+		{"name": "depthComp", "type": "bool", "value" : false },
+		{"name": "compMergeID", "type": "int", "value" : 0 },
         {"name": "floatbuffer", "type": "bool", "value": false, "hole":false},
         {"name": "ipcmode", "type": "bool", "value": false, "hole":false},
         {"name": "Camera",  "type": "RenderObject"},
