@@ -9,6 +9,8 @@
 #include "PointToVolume.h"
 #include "BufferVolumeData_Lua.h"
 #include "BufferPointData_Lua.h"
+#include "BufferExtraData_Lua.h"
+
 /**
  * PointToVolume Luaラッパー
  */
@@ -26,6 +28,11 @@ public:
         return PointToVolume::ToVolume(w, h, d);
     }
 
+    /// Rasterizer particle attribute to voxel.
+    bool ToVolumeWithAttrib(int w, int h, int d, BufferExtraData_Lua *attrib) {
+        return PointToVolume::ToVolumeWithAttrib(w, h, d, attrib);
+    }
+
     /// Retrieve volume data.
     /// Valid after ToVolume()
     BufferVolumeData_Lua* VolumeData() {
@@ -36,6 +43,7 @@ public:
     LUA_SCRIPTCLASS_BEGIN(PointToVolume_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferPointData_Lua*)
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("PointToVolume",bool,ToVolume,int,int,int)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("PointToVolumeWithAttrib",bool,ToVolumeWithAttrib,int,int,int,BufferExtraData_Lua*)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 
