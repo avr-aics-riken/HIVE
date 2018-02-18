@@ -28,9 +28,14 @@ public:
         return PointToVolume::ToVolume(w, h, d);
     }
 
+    ///
     /// Rasterizer particle attribute to voxel.
-    bool ToVolumeWithAttrib(int w, int h, int d, BufferExtraData_Lua *attrib) {
-        return PointToVolume::ToVolumeWithAttrib(w, h, d, attrib);
+    /// Supports voxelize vec3 and scalar data.
+    /// Create a scalar valued voxel for vec3 data when `vector_length` is true
+    /// (take a length of vector value)
+    /// 
+    bool ToVolumeWithAttrib(int w, int h, int d, BufferExtraData_Lua *attrib, bool vector_length = false) {
+        return PointToVolume::ToVolumeWithAttrib(w, h, d, attrib, vector_length);
     }
 
     /// Retrieve volume data.
@@ -43,7 +48,7 @@ public:
     LUA_SCRIPTCLASS_BEGIN(PointToVolume_Lua)
     LUA_SCRIPTCLASS_METHOD_ARG1(int,Create,BufferPointData_Lua*)
     LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG3("PointToVolume",bool,ToVolume,int,int,int)
-    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG4("PointToVolumeWithAttrib",bool,ToVolumeWithAttrib,int,int,int,BufferExtraData_Lua*)
+    LUA_SCRIPTCLASS_METHOD_MEASURE_CALC_ARG5("PointToVolumeWithAttrib",bool,ToVolumeWithAttrib,int,int,int,BufferExtraData_Lua*, bool)
     LUA_SCRIPTCLASS_METHOD_ARG0(BufferVolumeData_Lua*,VolumeData)
     LUA_SCRIPTCLASS_END()
 
