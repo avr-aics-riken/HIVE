@@ -125,6 +125,24 @@ class RenderView extends React.Component {
         }
 
     }
+	
+	drawRenderedImage(imageObject) {
+		let imgElem = document.getElementById(this.getCanvasName('img'));
+		imgElem.src = imageObject;
+		let canElem = document.getElementById(this.getCanvasName('canvas'));
+		let ctx = canElem.getContext("2d");
+		imgElem.onload = function () {
+			ctx.fillStyle = "rgb(255, 255, 255)";
+			ctx.fillRect(0, 0, this.state.width, this.state.height);
+			ctx.setTransform(1, 0, 0, -1, 0, this.state.height);
+			ctx.drawImage(imgElem, 0, 0, this.state.width, this.state.height);
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			// TODO
+			this.drawBBox();
+			URL.revokeObjectURL(imgElem.src);
+		}.bind(this);
+	}
+	
     readyForIPCImageTransfer(){
        	// Electron only
         if (this.sc === undefined && window && window.process && window.process.type) {
@@ -149,13 +167,11 @@ class RenderView extends React.Component {
 	                    param = meta.param;
 	                if (param.type === 'jpg') {
 	                    // resultElement is img.
-	                    var resultElement = document.getElementById(this.getCanvasName('img'));
-	                    resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+						this.drawRenderedImage(URL.createObjectURL(new Blob([data],{type: "image/jpeg"})));
 
 	                } else if (param.type === 'png') {
 						// resultElement is img.
-						var resultElement = document.getElementById(this.getCanvasName('img'));
-						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/png"}));
+						this.drawRenderedImage(URL.createObjectURL(new Blob([data], {type: "image/png"})))
 					} else if (param.type === 'raw'){
 	                    //console.log('UPDATE CANVAS!!!');
 
@@ -168,6 +184,8 @@ class RenderView extends React.Component {
                             var imageData = context.createImageData(param.width, param.height);
                             buffercopy.buffercopy(data, imageData.data);
                             context.putImageData(imageData, 0, 0);
+							
+							this.drawBBox();
 
                             this.progressiveUpdate(param);
                         }
@@ -204,22 +222,7 @@ class RenderView extends React.Component {
 			} else {
   		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
-		
-		
-                let imgElem = document.getElementById(this.getCanvasName('img'));
-                imgElem.src = URL.createObjectURL(this.state.image, {type: "image/png"})
-        		let canElem = document.getElementById(this.getCanvasName('canvas'));
-				let ctx = canElem.getContext("2d");
-				imgElem.onload = function () {
-					ctx.fillStyle = "rgb(255, 255, 255)";
-					ctx.fillRect(0, 0, this.state.width, this.state.height);
-					ctx.setTransform(1, 0, 0, -1, 0, this.state.height);
-					ctx.drawImage(imgElem, 0, 0, this.state.width, this.state.height);
-					ctx.setTransform(1, 0, 0, 1, 0, 0);
-					this.drawBBox();
-					URL.revokeObjectURL(imgElem.src);
-				}.bind(this);
-				
+				this.drawRenderedImage(URL.createObjectURL(this.state.image, {type: "image/png"}));
                 //console.log(imgElem);
 			}
 		}
