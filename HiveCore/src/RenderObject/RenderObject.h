@@ -14,6 +14,7 @@
 
 class BufferImageData;
 class BufferExtraData;
+class Vec3Buffer;
 
 /**
  * レンダーオブジェクト
@@ -72,6 +73,9 @@ public:
     const ExtraBufferMap& GetExtraBuffers() const;
 
     void UpdateBuffers();
+    
+    virtual bool GetBox(VX::Math::vec3 &bmin,VX::Math::vec3 &bmax) const { return false; };
+    
 protected:
     //--------------------------------------------------
     //Set
@@ -90,6 +94,8 @@ protected:
     bool SetTextureFiltering(const std::string& name, bool filter);
     /// Set texture wrapping mode. CLAMP_TO_EDGE(true) or REPEAT(false)
     bool SetTextureWrapping(const std::string& name, bool clampToEdgeS, bool clampToEdgeT, bool clampToEdgeR);
+    
+    bool CalcBBoxFromVec3Buffer(VX::Math::vec3 &bmin,VX::Math::vec3 &bmax, const Vec3Buffer* positions) const;
 
     RenderObject(MODE_TYPE t);
     ~RenderObject();

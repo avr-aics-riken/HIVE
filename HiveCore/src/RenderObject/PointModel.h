@@ -27,6 +27,7 @@ public:
     BufferPointData* GetPoint() const;
     const std::string& GetShader() const;
 
+    virtual bool GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const;
 };
 
 #endif //_POINTMODEL_H_

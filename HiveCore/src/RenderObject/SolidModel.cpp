@@ -107,3 +107,12 @@ const std::string& SolidModel::GetShader() const
     return m_imp->GetShader();
 }
 
+/// BBoxを取得
+bool SolidModel::GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+{
+    if (GetSolid()) {
+        return RenderObject::CalcBBoxFromVec3Buffer(box_min, box_max, GetSolid()->Position());
+    }
+    return false;
+}
+

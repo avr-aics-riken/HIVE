@@ -48,6 +48,11 @@ private:
         return LuaTable(Camera::GetScreenWidth(), Camera::GetScreenHeight());
     }
     
+    LuaTable ConvertToScreenSpace(float x, float y, float z) {
+        VX::Math::vec3 pos = Camera::ConvertToScreenSpace(x, y, z);
+        return LuaTable(pos.x, pos.y, pos.z);
+    }
+        
     // RenderObject methods
     IMPLEMENTATION_RENDEROBJECT_LUA()
     
@@ -73,6 +78,8 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG0(float,    GetFov)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetClearColor)
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetScreenSize)
+    
+    LUA_SCRIPTCLASS_METHOD_ARG3(LuaTable, ConvertToScreenSpace, float, float, float);
 
     
     // RenderObject interface

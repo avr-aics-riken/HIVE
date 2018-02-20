@@ -32,7 +32,8 @@ public:
     bool GetClampToEdgeS() const;  
     bool GetClampToEdgeT() const; 
     bool GetClampToEdgeR() const; 
-
+    
+    virtual bool GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const;
 };
 
 #endif //_VOLUMEMODEL_H_

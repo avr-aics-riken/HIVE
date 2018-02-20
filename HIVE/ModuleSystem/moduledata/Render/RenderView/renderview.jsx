@@ -28,7 +28,8 @@ class RenderView extends React.Component {
 		this.state = {
 			width : minWidth,
 			height : minHeight,
-			colorbar : null
+			colorbar : null,
+			bbox : null
 		};
 		
         // Mouse
@@ -92,10 +93,13 @@ class RenderView extends React.Component {
 			min :  Number(param.colorbar.min),
 			max :  Number(param.colorbar.max),
 		};
-			
+		
+		let bbox = param.bbox ? JSON.parse(param.bbox) : null;
+
         this.setState({
 			image : buffer,
-			colorbar : colorbar
+			colorbar : colorbar,
+			bbox : bbox
 		});
 		this.state.colorbar = colorbar; 
 		this.drawColorBar();
@@ -200,8 +204,22 @@ class RenderView extends React.Component {
 			} else {
   		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
+		
+		
                 let imgElem = document.getElementById(this.getCanvasName('img'));
                 imgElem.src = URL.createObjectURL(this.state.image, {type: "image/png"})
+        		let canElem = document.getElementById(this.getCanvasName('canvas'));
+				let ctx = canElem.getContext("2d");
+				imgElem.onload = function () {
+					ctx.fillStyle = "rgb(255, 255, 255)";
+					ctx.fillRect(0, 0, this.state.width, this.state.height);
+					ctx.setTransform(1, 0, 0, -1, 0, this.state.height);
+					ctx.drawImage(imgElem, 0, 0, this.state.width, this.state.height);
+					ctx.setTransform(1, 0, 0, 1, 0, 0);
+					this.drawBBox();
+					URL.revokeObjectURL(imgElem.src);
+				}.bind(this);
+				
                 //console.log(imgElem);
 			}
 		}
@@ -528,7 +546,7 @@ class RenderView extends React.Component {
                 width: String(this.canvasSize.bind(this)()[0]) + "px",
                 height: String(this.canvasSize.bind(this)()[1]) + "px",
                 transform : "scale(1.0,-1.0)",
-                display: (this.hasIPCAddress() ? "block" : "none")
+                display: "block" //(this.hasIPCAddress() ? "block" : "none")
 			},
 			image : {
 				postion : "relative",
@@ -536,7 +554,7 @@ class RenderView extends React.Component {
 				top : "0px",
                 width: String(this.canvasSize.bind(this)()[0]) + "px",
                 height: String(this.canvasSize.bind(this)()[1]) + "px",
-                display: (this.hasIPCAddress() ? "none" : "block")
+                display: "none" //(this.hasIPCAddress() ? "none" : "block")
 			},
 			cameraButtonArea : {
 				height : "25px",
@@ -736,6 +754,22 @@ class RenderView extends React.Component {
 			this.colorctx.fillText(maxVal, 255 - maxWidth - 2, 25);
 		}
     }
+	
+	drawBBox() {
+		if (this.state.bbox) {
+			let canElem = document.getElementById(this.getCanvasName('canvas'));
+			let ctx = canElem.getContext("2d");
+			ctx.strokeStyle = "white";
+			ctx.beginPath();
+			for (let i = 0; i < this.state.bbox.length; i += 2) {
+				let p0 = this.state.bbox[i + 0];
+				let p1 = this.state.bbox[i + 1];
+				ctx.moveTo(p0[0], p0[1]);
+				ctx.lineTo(p1[0], p1[1]);
+			}
+			ctx.stroke();
+		}
+	}
 	
     content() {
 		const styles = this.styles();

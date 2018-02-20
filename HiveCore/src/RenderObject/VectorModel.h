@@ -33,6 +33,8 @@ public:
     void  SetArrowSize(float s);
     float GetLengthScale() const;
     void  SetLengthScale(float s);
+    
+	virtual bool GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const;
 };
 
 #endif //_VECTORMODEL_H_
