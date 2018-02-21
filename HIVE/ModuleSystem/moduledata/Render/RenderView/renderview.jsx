@@ -895,7 +895,7 @@ class RenderView extends React.Component {
 							Register
 						</span>
 						<span style={{marginLeft : "65px", marginRight: "3px", fontSize : "11px"}}>BBox:
-							<input type="checkbox" style={{verticalAlign: "middle"}} onChange={this.onBBoxShowChange.bind(this)} />
+							<input type="checkbox" checked={this.getInputValue('showbbox')} style={{verticalAlign: "middle"}} onChange={this.onBBoxShowChange.bind(this)} />
 							<input type="color" ref="bboxcolor" value={this.singleConv(this.getInputValue('bboxcolor'))} onChange={this.onColorChange} style={styles.colorInputs} />
 						</span>
 					</div>
