@@ -144,9 +144,10 @@ class RenderView extends React.Component {
 		let ctx = canElem.getContext("2d");
 		imgElem.onload = function () {
 			ctx.fillStyle = "rgb(255, 255, 255)";
-			ctx.fillRect(0, 0, this.state.width, this.state.height);
-			ctx.setTransform(1, 0, 0, -1, 0, this.state.height);
-			ctx.drawImage(imgElem, 0, 0, this.state.width, this.state.height);
+			let screensize = this.getInputValue("screensize");
+			ctx.fillRect(0, 0, screensize[0], screensize[1]);
+			ctx.setTransform(1, 0, 0, -1, 0, screensize[1]);
+			ctx.drawImage(imgElem, 0, 0, screensize[0], screensize[1]);
 			ctx.setTransform(1, 0, 0, 1, 0, 0);
 			// TODO
 			this.drawBBox();
