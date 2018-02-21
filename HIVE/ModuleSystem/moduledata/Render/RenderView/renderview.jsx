@@ -11,6 +11,9 @@ const footerHeight = 50;
 function progressiveMin(val) {
 	return parseInt(val / 16.0, 10);
 }
+function zeroPadding(n, c){
+    return (new Array(c + 1).join('0') + n).slice(-c);
+}
 
 class RenderView extends React.Component {
 	constructor(props) {
@@ -47,6 +50,7 @@ class RenderView extends React.Component {
 		this.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);
 		this.onClickCameraButton = this.onClickCameraButton.bind(this);
 		this.onClickCameraRegisterButton = this.onClickCameraRegisterButton.bind(this);
+		this.onColorChange = this.onColorChange.bind(this);
 		this.reRender = this.reRender.bind(this);
 
 		this.updatePreset = this.updatePreset.bind(this);
@@ -126,6 +130,13 @@ class RenderView extends React.Component {
 
     }
 	
+    singleConv(color){
+        let r = zeroPadding(new Number(parseInt(color[0] * 255)).toString(16), 2);
+        let g = zeroPadding(new Number(parseInt(color[1] * 255)).toString(16), 2);
+        let b = zeroPadding(new Number(parseInt(color[2] * 255)).toString(16), 2);
+        return '#' + r + g + b;
+    }
+
 	drawRenderedImage(imageObject) {
 		let imgElem = document.getElementById(this.getCanvasName('img'));
 		imgElem.src = imageObject;
@@ -445,6 +456,16 @@ class RenderView extends React.Component {
 		}
 	}
 	
+	onBBoxShowChange(ev) {
+		let isShow = ev.target.checked;
+		this.action.changeNodeInput({
+			varname : this.props.node.varname,
+			input : {
+				"showbbox" : isShow
+			}
+		});
+	}
+	
 	onPresetChange(ev) {
 		let number = Number(ev.target.value);
 		if (number === null || number === undefined) { console.error("invalid camera layer"); return; }
@@ -488,6 +509,22 @@ class RenderView extends React.Component {
 		}
 	}
 
+	onColorChange(eve) {
+		let elem = ReactDOM.findDOMNode(this.refs.bboxcolor);
+		let val = elem.value.match(/[0-9|a-f]{2}/ig);
+		let r = parseInt(val[0], 16) / 255;
+		let g = parseInt(val[1], 16) / 255;
+		let b = parseInt(val[2], 16) / 255;
+		let color = [r, g, b, this.getInputValue('bboxcolor')[3]];
+		// send action from color input change
+		this.props.action.changeNodeInput({
+			varname: this.props.node.varname,
+			input: {
+				bboxcolor: color
+			}
+		});
+	}
+	
 	componentDidMount() {
         var colorbar    = ReactDOM.findDOMNode(this.refs.colorbar);
         colorbar.width  = 256;
@@ -600,7 +637,13 @@ class RenderView extends React.Component {
 				width : "100px",
 				height : "20px",
 				backgroundColor : "white"
-			}
+			},
+            colorInputs: {
+                width: "20px",
+                height: "20px",
+                margin: "2px 0px",
+                padding: "0px"
+            }
 		}
 	}
 
@@ -762,7 +805,7 @@ class RenderView extends React.Component {
 		if (this.state.bbox) {
 			let canElem = document.getElementById(this.getCanvasName('canvas'));
 			let ctx = canElem.getContext("2d");
-			ctx.strokeStyle = "white";
+			ctx.strokeStyle = this.singleConv(this.getInputValue('bboxcolor'));
 			ctx.beginPath();
 			for (let i = 0; i < this.state.bbox.length; i += 2) {
 				let p0 = this.state.bbox[i + 0];
@@ -849,6 +892,10 @@ class RenderView extends React.Component {
 							onMouseEnter={this.onEnterCameraButton}
 							onMouseLeave={this.onLeaveCameraButton}>
 							Register
+						</span>
+						<span style={{marginLeft : "65px", marginRight: "3px", fontSize : "11px"}}>BBox:
+							<input type="checkbox" style={{verticalAlign: "middle"}} onChange={this.onBBoxShowChange.bind(this)} />
+							<input type="color" ref="bboxcolor" value={this.singleConv(this.getInputValue('bboxcolor'))} onChange={this.onColorChange} style={styles.colorInputs} />
 						</span>
 					</div>
 				</div>);

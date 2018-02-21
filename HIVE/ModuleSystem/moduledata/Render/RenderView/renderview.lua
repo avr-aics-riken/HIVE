@@ -105,7 +105,7 @@ function RenderView:Do()
     end
     
     local bbox_verts2D = {}
-    if (v.RenderObject) then
+    if (v.showbbox == true and v.RenderObject) then
         for i, t in ipairs(v.RenderObject) do
             local linemodel = LineModel();
             local shadername = '../shader/const.frag';
