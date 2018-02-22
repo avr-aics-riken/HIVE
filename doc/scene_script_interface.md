@@ -666,7 +666,17 @@ Solid構造のデータをレンダリングするためのオブジェクト.
       local tridata = gen:TriangleList(trianglelist_table, num)
       model:Create(tridata)
  
+- テーブルから複数のVectorArrowを生成する例
 
+      local gen = PrimitiveGenerator()
+      local arrowList = gen:VectorArrowList(positionTable, dirTable, numArrows)
+      local model = VectorModel()
+      model:Create(arrowList)
+
+      -- VectorArrowList(positionTable, dirTable, numArrows)
+      -- positionTable ... 各ベクトルの始点の座標を格納したテーブル (X, Y, Z, X, Y, Z, ...)
+      -- dirTable ... 各ベクトルの方向を格納したテーブル (X, Y, Z, X, Y, Z, ...)
+      -- numArrows ... 生成するベクトルの個数
 
 ---------------------------------
 
