@@ -1,0 +1,14 @@
+
+{
+	"name": "ColorBarSetting",
+	"funcname": "ColorBarSetting",
+	"info":"ColorBar設定ノード",
+	"customfuncfile":"colorbarsetting.lua",
+    "input": [
+		{"name": "colorbar", "type": "ColorBar"},
+		{"name": "color", "type": "vec4", "value": [1.0, 1.0, 1.0, 1.0]}
+	],
+	"output": [
+		{"name": "ColorBar", "type": "ColorBar"}
+	]
+}

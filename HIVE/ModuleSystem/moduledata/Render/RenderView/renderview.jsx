@@ -91,6 +91,8 @@ class RenderView extends React.Component {
 			rgba : param.colorbar.rgba ? JSON.parse(param.colorbar.rgba) : null,
 			min :  Number(param.colorbar.min),
 			max :  Number(param.colorbar.max),
+			composite : (param.colorbar.composite == "true"),
+			fontcolor : param.colorbar.fontcolor ? JSON.parse(param.colorbar.fontcolor) : null 
 		};
 			
         this.setState({
@@ -696,22 +698,15 @@ class RenderView extends React.Component {
 			this.colorctx.clearRect(0,0, rgba.length / 4, this.colorbarAreaHeight);
 			let colorData = this.colorctx.getImageData(0,0, rgba.length / 4, this.colorbarHeight);
 			
-			this.colorctx.strokeStyle = "rgb(255, 255, 255)";
-			this.colorctx.beginPath();
-			this.colorctx.moveTo(0, 0);
-			this.colorctx.lineTo(0, 22);
-			this.colorctx.stroke();
-			
-			this.colorctx.beginPath();
-			this.colorctx.moveTo(128, 0);
-			this.colorctx.lineTo(128, 22);
-			this.colorctx.stroke();
-			
-			this.colorctx.beginPath();
-			this.colorctx.moveTo(255, 0);
-			this.colorctx.lineTo(255, 22);
-			this.colorctx.stroke();
-			
+			let color = "rgb(255, 255, 255)";
+			if (this.state.colorbar.fontcolor) {
+				let col = this.state.colorbar.fontcolor;
+				color = "rgba(" 
+					+ String(Math.round(col[0] * 0xFF)) + ","
+					+ String(Math.round(col[1] * 0xFF)) + ","
+					+ String(Math.round(col[2] * 0xFF)) + ","
+					+ String(Math.round(col[3] * 0xFF)) + ")";
+			}
 			for (let i = 0; i < rgba.length; i += 4) {
 				let r = rgba[i + 0];
 				let g = rgba[i + 1];
@@ -727,12 +722,44 @@ class RenderView extends React.Component {
 			}
 			this.colorctx.putImageData(colorData, 0, 0);
 			
+			// 枠線
+			this.colorctx.strokeStyle = color;
+			// 左
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(0, 0);
+			this.colorctx.lineTo(0, 22);
+			this.colorctx.stroke();
+			// 中央
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(128, 0);
+			this.colorctx.lineTo(128, this.colorbarHeight);
+			this.colorctx.stroke();
+			// 右
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(255, 0);
+			this.colorctx.lineTo(255, 22);
+			this.colorctx.stroke();
+			// 上
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(0, 0);
+			this.colorctx.lineTo(255, 0);
+			this.colorctx.stroke();
+			// 下
+			this.colorctx.beginPath();
+			this.colorctx.moveTo(0, this.colorbarHeight);
+			this.colorctx.lineTo(255, this.colorbarHeight);
+			this.colorctx.stroke();
+			
 			let maxVal = (this.state.colorbar.max === 0) ? "0" : this.state.colorbar.max.toFixed(5);
 			let minVal = (this.state.colorbar.min === 0) ? "0" : this.state.colorbar.min.toFixed(5);
+			let middleVal = (this.state.colorbar.max + this.state.colorbar.min) / 2.0;
+			middleVal = (middleVal === 0) ? "0" : middleVal.toFixed(5);
 			let maxWidth = this.colorctx.measureText(maxVal).width;
 			
-			this.colorctx.strokeStyle = "white";
+			this.colorctx.strokeStyle = color;
+			this.colorctx.fillStyle = color;
 			this.colorctx.fillText(minVal, 2, 25);
+			this.colorctx.fillText(middleVal, 120, 25);
 			this.colorctx.fillText(maxVal, 255 - maxWidth - 2, 25);
 		}
     }
