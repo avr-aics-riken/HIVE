@@ -673,7 +673,7 @@ class RenderCore::Impl
                 if (depth) {
                     // FIXME(IDS): Do not remove const
                     Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf, depth,
+                                      ID_RGBAZ64, DEPTH, imgbuf, depth,
                                       MPI_COMM_WORLD);
                 } else {
                     Do_234Composition(rank, nnodes, m_width, m_height,
@@ -726,9 +726,11 @@ class RenderCore::Impl
 
 			if (nnodes > 1)
 			{
+				// Assume m_compPixelType == ID_RGBA128
+				assert(m_compPixelType == ID_RGBA128);
                 if (depth) {
                     Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf,
+                                      ID_RGBAZ160, DEPTH, imgbuf,
                                       depth,
                                       MPI_COMM_WORLD);
                 } else {
