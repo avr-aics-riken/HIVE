@@ -92,7 +92,7 @@ class RenderView extends React.Component {
 			min :  Number(param.colorbar.min),
 			max :  Number(param.colorbar.max),
 			composite : (param.colorbar.composite == "true"),
-			fontcolor : param.colorbar.fontcolor ? JSON.parse(param.colorbar.fontcolor) : null 
+			color : param.colorbar.color ? JSON.parse(param.colorbar.color) : null 
 		};
 			
         this.setState({
@@ -699,8 +699,8 @@ class RenderView extends React.Component {
 			let colorData = this.colorctx.getImageData(0,0, rgba.length / 4, this.colorbarHeight);
 			
 			let color = "rgb(255, 255, 255)";
-			if (this.state.colorbar.fontcolor) {
-				let col = this.state.colorbar.fontcolor;
+			if (this.state.colorbar.color) {
+				let col = this.state.colorbar.color;
 				color = "rgba(" 
 					+ String(Math.round(col[0] * 0xFF)) + ","
 					+ String(Math.round(col[1] * 0xFF)) + ","

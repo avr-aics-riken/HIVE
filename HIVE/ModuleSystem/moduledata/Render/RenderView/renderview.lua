@@ -114,8 +114,8 @@ function RenderView:Do()
         colorbar_rgba = JSON.encode(v.ColorBar.rgba);
         colorbar_min = tostring(v.ColorBar.min)
         colorbar_max = tostring(v.ColorBar.max)
-        if v.ColorBar.fontcolor ~= nil then
-            colobar_color = JSON.encode(v.ColorBar.fontcolor);
+        if v.ColorBar.color ~= nil then
+            colobar_color = JSON.encode(v.ColorBar.color);
         end
         if v.ColorBar.composite ~= nil then
             colobar_composite = tostring(v.ColorBar.composite);
@@ -136,7 +136,7 @@ function RenderView:Do()
                     "rgba": "]] .. colorbar_rgba .. [[",
                     "min": "]] .. colorbar_min .. [[",
                     "max": "]] .. colorbar_max .. [[",
-                    "fontcolor" : "]] .. colobar_color .. [[",
+                    "color" : "]] .. colobar_color .. [[",
                     "composite" : "]] .. colobar_composite .. [["
                 },
                 "bbox" : "]] ..JSON.encode(bbox_verts2D) .. [["
