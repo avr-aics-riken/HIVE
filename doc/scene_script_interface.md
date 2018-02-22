@@ -203,6 +203,10 @@ RenderObjectは共通のインターフェースを持つ
 
       LuaTable GetScale()
       
+- オブジェクトのトランスフォームマトリックスを取得
+
+      LuaTable GetTransformMatrix()
+
 - シェーダのUniform変数(Vec4)の値をすべて取得
 
       LuaTable GetVec4Table()
@@ -255,8 +259,11 @@ RenderObjectは共通のインターフェースを持つ
 
 	  Number RemoveExtraBuffer(string)
 	
-	 
-	  
+- BoundingBoxを取得
+
+      LuaTable GetBBox()
+      
+
 
 ## Camera
 
@@ -391,6 +398,10 @@ RenderObjectは共通のインターフェースを持つ
 - 深度バッファを返す.
     
         BufferImageData GetDepthBuffer()
+
+- 座標をスクリーンスペースに変換して返す.
+    
+        LuaTable ConvertToScreenSpace(x, y, z)
 
 
 ## PolygonModel
