@@ -155,8 +155,8 @@ class RenderCore::Impl
 	int m_height;
 	RENDER_MODE m_mode;
 
-    // Use depth layer for 234composition.
-    bool m_use_depth_234composition;
+	// Use depth layer for 234composition.
+	bool m_use_depth_234composition;
 
 	// Framebuffers
 	unsigned int m_gs_framebuffer, m_gs_colorbuffer, m_gs_depthbuffer;
@@ -226,7 +226,7 @@ class RenderCore::Impl
 	Impl(RENDER_MODE mode)
 	{
 		m_mode = mode;
-        m_use_depth_234composition = false;
+		m_use_depth_234composition = false;
 
 		m_clearcolor = VX::Math::vec4(
 			0, 0, 0, 0); // Always (0,0,0,0). we set clearcolor at readbacked.
@@ -451,17 +451,23 @@ class RenderCore::Impl
 #if defined(HIVE_WITH_COMPOSITOR)
 				PMon::Start("Compositor");
 #endif
-                if (m_use_depth_234composition) {
-                    readbackDepth(depth);
-                    // TODO(IDS): Ensure depth buffer is float type 
-                    assert(depth->FloatImageBuffer());
-                    const float *depthData = depth->FloatImageBuffer()->GetBuffer();
-                    assert(depthDeta);
-                    readbackImage(colorfmt, color, depthData, clr[0], clr[1], clr[2], clr[3]);
-                } else {
-                    readbackImage(colorfmt, color, NULL, clr[0], clr[1], clr[2], clr[3]);
-                    readbackDepth(depth);
-                }
+				if (m_use_depth_234composition)
+				{
+					readbackDepth(depth);
+					// TODO(IDS): Ensure depth buffer is float type
+					assert(depth->FloatImageBuffer());
+					const float *depthData =
+						depth->FloatImageBuffer()->GetBuffer();
+					assert(depthDeta);
+					readbackImage(colorfmt, color, depthData, clr[0], clr[1],
+								  clr[2], clr[3]);
+				}
+				else
+				{
+					readbackImage(colorfmt, color, NULL, clr[0], clr[1], clr[2],
+								  clr[3]);
+					readbackDepth(depth);
+				}
 #if defined(HIVE_WITH_COMPOSITOR)
 				PMon::Stop("Compositor");
 #endif
@@ -640,8 +646,8 @@ class RenderCore::Impl
 	/// 画像の書き戻し
 	/// @param color カラーバッファ
 	void readbackImage(BufferImageData::FORMAT format, BufferImageData *color,
-                       const float *depth,
-					   float clr_r, float clr_g, float clr_b, float clr_a)
+					   const float *depth, float clr_r, float clr_g,
+					   float clr_b, float clr_a)
 	{
 		const float clearcolor_r = clr_r;
 		const float clearcolor_g = clr_g;
@@ -670,16 +676,18 @@ class RenderCore::Impl
 
 				// Assume m_compPixelType == ID_RGBA32
 				assert(m_compPixelType == ID_RGBA32);
-                if (depth) {
-                    // FIXME(IDS): Do not remove const
-                    Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      ID_RGBAZ64, DEPTH, imgbuf, depth,
-                                      MPI_COMM_WORLD);
-                } else {
-                    Do_234Composition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf,
-                                      MPI_COMM_WORLD);
-                }
+				if (depth)
+				{
+					Do_234ZComposition(rank, nnodes, m_width, m_height,
+									   ID_RGBAZ64, DEPTH, imgbuf, depth,
+									   MPI_COMM_WORLD);
+				}
+				else
+				{
+					Do_234Composition(rank, nnodes, m_width, m_height,
+									  m_compPixelType, ALPHA_BtoF, imgbuf,
+									  MPI_COMM_WORLD);
+				}
 			}
 #endif
 
@@ -728,16 +736,18 @@ class RenderCore::Impl
 			{
 				// Assume m_compPixelType == ID_RGBA128
 				assert(m_compPixelType == ID_RGBA128);
-                if (depth) {
-                    Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      ID_RGBAZ160, DEPTH, imgbuf,
-                                      depth,
-                                      MPI_COMM_WORLD);
-                } else {
-                    Do_234Composition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, ALPHA_BtoF, imgbuf,
-                                      MPI_COMM_WORLD);
-                }
+				if (depth)
+				{
+					Do_234ZComposition(rank, nnodes, m_width, m_height,
+									   ID_RGBAZ160, DEPTH, imgbuf, depth,
+									   MPI_COMM_WORLD);
+				}
+				else
+				{
+					Do_234Composition(rank, nnodes, m_width, m_height,
+									  m_compPixelType, ALPHA_BtoF, imgbuf,
+									  MPI_COMM_WORLD);
+				}
 			}
 #endif
 
@@ -834,7 +844,17 @@ class RenderCore::Impl
 			{
 				Destroy_234Composition(m_compPixelType);
 			}
-			Init_234Composition(rank, nnodes, w, h, m_compPixelType);
+			if (m_use_depth_234composition)
+			{
+				Init_234Composition(rank, nnodes, w, h,
+									((m_compPixelType == ID_RGBA32)
+										 ? ID_RGBAZ64
+										 : ID_RGBAZ160));
+			}
+			else
+			{
+				Init_234Composition(rank, nnodes, w, h, m_compPixelType);
+			}
 			m_compInitialized = true;
 		}
 #endif
