@@ -2,6 +2,8 @@
 RenderView = {}
 setmetatable(RenderView, {__index = HiveBaseModule})
 
+local JSON = require('dkjson')
+
 RenderView.new = function (varname)
     local this = HiveBaseModule.new(varname)
     this.cam = Camera()    
@@ -20,6 +22,29 @@ RenderView.new = function (varname)
     
     setmetatable(this, {__index=RenderView})
     return this
+end
+
+function lineVertex(vlist, v1, v2)
+    for k, v in ipairs(v1) do
+        table.insert(vlist, v);
+    end
+    for k, v in ipairs(v2) do
+        table.insert(vlist, v);
+    end
+end
+
+function transform(v, trans)
+	return {
+        trans[1] * v[1] + trans[5] * v[2] + trans[9]  * v[3] + trans[13] * 1.0,
+        trans[2] * v[1] + trans[6] * v[2] + trans[10] * v[3] + trans[14] * 1.0,
+        trans[3] * v[1] + trans[7] * v[2] + trans[11] * v[3] + trans[15] * 1.0,
+        trans[4] * v[1] + trans[8] * v[2] + trans[12] * v[3] + trans[16] * 1.0
+    };
+end
+
+function screenSpaceLineVertex(cam, vlist, v1, v2)
+    table.insert(vlist, cam:ConvertToScreenSpace(v1[1], v1[2], v1[3]));
+    table.insert(vlist, cam:ConvertToScreenSpace(v2[1], v2[2], v2[3]));
 end
 
 function RenderView:Do()
@@ -72,6 +97,54 @@ function RenderView:Do()
         render(temp)
     --end
     
+-- For bbox
+    if v.Camera then
+        targetcam = v.Camera
+    else
+        targetcam = self.cam
+    end
+    
+    local bbox_verts2D = {}
+    if (v.showbbox == true and v.RenderObject) then
+        for i, t in ipairs(v.RenderObject) do
+            local linemodel = LineModel();
+            local shadername = '../shader/const.frag';
+            linemodel:SetShader(shadername)
+            local bbox = t:GetBBox();
+            if bbox[1] ~= nil and bbox[2] ~= nil then
+                local bmin = bbox[1];
+                local bmax = bbox[2];
+                local p1 = { bmin[1], bmax[2], bmin[3] };
+                local p2 = { bmax[1], bmax[2], bmin[3] };
+                local p3 = { bmax[1], bmin[2], bmin[3] };
+                local p4 = { bmax[1], bmin[2], bmax[3] };
+                local p5 = { bmin[1], bmin[2], bmax[3] };
+                local p6 = { bmin[1], bmax[2], bmax[3] };
+                local trans = t:GetTransformMatrix();
+                bmin = transform(bbox[1], trans);
+                bmax = transform(bbox[2], trans);
+                p1 = transform(p1, trans);
+                p2 = transform(p2, trans);
+                p3 = transform(p3, trans);
+                p4 = transform(p4, trans);
+                p5 = transform(p5, trans);
+                p6 = transform(p6, trans);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, bmin, p1);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p1, p2);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p2, p3);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p3, bmin);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, bmin, p5);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p1, p6);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p2, bmax);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p3, p4);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, bmax, p4);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p4, p5);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p5, p6);
+                screenSpaceLineVertex(targetcam, bbox_verts2D, p6, bmax);
+            end
+        end
+    end
+    
     if network == nil and HIVE_metabin == nil then -- no UI mode        
         return true
     end 
@@ -102,6 +175,24 @@ function RenderView:Do()
     if targetClientId == nil then
         return false
     end
+    
+    local colorbar_rgba = "";
+    local colorbar_min = "0";
+    local colorbar_max = "0";
+    local colobar_color = "[1, 1, 1, 1]";
+    local colobar_composite = "false";
+    if v.ColorBar then
+        colorbar_rgba = JSON.encode(v.ColorBar.rgba);
+        colorbar_min = tostring(v.ColorBar.min)
+        colorbar_max = tostring(v.ColorBar.max)
+        if v.ColorBar.color ~= nil then
+            colobar_color = JSON.encode(v.ColorBar.color);
+        end
+        if v.ColorBar.composite ~= nil then
+            colobar_composite = tostring(v.ColorBar.composite);
+        end
+    end
+    
     local json = [[{
             "JSONRPC" : "2.0",
             "method" : "renderedImage",            
@@ -111,7 +202,15 @@ function RenderView:Do()
                 "width" : "]] .. w .. [[",
                 "height" : "]] .. h .. [[",
                 "canceled": ]] .. tostring(HIVE_isRenderCanceled) .. [[,
-                "varname": "]] .. self.varname .. [["
+                "varname": "]] .. self.varname .. [[",
+                "colorbar": {
+                    "rgba": "]] .. colorbar_rgba .. [[",
+                    "min": "]] .. colorbar_min .. [[",
+                    "max": "]] .. colorbar_max .. [[",
+                    "color" : "]] .. colobar_color .. [[",
+                    "composite" : "]] .. colobar_composite .. [["
+                },
+                "bbox" : "]] ..JSON.encode(bbox_verts2D) .. [["
             },
             "id":0
     }]]
@@ -138,7 +237,6 @@ function RenderView:Do()
     end
     return true
 end
-
 
 function RenderView:Camera()
     return self.cam

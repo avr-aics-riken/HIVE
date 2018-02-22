@@ -26,6 +26,8 @@ public:
     bool Create(BufferTetraData *Tetra);
     BufferTetraData* GetTetra() const;
     const std::string& GetShader() const;
+    
+	virtual bool GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const;
 };
 
 #endif //_TETRAMODEL_H_

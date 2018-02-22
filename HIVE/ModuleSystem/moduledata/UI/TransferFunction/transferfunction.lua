@@ -116,3 +116,11 @@ end
 function TransferFunction:RGBA()
     return self.value.rgba
 end
+
+function TransferFunction:ColorBar()
+    return {
+        rgba = self.value.rgba,
+        min = self.value.minval,
+        max = self.value.maxval,
+    };
+end

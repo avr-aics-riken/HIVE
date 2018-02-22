@@ -137,3 +137,12 @@ const std::string& PolygonModel::GetShader() const
 {
     return m_imp->GetShader();
 }
+
+/// BBoxを取得
+bool PolygonModel::GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+{
+    if (GetMesh()) {
+        return RenderObject::CalcBBoxFromVec3Buffer(box_min, box_max, GetMesh()->Position());
+    }
+    return false;
+}

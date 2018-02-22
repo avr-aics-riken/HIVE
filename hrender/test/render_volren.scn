@@ -1,0 +1,72 @@
+
+print('Render SPH')
+
+local camera = Camera()
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('render_volren_image.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+function CreateTransferFunctionTexture()
+   -- Create 1D transfer function texture
+   -- Jet color table from OSPray example
+   -- r, g, b, alpha
+   local tf =
+        { 0         , 0           , 1 ,      0
+        , 1         , 0           , 0        , 0.1
+        , 0.5         ,0.5            , 0        , 0.1
+        , 0         , 0.0           , 0.5        , 0.1
+        , 0  , 0           , 1.0        , 0.1 }
+
+   local width = #tf / 4
+   local tfTex = GenTexture()
+   tfTex:Create2D(tf, 3, width, 1); -- 3 = RGBA32F
+
+   return tfTex;
+end
+
+local tftex = CreateTransferFunctionTexture()
+
+local sph = LoadModule("SphLoader")
+sph:Load('fvel_0000001470.sph')
+
+print("origin", sph:OriginX(), sph:OriginY(), sph:OriginZ())
+print("pitch", sph:PitchX(), sph:PitchY(), sph:PitchZ())
+print("time", sph:Time())
+print("step", sph:Step())
+
+local volume = LoadModule("Volren")
+local volumedata = sph:VolumeData()
+volume:Create(volumedata)
+volume:SetShader('volume_raymarch_rvr.frag')
+
+local analy = LoadModule("Analyzer").VolumeAnalyzer()
+analy:Execute(volumedata)
+print(analy:MinX())
+print(analy:MaxX())
+
+volume:SetTransferFunctionTexture(tftex:ImageData())
+volume:SetTransferFunctionMin(analy:MinX())
+volume:SetTransferFunctionMax(analy:MaxX())
+volume:SetClampToEdge(true, true, true)
+volume:SetTextureWrapping('tf_tex', true, true, true) -- CLAMP_TO_EDGE wrap mode for transfer function texture.
+
+volume:EnableLighting(true);
+volume:SetLight(0.0, 0.0, 50.0, 5.0);
+volume:SetAttenuation(1.0, 0.0, 0.0);
+volume:SetAmbient(0.2, 0.2, 0.22);
+volume:SetSpecular(1.0, 1.0, 1.0);
+volume:SetSamples(100.0)
+volume:EnableGradientMap(false)
+volume:SetOffset(0.0, 0.0, 0.0);
+
+render {camera, volume}
+
+clearCache() --for volren
+
+    

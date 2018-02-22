@@ -21,7 +21,7 @@
     "electron-packager": "*",
     "react-split-pane": "0.1.25",
     "react-autosuggest": "4.0.0",
-    "react-vendor-prefix":"0.0.1",
+    "react-vendor-prefix": "0.0.1",
     "rc-menu": "4.12.4",
     "react-slider": "0.6.1"
   },
