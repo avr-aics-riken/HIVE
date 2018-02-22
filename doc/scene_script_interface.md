@@ -108,6 +108,12 @@ setBufferDataにより格納されているバッファデータを、キーを�
 ## clearBufferData()
 setBufferDataにより格納されているバッファデータを、全て削除する。
 
+## enableDepthComposition(enable)
+Compositorが有効のときのみ有効。DepthCompositionを有効にする。
+
+## setCompositionMergeID(mergeid)
+Compositorが有効のときのみ有効。Compositionを行う際のMergeIDを整数で設定する。
+
 --------------
 
 #RenderObject
