@@ -229,7 +229,7 @@ class RenderCore::Impl
 	{
 		m_mode = mode;
         m_use_depth_234composition = false;
-		m_compositionMergeID = ALPHA;
+		m_compositionMergeID = 0; // ALPHA
 
 		m_clearcolor = VX::Math::vec4(
 			0, 0, 0, 0); // Always (0,0,0,0). we set clearcolor at readbacked.
