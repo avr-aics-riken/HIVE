@@ -1,0 +1,82 @@
+print('render_vectorarrowlist')
+
+local cam = Camera()
+cam:SetScreenSize(1024, 1024)
+cam:SetFilename("render_vectorarrow_gaussian.jpg")
+cam:LookAt(
+	-50,-50,80,
+	0,0,0,
+	1,1,0,
+	60
+)
+
+-- Create Plane
+local gen   = PrimitiveGenerator()
+local planeWidth  = 100
+local planeHeight = 100
+local planeModel = PolygonModel()
+-- [-planeWidth, -planeHeight]x[planeWidth, planeHeight]
+local meshdata = gen:Quad(planeWidth, planeHeight)
+planeModel:Create(meshdata)
+planeModel:SetShader('white.frag')
+planeModel:SetTranslate(0, 0, 0)
+
+--Gen VectorArrowt List
+local postable = {}
+local dirtable = {}
+
+local gridDivision = 32
+local gridStepX = (planeWidth / gridDivision);
+local gridStepY = (planeHeight / gridDivision);
+local offsetX = -(planeWidth * 0.5) + gridStepX * 0.5;
+local offsetY = -(planeHeight * 0.5) + gridStepY * 0.5;
+
+function gaussian(A, x, y, x0, y0, sigmaX, sigmaY)
+  local xx = x - x0;
+  local yy = y - y0;
+  return A * math.exp(-((xx * xx) / (2 * sigmaX * sigmaX) + (yy * yy) / (2 * sigmaY * sigmaY)));
+end
+
+local sigmaX = 15;
+local sigmaY = 10;
+local gaussShiftX = 0;
+local gaussShiftY = 0;
+local gaussScale = 50;
+
+for x = 0, gridDivision-1, 1 do
+   for y = 0, gridDivision-1, 1 do
+      local x0 = offsetX + gridStepX * x;
+      local y0 = offsetY + gridStepY * y;
+      local z0 = gaussian(gaussScale, x0, y0, gaussShiftX, gaussShiftY, sigmaX, sigmaY);
+      print(x0)
+
+      local nx = gaussian(gaussScale, x0 + 0.01, y0, gaussShiftX, gaussShiftY, sigmaX, sigmaY) -
+        gaussian(gaussScale, x0 - 0.01, y0, gaussShiftX, gaussShiftY, sigmaX, sigmaY);
+      local ny = gaussian(gaussScale, x0, y0 + 0.01, gaussShiftX, gaussShiftY, sigmaX, sigmaY) -
+        gaussian(gaussScale, x0, y0 - 0.01, gaussShiftX, gaussShiftY, sigmaX, sigmaY);
+      local nz = gridStepX;
+      local norm = math.sqrt(nx * nx + ny * ny + nz * nz);
+      local nScale = 0.01;
+      nx = nScale * nx / norm;
+      ny = nScale * ny / norm;
+      nz = nScale * nz / norm;
+
+      table.insert(postable, x0);
+      table.insert(postable, y0);
+      table.insert(postable, z0);
+
+      table.insert(dirtable, x0 * 0.1 + nx );
+      table.insert(dirtable, y0 * 0.1 + ny );
+      table.insert(dirtable, z0 * 0.1 + nz);
+   end
+end
+
+--Create Point List
+local pl    = gen:VectorArrowList(postable, dirtable, gridDivision * gridDivision)
+local model = VectorModel()
+
+--Create Model Data
+model:Create(pl)
+model:SetShader('normal.frag')
+
+render({cam, model, planeModel})
