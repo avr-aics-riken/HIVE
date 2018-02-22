@@ -27,6 +27,8 @@ public:
     BufferLineData* GetLine() const;
     const std::string& GetShader() const;
     float GetLineWidth() const;
+    
+    virtual bool GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const;
 };
 
 #endif //_LINEMODEL_H_

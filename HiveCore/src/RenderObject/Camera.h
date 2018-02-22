@@ -60,6 +60,9 @@ class Camera : public RenderObject
 				float tar_z, float up_x, float up_y, float up_z, float fov);
 	bool ClearColor(float red, float green, float blue, float alpha);
 	float GetFov() const;
+	
+	VX::Math::vec3 ConvertToScreenSpace(float x, float y, float z);
+	bool GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const { return false; }
 };
 
 #endif //_CAMERA_H_

@@ -11,6 +11,9 @@ const footerHeight = 50;
 function progressiveMin(val) {
 	return parseInt(val / 16.0, 10);
 }
+function zeroPadding(n, c){
+    return (new Array(c + 1).join('0') + n).slice(-c);
+}
 
 class RenderView extends React.Component {
 	constructor(props) {
@@ -28,7 +31,8 @@ class RenderView extends React.Component {
 		this.state = {
 			width : minWidth,
 			height : minHeight,
-			colorbar : null
+			colorbar : null,
+			bbox : null
 		};
 		
         // Mouse
@@ -46,6 +50,7 @@ class RenderView extends React.Component {
 		this.onLeaveCameraButton = this.onLeaveCameraButton.bind(this);
 		this.onClickCameraButton = this.onClickCameraButton.bind(this);
 		this.onClickCameraRegisterButton = this.onClickCameraRegisterButton.bind(this);
+		this.onColorChange = this.onColorChange.bind(this);
 		this.reRender = this.reRender.bind(this);
 
 		this.updatePreset = this.updatePreset.bind(this);
@@ -94,10 +99,13 @@ class RenderView extends React.Component {
 			composite : (param.colorbar.composite == "true"),
 			color : param.colorbar.color ? JSON.parse(param.colorbar.color) : null 
 		};
-			
+		
+		let bbox = param.bbox ? JSON.parse(param.bbox) : null;
+
         this.setState({
 			image : buffer,
-			colorbar : colorbar
+			colorbar : colorbar,
+			bbox : bbox
 		});
 		this.state.colorbar = colorbar; 
 		this.drawColorBar();
@@ -123,6 +131,32 @@ class RenderView extends React.Component {
         }
 
     }
+	
+    singleConv(color){
+        let r = zeroPadding(new Number(parseInt(color[0] * 255)).toString(16), 2);
+        let g = zeroPadding(new Number(parseInt(color[1] * 255)).toString(16), 2);
+        let b = zeroPadding(new Number(parseInt(color[2] * 255)).toString(16), 2);
+        return '#' + r + g + b;
+    }
+
+	drawRenderedImage(imageObject) {
+		let imgElem = document.getElementById(this.getCanvasName('img'));
+		imgElem.src = imageObject;
+		let canElem = document.getElementById(this.getCanvasName('canvas'));
+		let ctx = canElem.getContext("2d");
+		imgElem.onload = function () {
+			ctx.fillStyle = "rgb(255, 255, 255)";
+			let screensize = this.getInputValue("screensize");
+			ctx.fillRect(0, 0, screensize[0], screensize[1]);
+			ctx.setTransform(1, 0, 0, -1, 0, screensize[1]);
+			ctx.drawImage(imgElem, 0, 0, screensize[0], screensize[1]);
+			ctx.setTransform(1, 0, 0, 1, 0, 0);
+			// TODO
+			this.drawBBox();
+			URL.revokeObjectURL(imgElem.src);
+		}.bind(this);
+	}
+	
     readyForIPCImageTransfer(){
        	// Electron only
         if (this.sc === undefined && window && window.process && window.process.type) {
@@ -147,13 +181,11 @@ class RenderView extends React.Component {
 	                    param = meta.param;
 	                if (param.type === 'jpg') {
 	                    // resultElement is img.
-	                    var resultElement = document.getElementById(this.getCanvasName('img'));
-	                    resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/jpeg"}));
+						this.drawRenderedImage(URL.createObjectURL(new Blob([data],{type: "image/jpeg"})));
 
 	                } else if (param.type === 'png') {
 						// resultElement is img.
-						var resultElement = document.getElementById(this.getCanvasName('img'));
-						resultElement.src = URL.createObjectURL(new Blob([data], {type: "image/png"}));
+						this.drawRenderedImage(URL.createObjectURL(new Blob([data], {type: "image/png"})))
 					} else if (param.type === 'raw'){
 	                    //console.log('UPDATE CANVAS!!!');
 
@@ -166,6 +198,8 @@ class RenderView extends React.Component {
                             var imageData = context.createImageData(param.width, param.height);
                             buffercopy.buffercopy(data, imageData.data);
                             context.putImageData(imageData, 0, 0);
+							
+							this.drawBBox();
 
                             this.progressiveUpdate(param);
                         }
@@ -202,8 +236,7 @@ class RenderView extends React.Component {
 			} else {
   		//		let imgElem = ReactDOM.findDOMNode(this.refs.renderviewimage);
 		//		imgElem.src = URL.createObjectURL(this.state.image, {type: "image/jpeg"});
-                let imgElem = document.getElementById(this.getCanvasName('img'));
-                imgElem.src = URL.createObjectURL(this.state.image, {type: "image/png"})
+				this.drawRenderedImage(URL.createObjectURL(this.state.image, {type: "image/png"}));
                 //console.log(imgElem);
 			}
 		}
@@ -426,6 +459,16 @@ class RenderView extends React.Component {
 		}
 	}
 	
+	onBBoxShowChange(ev) {
+		let isShow = ev.target.checked;
+		this.action.changeNodeInput({
+			varname : this.props.node.varname,
+			input : {
+				"showbbox" : isShow
+			}
+		});
+	}
+	
 	onPresetChange(ev) {
 		let number = Number(ev.target.value);
 		if (number === null || number === undefined) { console.error("invalid camera layer"); return; }
@@ -469,6 +512,22 @@ class RenderView extends React.Component {
 		}
 	}
 
+	onColorChange(eve) {
+		let elem = ReactDOM.findDOMNode(this.refs.bboxcolor);
+		let val = elem.value.match(/[0-9|a-f]{2}/ig);
+		let r = parseInt(val[0], 16) / 255;
+		let g = parseInt(val[1], 16) / 255;
+		let b = parseInt(val[2], 16) / 255;
+		let color = [r, g, b, this.getInputValue('bboxcolor')[3]];
+		// send action from color input change
+		this.props.action.changeNodeInput({
+			varname: this.props.node.varname,
+			input: {
+				bboxcolor: color
+			}
+		});
+	}
+	
 	componentDidMount() {
         var colorbar    = ReactDOM.findDOMNode(this.refs.colorbar);
         colorbar.width  = 256;
@@ -530,7 +589,7 @@ class RenderView extends React.Component {
                 width: String(this.canvasSize.bind(this)()[0]) + "px",
                 height: String(this.canvasSize.bind(this)()[1]) + "px",
                 transform : "scale(1.0,-1.0)",
-                display: (this.hasIPCAddress() ? "block" : "none")
+                display: "block" //(this.hasIPCAddress() ? "block" : "none")
 			},
 			image : {
 				postion : "relative",
@@ -538,7 +597,7 @@ class RenderView extends React.Component {
 				top : "0px",
                 width: String(this.canvasSize.bind(this)()[0]) + "px",
                 height: String(this.canvasSize.bind(this)()[1]) + "px",
-                display: (this.hasIPCAddress() ? "none" : "block")
+                display: "none" //(this.hasIPCAddress() ? "none" : "block")
 			},
 			cameraButtonArea : {
 				height : "25px",
@@ -581,7 +640,13 @@ class RenderView extends React.Component {
 				width : "100px",
 				height : "20px",
 				backgroundColor : "white"
-			}
+			},
+            colorInputs: {
+                width: "20px",
+                height: "20px",
+                margin: "2px 0px",
+                padding: "0px"
+            }
 		}
 	}
 
@@ -764,6 +829,22 @@ class RenderView extends React.Component {
 		}
     }
 	
+	drawBBox() {
+		if (this.state.bbox) {
+			let canElem = document.getElementById(this.getCanvasName('canvas'));
+			let ctx = canElem.getContext("2d");
+			ctx.strokeStyle = this.singleConv(this.getInputValue('bboxcolor'));
+			ctx.beginPath();
+			for (let i = 0; i < this.state.bbox.length; i += 2) {
+				let p0 = this.state.bbox[i + 0];
+				let p1 = this.state.bbox[i + 1];
+				ctx.moveTo(p0[0], p0[1]);
+				ctx.lineTo(p1[0], p1[1]);
+			}
+			ctx.stroke();
+		}
+	}
+	
     content() {
 		const styles = this.styles();
         return (<div style={styles.bounds}>
@@ -839,6 +920,10 @@ class RenderView extends React.Component {
 							onMouseEnter={this.onEnterCameraButton}
 							onMouseLeave={this.onLeaveCameraButton}>
 							Register
+						</span>
+						<span style={{marginLeft : "65px", marginRight: "3px", fontSize : "11px"}}>BBox:
+							<input type="checkbox" checked={this.getInputValue('showbbox')} style={{verticalAlign: "middle"}} onChange={this.onBBoxShowChange.bind(this)} />
+							<input type="color" ref="bboxcolor" value={this.singleConv(this.getInputValue('bboxcolor'))} onChange={this.onColorChange} style={styles.colorInputs} />
 						</span>
 					</div>
 				</div>);

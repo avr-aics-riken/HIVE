@@ -160,3 +160,12 @@ float LineModel::GetLineWidth() const
     return m_imp->GetLineWidth();
 }
 
+/// BBoxを取得
+bool LineModel::GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+{
+    if (GetLine()) {
+        const Vec3Buffer* position = GetLine()->Position();
+        return RenderObject::CalcBBoxFromVec3Buffer(box_min, box_max, GetLine()->Position());
+    }
+    return false;
+}
