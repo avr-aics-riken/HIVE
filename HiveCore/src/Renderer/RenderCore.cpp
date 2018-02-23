@@ -655,8 +655,8 @@ class RenderCore::Impl
 	/// 画像の書き戻し
 	/// @param color カラーバッファ
 	void readbackImage(BufferImageData::FORMAT format, BufferImageData *color,
-                       const float *depth,
-					   float clr_r, float clr_g, float clr_b, float clr_a)
+					   const float *depth, float clr_r, float clr_g,
+					   float clr_b, float clr_a)
 	{
 		const float clearcolor_r = clr_r;
 		const float clearcolor_g = clr_g;
@@ -686,7 +686,7 @@ class RenderCore::Impl
 				assert(m_compPixelType == ID_RGBA32);
                 if (depth) {
                     Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, m_compositionMergeID, imgbuf, depth,
+                                      ID_RGBAZ64, m_compositionMergeID, imgbuf, depth,
                                       MPI_COMM_WORLD);
                 } else {
                     Do_234Composition(rank, nnodes, m_width, m_height,
@@ -739,10 +739,11 @@ class RenderCore::Impl
 
 			if (nnodes > 1)
 			{
+				// Assume m_compPixelType == ID_RGBA128
+				assert(m_compPixelType == ID_RGBA128);
                 if (depth) {
                     Do_234ZComposition(rank, nnodes, m_width, m_height,
-                                      m_compPixelType, m_compositionMergeID, imgbuf,
-                                      depth,
+                                      ID_RGBAZ160, m_compositionMergeID, imgbuf, depth,
                                       MPI_COMM_WORLD);
                 } else {
                     Do_234Composition(rank, nnodes, m_width, m_height,
@@ -845,7 +846,17 @@ class RenderCore::Impl
 			{
 				Destroy_234Composition(m_compPixelType);
 			}
-			Init_234Composition(rank, nnodes, w, h, m_compPixelType);
+			if (m_use_depth_234composition)
+			{
+				Init_234Composition(rank, nnodes, w, h,
+									((m_compPixelType == ID_RGBA32)
+										 ? ID_RGBAZ64
+										 : ID_RGBAZ160));
+			}
+			else
+			{
+				Init_234Composition(rank, nnodes, w, h, m_compPixelType);
+			}
 			m_compInitialized = true;
 		}
 #endif
