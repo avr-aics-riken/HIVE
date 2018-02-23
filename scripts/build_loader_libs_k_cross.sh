@@ -197,7 +197,7 @@ function build_compositor {
 	echo "====> Building 234Compositor..."
 
 	cd third_party/ 
-	cd 234Compositor/
+	cd 234Compositor_AVR/
 	# if [ -f "Makefile" ]; then
 	# 	make distclean
 	# fi
