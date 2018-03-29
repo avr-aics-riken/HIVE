@@ -15,7 +15,7 @@ class RenderObject_Lua;
  */
 class RenderCore_Lua : public RefCount
 {
-private:
+protected:
     RenderCore* core;
     
 public:

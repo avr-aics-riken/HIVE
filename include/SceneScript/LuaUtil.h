@@ -796,7 +796,18 @@ public:
         } else if (lua_istable(L, stacki)) {
             lua_pushnil(L); // first nil
             while (lua_next(L, stacki) != 0) {
-                if (lua_isnumber(L, -2)) {
+                if (lua_istable(L, stacki/*-2*/)) {
+                    const int top = lua_gettop(L);
+                    LuaTable val(L, top);
+                    if (lua_isnumber(L, -2)) {
+                        m_type = TYPE_ARRAY;
+                        this->push(val);
+                    } else if (lua_isstring(L, -2)) {
+                        m_type = TYPE_MAP;
+                        const char* s = lua_tostring(L, -2);
+                        this->map(s, val);
+                    }
+                } else if (lua_isnumber(L, -2)) {
                     LuaTable val(L, -1);
                     if (val.GetType() != TYPE_INVALID) {
                         if (lua_isnumber(L, -2)) {
@@ -807,17 +818,6 @@ public:
                             const char* s = lua_tostring(L, -2);
                             this->map(s, val);
                         }
-                    }
-                } else if (lua_istable(L, -2)) {
-                    const int top = lua_gettop(L);
-                    LuaTable val(L, top);
-                    if (lua_isnumber(L, -2)) {
-                        m_type = TYPE_ARRAY;
-                        this->push(val);
-                    } else if (lua_isstring(L, -2)) {
-                        m_type = TYPE_MAP;
-                        const char* s = lua_tostring(L, -2);
-                        this->map(s, val);
                     }
                 }
                 lua_pop(L, 1);

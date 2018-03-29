@@ -14,7 +14,12 @@ private:
     : RenderCore_Lua(static_cast<RenderCore*>(new RenderCoreKVS()))
     {
     }
-        
+    
+    int render(LuaTable tbl, LuaTable cb) {
+        RenderCoreKVS* rcore = static_cast<RenderCoreKVS*>(core);
+        return rcore->render(tbl, cb);
+    }
+    
 public:
     ~RenderCoreKVS_Lua() {}
     

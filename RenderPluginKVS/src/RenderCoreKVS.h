@@ -7,6 +7,7 @@
 
 #include <Core/Ref.h>
 #include <Renderer/RenderCore.h>
+#include <SceneScript/LuaUtil.h>
 
 class RenderObject;
 class BufferImageData;
@@ -26,6 +27,8 @@ public:
     void Render();
     void ClearRenderObject();
     
+    int render(LuaTable args, LuaTable callback);
+
     void ClearBuffers(); // Clear RenderBuffer resouces
     void SetProgressCallback(bool (*func)(double));
     bool ClearShaderCache(const char* srcname);

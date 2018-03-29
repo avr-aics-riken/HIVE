@@ -61,6 +61,8 @@ endif()
 # --------------------------------------
 # KVS
 
+add_definitions(-DKVS_ENABLE_OPENGL=1)
+
 if (KVS_FOUND)
     include_directories(${KVS_INCLUDE_DIRS})
     link_libraries(${KVS_LIBRARIES})
@@ -169,5 +171,5 @@ if (HIVE_BUILD_WITH_OPENGL)
 endif()
 
 target_link_libraries(RenderPluginKVS pthread)
-target_link_libraries(RenderPluginKVS LSGLES)
+#target_link_libraries(RenderPluginKVS LSGLES)
 set_target_properties(RenderPluginKVS PROPERTIES PREFIX "")
