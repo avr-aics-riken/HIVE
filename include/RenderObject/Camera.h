@@ -41,6 +41,7 @@ class Camera : public RenderObject
 	VX::Math::vec3 GetTarget() const;
 	VX::Math::vec3 GetUp() const;
 
+    float GetFov() const;
   private:
 	class Impl;
 	Impl *m_imp;
@@ -59,7 +60,7 @@ class Camera : public RenderObject
 	bool LookAt(float eye_x, float eye_y, float eye_z, float tar_x, float tar_y,
 				float tar_z, float up_x, float up_y, float up_z, float fov);
 	bool ClearColor(float red, float green, float blue, float alpha);
-	float GetFov() const;
+	
 };
 
 #endif //_CAMERA_H_

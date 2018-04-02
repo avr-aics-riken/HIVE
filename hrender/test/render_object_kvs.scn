@@ -1,0 +1,58 @@
+
+print('Render camera')
+
+local camera = Camera()
+camera:ClearColor(0,1,0,1)
+camera:SetScreenSize(1024, 512)
+camera:SetFilename('image_object_kvs.jpg')
+
+camera:LookAt(
+	5,5,10,
+	0,0,0,
+	0,1,0,
+	45
+)
+
+
+local camera2 = Camera()
+camera2:ClearColor(0,0,1,1)
+camera2:SetScreenSize(512, 512)
+camera2:SetFilename('image_object_kvs2.jpg')
+
+camera2:LookAt(
+	-5,5,10,
+	0,0,0,
+	0,1,0,
+	45
+)
+
+local kvsdataimp = require('KVSDataImporter')()
+kvsdataimp:SetFile('blunt.inp')
+local idata = kvsdataimp:Object()
+
+local kvsExtFaces = require('KVSExternalFaces')()
+kvsExtFaces:SetVolumeObject(idata)
+local polygondata = kvsExtFaces:Object()
+
+local kvsStcasticPolyRenderer = require('KVSStochasticPolygonRenderer')()
+kvsStcasticPolyRenderer:EnableShading(true)
+local renderer = kvsStcasticPolyRenderer:Renderer()
+
+local krobj = require('KVSRenderObject')()
+krobj:SetObject(polygondata)
+krobj:SetRenderer(renderer)
+krobj:SetShaderFlag(true)
+krobj:SetShadingFlag(true)
+krobj:SetShowFlag(true)
+
+
+print (kvsdataimp, kvsExtFaces, kvsStcasticPolyRenderer, kvsrenderobj)
+
+local core = LoadModule("RenderPluginKVS")
+
+local robj = {
+    object = krobj:Object(),
+    renderer = krobj:Renderer()
+}
+core:render {robj, camera, camera2}
+
