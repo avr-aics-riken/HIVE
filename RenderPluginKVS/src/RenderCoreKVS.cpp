@@ -18,13 +18,13 @@
 #include <OpenGL/gl3.h>
 #else
 #include <GL/glew.h>
-//#include "glad/glad.h"
 #endif
 
 
 #include <kvs/Timer>
 #include <kvs/glut/Application>
 #include <kvs/glut/Screen>
+#include <kvs/Camera>
 #include <kvs/StochasticRenderingCompositor>
 
 
@@ -153,7 +153,6 @@ class RenderCoreKVS::Impl {
 private:
     typedef std::vector< RefPtr<RenderObject> > RenderObjectArray;
     RenderObjectArray m_renderObjects;
-    const Camera* m_currentCamera;
     
     int m_width;
     int m_height;
@@ -169,8 +168,8 @@ private:
 public:
 #ifndef __APPLE__
     int glInit() {
-        
-        
+        GLenum e = glewInit();
+        std::cout << "glewInit = " << e << std::endl;
         
         std::cout << "OpenGL " << GLVersion.major << "," << GLVersion.minor << std::endl;
         
@@ -179,15 +178,10 @@ public:
             return -1;
         }
         std::cout << "GL=" << glGetString(GL_VERSION) << ", GLSL=" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+        return 0;
     }
 #else
     int glInit() {
-        //GLenum e = glewInit();
-        //std::cout << e << std::endl;
-        /*if (!gladLoadGL()) {
-            std::cout << "Something went wrong!\n" << std::endl;
-            return -1;
-        }*/
         std::cout << "OpenGL ver. " <<glGetString(GL_VERSION) << ", GLSL=" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
         return 0;
     }
@@ -196,8 +190,8 @@ public:
     Impl() {
         printf("RenderCoreKVS contruct\n");
         
-        m_width = 512;
-        m_height = 512;
+        m_width = 2048;
+        m_height = 2048;
         
         m_framebuffer = 0;
         m_colorbuffer = 0;
@@ -211,9 +205,6 @@ public:
         m_far = 500.0;
         m_near = 0.1;
         
-        
-        
-        
         int argc = 1;
         char arg1[] = "KVSScreen";
         char* argv[] = { arg1 };
@@ -222,7 +213,6 @@ public:
         screen->setGeometry( 0, 0, m_width, m_height);
         screen->show();
         screen->hide();
-        //glewInit();
         glInit();
         
         m_screen = screen;
@@ -285,7 +275,6 @@ public:
         const std::vector<LuaTable>& robjs = args.GetTable();
         printf("arg num = %d\n", static_cast<int>(robjs.size()));
 
-        KVSScreenClear();
         
         std::string ttypes[] = {
             "TYPE_INVALID",
@@ -324,25 +313,7 @@ public:
         
         Render();
         
-        /*unsigned char* buf = m_img->ImageBuffer()->GetBuffer();
-        const int w = m_img->Width();
-        const int h = m_img->Height();
-        
-        if ( m_screen ) {
-            m_screen->paintEvent();
-        }
-#ifdef __APPLE__
-        glReadBuffer( GL_FRONT );
-#endif
-        glFlush();
-        glFinish();
-        ktime.stop();
-        std::cout << "[DEBUG] Render time : " << ktime.msec() << " [ms]" << std::endl;
-        ktime.start();
-        glReadPixels( 0, 0, w, h, GL_RGBA, GL_UNSIGNED_BYTE, buf );
-        ktime.stop();
-        std::cout << "[DEBUG] Readback time : " << ktime.msec() << " [ms]" << std::endl;
-        glReadBuffer( GL_BACK );*/
+        KVSScreenClear();
         
         return 1;
     }
@@ -369,19 +340,39 @@ public:
                 const double resizetm = ktime.msec();
                 
                 ktime.start();
-                setCurrentCamera(camera);
-                //renderObjects();
                 
                 // KVS Rendering
-                m_screen->setSize(color->Width(), color->Height());
-                m_compositor->resizeEvent(color->Width(), color->Height());
+                const VX::Math::vec3 pos = camera->GetPosition();
+                const VX::Math::vec3 tar = camera->GetTarget();
+                const VX::Math::vec3 upd = camera->GetUp();
+                
+                kvs::Camera* cam = m_screen->scene()->camera();
+                const kvs::Vector3<float> kpos(pos.x,pos.y,pos.z);
+                const kvs::Vector3<float> ktar(tar.x,tar.y,tar.z);
+                const kvs::Vector3<float> kupd(upd.x,upd.y,upd.z);
+                cam->setPosition(kpos, ktar, kupd);
+                cam->setFieldOfView(camera->GetFov());
+                
+                
+                m_screen->resizeEvent(m_width, m_height);
+                m_compositor->resizeEvent(m_width, m_height);
                 m_screen->setEvent( m_compositor );
-                printf( "Composite!2\n" );
                 m_screen->hide();
                 
-                m_screen->paintEvent(); // force redraw
+                const float* clr = camera->GetClearColor();
+                printf("pos = (%.3f,%.3f,%.3f) tar = (%.3f,%.3f,%.3f)\n", pos.x, pos.y, pos.z, tar.x, tar.y, tar.z);
+                printf("clearcolor = (%.3f,%.3f,%.3f,%.3f)\n", clr[0], clr[1], clr[2], clr[3]);
+                
+                ///glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer);
+                glViewport(0, 0, m_width, m_height);
+                
+                m_screen->setBackgroundColor(kvs::RGBAColor(clr[0]*255, clr[1]*255, clr[2]*255, clr[3]));
+                
+                for (int i = 0; i < 50; ++i) {
+                    m_screen->paintEvent(); // force redraw
+                }
 #ifdef __APPLE__
-                glReadBuffer( GL_FRONT );
+                //glReadBuffer( GL_FRONT );
 #endif
                 glFlush();
                 glFinish();
@@ -391,10 +382,13 @@ public:
                 const double rendertm = ktime.msec();
                 
                 ktime.start();
-                const float* clr = camera->GetClearColor();
-                printf("KVSRender:ClearColor:%f,%f,%f,%f\n", clr[0], clr[1], clr[2], clr[3]);
+                
+                //glReadBuffer(GL_COLOR_ATTACHMENT0);
                 readbackImage(colorfmt, color, clr[0], clr[1], clr[2], clr[3]);
                 readbackDepth(depth);
+                
+                //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                
                 ktime.stop();
                 const double readbacktm = ktime.msec();
                 
@@ -422,10 +416,6 @@ public:
 
     
 private:
-    void setCurrentCamera(const Camera* camera)
-    {
-        m_currentCamera = camera;
-    }
     
     void readbackDepth(BufferImageData* depth)
     {
@@ -452,7 +442,7 @@ private:
             KVSGetColorBuffer(m_width, m_height, imgbuf, colorbit);
             
             // merge to bgcolor
-            /*for (int y = 0; y < m_height; ++y) {
+            for (int y = 0; y < m_height; ++y) {
                 for (int x = 0; x < m_width; ++x) {
                     const double alp = imgbuf[4*(x + y * m_width) + 3]/255.0;
                     imgbuf[4*(x + y * m_width) + 0] = imgbuf[4*(x + y * m_width) + 0] * alp + 255.0*clearcolor_r*clearcolor_a * (1.0 - alp);
@@ -460,7 +450,7 @@ private:
                     imgbuf[4*(x + y * m_width) + 2] = imgbuf[4*(x + y * m_width) + 2] * alp + 255.0*clearcolor_b*clearcolor_a * (1.0 - alp);
                     imgbuf[4*(x + y * m_width) + 3] = (std::max)(0, (std::min)(255, static_cast<int>(255 * (alp + clearcolor_a))));
                 }
-            }*/
+            }
         } else {
             FloatBuffer* fbuf = color->FloatImageBuffer();
             if (!fbuf) { return; }
@@ -483,46 +473,6 @@ private:
             }
         }
         
-    }
-    
-    void draw(RenderObject* robj) {
-        if (robj->GetType() == RenderObject::TYPE_CAMERA) {
-            return;
-        }
-        
-        /*BaseBuffer* buffer = 0;
-        BufferMap::const_iterator it = m_buffers.find(robj);
-        if (it != m_buffers.end()) {
-            buffer = it->second.Get();
-        } else {
-            BaseBuffer* buf = render->createBuffer(robj);
-            m_buffers[robj] = buf;
-            buffer = buf;
-        }
-        
-        assert(buffer);
-        
-        const float res[] = {static_cast<float>(GetWidth()), static_cast<float>(GetHeight())};
-        buffer->Update();
-        buffer->BindProgram();
-        buffer->Uniform2fv("resolution", res);
-        buffer->Uniform4fv("backgroundColor", &m_clearcolor[0]);
-        buffer->SetCamera(m_currentCamera);
-        buffer->Render();
-        buffer->UnbindProgram();
-         */
-    }
-    
-    /// オブジェクトのレンダリング
-    void renderObjects()
-    {
-        KVSClear(0,0,0,0); //m_clearcolor[0], m_clearcolor[1], m_clearcolor[2], m_clearcolor[3]);
-        
-        RenderObjectArray::const_iterator it,eit = m_renderObjects.end();
-        for (it = m_renderObjects.begin(); it != eit; ++it)
-        {
-            draw((*it));
-        }
     }
 
     void resize(Camera* camera)
