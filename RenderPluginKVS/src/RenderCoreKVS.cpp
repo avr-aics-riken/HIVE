@@ -221,6 +221,7 @@ public:
         {
             printf( "Cannot creat a stocastic rendering compositor.\n");
         }
+        m_screen->setEvent( m_compositor );
     }
     ~Impl() {
         delete m_compositor;
@@ -262,7 +263,7 @@ public:
         if ( !m_screen ) { return false; }
         std::vector<std::pair<int, int> >::iterator it, eit = m_regstered.end();
         for (it = m_regstered.begin(); it != eit; ++it) {
-            m_compositor->scene()->removeObject( it->first, false, false );
+            m_screen->scene()->removeObject( it->first, false, false );
         }
         m_regstered.clear();
         m_screen->reset();
@@ -314,7 +315,7 @@ public:
         Render();
         
         KVSScreenClear();
-        
+        ClearRenderObject();
         return 1;
     }
 
@@ -342,6 +343,8 @@ public:
                 ktime.start();
                 
                 // KVS Rendering
+                m_screen->scene()->reset();
+
                 const VX::Math::vec3 pos = camera->GetPosition();
                 const VX::Math::vec3 tar = camera->GetTarget();
                 const VX::Math::vec3 upd = camera->GetUp();
@@ -356,7 +359,7 @@ public:
                 
                 m_screen->resizeEvent(m_width, m_height);
                 m_compositor->resizeEvent(m_width, m_height);
-                m_screen->setEvent( m_compositor );
+                
                 m_screen->hide();
                 
                 const float* clr = camera->GetClearColor();
@@ -368,12 +371,9 @@ public:
                 
                 m_screen->setBackgroundColor(kvs::RGBAColor(clr[0]*255, clr[1]*255, clr[2]*255, clr[3]));
                 
-                for (int i = 0; i < 50; ++i) {
+                for (int i = 0; i < 3; ++i) {
                     m_screen->paintEvent(); // force redraw
                 }
-#ifdef __APPLE__
-                //glReadBuffer( GL_FRONT );
-#endif
                 glFlush();
                 glFinish();
                 
