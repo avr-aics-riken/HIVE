@@ -16,7 +16,8 @@ RenderView.new = function (varname)
         clearcolor = {0,0,0,1},
         color_file = "",
         depth_file = "",
-        ipcmode = false
+        ipcmode = false,
+        renderer = nil
     }
     this.network_ipc = nil
     this.gen = PrimitiveGenerator()
@@ -172,13 +173,16 @@ function RenderView:Do()
          print('RenderObject->', v);   
     end
 --]]
+    if v.renderer == nil then
+        return "Not found renderer"
+    else
 --[[
     if v.screensize[1] / 10 < v.rendersize[1] then
         render(temp, HIVE_fetchEvent)
     else
     ]]
-        render(temp)
-    --end
+        v.renderer:render(temp)
+    end
     
     
     if network == nil and HIVE_metabin == nil then -- no UI mode        

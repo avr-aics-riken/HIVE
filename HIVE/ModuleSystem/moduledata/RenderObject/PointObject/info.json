@@ -4,6 +4,7 @@
 	"info":"ポイントデータを表示させるためのノード",
 	"customfuncfile": "PointObject.lua",
     "input": [
+    	{"name": "renderer", "type": "RenderCore"},
 		{"name": "point", "type": "BufferPointData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
 		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},

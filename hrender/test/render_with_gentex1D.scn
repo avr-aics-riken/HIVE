@@ -18,7 +18,7 @@ function lerp(x, y, s)
 end
 
 --create tax texture
-for j = 0, 255 do 
+for j = 0, 255 do
 	table.insert(textable, lerp(0, 255, (j / 256)));
 	table.insert(textable, lerp(0,   0,   (j / 256)));
 	table.insert(textable, lerp(255, 0, (j / 256)));
@@ -44,4 +44,5 @@ cam:LookAt(
 	60
 )
 
-render({cam, pm})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, pm})

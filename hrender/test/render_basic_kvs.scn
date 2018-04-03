@@ -1,0 +1,5 @@
+
+print('Render basic KVS')
+
+local core = LoadModule("RenderPluginKVS")
+core:render({})

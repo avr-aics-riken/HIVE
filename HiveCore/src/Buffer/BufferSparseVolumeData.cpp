@@ -7,10 +7,11 @@
 #include "BufferVolumeData.h"
 
 // Use SparseVolume feature from SURFACE to provide Sample() function
-#include "render_bvh_tree.h"
+#include "bvhtree/render_bvh_tree.h"
 
 #include <limits>
 #include <cstring>
+#include <algorithm>
 
 /**
  * BufferSparseVolumeDataクラス
@@ -22,7 +23,7 @@ private:
     std::vector<VolumeBlock> m_volumeBlocks;
 
 	// For `Sample()` method.
-	lsgl::render::BVHTree m_tree;
+	HIVE::render::BVHTree m_tree;
 	bool m_isBuilt;
 
 	// Grabbed from SURFACE/render/render_accel_volume.cc
@@ -30,14 +31,14 @@ private:
 		double value[16],
 		const double position[3]) {
 
-	  StackVector<lsgl::render::BVHNodeLocator, 32> locaters;
+	  StackVector<HIVE::render::BVHNodeLocator, 32> locaters;
 	  bool hit = m_tree.Locate(locaters, position);
 
       memset(value, 0, sizeof(double) * 16);
 
 	  if (hit) {
 		// @note { We don't allow overlapping of volume blocks. }
-		lsgl::render::BVHNodeLocator locator = locaters[0];
+		HIVE::render::BVHNodeLocator locator = locaters[0];
 
 		// fetch texel color
 		int blockID = locator.nodeID;
@@ -329,7 +330,7 @@ public:
 
 		for (size_t i = 0; i < m_volumeBlocks.size(); i++) {
 
-			lsgl::render::BVHData data;
+			HIVE::render::BVHData data;
 
 			data.bmin[0] = m_volumeBlocks[i].offset[0];
 			data.bmin[1] = m_volumeBlocks[i].offset[1];

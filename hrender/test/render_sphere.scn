@@ -20,6 +20,7 @@ local spheredata = gen:Sphere(radius)
 model:Create(spheredata)
 model:SetShader('white.frag')
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}
 
 

@@ -142,4 +142,5 @@ model1:SetTexture("pbs_mattex", matimg);
 model1:SetFloat("pbs_num_materials", numMaterials);
 model1:SetTextureFiltering("pbs_mattex", false); -- passthrough mode since we use pbs_mattex as an array.
 
-render {camera, pm0, model0}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, pm0, model0}

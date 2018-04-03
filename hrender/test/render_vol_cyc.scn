@@ -9,7 +9,7 @@ camera:LookAt( 0,-150,-30,
 	40
 )
 
-for j = 0, 200 do 
+for j = 0, 200 do
 	clearCache()
 	collectgarbage("collect")
 	local vol = LoadModule("VolLoader")
@@ -23,6 +23,7 @@ for j = 0, 200 do
 	local volumedata = vol:VolumeData()
 	volume:Create(volumedata)
 	volume:SetShader('fs_kakuhan.frag')
-	render {camera, volume}
+	local core = LoadModule("RenderPluginSURFACE")
+	core:render {camera, volume}
 end
 

@@ -23,5 +23,6 @@ camera2:LookAt(
 	45
 )
 
-render {camera1, camera2}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera1, camera2}
 

@@ -27,4 +27,5 @@ local volume = VolumeModel()
 local volumedata = sph:VolumeData()
 volume:Create(volumedata)
 volume:SetShader('def_volume.frag')
-render {camera, volume, poly}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume, poly}

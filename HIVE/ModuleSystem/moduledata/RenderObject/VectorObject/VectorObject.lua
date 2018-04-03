@@ -5,32 +5,36 @@ VectorObject.new = function (varname)
     local this = HiveBaseModule.new(varname)
     local pm = PolygonModel();
     this.pmodel = pm
-    
+
     setmetatable(this, {__index=VectorObject})
     return this
 end
 
-function VectorObject:Do()    
-    
+function VectorObject:Do()
+
     self:UpdateValue()
-    local v = self.value    
+    local v = self.value
     local pm = VectorModel(); -- make new Model!
     self.pmodel = pm           -- replace
-    
+
     if v.vector then
 	   pm:Create(v.vector)
     end
 	pm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
-    
+
+    if v.renderer == nil then
+        return "Not found renderer"
+    end
+
     if pm:GetShader() ~= v.shadername then
-        clearShaderCache(v.shadername)
+        v.renderer:clearShaderCache(v.shadername)
     end
 	pm:SetShader(v.shadername)
 
 	local uniforms = self.connection.Uniform
-    if uniforms ~= nil then    
+    if uniforms ~= nil then
         for i,v in pairs(uniforms) do
             if v.type == 'vec4' then
                 print('vec4[' .. v.name .. '] = (', v.value[1], v.value[2], v.value[3], v.value[4], ')')
@@ -58,7 +62,7 @@ function VectorObject:Do()
             end
         end
     end
-    
+
     pm:ClearExtraBuffer()
     local varyings = self.connection.Varying
     if varyings ~= nil then
@@ -66,7 +70,7 @@ function VectorObject:Do()
             pm:AddExtraBuffer(v.name, v.value)
         end
     end
-    
+
     return true
 end
 

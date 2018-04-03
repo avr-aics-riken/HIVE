@@ -97,6 +97,7 @@ local img = loader:ImageData()
 model:SetTexture('mytex0', img)
 ]]
 
-render(robj)
+local core = LoadModule("RenderPluginSURFACE")
+core:render(robj)
 
 

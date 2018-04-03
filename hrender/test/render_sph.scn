@@ -41,4 +41,5 @@ for i,v in pairs(hist) do
 	print('hist['..i..'] = ', v)
 end
 
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}

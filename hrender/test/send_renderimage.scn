@@ -18,7 +18,8 @@ local meshdata = obj:MeshData()
 model:Create(meshdata)
 model:SetShader('white.frag')
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}
 
 -- save render image as jpg on memory
 local saver = ImageSaver()

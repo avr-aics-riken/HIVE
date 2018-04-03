@@ -44,4 +44,5 @@ local isosurface = surfacer:MeshData()
 model:Create(isosurface)
 model:SetShader('normal.frag')
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}

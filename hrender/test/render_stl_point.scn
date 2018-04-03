@@ -25,6 +25,7 @@ local model = PolygonModel()
 model:Create(stl:MeshData())
 model:SetShader('white.frag')
 
-render {camera, model,pm}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model,pm}
 
 

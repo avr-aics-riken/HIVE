@@ -30,7 +30,8 @@ local pointdata = pdm:PointData('Coordinate', 0.2) -- container name, radius
 pointmodel:Create(pointdata)
 pointmodel:SetShader('white.frag')
 
-render {camera, pointmodel}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, pointmodel}
 
 -- -- Save image for each MPI node.
 -- local saver = ImageSaver()

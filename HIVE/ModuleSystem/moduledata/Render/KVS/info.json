@@ -1,0 +1,11 @@
+{
+	"name": "KVS",
+	"funcname": "KVS",
+	"info":"KVS Renderer",
+	"customfuncfile":"kvs.lua",
+    "input": [
+	],
+	"output": [
+		{"name": "renderer", "type": "RenderCore"}
+	]
+}

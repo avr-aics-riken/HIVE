@@ -9,6 +9,7 @@ PolygonObject.new = function (varname)
         rotate = {0,0,0},
         scale = {0,0,0},
         shadername = 'polygon.frag',
+        renderer = nil,
         Uniform = {
             
         }
@@ -33,9 +34,13 @@ function PolygonObject:Do()
 	pm:SetTranslate(v.translate[1], v.translate[2], v.translate[3])
 	pm:SetRotate(v.rotate[1], v.rotate[2], v.rotate[3])
 	pm:SetScale(v.scale[1], v.scale[2], v.scale[3])
-    
+
+    if v.renderer == nil then
+        return "Not found renderer"
+    end
+
     if pm:GetShader() ~= v.shadername then
-        clearShaderCache(v.shadername)
+        v.renderer:clearShaderCache(v.shadername)
     end
 	pm:SetShader(v.shadername)
 
