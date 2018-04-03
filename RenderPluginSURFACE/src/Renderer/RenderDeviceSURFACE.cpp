@@ -572,7 +572,7 @@ private:
     }
     /// 画像の書き戻し
     /// @param color カラーバッファ
-    void readbackImage(BufferImageData::FORMAT format, BufferImageData* color, float clr_r, float clr_g, float clr_b, float clr_a)
+    void readbackImage(BufferImageData::FORMAT format, BufferImageData* color, const float *depth, float clr_r, float clr_g, float clr_b, float clr_a)
     {
         const float clearcolor_r = clr_r;
         const float clearcolor_g = clr_g;
