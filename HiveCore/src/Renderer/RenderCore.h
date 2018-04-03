@@ -41,6 +41,10 @@ public:
 
     bool ClearShaderCache(const char* srcname);
     
+    // for compositor
+    void EnableDepthComposition(bool enable);
+    void SetCompositionMergeID(int mergeID);
+    
 private:
     RenderCore(RENDER_MODE mode);
     ~RenderCore();

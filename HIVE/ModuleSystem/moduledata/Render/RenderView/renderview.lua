@@ -161,6 +161,11 @@ function RenderView:Do()
     else
         targetcam:SetImageBufferFormat('RGBA8')
     end
+    
+-- For Compositor
+    enableDepthComposition(v.depthComp);
+    setCompositionMergeID(v.compMergeID);
+    
 -- dump
 --[[
     for i,v in pairs(temp) do
@@ -275,6 +280,10 @@ end
 
 function RenderView:Image()
     return self.cam:GetImageBuffer()
+end
+
+function RenderView:Depth()
+    return self.cam:GetDepthBuffer()
 end
 
 function RenderView:ScreenSize()

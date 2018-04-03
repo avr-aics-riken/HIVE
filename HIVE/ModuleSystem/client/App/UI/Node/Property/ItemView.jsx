@@ -9,6 +9,7 @@ import ItemArray from './ItemArray.jsx';
 import ItemTextInput from './ItemTextInput.jsx';
 import ItemSuggest from './ItemSuggest.jsx';
 import ItemObject from './ItemObject.jsx';
+import ItemSelectbox from './ItemSelectbox.jsx';
 
 function isHideProperty(input) {
 	return input.hasOwnProperty('visible') && !input.visible;
@@ -108,7 +109,7 @@ export default class ItemView extends React.Component {
 						this.refs[id].setState({
 							values : hole.value
 						});
-					} else if (hole.type === 'string' || hole.type === 'float' || hole.type === 'int') {
+					} else if (hole.type === 'string' || hole.type === 'float' || hole.type === 'int' || hole.type === 'select') {
 						this.refs[id].setState({
 							value : hole.value
 						});
@@ -434,6 +435,16 @@ export default class ItemView extends React.Component {
 							changeKeyFunc={this.changeKeyFunc.bind(this)}
 							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
 						/>);
+			} else if (hole.type == 'select') {
+				return (<ItemSelectbox  ref={id}
+				            varname={this.props.initialNodeData.varname}
+							store={this.props.store}
+                            initialParam={hole} key={id}
+                            top={topRow}
+                            bottom={bottom}
+							changeKeyFunc={this.changeKeyFunc.bind(this)}
+							deleteKeyFunc={this.deleteKeyFunc.bind(this)}
+				            changeSelectboxFunc={this.changeFunc(hole)} />);
 			} else {
 				return (<ItemText store={this.props.store} initialParam={hole} key={id} top={topRow} bottom={bottom}/>);
 			}
