@@ -475,7 +475,7 @@ public:
 					if (depth->Format() ==  BufferImageData::R32F && depth->FloatImageBuffer()) {
 						readbackDepth(depth);
 						const float *depthData = depth->FloatImageBuffer()->GetBuffer();
-						assert(depthDeta);
+						assert(depthData);
 						readbackImage(colorfmt, color, depthData, clr[0], clr[1], clr[2], clr[3]);
 					} else {
 						printf("[Error] Failed to composite depth buffer\n");

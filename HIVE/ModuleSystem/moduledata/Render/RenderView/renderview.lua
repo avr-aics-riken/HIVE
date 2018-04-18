@@ -162,11 +162,7 @@ function RenderView:Do()
     else
         targetcam:SetImageBufferFormat('RGBA8')
     end
-    
--- For Compositor
-    enableDepthComposition(v.depthComp);
-    setCompositionMergeID(v.compMergeID);
-    
+
 -- dump
 --[[
     for i,v in pairs(temp) do
@@ -176,6 +172,9 @@ function RenderView:Do()
     if v.renderer == nil then
         return "Not found renderer"
     else
+        -- For Compositor
+        v.renderer:enableDepthComposition(v.depthComp);
+        v.renderer:setCompositionMergeID(v.compMergeID);
 --[[
     if v.screensize[1] / 10 < v.rendersize[1] then
         render(temp, HIVE_fetchEvent)

@@ -57,6 +57,14 @@ void RenderCoreSURFACE::SetProgressCallback(bool (*func)(double))
 {
     m_imp->SetProgressCallback(func);
 }
+void RenderCoreSURFACE::EnableDepthComposition(bool enable)
+{
+	m_imp->EnableDepthComposition(enable);
+}
+void RenderCoreSURFACE::SetCompositionMergeID(int mergeID)
+{
+	m_imp->SetCompositionMergeID(mergeID);
+}
 
 bool RenderCoreSURFACE::CreateProgramSrc(const char* src, unsigned int& prg)
 {

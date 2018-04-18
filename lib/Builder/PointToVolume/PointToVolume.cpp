@@ -120,7 +120,7 @@ bool PointToVolume::ToVolumeWithAttrib(int w, int h, int d,
 	assert(m_point->Position());
 	assert(m_point->Position()->GetNum() > 0);
 
-	assert(vattrib);
+	assert(attrib);
 	if (attrib->GetNum() != m_point->Position()->GetNum())
 	{
 		std::cerr << "Number of elements mismatch. " << std::endl;
