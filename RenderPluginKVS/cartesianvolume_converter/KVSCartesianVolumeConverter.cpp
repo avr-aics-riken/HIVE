@@ -6,7 +6,7 @@
 
 KVSCartesianVolumeConverter::KVSCartesianVolumeConverter()
 {
-    kvsvolume = nullptr;
+    kvsvolume = 0;
 }
 
 KVSCartesianVolumeConverter::~KVSCartesianVolumeConverter()

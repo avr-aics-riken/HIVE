@@ -32,11 +32,13 @@
 #include <Core/vxmath.h>
 
 
+#ifdef HIVE_ENABLE_MPI
+#include <mpi.h>
 #ifdef HIVE_WITH_COMPOSITOR
-#include <mpi.h> // FIRST, include for MPI-C++ binding
 extern "C" {
 #include "234compositor.h"
 }
+#endif
 #endif
 
 
