@@ -63,11 +63,6 @@ endif()
 
 add_definitions(-DKVS_ENABLE_OPENGL=1)
 
-if (KVS_FOUND)
-    include_directories(${KVS_INCLUDE_DIRS})
-    link_libraries(${KVS_LIBRARIES})
-endif()
-
 # --------------------------------------
 
 # Headers
@@ -75,7 +70,8 @@ set(INCLUDES
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/third_party/lua/
 	${CMAKE_SOURCE_DIR}/third_party/LUA/src
-	${CMAKE_SOURCE_DIR}/third_party/local/kvs/include
+  ${CMAKE_SOURCE_DIR}/third_party/local/kvs/include
+  ${CMAKE_SOURCE_DIR}/third_party/KVS/Source/
 	${CMAKE_SOURCE_DIR}/include/Buffer
 	${CMAKE_SOURCE_DIR}/include/Network
 	${CMAKE_SOURCE_DIR}/include/RenderObject
@@ -173,3 +169,50 @@ endif()
 target_link_libraries(RenderPluginKVS pthread)
 #target_link_libraries(RenderPluginKVS LSGLES)
 set_target_properties(RenderPluginKVS PROPERTIES PREFIX "")
+
+#------------------------------------------------
+
+# Volume Converter
+
+# Source files
+set(KVSCARTESIAN_VOLUMECONVERTER_SOURCES
+  cartesianvolume_converter/main.cpp
+  cartesianvolume_converter/KVSCartesianVolumeConverter.cpp
+)
+add_library (KVSCartesianVolumeConverter ${HIVE_LIBRARY_TYPE} ${KVSCARTESIAN_VOLUMECONVERTER_SOURCES})
+
+# Enable address sanitizer(if available).
+add_sanitizers(KVSCartesianVolumeConverter)
+
+# link KVS lib
+target_link_libraries(KVSCartesianVolumeConverter kvsCore)
+target_link_libraries(KVSCartesianVolumeConverter kvsSupportGLUT)
+
+# link HiveCore lib
+target_link_libraries(KVSCartesianVolumeConverter hiveCore)
+
+set_target_properties(KVSCartesianVolumeConverter PROPERTIES PREFIX "")
+
+
+#------------------------------------------------
+
+# Point Converter
+
+# Source files
+set(KVSPOINTCONVERTER_SOURCES
+point_converter/main.cpp
+point_converter/KVSPointConverter.cpp
+)
+add_library (KVSPointConverter ${HIVE_LIBRARY_TYPE} ${KVSPOINTCONVERTER_SOURCES})
+
+# Enable address sanitizer(if available).
+add_sanitizers(KVSPointConverter)
+
+# link KVS lib
+target_link_libraries(KVSPointConverter kvsCore)
+target_link_libraries(KVSPointConverter kvsSupportGLUT)
+
+# link HiveCore lib
+target_link_libraries(KVSPointConverter hiveCore)
+
+set_target_properties(KVSPointConverter PROPERTIES PREFIX "")

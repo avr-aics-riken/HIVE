@@ -33,3 +33,4 @@ tools/hivereact/client/bundle.js
 tools/hivereact/client/bundle.js.map
 output.jpg
 HIVE/ModuleSystem/node_modules
+*.o
