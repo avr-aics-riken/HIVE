@@ -1,0 +1,12 @@
+{
+    "name": "PDM2KVSPoint",
+    "funcname": "PDM2KVSPoint",
+    "info": "PDMファイルをKVSPointに変換するためのノード",
+    "customfuncfile": "converter.lua",
+    "input": [
+        {"name": "PointData", "type": "BufferPointData"}
+    ],
+    "output": [
+        { "name": "object",   "type": "Object" }
+    ]
+}

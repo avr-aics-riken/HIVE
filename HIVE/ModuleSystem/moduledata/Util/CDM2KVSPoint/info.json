@@ -1,0 +1,12 @@
+{
+    "name": "CDM2KVSPoint",
+    "funcname": "CDM2KVSPoint",
+    "info": "CDMファイルをKVSPointに変換するためのノード",
+    "customfuncfile": "converter.lua",
+    "input": [
+        {"name": "VolumeData", "type": "BufferVolumeData"}
+    ],
+    "output": [
+        { "name": "object",   "type": "Object" }
+    ]
+}
