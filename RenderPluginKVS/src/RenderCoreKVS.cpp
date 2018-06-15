@@ -171,12 +171,14 @@ public:
         GLenum e = glewInit();
         std::cout << "glewInit = " << e << std::endl;
         
+        /*
         std::cout << "OpenGL " << GLVersion.major << "," << GLVersion.minor << std::endl;
         
         if (GLVersion.major < 2) {
             std::cout << "Your system doesn't support OpenGL >= 2!" << std::endl;
             return -1;
         }
+        */
         std::cout << "GL=" << glGetString(GL_VERSION) << ", GLSL=" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
         return 0;
     }

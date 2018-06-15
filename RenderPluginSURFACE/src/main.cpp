@@ -36,6 +36,22 @@ private:
         return 0;
     }
     
+    int enableDepthComposition(bool enable) {
+        RenderCoreSURFACE* surface = reinterpret_cast<RenderCoreSURFACE*>(core);
+        if (surface) {
+            surface->EnableDepthComposition(enable);
+        }
+        return 0;
+    }
+
+    int setCompositionMergeID(int mergeID) {
+        RenderCoreSURFACE* surface = reinterpret_cast<RenderCoreSURFACE*>(core);
+        if (surface) {
+            surface->SetCompositionMergeID(mergeID);
+        }
+        return 0;
+    }
+    
 public:
     //RenderCoreSURFACE_Lua(RenderCoreSURFACE* core) : RenderCore_Lua(static_cast<RenderCore*>(core)){}
     ~RenderCoreSURFACE_Lua() {}
@@ -52,6 +68,10 @@ public:
     LUA_SCRIPTCLASS_METHOD_ARG1(int, setParallelRendering, bool);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, sampleCoverage, float);
     LUA_SCRIPTCLASS_METHOD_ARG1(int, pixelStep, int);
+
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, enableDepthComposition, bool);
+    LUA_SCRIPTCLASS_METHOD_ARG1(int, setCompositionMergeID, int);
+
     LUA_SCRIPTCLASS_END()
 };
 LUA_SCRIPTCLASS_CAST_AND_PUSH(RenderCoreSURFACE_Lua);
