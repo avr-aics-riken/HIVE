@@ -155,7 +155,7 @@ ENDIF()
 set(INCLUDES
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/third_party/lua/
-	${CMAKE_SOURCE_DIR}/third_party/LUA/src
+	${CMAKE_SOURCE_DIR}/third_party/lua/src
 	${CMAKE_SOURCE_DIR}/third_party/SURFACE/include
 	${CMAKE_SOURCE_DIR}/third_party/SURFACE/gles
 	${CMAKE_SOURCE_DIR}/third_party/SURFACE/render

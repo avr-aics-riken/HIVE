@@ -69,7 +69,7 @@ add_definitions(-DKVS_ENABLE_OPENGL=1)
 set(INCLUDES
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/third_party/lua/
-	${CMAKE_SOURCE_DIR}/third_party/LUA/src
+	${CMAKE_SOURCE_DIR}/third_party/lua/src
   ${CMAKE_SOURCE_DIR}/third_party/local/kvs/include
   ${CMAKE_SOURCE_DIR}/third_party/KVS/Source/
 	${CMAKE_SOURCE_DIR}/include/Buffer
