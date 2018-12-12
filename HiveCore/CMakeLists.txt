@@ -278,10 +278,16 @@ endif()
 # For test
 add_executable (hiveCoreSimpleTest test/simpletest.cpp)
 add_sanitizers (hiveCoreSimpleTest)
+IF(HIVE_BUILD_WITH_PMLIB)
+target_link_libraries (hiveCoreSimpleTest hiveCore ${PMLIB_LIBS})
+ELSE()
 target_link_libraries (hiveCoreSimpleTest hiveCore)
-
+ENDIF()
 # For test
 add_executable (hiveCoreSolverSample test/solversample.cpp)
 add_sanitizers (hiveCoreSolverSample)
+IF(HIVE_BUILD_WITH_PMLIB)
+target_link_libraries (hiveCoreSolverSample hiveCore ${PMLIB_LIBS})
+ELSE()
 target_link_libraries (hiveCoreSolverSample hiveCore)
-
+ENDIF()
