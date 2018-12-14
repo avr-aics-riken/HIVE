@@ -8,8 +8,11 @@
 #include <string.h>
 
 #ifdef HIVE_BUILD_WITH_OPENGL
-#include "GLDevice/GLDevice.h"
-#include "GLDevice/GLDeviceExtention.h"
+// 2018.12.14 -DHIVE_BUILD_WITH_OPENGL
+// Ubuntu18 (Build error when including both GLDevice headers)
+
+// #include "GLDevice/GLDevice.h"
+// #include "GLDevice/GLDeviceExtention.h"
 #endif
 
 #include "Commands.h"
@@ -296,7 +299,9 @@ public:
     #endif
         SetCallback_SGL(Impl::progressCallbackFunc_, this);
         
-        
+    // 2018.12.14
+    // -DHIVE_BUILD_WITH_OPENGL seems that does not work from the FY2018 Version (2018-q1-merged)
+	    
     /*    if (m_mode == RENDER_OPENGL) {
     #ifdef HIVE_BUILD_WITH_OPENGL
             printf("Start OpenGL mode\n");
