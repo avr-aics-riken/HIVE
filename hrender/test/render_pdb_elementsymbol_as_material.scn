@@ -4,7 +4,7 @@ camera:SetScreenSize(1024, 1024)
 camera:SetFilename('render_pdb2.jpg')
 
 camera:LookAt(
-	480,480,480,
+	75,70,75,
 	0,0,0,
 	0,1,0,
 	60
@@ -12,7 +12,7 @@ camera:LookAt(
 
 
 local pdb = LoadModule("PdbLoader")
-pdb:Load('frame_1.pdb', false)
+pdb:Load('4CL8.pdb', false)
 
 local n = pdb:NumAtoms()
 print("# of atoms:", n)

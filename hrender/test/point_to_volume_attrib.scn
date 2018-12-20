@@ -10,7 +10,7 @@ local migration = false
 -- Uncomment if you want PDMlib's profiling support.
 -- pdm:EnableProfiling(true)
 
-pdm:Load('tsunami_t140_160.dfi', timeStep, coordinateName, migration)
+pdm:Load('tsunami_time_140.dfi', timeStep, coordinateName, migration)
 local pointdata = pdm:PointData('Coordinate', 0.5) -- container name, radius
 p2v:Create(pointdata)
 

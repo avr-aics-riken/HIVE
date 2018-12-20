@@ -14,7 +14,7 @@ camera:LookAt(
 	60
 )
 
-local obj = loader()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
 local model = PolygonModel()

@@ -54,4 +54,5 @@ planeModel:Create(meshdata)
 planeModel:SetShader('white.frag')
 planeModel:SetTranslate(0, 0, 0)
 
-render({cam, model, planeModel})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, model, planeModel})

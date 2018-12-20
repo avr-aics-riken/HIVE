@@ -53,4 +53,5 @@ local model = VectorModel()
 model:Create(pl)
 model:SetShader('normal.frag')
 
-render({cam, model})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, model})

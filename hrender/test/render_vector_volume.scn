@@ -26,7 +26,7 @@ local migration = false
 -- Uncomment if you want PDMlib's profiling support.
 -- pdm:EnableProfiling(true)
 
-pdm:Load('tsunami_t140_160.dfi', timeStep, coordinateName, migration)
+pdm:Load('tsunami_time_140.dfi', timeStep, coordinateName, migration)
 local pointdata = pdm:PointData('Coordinate', 0.5) -- container name, radius
 p2v:Create(pointdata)
 
@@ -53,7 +53,7 @@ local volume = VolumeModel()
 local volumedata = p2v:VolumeData()
 volume:Create(volumedata)
 --volume:SetShader('def_volume.frag')
-volume:SetShader('../../HIVE/ModuleSystem/examples/cross-section_contour/shader/volume_vector.frag')
+volume:SetShader('volume_vector.frag')
 
 volume:SetTexture('u_tfTexture', tftex:ImageData())
 volume:SetClampToEdge(true, true, true)
@@ -64,4 +64,6 @@ local colorMode = 0
 -- 1, 2, 3 ... x, y, z
 -- 4 ... refer transfer function using vector length
 volume:SetInt('u_colorMode', colorMode)
-render {camera, volume}
+
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}
