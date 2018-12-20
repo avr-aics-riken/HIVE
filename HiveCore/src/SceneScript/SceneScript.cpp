@@ -268,9 +268,13 @@ void RegisterHiveCoreProfilingPoints()
 {
     // PMon::Initialize() should be called before calling this this function.
     // (Usually outside of HiveCore modules, e.g. main())
-    PMon::Register("HiveCore::Render", PMon::PMON_CALC, /* exclusive */true);
-    PMon::Register("HiveCore::ImageSave", PMon::PMON_CALC, /* exclusive */false);
-    PMon::Register("Compositor", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Render",     PMon::PMON_CALC, /* exclusive */true);
+    PMon::Register("HIVE::ImageSave",  PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor::GetColor", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor::GetDepth", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor::Merge",    PMon::PMON_CALC, /* exclusive */false);
+
 }
 
 /*

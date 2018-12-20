@@ -458,7 +458,7 @@ public:
         for (it = m_renderObjects.begin(); it != eit; ++it)
         {
             if ((*it)->GetType() == RenderObject::TYPE_CAMERA) {
-                PMon::Start("RenderDevice::Render");
+                PMon::Start("HIVE::Render");
                 Camera* camera = static_cast<Camera*>(it->Get());
                 const std::string& outfile = camera->GetOutputFile();
                 const std::string& depth_outfile = camera->GetDepthOutputFile();
@@ -472,11 +472,11 @@ public:
                 const double resizetm = GetTimeCount();
                 setCurrentCamera(camera);
                 renderObjects(render);
-                PMon::Stop("RenderDevice::Render");
+                PMon::Stop("HIVE::Render");
                 const double rendertm = GetTimeCount();
                 const float* clr = camera->GetClearColor();
     #if defined(HIVE_WITH_COMPOSITOR)
-                PMon::Start("Compositor");
+                PMon::Start("HIVE::Compositor");
     #endif
                 if (m_use_depth_234composition) {
 					if (depth->Format() ==  BufferImageData::R32F && depth->FloatImageBuffer()) {
@@ -492,11 +492,11 @@ public:
                     readbackDepth(depth);
                 }
     #if defined(HIVE_WITH_COMPOSITOR)
-                PMon::Stop("Compositor");
+                PMon::Stop("HIVE::Compositor");
     #endif
                 const double readbacktm = GetTimeCount();
 
-                PMon::Start("RenderDevice::ImageSave");
+                PMon::Start("HIVE::ImageSave");
 
     #ifdef HIVE_ENABLE_MPI
                 int rank = 0;
@@ -514,7 +514,7 @@ public:
     #ifdef HIVE_ENABLE_MPI
                 }
     #endif
-                PMon::Stop("RenderDevice::ImageSave");
+                PMon::Stop("HIVE::ImageSave");
                 const double savetm = GetTimeCount();
                 //printf("[HIVE] Resize=%.3f DrawCall=%.3f Readback=%.3f Save=%.3f\n", resizetm-starttm, rendertm-resizetm, readbacktm-rendertm, savetm-readbacktm);
             }
