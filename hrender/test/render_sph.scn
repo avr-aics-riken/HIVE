@@ -29,12 +29,9 @@ volume:SetShader('def_volume_raymarch.frag')
 
 local analy = LoadModule("Analyzer").VolumeAnalyzer()
 analy:Execute(volumedata)
-print(analy:MinX())
-print(analy:MaxX())
-print(analy:MinY())
-print(analy:MaxY())
-print(analy:MinZ())
-print(analy:MaxZ())
+print('volume min/max X:', analy:MinX(), analy:MaxX())
+print('volume min/max Y:', analy:MinY(), analy:MaxY())
+print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
 
 local hist = analy:GetHistgramInRange(volumedata, analy:MinX()*0.5, analy:MaxX()*0.5)
 for i,v in pairs(hist) do

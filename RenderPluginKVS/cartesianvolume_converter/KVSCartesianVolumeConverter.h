@@ -1,5 +1,5 @@
 /*
-    RenderPluginKVS/KVSPointConverter.h
+    RenderPluginKVS/KVSCartesianVolumeConverter.h
 */
 
 #pragma once
@@ -20,7 +20,7 @@ public:
     KVSCartesianVolumeConverter();
     ~KVSCartesianVolumeConverter();
     
-    int setPointBuffer(BufferVolumeData* pdata);
+    int setVolumeBuffer(BufferVolumeData* pdata);
     kvs::StructuredVolumeObject* getKVSVolumeData();
 
 };

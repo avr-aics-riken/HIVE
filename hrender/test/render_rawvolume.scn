@@ -1,8 +1,12 @@
+local core = LoadModule("RenderPluginSURFACE")
+
 print('Render raw vol')
 
 local camera = Camera()
 camera:SetScreenSize(512, 512)
-camera:SetFilename('render_rawvol_image.jpg')
+--camera:ClearColor(1, 1, 1, 1)
+camera:ClearColor(0, 0, 0, 1)
+camera:SetFilename('HIVE2018_render_rawvol_image_BG_0001.jpg')
 
 camera:LookAt(
 	350,350,350,
@@ -99,13 +103,17 @@ local tftex = JetTransferFunctionTexture()
 local loader = LoadModule("RawVolumeLoader")
 -- .raw volume file can be found at http://ospray.github.io/demos.html for example.
 loader:Load('input-256x256x256-float.raw', 256, 256, 256, 1, 'float')
+
+print ('Width:  ', loader:Width())
+print ('Height: ', loader:Height())
+print ('Depth:  ', loader:Depth())
+
 local volume = VolumeModel()
 local volumedata = loader:VolumeData()
-
 volume:Create(volumedata)
 
-local analy = requLoadModuleire("Analyzer").VolumeAnalyzer()
-analy:Execute(volume)
+local analy = LoadModule("Analyzer").VolumeAnalyzer()
+analy:Execute(volumedata)
 print('volume min/max X:', analy:MinX(), analy:MaxX())
 print('volume min/max Y:', analy:MinY(), analy:MaxY())
 print('volume min/max Z:', analy:MinZ(), analy:MaxZ())
@@ -118,6 +126,4 @@ volume:SetFloat('tf_min', 0.0)
 volume:SetFloat('tf_max', 1.0)
 volume:SetFloat('tf_opacity', 0.01)
 
-
-local core = LoadModule("RenderPluginSURFACE")
 core:render {camera, volume}

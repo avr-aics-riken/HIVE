@@ -8,7 +8,7 @@ cdm:Load('cdm_sample.dfi')
 
 local kvsvolumeconv = LoadModule('KVSCartesianVolumeConverter')
 
-kvspointconv:setVolumeBuffer(cdm:VolumeData())
+kvsvolumeconv:setVolumeBuffer(cdm:VolumeData())
 
-local kvsStructuredVolumeObject = kvspointconv:getKVSVolumeData()
+local kvsStructuredVolumeObject = kvsvolumeconv:getKVSVolumeData()
 print('kvs::StructuredVolumeObject', kvsStructuredVolumeObject)

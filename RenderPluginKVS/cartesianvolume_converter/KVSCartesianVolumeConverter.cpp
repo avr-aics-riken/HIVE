@@ -15,7 +15,7 @@ KVSCartesianVolumeConverter::~KVSCartesianVolumeConverter()
 }
 
 
-int KVSCartesianVolumeConverter::setPointBuffer(BufferVolumeData* vdata)
+int KVSCartesianVolumeConverter::setVolumeBuffer(BufferVolumeData* vdata)
 {
     const int w = vdata->Width();
     const int h = vdata->Height();
