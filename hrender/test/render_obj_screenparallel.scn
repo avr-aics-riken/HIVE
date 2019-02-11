@@ -1,3 +1,4 @@
+local core = LoadModule("RenderPluginSURFACE")
 
 print('Render Obj')
 local camera = Camera()
@@ -32,7 +33,7 @@ print(analy:MaxZ())
 
 -- Enable screen parallel rendering
 if mpiMode() == true then
-  screenParallelRendering(true)
+  core:setParallelRendering(true)
 end
 
-render {camera, model}
+core:render {camera, model}

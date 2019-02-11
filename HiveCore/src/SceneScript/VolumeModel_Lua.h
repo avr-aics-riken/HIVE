@@ -50,4 +50,3 @@ public:
 LUA_SCRIPTCLASS_CAST_AND_PUSH(VolumeModel_Lua);
 
 #endif //_VOLUMEMODEL_LUA_H_
-

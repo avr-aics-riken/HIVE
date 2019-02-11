@@ -27,4 +27,5 @@ stickmodel:Create(stickdata)
 stickmodel:SetLineWidth(0.20);
 stickmodel:SetShader('white.frag')
 
-render {camera, ballmodel, stickmodel}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, ballmodel, stickmodel}

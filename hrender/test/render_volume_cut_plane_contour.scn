@@ -71,4 +71,5 @@ volume:SetVec4('contour_param', -0.5, 0.5, 0.1, 0.1)
 --volume:SetFloat('contour_border_weight', 0.1)
 
 
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}

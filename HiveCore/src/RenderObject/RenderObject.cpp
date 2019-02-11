@@ -2,6 +2,7 @@
  * @file RenderObject.cpp
  * レンダーオブジェクト
  */
+#include <limits>
 #include "RenderObject.h"
 #include "../Buffer/BufferImageData.h"
 
@@ -279,6 +280,29 @@ public:
         return m_extrabuffers;
     }
 
+    /// BBoxを計算する
+    bool CalcBBoxFromVec3Buffer(VX::Math::vec3 &box_min,VX::Math::vec3 &box_max, const Vec3Buffer* positions) const
+    {
+        const float flt_max = std::numeric_limits<float>::max();
+        VX::Math::vec3 vmin(flt_max, flt_max, flt_max);
+        VX::Math::vec3 vmax(-flt_max, -flt_max, -flt_max);
+        const float* buffer = positions->GetBuffer();
+        for (int i = 0; i < positions->GetNum(); i++) {
+            vmin[0] = (std::min)(vmin[0], buffer[i*3 + 0]);
+            vmin[1] = (std::min)(vmin[1], buffer[i*3 + 1]);
+            vmin[2] = (std::min)(vmin[2], buffer[i*3 + 2]);
+            vmax[0] = (std::max)(vmax[0], buffer[i*3 + 0]);
+            vmax[1] = (std::max)(vmax[1], buffer[i*3 + 1]);
+            vmax[2] = (std::max)(vmax[2], buffer[i*3 + 2]);
+        }
+        if (vmin.x < vmax.x && vmin.y < vmax.y && vmin.z < vmax.z) {
+            box_min = vmin;
+            box_max = vmax;
+            return true;
+        }
+        return false;
+    }
+
 
     /// コンストラクタ
     Impl(MODE_TYPE t) : m_type(t)
@@ -470,4 +494,9 @@ bool RenderObject::ClearExtraBuffer()
     return m_imp->ClearExtraBuffer();
 }
 
+/// BBoxを計算する
+bool RenderObject::CalcBBoxFromVec3Buffer(VX::Math::vec3 &bmin,VX::Math::vec3 &bmax, const Vec3Buffer* positions) const
+{
+    return m_imp->CalcBBoxFromVec3Buffer(bmin, bmax, positions);
+}
 

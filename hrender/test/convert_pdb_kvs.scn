@@ -1,0 +1,15 @@
+
+print('load and convert pdb')
+
+local pdb = LoadModule("PdbLoader")
+pdb:Load('4CL8.pdb')
+
+local pointdata = pdb:BallData()
+print('pointdata', pointdata)
+
+local kvspointconv = LoadModule('KVSPointConverter')
+
+kvspointconv:setPointBuffer(pointdata)
+
+local kvspoint = kvspointconv:getKVSPointData()
+print('kvspoint', kvspoint)

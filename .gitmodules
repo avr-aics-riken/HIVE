@@ -38,3 +38,10 @@ url=https://github.com/avr-aics-riken/UDMlib.git
 [submodule "third_party/CPMlib"]
 	path = third_party/CPMlib
 	url = https://github.com/avr-aics-riken/CPMlib.git
+[submodule "third_party/234Compositor_AVR"]
+	path = third_party/234Compositor_AVR
+	url = https://github.com/jorji/234Compositor_AVR
+[submodule "third_party/KVS"]
+	path = third_party/KVS
+	url = https://github.com/naohisas/KVS
+	branch = develop

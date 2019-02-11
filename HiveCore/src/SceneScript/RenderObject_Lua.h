@@ -49,6 +49,14 @@
         t.push(v.z); \
         return t; \
     } \
+    LuaTable GetTransformMatrix() { \
+        const VX::Math::matrix mat = RenderObject::GetTransformMatrix(); \
+        LuaTable t; \
+        for (int i = 0; i < 16; ++i) { \
+            t.push(mat.f[i]); \
+        } \
+        return t; \
+    } \
     LuaTable GetFloatTable() { \
         const FloatMap& m = RenderObject::GetUniformFloat(); \
         FloatMap::const_iterator it, eit = m.end(); \
@@ -187,6 +195,18 @@
         } \
         /* TODO: implemantation */ \
         return 0;/*BufferImageData_Lua(it->second);*/ \
+    } \
+    LuaTable GetBBox() { \
+        LuaTable res; \
+        VX::Math::vec3 bmin(0, 0, 0); \
+        VX::Math::vec3 bmax(0, 0, 0); \
+        if (GetBox(bmin, bmax)) { \
+            LuaTable tmin(bmin.x, bmin.y, bmin.z); \
+            LuaTable tmax(bmax.x, bmax.y, bmax.z); \
+            res.push(tmin); \
+            res.push(tmax); \
+        } \
+        return res; \
     }
 
 #define DECLARE_RENDEROBJECT_LUA_METHOD() \
@@ -206,6 +226,7 @@
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTranslate) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetRotate) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetScale) \
+    LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetTransformMatrix) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetVec4Table) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetVec3Table) \
     LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetVec2Table) \
@@ -219,7 +240,8 @@
     LUA_SCRIPTCLASS_METHOD_ARG2(bool, AddExtraBuffer, const char*, BufferExtraData_Lua*) \
     LUA_SCRIPTCLASS_METHOD_ARG1(bool, RemoveExtraBuffer, const char*) \
     LUA_SCRIPTCLASS_METHOD_ARG0(bool, ClearExtraBuffer) \
-    LUA_SCRIPTCLASS_METHOD_ARG1(BufferImageData_Lua, GetTexture, const char*)
+    LUA_SCRIPTCLASS_METHOD_ARG1(BufferImageData_Lua, GetTexture, const char*) \
+    LUA_SCRIPTCLASS_METHOD_ARG0(LuaTable, GetBBox)
 
 
 #endif //_RENDEROBJECT_LUA_H_

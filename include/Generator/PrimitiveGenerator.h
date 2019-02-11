@@ -29,7 +29,8 @@ protected:
     BufferPointData* Sphere(float radius) const;
     BufferMeshData*  Cube(float width, float height, float depth) const;
     BufferMeshData*  Teapot(float scale) const;
-  //BufferVectorData* VectorArrow() const; // @todo
+    // Create vector arrow list
+    BufferVectorData* VectorArrowList(const float *positions, const float *directions,  float num) const;
     BufferPointData*  SphereList(float *p, float num, float radius) const;
     BufferLineData*  LineList(float *vertices, float num, float radius) const;
     BufferMeshData*  TriangleList(float *vertices, float num) const;

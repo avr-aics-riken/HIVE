@@ -29,7 +29,7 @@ filter:Expr(sph:VolumeData(), nil, nil, nil, 1, filterCode);
 
 local volumedata = filter:VolumeData()
 
-local surfacer = requiLoadModulere("VolumeToMeshData")
+local surfacer = LoadModule("VolumeToMeshData")
 print(surfacer)
 
 local isovalue = 0.0005
@@ -44,4 +44,5 @@ local isosurface = surfacer:MeshData()
 model:Create(isosurface)
 model:SetShader('normal.frag')
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}

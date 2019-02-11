@@ -1,5 +1,4 @@
-
-local loader = LoadModule("ObjLoader")
+local core   = LoadModule("RenderPluginSURFACE")
 
 print('Render Obj')
 local camera = Camera()
@@ -14,7 +13,7 @@ camera:LookAt(
 	60
 )
 
-local obj = loader()
+local obj = LoadModule("ObjLoader")
 obj:Load('bunny.obj')
 
 local model = PolygonModel()
@@ -32,7 +31,7 @@ print(analy:MaxY())
 print(analy:MinZ())
 print(analy:MaxZ())
 
-render {camera, model}
+core:render {camera, model}
 
 -- save to file
 local saver = ImageSaver()

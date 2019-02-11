@@ -19,7 +19,7 @@ local rx = 0;
 local ry = 0;
 local rz = 0;
 
-for j = 1, maxnum do 
+for j = 1, maxnum do
 	local x = (( math.random() * 2.0) - 1.0);
 	local y = (( math.random() * 2.0) - 1.0);
 	local z = (( math.random() * 2.0) - 1.0);
@@ -42,4 +42,5 @@ local model = LineModel()
 model:Create(pl)
 model:SetShader('normal.frag')
 
-render({cam, model})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, model})

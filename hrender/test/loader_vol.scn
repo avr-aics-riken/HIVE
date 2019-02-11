@@ -2,6 +2,6 @@
 print('load VOL')
 
 local vol = LoadModule("VolLoader")
-vol:Load('test.vol')
+vol:Load('output32.vol')
 
 

@@ -160,6 +160,28 @@ class Camera::Impl
 	BufferImageData *GetImageBuffer() { return m_imagebuffer; }
 	/// 深度バッファを返す.
 	BufferImageData *GetDepthBuffer() { return m_depthbuffer; }
+	
+	/// 座標をスクリーンスペースに変換して返す
+	VX::Math::vec3 ConvertToScreenSpace(float x, float y, float z)
+	{
+		VX::Math::vec4 p(x, y, z, 1.0);
+		VX::Math::vec3 res;
+		VX::Math::vec3 veye(m_info.eye);
+		VX::Math::vec3 vtar(m_info.tar);
+		VX::Math::vec3 vup(m_info.up);
+		VX::Math::matrix4x4 viewmat = VX::Math::LookAt(veye, vtar, vup);
+		const float width = static_cast<float>(GetScreenWidth());
+		const float height = static_cast<float>(GetScreenHeight());
+		const float aspect = width / height;
+		VX::Math::matrix4x4 projectionmat = VX::Math::PerspectiveFov(m_info.fov, aspect, 0.1f, 500.0f);
+		VX::Math::vec4 pp = projectionmat * (viewmat * p);
+		float invw = 1.0f / pp.w;
+		VX::Math::vec3 ndcPos(pp.x * invw, pp.y * invw, pp.z * invw);
+		VX::Math::vec2 screenPos(
+			(ndcPos.x + 1.0) / 2.0 * width,
+			(ndcPos.y + 1.0) / 2.0 * height);
+		return  VX::Math::vec3(screenPos.x, screenPos.y, 0.0f);
+	}
 
   private:
 	unsigned int m_width;
@@ -173,6 +195,14 @@ class Camera::Impl
 	RefPtr<BufferImageData> m_depthbuffer;
 };
 
+/*
+
+inline matrix4x4 PerspectiveFov(float fovy_degree, float Aspect, float zn, float zf)
+{
+
+	
+inline matrix4x4 LookAt(const vec3& eye, const vec3& target, const vec3& up)
+*/
 Camera::Camera() : RenderObject(TYPE_CAMERA) { m_imp = new Impl(); }
 
 Camera::~Camera() { delete m_imp; }
@@ -287,3 +317,8 @@ VX::Math::vec3 Camera::GetTarget() const { return m_imp->GetTarget(); }
 VX::Math::vec3 Camera::GetUp() const { return m_imp->GetUp(); }
 /// 視野角を返す
 float Camera::GetFov() const { return m_imp->GetFov(); }
+
+/// 座標をスクリーンスペースに変換して返す
+VX::Math::vec3 Camera::ConvertToScreenSpace(float x, float y, float z) {
+	return m_imp->ConvertToScreenSpace(x, y, z);
+}

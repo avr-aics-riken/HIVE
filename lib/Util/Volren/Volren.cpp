@@ -1,0 +1,75 @@
+/**
+ * @file Volren.cpp
+ */
+
+#include "Volren.h"
+
+/// コンストラクタ
+Volren::Volren()
+{
+}
+
+/// デストラクタ
+Volren::~Volren()
+{
+}
+
+int Volren::SetTransferFunctionTexture(BufferImageData* tex)
+{
+    SetTexture("tf_tex", tex);
+}
+
+int Volren::SetTransferFunctionMin(float minVal)
+{
+    SetFloat("tf_min", minVal);
+}
+
+int Volren::SetTransferFunctionMax(float maxVal)
+{
+    SetFloat("tf_max", maxVal);
+}
+
+int Volren::SetGradientTexure(BufferImageData* tex)
+{
+    SetTexture("u_gradTex", tex);
+}
+
+int Volren::EnableGradientMap(bool enable)
+{
+    SetFloat("u_enableGradientMap", enable ? 1.0f : 0.0f);
+}
+
+int Volren::EnableLighting(bool enable)
+{
+    SetFloat("u_enableLighting", enable ? 1.0f : 0.0f);
+}
+
+int Volren::SetLight(float posX, float posY, float posZ, float specular)
+{
+    SetVec4("u_light", posX, posY, posZ, specular);
+}
+
+int Volren::SetAttenuation(float constVal, float linearVal, float quadraticVal)
+{
+    SetVec3("u_attenuation", constVal, linearVal, quadraticVal);
+}
+
+int Volren::SetAmbient(float r, float g, float b)
+{
+    SetVec3("u_ambient", r, g, b);
+}
+
+int Volren::SetSpecular(float r, float g, float b)
+{
+    SetVec3("u_specular", r, g, b);
+}
+
+int Volren::SetSamples(int samples)
+{
+    SetFloat("u_samples", static_cast<float>(samples));
+}
+
+int Volren::SetOffset(float x, float y, float z)
+{
+    SetVec3("u_offset", x, y, z);
+}

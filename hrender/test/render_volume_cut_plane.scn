@@ -71,4 +71,5 @@ volume:SetFloat('enable_cut_plane', 1.0)
 -- volume:SetFloat('contour_border_weight', 0.1)
 
 
-render {camera, volume}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, volume}

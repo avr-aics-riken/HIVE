@@ -25,4 +25,5 @@ cam:LookAt(
 	60
 )
 
-render({cam, pm})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, pm})

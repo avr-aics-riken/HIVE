@@ -788,5 +788,6 @@ model_ID3_G0_G1_G6_Line:SetTranslate(
 
 model_ID3_G0_G1_G6_Line:SetShader('pathtrace.frag')
 table.insert(scene, model_ID3_G0_G1_G6_Line)
-render(scene)
+local core = LoadModule("RenderPluginSURFACE")
+core:render(scene)
 

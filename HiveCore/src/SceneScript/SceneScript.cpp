@@ -15,7 +15,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "../Renderer/RenderCore.h"
+//#include "../Renderer/RenderCore.h"
+#include "RenderCore_Lua.h"
+
 #include "../Buffer/UserBufferData.h"
 
 #include "Core/Perf.h"
@@ -124,6 +126,7 @@ void RegisterSceneClass(lua_State* L)
     LUA_SCRIPTCLASS_REGISTER(L, ImageLoader_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, ImageSaver_Lua);
     LUA_SCRIPTCLASS_REGISTER(L, GenTexture_Lua);
+    LUA_SCRIPTCLASS_REGISTER(L, RenderCore_Lua);
 
     SetFunction(L, "PolygonModel",        LUA_SCRIPTCLASS_NEW_FUNCTION(PolygonModel_Lua));
     SetFunction(L, "VolumeModel",         LUA_SCRIPTCLASS_NEW_FUNCTION(VolumeModel_Lua));
@@ -146,6 +149,8 @@ void RegisterSceneClass(lua_State* L)
     SetFunction(L, "ImageLoader",         LUA_SCRIPTCLASS_NEW_FUNCTION(ImageLoader_Lua));
     SetFunction(L, "ImageSaver",          LUA_SCRIPTCLASS_NEW_FUNCTION(ImageSaver_Lua));
     SetFunction(L, "GenTexture",          LUA_SCRIPTCLASS_NEW_FUNCTION(GenTexture_Lua));
+    //SetFunction(L, "RenderCore",          LUA_SCRIPTCLASS_NEW_FUNCTION(RenderCore_Lua));
+
     
 #ifdef HIVE_STATIC
         LUA_SCRIPTCLASS_REGISTER(L, OBJLoader_Lua);
@@ -263,9 +268,13 @@ void RegisterHiveCoreProfilingPoints()
 {
     // PMon::Initialize() should be called before calling this this function.
     // (Usually outside of HiveCore modules, e.g. main())
-    PMon::Register("HiveCore::Render", PMon::PMON_CALC, /* exclusive */true);
-    PMon::Register("HiveCore::ImageSave", PMon::PMON_CALC, /* exclusive */false);
-    PMon::Register("Compositor", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Render",     PMon::PMON_CALC, /* exclusive */true);
+    PMon::Register("HIVE::ImageSave",  PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor::GetColor", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor::GetDepth", PMon::PMON_CALC, /* exclusive */false);
+    PMon::Register("HIVE::Compositor::Merge",    PMon::PMON_CALC, /* exclusive */false);
+
 }
 
 /*
@@ -380,7 +389,7 @@ static bool progressCallback(double val)
     lua_pop(g_L, 1);  // pop returned value
     return true; // true:continue, false: exit
 }
-
+/*
 int renderMode(lua_State* L)
 {
     if (lua_isstring(L, -1)) {
@@ -392,8 +401,9 @@ int renderMode(lua_State* L)
         }
     }
     return 0;
-}
+}*/
 
+/*
 int render(lua_State* L)
 {
     const int stnum = lua_gettop(L);
@@ -461,7 +471,27 @@ int screenParallelRendering(lua_State* L)
     core->SetParallelRendering(para);
     lua_pushboolean(L, true);
     return 1;
+}*/
+
+/*
+int enableDepthComposition(lua_State* L)
+{
+    const bool enableDepth = lua_toboolean(L, 1);
+    RenderCore* core = RenderCore::GetInstance();
+    core->EnableDepthComposition(enableDepth);
+    lua_pushboolean(L, true);
+    return 1;
 }
+
+int setCompositionMergeID(lua_State* L)
+{
+    int mergeID = lua_tointeger(L, 1);
+    RenderCore* core = RenderCore::GetInstance();
+    core->SetCompositionMergeID(mergeID);
+    lua_pushboolean(L, true);
+    return 1;
+}
+*/
 
 int getMemoryData(lua_State* L);
 int getMemoryDataNames(lua_State* L);
@@ -474,11 +504,12 @@ int clearBufferData(lua_State* L);
 
 void registerFuncs(lua_State* L, void* sceneScriptPtr)
 {
-    SetFunction(L, "render", render);
-    SetFunction(L, "clearCache", clearCache);
-    SetFunction(L, "clearShaderCache", clearShaderCache);
-    SetFunction(L, "renderMode", renderMode);
-    
+//    SetFunction(L, "render", render);
+//    SetFunction(L, "clearCache", clearCache);
+//    SetFunction(L, "clearShaderCache", clearShaderCache);
+    //SetFunction(L, "renderMode", renderMode);
+    //SetFunction(L, "screenParallelRendering", screenParallelRendering);
+
     SetFunction(L, "mpiMode", mpiMode);
     SetFunction(L, "mpiRank", mpiRank);
     SetFunction(L, "mpiSize", mpiSize);
@@ -486,8 +517,11 @@ void registerFuncs(lua_State* L, void* sceneScriptPtr)
     SetFunction(L, "dllExtension", dllExtension);
     SetFunction(L, "endian", endian);
     SetFunction(L, "sleep", h_sleep);
-    
-    SetFunction(L, "screenParallelRendering", screenParallelRendering);
+
+    /*
+    SetFunction(L, "enableDepthComposition", enableDepthComposition);
+    SetFunction(L, "setCompositionMergeID", setCompositionMergeID);
+    */
 
     SetFunction(L, "getMemoryData", getMemoryData);
     SetFunction(L, "getMemoryDataNames", getMemoryDataNames);
@@ -675,11 +709,11 @@ namespace {
                     if (instance) {
                         return LUAPUSH<BufferVolumeData_Lua*>(L, instance);
                     }
-                } else if (data->GetType() == BufferData::TYPE_SPARSEVOLUME) {
+/*                } else if (data->GetType() == BufferData::TYPE_SPARSEVOLUME) {
                     BufferSparseVolumeData_Lua* instance = static_cast<BufferSparseVolumeData_Lua*>(data);
                     if (instance) {
                         return LUAPUSH<BufferSparseVolumeData_Lua*>(L, instance);
-                    }
+                    }*/
                 } else if (data->GetType() == BufferData::TYPE_IMAGE) {
                     BufferImageData_Lua* instance = static_cast<BufferImageData_Lua*>(data);
                     if (instance) {
@@ -880,11 +914,11 @@ void SceneScript::Impl::Begin(const std::vector<std::string>& sceneargs)
 {
     RegisterHiveCoreProfilingPoints();
 
-    for (size_t i = 0; i < sceneargs.size(); ++i) {
+    /*for (size_t i = 0; i < sceneargs.size(); ++i) {
         if (sceneargs[i] == "--opengl") {
             RenderCore::GetInstance(RENDER_OPENGL); // Switch OpenGL mode
         }
-    }
+    }*/
     m_L = createLua();
     registerFuncs(m_L, this);
     
@@ -910,7 +944,7 @@ void SceneScript::Impl::End()
     }
     m_L = 0;
 
-    RenderCore::Finalize();
+    //RenderCore::Finalize();
 }
 
 

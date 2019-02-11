@@ -190,3 +190,13 @@ void VectorModel::SetLengthScale(float s) {
     m_imp->SetLengthScale(s);
 }
 
+/// BBoxの取得
+bool VectorModel::GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+{
+    if (GetVector()) {
+        const Vec3Buffer* position = GetVector()->Position();
+        return CalcBBoxFromVec3Buffer(box_min, box_max, position);
+    }
+    return false;
+}
+

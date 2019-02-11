@@ -3,6 +3,7 @@ HIVE/tool/SceneNodeEditor/node_modules
 HIVE/tool/glsl
 build
 build2
+build3
 HIVE/app/node_modules
 HIVE/test/node_modules
 HIVE/HIVE/node_modules
@@ -12,6 +13,12 @@ HIVE/SceneNodeEditor/node_modules
 HIVE/HIVE_UI/node_modules
 HIVE/glsl
 tools/electronviewer/node_modules
+third_party/BCMTools_build
+third_party/CDMlib_build
+third_party/CPMlib_build
+third_party/HDMlib_build
+third_party/Polylib_build
+third_party/TextParser_build
 third_party/cgnslib_3.2.1
 third_party/cgnslib_build
 third_party/fpzip-1.0.1
@@ -26,3 +33,4 @@ tools/hivereact/client/bundle.js
 tools/hivereact/client/bundle.js.map
 output.jpg
 HIVE/ModuleSystem/node_modules
+*.o

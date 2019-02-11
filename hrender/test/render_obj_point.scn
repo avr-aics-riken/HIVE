@@ -20,4 +20,5 @@ local pointdata = obj:PointData()
 model:Create(pointdata)
 model:SetShader('white.frag')
 
-render {camera, model}
+local core = LoadModule("RenderPluginSURFACE")
+core:render {camera, model}

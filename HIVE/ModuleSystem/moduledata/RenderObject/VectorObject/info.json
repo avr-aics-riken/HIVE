@@ -4,6 +4,7 @@
 	"info": "ベクターデータを表示させるためのノード",
 	"customfuncfile": "VectorObject.lua",
     "input": [
+    	{"name": "renderer", "type": "RenderCore"},
 		{"name": "vector", "type": "BufferVectorData"},
 		{"name": "translate", "type": "vec3", "value": [0, 0, 0]},
 		{"name": "rotate", "type": "vec3", "value": [0.0, 0.0, 0.0]},

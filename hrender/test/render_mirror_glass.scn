@@ -34,5 +34,6 @@ cam:LookAt(
 	60
 )
 
-render({cam, env, sph1, sph2})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({cam, env, sph1, sph2})
 

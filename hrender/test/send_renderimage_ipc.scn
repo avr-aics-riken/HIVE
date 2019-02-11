@@ -39,7 +39,8 @@ for i=1,300 do
 	)
 
 
-	render {camera, model}
+	local core = LoadModule("RenderPluginSURFACE")
+	core:render {camera, model}
 
 
 	-- create metabinary

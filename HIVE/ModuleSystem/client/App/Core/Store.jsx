@@ -113,19 +113,19 @@ export default class Store extends EventEmitter {
     // private:
 	initHive(nodePlugData) {
 		this.hive = new Hive();
-		var hostaddr = location.host;
+		this.hostaddr = location.host;
 		let port = this.getPortFromLoaction();
-		if (hostaddr === "") { // electron
+		if (this.hostaddr === "") { // electron
 			if (port) {
-				hostaddr = "localhost:" + port;
+				this.hostaddr = "localhost:" + port;
 			} else {
-				hostaddr = "localhost:8080";
+				this.hostaddr = "localhost:8080";
 			}
 		}
-		this.hive.connect('ws://' + hostaddr); //, '', true);
+		this.hive.connect('ws://' + this.hostaddr); //, '', true);
 
         this.nodeExecutor = new NodeSystem.NodeExecutor(nodePlugData);
-        this.nodeCreator =new NodeSystem.NodeCreator("http://" + hostaddr + "/modulelist.json", () => {		
+        this.nodeCreator =new NodeSystem.NodeCreator("http://" + this.hostaddr + "/modulelist.json", () => {		
 			this.emit(Constants.INITIALIZED, null);
 		});
 		this.hive.on(Hive.IMAGE_RECIEVED, (err, param, data) => {
@@ -163,6 +163,13 @@ export default class Store extends EventEmitter {
             });
 		});
 		this.nodeExecutor.initEmitter(this);
+	}
+	
+	/**
+	 * 自身のホストアドレスを返す
+	 */
+	getHostAddress() {
+		return this.hostaddr;
 	}
 
 	/**

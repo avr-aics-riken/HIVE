@@ -6,6 +6,9 @@
 #include "PointModel.h"
 #include "BufferPointData.h"
 
+#include <limits>
+#include "Buffer.h"
+
 /**
  * ポイントモデル
  */
@@ -64,7 +67,52 @@ public:
     {
         return m_shaderfile;
     }
-
+    
+    
+    bool GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+    {
+        if (!m_point) { return false; }
+        const Vec3Buffer* position = m_point->Position();
+        const FloatBuffer* rad = m_point->Radius();
+        const float flt_max = std::numeric_limits<float>::max();
+        VX::Math::vec3 vmin(flt_max, flt_max, flt_max);
+        VX::Math::vec3 vmax(-flt_max, -flt_max, -flt_max);
+        if (rad) {
+            const float* radius = rad->GetBuffer();
+            const float* buffer = position->GetBuffer();
+            for (int i = 0; i < position->GetNum(); i++) {
+                vmin[0] = (std::min)(vmin[0], buffer[i*3 + 0] - radius[i]);
+                vmin[1] = (std::min)(vmin[1], buffer[i*3 + 1] - radius[i]);
+                vmin[2] = (std::min)(vmin[2], buffer[i*3 + 2] - radius[i]);
+                vmax[0] = (std::max)(vmax[0], buffer[i*3 + 0] + radius[i]);
+                vmax[1] = (std::max)(vmax[1], buffer[i*3 + 1] + radius[i]);
+                vmax[2] = (std::max)(vmax[2], buffer[i*3 + 2] + radius[i]);
+            }
+            if (vmin.x < vmax.x && vmin.y < vmax.y && vmin.z < vmax.z) {
+                box_min = vmin;
+                box_max = vmax;
+                return true;
+            }
+        } else {
+            const float* buffer = position->GetBuffer();
+            for (int i = 0; i < position->GetNum(); i++) {
+                vmin[0] = (std::min)(vmin[0], buffer[i*3 + 0]);
+                vmin[1] = (std::min)(vmin[1], buffer[i*3 + 1]);
+                vmin[2] = (std::min)(vmin[2], buffer[i*3 + 2]);
+                vmax[0] = (std::max)(vmax[0], buffer[i*3 + 0]);
+                vmax[1] = (std::max)(vmax[1], buffer[i*3 + 1]);
+                vmax[2] = (std::max)(vmax[2], buffer[i*3 + 2]);
+            }
+            if (vmin.x < vmax.x && vmin.y < vmax.y && vmin.z < vmax.z) {
+                box_min = vmin;
+                box_max = vmax;
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
 private:
     RefPtr<BufferPointData> m_point;
     std::string m_shaderfile;
@@ -120,3 +168,8 @@ const std::string& PointModel::GetShader() const
     return m_imp->GetShader();
 }
 
+/// BBoxを取得
+bool PointModel::GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+{
+    return m_imp->GetBox(box_min, box_max);
+}

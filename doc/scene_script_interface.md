@@ -2,19 +2,27 @@
 
 ---------------------------------
 
-# Basic function
+# Basic functions
+
+## LoadModule()
+Load necessary modules (DLL libraries)
+	
+	Example: Load necesary RenderPlugin module 
+	local core = LoadModule("RenderPluginSURFACE")
+	local core = LoadModule("RenderPluginKVS")
 
 ## render()
-指定されたRenderObjectでレンダリングを行う
+Execute rendering of a single or multiple objects
 
-     render({renderobject1, renderobject2, renderobject3 })
+     core:render(renderobject1)
+     core:render({renderobject1, renderobject2, renderobject3 })
 
-第2引数にレンダリング中のコールバック関数を指定可能
+It is also possible to seta callback function 
 
-     render({renderobject1, renderobject2, renderobject3 }, funciton (progress) 
+     Example: Progress Bar	
+     core:render({renderobject1, renderobject2, renderobject3 }, funciton (progress) 
      	print('Progress = ' .. progress)
      end)
-
 
 
 ## clearCache()
@@ -22,6 +30,8 @@
 
 また, 別途collectgarbage("collect")を呼び出すことで
 luaのGCが呼び出され,メモリ解放が行われる。
+
+     core:clearCache()
 
 ## clearShaderCache(name)
 指定したシェーダをレンダラのキャッシュから削除する.
@@ -64,16 +74,17 @@ MPIモードで起動している場合、MPIのサイズを取得する。
 - little - リトルエンディアン
 - big - ビッグエンディアン
 
-## screenParallelRendering(enable)
-MPIモードでのみ有効。SURFACEの画面分割レンダリング機能を有効にする。N プロセスで N 領域に画面を分割してレンダリングします。
-の分割方法は自動で行われます。
+## setParallelRendering(true or false)
+Only for RenderPluginSURFACE using MPI mode. 
+It automatically divides the screen space in N (Number of processes) 
+After the parallel rendering the final image is generated
 
-以下のいずれかの値が設定可能
-
-- true - 有効
-- false - 無効
+- true  : Enable Parallel Rendering
+- false : Disable Parallel Rendering (Default)
  
-初期値はfalse。
+    if mpiMode() == true then
+       core:setParallelRendering(true)
+    end
 
 ## getMemoryDataNames()
 
@@ -107,6 +118,12 @@ setBufferDataにより格納されているバッファデータを、キーを�
 
 ## clearBufferData()
 setBufferDataにより格納されているバッファデータを、全て削除する。
+
+## enableDepthComposition(enable)
+Compositorが有効のときのみ有効。DepthCompositionを有効にする。
+
+## setCompositionMergeID(mergeid)
+Compositorが有効のときのみ有効。Compositionを行う際のMergeIDを整数で設定する。
 
 --------------
 
@@ -203,6 +220,10 @@ RenderObjectは共通のインターフェースを持つ
 
       LuaTable GetScale()
       
+- オブジェクトのトランスフォームマトリックスを取得
+
+      LuaTable GetTransformMatrix()
+
 - シェーダのUniform変数(Vec4)の値をすべて取得
 
       LuaTable GetVec4Table()
@@ -255,8 +276,11 @@ RenderObjectは共通のインターフェースを持つ
 
 	  Number RemoveExtraBuffer(string)
 	
-	 
-	  
+- BoundingBoxを取得
+
+      LuaTable GetBBox()
+      
+
 
 ## Camera
 
@@ -391,6 +415,10 @@ RenderObjectは共通のインターフェースを持つ
 - 深度バッファを返す.
     
         BufferImageData GetDepthBuffer()
+
+- 座標をスクリーンスペースに変換して返す.
+    
+        LuaTable ConvertToScreenSpace(x, y, z)
 
 
 ## PolygonModel
@@ -666,7 +694,17 @@ Solid構造のデータをレンダリングするためのオブジェクト.
       local tridata = gen:TriangleList(trianglelist_table, num)
       model:Create(tridata)
  
+- テーブルから複数のVectorArrowを生成する例
 
+      local gen = PrimitiveGenerator()
+      local arrowList = gen:VectorArrowList(positionTable, dirTable, numArrows)
+      local model = VectorModel()
+      model:Create(arrowList)
+
+      -- VectorArrowList(positionTable, dirTable, numArrows)
+      -- positionTable ... 各ベクトルの始点の座標を格納したテーブル (X, Y, Z, X, Y, Z, ...)
+      -- dirTable ... 各ベクトルの方向を格納したテーブル (X, Y, Z, X, Y, Z, ...)
+      -- numArrows ... 生成するベクトルの個数
 
 ---------------------------------
 

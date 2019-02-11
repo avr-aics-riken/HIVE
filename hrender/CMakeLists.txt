@@ -152,7 +152,7 @@ set(INCLUDES
 	${PROJECT_SOURCE_DIR}/../HiveCore/src/SceneScript
   
   ${PROJECT_SOURCE_DIR}/../lib/Analyzer
-	${PROJECT_SOURCE_DIR}/../lib/Builder
+  ${PROJECT_SOURCE_DIR}/../lib/Builder
   ${PROJECT_SOURCE_DIR}/../lib/Builder/FloatsToFloat
   ${PROJECT_SOURCE_DIR}/../lib/Builder/ImageFilter
   ${PROJECT_SOURCE_DIR}/../lib/Builder/MeshAttribToVolume
@@ -166,9 +166,9 @@ set(INCLUDES
   ${PROJECT_SOURCE_DIR}/../lib/Builder/VolumeToMeshData
   ${PROJECT_SOURCE_DIR}/../lib/Builder/VolumeToVector
   ${PROJECT_SOURCE_DIR}/../lib/ClusterParallelCoord
-	${PROJECT_SOURCE_DIR}/../lib/Generator
+  ${PROJECT_SOURCE_DIR}/../lib/Generator
   ${PROJECT_SOURCE_DIR}/../lib/Generator/MandelbulbVolGen
-	${PROJECT_SOURCE_DIR}/../lib/Loader
+  ${PROJECT_SOURCE_DIR}/../lib/Loader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/BcmLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/CdmLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/HdmLoader
@@ -185,7 +185,7 @@ set(INCLUDES
   ${PROJECT_SOURCE_DIR}/../lib/Loader/VolLoader
   ${PROJECT_SOURCE_DIR}/../lib/Loader/VtkLoader
   ${PROJECT_SOURCE_DIR}/../lib/Network
-	${PROJECT_SOURCE_DIR}/../lib/Saver
+  ${PROJECT_SOURCE_DIR}/../lib/Saver
   ${PROJECT_SOURCE_DIR}/../lib/Saver/PdmSaver
   ${PROJECT_SOURCE_DIR}/../lib/Saver/RawVolumeSaver
   ${PROJECT_SOURCE_DIR}/../lib/Saver/SphSaver
@@ -218,21 +218,23 @@ IF (NOT BUILD_SHARED_LIBS)
     ../HiveCore/src/Buffer/BufferImageData.cpp
     ../HiveCore/src/Buffer/BufferExtraData.cpp
     ../HiveCore/src/Buffer/UserBufferData.cpp
-    ../HiveCore/src/Renderer/RenderCore.cpp
-    ../HiveCore/src/Renderer/BaseBuffer.cpp
-    ../HiveCore/src/Renderer/Commands_GL.cpp
-    ../HiveCore/src/Renderer/Commands_LSGL.cpp
-    ../HiveCore/src/Renderer/PolygonBuffer.cpp
-    ../HiveCore/src/Renderer/VolumeBuffer.cpp
-    ../HiveCore/src/Renderer/SparseVolumeBuffer.cpp
-    ../HiveCore/src/Renderer/LineBuffer.cpp
-    ../HiveCore/src/Renderer/PointBuffer.cpp
-    ../HiveCore/src/Renderer/TetraBuffer.cpp
-    ../HiveCore/src/Renderer/SolidBuffer.cpp
-    ../HiveCore/src/Renderer/VectorBuffer.cpp
+    ../HiveCore/src/Buffer/bvhtree/render_bvh_tree.cc
+    ../RenderPluginSURFACE/src/Renderer/RenderDevice.cpp
+    ../RenderPluginSURFACE/src/Renderer/RenderDeviceSURFACE.cpp
+    ../RenderPluginSURFACE/src/Renderer/Commands_GL.cpp
+    ../RenderPluginSURFACE/src/Renderer/Commands_LSGL.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/BaseBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/PolygonBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/VolumeBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/SparseVolumeBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/LineBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/PointBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/TetraBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/SolidBuffer.cpp
+    ../RenderPluginSURFACE/src/Renderer/Buffer/VectorBuffer.cpp
     ../HiveCore/src/SceneScript/SceneScript.cpp
-    ../HiveCore/src/RenderObject/Camera.cpp
     ../HiveCore/src/RenderObject/RenderObject.cpp
+    ../HiveCore/src/RenderObject/Camera.cpp
     ../HiveCore/src/RenderObject/PolygonModel.cpp
     ../HiveCore/src/RenderObject/VolumeModel.cpp
     ../HiveCore/src/RenderObject/SparseVolumeModel.cpp
@@ -486,6 +488,8 @@ IF (NOT BUILD_SHARED_LIBS)
     SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
   ENDIF()
 
+ENDIF() # !BUILD_SHARED_LIBS
+
   # --------- Ext lib ------------------
   # PMlib
   IF(HIVE_BUILD_WITH_PMLIB)
@@ -512,7 +516,6 @@ IF (NOT BUILD_SHARED_LIBS)
     
   ENDIF()
   # ---------------------------------------
-ENDIF() # !BUILD_SHARED_LIBS
 
 # hrender
 add_executable (hrender ${HRENDER_SOURCES} ${HRENDER_SOURCES_STATIC}
@@ -524,7 +527,13 @@ add_sanitizers (hrender)
 IF (BUILD_SHARED_LIBS)
   # HIVE Core		
   link_directories(${PROJECT_SOURCE_DIR}/../bin)		
+
+  IF(HIVE_BUILD_WITH_PMLIB)
+  target_link_libraries(hrender hiveCore ${PMLIB_LIBS})		
+  ELSE()
   target_link_libraries(hrender hiveCore)		
+  ENDIF()
+
 ENDIF() # BUILD_SHARED_LIBS
 
 IF (NOT BUILD_SHARED_LIBS)

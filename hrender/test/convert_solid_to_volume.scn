@@ -38,5 +38,6 @@ s2v:ToVolume(128, 128, 128)
 -- model:Create(hexadata)
 -- model:SetShader('normal.frag')
 -- print(model)
--- 
--- render {camera, model}
+--
+-- local core = LoadModule("RenderPluginSURFACE")
+-- core:render {camera, model}

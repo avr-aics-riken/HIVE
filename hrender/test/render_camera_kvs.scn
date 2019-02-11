@@ -1,0 +1,18 @@
+
+print('Render camera')
+
+local camera = Camera()
+camera:ClearColor(1,0,0,1)
+camera:SetScreenSize(1024, 1024)
+camera:SetFilename('image_kvs.jpg')
+
+camera:LookAt(
+	0,0,300,
+	0,0,0,
+	0,1,0,
+	60
+)
+
+local core = LoadModule("RenderPluginKVS")
+core:render { camera }
+

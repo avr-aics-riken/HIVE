@@ -87,6 +87,21 @@ public:
         return m_shaderfile;
     }
 
+    /// BBoxの取得
+    bool GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+    {
+        if (m_volume) {
+            box_min.x = - m_volume->Width() / 2.0f;
+            box_min.y = - m_volume->Height() / 2.0f;
+            box_min.z = - m_volume->Depth() / 2.0f;
+            box_max = -box_min;
+            if (!(box_max.x == 0.0 && box_max.y == 0.0 && box_max.z == 0.0)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 private:
     RefPtr<BufferSparseVolumeData> m_volume;
     std::string m_shaderfile;
@@ -162,5 +177,11 @@ BufferSparseVolumeData* SparseVolumeModel::GetSparseVolume() const
 const std::string& SparseVolumeModel::GetShader() const
 {
     return m_imp->GetShader();
+}
+
+/// BBoxの取得
+bool SparseVolumeModel::GetBox(VX::Math::vec3& bmin, VX::Math::vec3& bmax) const
+{
+    return m_imp->GetBox(bmin, bmax);
 }
 

@@ -77,6 +77,15 @@ seserver = http.createServer(function (req, res) {
 				};
 			}(res)));
 		}
+	} else if (req.url === '/colormap_preset') { // temp
+		makeColorMapPresetList((function (res) {
+			return function (err, presetlist) {
+				jsondata = {error: err, data:presetlist};
+				file = JSON.stringify(jsondata);
+				cacheData = file;
+				res.end(file);
+			}
+		}(res)));
 	} else {
 		fname = req.url.substr(1, req.url.length); // remove '/'
 		fs.readFile(HTTP_ROOT_DIR + fname, function(err, file){
@@ -194,6 +203,52 @@ function makeNodeList(callback) {
             }(nodeDir));
         }
     });
+}
+
+function makeColorMapPresetList(callback) {
+	"use strict";
+	var presetDir = './colormap_preset',
+        presetList = {},
+		presetFile,
+        fileCounter,
+        readError;
+
+	function finishLoad() {
+		fileCounter = fileCounter - 1;
+		if (fileCounter === 0) {
+			callback((readError.length === 0 ? null : readError), presetList);
+		}
+	}
+	
+    fs.readdir(presetDir, function (err, files) {
+        if (err) {
+            return;
+        }
+
+        fileCounter = 0;
+        readError = '';
+            
+        var i, nodeDir;
+		fileCounter = files.length;
+        for (i in files) {
+	        presetFile = presetDir + "/" + files[i];
+			try {
+				fs.readFile(presetFile, 'utf8', (function(fileName) {
+					return function (err, data) {
+						if (err) {
+							return;
+						}
+						presetList[fileName] = data;
+						finishLoad();
+					}
+				}(files[i])));
+			} catch (e) {
+				var errmsg = '[Error] Failed Load:' + presetFile;
+				console.error(errmsg, e);
+				readError += errmsg + '\n' + e.toString() + '\n';
+			}
+		}
+	});
 }
 
 //---------------

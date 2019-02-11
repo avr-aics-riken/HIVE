@@ -20,25 +20,25 @@
 
 レンダリングのパラメータには以下のものがある. 
 
-| Type        | Name                | Default         | Description                                    |
-| ----------- |:-------------------:|:---------------:|:----------------------------------------------:|
-| sampler2D   | tf_tex              |    -            | Transfer Functionの色テーブル                   |
-| float       | tf_min              |    -            | ボリュームの濃度の最小値                         |
-| float       | tf_max              |   -             | ボリュームの濃度の最大値                         |
-| float       | u_enableGradientMap |  1              | Gradient Mapの有無 (0 or 1)                     |
-| sampler2D   | u_gradTex           | -               | Gradient Mapの色テーブル                         |
-| float       | u_enableLighting    | 1               | ライティングの有無 (0 or 1)                      |
-| vec4        | u_light             | (0, 0, 50, 5)   | 光源の位置と強さ (posX, posY, posZ, specular)    |
-| vec3        | u_attenuation       | (1, 0, 0)       | 光の減衰 (const, linear, quadratic)              |
-| vec3        | u_ambient           | (0.2, 0.2, 0.2) | 環境光成分 (R, G, B) [0, 1]                      |
-| vec3        | u_specular          | (1, 1, 1)       | 鏡面反射成分 (R, G, B) [0, 1]                    |
-| float       | u_samples           | 100             | レイマーチングのサンプル数                        |
-| vec3        | u_offset            | (0, 0, 0)       | ボリュームの位置のオフセット                      |
+| Type        | Unifrom変数名                | Nodeの入力名 |  Default         | Description                                    |
+| ----------- |:-------------------:|:---------------:|:---------------:|:----------------------------------------------:|
+| sampler2D   | tf_tex              | tf_tex          |    -            | Transfer Functionの色テーブル                   |
+| float       | tf_min              | tf_min          |    -            | ボリュームの濃度の最小値                         |
+| float       | tf_max              | tf_max          |   -             | ボリュームの濃度の最大値                         |
+| float       | u_enableGradientMap | enableG         |  1              | Gradient Mapの有無 (0 or 1)                     |
+| sampler2D   | u_gradTex           | gradTex         | -               | Gradient Mapの色テーブル                         |
+| float       | u_enableLighting    | enableL         | 1               | ライティングの有無 (0 or 1)                      |
+| vec4        | u_light             | light           | (0, 0, 50, 5)   | 光源の位置と強さ (posX, posY, posZ, specular)    |
+| vec3        | u_attenuation       | attenuation     | (1, 0, 0)       | 光の減衰 (const, linear, quadratic)              |
+| vec3        | u_ambient           | offset          | (0.2, 0.2, 0.2) | 環境光成分 (R, G, B) [0, 1]                      |
+| vec3        | u_specular          | specular        | (1, 1, 1)       | 鏡面反射成分 (R, G, B) [0, 1]                    |
+| float       | u_samples           | samples         | 100             | レイマーチングのサンプル数                        |
+| vec3        | u_offset            | offset          | (0, 0, 0)       | ボリュームの位置のオフセット                      |
 
 ### Transfer Function
 TransferFunctionノードにはVolume LoaderからVolumeDataを接続する. 
 また，filepathにlutファイルを指定することでTransfer Functionをインポートすることができる．lutファイルは後述するSaveColorMapノードで保存したものや，Visioからエクスポートしたものを用いることができる．  
-TransferFunctionノードからはImageをtf_texに, MinとMaxをtf_min, tf_maxのUniform変数に接続して使用する.   
+TransferFunctionノードからはImageをtf_texに, MinとMaxをtf_min, tf_maxに接続して使用する.   
 ![TF-Node](img/TFNode.png)   
 Transfer Functionではボリュームの濃度が0から1に正規化され, その値で色テーブルを参照し, 色をつける. 
 下の画像では濃度が高い値が赤, 低い値が青となっている.   
@@ -62,7 +62,7 @@ SaveColorMapノードを以下のように繋ぐことで，設定したTransfer
 
 GradientMapノードにはVolume LoaderからVolumeDataを接続する. 
 また，Transfer Functionと同様にして，lutファイルをインポートすることができる．   
-GradientMapノードからはImageをu_gradTexにUniform変数に接続して使用する. 
+GradientMapノードからはImageをgradTexに接続して使用する. 
 
 ![Gradient-Node](img/gradNode.png)  
 Gradient Mapではボリュームの濃度の勾配の大きさによって, 色テーブルを参照し, 得られた値をボリュームの透明度にかけ合わせる.   

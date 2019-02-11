@@ -107,3 +107,12 @@ const std::string& TetraModel::GetShader() const
     return m_imp->GetShader();
 }
 
+/// BBoxを取得する
+bool TetraModel::GetBox(VX::Math::vec3& box_min, VX::Math::vec3& box_max) const
+{
+    if (GetTetra()) {
+        const Vec3Buffer* position = GetTetra()->Position();
+        return CalcBBoxFromVec3Buffer(box_min, box_max, position);
+    }
+    return false;
+}

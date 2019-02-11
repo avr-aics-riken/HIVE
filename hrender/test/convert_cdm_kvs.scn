@@ -1,0 +1,14 @@
+
+
+print('load and convert CDM')
+
+local cdm = LoadModule("CdmLoader")
+
+cdm:Load('cdm_sample.dfi')
+
+local kvsvolumeconv = LoadModule('KVSCartesianVolumeConverter')
+
+kvsvolumeconv:setVolumeBuffer(cdm:VolumeData())
+
+local kvsStructuredVolumeObject = kvsvolumeconv:getKVSVolumeData()
+print('kvs::StructuredVolumeObject', kvsStructuredVolumeObject)

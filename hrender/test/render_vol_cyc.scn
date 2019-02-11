@@ -1,3 +1,4 @@
+local core = LoadModule("RenderPluginSURFACE")
 
 print('Render VOL for cyc')
 
@@ -9,8 +10,8 @@ camera:LookAt( 0,-150,-30,
 	40
 )
 
-for j = 0, 200 do 
-	clearCache()
+for j = 0, 200 do
+	core:clearCache()
 	collectgarbage("collect")
 	local vol = LoadModule("VolLoader")
 	local output_filename = "img_cyc_" .. j .. ".jpg"
@@ -23,6 +24,6 @@ for j = 0, 200 do
 	local volumedata = vol:VolumeData()
 	volume:Create(volumedata)
 	volume:SetShader('fs_kakuhan.frag')
-	render {camera, volume}
+	core:render {camera, volume}
 end
 

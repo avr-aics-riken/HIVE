@@ -30,4 +30,5 @@ print( analy:MaxY() )
 print( analy:MinZ() )
 print( analy:MaxZ() )
 
-render { camera, model }
+local core = LoadModule("RenderPluginSURFACE")
+core:render { camera, model }

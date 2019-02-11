@@ -1,4 +1,5 @@
 
 print('Render basic')
 
-render({})
+local core = LoadModule("RenderPluginSURFACE")
+core:render({})
